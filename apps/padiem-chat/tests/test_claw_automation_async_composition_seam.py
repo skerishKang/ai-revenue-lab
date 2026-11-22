@@ -63,7 +63,7 @@ from app.claw_automation_store import D1ClawAutomationStore  # noqa: E402
 
 # Sibling contract modules reuse their proven doubles so the seam is tested
 # against the SAME fixtures the sync contracts pin, not a drifted copy.
-from test_claw_automation_background_execution import (  # noqa: E402
+from _support.claw_automation import (  # noqa: E402
     NOW,
     WORKSPACE,
     OutcomeAdapter,
@@ -72,7 +72,7 @@ from test_claw_automation_background_execution import (  # noqa: E402
     membership,
     resolver,
 )
-from test_claw_automation_due_workspace_discovery import (  # noqa: E402
+from _support.claw_automation import (  # noqa: E402
     MIGRATION_019_PATH,
     MIGRATION_PATH,
     DictMembershipAuthority,

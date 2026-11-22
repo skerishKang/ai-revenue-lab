@@ -42,6 +42,23 @@
     return typeof value === "string" ? value.trim() : "";
   }
 
+  /* #8021: the chip must not cover a button — above the send button it used
+   * to land on the composer status pill stacked right above it. The anchor
+   * itself is never a collision; the first candidate that fits the viewport
+   * and clears every button wins. */
+  function buttonUnder(anchor, left, top, size) {
+    const box = {left, top, right: left + size.width, bottom: top + size.height};
+    const scope = anchor.closest("form") || document;
+    for (const button of scope.querySelectorAll("button")) {
+      if (button === anchor || button.hidden) continue;
+      const r = button.getBoundingClientRect();
+      if (r.width <= 0 || r.height <= 0) continue;
+      if (box.left < r.right && r.left < box.right
+          && box.top < r.bottom && r.top < box.bottom) return r;
+    }
+    return null;
+  }
+
   function place(anchor) {
     const node = ensureBubble();
     const rect = anchor.getBoundingClientRect();
@@ -50,14 +67,34 @@
     node.style.top = "0px";
     const size = node.getBoundingClientRect();
     const viewportWidth = document.documentElement.clientWidth;
-    let left = rect.left + (rect.width / 2) - (size.width / 2);
-    left = Math.max(6, Math.min(left, viewportWidth - size.width - 6));
-    let top = rect.top - size.height - OFFSET_PX;
-    if (top < 6) {
-      top = rect.bottom + OFFSET_PX;
+    const viewportHeight = document.documentElement.clientHeight;
+    const clampLeft = (left) => Math.max(6, Math.min(left, viewportWidth - size.width - 6));
+    const centerX = clampLeft(rect.left + (rect.width / 2) - (size.width / 2));
+    const aboveY = rect.top - size.height - OFFSET_PX;
+    const belowY = rect.bottom + OFFSET_PX;
+    const fits = (top) => top >= 6 && top + size.height <= viewportHeight - 6;
+
+    const candidates = [{left: centerX, top: aboveY}];
+    const blocker = fits(aboveY) ? buttonUnder(anchor, centerX, aboveY, size) : null;
+    if (blocker) {
+      candidates.push({left: clampLeft(blocker.left - size.width - OFFSET_PX), top: aboveY});
+      candidates.push({left: clampLeft(blocker.right + OFFSET_PX), top: aboveY});
     }
-    node.style.left = Math.round(left) + "px";
-    node.style.top = Math.round(top) + "px";
+    candidates.push({left: centerX, top: belowY});
+
+    let placed = null;
+    for (const candidate of candidates) {
+      if (!fits(candidate.top)) continue;
+      if (!buttonUnder(anchor, candidate.left, candidate.top, size)) {
+        placed = candidate;
+        break;
+      }
+    }
+    if (!placed) {
+      placed = {left: centerX, top: aboveY < 6 ? belowY : aboveY};
+    }
+    node.style.left = Math.round(placed.left) + "px";
+    node.style.top = Math.round(placed.top) + "px";
     node.style.visibility = "";
   }
 
@@ -77,6 +114,10 @@
   }
 
   function hide() {
+    // A dismissed tooltip must not come back through a pending show timer
+    // (e.g. the pointer entered right before a click dismissed it).
+    window.clearTimeout(showTimer);
+    window.clearTimeout(hideTimer);
     if (!bubble) return;
     bubble.dataset.padiemTooltipState = "hidden";
     bubble.setAttribute("aria-hidden", "true");
@@ -84,6 +125,29 @@
       currentAnchor.removeAttribute("aria-describedby");
       currentAnchor = null;
     }
+  }
+
+  /* #8021: a shown chip must not outlive the interaction that triggered it.
+   * Pressing anywhere closes it (a touch on the anchor itself keeps its tap
+   * toggle), and the first keystroke in any field closes it immediately.
+   * Focus moves away are already covered by the anchor's own blur. */
+  function onDocumentPointerDown(event) {
+    if (!currentAnchor) return;
+    if (event.pointerType === "touch" && currentAnchor.contains(event.target)) return;
+    hide();
+  }
+
+  function onDocumentInput() {
+    hide();
+  }
+
+  let dismissBound = false;
+
+  function ensureDismissListeners() {
+    if (dismissBound) return;
+    dismissBound = true;
+    document.addEventListener("pointerdown", onDocumentPointerDown, true);
+    document.addEventListener("input", onDocumentInput, true);
   }
 
   function detach(anchor) {
@@ -174,8 +238,12 @@
   });
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => bind(document));
+    document.addEventListener("DOMContentLoaded", () => {
+      ensureDismissListeners();
+      bind(document);
+    });
   } else {
+    ensureDismissListeners();
     bind(document);
   }
 })();

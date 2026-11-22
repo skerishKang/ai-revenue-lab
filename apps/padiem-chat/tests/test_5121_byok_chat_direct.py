@@ -246,7 +246,7 @@ async def request(app, method, path, *, uid=None, json_body=None, headers=None):
         base_url=ORIGIN,
     ) as client:
         if uid:
-            client.cookies.set(SESSION_COOKIE, create_session_token(settings(), uid))
+            client.cookies.set(SESSION_COOKIE, create_session_token(settings(), uid, canonical_session_id="session_test_a"))
         return await client.request(
             method, path, json=json_body, headers=request_headers
         )
@@ -557,51 +557,44 @@ async def test_byok_reasoning_provider_rejection_gets_clear_korean_copy():
 
 
 @pytest.mark.asyncio
-async def test_byok_via_b14_forwards_the_reasoning_choice_to_the_bridge():
-    # #6838: the relayed lane now carries the user's reasoning effort in the
-    # engine request policy; B14 applies it to the user-credential call.
-    captured = {}
-
-    class FakeBridge:
-        async def start(self, **kwargs):
-            captured.update(kwargs)
-            class _Result:
-                answer = "b14 경유 답변"
-            return _Result()
-
-    app, history, credential_store, _, _ = build_app()
+async def test_byok_via_b14_flag_still_uses_direct_provider():
+    app, history, credential_store, recorder, _ = build_app()
     app.state.settings = replace(app.state.settings, byok_via_b14=True)
-    app.state.orchestration_bridge = FakeBridge()
+
+    class B14Stopped:
+        def __getattr__(self, name):
+            raise AssertionError("B14 must not be touched by BYOK")
+
+    app.state.orchestration_bridge = B14Stopped()
     await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
 
     payload = chat_payload()
     payload["custom"]["reasoning_effort"] = "high"
     response = await request(app, "POST", "/api/chat", uid=OWNER, json_body=payload)
     assert response.status_code == 200, response.text
-    assert response.json()["answer"] == "b14 경유 답변"
-    assert captured["reasoning_effort"] == "high"
-    assert captured["byok_selection"] == {"provider": PROVIDER_ID, "model": MODEL_ID}
+    assert len(recorder.requests) == 1
+    assert json.loads(recorder.requests[0].content)["model"] == "beam-free"
     saved = history.conversations[response.json()["conversation_id"]]
-    assert saved["messages"][1]["content"] == "b14 경유 답변"
+    assert saved["messages"][1]["content"] == "custom 답변"
+    assert CUSTOM_KEY not in response.text
 
 
 @pytest.mark.asyncio
 async def test_byok_via_b14_reasoning_rejection_gets_clear_korean_copy():
-    # #6838: the provider refused the reasoning value behind B14. The code
-    # survives the engine relay and the caller gets one actionable fix;
-    # the request is never retried without the choice.
-    class RejectingBridge:
-        async def start(self, **kwargs):
-            from app.orchestration_bridge import B62OrchestrationError
-            raise B62OrchestrationError(
-                "custom_provider_reasoning_rejected",
-                "선택한 모델이 이 추론 강도를 받지 않았습니다. 추론 강도를 '기본'으로 바꾸거나 다른 모델을 선택해 주세요.",
-                status_code=400,
-            )
+    def reject_reasoning(_request):
+        return httpx.Response(400, json={"error": {
+            "message": "reasoning_effort is not supported by this model",
+        }})
 
-    app, _, credential_store, recorder, _ = build_app()
+    recorder = ProviderRecorder(reject_reasoning)
+    app, _, credential_store, _, _ = build_app(recorder=recorder)
     app.state.settings = replace(app.state.settings, byok_via_b14=True)
-    app.state.orchestration_bridge = RejectingBridge()
+
+    class B14Stopped:
+        def __getattr__(self, name):
+            raise AssertionError("B14 must not be touched by BYOK")
+
+    app.state.orchestration_bridge = B14Stopped()
     await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
 
     payload = chat_payload()
@@ -611,7 +604,7 @@ async def test_byok_via_b14_reasoning_rejection_gets_clear_korean_copy():
     body = response.json()["error"]
     assert body["code"] == "custom_provider_reasoning_rejected"
     assert "추론 강도" in body["message"] and "기본" in body["message"]
-    assert len(recorder.requests) == 0
+    assert len(recorder.requests) == 1
 
 
 @pytest.mark.parametrize(
@@ -692,7 +685,7 @@ async def test_chat_custom_rejects_unexpected_wire_model_and_malformed_body():
 async def test_expired_session_cannot_use_custom_path():
     app, _, credential_store, recorder, _ = build_app()
     await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
-    expired = SESSION_COOKIE + "=" + create_session_token(settings(), OWNER, now=1)
+    expired = SESSION_COOKIE + "=" + create_session_token(settings(), OWNER, now=1, canonical_session_id="session_test_a")
     response = await request(
         app, "POST", "/api/chat", json_body=chat_payload(),
         headers={"Cookie": expired},
@@ -706,32 +699,22 @@ async def test_expired_session_cannot_use_custom_path():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("path", ["/api/chat", "/api/chat/stream"])
-async def test_custom_chat_flag_on_uses_engine_byok_without_direct_provider(path):
-    from dataclasses import replace
-    from types import SimpleNamespace
-
+async def test_custom_chat_flag_on_still_uses_direct_provider(path):
     app, _history, store, recorder, _db = build_app()
     await store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY, now=100)
     app.state.settings = replace(app.state.settings, byok_via_b14=True)
-    calls = []
-    class FakeBridge:
-        async def start(self, **kwargs):
-            calls.append(kwargs)
-            return SimpleNamespace(answer="B14 response")
-    app.state.orchestration_bridge = FakeBridge()
+
+    class B14Stopped:
+        def __getattr__(self, name):
+            raise AssertionError("B14 must not be touched by BYOK")
+
+    app.state.orchestration_bridge = B14Stopped()
 
     response = await request(app, "POST", path, uid=OWNER, json_body=chat_payload())
     assert response.status_code == 200
-    assert "B14 response" in response.text
+    assert "custom 답변" in response.text
     assert CUSTOM_KEY not in response.text
-    assert len(recorder.requests) == 0
-    assert len(calls) == 1
-    assert calls[0]["model_id"] == "opencode-go/beam-free"
-    ref = json.loads(calls[0]["user_credential_ref"])
-    assert ref["provider"] == "opencode-go"
-    assert ref["model"] == "beam-free"
-    assert ref["key"] == CUSTOM_KEY
-    assert calls[0]["byok_selection"] == {"provider": PROVIDER_ID, "model": MODEL_ID}
+    assert len(recorder.requests) == 1
 
 
 @pytest.mark.asyncio
@@ -745,19 +728,22 @@ async def test_custom_chat_flag_off_still_uses_direct_provider():
 
 
 @pytest.mark.asyncio
-async def test_custom_chat_flag_on_failure_does_not_fall_back_to_direct():
-    from dataclasses import replace
-    from app.orchestration_bridge import B62OrchestrationError
+async def test_custom_chat_flag_on_failure_has_no_b14_fallback():
+    def reject(_request):
+        return httpx.Response(403, json={"error": "vendor-forbidden"})
 
-    app, _history, store, recorder, _db = build_app()
+    recorder = ProviderRecorder(reject)
+    app, _history, store, _, _db = build_app(recorder=recorder)
     await store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY, now=100)
     app.state.settings = replace(app.state.settings, byok_via_b14=True)
-    class FailingBridge:
-        async def start(self, **kwargs):
-            raise B62OrchestrationError("upstream_auth_error", "authorization failed", status_code=403)
-    app.state.orchestration_bridge = FailingBridge()
+
+    class B14Stopped:
+        def __getattr__(self, name):
+            raise AssertionError("B14 must not be touched by BYOK")
+
+    app.state.orchestration_bridge = B14Stopped()
     response = await request(app, "POST", "/api/chat", uid=OWNER, json_body=chat_payload())
-    assert response.status_code == 403
-    assert response.json()["error"]["code"] == "upstream_auth_error"
-    assert len(recorder.requests) == 0
+    assert response.status_code == 502
+    assert response.json()["error"]["code"] == "custom_provider_auth_failed"
+    assert len(recorder.requests) == 1
     assert CUSTOM_KEY not in response.text

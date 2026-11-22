@@ -65,6 +65,12 @@ _USER_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:@+-]{0,255}$")
 _LINK_ID_RE = re.compile(r"^pclink_[0-9a-f]{32}$")
 #: A whole drive, the shape the Owner's default scope grants (`C:`).
 _DRIVE_ROOT_RE = re.compile(r"[A-Za-z]:")
+#: #8036: one mapped drive letter in a self-reported share candidate (`Z:`).
+_SHARE_DRIVE_RE = re.compile(r"[A-Za-z]:")
+#: One brace group after the drive group in an observed agent name. The drive
+#: group stays the first bracket pair, so every existing name reader is intact.
+_NAME_SHARES_RE = re.compile(r"\{\s*([^{}]{1,200})\s*\}")
+_MAX_SHARE_CANDIDATES = 8
 _CODE_ID_RE = re.compile(r"^pcpair_[0-9a-f]{32}$")
 #: The derived install tag: `pd-` plus the eight hex characters this module
 #: produces. MeshCentral agent names are operator-editable text, so the tag is
@@ -93,6 +99,9 @@ _NAME_SEPARATOR = " · "
 #: single letters inside one bracketed group.
 _NAME_DRIVES_RE = re.compile(r"\[\s*([A-Za-z](?:[ \t]+[A-Za-z])*)\s*\]")
 _STATE_ACTIVE = "active"
+#: #8036: a share the PC reported about itself. It is a candidate only; no read
+#: can use it until an administrator approves that one share unit.
+_STATE_CANDIDATE = "candidate"
 _STATE_PENDING_VERIFICATION = "pending_verification"
 _STATE_REVOKED = "revoked"
 #: A superseded link keeps `state='revoked'` (the table's own CHECK vocabulary,
@@ -152,9 +161,23 @@ class PcPairingStore(Protocol):
         label: str | None = None,
     ) -> dict[str, Any]: ...
 
+    async def seed_share_candidates(
+        self, *, owner: str, link: dict[str, Any],
+        candidates: list[dict[str, str | None]], moment: str,
+    ) -> dict[str, Any]: ...
+
+    async def approve_share_candidate(
+        self, *, user_id: str, link_id: str, root_ref: str, now: datetime,
+    ) -> dict[str, Any]: ...
+
     async def links_for_owner(self, *, user_id: str) -> list[dict[str, Any]]: ...
 
     async def list_active_device_ids(self) -> list[str]: ...
+
+    async def list_helper_update_preferences(self, *, user_id: str) -> list[dict[str, Any]]: ...
+
+    async def set_helper_update_preference(self, *, user_id: str, link_id: str,
+                                           auto: bool | None = None, dismissed_version: str | None = None) -> bool: ...
 
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None: ...
 
@@ -240,6 +263,12 @@ def normalize_root_path(value: Any) -> str | None:
     folders is a later feature. The other guards - no traversal, no wildcards,
     no control characters, bounded length, absolute shape - stay exactly as they
     were, because they are what makes the grant addressable at all.
+
+    #7978: a network share keeps its UNC prefix. ``\\\\server\\share`` stores as
+    ``//server/share`` — the doubled leading slash is the UNC marker, and it is
+    the one spelling the scope checks and the Windows folder builder read
+    without another branch. Folding it away used to store a drive-relative
+    path no PC command could address.
     """
     if not isinstance(value, str) or not value.strip():
         return None
@@ -247,12 +276,19 @@ def normalize_root_path(value: Any) -> str | None:
     if any(ord(ch) < 32 or ord(ch) == 0x7F for ch in text) or "*" in text or "?" in text:
         return None
     normalized = text.replace("\\", "/")
-    while "//" in normalized:
-        normalized = normalized.replace("//", "/")
+    if normalized.startswith("//"):
+        # Collapse repeated separators beyond the UNC marker only: the two
+        # leading slashes name the share, folding them away turns the grant
+        # into a drive-relative path (#7978).
+        normalized = "//" + normalized[2:].replace("//", "/").lstrip("/")
+    else:
+        while "//" in normalized:
+            normalized = normalized.replace("//", "/")
     normalized = normalized.rstrip("/")
     if _DRIVE_ROOT_RE.fullmatch(normalized) is not None:
         return normalized.upper()
-    segments = [segment for segment in normalized.split("/") if segment]
+    segments = [segment for segment in normalized[2:].split("/") if segment] if normalized.startswith("//") \
+        else [segment for segment in normalized.split("/") if segment]
     if len(segments) < 2:
         return None
     if any(segment in {".", ".."} for segment in segments):
@@ -307,15 +343,67 @@ def drive_root(value: Any) -> str | None:
     return text.upper() if _DRIVE_ROOT_RE.fullmatch(text) else None
 
 
-def _root_row(path: str, moment: str) -> dict[str, Any]:
-    return {
+def share_candidate(value: Any) -> dict[str, str | None] | None:
+    """One reported network share unit, optionally under a mapped drive letter.
+
+    The spelling of the UNC address is kept exactly as #8041 requires. A mapped
+    letter is only a hint for the scope check; the authority is always the share
+    address, never the letter. Credentials are never part of this value.
+    """
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    mapped: str | None = None
+    if not text.startswith("//"):
+        drive, marker, remainder = text.partition("=")
+        if not marker or _SHARE_DRIVE_RE.fullmatch(drive.strip()) is None:
+            return None
+        mapped = drive.strip().upper()
+        text = remainder.strip()
+    path = normalize_root_path(text)
+    if path is None or not path.startswith("//"):
+        return None
+    parts = [part for part in path[2:].split("/") if part]
+    if len(parts) < 2:
+        # A share unit is \\server\share; a bare server is not one.
+        return None
+    return {"path": path, "mapped_drive": mapped, "label": parts[-1]}
+
+
+def shares_from_agent_name(value: Any) -> list[dict[str, str | None]]:
+    """The share units an installing PC named in its one brace group."""
+    if not isinstance(value, str) or not 1 <= len(value) <= 256:
+        return []
+    found = _NAME_SHARES_RE.findall(value)
+    if len(found) != 1:
+        return []
+    candidates: list[dict[str, str | None]] = []
+    for entry in found[0].split(";"):
+        candidate = share_candidate(entry)
+        if candidate is None:
+            return []
+        if candidate not in candidates:
+            candidates.append(candidate)
+        if len(candidates) > _MAX_SHARE_CANDIDATES:
+            return []
+    return candidates
+
+
+def _root_row(
+    path: str, moment: str, *, mapped_drive: str | None = None,
+    state: str = _STATE_ACTIVE,
+) -> dict[str, Any]:
+    row = {
         "root_ref": root_ref_for(path),
         "label": default_root_label(path),
         "path": path,
-        "state": _STATE_ACTIVE,
+        "state": state,
         "approved_at": moment,
         "revoked_at": None,
     }
+    if mapped_drive is not None:
+        row["mapped_drive"] = mapped_drive
+    return row
 
 
 def _merge_roots(
@@ -357,10 +445,9 @@ def _roots(value: Any) -> list[dict[str, Any]]:
     if not isinstance(parsed, list):
         raise PcPairingError("link roots unreadable")
     roots: list[dict[str, Any]] = []
+    base_keys = {"root_ref", "label", "path", "state", "approved_at", "revoked_at"}
     for row in parsed:
-        if not isinstance(row, dict) or set(row) != {
-            "root_ref", "label", "path", "state", "approved_at", "revoked_at",
-        }:
+        if not isinstance(row, dict) or set(row) not in (base_keys, base_keys | {"mapped_drive"}):
             raise PcPairingError("link roots unreadable")
         path = normalize_root_path(row.get("path"))
         if path is None or row.get("root_ref") != root_ref_for(path):
@@ -368,7 +455,12 @@ def _roots(value: Any) -> list[dict[str, Any]]:
         label = normalize_root_label(row.get("label"))
         if label is None:
             raise PcPairingError("link roots unreadable")
-        if row.get("state") not in (_STATE_ACTIVE, _STATE_REVOKED):
+        if row.get("state") not in (_STATE_ACTIVE, _STATE_REVOKED, _STATE_CANDIDATE):
+            raise PcPairingError("link roots unreadable")
+        mapped = row.get("mapped_drive")
+        if mapped is not None and (
+            not isinstance(mapped, str) or _SHARE_DRIVE_RE.fullmatch(mapped) is None
+        ):
             raise PcPairingError("link roots unreadable")
         approved_at = row.get("approved_at")
         if not isinstance(approved_at, str) or not approved_at:
@@ -376,14 +468,17 @@ def _roots(value: Any) -> list[dict[str, Any]]:
         revoked_at = row.get("revoked_at")
         if revoked_at is not None and not isinstance(revoked_at, str):
             raise PcPairingError("link roots unreadable")
-        roots.append({
+        parsed_row = {
             "root_ref": row["root_ref"],
             "label": label,
             "path": path,
             "state": row["state"],
             "approved_at": approved_at,
             "revoked_at": revoked_at,
-        })
+        }
+        if mapped is not None:
+            parsed_row["mapped_drive"] = mapped
+        roots.append(parsed_row)
     return roots
 
 
@@ -554,6 +649,13 @@ def _public_link(row: dict[str, Any]) -> dict[str, Any]:
                 "approved_at": root["approved_at"],
             }
             for root in _active(row["roots"])
+        ],
+        # #8036: reported but unapproved shares are shown for the administrator
+        # to choose. They are never in `roots`, so no scope read can use them.
+        "share_candidates": [
+            {"root_ref": root["root_ref"], "label": root["label"],
+             "path": root["path"], "mapped_drive": root.get("mapped_drive")}
+            for root in row["roots"] if root["state"] == _STATE_CANDIDATE
         ],
         "created_at": row["created_at"],
         "updated_at": row["updated_at"],
@@ -768,6 +870,7 @@ class D1PcPairingStore:
             self.db.prepare("DELETE FROM pc_install_tokens WHERE user_id = ?").bind(owner),
             self.db.prepare("DELETE FROM pc_device_links WHERE user_id = ?").bind(owner),
             self.db.prepare("DELETE FROM pc_pairing_codes WHERE user_id = ?").bind(owner),
+            self.db.prepare("DELETE FROM pc_helper_registration WHERE actor_user_id = ?").bind(owner),
         ]
         statements.extend(
             oracle_mesh_dispatch_identity_cleanup_statements(self.db, owner)
@@ -1376,6 +1479,11 @@ class D1PcPairingStore:
             owner=owner, link=stored,
             drives=drives_from_agent_name(agent_name), moment=moment,
         )
+        # #8036: reported shares are candidates only. Nothing here grants them.
+        seeded = await self.seed_share_candidates(
+            owner=owner, link=seeded,
+            candidates=shares_from_agent_name(agent_name), moment=moment,
+        )
         if isinstance(seeded, dict):
             seeded["_promoted"] = True
         return seeded
@@ -1400,10 +1508,12 @@ class D1PcPairingStore:
         tag is the one this very node already claimed: the install wrapper
         leaves the tag inside the agent name it stamped, so a paired PC repeats
         it on every presence beat, the code has already granted everything it
-        had, and the repeat adds nothing. A name that does carry one is
-        otherwise a claim attempt, and a failed attempt is refused rather than
-        ignored, because silently dropping it would leave an owner staring at a
-        card that never resolves. What is kept from the name is the single word
+        had, and the repeat adds nothing. An expired unclaimed code is also
+        ended quietly: it is cancelled and grants nothing, and its tag keeps
+        being offered by the executor until a reinstall brings a fresh one.
+        Other failed attempts are refused rather than ignored, because silently
+        dropping them would leave an owner staring at a card that never
+        resolves. What is kept from the name is the single word
         the machine called itself, and only as this account's own label for the
         link; the tag - the proof - is never written down, and neither is a name
         the owner has already replaced with their own.
@@ -1433,8 +1543,11 @@ class D1PcPairingStore:
             claimed = row.get("mesh_node_id")
             if not (isinstance(claimed, str) and claimed == node):
                 raise PcPairingError("pairing code used")
-            if str(row.get("expires_at") or "") <= moment:
-                raise PcPairingError("pairing code expired")
+            # #8043: this node already claimed the code, so its link stands and
+            # the repeat grants nothing. The spent code's expiry is irrelevant to
+            # its own node re-reporting the tag on every beat: end quietly instead
+            # of refusing "pairing code expired" once an hour per node. A different
+            # node naming this spent tag was refused above, exactly as before.
             # #7563: the typed claim already consumed this code and left a
             # pending link behind. This is the observation that promotes it -
             # once, conditionally, and only for the account that issued it.
@@ -1448,7 +1561,11 @@ class D1PcPairingStore:
                 "WHERE code_id=? AND state='pending'",
                 row["code_id"],
             )
-            raise PcPairingError("pairing code expired")
+            # An expired code grants nothing and its tag is re-offered by the
+            # executor every cooldown. Cancelling above is the whole effect;
+            # raising here only produced a refusal line per node per hour. A
+            # fresh tag from a reinstall is a different code and still claims.
+            return None
         # #6695 PR-4: the install file stamps its token into the same name the
         # tag rides in, so a token minted for another account is refused here
         # even though the tag alone would have matched. A name with no token is
@@ -1518,6 +1635,10 @@ class D1PcPairingStore:
             owner=owner, link=link,
             drives=drives_from_agent_name(agent_name),
             moment=moment,
+        )
+        seeded = await self.seed_share_candidates(
+            owner=owner, link=seeded,
+            candidates=shares_from_agent_name(agent_name), moment=moment,
         )
         if isinstance(seeded, dict):
             if isinstance(superseded_mesh_node_ids, list) and superseded_mesh_node_ids:
@@ -1706,6 +1827,61 @@ class D1PcPairingStore:
         return [row["mesh_node_id"] for row in rows
                 if isinstance(row, dict) and is_pc_device_id(row.get("mesh_node_id"))]
 
+    async def load_helper_rollout(self) -> dict[str, Any] | None:
+        row = await self._first("SELECT revision, plan_json, updated_at FROM pc_helper_rollout WHERE singleton=1")
+        if row is None:
+            return None
+        return {"revision": row["revision"], "plan": json.loads(row["plan_json"]), "updated_at": row["updated_at"]}
+
+    async def save_helper_rollout(self, *, plan: dict, revision: int, now: datetime) -> bool:
+        # Compare-and-set: a stale operator cannot reopen a paused release.
+        data = json.dumps(plan, sort_keys=True, separators=(",", ":"))
+        stamp = _stamp(now)
+        if revision == 0:
+            await self._run(
+                "INSERT INTO pc_helper_rollout (singleton, revision, plan_json, updated_at) "
+                "VALUES (1,1,?,?) ON CONFLICT(singleton) DO NOTHING", data, stamp,
+            )
+        else:
+            await self._run(
+                "UPDATE pc_helper_rollout SET revision=revision+1, plan_json=?, updated_at=? "
+                "WHERE singleton=1 AND revision=?", data, stamp, revision,
+            )
+        row = await self.load_helper_rollout()
+        return row == {"revision": revision + 1, "plan": plan, "updated_at": stamp}
+
+    async def list_managed_device_ids(self) -> list[str]:
+        rows = await self._all(
+            "SELECT DISTINCT mesh_node_id FROM pc_device_links WHERE state='active' "
+            "AND paused_at IS NULL AND managed_at IS NOT NULL ORDER BY mesh_node_id"
+        )
+        return [row["mesh_node_id"] for row in rows if is_pc_device_id(row.get("mesh_node_id"))]
+
+    async def resolve_helper_rollout_device(self, *, device_id: str, install_id: bool = False) -> dict | None:
+        if not is_pc_device_id(device_id):
+            return None
+        # Installed helpers carry the pairing tag, not the Mesh node id.
+        # Resolve it using the consumed code and the active link; never hash a
+        # transient reinstall tag into a cohort. No account data leaves here.
+        if install_id and re.fullmatch(r"pd-[0-9a-f]{8}", device_id):
+            row = await self._first(
+                "SELECT c.mesh_node_id FROM pc_pairing_codes c JOIN pc_device_links l "
+                "ON l.mesh_node_id=c.mesh_node_id AND l.user_id=c.user_id "
+                "WHERE c.tag_sha256=? AND c.state='claimed' AND l.state='active' "
+                "AND l.paused_at IS NULL", _hash(device_id),
+            )
+            if not row or not is_pc_device_id(row.get("mesh_node_id")):
+                return None
+            device_id = row["mesh_node_id"]
+        row = await self._first(
+            "SELECT MAX(CASE WHEN managed_at IS NOT NULL THEN 1 ELSE 0 END) AS managed "
+            "FROM pc_device_links WHERE mesh_node_id=? AND state='active' AND paused_at IS NULL",
+            device_id,
+        )
+        if not row or row.get("managed") is None:
+            return None
+        return {"device_id": device_id, "managed": row["managed"] == 1}
+
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None:
         """Who owns a reported Mesh identity, from the link directory only.
 
@@ -1732,6 +1908,35 @@ class D1PcPairingStore:
         return {"device_id": device_id, "account_refs": sorted(accounts)}
 
     # -- links and roots ----------------------------------------------------
+
+    async def list_helper_update_preferences(self, *, user_id: str) -> list[dict[str, Any]]:
+        return await self._all(
+            "SELECT link_id, mesh_node_id, label, auto_helper_update, helper_update_dismissed_version "
+            "FROM pc_device_links WHERE user_id=? AND state='active' AND paused_at IS NULL "
+            "ORDER BY created_at DESC LIMIT 100", _user_id(user_id),
+        )
+
+    async def set_helper_update_preference(self, *, user_id: str, link_id: str,
+                                           auto: bool | None = None, dismissed_version: str | None = None) -> bool:
+        owner = _user_id(user_id)
+        if type(auto) is bool and dismissed_version is None:
+            column, value = "auto_helper_update", int(auto)
+        elif auto is None and isinstance(dismissed_version, str):
+            from .pc_helper_update_policy import version_parts
+            if version_parts(dismissed_version) is None:
+                return False
+            column, value = "helper_update_dismissed_version", dismissed_version
+        else:
+            return False
+        await self._run(
+            f"UPDATE pc_device_links SET {column}=? WHERE user_id=? AND link_id=? "
+            "AND state='active' AND paused_at IS NULL", value, owner, link_id,
+        )
+        row = await self._first(
+            f"SELECT {column} FROM pc_device_links WHERE user_id=? AND link_id=? "
+            "AND state='active' AND paused_at IS NULL", owner, link_id,
+        )
+        return isinstance(row, dict) and row.get(column) == value
 
     async def _read_link(self, user_id: str, link_id: str) -> dict[str, Any] | None:
         row = await self._first(
@@ -1905,6 +2110,58 @@ class D1PcPairingStore:
             raise PcPairingError("root approval not stored")
         return stored
 
+    async def seed_share_candidates(
+        self, *, owner: str, link: dict[str, Any],
+        candidates: list[dict[str, str | None]], moment: str,
+    ) -> dict[str, Any]:
+        """Record reported shares as candidates; never grant one here."""
+        if not candidates:
+            return link
+        existing = {root["path"] for root in link["roots"]}
+        added: list[dict[str, Any]] = []
+        for candidate in candidates:
+            path = candidate.get("path")
+            if not isinstance(path, str) or path in existing:
+                continue
+            added.append(_root_row(
+                path, moment, mapped_drive=candidate.get("mapped_drive"),
+                state=_STATE_CANDIDATE,
+            ))
+            existing.add(path)
+        if not added:
+            return link
+        await self._write_roots(owner, link["link_id"], link["roots"] + added, moment)
+        stored = await self._read_link(owner, link["link_id"])
+        return stored if stored is not None else link
+
+    async def approve_share_candidate(
+        self, *, user_id: str, link_id: str, root_ref: str, now: datetime,
+    ) -> dict[str, Any]:
+        """Approve exactly one reported share unit, keeping its UNC spelling."""
+        owner = _user_id(user_id)
+        if not isinstance(root_ref, str) or re.fullmatch(r"pcroot_[0-9a-f]{16}", root_ref) is None:
+            raise PcPairingError("root reference invalid")
+        row = await self._require_live_link(owner, link_id)
+        moment = _stamp(now)
+        found = False
+        roots: list[dict[str, Any]] = []
+        for root in row["roots"]:
+            if root["root_ref"] == root_ref and root["state"] == _STATE_CANDIDATE:
+                root = {**root, "state": _STATE_ACTIVE, "approved_at": moment}
+                found = True
+            roots.append(root)
+        if not found:
+            raise PcPairingError("share candidate not found")
+        await self._write_roots(owner, link_id, roots, moment)
+        stored = next(
+            (root for root in (await self._require_live_link(owner, link_id))["roots"]
+             if root["root_ref"] == root_ref),
+            None,
+        )
+        if stored is None or stored["state"] != _STATE_ACTIVE:
+            raise PcPairingError("share approval not stored")
+        return stored
+
     async def revoke_root(
         self, *, user_id: str, link_id: str, root_ref: str, now: datetime,
     ) -> bool:
@@ -1969,7 +2226,8 @@ def pc_name_from_agent_name(value: Any) -> str | None:
     """
     if not isinstance(value, str):
         return None
-    residue = _NAME_DRIVES_RE.sub(" ", value)
+    residue = _NAME_SHARES_RE.sub(" ", value)
+    residue = _NAME_DRIVES_RE.sub(" ", residue)
     residue = _AGENT_TOKEN_RE.sub(" ", residue)
     residue = _AGENT_TAG_RE.sub(" ", residue)
     # A Windows machine names itself in one word, so the first remaining word is
@@ -2086,4 +2344,6 @@ __all__ = [
     "normalize_root_label",
     "normalize_root_path",
     "root_ref_for",
+    "share_candidate",
+    "shares_from_agent_name",
 ]

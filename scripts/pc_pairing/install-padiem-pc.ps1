@@ -138,6 +138,25 @@ function Install-PadiemAgentService {
   return ($null -ne $service)
 }
 
+function Register-PadiemHelperUpdater {
+  $b=[Convert]::FromBase64String('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');$ms=[IO.MemoryStream]::new($b);$gz=[IO.Compression.GZipStream]::new($ms,[IO.Compression.CompressionMode]::Decompress);$reader=[IO.StreamReader]::new($gz);$source=$reader.ReadToEnd();$reader.Dispose();& ([scriptblock]::Create($source)) -Register -SourceText $source
+}
+# ---- the SYSTEM self-heal watcher (#8193), fixed build-time payload ----
+# Overwrites the product's own task on every run; never touches another task.
+# No machine-name exception: #8225 removed the old single-host exclusion.
+function Register-PadiemSelfHealWatcher {
+  param([string]$PythonExecutable)
+  $b=[Convert]::FromBase64String('H4sIAAAAAAACCqVUUWvbMBB+z684WEApVKWjdGyFPpjEXQNJZ2J3MNpiNOVii9qSkeSmYet/38lJmmwNe9j8YJs76/vuu/vOjbCiHtw5b5UuHvrJypdGx88oWy++V3gMd26pvCwf+rfaYqGcR3vU68fWGhtJr4xOLC7QopYIl8BSbxrW63vhHhPhyxC6T8RcYX2/Cd+IuvtyHU1kitXiGkXFemoBg30a+NEDukL4M3qeyhLnbYXzjFCAZ1uKHVkX6/B3THyvVEhVhdpXq6HRXukWtxTh2hH/KxOhLpStL/oLUTnsgF+6Oz4rD6e9l04h18bDm0ZTJeBLa5bAmi6V42sur5VzNB5GcHexflLW6Jp0PFxcpOj3Al+FVeHAgCXRaBxP82SYp/HkKr+Oowk7BmZ0uE+FLJVGdvQfaPksTrNolh1C7Yt1ty/hBpe/N3MzB74Wjm/7ADyyRRvogfEaHkVBryeVkaLKu/e8RlfmjkyTl51r+mTdokB7iC7bpPiXYE8e+bWTRsJTw/kMG/QqFDTWNPYnUZErs/Mp20+NWiu6mgcBPVM1po0gBSOxcnD24fyU9Da0PFI1dP5ADclrkt86tOM5Lcm3NIsDzcQURmerBilGBSiJkZSm1T6U0OoJPiHVdK2KEp0nqQ49+bZwh3jSTY6ewKdt5VVT4Vg7L0i7AzYutLFIx9i2/aQq6JmomuxJyk9T1pv9ZQf+9PuhvdgMeGsBvp3A65T4rh97fePb6mGnkY/QSauaDmjjQUiGEGbPw+xhKejPRJiDdx/ffzo7OoFhifLRwZQsAlFwC1AH7QrOoaZ19+hOSPyVsWSGn/Cl9fymrapf4m+dbAMFAAA=');$ms=[IO.MemoryStream]::new($b);$gz=[IO.Compression.GZipStream]::new($ms,[IO.Compression.CompressionMode]::Decompress);$reader=[IO.StreamReader]::new($gz);$source=$reader.ReadToEnd();$reader.Dispose();& ([scriptblock]::Create($source)) -PythonExecutable $PythonExecutable
+}
+function Get-PadiemSelfHealPython {
+  # The watcher runs ``python -m kagent.local_agent_mesh_self_heal``. An explicit
+  # deployment value wins; the PATH interpreter is the fallback. Neither is a
+  # reason to undo the agent connection that already succeeded.
+  if ($env:PADIEM_PYTHON) { return $env:PADIEM_PYTHON }
+  $command = Get-Command python.exe -ErrorAction SilentlyContinue
+  if ($command) { return $command.Source }
+  return $null
+}
 # ---- the user-session helper the one-click install also provisions ----
 # The helper is a per-user process, not a service: it listens on this PC's
 # named pipe and runs one request per process (see claw_connect.user_helper_service).
@@ -164,16 +183,177 @@ $PadiemHelperAdministratorsSid = "S-1-5-32-544"
 $PadiemHelperOwnerSid = $PadiemHelperAdministratorsSid
 
 function Get-PadiemConsoleUser {
-  # The account actually signed in at the console - not the elevated
-  # administrator token this installer runs under. Registering the installer's
-  # own identity would put the helper in the wrong session (or in no session at
-  # all), which is the one thing the logon task must not do.
+  param([ref] $Reason)
+  # Never fall back to the elevated installer's identity.
   try {
     $computer = Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction Stop
     $name = [string] $computer.UserName
     if ($name -and $name -match '^[^\\/\s]+\\[^\\/\s]+$') { return $name }
-  } catch { }
-  return $null
+    $Reason.Value = "wmi_no_user"
+  } catch {
+    $Reason.Value = "wmi_failed:" + $_.Exception.GetType().Name
+  }
+  try {
+    if (-not ('PadiemSessionLookup' -as [type])) {
+      Add-Type -ErrorAction Stop -TypeDefinition @'
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+public static class PadiemSessionLookup
+{
+    const int WTSUserName = 5;
+    const int WTSDomainName = 7;
+    const int WTSClientProtocolType = 16;
+    const int WTSActive = 0;
+    const short RdpProtocol = 2;
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct SessionInfo
+    {
+        public uint SessionId;
+        public IntPtr StationName;
+        public int State;
+    }
+
+    [DllImport("kernel32.dll")]
+    static extern uint WTSGetActiveConsoleSessionId();
+
+    [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    static extern bool WTSQuerySessionInformation(IntPtr server, uint sessionId,
+        int infoClass, out IntPtr buffer, out int bytes);
+
+    [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    static extern bool WTSEnumerateSessions(IntPtr server, int reserved,
+        int version, out IntPtr sessions, out int count);
+
+    [DllImport("wtsapi32.dll")]
+    static extern void WTSFreeMemory(IntPtr buffer);
+
+    static T Query<T>(uint sessionId, int infoClass, Func<IntPtr, int, T> read)
+    {
+        IntPtr buffer;
+        int bytes;
+        if (!WTSQuerySessionInformation(IntPtr.Zero, sessionId, infoClass, out buffer, out bytes))
+            throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+        try { return read(buffer, bytes); }
+        finally { WTSFreeMemory(buffer); }
+    }
+
+    static string SessionText(uint sessionId, int infoClass)
+    {
+        return Query<string>(sessionId, infoClass, delegate(IntPtr buffer, int bytes)
+        {
+            return bytes > 2 ? Marshal.PtrToStringUni(buffer) : "";
+        });
+    }
+
+    public static bool ValidName(string name)
+    {
+        return !string.IsNullOrEmpty(name)
+            && Regex.IsMatch(name, @"^[^\\/\s]+\\[^\\/\s]+$", RegexOptions.CultureInvariant);
+    }
+
+    static string SessionUser(uint sessionId)
+    {
+        string user = SessionText(sessionId, WTSUserName);
+        string domain = SessionText(sessionId, WTSDomainName);
+        string name = domain + "\\" + user;
+        return ValidName(name) ? name : null;
+    }
+
+    public static string ConsoleUser()
+    {
+        uint sessionId = WTSGetActiveConsoleSessionId();
+        return sessionId == uint.MaxValue ? null : SessionUser(sessionId);
+    }
+
+    // The cardinality is for sessions, not unique user names. Never choose
+    // an arbitrary user if more than one remote desktop is active.
+    public static uint? SingleRdpSession(IEnumerable<uint> ids)
+    {
+        uint? selected = null;
+        foreach (uint id in ids)
+        {
+            if (selected.HasValue)
+                throw new InvalidOperationException("ambiguous_active_rdp");
+            selected = id;
+        }
+        return selected;
+    }
+
+    public static string RdpUser()
+    {
+        IntPtr sessions;
+        int count;
+        if (!WTSEnumerateSessions(IntPtr.Zero, 0, 1, out sessions, out count))
+            throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+        try
+        {
+            List<uint> activeRdp = new List<uint>();
+            int size = Marshal.SizeOf(typeof(SessionInfo));
+            for (int i = 0; i < count; i++)
+            {
+                SessionInfo session = (SessionInfo)Marshal.PtrToStructure(
+                    IntPtr.Add(sessions, checked(i * size)), typeof(SessionInfo));
+                if (session.State != WTSActive || session.SessionId == 0) continue;
+                short protocol = Query<short>(session.SessionId, WTSClientProtocolType,
+                    delegate(IntPtr buffer, int bytes)
+                    {
+                        if (bytes < 2) throw new InvalidOperationException("invalid_wts_protocol");
+                        return Marshal.ReadInt16(buffer);
+                    });
+                if (protocol == RdpProtocol) activeRdp.Add(session.SessionId);
+            }
+            uint? selected = SingleRdpSession(activeRdp);
+            return selected.HasValue ? SessionUser(selected.Value) : null;
+        }
+        finally { WTSFreeMemory(sessions); }
+    }
+
+    public static string Resolve(Func<string> wmi, Func<string> console,
+        Func<string> rdp, out string reason)
+    {
+        List<string> failures = new List<string>();
+        Func<string>[] lookups = { wmi, console, rdp };
+        string[] names = { "wmi", "wts_console", "wts_rdp" };
+        for (int i = 0; i < lookups.Length; i++)
+        {
+            try
+            {
+                string user = lookups[i]();
+                if (ValidName(user))
+                {
+                    reason = string.Join(";", failures.ToArray());
+                    return user;
+                }
+                failures.Add(names[i] + "_no_user");
+            }
+            catch (Exception error)
+            {
+                // Type only: exception messages may contain account data.
+                failures.Add(names[i] + "_failed:" + error.GetType().Name);
+            }
+        }
+        reason = string.Join(";", failures.ToArray());
+        return null;
+    }
+}
+'@
+    }
+    $fallbackReason = ""
+    $name = [PadiemSessionLookup]::Resolve(
+      [Func[string]] { return $null },
+      [Func[string]] { [PadiemSessionLookup]::ConsoleUser() },
+      [Func[string]] { [PadiemSessionLookup]::RdpUser() },
+      [ref] $fallbackReason)
+    # The synthetic first lookup was already performed by Get-CimInstance.
+    $Reason.Value += ($fallbackReason -replace '^wmi_no_user', '')
+    return $name
+  } catch {
+    $Reason.Value += ";wts_failed:" + $_.Exception.GetType().Name
+    return $null
+  }
 }
 
 function Get-PadiemAccountSid {
@@ -542,10 +722,11 @@ function Install-PadiemUserHelper {
   $stopped = $false
   $verified = $false
   try {
-    $consoleUser = Get-PadiemConsoleUser
+    $lookupReason = ""
+    $consoleUser = Get-PadiemConsoleUser -Reason ([ref] $lookupReason)
     if ($consoleUser) { $userSid = Get-PadiemAccountSid -Account $consoleUser }
     if (-not $userSid) {
-      $status.reason = if ($consoleUser) { "console_user_unresolved" } else { "no_console_user" }
+      $status.reason = if ($consoleUser) { "console_user_unresolved" } else { "no_console_user;" + $lookupReason }
       Write-PadiemHelperFailure -Status $status -UserSid $null
       return $false
     }
@@ -598,8 +779,27 @@ function Install-PadiemUserHelper {
     }
     $status.status = "installed"
     $status.sha256 = $expected
+    # Only an immutable release path supplies a version. Its verified digest
+    # above binds the version to the installed bytes.
+    if ($Url -match '^https://downloads\.padiem\.net/pc-helper/([0-9]{1,5}\.[0-9]{1,5}\.[0-9]{1,5}(?:-rc[0-9]{1,5})?)/padiem-user-helper\.exe$') {
+      $status.version = $Matches[1]
+    }
     $status.user = $consoleUser
+    if ($lookupReason) { $status.reason = $lookupReason }
     Write-PadiemHelperStatus -Status $status -UserSid $userSid
+    try {
+      if (-not $status.ContainsKey("version")) { throw "version_unavailable" }
+      Register-PadiemHelperUpdater
+    } catch {
+      # Report only a bounded code, never an exception containing device data.
+      $status.update_result = "registration_failed"
+      $reason = [string] $_.Exception.Message
+      $status.update_registration_error = if ($reason -in @("updater_running", "missing_fixed_source", "invalid_install_record", "installed_digest_mismatch", "version_unavailable")) { $reason } else { "task_registration_failed" }
+      $registrationReason = "update_registration_failed:" + $status.update_registration_error
+      $status.reason = if ($status.ContainsKey("reason") -and $status.reason) { $status.reason + ";" + $registrationReason } else { $registrationReason }
+      Write-PadiemHelperStatus -Status $status -UserSid $userSid
+      Write-Host ("자동 업데이트 작업 등록 실패: " + $status.update_registration_error)
+    }
     return $true
   } catch {
     $status.status = "not_installed"
@@ -662,12 +862,30 @@ function Invoke-PadiemHandoff {
 function Get-PadiemDriveRoots {
   # A linked PC works over its whole local drives by default (#5573, Owner
   # decision), so the PC names the fixed drives it actually has. Network drives
-  # carry a DisplayRoot and stay out. A failed query reports nothing at all: the
-  # server then says the drive lookup failed instead of guessing a scope.
+  # carry a DisplayRoot and stay out of the grants. A failed query reports
+  # nothing at all: the server then says the drive lookup failed instead of
+  # guessing a scope.
   try {
     return @(Get-PSDrive -PSProvider FileSystem -ErrorAction Stop |
       Where-Object { $null -eq $_.DisplayRoot } |
       ForEach-Object { $_.Name.ToUpperInvariant() + ':' } | Sort-Object -Unique)
+  } catch {
+    return @()
+  }
+}
+
+function Get-PadiemShareCandidates {
+  # #8036: a mapped drive or a shared folder is only a CANDIDATE. Its real UNC
+  # address is reported so an administrator can approve that one share unit;
+  # nothing here grants access and no credential is ever part of this value.
+  try {
+    return @(Get-PSDrive -PSProvider FileSystem -ErrorAction Stop |
+      Where-Object { $null -ne $_.DisplayRoot -and $_.DisplayRoot -match '^\\\\[^\\]+\\[^\\]+' } |
+      Select-Object -First 8 |
+      ForEach-Object {
+        $root = '//' + $_.DisplayRoot.TrimStart('\').Replace('\', '/')
+        $_.Name.ToUpperInvariant() + ':=' + $root
+      } | Sort-Object -Unique)
   } catch {
     return @()
   }
@@ -790,7 +1008,7 @@ if (-not $agentUrl) {
 }
 
 function Format-PadiemAgentName {
-  param([string] $Tag, [string[]] $Drives)
+  param([string] $Tag, [string[]] $Drives, [string[]] $Shares)
   # The name the agent reports to the server is what completes the pairing: the
   # tag inside it decides the account, and the drive letters after it are the
   # same self-report a claiming PC posts. Anything that is not one bare letter
@@ -798,6 +1016,11 @@ function Format-PadiemAgentName {
   $letters = @($Drives |
     ForEach-Object { (($_ -replace ':', '')).ToUpperInvariant() } |
     Where-Object { $_ -match '^[A-Z]$' } | Sort-Object -Unique)
+  # #8036: share units go in a separate brace group so the drive group keeps its
+  # exact old shape. They are candidates only; an administrator approves one.
+  $shareText = ''
+  $candidates = @($Shares | Where-Object { $_ -match '^[A-Za-z]:=//[^/]+/[^/]+' } | Select-Object -First 8)
+  if ($candidates.Count -gt 0) { $shareText = ' {' + ($candidates -join ';') + '}' }
   # The trailing word is the name Windows gave this machine. The server reads
   # the tag to decide the account, the letters to grant whole drives, and that
   # name to call the PC by until its owner renames it. Dns.GetHostName() is
@@ -806,15 +1029,15 @@ function Format-PadiemAgentName {
   $machine = try { [System.Net.Dns]::GetHostName() } catch { $env:COMPUTERNAME }
   if (-not $machine) { $machine = $env:COMPUTERNAME }
   if ($letters.Count -eq 0) {
-    if (-not $machine) { return $Tag }
-    return $Tag + ' ' + $machine
+    if (-not $machine) { return $Tag + $shareText }
+    return $Tag + $shareText + ' ' + $machine
   }
-  if (-not $machine) { return $Tag + ' [' + ($letters -join ' ') + ']' }
-  return $Tag + ' [' + ($letters -join ' ') + '] ' + $machine
+  if (-not $machine) { return $Tag + ' [' + ($letters -join ' ') + ']' + $shareText }
+  return $Tag + ' [' + ($letters -join ' ') + ']' + $shareText + ' ' + $machine
 }
 
 if ($DryRun) {
-  $agentName = Format-PadiemAgentName -Tag $tag -Drives (Get-PadiemDriveRoots)
+  $agentName = Format-PadiemAgentName -Tag $tag -Drives (Get-PadiemDriveRoots) -Shares (Get-PadiemShareCandidates)
   Write-Host ("{0} -> {1}" -f $Copy.Installed, $agentUrl)
   Write-Host ("설치 위치 " + $PadiemAgentDurableExe)
   Write-Host ("실행 명령 MeshAgent.exe -install --agentName=`"" + $agentName + "`"")
@@ -822,7 +1045,7 @@ if ($DryRun) {
   exit 0
 }
 
-$agentName = Format-PadiemAgentName -Tag $tag -Drives (Get-PadiemDriveRoots)
+$agentName = Format-PadiemAgentName -Tag $tag -Drives (Get-PadiemDriveRoots) -Shares (Get-PadiemShareCandidates)
 $installer = Save-PadiemInstaller -Url $agentUrl
 try {
   if (-not (Install-PadiemAgentService -SourceExe $installer -AgentName $agentName)) {
@@ -843,6 +1066,18 @@ try {
   }
 } finally {
   Remove-Item -LiteralPath $installer -Force -ErrorAction SilentlyContinue
+}
+# #8193: register the SYSTEM watcher the same way the updater is registered -
+# fixed payload, -Force overwrite, best effort. No computer-name exclusion.
+try {
+  $selfHealPython = Get-PadiemSelfHealPython
+  if ($selfHealPython) {
+    Register-PadiemSelfHealWatcher -PythonExecutable $selfHealPython
+  } else {
+    Write-Host "자가 복구 감시기를 등록하지 못했습니다: Python 실행 파일을 찾을 수 없습니다."
+  }
+} catch {
+  Write-Host ("자가 복구 감시기 등록 실패: " + $_.Exception.GetType().Name)
 }
 Invoke-PadiemUserHelperInstall -Url $helperUrl -Sha256 $helperSha -Tag $tag
 Write-Host $Copy.Installed

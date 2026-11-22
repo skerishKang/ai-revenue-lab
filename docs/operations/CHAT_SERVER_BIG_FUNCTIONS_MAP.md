@@ -1,0 +1,414 @@
+# #7814 [리팩터링 v2 · T4] 서버 큰 함수 지도 (R7-0)
+
+- 측정 기준: `origin/main` `3726bd3f7` (2026-11-16). 표의 줄 수는 `tools/chat_structure_audit.py`의 `py_functions_over_300` 정의(`ast`, `>=300`줄, 중첩 함수 포함)와 동일하다. 이슈 표(`199ea37` 기준) 대비 `create_app` 1511→1516, `oracle_mesh_read_result` 679→693, `_answer_orchestration` 468→472로 소폭 증가, 개수는 15개로 동일하다.
+- 범위: `apps/padiem-chat/app/*.py`의 300줄 이상 함수 전부. `history.py`/history 영역 파일은 다른 레인(T3)이 나누고 있으므로 이 지도와 이후 PR은 건드리지 않는다.
+- 구간 표기: `입력 검증 / 권한·한도 / 분기 / 외부 호출 / 기록 / 응답 조립` 6구간으로 나누어 제안한다. 줄 범위는 함수 시작~끝 중 대략 위치이며, 각 단계 PR에서 확정한다(제목의 "대략" 표기). 구간 사이 변수와 early return 수는 `ast` 실측이다.
+- PC 표시: 오늘 다친 PC 경로 `#7845`(orchestration PC 의도), `#7851`(범위 밖 안내), `#7854`(답변 저장 거절 503 방지), `#7857`(결과 적재 거절 이유 로그)가 걸치는 함수는 ★로 표시한다. `#7851/#7854`는 `chat_pc_drive.py`를 고쳤으므로, 그 함수를 호출하는 큰 함수는 간접 영향으로 ★다.
+
+## 요약
+
+| 줄 | 파일 | 함수 | early return·raise | 글자 검사 파일 수 | 예상 PR | PC |
+|---:|---|---|---:|---:|---:|:---:|
+| 1,516 | `app_factory.py` | `create_app` | return 1(최종)·raise 1(내부 가드) | 31 | 2 |  |
+| 1,053 | `claw_general_routes.py` | `claw_general_execute` | return 92·raise 5 | 14 | 4 | ★(간접) |
+| 784 | `chat_routes.py` | `_api_chat_stream_body` | return 38·raise 3 | 14 | 3 | ★ |
+| 767 | `local_cpython.py` | `build_app` | return 1·raise 9 | 14 | 3 |  |
+| 693 | `oracle_mesh_read_return_routes.py` | `oracle_mesh_read_result` | return 30·raise 0 | 4 | 3 | ★ |
+| 667 | `oracle_mesh_read_return_routes.py` | `_engine_pc_files_call` | return 79·raise 0 | 0(파일은 4) | 3 | ★ |
+| 472 | `orchestration_routes.py` | `_answer_orchestration` | return 32·raise 0 | 9 | 2 | ★ |
+| 460 | `b66_ai_chat_routes.py` | `b66_ai_chat` | return 57·raise 0 | 0 | 2 |  |
+| 436 | `mcp_gateway_execution.py` | `execute_mcp_pc_tool` | return 18·raise 20 | 0 | 2 | ★ |
+| 436 | `config.py` | `from_values` | return 1·raise 28 | 8 | 2 |  |
+| 416 | `claw_routes.py` | `claw_manual_intake_execute` | return 33·raise 0 | 12 | 2 |  |
+| 373 | `chat_routes.py` | `api_chat` | return 36·raise 1 | 14 | 2 | ★(간접) |
+| 313 | `oracle_mesh_read_return_routes.py` | `_pc_write_command` | return 1·raise 0 | 파일 4 중 1 | 1 |  |
+| 312 | `account_deletion.py` | `_account_delete_impl` | return 25·raise 3 | 2 | 2 |  |
+| 306 | `b66_ai_conversation_routes.py` | `conversation_turn` | return 43·raise 1 | 0 | 1 |  |
+
+- `py_functions_over_300` 15개. 파일별: `oracle_mesh_read_return_routes.py` 3개, `chat_routes.py` 2개, 나머지 1개씩.
+- 열린 PR(측정일 기준 #7863·#7862·#7848·deps·B14 등) 중 같은 파일을 만지는 곳은 `#7282` 하나다(`chat_routes.py`, `orchestration_routes.py` – `_api_chat_stream_body`·`api_chat`·`_answer_orchestration`과 겹침). 그 외 열린 PR은 겹침 없음.
+- T3(history) 레인은 `history.py`·`history_*`만 건드리므로 직접 겹침은 없고, `history_store`를 호출하는 큰 함수는 합병 순서만 조율하면 된다.
+
+## 함수별
+
+### 1. `create_app` — `apps/padiem-chat/app/app_factory.py:601-2116` (1,516줄)
+
+- 구간(대략): 입력 검증 601-694(서명·`resolved`), 권한·한도 694-695(주입값 확인에 흡수), 분기 1204-1312(조건부 마운트 4블록), 외부 호출(상태 공장) 1339-2115, 기록 1314-2115(`app.state.*` 대입), 응답 조립 695-1200(라우트 조립)+1313-1314(앱 생성)+2116(반환). 라우트 조립 695-1200은 R7-1에서 먼저 뺀다.
+- 구간 사이 변수: 40개 자리(실측 `Store` 40개). 예: `resolved`, `routes`, `app`, `_approved_memory_store`, `_auth_abuse_store`, `_b66_*_store`, `_catalog_client`, `_push_*`, `global_model_admin` 등. 라우트 조립 구간은 바깥 지역 변수를 쓰지 않으며(모듈 전역 핸들러만), 상태 초기화 구간은 `d1_binding`·`r2_binding`을 다음 구간으로 넘긴다.
+- early return: 1(2116 최종 `return app`)·raise 1(1394 내부 가드). 분기는 조건부 `if`뿐이라 early return이 적다.
+- 글자 검사: `app_factory.py`를 `read_text`로 읽는 31개 파일(예: `test_2824_isolated_parser_transport`, `test_3933_existing_result_reuse_adopt`, `test_4139_private_rpc_export_parity`, `test_auth_abuse`, `test_b54_claw_general_p01_routing`, `test_4471_conversation_search`). 라우트 문자열을 옮기면 파일 내 위치가 바뀌므로, 읽는 대상이 `create_app` 본문이면 새 `register_*`로 바꾸거나 라우트 표 검사로 옮긴다(약하게 만들지 않는다).
+- 겹침: 열린 PR 중 같은 파일 없음. `local_cpython.build_app`이 조립 후 `create_app`을 호출하므로, 시그니처는 그대로 둔다.
+- 나누기: R7-1(라우트, 1 PR) → 상태 초기화 helpers(1~2 PR). 위 두 단계 후 본체는 `Starlette(routes=...)`·미들웨어·상태 조립·반환만 남는다. 예상 2 PR(라우트 1 + 상태 1, 상태가 크면 2로 늘어남).
+
+#### R7-1 영역 제안 (원본 순서 그대로, 인접 구간)
+
+원본 `routes = [...]` 298 엘트(695-1200) + 조건부 4블록(1204-1312)을 아래 `register_*`로 잇댄다. 파일 내 정의 순서도 호출 순서와 같다(글자 인덱스 검사를 깨지 않기 위함). 각 등록은 인자로 받은 `routes` 목록에만 쓴다. 정적 `Mount`는 마지막에 오도록, 조건부는 정적 앞 삽입(`routes[-1:-1]`)·앞 삽입(`routes[0:0]`) 원본 코드를 그대로 유지한다.
+
+| 호출 순서 | 함수 | 엘트 | 원본 줄(대략) | 영역 |
+|---|---|---|---|---|
+| 1 | `register_util_routes` | 0 | 696 | 유틸(health) |
+| 2 | `register_opinion_news_routes` | 1-5 | 697-701 | 의견/새 소식 |
+| 3 | `register_admin_feedback_routes` | 6-9 | 702-705 | 관리(피드백) |
+| 4 | `register_site_feedback_routes` | 10-12 | 706-708 | 의견/관리(사이트 피드백) |
+| 5 | `register_admin_routes` | 13-28 | 709-727 | 관리(모델·세션·역할) |
+| 6 | `register_auth_voice_routes` | 29-38 | 728-738 | 인증·음성 |
+| 7 | `register_auth_login_routes` | 39-59 | 739-776 | 인증(로그인) |
+| 8 | `register_connector_routes` | 60-84 | 777-805 | 연결·회의(Google/GitHub/B66 drive) |
+| 9 | `register_project_document_routes` | 85-113 | 806-873 | 프로젝트·문서·출력 |
+| 10 | `register_chat_routes` | 114-145 | 874-923 | 대화·대화 보조(MCP·BYOK 포함) |
+| 11 | `register_b66_routes` | 146-194 | 924-1033 | B66 |
+| 12 | `register_web_xlsx_routes` | 195-215 | 1034-1055 | Claw 웹·XLSX·쓰기 |
+| 13 | `register_claw_routes` | 216-258 | 1056-1139 | Claw |
+| 14 | `register_calendar_routes` | 259-268 | 1140-1153 | 캘린더 |
+| 15 | `register_pc_routes` | 269-295 | 1154-1190 | PC(페어링·파일 교환) |
+| 16 | `register_static_routes` | 296-297 | 1191-1199 | 유틸·정적(리다이렉트+`Mount`) |
+| 17 | `register_connector_enrollment_routes` | 조건부 | 1201-1242 | 연결(주인 전용, 정적 앞 삽입) |
+| 18 | `register_oracle_mesh_routes` | 조건부 | 1243-1307 | PC·메시(정적 앞 삽입) |
+| 19 | `register_shared_auth_comparison_routes` | 조건부 | 1308-1310 | 인증(시험 앞 삽입) |
+| 20 | `register_shared_login_routes` | 조건부 | 1311-1312 | 인증(시험 앞 삽입) |
+
+- 멈춤 조건: 등록 순서 변경 없이는 나눌 수 있는 구간인지가 기준이다. 지역 변수가 20개를 넘거나 상태 초기화가 뒤엉킨 영역은 R7-1에 포함하지 않고 지도의 "남김"으로 적는다. 전후 라우트 표가 달라지면 멈춘다.
+
+### 2. `claw_general_execute` — `apps/padiem-chat/app/claw_general_routes.py:1894-2946` (1,053줄) ★(간접)
+
+- 구간(대략): 입력 검증 1894-2050, 권한·한도 1905-1915(비로그인 거부)+본문 내 quota, 분기 2050-2600(데스크톱·PC·브라우저·목록·확인 턴), 외부 호출 2350-2850(Engine 어댑터·PC 문맥·목록 읽기), 기록 2850-2900(런·미러·계측), 응답 조립 2850-2946(SSE·JSON).
+- 구간 사이 변수: 120개. 대표: `uid`, `data`, `user_text`, `adapter`, `run`, `initial_pc_capture`, `pc_owner`, `desktop_device_id`, `dispatch_args`, `outcome`, `staged_conversation_id`.
+- early return: 92(대부분 `_error` early)·raise 5(2312·2328·2346·2348·2476).
+- 글자 검사: `claw_general_routes.py`를 읽는 14개 중 함수 본문 근처를 보는 `test_3933_b54_first_turn_grant`, `test_b54_claw_general_p01_routing` 등.
+- 겹침: 열린 PR 겹침 없음. 대화·Claw 라우트와 P01 어댑터 계약 공유.
+- 나누기: 검증·권한 1 PR, 분기(PC/데스크톱) 1~2 PR, 외부 호출·기록·응답 1 PR. 예상 4 PR. 가장 위험한 축에 속한다(반환 92개).
+- 1단계 완료(R7-4): 입력 검증·권한 구간(원래 1912-1977: 로그인 거부부터 첨부 충돌 생성까지, 세션·Custom·데스크톱 분기 진입 전)을 `_claw_general_intake` 75줄로 분리했다. `claw_general_execute` 1,053→994줄, `py_functions_over_300`은 12로 그대로다. 넘기는 변수 5개(`turn_started`, `data`, `user_text`, `document_context`, `attachment_conflict`)는 도우미 묶음으로 돌려받고 본체가 같은 이름으로 푼다. 조기 반환 10개는 `(오류응답, None)`으로 보존하고 본체가 `if intake_error is not None: return intake_error`로 원래 자리에서 반환한다. PC 분기(`initial_pc_capture`, `pc_owner`, `desktop_device_id`, `dispatch_args` 등)와 quota(원래 2506 이후)는 건드리지 않았다. 증거: `test_7814_claw_general_intake_table.py`(오류 18개·정상 3개 골든).
+
+- 2/4 구간 표(1/4 완료 후, 현재 1971-2964): PC 밖은 PC 문맥 변수(`initial_pc_capture`, `pc_owner`, `desktop_device_id`, `dispatch_args`, `requested_device_id`, `pc_browser_*`, `pc_files_*`, `initial_pc_drive_query`)를 읽거나 쓰지 않는 구간이다.
+
+  | 구간 | 줄 | 하는 일 | return | 받는 변수 | 넘기는 변수(다시 쓰는 변수) | 분류 |
+  |---|---|---|---|---|---|---|
+  | 세션 소유자 턴 | 1997-2003 | `handle_owner_turn`→`claw_response` | 1 | request, data, user_text, document_context | 없음 | PC 밖 |
+  | Custom 직접 완성 | 2008-2047 | custom 선택·헤더·PC 의도 거부·로그인·`_claw_custom_direct` | 6 | request, data, user_text, attachment_conflict | 없음(custom·uid는 구간 안에만) | PC 밖 |
+  | 데스크톱 | 2051-2067 | `_requested_local_desktop`·확인·dispatch | 3 | user_text, attachment_conflict, data | desktop_requested, desktop_op | PC |
+  | 화면 보기 | 2072-2079 | 읽기 전용 화면 캡처 dispatch | 2 | user_text, attachment_conflict, data | 없음 | PC |
+  | 데스크톱 통제 | 2085-2107 | 통제 op·예외 질문·확인·dispatch | 2 | user_text, attachment_conflict, data | control_requested, control_op | PC |
+  | 초기 PC 캡처·데스크톱 작업 | 2113-2133 | `explicit_pc_instruction`·작업 개시 | 2 | user_text, attachment_conflict | initial_pc_capture, desktop_task_requested | PC |
+  | 장치 모양·데스크톱 장치 | 2139-2142 | device_id 모양·`desktop_device_id` | 1 | data, initial_pc_capture | requested_device_id, desktop_device_id | PC |
+  | 확인 턴(명령) | 2145-2149 | staged PC 명령 확인·dispatch | 1 | request, user_text, data | confirmed_command | PC |
+  | 확인 턴(입력) | 2151-2158 | staged 입력 확인·dispatch | 1 | request, user_text, data | confirmed_value | PC |
+  | 로컬 명령 | 2160-2174 | 명령 확인·직접/단계 dispatch | 4 | user_text, attachment_conflict, data | command_requested, command_text | PC |
+  | 브라우저 분류 | 2180-2185 | `requested_pc_browser`·PC 변수 초기화 | 0 | user_text, requested_device_id | pc_browser_requested, pc_browser_device_id, initial_pc_capture, desktop_device_id | PC |
+  | 목록 읽기 분류 | 2186-2191 | PC 파일 의도·장치 | 1 | pc_browser_requested, user_text, attachment_conflict, requested_device_id | pc_files_requested, pc_files_device_id | PC |
+  | 자연 PC 조회 | 2195-2209 | PC 조회 명령·drive query 표식 | 3 | user_text, pc_browser_requested, attachment_conflict, requested_device_id | natural_pc_requested, natural_pc_command, initial_pc_drive_query, desktop_device_id | PC |
+  | TXT 읽기 | 2211-2220 | txt 경로 dispatch | 3 | user_text, pc_files_requested, pc_browser_requested, attachment_conflict, data | txt_requested, txt_path | PC |
+  | 등급·경로 | 2222-2266 | 등급·관리자·`resolve_claw_tier_model`·모델 선언 검사 | 5 | request, data | grade, requested_tier, admin_lane, product_tier, identity_tier_id, claw_route, central_route_model_id | PC 밖 |
+  | 단계·대화 참조 | 2268-2277 | `_claw_stage(ROUTE)`·`_resolve_intake_session_reference` | 1 | turn_started, request, data | conversation_id | PC 밖 |
+  | 어댑터·선행 읽기 | 2282-2331 | identity lane·history/session/drive 함께 읽기(`asyncio.gather`)·이력 오류 | 2+raise 1 | request, conversation_id, user_text | adapter, has_identity_lane, model_user_text, b54_session, drive_result | PC 밖 |
+  | 브라우저 재검사 | 2332-2336 | history 이후 브라우저 재판정 | 0 | pc_browser_requested, user_text, requested_device_id | pc_browser_requested, pc_browser_device_id | PC |
+  | 주체·Drive 정리 | 2338-2367 | b54 주체·workspace·Drive 결과 | 4+raise 2 | conversation_id, has_identity_lane, b54_session, drive_result | subject_id, authorized_workspace_id, canonical_session_id, drive_context, drive_sources | PC 밖이나 재검사 뒤라 3/4 몫 |
+  | PC 문맥 | 2375-2509 | `pc_owner`·작업 공간·저장 선택·`resolve_pc_work_context` | 4 | pc_* 분류, central_route_model_id 등 | pc_owner, pc_context, pc_work_text 등 | PC |
+  | quota·실행·기록·응답 | 2511-2964 | quota·live·캘린더·run·증거·dispatch·저장·SSE | 다수 | subject_id, adapter, model_user_text 등 | run, outcome, dispatch_args, staged_conversation_id, saved_conversation_id | PC/Engine/기록/응답, 3/4 몫 |
+- 2단계 완료(R7-5): PC 밖 분기만 분리했다 — 세션 소유자 턴·Custom(1997-2047)을 `_claw_general_session_custom` 54줄로, 등급·경로·대화 참조·선행 읽기(2222-2331)를 `_claw_general_route_preflight` 127줄로 옮겼다. `claw_general_execute` 994→853줄, `py_functions_over_300` 12 그대로. 넘기는 변수: 세션·Custom은 request·data·user_text·document_context·attachment_conflict(5개, 돌려주는 묶음은 빈 딕셔너리), 등급·선행 읽기는 request·data·user_text·turn_started(4개)를 받고 grade·requested_tier·admin_lane·product_tier·identity_tier_id·claw_route·central_route_model_id·conversation_id·adapter·has_identity_lane·model_user_text·b54_session·drive_result(13개)를 다시 쓴다. 브라우저·목록·확인 턴 등 PC 구간(2051-2220과 2332 이후)은 PC 문맥 변수를 읽거나 써서 이번에 건드리지 않았고 3/4 몫으로 남겼다. 증거: `test_7814_claw_general_branches_table.py`(15개 골든). 글자 검사 1개(`test_b54_claw_general_p01_routing`)는 옮긴 문자열을 새 함수 블록까지 함께 보도록 고쳤다.
+
+- 3/4 공유 PC 문맥 흐름(2/4 main 줄 번호):
+
+  | 경계 | 원래 줄 | 도우미 | 들어가는 값 | 돌려받아 다시 쓰는 값 |
+  |---|---|---|---|---|
+  | 데스크톱·화면·통제·확인·명령·브라우저/파일/자연 조회·TXT 분류 | 2187-2358 | `_claw_general_pc_branch` 192줄 | request, data, user_text, attachment_conflict | initial_pc_capture, desktop_task_requested, desktop_device_id, requested_device_id, pc_browser_requested, pc_browser_device_id, pc_files_requested, pc_files_device_id, initial_pc_drive_query(9개) |
+  | history 뒤 브라우저 재검사 | 2376-2380 | 본체 유지 | pc_browser_requested, user_text, requested_device_id | pc_browser_requested, pc_browser_device_id, pc_files_requested |
+  | 소유자·저장 선택·실행 대상·PC 작업 문맥 | 2432-2519 | `_claw_general_pc_work_context` 111줄 | request, PC 분류·장치 6개, canonical_session_id | pc_work_text, desktop_device_id, pc_files_device_id, pc_browser_device_id(4개) |
+  | staging·P01 실행 | 2740 이후 | 본체 유지 | 위 9+4개 중 소비값 | staged_conversation_id, dispatch_args 등 나머지는 4/4 범위 |
+
+- 3단계 완료(R7-6): 원래 본문 260줄을 위 두 helper로 옮겼고 `claw_general_execute`는 853→623줄이다. `pc_owner`·`pc_workspace`·`pc_context`는 뒤 경계에서 쓰지 않아 helper 안에 두고, 미인증이면 원래처럼 `pc_work_text=None`이다. await·SSE·catalog read/finally 순서는 바꾸지 않았고 #7881/#7885 contextvar 설정·해제 범위는 helper 경계를 넘지 않는다. `test_b54_claw_general_p01_routing.py`는 명시 helper 목록 전체에 금지 경로를 검사하고 목록에서 빠진 새 helper를 실패시킨다. 증거: `test_7814_claw_general_pc_branches_table.py`(23개 표 경로 + 확인 카드→승인→실디스패치 통합 1경로)는 pre-refactor main 재생성과 같고, 통합 경로는 dispatch 생성 인자·호출 순서·SSE와 500~610초 expires 범위를 고정한다. PC 소유자·dispatch root_ref·SSE 문구 뮤테이션 3건을 각각 검출하고 원복했다. 현재 `py_functions_over_300`은 7로 main과 같다.
+
+- 4/4 계획 표 (R7-7, 기준 `origin/main` `28c1815d1`, 현재 본문 `claw_general_routes.py:2463-3085` = 623줄). 아래 줄 번호는 리팩터 전 기준이다.
+
+  | 구간 | 원래 줄 | 하는 일 | return(개) | 받는 변수 | 넘기는 값 / 다시 쓰는 값 | await·SSE 순서 | contextvar·finally·예외 |
+  |---|---|---|---|---|---|---|---|
+  | 브라우저 재검사·소유자/Drive 정리 | 2524-2560 | 재판정, b54 주체·작업공간·세션, Drive 오류 투영 | 5 | request, user_text, requested_device_id, conversation_id, has_identity_lane, b54_session, drive_result | 5 / 없음 | await 없음, `_error`는 JSON | 없음. `raise b54_session`, `raise drive_result` 원위치 |
+  | PC 문맥 + 모델 목록 읽기 | 2562-2631 | `_start_selectable_model_read` 시작 → `_claw_general_pc_work_context` → 목록 평가 → `finally` 취소 | 4 | request, central_route_model_id, claw_route, initial_pc_drive_query, pc_files_requested, pc_browser_requested, desktop_device_id, pc_files_device_id, pc_browser_device_id, canonical_session_id | 7 / 6+ | `catalog_task` 시작(await 아님) → pc_work_context await → catalog await →finally cancel | **finally가 구간 안에 전부 있음**. 밖으로 옮기면 경계를 넘음 |
+  | 실시간 허용 + quota + 네이티브 캘린더 | 2632-2757 (헤더 읽기 2632-2635는 본체 유지, 이동 2636-2757) | live 허용 → first-turn 예약 → quota 거부 → adapter 미설정 → live relay 거부 → 캘린더 실행 | 13 (quota 초과 2662, engine_not_configured 2670, live 2639·2694, 캘린더 2703·2708·2719·2729·2732·2738·2742, first-turn 2657, 정상 SSE 2756) | request, data, user_text, conversation_id, subject_id, authorized_workspace_id, adapter, live_requested | **8 / 1** (`first_turn_context`) | reserve→usage_gate→refund/fail→claim→calendar execute→record→`delta`·`done` SSE 순서 그대로 | contextvar 설정·해제 없음(`_claw_stage`는 미들웨어 contextvar 소비만). `try/finally` 없음. 예외는 `FirstTurnAuthorityError`만 현지 처리. #5479 글자 검사 표식 보존 |
+  | run·claim·근거·staging·PC 문맥 조립 | 2759-2941 | run 생성, grant claim, evidence/live 충돌, 무색인 검색, staging, `additional_system_context`, live SSE 반환 | 6 + SSE 1 | request, data, user_text, conversation_id, subject_id, identity_tier_id, product_tier, adapter, first_turn_context, live_requested, central_route_model_id, model_user_text, drive_context, drive_sources, document_context, pc_* 6개 | 19+ / 6+ | search judgement await → staging await → delegation await → live SSE 반환 | contextvar 없음. 중첩 callback 2개는 run·staged id를 클로저로만 읽음 |
+  | dispatch + 예외 + 기록 + 응답 | 2943-3085 | `adapter.execute` → P01 오류/HOLD → 상태 검사 → 기록 → SSE | 8 + 최종 SSE | request, adapter, run, dispatch_args 13개, staged_conversation_id, first_turn_context, evidence_requested, conversation_id, user_text, authorized_workspace_id, search_sources | 20+ / 없음 | `delta`(post-execution `p01_event*`은 history 있을 때만)→`done` 순서 유지 | contextvar 없음. `try/except P01AdapterError`/`except Exception`은 run·refund 원위치 유지 |
+
+  - contextvar(#7881·#7885) 확인: 본문 623줄에는 `ContextVar.set/reset` 호출이 없다. 설정·해제는 `request_telemetry`·`model_policy`·`canonical_orchestration_bridge`의 미들웨어/서비스 계층에 있고, `_claw_stage`는 그 contextvar를 소비할 뿐이다. 두 끊을 자리 모두 설정·해제 쌍을 포함하지 않으므로 경계를 넘지 않는다.
+  - 끊을 자리 2곳과 근거:
+    1. **4/4a — 2636-2757 → `_claw_general_quota_gate`**: 반환 경로 13개(quota 초과 포함)가 한 구간에 몰려 있어 골든으로 가장 많이 고정할 수 있다. `finally`가 없고 contextvar 쌍이 없어 경계가 안전하다. 헤더 읽기(2632-2635)는 #5479 글자 검사 표식 보존 위해 본체에 둔다. 입력 8개(`request`, `data`, `user_text`, `conversation_id`, `subject_id`, `authorized_workspace_id`, `adapter`, `live_requested`), 반환 `(응답 | None, 묶음)`, 다시 쓰는 값 1개. 예상 623→510줄. 2562-2631의 `finally`는 4/4b에서 `_claw_general_pc_work_context`와 같은 묶음으로 다룬다.
+    2. **4/4b — 2759-2941 → `_claw_general_dispatch_context`**: run 생성부터 live SSE 직전까지가PC 조립의 마지막 덩어리다. 입력 19개(4/4a 제약은 이 PR에 적용하지 않음), 다시 쓰는 값 6개(`run`, `stage_uid`, `staged_conversation_id`, `combined_system_context`, `pc_action_context`, `pc_delegation`). 예상 506→331줄. 이어 2943-3085의 dispatch/기록/응답을 `_claw_general_dispatch`로 옮겨 300줄 미만(예상 296줄)을 만든다. 두 helper 모두 `try/except`와 최종 SSE `return`을 통째로 옮긴다.
+  - 위험 목록과 확인 방법:
+    - quota/refund·first-turn claim 순서 뒤집힘 → `test_7814_claw_general_tail_table.py` 골든이 `calls` 순서로 검출.
+    - SSE 이벤트 순서(`delta`→`done`, evidence 헤더) 변경 → 같은 골든의 `resp.events`·`headers`로 검출.
+    - `finally` 취소 누락(2562-2631) → 4/4a에서 구간 밖에 두어 회피, 4/4b에서 `catalog_task`를 helper 경계 안에 둔다.
+    - 새 helper 누락 → `test_b54_claw_general_p01_routing.py`의 명시 목록 검사가 실패시킴(장치 그대로 유지).
+    - 구조 수치 → `test_structure_ratchet.py`. 4/4a는 함수가 300줄 초과를 유지해 `py_functions_over_300=5` 그대로, 4/4b에서 실측으로 내린다.
+    - 뮤테이션: quota 거부 코드·SSE 이벤트 문자열·기록 행 인자를 각각 바꿔 골든이 검출하는지 확인 후 원복(바이트 동일).
+  - 1~3단계에서 놓친 것: `pc_browser_device_id`가 2889-2903의 live_args와 2958-2960의 dispatch_args에서 같은 값으로 중복 대입되고, `initial_pc_drive_query`의 `pc_drive_query` 대입도 2890-2893·2949-2954에서 중복된다. 동작에는 영향이 없으므로 4/4a에서는 옮기지 않고 4/4b helper에서 원문을 그대로 유지한다(동작 변경 금지). 2757-2758의 `# continue normal P01 path below` 주석도 원문 그대로 둔다.
+
+  - 4/4a 완료: 원래 2636-2757의 121줄을 `_claw_general_quota_gate`(143줄, 시그니처·docstring 포함)로 옮겼다. 실시간 헤더 읽기(2632-2635)는 본체에 남겼다 — `test_5573_long_turn_progress_261026.py`가 `catalog_task…`→`    live_requested = (` 사이의 #5479 finally 구간을 글자로 검사하므로, 그 표식을 옮기면 기존 시험 기대값을 바꿔야 한다. 본문 623→510줄, `py_functions_over_300`은 5 그대로다. 넘기는 값 8개(`request`, `data`, `user_text`, `conversation_id`, `subject_id`, `authorized_workspace_id`, `adapter`, `live_requested`), 다시 쓰는 값 1개(`first_turn_context`), 조기 반환 13개는 `(응답, None)`으로 보존하고 본체가 원래 자리에서 반환한다. 옮긴 121줄은 `origin/main` `28c1815d1` blob과 바이트 동일(반환 튜플 변환만 적용)하고, quota·refund·claim·calendar·기록 await 순서와 `delta`→`done` SSE는 그대로다. 이 구간에 `finally`와 contextvar 설정·해제가 없어 경계를 넘지 않는다. 증거: `test_7814_claw_general_tail_table.py`(반환 경로 8개 + 정상 2개, 골든은 origin/main blob에서 생성), 1~3단계 골든과 `test_b54_claw_general_p01_routing.py`, `test_5573_long_turn_progress_261026.py` 통과. 뮤테이션 2건(503→502 상태 코드, refund/fail await 순서 교대)을 각각 검출하고 원복 뒤 바이트 동일을 확인했다. 관련 시험 795개 통과, 새 실패 0. 최초 CI에서 같은 표식 문제로 `B62 Chat full pytest 2/4`와 `b62-test`가 실패했고, 코드 수정으로 해결했다(시험 기대값은 바꾸지 않음).
+
+  - 4/4b 완료(T4 마지막): 리팩터 전 `origin/main` `6b571b62d` blob의 7개 구간, 265줄을 같은 파일 도우미로 옮겼다. `_claw_general_authority_context`(2674-2703, 입력 4/출력 5), `_claw_general_catalog_gate`(2705-2773, 10/5, **try/finally 전체 포함**), `_claw_general_run_claim`(2788-2820, 4/2), `_claw_general_grounding`(2822-2840, 9/2), `_claw_general_staging`(2842-2880, 10/2), `_claw_general_context_bundle`(2882-2910, 10/3), `_claw_general_terminal`(3069-3114, 10/0). 각 도우미는 300줄 미만이고 입력 10개 이하·재사용 20개 이하다. 옮긴 265줄은 blob과 바이트 동일(반환 튜플 변환만 적용), await·SSE(`delta`→`done`)·catalog `finally`·#5479 표식 구간 순서 그대로다. contextvar 설정·해제 쌍은 어느 도우미 경계도 넘지 않는다. Body는 510→**297줄**로 300 미만이 되어 `py_functions_over_300`을 실측 5→**4**로 내리고 `tests/structure_baseline.json`을 갱신했다. 증거: `test_7814_claw_general_dispatch_table.py`(반환 경로 5개 + 정상 3개, 골든은 origin/main blob에서 생성; 정상은 SSE 끝까지·Engine 호출 인자·기록 행 고정), 1/4~4/4a 골든 그대로 통과, `test_b54_claw_general_p01_routing.py` 명시 목록에 7개 추가. `stage_uid`는 분리 후 미바인딩이 되지 않도록 staging 도우미에서 `None`으로 초기화했다(동작 변경 없음). 금지 경로 시험의 검사 범위만 넓혔고 단언을 삭제·완화하지 않았다.
+
+### 3. `_api_chat_stream_body` — `apps/padiem-chat/app/chat_routes.py:682-1465` (784줄) ★
+
+- 구간(대략): 입력 검증 682-800, 권한·한도 800-900, 분기 900-1200(스트림·비스트림·PC·연결자), 외부 호출 1200-1400(모델·PC 드라이브·그라운딩), 기록 1400-1430(대화 저장), 응답 조립 1430-1465(SSE).
+- 구간 사이 변수: 78개. 대표: `conversation_id`, `user_id`, `model`, `messages`, `attachments`, `existing_conversation`, `execute_chat_pc_drive_lane`, `pc_scope_notice`, `answer`.
+- early return: 38·raise 3(954·1136·1138).
+- 글자 검사: `chat_routes.py`를 읽는 14개(`test_5247_chat_claw_error_contract`, `test_7297_claw_server_contract` 등).
+- 겹침: 열린 `#7282`와 파일 겹침(캘린더 경로). PC 오늘 경로의 호출부(1258·1311 줄 부근) — `chat_pc_drive` 계약 변경 시 함께 본다.
+- 나누기: 검증·권한 1, 분기(스트림/PC) 1, 외부·기록·응답 1. 예상 3 PR.
+
+- 구간 표(T4 1/3, 리팩터 전 `1e020b741` 기준 — 줄은 리팩터 전 함수 682-1465):
+
+  | 구간 | 줄 범위 | return·yield | 받는 / 넘기는 / 다시 쓰는 변수 | await·SSE 이벤트 순서 | finally·예외 경로 | PC |
+  |---|---|---|---|---|---|---|
+  | 본문·디코드·검증 | 683-720 | return 5(413·422·422·422·422), yield 0 | 받음 `request, timing` / 넘음 `raw, messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom, selected_model` / 다시 씀 없음 | `read_bounded_request_body`(695) → `legacy_turn_error`(702) → `_validate_payload_async`(705) / SSE 없음 | `RequestBodyTooLarge`·`BrowserRequestError`는 413·422로 종료, `timing.mark("validated")` 720 | PC 세션 422 게이트 701-704 포함 |
+  | 스트림 거부·권한·한도 | 722-752 | return 6(422·401·401·관리자 3·403·401; 관리자 내부 분기 포함), yield 0 | 받음 위 묶음 / 넘음 `uid, store, project_file_store` / 다시 씀 `custom, raw` | `selected_admin_denial`(742) → `selected_grade_denial`(746) / SSE 없음 | 거부는 JSONResponse, 예외 전파 없음 | 없음 |
+  | 대화 복원 | 754-806 | return 12(503·404·409·413·503 repeatedly), yield 0 | 넘음 `effective_project_id` / 다시 씀 `messages` | `get_conversation`+`get_conversation_model_context` gather(766) → `_restore_owner_chat_model_messages`(796) / SSE 없음 | `HistoryContextIncomplete` 409, `OverflowError` 413, 나머지 503, `timing.mark("history")` 806 | 없음 |
+  | 프로젝트·참조 문맥 | 808-837 | return 4(401·503·404·503), yield 0 | 넘음 `project, project_context, project_files_context, project_files_used, reference_context` / 다시 씀 없음 | `get_project`(823) → `list_files`(831) / SSE 없음 | 각 저장소 오류를 503·404로 종료, `timing.mark("project")` 835 | 없음 |
+  | Custom 직접 SSE | 842-901 | return 1(StreamingResponse), yield 2(`delta`→`done`) | 받음 `custom, uid, store, effective_project_id` / 다시 씀 없음 | `_complete_custom_chat`(844) → 응답 생성 후 `delta`→`append_exchange`→`done` | `custom_timing_iterator`가 `finally: timing.emit()`(893-894), `HistoryForbidden`은 `done` 대신 `error` | 없음 |
+  | 드라이브·PC·사용량 preflight | 903-957 | return 2(드라이브 오류·사용량 거부), raise 1(사용량 예외), yield 0 | 넘음 `drive_context, drive_sources, pc_work_result, usage_decision` / 다시 씀 `reference_context` | `drive_general_grounding`+`build_pc_work_context_text`+`usage_gate.authorize` gather(934) / SSE 없음 | 드라이브 오류는 그대로 JSON, 사용량 예외는 재던짐, `mark("preflight")`→`mark("usage")` | ★ 드라이브+PC 문맥, 906-934 |
+  | 캘린더 분기 | 959-1087 | return 4(503·오류 그대로·503·StreamingResponse), yield 4(`delta`→`done`) | 다시 씀 `reference_context` | `google_connector_turn_for_text`(967) → `calendar_read_reachable`(998) → `try_native_calendar_chat`(1016) / `delta`→저장→`done` | `native_timing_iterator`·`connect_note_timing_iterator`가 `finally: timing.emit()`, `mark("calendar")` 1089 | 커넥터 READ와 네이티브 캘린더 분리 |
+  | 그라운딩·모델 도구 선언 | 1089-1178 | return 0, raise 2(가드·PC 도구 예외), yield 0 | 넘음 `tier_binding, client, turn_tools, stream, latest_user` / 다시 씀 `reference_context` | `auto_grounding.prepare`(1094) → guard·PC tools·connector tools gather(1123) → `chat_pc_connection_available`(1160) → `client.stream_text_auto`(1170) / SSE 없음 | `GroundingError`는 notice로 흡수, guard·PC 도구 예외는 재던짐, `mark("grounding")`→`mark("lane")` | ★ PC 도구 선언 1123-1163 |
+  | SSE 본문·PC 도구 분기 | 1181-1367 | return 다수(empty·tool·pause·denial·lane unavailable), yield `meta`→`thought`·`delta`·`orchestration_pause`·`error`·`done` | 다시 씀 `answer_parts, tool_call, first_visible` | `anext(stream)`(1199) → PC 도구면 `_close_stream`(1256·1270) → `execute_chat_pc_drive_lane`(1311) → `pc_scope_notice_for_run`(1353) / `meta`→`delta`→`done` | `ChatRuntimeError`·`CancelledError`·일반 예외별 SSE, `orchestration_pause`는 `timing.set_outcome("ok")` | ★ PC/커넥터 실행 1251-1367 |
+  | 최종 답변·저장·SSE 종료 | 1369-1455 | return 4(tool·저장 거부·done·malformed), yield `delta`→`thought`→keepalive→`done`·`error` | 다시 씀 `answer, saved_id, done_payload` | `_stream_with_keepalive`(1373) → `store.append_exchange`(1401·1403) → 실행 기록 투영(1428) / `delta`→`done` | `HistoryForbidden`은 `error`, 그 외 저장 실패는 `saved_id=None`, `finally: _close_stream`+`timing.emit()`(1453-1455) | 간접(실행 기록) |
+  | 응답 반환 | 1457-1465 | return 1(StreamingResponse), yield 0 | 없음 | `body_iterator()` 반환 / 헤더 `Cache-Control`, `X-Accel-Buffering` | 없음 | 없음 |
+
+  T4 1/3은 앞 4행(683-837, 155줄, return 27·yield 0)만 옮긴다. 첫 도우미는 683-752(70줄, 12값), 둘째는 754-837(84줄, 6값)로 각각 12개 이하의 값만 넘긴다. Custom SSE, 드라이브·PC preflight, 캘린더, 모델 호출과 모든 `yield`는 본체에 남긴다.
+
+### 4. `build_app` — `apps/padiem-chat/app/local_cpython.py:950-1149` (200줄)
+
+원본 767줄(251-1017). T4는 네 단계로 나누며 1/3·2/3·3/3a·3/3b가 끝났다.
+
+- 1/3 `_compose_local_settings_and_bindings`(251-316): 진입 플래그·설정 검증 + SQLite/disk-R2.
+- 2/3 `_compose_local_service_bindings`(319-452): 저장소·서비스 바인딩(반환 8값).
+- 3/3a `_install_local_host_state`(455-723, 269줄): startup/shutdown 훅, WAL·감시자, auth 캐시·로컬 검증, 메일 채널, council 라우트, 기기 저장소·큐, broker 디렉터리. 호출에서 `app`을 받아 같은 순서로 대입한다.
+- 3/3b `_install_local_b14_gate`(726-947, 222줄): B14 전송·클라이언트 교체, Claw 검색·SSE 스위치, 견적 리졸버·실행기, slot/model-ops 소스, edge proof, connector 게이트웨이 라우트, 오케스트레이션 브리지, apps-ai ingress, edge 미들웨어 재정렬. 호출 1141에서 `app`·`settings`·`identity_authority`·`db`·`host_flag` 5값을 받아 같은 순서로 대입·등록한다. 본문 205줄을 글자 그대로 옮겼다.
+
+| 순서 | 구간 | 리팩터 후 줄 | 내용 | 상태 |
+|---|---|---|---|---|
+| 1 | 설정 읽기·검증 + SQLite/disk-R2 | helper 251-316 / 호출 326 | 진입 플래그, 데이터 폴더·세션 비밀값, `Settings.from_env()` 검증, sqlite 연결·마이그레이션, `SqliteD1`, `ThreadedLocalDiskR2` | 완료 |
+| 2 | 저장소·서비스 바인딩 | helper 319-452 / 호출 464-473 | `_optional_pair` 4종, github_oauth 포트, identity authority, cache-generation store, shadow store, pdf renderer | 완료 |
+| 3 | `create_app` 호출 | 803-842 | 같은 시그니처·같은 인자 순서 | 본체 유지 |
+| 4 | 상태 조립 — 훅·캐시·메일·council·기기 | helper 455-723 / 호출 | 위 3/3a 목록, 대입 순서 그대로 | 완료(3/3a) |
+| 5 | 상태 조립 — B14 전송·게이트·오케스트레이션 | helper 726-947 / 호출 1141-1147 | 위 3/3b 목록, 대입·라우트·미들웨어 순서 그대로 | 완료(3/3b) |
+| 6 | 마무리 | 1148-1149 | write freeze 래핑과 반환 | 본체 유지 |
+
+- 본체 200줄, `_install_local_host_state` 269줄, `_install_local_b14_gate` 222줄. 두 helper 모두 300줄 미만이고 본체도 300줄 미만이므로 `py_functions_over_300`은 9로 내려갔다(기준선도 10→9 하향).
+- 골든: `tests/test_7814_local_build_app_table.py` — 1/3 거절 4경로·표면, 2/3 바인딩 쌍, 3/3a `app.state` 대입 순서(146회·이름 142개, base·identity_on 두 입력). `tests/test_7814_local_build_app_b14_table.py` — 3/3b B14/게이트 켜짐·꺼짐 쌍과 거절 6경로(예외 종류·문구), 대입 순서·바인딩 종류.
+
+### 5. `oracle_mesh_read_result` — `apps/padiem-chat/app/oracle_mesh_read_return_routes.py:3239-3931` (693줄) ★
+
+- 구간(대략): 입력 검증 3239-3350, 권한·한도 3350-3500, 분기 3500-3700(데스크톱·PC·브라우저·파일), 외부 호출 3700-3850(엔진·메시 소스), 기록 3850-3900(히스토리·감사), 응답 조립 3900-3931.
+- 구간 사이 변수: 55개. 대표: `conversation_id`, `messages`, `history_store`, `mesh_source`, `command_text`, `dispatch`, `finished`, `appended`.
+- early return: 30·raise 0.
+- 글자 검사: `oracle_mesh_read_return_routes.py`를 읽는 4개(`test_261109_pc_result_host_visible`, `test_5479_longpoll_bounded_wait` 등).
+- 겹침: 열린 PR 없음. 오늘 `#7857`이 같은 파일의 결과 적재부를 다침(로깅 추가) — 후속 나눌 때 로깅 자리를 그대로 본다.
+- 나누기: 검증·권한 1, 분기·외부 1, 기록·응답 1. 예상 3 PR. 파일이 6,379줄·최상위 100개이므로, 함수별 PR보다 파일 단계 분할과 함께 계획하는 편이 좋다.
+- 구간 표(T4 1/3 실측, 리팩터 전 함수 3246-3938 기준 — 줄은 현재 main):
+
+  | 구간 | 줄 | return | 다시 쓰는 변수 | await 순서 | 로그 줄(stage) |
+  |---|---|---:|---|---|---|
+  | 서명·nonce·lease 확인 | 3249-3294 | 7 | `wire, result_blob_raw, submitted_node` | `_read_result_body`(3249) | 없음 |
+  | 채널·저장소 확인 | 3296-3308 | 3 | `mesh_source, history_store` | 없음 | 없음 |
+  | 디스패치 조회·소비 | 3310-3329 | 3 | `dispatch, claim, result_run_hash, result_dispatch_id, result_log` | `consume_oracle_mesh_dispatch`(3311) | `pc_result stage=received`(3326) |
+  | 원본 저장 | 3557-3593 | 2 | `same_result` | `record_oracle_mesh_first_result`(3559) | 없음 |
+  | 결과 적재·first_result·이유 로그 | 3595-3903 | 1 | `conversation_id, appended, store_stage` | `get_claw_run`(3597) → `append_local_task_result`(3851) | `pc_result stage=not_appended/stored`(3908) |
+  | 큐 종료 | 3920-3927 | 0 | — | `finish_oracle_mesh_dispatch`(3920) | `pc_result stage=queue_finished` |
+  | 응답 | 3929-3938 | 1 | `payload` | 없음 | 없음 |
+
+- 완료(T4 1/3): 앞 구간 두 덩이를 도우미로 분리했다. `_oracle_mesh_read_result_verify`(99줄: 서명·nonce·lease·termination·디스패치 조회, 81줄 이동·반환 13곳 변환), `_oracle_mesh_read_result_outcome`(239줄: 결과 검증·outcome 산출, 220줄 이동). 본문 693→421줄, `py_functions_over_300` 7 유지. 소스 텍스트 시험 2개(`test_oracle_mesh_read_return.py:1557`, `test_6923_executor_result_contract.py:193`)는 검사 소스를 본체+도우미로 넓히고 호출 단언을 추가했다. `test_261109:85`는 도우미를 함수 뒤에 두어 그대로 통과.
+- 완료(T4 2/3): 메시지 조립·원본 저장 구간 3379-3556(178줄)을 `_oracle_mesh_read_result_store`(195줄)로 분리했다. 본문 421→264줄로 300 미만, `py_functions_over_300` 7→6(기준선 하향). 반환 9곳만 `(응답 | None, 묶음)`으로 변환, 나머지 글자 그대로. 골든에 명령 원본 저장 거절 2경로와 `not_appended` 이유 로그·`queue_finished` 경로를 추가(origin/main blob 출처 검증). 3/3은 없다.
+
+### 6. `_engine_pc_files_call` — `apps/padiem-chat/app/oracle_mesh_read_return_routes.py:5315-5981` (667줄) ★
+
+- 구간(대략): 입력 검증 5315-5430, 권한·한도 5430-5550, 분기 5550-5770(읽기/쓰기·범위·확인), 외부 호출 5770-5900(PC 파일·엔진), 기록 5900-5950(히스토리), 응답 조립 5950-5981.
+- 구간 사이 변수: 94개. 대표: `device_id`, `destination_path`, `content_b64`, `dispatch`, `bound`, `command`, `history_store`.
+- early return: 79·raise 0(가장 잦은 early return 그룹).
+- 글자 검사: 파일 4개 중 함수명을 글자로 직접 보는 시험은 0개(행위는 `test_261104_pc_files_early_return`, `test_7065_pc_edit_tool` 등의 호출 시험으로 본다).
+- 겹침: 열린 PR 없음. `#7857`의 로깅이 인접.
+- 나누기: 검증·권한 1, 분기·외부 1, 기록·응답 1. 예상 3 PR.
+- 구간 표(1/3 실측, 리팩터 전 함수 5483-6151 기준 — 줄은 현재 main):
+
+  | 구간 | 줄 | return | 받는 / 넘기는 / 다시 쓰는 변수 | await 순서 | 로그 stage | contextvar |
+  |---|---|---:|---|---|---|---|
+  | 서명·범위 확인 | 5485-5492 | 5487·5492 | 받음 `request, product` / 넘음 `raw, proof_error, scope_claim, scope_error` / 다시 씀 없음 | `_verify_engine_proof`(5485) | 없음 | 없음 |
+  | 본문 파싱·모드 검증 | 5493-5549 | 5496·5498·5547·5549 | 받음 위 묶음 / 넘음 `payload, requested_mode, mode, expected, optional` / 다시 씀 `mode` | 없음 | 없음 | 없음 |
+  | 필드·작업 검증 | 5550-5597 | 5558·5567·5575·5585·5587·5592·5597 | 받음 위 묶음 / 넘음 `new_mode, selected` / 다시 씀 `payload, mode` | 없음 | 없음 | 없음 |
+  | 소유자·실행 확인 | 5598-5624 | 5602·5607·5617·5624 | 받음 위 묶음 / 넘음 `uid, session, history_store, run_row` / 다시 씀 `selected` | `_engine_pc_files_owner`(5598) → `get_claw_run`(5609) → `promote_chat_pc_stream_run`(5612, chat·context 한정) | 없음 | 없음 |
+  | 범위 저장·고정 | 5626-5632 | 5630·5632 | 받음 위 묶음 / 넘음 `saved_scope` / 다시 씀 없음 | `get_pc_run_scope`(5628) | 없음 | 없음 |
+  | 상태/결과 대상 재확인 | 5634-5656 | 없음 | 받음 위 묶음 / 넘음 `reader, status_dispatch, hint` / 다시 씀 `selected` | `reader`(5648, 조건부) | 없음 | 없음 |
+  | 대상 확정·무PC 응답(이번 PR 이동) | 5658-5678 | 5662·5667·5675 | 받음 위 묶음 / 넘음 `resolved, target, roots, device_id` / 다시 씀 `selected` | `_engine_pc_files_target`(5658) | 없음 | 없음 |
+  | 범위 고정·컨텍스트 응답 | 5680-5721 | 5683·5687·5689·5697 | 받음 위 묶음 / 넘음 `labels` / 다시 씀 없음 | `pin_pc_run_scope`(5685) | 없음 | 없음 |
+  | 출력 경로 위임·실행 표시 | 5723-5738 | 5724 | 받음 위 묶음 / 넘음 `mark_running` / 다시 씀 없음 | `_engine_pc_output_call`(5724, 조건부) → `update_claw_run_status`(5736, 조건부) | 없음 | 없음 |
+  | 디스패치 분기 | 5740-5978 | 27곳(5743…5978) | 받음 위 묶음 / 넘음 `command, response, tool_call_ref, command_workspace, job_operation` / 다시 씀 `resolved, root, relative` | `_dispatch_workspace_id`(5801) → `dispatch_oracle_mesh_command_intent`(5872·5913·5933·5963) / `dispatch_oracle_mesh_file_read_intent`(5889) | 없음 | TTL 읽음(생성 시점) |
+  | 상태/결과 조회·응답 | 5980-6149 | 21곳(5982…6130) | 받음 위 묶음 / 넘음 `dispatch, kind, state, output, output_ref, image_block` / 다시 씀 없음 | `reader`(5987) → `read_oracle_mesh_original`(6069) → `_engine_pc_public_output`(6093) → `_engine_pc_output_call`(6101, 조건부) | 없음 | TTL 읽음(생성 시점) |
+
+- contextvar 위치: 함수 본체 5483-6151에는 contextvar 설정·해제가 없다. #7885 `chat_pc_dispatch_ttl`은 래퍼 `oracle_mesh_engine_chat_files_call`(6156) 진입 시 설정하고 퇴장 시 reset하며, `dispatch_ttl_seconds`가 디스패치 생성 시점(`dispatch_oracle_mesh_command_intent` 1553)에 읽는다. #7881 `pc_dispatch_wait_window`의 `reset_wait_reason`·`last_wait_reason`은 `orchestration_routes.py`에 있고 이 함수는 호출하지 않는다(골든 `wait_reason=none`). 따라서 앞 구간을 도우미로 옮겨도 설정·해제 범위를 가로지르지 않으며 Engine 호출·로그 순서를 바꿀 필요가 없다.
+- 완료(T4 1/3): 앞 연속 구간 5485-5678(서명·본문 파싱·모드/필드 검증·소유자/실행/범위 확인·대상 확정·무PC 응답) 194줄을 `_engine_pc_files_call_verify`(220줄)로 옮겼다. 넘기는 값 2개(`request`, `product`), 다시 받아 쓰는 값 14개, 반환 23곳만 `(응답 | None, 묶음)`으로 변환하고 나머지 본문은 글자 그대로다. 도우미는 함수 뒤에 배치했다. 본문 669→491줄, `py_functions_over_300` 6 유지. 골든 `test_7814_engine_pc_files_call_table.py`(반환 경로 23 + 정상 2, origin/main blob 출처 검증 26/26), 소스 텍스트 시험 변경 0건, 뮤테이션 2건(호출 순서 10 실패, 디스패치 인자 1 실패) 후 원복 바이트 동일. 관련 70개 파일 1348 pass / 15 fail(기존 실패와 동일, 새 실패 0).
+- 구간 표(2/3 실측, 1/3 리팩터 후 본체 5483-5972 기준):
+
+  | 구간 | 줄 | return | 받는 / 넘기는 / 다시 쓰는 변수 | await 순서 | 로그 stage | contextvar |
+  |---|---|---:|---|---|---|---|
+  | 도우미 호출·묶음 해제 | 5485-5501 | 없음 | 받음 `request, product` / 넘음 14개 / 다시 씀 없음 | `_engine_pc_files_call_verify`(5485) | 없음 | 없음 |
+  | 범위 고정 | 5503-5512 | 5506·5510·5512 | 받음 `history_store, uid, payload, scope_claim` / 넘음 `scope_pinner` / 다시 씀 없음 | `pin_pc_run_scope`(5508) | 없음 | 없음 |
+  | 컨텍스트 응답 | 5514-5544 | 5520 | 받음 `roots, target, device_id, payload` / 넘음 `labels` / 다시 씀 없음 | 없음 | 없음 | 없음 |
+  | 출력 경로 위임 | 5546-5549 | 5547 | 받음 `history_store, payload, uid, device_id` / 넘음 없음 / 다시 씀 없음 | `_engine_pc_output_call`(5547) | 없음 | 없음 |
+  | 실행 표시 | 5551-5561 | 없음 | 받음 `history_store, uid, payload` / 넘음 `mark_running` / 다시 씀 없음 | `update_claw_run_status`(5559, 조건부) | 없음 | 없음 |
+  | 디스패치 분기(이번 PR 이동) | 5563-5801 | 28곳(5566…5801) | 받음 `request, payload, requested_mode, mode, scope_claim, roots, selected, session, uid, target` / 넘음 없음 / 다시 씀 없음 | `_dispatch_workspace_id`(5624) → `dispatch_oracle_mesh_command_intent`(5695·5736·5756·5786) / `dispatch_oracle_mesh_file_read_intent`(5712) | 없음 | TTL 읽음(생성 시점) |
+  | 상태/결과 조회·응답 | 5803-5972 | 21곳(5805…5953) | 받음 위 묶음 / 넘음 `dispatch, kind, state, output, output_ref, image_block` / 다시 씀 `content` | `reader`(5810) → `read_oracle_mesh_original`(5892) → `_engine_pc_public_output`(5916) → `_engine_pc_output_call`(5924, 조건부) | 없음 | TTL 읽음(생성 시점) |
+
+- 완료(T4 2/2): 남은 연속 구간 5563-5801(디스패치 분기, 239줄)을 `_engine_pc_files_call_dispatch`(252줄)로 옮겼다. 넘기는 값 10개(`request, payload, requested_mode, mode, scope_claim, roots, selected, session, uid, target`), 다시 받아 쓰는 값 0개. 반환 28곳만 `(응답 | None, 묶음)`으로 변환하고 비분기 경로는 도우미 끝의 `return None, {}`로 처리한다. 나머지 본문은 글자 그대로, 도우미는 함수 뒤에 배치했다. 본문 491→258줄로 300 미만, `py_functions_over_300` 5→4(실측; 사이 다른 PR이 6→5로 내림), `structure_baseline.json` 동일 하향. 골든 45케이스·46건(1/3 25케이스 그대로 + 디스패치 분기 반환/정상 20케이스 추가), origin/main blob 출처 검증 46/46, 원복 바이트 동일. 소스 텍스트 시험 변경 0건(해당 시험 없음), 뮤테이션 2건(호출 순서 2 실패, 디스패치 인자 1 실패) 후 원복 바이트 동일. 관련 파일 1399 pass / 15 fail(기존 실패와 동일, 새 실패 0). 3/3은 없다.
+
+### 7. `_answer_orchestration` — `apps/padiem-chat/app/orchestration_routes.py:356-827` (472줄) ★
+
+- 구간(대략): 입력 검증 356-440, 권한·한도 440-490, 분기 490-650(오케스트레이션 의사결정), 외부 호출 650-780(모델·브리지·PC 의도), 기록 780-810, 응답 조립 810-827.
+- 구간 사이 변수: 65개. 대표: `conversation_id`, `decision`, `bridge`, `confirmed`, `explicit_intent`, `byok_model`, `grounded_evidence`.
+- early return: 32·raise 0.
+- 글자 검사: `orchestration_routes.py`를 읽는 9개 중 `test_orchestration_timing_261103`, `test_7841_pc_task_intent`, `test_7841_pc_tools_timing` 등.
+- 겹침: 열린 `#7282`와 파일 겹침. 오늘 `#7845`가 이 함수(PC 의도 부스팅)를 직접 다침 — 같은 파일을 만지는 PR은 합병 순서를 조율한다.
+- 나누기: 검증·권한 1, 분기·외부·기록·응답 1. 예상 2 PR.
+- 구간 표(T4 1/2, 최신 main `7e2d5462` 기준 — 줄은 리팩터 전 함수 361-832):
+
+  | 구간 | 줄 | return | 받는 / 넘기는 / 다시 쓰는 변수 | await 순서 | contextvar·timing |
+  |---|---|---:|---|---|---|
+  | 입력·턴 시작 | 362-399 | 364(503)·367(401)·399(세션 거절) | 받음 `request, timing` / 넘음 `uid, raw, trace_run_id, model_first_on` / 다시 씀 `messages, skill, tool_request, attachments, conversation_id, project_id, custom` | `_json_body`(369) → `_validate_payload_async`(389) | `timing.mark("validated")` 393 |
+  | 정책(BYOK·커넥터·등급) | 400-477 | 408·410·413·441·457·461·473·475·477 | 받음 위 묶음 / 넘음 `user_credential_ref, byok_model, policy, product_identity` / 다시 씀 없음 | `resolve_reference`(406) → `connector_tools_granted_for_fallback`(438) → `selected_admin_denial`(455)/`selected_grade_denial`(459) → `resolve_request_model_policy`(463) | `chat_request_tier_context`(462) 진입·퇴장 모두 이 구간. `timing.mark("policy")` 479 |
+  | 대화·사용량·PC 문맥 (이번 PR 이동) | 479-559 | 485·487·498·511·539·544·552·556 | 받음 위 묶음 / 넘음 `store, existing, pc_context, user_text` / 다시 씀 없음 | `get_conversation`(483) → `usage_gate.authorize`(492) → `handle_owner_turn`(507) → `resolve_chat_pc_stream_context`(515) → PC 명령 분기(542-559) | `mark("conversation")` 488·`mark("usage")` 504·`set_pc_lane_closed` 522·`mark("pc_context")` 523 |
+  | 근거(grounding) 조립 | 560-631 | 없음 | `grounding_context, grounded_evidence, grounding_notice, answer_context, pc_connected` | `prepare_grounding`(577/584) → `chat_pc_connection_available`(623) | `mark("grounding")` 598 |
+  | 경로 결정·모델 호출(model_first) | 632-654 | 654 | `model_first_response` | `_answer_model_first`(633) | `reset_wait_reason` 1051·`last_wait_reason` 1234·`timing.set_reason` 1236은 `_answer_model_first` 안에 있어 이번 PR에서 옮기지 않음 |
+  | PC 도구 호출과 대기(#7881) SSE | 655-744 | 664·673·675·683·685·689·740 | `pc_run_id, saved_id, action_context, pc_delegation` | `_restore_owner_chat_model_messages`(669) → `begin`(678) → `load_pc_delegation`(698) | `reason=pc_dispatch_no_result_in_window`가 이 경로의 timing 필드 |
+  | 모델 호출·기록·응답(SSE/JSON) | 746-832 | 786·804·806·832 | `answer_budget_seconds, result, saved_id, payload` | `bridge.start`(789) → `_save_terminal_history`(809) | `mark("engine")` 808·`mark("save")` 817 |
+
+- 완료(T4 1/2): 앞 연속 구간 362-523(입력·턴 시작, 정책, 대화·사용량·PC 문맥) 162줄을 `_answer_orchestration_intake`(189줄)로 옮겼다. 본문은 글자 그대로이고 반환 16곳만 `(응답 | None, 묶음)`으로 바꿨다. 넘기는 값 2개(`request`, `timing`), 다시 쓰는 값 16개. `reset_wait_reason`·`last_wait_reason`·`timing.set_reason`은 `_answer_model_first`에 있어 옮기지 않았다. `_answer_orchestration` 472→329줄로 300줄을 넘으므로 `py_functions_over_300`은 9 그대로다(2/2에서 300 미만으로 내린다). timing mark 순서와 elapsed 기준점, await 순서 불변. 증거: `test_7814_answer_orchestration_table.py`(반환 경로 8개, 정상 2개, #7881 1개).
+- 완료(T4 2/2): 마지막 연속 구간 836-880(모델 직접 호출·기록·응답 조립) 45줄을 `_answer_orchestration_direct`(65줄)로 옮겼다. 본문 45줄 글자 그대로, 호출은 5줄. `_answer_orchestration` 329→289줄, `py_functions_over_300` 9→8(기준선 하향). 다시 받아 쓰는 값은 응답 1개뿐이고, `timing.mark("engine")`·`mark("save")` 순서와 elapsed 기준점, await 순서, 반환 3경로(504·403·200) 불변. 골든에 직접 성공·upstream timeout·B62 오류 3경로를 추가(origin/main blob 출처 검증 포함). 증거: `test_7814_answer_orchestration_table.py` 12건, 기존 117건 통과.
+
+- 구간 표(B4-1 선행, 2026-11-17 기준):
+  | 구간 | 줄 범위 | 반환 | 받는 변수 | 넘기는 변수 | 다시 쓰는 변수 |
+  |---|---|---:|---|---|---|
+  | 입력·본인 확인 | 725-771 (`_account_delete_identity`) | 10 | request, bookai_subject_id | db, user_id, row, email | db, user_id, row, email |
+  | 권한(관리자 차단) | 위 구간에 포함 | 3 | db, user_id, email | — | — |
+  | 삭제 대상 수집 | 780-846 | 4 | db, user_id, row | cleanup_targets, subjects, links | subject_id, marker_subject |
+  | 삭제 실행·기록 | 849-1006 | 5 | db, cleanup_targets, subjects | deleted_subjects | shared_complete_pending |
+  | 응답 | 1008-1036 | 1 | cleanup, shared_complete_pending | body | — |
+- 완료(B4-1): 본체 314→278줄. 앞 구간(입력·본인 확인+관리자 차단)을 `_account_delete_identity`(47줄)로 떼어 냈다. 도우미는 `(응답 | None, 값 묶음)`을 돌려주고 본체가 원래 자리에서 `if resp is not None: return resp`로 같은 응답을 반환한다. 삭제 실행 순서·트랜잭션 경계·외부 호출 순서는 그대로다. 증거: `test_7814_account_delete_table.py`(거절 10경로 + 통과 1경로, 거절 경로 삭제 0건).
+
+- 구간 표(최신 main, 883-1298):
+  | 구간 | 줄 | 하는 일 | return | 받는 변수 | 넘기는 변수(다시 쓰는 변수) |
+  |---|---|---|---|---|---|
+  | 입력 검증 | 887-926 | 로그인 거부·content-type·본문·JSON·객체·원문·채널·작업 | 9 | request | data, content_clean, channel, action |
+  | 권한·한도(등급) | 931-974 | 작업 길이·발신자 힌트·등급·관리자·등급 거부·중앙 경로 | 5 | request, data, content_clean, action | sender_hint, grade, product_tier, identity_tier_id, claw_route |
+  | intake 조립·세션 참조 | 976-1006 | `ManualIntakeRequest`·`ManualIntakeRouter`·세션 참조 | 3 | request, data, channel, action, content_clean, sender_hint | session_conversation_id(intake_req는 구간 안에만) |
+  | 산출물 권한 | 1010-1030 | 견적·주문 draft의 tenant·owner·스토어 | 2 | request, action | artifact_tenant_id, artifact_owner_id, artifact_store |
+  | 어댑터·주체·quota | 1036-1086 | adapter 읽기·B54 주체·usage gate·adapter 없음 | 4 | request | adapter, subject_id |
+  | Engine 호출 | 1088-1129 | task·run·`adapter.execute`·예약 해제 | 2 | action, content_clean, adapter, product_tier, subject_id, claw_route, identity_tier_id | run, outcome |
+  | 결과 투영 | 1136-1217 | waiting_approval·미완료 거부 | 2 | outcome | 없음 |
+  | 기록·응답 조립 | 1219-1298 | 제목·산출물 설명·결과·이력 기록·200 응답 | 2 | channel, action, sender_hint, artifact_*, session_conversation_id, run, outcome | 없음 |
+  PC·메시·데스크톱을 부르는 줄은 이 함수 안에 없다(Engine `adapter.execute`만 있다).
+- 완료(R7-6): 입력 검증·등급·경로(887-974)를 `_claw_manual_intake_validate` 101줄로, intake 조립·세션·산출물·어댑터·quota(976-1086)를 `_claw_manual_intake_prepare` 121줄로 분리했다. 본체 416→239줄, `py_functions_over_300` 12→11. 다시 쓰는 변수: validate는 data·content_clean·channel·action·sender_hint·grade·product_tier·identity_tier_id·claw_route(9개), prepare는 session_conversation_id·artifact_tenant_id·artifact_owner_id·artifact_store·adapter·subject_id(6개). PC·메시·데스크톱 줄은 없어 옮기지 않았다. 증거: `test_7814_claw_manual_intake_table.py`(25개 골든). 금지 경로 시험: `test_usage_gate_is_applied_before_p01_adapter_construction`와 `test_execute_route_has_no_body_driven_refund_authority`는 도우미까지 함께 보도록 넓혔다.
+
+### 8. `b66_ai_chat` — `apps/padiem-chat/app/b66_ai_chat_routes.py:278-737` (460줄)
+
+- 구간(대략): 입력 검증 278-350, 권한·한도 350-420, 분기 420-600(관점·모델·등급), 외부 호출 600-690(가드 클라이언트), 기록 690-720, 응답 조립 720-737.
+- 구간 사이 변수: 57개. 대표: `conversation_id`, `declared_model_id`, `expected_model`, `guarded_client`, `attempt_store`, `decision`, `answer`.
+- early return: 57 제자리 크기(거부·재시도 분기). raise 0.
+- 글자 검사: `b66_ai_chat_routes.py`를 직접 읽는 시험 0개(호출 시험 위주).
+- 겹침: 열린 PR 없음.
+- 나누기: 검증·권한 1, 분기·외부·기록·응답 1. 예상 2 PR.
+
+### 9. `execute_mcp_pc_tool` — `apps/padiem-chat/app/mcp_gateway_execution.py:238-673` (436줄) ★
+
+- 구간(대략): 입력 검증 238-320, 권한·한도 320-420(승인·장치), 분기 420-520(도구별 계획), 외부 호출 520-610(PC 실행·브라우저), 기록 610-650(대화 기록), 응답 조립 650-673.
+- 구간 사이 변수: 61개. 대표: `tool_name`, `arguments`, `approval_id`, `device_id`, `chosen_device`, `chat_pc_plan_for_tool`, `bridge`, `browser`, `conversation_id`.
+- early return: 18·raise 20(raise 265·268·272·293·348·355·361·365 등 — raise가 많은 그룹).
+- 글자 검사: 파일 직접 읽는 시험 0개(호출 시험 `test_7065_pc_edit_tool`, `test_mcp_multi_device_261104` 등).
+- 겹침: 열린 PR 없음. 오늘 PC(`#7851/#7854`)의 `chat_pc_drive`를 부르므로 간접 ★.
+- 나누기: 검증·권한 1, 분기·외부·기록·응답 1. 예상 2 PR.
+- 구간 표(T4 1/2, 리팩터 전 함수 238-673 기준):
+
+  | 구간 | 줄 | return | raise(종류) | 받는 / 다시 쓰는 변수 | await 순서 |
+  |---|---|---:|---|---|---|
+  | 입력·도구 이름 검증 | 238-279 | 278(pc_devices) | 3 `ValueError`(principal·tool) | 받음 `request, principal, tool_name, arguments, approval` / 다시 씀 `uid, device_id, token_id, tool` | `list_owner_devices`(277) |
+  | 인자 스키마·모드 검증 | 280-393 | 382·391 | 8 `ValueError`(인자) | `arguments, shell, scope, tool_id, keys, browser, shell_enabled, shell_user_enabled` | `validate_shell_tool_arguments`(292) → `_pc_system_mode_allowed`(390) |
+  | 승인·사전 위임 | 394-415 | 409·410·414 | 2 `ValueError`(browser·digest) | `approval_id, arguments, browser` | 없음 |
+  | 토큰·소유자·저장소 권한 | 416-424 | 없음 | 2 `ChatPCDriveError` | `session, subject_id, workspace_id, bridge, store` | `_resolve_chat_owner`(417) |
+  | 장치 선택 | 425-502 | 430·440·453·489·495 | 3 `ChatPCDriveError` | `context, denial, device_chosen` | `resolve_pc_work_context`(447/490) → `_check_mesh_grant`(459/499) |
+  | 디스패치 생성 | 503-615 | 없음 | 1 `ChatPCDriveError`(B62 변환) | `folders, plan, gateway, conversation_id` | `_registered_pc_folders`(510) → `bridge.start`(605) |
+  | 결과 대기·응답 조립 | 616-673 | 673 | 없음 | `result, receipt, browser_context` | `save_browser_context`(642) → `read_browser_capture`(653) → `_append_lane_notice`(670) |
+
+- 완료(T4 1/2): 앞 연속 구간 264-404(입력·도구 이름·인자·승인 검사) 141줄을 `_mcp_pc_tool_intake`(164줄)로 옮겼다. 본문은 글자 그대로이고 반환 3곳만 `(응답 | None, 묶음)`으로 바꿨다. raise 13개는 원래 자리·종류(`ValueError`)·메시지·순서 그대로 도우미 안에서 일어난다. 넘기는 값 5개(`request, principal, tool_name, arguments, approval`), 다시 받아 쓰는 값 13개. `execute_mcp_pc_tool` 436→313줄로 300줄을 넘으므로 `py_functions_over_300`은 8 그대로다(2/2에서 300 미만으로 내린다). 증거: `test_7814_mcp_pc_tool_table.py`(raise 13·return 3·순서 3·정상 2).
+- 완료(T4 2/2): 응답 조립 구간 673-707(작업 영수증·브라우저 응답·캡처 투영) 35줄을 `_mcp_pc_tool_response`(45줄)로 옮겼다. 본문 35줄 글자 그대로, 내부 `raise`와 예외→응답 변환, await 순서 불변. `execute_mcp_pc_tool` 313→283줄, `py_functions_over_300` 8→7(기준선 하향). 1/2 골든 22건 그대로 통과, origin/main blob 출처 검증 포함. 증거: `test_7814_mcp_pc_tool_table.py` 22건, 기존 18개 파일 319건 통과(`test_7603` PowerShell 1건은 main과 같은 기존 실패). 다른 레인이 같은 기준값을 내릴 경우 rebase 시 실측값(7)으로 다시 맞춘다.
+
+### 10. `from_values` — `apps/padiem-chat/app/config.py:322-757` (436줄)
+
+- 구간(대략): 입력 검증 322-430, 권한·한도(설정 한도) 430-560, 분기 560-660(모드·제공자), 외부 호출 — 없음(순수 파싱, 키 정규화), 기록 — 없음, 응답 조립 660-757(`Settings` 생성·반환). 조립 함수라 6구간 중 외부 호출/기록은 비어 있다.
+- 구간 사이 변수: 53개 자리(입력 키 60여 개)·111개 자리(실측 Store 총계). 대표: `b14_base_url`, `auth_mode`, `client_id`, `normalized`, `extra_base_urls`, `max_age`.
+- early return: 1(637·내부 정규화 반환)·raise 28(394·405·416·424·432·440·459·464 등 검증 오류) — raise 중심.
+- 글자 검사: `config.py`를 읽는 8개(`test_4139_private_rpc_export_parity`, `test_staging_config_6305` 등).
+- 겹침: 열린 PR 없음. 합성 함수라 호출부(`build_app`, `create_app`)가 많다.
+- 나누기: 키 그룹별 validators 2 PR(검증/한도, 분기/조립). 예상 2 PR. 가장 먼저 나눌 후보(순수·raise 중심·외부 의존 없음).
+- 완료(R7-3): `from_values` 436→242줄, 단계 함수 5개(모두 300줄 이하)로 분리 — `_values_runtime_flags` 58줄(실행 모드·운영 플래그), `_values_b14_and_timeouts` 57줄(B14·타임아웃), `_values_web_search` 34줄(웹 검색), `_values_auth_session` 70줄(인증·세션), `_values_limits_document` 71줄(한도·문서 변환). 검증·조립 순서와 생성자 안 인라인 검증을 그대로 두어 오류 우선순위를 보존했다. 증거: `test_7814_config_from_values_table.py`(대표 입력의 설정 필드·값과 오류 메시지, `from_env` 환경 변수 접근 순서 골든).
+
+### 11. `claw_manual_intake_execute` — `apps/padiem-chat/app/claw_routes.py:883-1298` (416줄)
+
+- 구간(대략): 입력 검증 883-960, 권한·한도 960-1010, 분기 1010-1150(수 intake·산출물·등급), 외부 호출 1150-1240(어댑터·스토어), 기록 1240-1270, 응답 조립 1270-1298.
+- 구간 사이 변수: 43개. 대표: `data`, `action`, `adapter`, `intake_req`, `artifact_*`, `grade`, `denial`, `outcome`.
+- early return: 33·raise 0.
+- 글자 검사: `claw_routes.py`를 읽는 12개(`test_claw_execution`, `test_bounded_request_body` 등).
+- 겹침: 열린 PR 없음.
+- 나누기: 검증·권한 1, 분기·외부·기록·응답 1. 예상 2 PR.
+
+### 12. `api_chat` — `apps/padiem-chat/app/chat_routes.py:1474-1846` (373줄) ★(간접)
+
+- 구간(대략): 입력 검증 1474-1550, 권한·한도 1550-1600, 분기 1600-1700(비스트림·연결자·그라운딩), 외부 호출 1700-1800(모델·문서·드라이브), 기록 1800-1820, 응답 조립 1820-1846.
+- 구간 사이 변수: 60개. 대표: `body`, `conversation_id`, `document_context`, `drive_context`, `custom_result`, `google_connector_turn`, `grounded`.
+- early return: 36·raise 1(1790).
+- 글자 검사: `chat_routes.py`를 읽는 14개 + `api_chat`을 직접 보는 8개(`test_7297_parity_gates`, `test_bounded_request_body` 등).
+- 겹침: 열린 `#7282`와 파일 겹침. `_api_chat_stream_body`와 한 파일이므로 함께 계획한다.
+- 나누기: 검증·권한 1, 분기·외부·기록·응답 1. 예상 2 PR.
+
+### 13. `_pc_write_command` — `apps/padiem-chat/app/oracle_mesh_read_return_routes.py:4349-4661` (313줄)
+
+- 구간(대략): 입력 검증 4349-4420, 권한·한도 — 없음(호출부에서 검증), 분기 4420-4550(덮어쓰기·추가·검증), 외부 호출 4550-4640(파일·백업), 기록 4640-4655, 응답 조립 4655-4661(반환).
+- 구간 사이 변수: 6개 자리 — 가장 작다(`append_probe`, `backup_step`, `body`, `target_missing`). 인자로만 동작하므로 분리 난도가 낮다.
+- early return: 1(4661 최종)·raise 0.
+- 글자 검사: `test_7065_pc_edit_tool` 1개.
+- 겹침: 열린 PR 없음.
+- 나누기: 1 PR(검증, 분기·외부·기록·응답). 가장 먼저 처리 가능.
+- 완료(R7-2): `_pc_write_command` 313→63줄, 단계 함수 5개(모두 300줄 이하)로 분리 — `_pc_write_backup_fragments` 14줄(외부 호출: 백업·대상 없음 조각), `_pc_write_input_statements` 40줄(입력 검증: 초기 문장·관찰 대상), `_pc_write_scope_guard` 37줄(권한·한도: 허용 범위 밖 바로가기 경로 거절), `_pc_write_operation_body` 131줄(분기: 덮어쓰기·추가·편집·폴더·이동·삭제), `_pc_write_record_statements` 69줄(기록·응답: 거절 문장·검증·계정 줄). 본체는 단계 호출만 순서대로 이어 붙인다. 증거: `test_7814_pc_write_command_table.py`(대표 8개 입력의 명령 해시·이유 코드·단계 순서 골든).
+
+### 14. `_account_delete_impl` — `apps/padiem-chat/app/account_deletion.py:774-1051` (278줄)
+
+- 구간(대략): 입력 검증 725-785, 권한·한도 785-850, 분기 850-950(연결·주제·마지막 공동 삭제로 분기), 외부 호출 950-1010(스토어·정리), 기록 1010-1030, 응답 조립 1030-1036.
+- 구간 사이 변수: 39개. 대표: `request`, `delete_all_services`, `preparation`, `cleanup_targets`, `deleted_subjects`, `auth_operation_id`.
+- early return: 25·raise 3(857·872·963).
+- 글자 검사: `account_deletion.py`를 읽는 2개(`test_7084_session_cache_window_261108`, `test_7388_conversation_soft_delete`).
+- 겹침: 열린 PR 없음.
+- 나누기: 검증·권한 1, 분기·외부·기록·응답 1. 예상 2 PR.
+
+### 15. `conversation_turn` — `apps/padiem-chat/app/b66_ai_conversation_routes.py:184-489` (306줄)
+
+- 구간(대략): 입력 검증 184-245, 권한·한도 245-290, 분기 290-400(관점·등급·초안), 외부 호출 400-470(가드 클라이언트), 기록 470-485, 응답 조립 485-489.
+- 구간 사이 변수: 45개. 대표: `data`, `declared_model_id`, `expected_model`, `guarded_client`, `draft`, `loaded`, `message`.
+- early return: 43(가장 촘촘한 early)·raise 1(454). 300줄이면서 early가 많으므로, 뺀 뒤 300줄 기준은 쉽게 만족한다.
+- 글자 검사: 파일 직접 읽는 시험 0개.
+- 겹침: 열린 PR 없음. `b66_ai_chat`과 함께 B66 묶음으로 계획한다.
+- 나누기: 1 PR. `b66_ai_chat`과 합쳐도 된다.
+
+## 나누는 순서 제안
+
+위험이 낮은 것부터, PC 오늘 경로와 열린 `#7282`를 한 번에 넘지 않게 배치한다.
+
+1. `_pc_write_command` (1) — 변수 6개·early 1. 다른 함수와 연결이 가장 얇다.
+2. `conversation_turn` (1) — 파일 글자 검사 0. B66 묶음 시작.
+3. `from_values` (2) — 순수 파싱·raise 중심·외부 없음. 검증/분기 조립으로 나뉜다.
+4. `create_app` 상태 초기화 (1~2) — R7-1 라우트 후, 상태 조립을 단계 helpers로. 시그니처 유지.
+5. `claw_manual_intake_execute` (2) — `claw_general_execute`보다 작다.
+6. `b66_ai_chat` (2) — #15와 독립 PR.
+7. `_account_delete_impl` (2) — 권한·외부 호출 단계가 뚜렷하다.
+8. `execute_mcp_pc_tool` (2) — raise가 많으므로 raise 자리는 이동하지 않는다.
+9. `api_chat` (2) — `#7282` 합병 후 착수.
+10. `_answer_orchestration` (2) — `#7282`·`#7845` 합병 후 착수.
+11. `_api_chat_stream_body` (3) — `api_chat`과 한 파일, PC 호출 포함.
+12. `claw_general_execute` (4) — 크기 1,053·return 92. 검증, 분기, 외부·기록·응답으로 나눈 뒤에도 300줄을 피하려면 4개가 필요하다.
+13. `_engine_pc_files_call` (3) — return 79.
+14. `oracle_mesh_read_result` (3) — 파일 단계 분할과 함께.
+15. `build_app` (3) — `create_app`과 맞물리므로 마지막.
+
+- R7-1은 위 순서 중 `create_app` 라우트 부분만 수행한다(라우트 표·미들웨어 순서 전후 동일 시험 포함). 상태 초기화는 위 4번째다.
+- 한 PR은 한 카드(함수 1개 또는 그 안의 1 구간)이므로, 함수별 예상 PR 수는 위와 같다.

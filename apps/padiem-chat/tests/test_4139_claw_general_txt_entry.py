@@ -8,7 +8,7 @@ from starlette.responses import JSONResponse
 from app import claw_general_routes as general
 from app import connector_txt_read_routes as connector
 from app.history import D1HistoryStore, PRODUCT_SCOPE_CHAT
-from test_claw_local_task_result_projection import _accounts, _open_database
+from _support.claw_local_task_result import _accounts, _open_database
 
 
 def run(coro):

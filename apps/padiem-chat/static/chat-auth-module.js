@@ -6,6 +6,14 @@
   "use strict";
   window.PadiemChatAuthModule = {
     create(deps) {
+      const SESSION_PRESENTATION = {
+        "pending": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
+        "signed_in": { "accountHidden": false, "loginHidden": true, "loginDisabled": false, "accountNameHidden": false },
+        "guest": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": false },
+        "expired": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": false },
+        "unavailable": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
+        "unreachable": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": true }
+      };
   function closeProfilePanel(restoreFocus = false) {
     deps.profilePanel.hidden = true;
     deps.profileToggle.setAttribute("aria-expanded", "false");
@@ -18,7 +26,7 @@
     return first.toLocaleUpperCase();
   }
   function resolveSessionPresentation(sessionState) {
-    return deps.SESSION_PRESENTATION[sessionState] || deps.SESSION_PRESENTATION.unreachable;
+    return SESSION_PRESENTATION[sessionState] || SESSION_PRESENTATION.unreachable;
   }
   function setLoginButtonCopy(text, title) {
     // #7164: identical writes are skipped. Writing textContent replaces the
@@ -191,396 +199,6 @@
   function authMethodEnabled(name) {
     return Boolean(deps.authState && deps.authState.methods && deps.authState.methods[name] === true);
   }
-  function setAuthFormError(node, message = "") {
-    if (!node) return;
-    node.textContent = message;
-    node.hidden = !message;
-  }
-  // #7729: the email entry is a plain link to the common login, so this dialog
-  // owns no input fields. app.js adds no declaration for it — the module reads
-  // the element itself, and a harness that injects it through deps still wins.
-  function emailContinueElement() {
-    if (deps.passwordLoginContinue) return deps.passwordLoginContinue;
-    if (typeof document === "undefined") return null;
-    return document.getElementById("passwordLoginContinue");
-  }
-  function syncAuthDialogMethods() {
-    if (!deps.authDialog) return;
-    const googleEnabled = deps.authMethodEnabled("google");
-    const passwordEnabled = deps.authMethodEnabled("password");
-    if (deps.googleLoginButton) deps.googleLoginButton.hidden = !googleEnabled;
-    if (deps.authDivider) deps.authDivider.hidden = !(googleEnabled && passwordEnabled);
-    // #5481: the login view and the two reset views are mutually exclusive.
-    // The email entry is a link to the common login; no input fields remain
-    // in this dialog, so it toggles exactly where the login form used to.
-    const showLogin = passwordEnabled && deps.authDialogView === "login";
-    const emailContinue = emailContinueElement();
-    if (emailContinue) emailContinue.hidden = !showLogin;
-    if (deps.passwordResetOpen) deps.passwordResetOpen.hidden = !passwordEnabled || deps.authDialogView !== "login";
-    if (deps.passwordResetPanel) deps.passwordResetPanel.hidden = deps.authDialogView === "login";
-    if (deps.passwordResetRequestView) deps.passwordResetRequestView.hidden = deps.authDialogView !== "request";
-    if (deps.passwordResetConfirmView) deps.passwordResetConfirmView.hidden = deps.authDialogView !== "confirm";
-    deps.renderAndroidHandoff();
-  }
-  function openAuthDialog() {
-    if (!deps.authDialog) {
-      if (deps.authMethodEnabled("google")) {
-        if (deps.isAndroidWebView()) deps.startAndroidHandoff();
-        else window.location.assign("/auth/google/start");
-      }
-      return;
-    }
-    // #5481: a mailed one-time link opens the reset confirm view directly.
-    const token = deps.passwordResetTokenFromLocation();
-    if (token) {
-      deps.authDialogView = "confirm";
-      deps.passwordResetToken = token;
-    } else {
-      deps.authDialogView = "login";
-    }
-    deps.syncAuthDialogMethods();
-    deps.setAuthFormError(deps.passwordLoginError);
-    deps.setAuthFormError(deps.passwordResetRequestError);
-    deps.setAuthFormError(deps.passwordResetConfirmError);
-    deps.setAuthStatusMessage(deps.passwordResetRequestStatus);
-    deps.setAuthStatusMessage(deps.passwordResetConfirmStatus);
-    if (typeof deps.authDialog.showModal === "function") {
-      deps.authDialog.showModal();
-    } else {
-      deps.authDialog.setAttribute("open", "");
-    }
-    if (deps.authDialogView === "confirm") deps.passwordResetNew?.focus();
-    else if (deps.authDialogView === "request") deps.passwordResetEmail?.focus();
-    else if (emailContinueElement()) emailContinueElement().focus();
-  }
-  function closeAuthDialog() {
-    if (!deps.authDialog) return;
-    if (typeof deps.authDialog.close === "function") deps.authDialog.close();
-    else deps.authDialog.removeAttribute("open");
-  }
-  function authServerUnreachableError() {
-    const error = new Error(deps.uiT("auth-server-unreachable"));
-    error.code = deps.AUTH_SERVER_UNREACHABLE;
-    return error;
-  }
-  function passwordAuthAnswer(data) {
-    return data !== null && typeof data === "object" && !Array.isArray(data);
-  }
-  async function passwordAuthRequest(path, payload, options = {}) {
-    const attempts = options.retryUnreachable ? 2 : 1;
-    let response = null;
-    let data = null;
-    let answered = false;
-    for (let attempt = 0; attempt < attempts; attempt += 1) {
-      if (attempt > 0) {
-        await new Promise((resolve) => setTimeout(resolve, deps.AUTH_UNREACHABLE_RETRY_DELAY_MS));
-      }
-      response = await fetch(path, {
-        method: "POST",
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-      data = null;
-      try {
-        data = await response.json();
-      } catch (_) {}
-      answered = deps.passwordAuthAnswer(data);
-      // A route answer, success or refusal, is final: replaying it would
-      // repeat a write. Only a body no route produced is worth the one replay.
-      if (response.ok || answered) break;
-    }
-    if (!response.ok) {
-      if (!answered) throw deps.authServerUnreachableError();
-      const message = data.error && typeof data.error.message === "string"
-        ? data.error.message
-        : deps.uiT("auth-error-generic");
-      const error = new Error(message);
-      error.code = data.error && typeof data.error.code === "string" ? data.error.code : "auth_error";
-      if (typeof data.login_url === "string" && data.login_url) error.loginUrl = data.login_url;
-      throw error;
-    }
-    // A 2xx without a route answer is not a success: reporting one here would
-    // claim a password was set that the server never stored.
-    if (!answered) throw deps.authServerUnreachableError();
-    return data;
-  }
-  function setAuthStatusMessage(node, message = "") {
-    if (!node) return;
-    node.textContent = message;
-    node.hidden = !message;
-  }
-  function passwordResetTokenFromLocation() {
-    try {
-      const raw = window.location.hash || "";
-      const match = /^#reset=([A-Za-z0-9_-]{16,256})$/.exec(raw);
-      return match ? match[1] : "";
-    } catch (_) {
-      return "";
-    }
-  }
-  function clearPasswordResetFragment() {
-    // The one-time token leaves the address bar as soon as the member leaves
-    // the reset view, so a shared link never lingers in the browser history
-    // of the next person who opens this window.
-    try {
-      if (!window.location.hash) return;
-      window.history.replaceState(null, "", window.location.pathname + window.location.search);
-    } catch (_) {}
-  }
-  function showPasswordResetView(view) {
-    deps.authDialogView = view;
-    if (deps.passwordResetPanel) deps.passwordResetPanel.hidden = false;
-    const emailContinue = emailContinueElement();
-    if (emailContinue) emailContinue.hidden = view !== "login";
-    if (deps.passwordResetRequestView) deps.passwordResetRequestView.hidden = view !== "request";
-    if (deps.passwordResetConfirmView) deps.passwordResetConfirmView.hidden = view !== "confirm";
-  }
-  function hidePasswordResetViews() {
-    deps.passwordResetToken = "";
-    deps.authDialogView = "login";
-    deps.clearPasswordResetFragment();
-    if (deps.passwordResetPanel) deps.passwordResetPanel.hidden = true;
-    if (deps.passwordResetRequestView) deps.passwordResetRequestView.hidden = true;
-    if (deps.passwordResetConfirmView) deps.passwordResetConfirmView.hidden = true;
-    if (deps.passwordResetOpen) deps.passwordResetOpen.hidden = !deps.authMethodEnabled("password");
-    if (deps.passwordResetEmail) deps.passwordResetEmail.value = "";
-    if (deps.passwordResetNew) deps.passwordResetNew.value = "";
-    if (deps.passwordResetConfirm) deps.passwordResetConfirm.value = "";
-    deps.setAuthFormError(deps.passwordResetRequestError);
-    deps.setAuthFormError(deps.passwordResetConfirmError);
-    deps.setAuthStatusMessage(deps.passwordResetRequestStatus);
-    deps.setAuthStatusMessage(deps.passwordResetConfirmStatus);
-  }
-  function openPasswordResetRequest() {
-    if (!deps.authMethodEnabled("password")) return;
-    deps.setAuthFormError(deps.passwordResetRequestError);
-    deps.setAuthStatusMessage(deps.passwordResetRequestStatus);
-    deps.showPasswordResetView("request");
-    deps.passwordResetEmail?.focus();
-  }
-  function openPasswordResetConfirm(token) {
-    if (!deps.authMethodEnabled("password")) return;
-    deps.passwordResetToken = typeof token === "string" ? token : "";
-    deps.setAuthFormError(deps.passwordResetConfirmError);
-    deps.setAuthStatusMessage(deps.passwordResetConfirmStatus);
-    deps.showPasswordResetView("confirm");
-    deps.passwordResetNew?.focus();
-  }
-  function closePasswordResetViews() {
-    deps.passwordResetToken = "";
-    deps.hidePasswordResetViews();
-    if (deps.passwordResetEmail) deps.passwordResetEmail.value = "";
-    if (deps.passwordResetNew) deps.passwordResetNew.value = "";
-    if (deps.passwordResetConfirm) deps.passwordResetConfirm.value = "";
-    deps.setAuthFormError(deps.passwordResetRequestError);
-    deps.setAuthFormError(deps.passwordResetConfirmError);
-    deps.setAuthStatusMessage(deps.passwordResetRequestStatus);
-    deps.setAuthStatusMessage(deps.passwordResetConfirmStatus);
-  }
-  async function submitPasswordResetRequest(event) {
-    event.preventDefault();
-    if (!deps.authMethodEnabled("password") || !deps.passwordResetRequestForm) return;
-    deps.setAuthFormError(deps.passwordResetRequestError);
-    deps.setAuthStatusMessage(deps.passwordResetRequestStatus);
-    deps.passwordResetRequestSubmit.disabled = true;
-    try {
-      await deps.passwordAuthRequest("/api/auth/password/reset/request", {
-        email: deps.passwordResetEmail.value,
-      });
-      // The server answers the same way for every address, so the browser
-      // shows the same confirmation either way.
-      deps.setAuthStatusMessage(deps.passwordResetRequestStatus, deps.uiT("auth-reset-request-sent"));
-    } catch (error) {
-      deps.setAuthFormError(
-        deps.passwordResetRequestError,
-        error instanceof Error ? error.message : deps.uiT("auth-error-generic"),
-      );
-    } finally {
-      deps.passwordResetRequestSubmit.disabled = false;
-    }
-  }
-  async function submitPasswordResetConfirm(event) {
-    event.preventDefault();
-    if (!deps.authMethodEnabled("password") || !deps.passwordResetConfirmForm) return;
-    deps.setAuthFormError(deps.passwordResetConfirmError);
-    deps.setAuthStatusMessage(deps.passwordResetConfirmStatus);
-    const newPassword = deps.passwordResetNew?.value || "";
-    const confirmPassword = deps.passwordResetConfirm?.value || "";
-    if (!newPassword || !confirmPassword) {
-      deps.setAuthFormError(deps.passwordResetConfirmError, deps.uiT("auth-reset-confirm-incomplete"));
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      deps.setAuthFormError(deps.passwordResetConfirmError, deps.uiT("auth-reset-confirm-mismatch"));
-      return;
-    }
-    if (!deps.passwordResetToken) {
-      deps.setAuthFormError(deps.passwordResetConfirmError, deps.uiT("auth-reset-expired"));
-      return;
-    }
-    deps.passwordResetConfirmSubmit.disabled = true;
-    try {
-      await deps.passwordAuthRequest("/api/auth/password/reset/confirm", {
-        token: deps.passwordResetToken,
-        new_password: newPassword,
-      }, { retryUnreachable: true });
-      deps.passwordResetToken = "";
-      deps.clearPasswordResetFragment();
-      if (deps.passwordResetNew) deps.passwordResetNew.value = "";
-      if (deps.passwordResetConfirm) deps.passwordResetConfirm.value = "";
-      deps.setAuthStatusMessage(deps.passwordResetConfirmStatus, deps.uiT("auth-reset-confirm-done"));
-      deps.closeAuthDialog();
-      await deps.loadAuthStatus();
-    } catch (error) {
-      deps.setAuthFormError(
-        deps.passwordResetConfirmError,
-        error instanceof Error ? error.message : deps.uiT("auth-error-generic"),
-      );
-    } finally {
-      deps.passwordResetConfirmSubmit.disabled = false;
-    }
-  }
-  function openPasswordChangeDialog() {
-    if (!deps.passwordChangeDialog) return;
-    deps.setAuthFormError(deps.passwordChangeError);
-    if (deps.passwordChangeCurrent) deps.passwordChangeCurrent.value = "";
-    if (deps.passwordChangeNew) deps.passwordChangeNew.value = "";
-    if (deps.passwordChangeConfirm) deps.passwordChangeConfirm.value = "";
-    if (typeof deps.passwordChangeDialog.showModal === "function") deps.passwordChangeDialog.showModal();
-    else deps.passwordChangeDialog.setAttribute("open", "");
-    deps.passwordChangeCurrent?.focus();
-  }
-  function closePasswordChangeDialog() {
-    if (!deps.passwordChangeDialog) return;
-    if (deps.passwordChangeDialog.open && typeof deps.passwordChangeDialog.close === "function") deps.passwordChangeDialog.close();
-    else deps.passwordChangeDialog.removeAttribute("open");
-  }
-  async function submitPasswordChange(event) {
-    event.preventDefault();
-    if (!deps.passwordChangeForm) return;
-    deps.setAuthFormError(deps.passwordChangeError);
-    const currentPassword = deps.passwordChangeCurrent?.value || "";
-    const newPassword = deps.passwordChangeNew?.value || "";
-    const confirmPassword = deps.passwordChangeConfirm?.value || "";
-    if (!currentPassword || !newPassword) {
-      deps.setAuthFormError(deps.passwordChangeError, deps.uiT("password-change-incomplete"));
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      deps.setAuthFormError(deps.passwordChangeError, deps.uiT("password-change-mismatch"));
-      return;
-    }
-    if (newPassword === currentPassword) {
-      deps.setAuthFormError(deps.passwordChangeError, deps.uiT("password-change-unchanged"));
-      return;
-    }
-    deps.passwordChangeSubmit.disabled = true;
-    try {
-      await deps.passwordAuthRequest("/api/auth/password/change", {
-        current_password: currentPassword,
-        new_password: newPassword,
-      });
-      // The server ends the session it changed the credential for, so the
-      // browser signs in again with the new password.
-      if (deps.passwordChangeCurrent) deps.passwordChangeCurrent.value = "";
-      if (deps.passwordChangeNew) deps.passwordChangeNew.value = "";
-      if (deps.passwordChangeConfirm) deps.passwordChangeConfirm.value = "";
-      deps.closePasswordChangeDialog();
-      deps.closeSettings();
-      await deps.loadAuthStatus();
-      if (deps.authDialog && !deps.authDialog.open) deps.openAuthDialog();
-      deps.setAuthFormError(deps.passwordLoginError, deps.uiT("password-change-done"));
-    } catch (error) {
-      deps.setAuthFormError(
-        deps.passwordChangeError,
-        error instanceof Error ? error.message : deps.uiT("auth-error-generic"),
-      );
-    } finally {
-      deps.passwordChangeSubmit.disabled = false;
-    }
-  }
-  function resetAccountDeleteConfirm() {
-    if (deps.accountDeleteConfirmEmail) deps.accountDeleteConfirmEmail.value = "";
-    if (deps.accountDeleteButton) deps.accountDeleteButton.disabled = true;
-    deps.setAuthFormError(deps.accountDeleteError);
-  }
-  function resetAccountSharedDeleteConfirm() {
-    if (deps.accountSharedDeleteConfirmEmail) deps.accountSharedDeleteConfirmEmail.value = "";
-    if (deps.accountSharedDeleteButton) deps.accountSharedDeleteButton.disabled = true;
-    deps.setAuthFormError(deps.accountSharedDeleteError);
-  }
-  function openAccountDeleteConfirm() {
-    if (!deps.accountDeleteConfirm) return;
-    deps.resetAccountDeleteConfirm();
-    deps.resetAccountSharedDeleteConfirm();
-    if (deps.accountSharedDeleteConfirm) deps.accountSharedDeleteConfirm.hidden = true;
-    deps.accountDeleteConfirm.hidden = false;
-    deps.accountDeleteConfirmEmail?.focus();
-  }
-  function openAccountSharedDeleteConfirm() {
-    if (!deps.accountSharedDeleteConfirm) return;
-    deps.resetAccountDeleteConfirm();
-    deps.resetAccountSharedDeleteConfirm();
-    if (deps.accountDeleteConfirm) deps.accountDeleteConfirm.hidden = true;
-    deps.accountSharedDeleteConfirm.hidden = false;
-    deps.accountSharedDeleteConfirmEmail?.focus();
-  }
-  function syncAccountDeleteButton() {
-    syncDeleteButton(deps.accountDeleteButton, deps.accountDeleteConfirmEmail);
-  }
-  function syncAccountSharedDeleteButton() {
-    syncDeleteButton(deps.accountSharedDeleteButton, deps.accountSharedDeleteConfirmEmail);
-  }
-  async function submitAccountDelete(deleteAllServices = false) {
-    const button = deleteAllServices ? deps.accountSharedDeleteButton : deps.accountDeleteButton;
-    const inputElement = deleteAllServices ? deps.accountSharedDeleteConfirmEmail : deps.accountDeleteConfirmEmail;
-    const errorElement = deleteAllServices ? deps.accountSharedDeleteError : deps.accountDeleteError;
-    if (!button || button.disabled) return;
-    deps.setAuthFormError(errorElement);
-    const typed = inputElement?.value || "";
-    button.disabled = true;
-    try {
-      const endpoint = deleteAllServices ? "/api/account/shared-delete" : "/api/account/delete";
-      const result = await deps.passwordAuthRequest(endpoint, { confirm: typed });
-      // #7557: the account is gone, but some stored files or connections may
-      // still be erasing in the background. Say so instead of "all done".
-      const cleanup = (result && result.cleanup) || null;
-      const cleanupPending = Boolean(cleanup && cleanup.complete === false);
-      // #7647: a pending shared-login finish is its own retried item and the
-      // answer names it, not only the stored files and connections. The
-      // pending count includes that one finish item, so a count above one
-      // means stored files or connections are pending as well.
-      const sharedLoginPending = Boolean(cleanup && cleanup.shared_login_pending === true);
-      const cleanupMessageKey = !cleanupPending
-        ? (deleteAllServices ? "account-shared-delete-done" : "account-delete-done")
-        : (!sharedLoginPending
-          ? "account-delete-cleanup-pending"
-          : (Number(cleanup.pending) > 1
-            ? "account-delete-cleanup-pending-shared-login"
-            : "account-delete-cleanup-pending-shared-login-only"));
-      deps.resetAccountDeleteConfirm();
-      deps.resetAccountSharedDeleteConfirm();
-      if (deps.accountDeleteConfirm) deps.accountDeleteConfirm.hidden = true;
-      if (deps.accountSharedDeleteConfirm) deps.accountSharedDeleteConfirm.hidden = true;
-      // Successful deletion revokes this service session and clears its cookie.
-      deps.closeSettings();
-      await deps.loadAuthStatus();
-      if (deps.authDialog && !deps.authDialog.open) deps.openAuthDialog();
-      deps.setAuthFormError(
-        deps.passwordLoginError,
-        deps.uiT(cleanupMessageKey),
-      );
-    } catch (error) {
-      deps.setAuthFormError(
-        errorElement,
-        error instanceof Error ? error.message : deps.uiT("auth-error-generic"),
-      );
-      button.disabled = false;
-    }
-  }
   async function loadAuthStatus() {
     // #6114: a Python Worker restart can eat the first status read (1101/1102).
     // A request that produced NO answer is never a signed-out answer: ask once
@@ -718,13 +336,6 @@
     }
   }
 
-  function syncDeleteButton(button, inputElement) {
-    if (!button) return;
-    const typed = inputElement?.value ?? "";
-    const email = deps.authState.user && typeof deps.authState.user.email === "string"
-      ? deps.authState.user.email : "";
-    button.disabled = !email || typed !== email;
-  }
 
   async function fetchAuthStatusOnce() {
     const response = await fetch("/api/auth/status", { headers: { "Accept": "application/json" }, cache: "no-store" });
@@ -744,9 +355,53 @@
     }, 14 * 60 * 1000);
   }
 
+      function wireSessionRefresh() {
+        // Background tabs may have their timers suspended beyond access expiry.
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible" && deps.authState.shared_login_enabled === true) void deps.loadAuthStatus();
+        });
+      }
+
+      function wireLoginButton() {
+        deps.loginButton.addEventListener("click", async () => {
+          if (!deps.authState.ready) {
+            // #5479: the session state is unknown, so the button retries it instead of
+            // doing nothing. A dead entry point is what locked people out when the
+            // Chat Worker failed to answer /api/auth/status.
+            await deps.loadAuthStatus();
+            if (!deps.authState.ready) {
+              deps.setNote(deps.uiT(deps.authState.status_reachable === false ? "login-unreachable-title" : "login-unavailable-title"), "error");
+              return;
+            }
+          }
+          if (!deps.authState.authenticated) {
+            deps.openAuthDialog();
+            return;
+          }
+          await deps.signOutCurrentAccount();
+        });
+      }
+
+      function wireLogoutButton() {
+        if (!deps.settingsLogoutButton) return;
+        deps.settingsLogoutButton.addEventListener("click", async () => {
+          if (!deps.authState.ready || !deps.authState.authenticated) return;
+          deps.settingsLogoutButton.disabled = true;
+          deps.settingsLogoutButton.setAttribute("aria-disabled", "true");
+          deps.settingsLogoutButton.setAttribute("aria-busy", "true");
+          try {
+            deps.closeSettings();
+            await deps.signOutCurrentAccount();
+          } finally {
+            deps.settingsLogoutButton.disabled = false;
+            deps.settingsLogoutButton.setAttribute("aria-disabled", "false");
+            deps.settingsLogoutButton.removeAttribute("aria-busy");
+          }
+        });
+      }
+
       return {
         loveTreeHandoffFromLocation,
-        syncDeleteButton,
         fetchAuthStatusOnce,
         scheduleSharedRefresh,
         closeProfilePanel,
@@ -755,39 +410,15 @@
         setLoginButtonCopy,
         applyAuthState,
         authMethodEnabled,
-        setAuthFormError,
-        syncAuthDialogMethods,
-        openAuthDialog,
-        closeAuthDialog,
-        authServerUnreachableError,
-        passwordAuthAnswer,
-        passwordAuthRequest,
-        setAuthStatusMessage,
-        passwordResetTokenFromLocation,
-        clearPasswordResetFragment,
-        showPasswordResetView,
-        hidePasswordResetViews,
-        openPasswordResetRequest,
-        openPasswordResetConfirm,
-        closePasswordResetViews,
-        submitPasswordResetRequest,
-        submitPasswordResetConfirm,
-        openPasswordChangeDialog,
-        closePasswordChangeDialog,
-        submitPasswordChange,
-        resetAccountDeleteConfirm,
-        resetAccountSharedDeleteConfirm,
-        openAccountDeleteConfirm,
-        openAccountSharedDeleteConfirm,
-        syncAccountDeleteButton,
-        syncAccountSharedDeleteButton,
-        submitAccountDelete,
         loadAuthStatus,
         requireSessionForModelUse,
         signOutCurrentAccount,
         invalidateClawApprovalSession,
         noteClawApprovalSession,
         reviewedGoogleAuthorizationUrl,
+        wireSessionRefresh,
+        wireLoginButton,
+        wireLogoutButton,
       };
     },
   };

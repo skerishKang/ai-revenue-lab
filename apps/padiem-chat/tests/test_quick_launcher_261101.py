@@ -13,6 +13,7 @@
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import http.server
 import re
@@ -26,7 +27,7 @@ sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 LIBRARY_JS = (STATIC / "library.js").read_text(encoding="utf-8")
 DOCUMENTS_CSS = (STATIC / "documents.css").read_text(encoding="utf-8")
 PID = "proj_" + "1" * 32

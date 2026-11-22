@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import json
 import re
+import secrets
 import sqlite3
 import time
 from pathlib import Path
@@ -15,78 +16,27 @@ from app.config import Settings
 from app.d1_sqlite import SqliteD1
 from app.history import D1HistoryStore, _password_user_id
 from app.main import create_app
-from app.password_auth import hash_password, verify_password
+from app.password_auth import PasswordAuthError, hash_password, validate_password, verify_password
 from test_password_rpc_261106 import proof_headers
 
-ROOT = Path(__file__).resolve().parents[1]
-BASE = "https://chat.example.test"
-SECRET = "email-recovery-rpc-test-secret-00000000"
-EMAIL = "returning@example.test"
-ACCOUNT = "sub_existing_account_7606"
-EPOCH = "2026-10-01T10:00:00+00:00"
-PASSWORD = "new-mail-proven-password-7606"
-SOURCE = "a" * 64
-PREFIX = "/internal/password-recovery/"
-
-
-class Mail:
-    def __init__(self):
-        self.messages = []
-        self.result = True
-
-    async def send(self, **message):
-        self.messages.append(message)
-        if isinstance(self.result, Exception):
-            raise self.result
-        return self.result
-
-    def token(self):
-        return self.messages[-1]["text"].split("#token=", 1)[1].split()[0]
-
-
-def build(*, enabled=True, before_recovery_migration=False):
-    connection = sqlite3.connect(":memory:", isolation_level=None, check_same_thread=False)
-    connection.row_factory = sqlite3.Row
-    for path in sorted((ROOT / "migrations").glob("*.sql")):
-        if before_recovery_migration and path.name.startswith("114_"):
-            continue
-        connection.executescript(path.read_text(encoding="utf-8"))
-    db = SqliteD1(connection)
-    settings = Settings.from_values(
-        runtime_mode="mock", auth_mode="password", public_base_url=BASE,
-        session_secret="email-recovery-test-session-secret-00000000",
-        password_rpc_secret=SECRET,
-    )
-    # Also works against the pre-change Settings, making the baseline failure
-    # the missing real route rather than an unknown constructor argument.
-    object.__setattr__(settings, "email_recovery_enabled", enabled)
-    delivery = Mail()
-    app = create_app(settings=settings, d1_binding=db, history_store=D1HistoryStore(db),
-                     password_reset_delivery=delivery)
-    return app, db, delivery
-
-
-async def send(app, action, payload, *, secret=SECRET, headers=None):
-    path = PREFIX + action
-    body = json.dumps(payload, separators=(",", ":")).encode()
-    signed = proof_headers(secret, path, body) if headers is None else headers
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE) as client:
-        return await client.post(path, content=body, headers=signed)
-
-
-def rpc(app, action, payload, **kwargs):
-    return asyncio.run(send(app, action, payload, **kwargs))
-
-
-def issue(app, *, email=EMAIL, source=SOURCE, account=ACCOUNT, epoch=EPOCH):
-    return rpc(app, "request", {"email": email, "source_digest": source,
-        "account_id": account, "credential_epoch": epoch})
-
-
-def complete(app, token, *, password=PASSWORD, account=ACCOUNT, epoch=EPOCH):
-    return rpc(app, "complete", {"token": token, "new_password": password,
-        "account_id": account, "credential_epoch": epoch})
-
+from _support.email_recovery import (
+    ACCOUNT,
+    BASE,
+    EMAIL,
+    EPOCH,
+    PREFIX,
+    PASSWORD,
+    ROOT,
+    SECRET,
+    SOURCE,
+    Mail,
+    build,
+    complete,
+    fixture_password,
+    issue,
+    rpc,
+    send,
+)
 
 def test_signed_status_reaches_new_route_and_reports_only_chat_absence():
     app, _, _ = build()
@@ -508,7 +458,7 @@ def test_fresh_chat_identity_does_not_revive_sidless_cookie_even_after_switch_of
     app, db, mail = build()
     _existing_user(db)
     old_id = _password_user_id(EMAIL)
-    old_cookie = create_session_token(app.state.settings, old_id, now=int(time.time()) - 60)
+    old_cookie = create_session_token(app.state.settings, old_id, now=int(time.time()) - 60, canonical_session_id=None)
 
     async def no_canonical_lookup(**_kwargs):
         raise AssertionError("the old cookie deliberately has no canonical sid")

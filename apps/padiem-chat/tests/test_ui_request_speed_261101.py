@@ -173,10 +173,27 @@ const conversationState={resetProduct(){},setProduct(){},setConversationId(){},a
 const messageList={replaceChildren(){}};const conversationArtifactContext=null;
 const clearAttachment=()=>{},renderProjectState=()=>{},refreshActiveProjectFileCount=()=>{};
 const openClawWorkspace=()=>{},showConversation=()=>{},resumeUnfinishedPcRun=()=>{};
+// B7 18차+19차: the conversation piece is reached through the registry; this
+// harness mirrors the same path with the same stubs (clearAttachment,
+// showConversation and addUserMessage are called by the sliced function).
+const conversationModule=()=>({clearAttachment, showConversation, addUserMessage:()=>{}});
+// B7: the nav registry piece is reached through the same stub in this slice.
+const navModuleInstance={setNavActive:()=>{},openClawWorkspace};
+// B7: the pc-run registry piece is reached through the same stub in this slice.
+const pcRunModuleInstance={resumeUnfinishedPcRun:async()=>{}};
 const syncApprovedMemoryVisibility=()=>{},syncClawRunHistoryVisibility=()=>{};
 const app={syncApprovedMemoryVisibility};
+// B7: app.js reaches the run-history module through the registry; this harness
+// mirrors the same path with the same stub.
+const runHistory={syncClawRunHistoryVisibility};
 const window={},input={focus(){}},closeSidebar=()=>{};
+// B7: the same for the sidebar registry piece (closeSidebar).
+const sidebar={closeSidebar};
 const uiT=x=>x,setNote=message=>{throw Error(message)};
+// B7: the core helpers are on the registry; openSavedConversation reaches them
+// through it (success path does not call them, but the stub keeps the slice
+// executable).
+const coreModule=()=>({uiT,setNote, idleNote:()=>"idle"});
 (async()=>{
 const pending=openSavedConversation(id);await flush();assert.equal(conversationProduct,'');
 clawConversationIds.add(id);labels.resolve();assert.equal(await pending,true);

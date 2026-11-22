@@ -28,8 +28,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: b62-automation-scheduler-config-gate
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('b62-automation-scheduler-config-gate-pr-{0}', github.event.pull_request.number) || 'b62-automation-scheduler-config-gate' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   source-contract:

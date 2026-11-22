@@ -527,7 +527,7 @@ def test_multi_provider_manual_model_endpoint_model_list_and_connection_test(
         expect(load_models).to_be_visible()
         load_models.click()
         expect(page.locator(".mode-custom-message")).to_have_text(
-            "공급사 모델 목록을 불러왔습니다."
+            "사용할 수 있는 모델을 불러왔습니다."
         )
         assert state["model_gets"] == [MANUAL_PROVIDER]
         datalist = page.locator("#modeCustomModelOptions option")
@@ -540,7 +540,7 @@ def test_multi_provider_manual_model_endpoint_model_list_and_connection_test(
         expect(test_button).to_be_visible()
         test_button.click()
         expect(page.locator(".mode-custom-message")).to_have_text(
-            "공급사 연결을 확인했습니다."
+            "키가 잘 연결되었습니다."
         )
         assert state["test_gets"] == [MANUAL_PROVIDER]
 

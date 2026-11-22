@@ -8,9 +8,15 @@
 // list — never an identity, drive or folder field.
 const fs = require("node:fs");
 const vm = require("node:vm");
+const path = require("node:path");
 
 const SOURCE = process.argv[2];
 const script = fs.readFileSync(SOURCE, "utf8");
+// #7962: the guide reads its 10-minute clock from the shared module index.html
+// loads before it. The harness loads it too, and from the real static folder,
+// so a temporary copy of the guide still has the same dependency behind it.
+const dependency = fs.readFileSync(
+  path.join(__dirname, "..", "static", "pc-install-deadline.js"), "utf8");
 
 class El {
   constructor(tag, className, text) {
@@ -121,6 +127,9 @@ function makeDom(responses, options = {}) {
     return {
       ok: reply.status >= 200 && reply.status < 300,
       status: reply.status,
+      headers: {
+        get: (name) => (reply.headers || {})[String(name).toLowerCase()] ?? null,
+      },
       json: async () => {
         if (typeof reply.bytes === "string") throw new Error("not json");
         return reply.body ?? {};
@@ -148,7 +157,7 @@ function makeDom(responses, options = {}) {
     },
     innerWidth: 1280,
     padiemPcConnectFlow: undefined,
-    PADIEM_PC_CONNECT_POLL_MS: 1,
+    PADIEM_PC_CONNECT_POLL_MS: (options.fakeClock && options.pollMs) || 1,
     PADIEM_PC_CONNECT_CLOSE_MS: 5,
     localStorage: {
       getItem: (key) => (key in store ? store[key] : null),
@@ -156,10 +165,47 @@ function makeDom(responses, options = {}) {
     },
   };
   let objectUrls = 0;
+  /* #8028: a controllable clock for the deadline scenarios. Timers and
+   * Date.now() inside the sandbox step only when advance() runs, so 3-minute
+   * and 10-minute waits elapse without real waiting. */
+  const clock = options.fakeClock ? { now: Date.now(), seq: 0, timers: [] } : null;
+  const setTimeoutFake = (cb, ms) => {
+    const id = ++clock.seq;
+    clock.timers.push({ id, cb, ms: Math.max(0, Number(ms) || 0), repeat: false, due: clock.now + (Number(ms) || 0), active: true });
+    return id;
+  };
+  const setIntervalFake = (cb, ms) => {
+    const id = ++clock.seq;
+    const period = Math.max(1, Number(ms) || 1);
+    clock.timers.push({ id, cb, ms: period, repeat: true, due: clock.now + period, active: true });
+    return id;
+  };
+  const clearTimer = (id) => {
+    const timer = clock.timers.find((entry) => entry.id === id);
+    if (timer) timer.active = false;
+  };
+  const advance = async (ms) => {
+    if (!clock) return;
+    clock.now += ms;
+    let guard = 0;
+    for (;;) {
+      const due = clock.timers.filter((t) => t.active && t.due <= clock.now)
+        .sort((a, b) => (a.due - b.due) || (a.id - b.id));
+      if (!due.length) break;
+      if (++guard > 100000) throw new Error("clock runaway");
+      const timer = due[0];
+      if (timer.repeat) { timer.due += timer.ms; } else { timer.active = false; }
+      await timer.cb();
+    }
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  };
   const sandbox = {
     document: documentObj, window: windowObj, fetch: fetchImpl, calls,
     AbortController, TextDecoder, TextEncoder, CustomEvent,
-    setTimeout, clearTimeout, setInterval, clearInterval,
+    setTimeout: clock ? setTimeoutFake : setTimeout,
+    clearTimeout: clock ? clearTimer : clearTimeout,
+    setInterval: clock ? setIntervalFake : setInterval,
+    clearInterval: clock ? clearTimer : clearInterval,
     Blob: class { constructor(parts) { this.parts = parts; } },
     URL: {
       createObjectURL: (blob) => { objectUrls += 1; (globalThis.blobs ||= {})[`blob:${objectUrls}`] = blob; return `blob:${objectUrls}`; },
@@ -168,13 +214,18 @@ function makeDom(responses, options = {}) {
     MutationObserver: class { observe() {} },
     console, JSON, Object, Array, Promise, String, Number, Math, Date, encodeURIComponent,
   };
+  if (clock) {
+    const RealDate = Date;
+    sandbox.Date = class FakeDate extends RealDate { static now() { return clock.now; } };
+  }
   globalThis.downloads = downloads;
   globalThis.blobs = {};
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
+  vm.runInContext(dependency, sandbox);
   vm.runInContext(script, sandbox);
   return { body, chip, starter, managerToggle, calls, downloads, store, events, sandbox,
-    window: windowObj, blobs: globalThis.blobs };
+    window: windowObj, blobs: globalThis.blobs, advance };
 }
 
 const LINK = {
@@ -223,13 +274,18 @@ async function main() {
     + "PADIEMTRAILER:PADIEM-PC-CONNECT-1\r\nPADIEMTAG:pd-1234abcd\r\n"
     + "PADIEMURL:https://mesh.example.net/meshagents?id=101\r\n";
   const scriptText = "# PADIEM PC 자동 연결\n$PairingTag = 'pd-1234abcd'\n";
+  const installExpiry = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
   // -- the first-time account: zero PCs --------------------------------------
   let seen = [];
   const first = makeDom({
     "GET *": () => ({ status: 200, body: { ok: true, links: seen, codes: [] } }),
-    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes },
-    "POST /api/pc/pairings/install-file": { status: 200, text: scriptText },
+    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
+      headers: { "x-pc-pairing-code-id": "pcpair_exe01",
+        "x-pc-pairing-expires-at": installExpiry } },
+    "POST /api/pc/pairings/install-file": { status: 200, text: scriptText,
+      headers: { "x-pc-pairing-code-id": "pcpair_file01",
+        "x-pc-pairing-expires-at": installExpiry } },
   });
   await settle();
   check("boot publishes the PC-list state (disconnected for an empty list)",
@@ -274,6 +330,12 @@ async function main() {
   check("the wait says the card re-checks by itself",
     waitLine && waitLine.hidden === false && waitLine.allText().includes("자동으로"),
     modal.allText());
+  const deadlineLine = modal.querySelector(".pc-connect-deadline");
+  check("the downloaded file shows the server's 10-minute window and the remaining time",
+    deadlineLine && deadlineLine.hidden === false
+    && deadlineLine.allText().includes("10분 안에 실행")
+    && deadlineLine.allText().includes("남은 시간"),
+    deadlineLine ? deadlineLine.allText() : "no deadline");
 
   seen = [LINK];
   await dwell(80);
@@ -292,6 +354,115 @@ async function main() {
   await dwell(30);
   check("the modal closes itself without a click",
     modal.hidden === true, JSON.stringify({ hidden: modal.hidden }));
+
+  // -- the install expired while the wait was running -------------------------
+  const expiredCode = {
+    code_id: "pcpair_expired01",
+    state: "expired",
+    install_token_state: "expired",
+  };
+  const expired = makeDom({
+    "GET *": { status: 200, body: { ok: true, links: [], codes: [expiredCode] } },
+    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
+      headers: { "x-pc-pairing-code-id": "pcpair_expired01",
+        "x-pc-pairing-expires-at": installExpiry } },
+  });
+  await settle();
+  await expired.window.PadiemPcConnectFlow.open();
+  const expiredModal = expired.body.querySelectorAll(".pc-connect-backdrop")[0];
+  expiredModal.querySelector(".pc-connect-install").click();
+  await dwell(80);
+  const expiredBox = expiredModal.querySelector(".pc-connect-expired-copy");
+  const redownload = expiredModal.querySelector(".pc-connect-redownload");
+  check("an expired code replaces the wait with the recovery sentence and 다시 받기",
+    expiredBox && expiredBox.hidden === false
+    && expiredBox.allText().includes("설치 파일 시간이 지났어요")
+    && expiredBox.allText().includes("10분 안에 다시 실행")
+    && redownload && redownload.hidden === false,
+    expiredModal.allText());
+  const downloadsBeforeRetry = expired.downloads.length;
+  redownload.click();
+  await settle();
+  check("다시 받기 downloads a fresh file instead of leaving the expired one in place",
+    expired.downloads.length === downloadsBeforeRetry + 1,
+    JSON.stringify(expired.downloads));
+
+  // -- #8028: the deadline survives the poll cap ---------------------------------
+  /* Polling stops after POLL_MAX_ROUNDS (4초 × 45 = 3분). Previously the
+   * 만료 타이머까지 함께 꺼져서 10분 뒤 만료 화면에 도달하지 못했다.
+   * 폴링 횟수 상한은 그대로(서버 부하 추가 없음)이면서 타이머는 만료까지
+   * 살아 있어야 한다. 가짜 시계만으로 3분·10분을 서로 증명한다. */
+  const waiting = makeDom({
+    "GET *": () => ({ status: 200, body: { ok: true, links: [], codes: [] } }),
+    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
+      headers: { "x-pc-pairing-code-id": "pcpair_wait01",
+        "x-pc-pairing-expires-at": new Date(Date.now() + 10 * 60 * 1000).toISOString() } },
+  }, { fakeClock: true, pollMs: 4000 });
+  await settle();
+  await waiting.window.PadiemPcConnectFlow.open();
+  const waitingModal = waiting.body.querySelectorAll(".pc-connect-backdrop")[0];
+  waitingModal.querySelector(".pc-connect-install").click();
+  await settle();
+  await waiting.advance(180000);
+  await settle();
+  const waitingWaitLine = waitingModal.querySelector(".pc-connect-wait");
+  const waitingDeadlineLine = waitingModal.querySelector(".pc-connect-deadline");
+  const waitingExpired = waitingModal.querySelector(".pc-connect-expired-copy");
+  check("fake clock: after 3 minutes the wait still shows the remaining time and no expiry",
+    waitingWaitLine && waitingWaitLine.hidden === false
+    && waitingDeadlineLine && waitingDeadlineLine.hidden === false
+    && waitingDeadlineLine.allText().includes("10분 안에 실행")
+    && waitingDeadlineLine.allText().includes("남은 시간")
+    && waitingExpired && waitingExpired.hidden === true,
+    waitingModal.allText());
+  const waitingGets = waiting.calls.filter((call) => call.method === "GET").length;
+  await waiting.advance(60000);
+  await settle();
+  const waitingGetsLater = waiting.calls.filter((call) => call.method === "GET").length;
+  check("fake clock: polling stops at the cap and never asks the server again after",
+    waitingGetsLater === waitingGets,
+    JSON.stringify({ waitingGets, waitingGetsLater }));
+  await waiting.advance(601000);
+  await settle();
+  const waitingExpiredBox = waitingModal.querySelector(".pc-connect-expired-copy");
+  const waitingRedownload = waitingModal.querySelector(".pc-connect-redownload");
+  check("fake clock: at 10 minutes the wait becomes the expiry sentence and 다시 받기",
+    waitingExpiredBox && waitingExpiredBox.hidden === false
+    && waitingExpiredBox.allText().includes("설치 파일 시간이 지났어요")
+    && waitingExpiredBox.allText().includes("10분 안에 다시 실행")
+    && waitingRedownload && waitingRedownload.hidden === false,
+    waitingModal.allText());
+
+  // -- #8028: a connection stops the flow immediately ------------------------------
+  let seen2 = [];
+  const connected = makeDom({
+    "GET *": () => ({ status: 200, body: { ok: true, links: seen2, codes: [] } }),
+    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
+      headers: { "x-pc-pairing-code-id": "pcpair_conn01",
+        "x-pc-pairing-expires-at": new Date(Date.now() + 10 * 60 * 1000).toISOString() } },
+  }, { fakeClock: true, pollMs: 4000 });
+  await settle();
+  await connected.window.PadiemPcConnectFlow.open();
+  const connectedModal = connected.body.querySelectorAll(".pc-connect-backdrop")[0];
+  connectedModal.querySelector(".pc-connect-install").click();
+  await settle();
+  seen2 = [LINK];
+  await connected.advance(20000);
+  await settle();
+  const connectedDone = connectedModal.querySelector(".pc-connect-done");
+  check("fake clock: a connection stops the flow immediately",
+    connectedDone && connectedDone.hidden === false
+    && connectedDone.allText().includes("연결됐어요 ✓"),
+    connectedModal.allText());
+  const connectedGets = connected.calls.filter((call) => call.method === "GET").length;
+  await connected.advance(900000);
+  await settle();
+  const connectedExpired = connectedModal.querySelector(".pc-connect-expired-copy");
+  const connectedGetsLater = connected.calls.filter((call) => call.method === "GET").length;
+  check("fake clock: after connect the deadline timer never repaints the expiry",
+    connectedExpired && connectedExpired.hidden === true
+    && connectedGetsLater === connectedGets,
+    JSON.stringify({ modal: connectedModal.allText(), connectedGets, connectedGetsLater }));
 
   // -- the account that already has a PC --------------------------------------
   const second = makeDom({

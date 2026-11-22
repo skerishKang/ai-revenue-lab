@@ -54,7 +54,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
-from padiem_ai_core.powershell_literal import ps_literal
+from padiem_ai_core.powershell_literal import ps_literal, ps_utf8_literal
 
 #: The result-leg stage lines (``pc_result stage=…``) and this module's own
 #: bounded warnings share one logger; the host hook below is bound to it.
@@ -72,6 +72,13 @@ def ensure_result_log_host_visible() -> None:
     ensure_journal_visible(_RESULT_LOG)
 
 from .pc_device_pairing_store import PcPairingError
+from .pc_dispatch_ttl import chat_pc_dispatch_ttl, dispatch_ttl_seconds
+from .pc_share_timeout import (
+    PC_SHARE_UNAVAILABLE_CODE,
+    PC_SHARE_UNAVAILABLE_MESSAGE_KO,
+    share_command_prefix,
+    share_roots_of,
+)
 
 from .auth_routes import current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
@@ -109,6 +116,7 @@ from .history import (
     is_multi_command_action,
     validate_conversation_id,
 )
+from .history_append_reason import last_append_reason
 from .request_telemetry import emit_stage_event
 
 
@@ -116,6 +124,51 @@ def _identity_bridge_failure_log_line(stage: str) -> str:
     if stage not in ("product_user", "b54_session"):
         stage = "unknown"
     return f"claw_engine_bridge_stage stage={stage} result=failed"
+
+
+#: #7841 instrumentation — the store-stage word set. A refused append names why
+#: it refused and what the run row looked like before it, in lower-case words
+#: only: no id, body or path is added, and the stored line keeps its shape.
+_PC_RESULT_ACTION_WORDS = frozenset(
+    {"pc_drive_query", "pc_files_query", "pc_browser_query"}
+)
+_PC_RESULT_STATUS_WORDS = frozenset({"pending", "running", "completed", "failed"})
+_PC_RESULT_REASON_WORDS = frozenset(
+    {
+        "stored", "already_completed", "same_message", "summary_same",
+        "summary_guard", "other",
+    }
+)
+
+
+def _pc_result_word(value: object, allowed: frozenset, fallback: str = "other") -> str:
+    """One known lower-case word, or the fallback word for anything else."""
+
+    return value if isinstance(value, str) and value in allowed else fallback
+
+
+def log_pc_result_store_stage(
+    logger, *, stage: str, run_hash: str, dispatch_id: str,
+    reason: str | None = None, run_action: str = "other",
+    run_status_before: str = "other", scoped: bool = False,
+) -> None:
+    """Write the one store-stage line; only a refusal carries the extra words."""
+
+    if stage == "stored":
+        logger.info(
+            "pc_result stage=%s run_hash=%s dispatch_id=%s",
+            stage, run_hash, dispatch_id,
+        )
+        return
+    logger.info(
+        "pc_result stage=%s run_hash=%s dispatch_id=%s reason=%s run_action=%s "
+        "run_status_before=%s scoped=%d",
+        stage, run_hash, dispatch_id,
+        _pc_result_word(reason, _PC_RESULT_REASON_WORDS, "unknown"),
+        _pc_result_word(run_action, _PC_RESULT_ACTION_WORDS),
+        _pc_result_word(run_status_before, _PC_RESULT_STATUS_WORDS),
+        1 if scoped else 0,
+    )
 
 
 ORACLE_MESH_READ_REQUEST_PATH = "/api/claw/connector/mesh-reads/request"
@@ -1364,6 +1417,8 @@ async def dispatch_oracle_mesh_command_intent(
     ttl_seconds: int | None = None,
     user_mode: bool = False,
     read_only: bool = False,
+    share_roots: list[str] | None = None,
+    helper_update_control: bool = False,
 ) -> JSONResponse:
     """Owner intent for ONE terminal command on the pinned management PC.
 
@@ -1467,6 +1522,15 @@ async def dispatch_oracle_mesh_command_intent(
     if target is None:
         return _error(403, "oracle_mesh_command_unverified")
 
+    from .pc_helper_update_routes import command_update_denial
+    update_denial = await command_update_denial(
+        request.app.state, device_id=target.get("device_id") or target["node_ref"],
+        command=command, user_mode=user_mode, helper_update_control=helper_update_control,
+        now=datetime.now(timezone.utc),
+    )
+    if update_denial is not None:
+        return _error(*update_denial)
+
     try:
         bound = await history_store.get_local_task_correlation(uid, wire["run_id"])
     except Exception:
@@ -1502,6 +1566,8 @@ async def dispatch_oracle_mesh_command_intent(
             (account_ref + "|" + target["node_ref"] + "|" + command).encode("utf-8")
         ).hexdigest()
 
+    if ttl_seconds is None:
+        ttl_seconds = dispatch_ttl_seconds(run_row)
     now = datetime.now(timezone.utc)
     try:
         dispatch = await history_store.create_oracle_mesh_dispatch(
@@ -1527,6 +1593,7 @@ async def dispatch_oracle_mesh_command_intent(
             command_text=command,
             tool_call_ref=tool_call_ref,
             read_only=read_only,
+            **({"share_roots": share_roots} if share_roots else {}),
             **({"background": True, "job_operation": job_operation} if background else {}),
             user_mode=user_mode,
         )
@@ -1574,6 +1641,7 @@ async def dispatch_oracle_mesh_file_read_intent(
     background: bool = False,
     job_operation: dict[str, Any] | None = None,
     user_mode: bool = False,
+    ttl_seconds: int | None = None,
 ) -> JSONResponse:
     """Stage ONE PC-files read on the existing kind="read" Mesh lane.
 
@@ -1674,6 +1742,8 @@ async def dispatch_oracle_mesh_file_read_intent(
         ).encode("utf-8")
     ).hexdigest()
 
+    if ttl_seconds is None:
+        ttl_seconds = dispatch_ttl_seconds(run_row)
     now = datetime.now(timezone.utc)
     try:
         dispatch = await history_store.create_oracle_mesh_dispatch(
@@ -1693,7 +1763,8 @@ async def dispatch_oracle_mesh_file_read_intent(
             root_ref=_PC_FILES_READ_ROOT_REF,
             path_relative=relative,
             file_path=file_path,
-            expires_at=(now + _DISPATCH_TTL).isoformat(
+            expires_at=(now + (_DISPATCH_TTL if ttl_seconds is None
+                               else timedelta(seconds=ttl_seconds))).isoformat(
                 timespec="milliseconds",
             ).replace("+00:00", "Z"),
             kind="read",
@@ -2077,6 +2148,28 @@ def _oracle_mesh_poll_granted_root(dispatch: dict[str, Any]) -> str | None:
     return file_path[:-len(marker)] or None
 
 
+def _oracle_mesh_poll_share_roots(dispatch: dict[str, Any]) -> list[str] | None:
+    """#8037: the share addresses this command was staged against, named on poll.
+
+    The staging lane resolved them from the owner's approved roots; the claim
+    response echoes that server decision so the executor bounds exactly the
+    shares the server admitted. A row without the declaration keeps the exact
+    older response and the executor runs it with no share deadline.
+    """
+    if (dispatch.get("kind") or "read") != "command":
+        return None
+    roots = dispatch.get("share_roots")
+    if not isinstance(roots, list) or not roots:
+        return None
+    if any(
+        not isinstance(item, str) or not item or len(item) > 32000
+        or any(ord(ch) < 32 for ch in item)
+        for item in roots
+    ):
+        return None
+    return list(roots)
+
+
 async def _read_presence(request: Request) -> list[dict[str, Any]] | None:
     """The optional presence beat, or ``None`` when absent or malformed.
 
@@ -2425,6 +2518,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             except Exception:
                 session_input_text = None
     granted_root = _oracle_mesh_poll_granted_root(pending)
+    share_roots = _oracle_mesh_poll_share_roots(pending)
     # #7215: hand the user-mode client a per-dispatch cancel token and the public URL
     # to poll it at, so a stop reaches the command after it has left the queue. Only
     # when a public base is configured; a missing base keeps the exact older response
@@ -2464,6 +2558,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             **({"session_input_text": session_input_text} if session_input_text is not None else {}),
             "max_bytes": _oracle_mesh_poll_max_bytes(pending),
             **({"granted_root": granted_root} if granted_root else {}),
+            **({"share_roots": share_roots} if share_roots else {}),
             **({"background": True, "owner_ref": pending["user_id"]}
                if pending.get("background") is True else {}),
             "user_mode": user_mode,
@@ -2866,6 +2961,23 @@ def _verified_read_result_text(
     return _verified_result_text(dispatch, wire, max_bytes=_MAX_FILE_TEXT_BYTES)
 
 
+def _pc_share_unavailable_output(output: str) -> bool:
+    """#8037: the closed share-unavailable verdict the connector delivers.
+
+    Only the exact closed shape counts — ok=false with the one reviewed code.
+    Any other body keeps the lane's existing judgement.
+    """
+    try:
+        parsed = json.loads(output)
+    except (TypeError, ValueError):
+        return False
+    return (
+        isinstance(parsed, dict)
+        and parsed.get("ok") is False
+        and parsed.get("error") == PC_SHARE_UNAVAILABLE_CODE
+    )
+
+
 def _command_header(dispatch: dict[str, Any], wire: dict[str, Any]) -> list[str]:
     """The fixed head of one command message: what ran, how, and what is known.
 
@@ -3193,14 +3305,285 @@ def _command_output_parts(output: str, limit: int) -> list[str]:
 async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     """Executor submit: secret + single-use nonce, verified, appended once."""
     ensure_result_log_host_visible()
+    resp, bundle = await _oracle_mesh_read_result_verify(request)
+    if resp is not None:
+        return resp
+    wire = bundle["wire"]
+    result_blob_raw = bundle["result_blob_raw"]
+    result_log = bundle["result_log"]
+    result_run_hash = bundle["result_run_hash"]
+    result_dispatch_id = bundle["result_dispatch_id"]
+    history_store = bundle["history_store"]
+    dispatch = bundle["dispatch"]
+    claim = bundle["claim"]
+
+    resp, bundle = await _oracle_mesh_read_result_outcome(
+        dispatch, result_blob_raw, wire,
+    )
+    if resp is not None:
+        return resp
+    outcome = bundle["outcome"]
+    content = bundle["content"]
+    summary = bundle["summary"]
+    status = bundle["status"]
+    command_output = bundle["command_output"]
+    read_output = bundle["read_output"]
+    read_stored_output = bundle["read_stored_output"]
+    desktop_note = bundle["desktop_note"]
+    desktop_blob = bundle["desktop_blob"]
+    desktop_op = bundle["desktop_op"]
+    desktop_arg = bundle["desktop_arg"]
+    result_digest = bundle["result_digest"]
+    result_size = bundle["result_size"]
+    # Every stored message is now bounded by the splitter, so the former
+    # 1 000-character refusal has no case left to serve.
+
+    # Pin the first accepted result. A resend after a transient store failure
+    # must be the identical bytes: the executor holds them and never re-reads
+    # the PC file, and a differing resend is refused rather than appended.
+    try:
+        try:
+            same_result = await history_store.record_oracle_mesh_first_result(
+                dispatch_id=wire["dispatch_id"],
+                content_sha256=result_digest,
+                content_bytes=result_size,
+                termination=wire.get("termination") if isinstance(wire.get("termination"), str) else None,
+                exit_code=wire.get("exit_code"),
+            )
+        except TypeError:
+            same_result = await history_store.record_oracle_mesh_first_result(
+                dispatch_id=wire["dispatch_id"],
+                content_sha256=result_digest,
+                content_bytes=result_size,
+            )
+    except Exception:
+        # A pin failure must stay retryable: park the received row so the
+        # identical resend is accepted as claim="retry" instead of dying
+        # on 409. Pin comparison and idempotent append still prevent any
+        # second delivery.
+        try:
+            await history_store.mark_oracle_mesh_store_failed(
+                dispatch_id=wire["dispatch_id"],
+            )
+        except Exception:
+            pass
+        return _error(503, "oracle_mesh_dispatch_unavailable")
+    if same_result is not True:
+        # Park the claim again: a rejected resend must not burn the retry the
+        # executor still legitimately owns for its identical bytes.
+        try:
+            await history_store.mark_oracle_mesh_store_failed(
+                dispatch_id=wire["dispatch_id"],
+            )
+        except Exception:
+            pass
+        return _error(409, "oracle_mesh_result_fingerprint_mismatch")
+
+    run_row = None
+    try:
+        run_row = await history_store.get_claw_run(
+            dispatch["user_id"], dispatch["run_id"],
+        )
+    except Exception:
+        run_row = None
+    conversation_id = (
+        validate_conversation_id((run_row or {}).get("conversation_id"))
+        if isinstance(run_row, dict) else None
+    )
+    if not conversation_id:
+        try:
+            await history_store.finish_oracle_mesh_dispatch(
+                dispatch_id=wire["dispatch_id"], outcome="failed",
+            )
+        except Exception:
+            pass
+        return _error(404, "oracle_mesh_run_unavailable")
+
+    base_message_id = result_message_id(
+        conversation_id=conversation_id,
+        command_id=dispatch["command_id"],
+        revision_ref=dispatch["revision_ref"],
+    )
+    from .chat_pc_session import project_history_result, is_session_dispatch
+    session_messages = project_history_result(run_row, dispatch, command_output)
+    if read_stored_output is not None:
+        # #5015: the Engine read lane retrieves the exact verified body from
+        # this existing store. Storing before the conversation projection
+        # keeps a store failure retryable with the same bytes; the executor
+        # is never asked to read the PC file again.
+        try:
+            await _store_oracle_mesh_read_original(
+                history_store, dispatch=dispatch,
+                conversation_id=conversation_id, message_id=base_message_id,
+                raw=read_stored_output,
+                expected_sha256=result_digest,
+                expected_bytes=result_size,
+            )
+        except HistoryForbidden:
+            try:
+                await history_store.finish_oracle_mesh_dispatch(
+                    dispatch_id=wire["dispatch_id"], outcome="failed",
+                )
+            except Exception:
+                pass
+            return _error(403, "oracle_mesh_conversation_forbidden")
+        except Exception:
+            try:
+                await history_store.mark_oracle_mesh_store_failed(
+                    dispatch_id=wire["dispatch_id"],
+                )
+            except Exception:
+                pass
+            return _error(503, "oracle_mesh_original_unavailable")
+    resp, bundle = await _oracle_mesh_read_result_store(
+        base_message_id=base_message_id,
+        command_output=command_output,
+        content=content,
+        conversation_id=conversation_id,
+        desktop_arg=desktop_arg,
+        desktop_blob=desktop_blob,
+        desktop_note=desktop_note,
+        desktop_op=desktop_op,
+        dispatch=dispatch,
+        history_store=history_store,
+        is_session_dispatch=is_session_dispatch,
+        read_output=read_output,
+        result_digest=result_digest,
+        result_size=result_size,
+        summary=summary,
+        wire=wire,
+    )
+    if resp is not None:
+        return resp
+    messages = bundle["messages"]
+    if session_messages is not None:
+        messages = session_messages
+    appended = False
+    # #5015: a run that may hold more than one PC tool call stores each
+    # command's own result beside the others and never seals the run row, so
+    # one command's completion is never read as the whole work's completion.
+    command_scope = None
+    if is_multi_command_action((run_row or {}).get("action")):
+        command_scope = dispatch.get("command_id")
+    # #6460 step 3: a model-driven desktop loop stages one dispatch per step.
+    # Each step's message is evidence of that step alone, so it never writes
+    # the run's terminal result; the verified final answer owns that.
+    step_message_only = (
+        command_scope is None
+        and dispatch.get("kind") == "desktop"
+        and isinstance(dispatch.get("tool_call_ref"), str)
+        and bool(dispatch["tool_call_ref"])
+        and len(messages) == 1
+    )
+    append_step = getattr(history_store, "append_step_result_message", None)
+    if step_message_only and not callable(append_step):
+        step_message_only = False
+    try:
+        for index, part in enumerate(messages):
+            message_id = base_message_id if len(messages) == 1 else (
+                base_message_id + "_p" + str(index)
+            )
+            if step_message_only:
+                appended = await append_step(
+                    user_id=dispatch["user_id"],
+                    run_id=dispatch["run_id"],
+                    message_id=message_id,
+                    content=part,
+                ) or appended
+                continue
+            appended = await history_store.append_local_task_result(
+                user_id=dispatch["user_id"],
+                run_id=dispatch["run_id"],
+                message_id=message_id,
+                summary=summary,
+                content=part,
+                status=("failed" if command_scope is not None and outcome == "failed" else status),
+                # A terminal result is the only caller that opts out of the
+                # shared edge trim; every other message keeps today's behavior.
+                preserve_edges=(dispatch.get("kind") == "command"),
+                command_scope=command_scope,
+            ) or appended
+        if command_scope is not None and outcome == "failed":
+            # Seal before acknowledging the queue result: an unavailable Chat
+            # store leaves the dispatch retryable with the same pinned result.
+            await history_store.seal_run_terminal(
+                user_id=dispatch["user_id"], run_id=dispatch["run_id"],
+                summary="pc_read_failed", status="failed",
+            )
+    except HistoryForbidden:
+        # Ownership refusal is final: retrying cannot change it.
+        try:
+            await history_store.finish_oracle_mesh_dispatch(
+                dispatch_id=wire["dispatch_id"], outcome="failed",
+            )
+        except Exception:
+            pass
+        return _error(403, "oracle_mesh_conversation_forbidden")
+    except Exception:
+        # Transient conversation-store failure. The verified result is parked
+        # (claim and expiry intact) so the executor can resend the SAME result
+        # — the PC file is not read again, and the stable message id keeps the
+        # eventual append exactly-once.
+        try:
+            await history_store.mark_oracle_mesh_store_failed(
+                dispatch_id=wire["dispatch_id"],
+            )
+        except Exception:
+            pass
+        return _error(503, "oracle_mesh_append_unavailable")
+    store_stage = "stored" if appended else "not_appended"
+    # #7841 instrumentation: a refused append names the guard that refused it
+    # and the run row it saw before the write. Values only; the stored line is
+    # unchanged, and nothing here changes a return value or a write.
+    log_pc_result_store_stage(
+        result_log, stage=store_stage, run_hash=result_run_hash,
+        dispatch_id=result_dispatch_id,
+        reason=last_append_reason() if not appended else None,
+        run_action=_pc_result_word(
+            (run_row or {}).get("action"), _PC_RESULT_ACTION_WORDS,
+        ),
+        run_status_before=_pc_result_word(
+            (run_row or {}).get("status"), _PC_RESULT_STATUS_WORDS,
+        ),
+        scoped=command_scope is not None,
+    )
+    try:
+        finished = await history_store.finish_oracle_mesh_dispatch(
+            dispatch_id=wire["dispatch_id"], outcome=outcome,
+        )
+    except Exception:
+        result_log.info("pc_result stage=queue_finish_error run_hash=%s dispatch_id=%s", result_run_hash, result_dispatch_id)
+    else:
+        stage = "queue_finished" if finished else "queue_not_finished"
+        result_log.info("pc_result stage=%s run_hash=%s dispatch_id=%s", stage, result_run_hash, result_dispatch_id)
+    return _response({
+        "ok": True,
+        "runId": dispatch["run_id"],
+        "commandId": dispatch["command_id"],
+        "appended": bool(appended),
+        "status": status,
+        "claim": claim,
+        "executor": _EXECUTOR,
+        "brokerAcknowledged": False,
+    })
+
+
+async def _oracle_mesh_read_result_verify(
+    request: Request,
+) -> tuple[JSONResponse | None, dict[str, object]]:
+    """서명·nonce·lease·termination·디스패치 조회 구간.
+
+    본문은 리팩터 전 `oracle_mesh_read_result`의 연속 구간을 글자 그대로 옮긴다.
+    보안 검사 순서와 `stage=received` 로그의 자리·문구를 그대로 지킨다.
+    """
     parsed_result = await _read_result_body(request)
     if parsed_result is None:
-        return _invalid_body("result")
+        return _invalid_body("result"), {}
     wire, result_blob_raw = parsed_result
     if _ref(wire.get("dispatch_id"), 128) is None:
-        return _invalid_body("result", "dispatch_id")
+        return _invalid_body("result", "dispatch_id"), {}
     if _ref(wire.get("nonce"), 128) is None:
-        return _invalid_body("result", "nonce")
+        return _invalid_body("result", "nonce"), {}
     submitted_node = wire.get("node_ref")
     if submitted_node is not None and (
         not isinstance(submitted_node, str) or not submitted_node
@@ -3210,13 +3593,13 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             for ch in submitted_node
         )
     ):
-        return _invalid_body("result", "node_ref")
+        return _invalid_body("result", "node_ref"), {}
     if wire.get("termination") not in (
         "exited", "cancelled", "timed_out", "no_reply", "no_exit_code",
         "not_executed", "output_too_large",
         "captured", "acted", "desktop_unavailable",
     ):
-        return _invalid_body("result", "termination")
+        return _invalid_body("result", "termination"), {}
     # #4139: a wait timeout and a console that never answered have NO observed
     # exit code. That is carried as null, never invented as 0; only a real
     # "exited" run must report an integer. A desktop turn never reports one
@@ -3232,9 +3615,9 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             # the PC's console. That is carried as null, never invented as 0.
             "cancelled",
         ):
-            return _invalid_body("result", "exit_code_missing")
+            return _invalid_body("result", "exit_code_missing"), {}
     elif isinstance(wire.get("exit_code"), bool) or not isinstance(wire.get("exit_code"), int):
-        return _invalid_body("result", "exit_code_type")
+        return _invalid_body("result", "exit_code_type"), {}
     if wire.get("content_bytes") == 0 and wire.get("content_sha256") == "":
         # Legacy empty-read shape: canonicalize before verification and
         # pinning so a 0-byte outcome is delivered instead of stranding.
@@ -3242,9 +3625,9 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
 
     mesh_source = _channel_source(request)
     if mesh_source is None:
-        return _error(503, "oracle_mesh_unconfigured")
+        return _error(503, "oracle_mesh_unconfigured"), {}
     if not _channel_proof(request, mesh_source):
-        return _error(403, "oracle_mesh_channel_rejected")
+        return _error(403, "oracle_mesh_channel_rejected"), {}
     history_store = getattr(request.app.state, "history_store", None)
     for method in ("consume_oracle_mesh_dispatch", "finish_oracle_mesh_dispatch",
                    "mark_oracle_mesh_store_failed",
@@ -3252,7 +3635,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                    "store_oracle_mesh_original",
                    "get_claw_run", "append_local_task_result"):
         if not callable(getattr(history_store, method, None)):
-            return _error(503, "oracle_mesh_unconfigured")
+            return _error(503, "oracle_mesh_unconfigured"), {}
 
     try:
         dispatch = await history_store.consume_oracle_mesh_dispatch(
@@ -3260,12 +3643,12 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             node_ref=submitted_node,
         )
     except Exception:
-        return _error(503, "oracle_mesh_dispatch_unavailable")
+        return _error(503, "oracle_mesh_dispatch_unavailable"), {}
     if dispatch is None:
         # Unknown, expired, already-consumed or nonce-mismatched dispatch. A
         # concurrent second submit of the same result loses the atomic update
         # here and is refused, rather than looking like the accepted request.
-        return _error(409, "oracle_mesh_dispatch_rejected")
+        return _error(409, "oracle_mesh_dispatch_rejected"), {}
     from .pc_correlation import run_hash as _result_run_hash, dispatch_id as _result_dispatch_id
     result_run_hash = _result_run_hash(dispatch.get("run_id")) or "none"
     result_dispatch_id = _result_dispatch_id(wire.get("dispatch_id")) or "none"
@@ -3273,8 +3656,23 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     result_log.info("pc_result stage=received run_hash=%s dispatch_id=%s", result_run_hash, result_dispatch_id)
     claim = dispatch.get("claim")
     if claim not in ("first", "retry"):
-        return _error(503, "oracle_mesh_dispatch_unavailable")
+        return _error(503, "oracle_mesh_dispatch_unavailable"), {}
+    return None, {
+        "wire": wire,
+        "result_blob_raw": result_blob_raw,
+        "result_log": result_log,
+        "result_run_hash": result_run_hash,
+        "result_dispatch_id": result_dispatch_id,
+        "history_store": history_store,
+        "dispatch": dispatch,
+        "claim": claim,
+    }
 
+
+async def _oracle_mesh_read_result_outcome(
+    dispatch: dict, result_blob_raw: bytes | None, wire: dict,
+) -> tuple[JSONResponse | None, dict[str, object]]:
+    """결과 검증·outcome 산출 구간 (본문 글자 그대로)."""
     outcome = "done"
     content = ""
     summary = ""
@@ -3335,7 +3733,17 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         else:
             content = _command_result_content(dispatch, wire, verified_output)
             command_output = verified_output
-            if wire["termination"] in ("exited", "output_too_large"):
+            if _pc_share_unavailable_output(verified_output):
+                # #8037: the share bound closed this command. The row finishes
+                # (the console answered a closed verdict), the turn is a named
+                # failure, and the owner reads the one guidance sentence — not
+                # a wedged command line.
+                outcome, summary, status = "done", PC_SHARE_UNAVAILABLE_CODE, "failed"
+                content = (
+                    "PC 명령이 네트워크 공유에 연결하지 못해 20초 만에 정리되었습니다.\n"
+                    + PC_SHARE_UNAVAILABLE_MESSAGE_KO
+                )
+            elif wire["termination"] in ("exited", "output_too_large"):
                 if wire["exit_code"] == 0:
                     outcome, summary, status = "done", "exited/0", "completed"
                 else:
@@ -3495,106 +3903,39 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             f"명령: {dispatch['command_id']}, 상태: {wire['termination']}, "
             f"종료 코드: {wire['exit_code']}."
         )
-    # Every stored message is now bounded by the splitter, so the former
-    # 1 000-character refusal has no case left to serve.
+    return None, {
+        "outcome": outcome,
+        "content": content,
+        "summary": summary,
+        "status": status,
+        "command_output": command_output,
+        "read_output": read_output,
+        "read_stored_output": read_stored_output,
+        "desktop_note": desktop_note,
+        "desktop_blob": desktop_blob,
+        "desktop_op": desktop_op,
+        "desktop_arg": desktop_arg,
+        "result_digest": result_digest,
+        "result_size": result_size,
+    }
 
-    # Pin the first accepted result. A resend after a transient store failure
-    # must be the identical bytes: the executor holds them and never re-reads
-    # the PC file, and a differing resend is refused rather than appended.
-    try:
-        try:
-            same_result = await history_store.record_oracle_mesh_first_result(
-                dispatch_id=wire["dispatch_id"],
-                content_sha256=result_digest,
-                content_bytes=result_size,
-                termination=wire.get("termination") if isinstance(wire.get("termination"), str) else None,
-                exit_code=wire.get("exit_code"),
-            )
-        except TypeError:
-            same_result = await history_store.record_oracle_mesh_first_result(
-                dispatch_id=wire["dispatch_id"],
-                content_sha256=result_digest,
-                content_bytes=result_size,
-            )
-    except Exception:
-        # A pin failure must stay retryable: park the received row so the
-        # identical resend is accepted as claim="retry" instead of dying
-        # on 409. Pin comparison and idempotent append still prevent any
-        # second delivery.
-        try:
-            await history_store.mark_oracle_mesh_store_failed(
-                dispatch_id=wire["dispatch_id"],
-            )
-        except Exception:
-            pass
-        return _error(503, "oracle_mesh_dispatch_unavailable")
-    if same_result is not True:
-        # Park the claim again: a rejected resend must not burn the retry the
-        # executor still legitimately owns for its identical bytes.
-        try:
-            await history_store.mark_oracle_mesh_store_failed(
-                dispatch_id=wire["dispatch_id"],
-            )
-        except Exception:
-            pass
-        return _error(409, "oracle_mesh_result_fingerprint_mismatch")
 
-    run_row = None
-    try:
-        run_row = await history_store.get_claw_run(
-            dispatch["user_id"], dispatch["run_id"],
-        )
-    except Exception:
-        run_row = None
-    conversation_id = (
-        validate_conversation_id((run_row or {}).get("conversation_id"))
-        if isinstance(run_row, dict) else None
-    )
-    if not conversation_id:
-        try:
-            await history_store.finish_oracle_mesh_dispatch(
-                dispatch_id=wire["dispatch_id"], outcome="failed",
-            )
-        except Exception:
-            pass
-        return _error(404, "oracle_mesh_run_unavailable")
-
-    base_message_id = result_message_id(
-        conversation_id=conversation_id,
-        command_id=dispatch["command_id"],
-        revision_ref=dispatch["revision_ref"],
-    )
-    from .chat_pc_session import project_history_result, is_session_dispatch
-    session_messages = project_history_result(run_row, dispatch, command_output)
-    if read_stored_output is not None:
-        # #5015: the Engine read lane retrieves the exact verified body from
-        # this existing store. Storing before the conversation projection
-        # keeps a store failure retryable with the same bytes; the executor
-        # is never asked to read the PC file again.
-        try:
-            await _store_oracle_mesh_read_original(
-                history_store, dispatch=dispatch,
-                conversation_id=conversation_id, message_id=base_message_id,
-                raw=read_stored_output,
-                expected_sha256=result_digest,
-                expected_bytes=result_size,
-            )
-        except HistoryForbidden:
-            try:
-                await history_store.finish_oracle_mesh_dispatch(
-                    dispatch_id=wire["dispatch_id"], outcome="failed",
-                )
-            except Exception:
-                pass
-            return _error(403, "oracle_mesh_conversation_forbidden")
-        except Exception:
-            try:
-                await history_store.mark_oracle_mesh_store_failed(
-                    dispatch_id=wire["dispatch_id"],
-                )
-            except Exception:
-                pass
-            return _error(503, "oracle_mesh_original_unavailable")
+async def _oracle_mesh_read_result_store(
+    *, base_message_id, command_output, content, conversation_id,
+    desktop_arg,
+    desktop_blob,
+    desktop_note,
+    desktop_op,
+    dispatch,
+    history_store,
+    is_session_dispatch,
+    read_output,
+    result_digest,
+    result_size,
+    summary,
+    wire,
+) -> tuple[JSONResponse | None, dict[str, object]]:
+    """메시지 조립·원본 저장 구간 (본문 글자 그대로)."""
     if command_output is not None:
         # #5015: the Engine model lane re-feeds exact bytes, including small
         # drive inventories that never needed the over-budget original store.
@@ -3624,7 +3965,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                     )
                 except Exception:
                     pass
-                return _error(403, "oracle_mesh_conversation_forbidden")
+                return _error(403, "oracle_mesh_conversation_forbidden"), {}
             except Exception:
                 try:
                     await history_store.mark_oracle_mesh_store_failed(
@@ -3632,7 +3973,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                     )
                 except Exception:
                     pass
-                return _error(503, "oracle_mesh_original_unavailable")
+                return _error(503, "oracle_mesh_original_unavailable"), {}
         if wire["termination"] == "output_too_large" and not command_output:
             # The executor withheld the body at the wire envelope, so there
             # is no original to store and nothing to split: the observed
@@ -3666,7 +4007,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                         )
                     except Exception:
                         pass
-                    return _error(403, "oracle_mesh_conversation_forbidden")
+                    return _error(403, "oracle_mesh_conversation_forbidden"), {}
                 except Exception:
                     # Storage failed: park the row so the executor resends
                     # the SAME bytes. No completion is reported, and the PC
@@ -3677,7 +4018,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                         )
                     except Exception:
                         pass
-                    return _error(503, "oracle_mesh_original_unavailable")
+                    return _error(503, "oracle_mesh_original_unavailable"), {}
                 messages = [_command_original_stored_content(
                     dispatch, wire, command_output,
                 )]
@@ -3710,7 +4051,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                     )
                 except Exception:
                     pass
-                return _error(403, "oracle_mesh_conversation_forbidden")
+                return _error(403, "oracle_mesh_conversation_forbidden"), {}
             except Exception:
                 try:
                     await history_store.mark_oracle_mesh_store_failed(
@@ -3718,7 +4059,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                     )
                 except Exception:
                     pass
-                return _error(503, "oracle_mesh_original_unavailable")
+                return _error(503, "oracle_mesh_original_unavailable"), {}
             messages = [_file_read_stored_content(dispatch, wire, read_output)]
         else:
             messages = _file_read_part_messages(output_parts)
@@ -3731,7 +4072,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             if not callable(getattr(
                 history_store, "store_oracle_mesh_original_bytes", None
             )):
-                return _error(503, "oracle_mesh_unconfigured")
+                return _error(503, "oracle_mesh_unconfigured"), {}
             try:
                 await history_store.store_oracle_mesh_original_bytes(
                     user_id=dispatch["user_id"],
@@ -3750,7 +4091,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                     )
                 except Exception:
                     pass
-                return _error(403, "oracle_mesh_conversation_forbidden")
+                return _error(403, "oracle_mesh_conversation_forbidden"), {}
             except Exception:
                 try:
                     await history_store.mark_oracle_mesh_store_failed(
@@ -3758,7 +4099,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                     )
                 except Exception:
                     pass
-                return _error(503, "oracle_mesh_original_unavailable")
+                return _error(503, "oracle_mesh_original_unavailable"), {}
             messages = [_desktop_capture_content(
                 dispatch, wire, desktop_op, desktop_arg,
                 desktop_note, result_digest,
@@ -3773,102 +4114,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             )]
     else:
         messages = [content]
-    if session_messages is not None:
-        messages = session_messages
-    appended = False
-    # #5015: a run that may hold more than one PC tool call stores each
-    # command's own result beside the others and never seals the run row, so
-    # one command's completion is never read as the whole work's completion.
-    command_scope = None
-    if is_multi_command_action((run_row or {}).get("action")):
-        command_scope = dispatch.get("command_id")
-    # #6460 step 3: a model-driven desktop loop stages one dispatch per step.
-    # Each step's message is evidence of that step alone, so it never writes
-    # the run's terminal result; the verified final answer owns that.
-    step_message_only = (
-        command_scope is None
-        and dispatch.get("kind") == "desktop"
-        and isinstance(dispatch.get("tool_call_ref"), str)
-        and bool(dispatch["tool_call_ref"])
-        and len(messages) == 1
-    )
-    append_step = getattr(history_store, "append_step_result_message", None)
-    if step_message_only and not callable(append_step):
-        step_message_only = False
-    try:
-        for index, part in enumerate(messages):
-            message_id = base_message_id if len(messages) == 1 else (
-                base_message_id + "_p" + str(index)
-            )
-            if step_message_only:
-                appended = await append_step(
-                    user_id=dispatch["user_id"],
-                    run_id=dispatch["run_id"],
-                    message_id=message_id,
-                    content=part,
-                ) or appended
-                continue
-            appended = await history_store.append_local_task_result(
-                user_id=dispatch["user_id"],
-                run_id=dispatch["run_id"],
-                message_id=message_id,
-                summary=summary,
-                content=part,
-                status=("failed" if command_scope is not None and outcome == "failed" else status),
-                # A terminal result is the only caller that opts out of the
-                # shared edge trim; every other message keeps today's behavior.
-                preserve_edges=(dispatch.get("kind") == "command"),
-                command_scope=command_scope,
-            ) or appended
-        if command_scope is not None and outcome == "failed":
-            # Seal before acknowledging the queue result: an unavailable Chat
-            # store leaves the dispatch retryable with the same pinned result.
-            await history_store.seal_run_terminal(
-                user_id=dispatch["user_id"], run_id=dispatch["run_id"],
-                summary="pc_read_failed", status="failed",
-            )
-    except HistoryForbidden:
-        # Ownership refusal is final: retrying cannot change it.
-        try:
-            await history_store.finish_oracle_mesh_dispatch(
-                dispatch_id=wire["dispatch_id"], outcome="failed",
-            )
-        except Exception:
-            pass
-        return _error(403, "oracle_mesh_conversation_forbidden")
-    except Exception:
-        # Transient conversation-store failure. The verified result is parked
-        # (claim and expiry intact) so the executor can resend the SAME result
-        # — the PC file is not read again, and the stable message id keeps the
-        # eventual append exactly-once.
-        try:
-            await history_store.mark_oracle_mesh_store_failed(
-                dispatch_id=wire["dispatch_id"],
-            )
-        except Exception:
-            pass
-        return _error(503, "oracle_mesh_append_unavailable")
-    store_stage = "stored" if appended else "not_appended"
-    result_log.info("pc_result stage=%s run_hash=%s dispatch_id=%s", store_stage, result_run_hash, result_dispatch_id)
-    try:
-        finished = await history_store.finish_oracle_mesh_dispatch(
-            dispatch_id=wire["dispatch_id"], outcome=outcome,
-        )
-    except Exception:
-        result_log.info("pc_result stage=queue_finish_error run_hash=%s dispatch_id=%s", result_run_hash, result_dispatch_id)
-    else:
-        stage = "queue_finished" if finished else "queue_not_finished"
-        result_log.info("pc_result stage=%s run_hash=%s dispatch_id=%s", stage, result_run_hash, result_dispatch_id)
-    return _response({
-        "ok": True,
-        "runId": dispatch["run_id"],
-        "commandId": dispatch["command_id"],
-        "appended": bool(appended),
-        "status": status,
-        "claim": claim,
-        "executor": _EXECUTOR,
-        "brokerAcknowledged": False,
-    })
+    return None, {"messages": messages}
 
 
 async def oracle_mesh_read_original(request: Request) -> Response:
@@ -4034,6 +4280,28 @@ _PC_FILES_READ_ROOT_REF = "pc_files_read"
 _PC_FILES_SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,127}$")
 
 
+#: The op ceilings the signed Engine scope claim may name, per admitted or
+#: requested scope name. The names mirror the Engine's own table one-to-one
+#: (``PC_REQUEST_SCOPE_TOOLS`` in kagent's pc_query_adapter) — #8098: the
+#: three #8048 single-step scopes were missing here, so a recursive name
+#: search (``admitted=files_search``) was refused 422 before the PC saw it.
+#: The op values derive exactly like the Engine derives them: an op pairs
+#: with its tool id, so a scope of only the chunk reader carries no named op
+#: (``files_chunk`` → ``[]``). The browser scope is absent on purpose — a
+#: browser claim verifies in claw_pc_browser_routes, never on this lane.
+_ENGINE_PC_FILES_SCOPE_OPS = {
+    # A name search is a listing that filters; a content search reads the same
+    # files a `files` grant may already read, one match line at a time.
+    "files_list": ["list", "search_name"],
+    "files": ["list", "read", "search_name", "search_content"],
+    "files_write": ["write", "edit", "move", "delete", "mkdir"],
+    "query_drives": ["drives"], "none": [],
+    "files_search": ["search_name"],
+    "files_search_contents": ["search_content"],
+    "files_chunk": [],
+}
+
+
 def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
     """Authenticate the optional ceiling without widening the legacy body."""
     import hmac
@@ -4052,12 +4320,7 @@ def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
         claim = json.loads(encoded)
     except (ValueError, TypeError):
         return None, _error(422, "pc_scope_claim_invalid")
-    # A name search is a listing that filters; a content search reads the same
-    # files a `files` grant may already read, one match line at a time.
-    scopes = {"files_list": ["list", "search_name"],
-              "files": ["list", "read", "search_name", "search_content"],
-              "files_write": ["write", "edit", "move", "delete", "mkdir"],
-              "query_drives": ["drives"], "none": []}
+    scopes = _ENGINE_PC_FILES_SCOPE_OPS
     if (
         not isinstance(claim, dict)
         or set(claim) != {"version", "requested", "admitted", "source", "ops", "app_id"}
@@ -4145,7 +4408,7 @@ def _pc_files_roots_of_map_row(file_path: Any) -> list[dict[str, Any]]:
 #: How an owner refers to a drive they did not name: `C`, `C:`, `C드라이브`,
 #: `c drive` all mean the whole C drive, which is the scope a linked PC has by
 #: default (#5573, Owner decision).
-_DRIVE_REFERENCE = re.compile(r"([A-Za-z])(?: ?(?:드라이브|drive))?[:]?", re.IGNORECASE)
+_DRIVE_REFERENCE = re.compile(r"([A-Za-z])(?: ?(?:드라이브|drive))?[:]?/?", re.IGNORECASE)
 #: How an owner refers to the place they are already standing.
 _ROOT_WORDS = frozenset({
     "루트", "여기", "최상위", "최 상위", "승인 폴더", "승인폴더", "root", "here",
@@ -4190,7 +4453,10 @@ def _pc_files_pick_root(
             return None
         text = text.strip().replace("\\", "/")
     drive = _drive_reference(text)
-    if drive is not None and any(root["path"].upper() == drive for root in roots):
+    if drive is not None and any(
+        str(root["path"]).replace("\\", "/").rstrip("/").upper() == drive
+        for root in roots
+    ):
         # A drive the account granted means that drive, the whole of it - not a
         # folder inside another grant. Anything else stays ordinary path text, so
         # a file actually named `C` is still reachable.
@@ -4286,47 +4552,8 @@ def _pc_ps_literal(value: str) -> str:
     return _pc_files_powershell_literal(value)
 
 
-def _pc_write_command(
-    *, op: str, root: str, target: str, backup_dir: str, relative: str,
-    destination: str | None = None, content_b64: str | None = None,
-    old_text_b64: str | None = None, new_text_b64: str | None = None,
-    append: bool = False, replace_all: bool = False,
-) -> str:
-    """Build one write, move or delete step for the paired PC.
-
-    Four rules hold across all three operations. The original is copied to the
-    hidden backup folder on the same drive *before* anything changes, and a
-    backup that fails stops the step there, so no change is made that cannot be
-    undone. The step prints exactly one account line saying what happened and
-    where the original landed - including when it refused. There is no
-    confirmation anywhere in it: the change happens when the account says it
-    did. And the step refuses a path that crosses a reparse point (#5994 D3):
-    every folder from the granted root down to the target - and the target
-    itself - is checked for the ReparsePoint attribute (junctions, symbolic
-    links, mounts), the final normalized path must still sit inside the granted
-    root, and a refusal happens before the backup, so nothing changes.
-
-    The command is cmdlet and .NET calls only, like the listing command: no
-    native program runs, so the PC reports no exit code and the existing result
-    lane stays truthful.
-
-    It is also exactly ONE line, which is not a style choice. The agent runs a
-    console command as ``powershell -noprofile -nologo -command -`` and feeds the
-    script through that process's standard input: a script carrying a newline
-    never completes there, so its PowerShell stays alive, and because that agent
-    serves one console task at a time every later PC operation - reads included -
-    waits behind it. Measured on the real machines on 2026-10-28: one line
-    answered in under two seconds and wrote the file with its backup; the same
-    statements on two lines never answered at all. Semicolons are what PowerShell
-    needs on one line, so nothing here changed meaning.
-
-    For the same reason the parent folder is taken with
-    ``[IO.Path]::GetDirectoryName`` and not with ``Split-Path -LiteralPath ...
-    -Parent``: on the PC's own Windows PowerShell 5.1 that combination is refused
-    with ``AmbiguousParameterSet``, which would turn every new file into a
-    refusal. Both rules are about what the customer's PC actually accepts, so
-    they are checked here where the script is built.
-    """
+def _pc_write_backup_fragments(*, relative: str) -> tuple[str, str]:
+    """백업·대상 없음 조각: 모든 변경이 같은 백업 단계로 시작한다."""
     backup_step = (
         "New-Item -ItemType Directory -Force -Path $backupDir | Out-Null; "
         "$backup = Join-Path $backupDir ($stamp + '-' + ("
@@ -4338,7 +4565,15 @@ def _pc_write_command(
         "if (-not (Test-Path -LiteralPath $source_to_keep -PathType Leaf)) {"
         " $reason = 'path_invalid'; throw 'padiem target missing' }"
     )
+    return backup_step, target_missing
 
+
+def _pc_write_input_statements(
+    *, op: str, target: str, backup_dir: str, content_b64: str | None = None,
+    old_text_b64: str | None = None, new_text_b64: str | None = None,
+    destination: str | None = None,
+) -> list[str]:
+    """입력 검증 단계: 초기 문장과 관찰 대상을 같은 순서로 만든다."""
     statements = [
         "$ErrorActionPreference = 'Stop'",
         "$ok = $false",
@@ -4372,6 +4607,11 @@ def _pc_write_command(
         "$verifySource = $target",
         "$verifyTarget = " + ("$destination" if op == "move" else "$target"),
     ])
+    return statements
+
+
+def _pc_write_scope_guard(statements: list[str], *, root: str) -> str:
+    """권한·한도 단계: 허용 범위 밖 바로가기 경로를 백업 전에 막는다."""
     # #5994 D3: the guard walks every folder from the granted root down to the
     # target (and, for a move, down to the destination) and refuses the step
     # before any backup or change when one of them is a reparse point — a
@@ -4406,7 +4646,14 @@ def _pc_write_command(
         " if (-not $fullDestination.StartsWith($guardRoot, [System.StringComparison]::OrdinalIgnoreCase))"
         " { $guardHit = $guardRoot } };"
     )
+    return link_refusal
 
+
+def _pc_write_operation_body(
+    *, op: str, append: bool, replace_all: bool, backup_step: str,
+    target_missing: str,
+) -> str:
+    """분기 단계: 덮어쓰기·추가·편집·폴더·이동·삭제 중 하나를 고른다."""
     if op == "write" and append:
         # #7603: append keeps every existing byte and adds the caller's bytes at
         # the end. A file that is not valid UTF-8 is refused exactly like pc_edit
@@ -4532,7 +4779,13 @@ def _pc_write_command(
             " $ok = $true; $reason = $null }"
             " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
         )
+    return body
 
+
+def _pc_write_record_statements(
+    statements: list[str], *, body: str, link_refusal: str, append: bool,
+) -> None:
+    """기록·응답 단계: 거절 문장, 검증, 계정 줄을 같은 순서로 붙인다."""
     # A refused step changes nothing and still answers with one account line:
     # the refusal names the Korean sentence the owner sees, never an internal
     # component.
@@ -4598,6 +4851,70 @@ def _pc_write_command(
         "$encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))",
         "Write-Output ('" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded)",
     ])
+
+
+def _pc_write_command(
+    *, op: str, root: str, target: str, backup_dir: str, relative: str,
+    destination: str | None = None, content_b64: str | None = None,
+    old_text_b64: str | None = None, new_text_b64: str | None = None,
+    append: bool = False, replace_all: bool = False,
+) -> str:
+    """Build one write, move or delete step for the paired PC.
+
+    Four rules hold across all three operations. The original is copied to the
+    hidden backup folder on the same drive *before* anything changes, and a
+    backup that fails stops the step there, so no change is made that cannot be
+    undone. The step prints exactly one account line saying what happened and
+    where the original landed - including when it refused. There is no
+    confirmation anywhere in it: the change happens when the account says it
+    did. And the step refuses a path that crosses a reparse point (#5994 D3):
+    every folder from the granted root down to the target - and the target
+    itself - is checked for the ReparsePoint attribute (junctions, symbolic
+    links, mounts), the final normalized path must still sit inside the granted
+    root, and a refusal happens before the backup, so nothing changes.
+
+    The command is cmdlet and .NET calls only, like the listing command: no
+    native program runs, so the PC reports no exit code and the existing result
+    lane stays truthful.
+
+    It is also exactly ONE line, which is not a style choice. The agent runs a
+    console command as ``powershell -noprofile -nologo -command -`` and feeds the
+    script through that process's standard input: a script carrying a newline
+    never completes there, so its PowerShell stays alive, and because that agent
+    serves one console task at a time every later PC operation - reads included -
+    waits behind it. Measured on the real machines on 2026-10-28: one line
+    answered in under two seconds and wrote the file with its backup; the same
+    statements on two lines never answered at all. Semicolons are what PowerShell
+    needs on one line, so nothing here changed meaning.
+
+    For the same reason the parent folder is taken with
+    ``[IO.Path]::GetDirectoryName`` and not with ``Split-Path -LiteralPath ...
+    -Parent``: on the PC's own Windows PowerShell 5.1 that combination is refused
+    with ``AmbiguousParameterSet``, which would turn every new file into a
+    refusal. Both rules are about what the customer's PC actually accepts, so
+    they are checked here where the script is built.
+    """
+    backup_step, target_missing = _pc_write_backup_fragments(relative=relative)
+    statements = _pc_write_input_statements(
+        op=op,
+        target=target,
+        backup_dir=backup_dir,
+        content_b64=content_b64,
+        old_text_b64=old_text_b64,
+        new_text_b64=new_text_b64,
+        destination=destination,
+    )
+    link_refusal = _pc_write_scope_guard(statements, root=root)
+    body = _pc_write_operation_body(
+        op=op,
+        append=append,
+        replace_all=replace_all,
+        backup_step=backup_step,
+        target_missing=target_missing,
+    )
+    _pc_write_record_statements(
+        statements, body=body, link_refusal=link_refusal, append=append,
+    )
     return "; ".join(statements)
 
 
@@ -4614,6 +4931,26 @@ def _pc_files_filter_prefilter(term: str) -> str:
     if term and all(ch in _FILTER_PREFILTER_SAFE or ord(ch) > 127 for ch in term):
         return "*" + term + "*"
     return "*"
+
+
+def _pc_files_windows_folder(root: str, relative: str) -> str:
+    """The folder to list: a bare drive is the volume root, not ``D:``.
+
+    Windows reads ``-LiteralPath 'D:'`` as the *current directory on D:*, not
+    the drive root. Spelling it ``D:/`` makes a granted drive list the drive.
+    #7978: a network share reaches PowerShell in its own Windows spelling —
+    the stored ``//server/share`` becomes ``\\\\server\\share\\relative``. A
+    single leading slash would be a drive-relative path, never the share.
+    """
+    trimmed = str(root or "").replace("\\", "/").rstrip("/")
+    if trimmed.startswith("//"):
+        unc = "\\\\" + trimmed[2:].replace("/", "\\")
+        if not relative:
+            return unc
+        return unc + "\\" + str(relative).replace("/", "\\")
+    bare_drive = len(trimmed) == 2 and trimmed[1] == ":"
+    base = trimmed + "/" if bare_drive else trimmed
+    return base.rstrip("/") + "/" + relative if relative else base
 
 
 def _pc_files_command(*, op: str, root: str, relative: str,
@@ -4674,8 +5011,16 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             raise ValueError("a filter term must be non-empty text")
         if any(ord(ch) < 32 or ord(ch) == 127 for ch in filter_term):
             raise ValueError("a filter term may not carry control characters")
-    folder = root + ("/" + relative if relative else "")
-    folder_literal = _pc_files_powershell_literal(folder)
+    # #7976: a bare drive is the volume root, not a drive-relative directory.
+    folder = _pc_files_windows_folder(root, relative)
+    # #7973: a path, a relative segment or a name fragment is carried as base64
+    # of its UTF-8 bytes, never as characters in the command text. The MeshCentral
+    # agent hands that text to a PowerShell console whose input decoder is the
+    # PC's legacy code page on a Korean installation; Korean written into the
+    # command arrives as mojibake, Get-ChildItem cannot find the folder and the
+    # answer is an error instead of JSON (stage pc_list_output_invalid). An
+    # ASCII-only command decodes to the exact value on the PC whatever that code
+    # page is. The root/relative grant and reparse checks below are unchanged.
     # Measured through the same wrapper the executor sends: one page of 200 rows on
     # 컴1's System32 came back as 20,647 transcript bytes in 1,240 ms, and the
     # matching 500-row page as 53,979 bytes in 1,454 ms. `-First` alone silently cut
@@ -4684,13 +5029,19 @@ def _pc_files_command(*, op: str, root: str, relative: str,
     # #5994 D3: a listing must not open a shortcut folder either — the same
     # reparse walk the write lane uses refuses a folder that is reached through
     # a junction or a symbolic link below the granted root.
+    guard_root = root.rstrip("\\/") + "\\"
+    if guard_root.startswith("//"):
+        # #7978: a UNC root reaches the guard in its Windows spelling, the same
+        # way _pc_files_windows_folder spells the folder itself.
+        guard_root = "\\\\" + guard_root[2:].replace("/", "\\")
     guard = (
-        "$guardRoot = " + _pc_files_powershell_literal(root.rstrip("\\/") + "\\") + ";"
+        "$folder = " + ps_utf8_literal(folder) + ";"
+        "$guardRoot = " + ps_utf8_literal(guard_root) + ";"
+        "$relText = " + ps_utf8_literal(relative) + ";"
         "$guardHit = $null;"
         "try {"
         " $walk = $guardRoot;"
-        " foreach ($seg in (" + _pc_files_powershell_literal(relative)
-        + ".Replace('/', '\\') -split '\\\\')) {"
+        " foreach ($seg in ($relText.Replace('/', '\\') -split '\\\\')) {"
         "  if (-not $seg) { continue };"
         "  $walk = Join-Path $walk $seg;"
         "  if (-not (Test-Path -LiteralPath $walk)) { break };"
@@ -4699,7 +5050,12 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         "  { $guardHit = $walk; break } };"
         "} catch { $guardHit = $guardRoot };"
         "if ($guardHit) {"
-        " @{error='이 위치는 바로가기 폴더를 거쳐서 볼 수 없습니다.'} | ConvertTo-Json -Compress"
+        " @{error=" + ps_utf8_literal("이 위치는 바로가기 폴더를 거쳐서 볼 수 없습니다.")
+        + "} | ConvertTo-Json -Compress"
+        " } elseif (-not (Test-Path -LiteralPath $folder)) {"
+        # A folder that is not there is a closed verdict, not a malformed page.
+        # The engine can then answer pc_path_not_found instead of output_invalid.
+        " @{error='path_not_found'} | ConvertTo-Json -Compress"
         " } else {"
     )
     if recursive:
@@ -4714,7 +5070,7 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         # backtick differently. -like would also need an escape the caller
         # never asked for.
         match = (
-            "$needle=" + _pc_files_powershell_literal(filter_term) + ";"
+            "$needle=" + ps_utf8_literal(filter_term) + ";"
         )
         walk = (
             "$ErrorActionPreference='SilentlyContinue';"
@@ -4733,7 +5089,7 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             "  Modified=$item.LastWriteTimeUtc.ToString('o'); PSIsContainer=$item.PSIsContainer;"
             "  relative_path=$rel})"
             "};"
-            "$frontier=@(@{dir=" + folder_literal + "; rel=''});"
+            "$frontier=@(@{dir=$folder; rel=''});"
             "while($frontier.Count -gt 0 -and -not $stop){"
             "  $next=@();"
             "  foreach($f in $frontier){"
@@ -4791,7 +5147,7 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             "  Modified=$item.LastWriteTimeUtc.ToString('o'); PSIsContainer=$item.PSIsContainer;"
             "  relative_path=$rel; depth=$level})"
             "};"
-            "$frontier=@(@{dir=" + folder_literal + "; rel=''});"
+            "$frontier=@(@{dir=$folder; rel=''});"
             "$level=1;"
             "while($frontier.Count -gt 0 -and $level -le $maxDepth){"
             "  $next=@();"
@@ -4832,15 +5188,14 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         )
         return guard + walk
     if filter_term is None:
-        scan = ("$p=@(Get-ChildItem -LiteralPath " + folder_literal
-                + " -Force -ErrorAction Stop);")
+        scan = ("$p=@(Get-ChildItem -LiteralPath $folder"
+                " -Force -ErrorAction Stop);")
     else:
         scan = (
-            "$needle=" + _pc_files_powershell_literal(filter_term) + ";"
-            "$p=@(Get-ChildItem -LiteralPath " + folder_literal
-            + " -Filter "
-            + _pc_files_powershell_literal(_pc_files_filter_prefilter(filter_term))
-            + " -Force -ErrorAction Stop"
+            "$needle=" + ps_utf8_literal(filter_term) + ";"
+            "$filter=" + ps_utf8_literal(_pc_files_filter_prefilter(filter_term)) + ";"
+            "$p=@(Get-ChildItem -LiteralPath $folder -Filter $filter"
+            " -Force -ErrorAction Stop"
             " | Where-Object { $_.Name.IndexOf($needle,"
             "[StringComparison]::OrdinalIgnoreCase) -ge 0 });"
         )
@@ -5254,200 +5609,23 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
 
 async def _engine_pc_files_call(request: Request, *, product: str) -> JSONResponse:
     """One signed Engine call for the PC file context/dispatch/status/result."""
-    raw, proof_error = await _verify_engine_proof(request, max_body_bytes=None)
-    if proof_error is not None or raw is None:
-        return proof_error if proof_error is not None else _error(
-            401, "claw_engine_proof_required",
-        )
-    scope_claim, scope_error = _engine_pc_scope_claim(request, raw, product=product)
-    if scope_error is not None:
-        return scope_error
-    try:
-        payload = json.loads(raw)
-    except (ValueError, TypeError):
-        return _error(400, "claw_engine_files_invalid_body")
-    if not isinstance(payload, dict):
-        return _error(400, "claw_engine_files_invalid_body")
-    requested_mode = mode = payload.get("mode")
-    # Only the dispatch leg has optional fields today; every other leg is exact.
-    optional = set()
-    if mode == "context":
-        expected = {"subject_id", "run_id", "device_id", "mode"}
-    elif mode == "dispatch":
-        expected = {
-            "subject_id", "run_id", "device_id", "op", "path",
-            "tool_call_ref", "mode",
-        }
-        # A write names its bytes and a move names where the file lands. Nothing
-        # else may add a field, and the operation itself is validated below.
-        # A search names its query and which side of the file it looks at.
-        extra_fields = {"write": {"content"}, "move": {"destination"},
-                        "search": {"query", "search_mode"},
-                        "read_chunk": {"offset", "length"}}
-        # #7603: a write may name the append spelling. It is its own boolean
-        # because `mode` in this body already names the transport leg.
-        optional_fields = {"write": {"append"}}
-        named = payload.get("op")
-        if isinstance(named, str) and named in extra_fields:
-            expected = expected | extra_fields[named]
-        if isinstance(named, str) and named in optional_fields:
-            optional = optional_fields[named]
-        else:
-            optional = set()
-        if named == "list":
-            # The widened read-only listing carries its depth and recursive
-            # flag only when the caller named them; both are re-validated
-            # (type and range) below before any command is built.
-            for key in ("depth", "recursive"):
-                if key in payload:
-                    expected = expected | {key}
-    elif mode == "job_start":
-        expected = {"subject_id", "run_id", "device_id", "mode", "operation", "tool_call_ref"}
-    elif mode == "job_status":
-        expected = {"subject_id", "run_id", "device_id", "mode", "job_id"}
-    elif mode == "job_output":
-        expected = {"subject_id", "run_id", "device_id", "mode", "job_id", "offset", "length"}
-    elif mode == "read_output":
-        expected = {"subject_id", "run_id", "device_id", "mode", "handle", "offset", "length"}
-    elif mode == "search_output":
-        expected = {"subject_id", "run_id", "device_id", "mode", "handle", "query"}
-    elif mode == "store_output":
-        expected = {"subject_id", "run_id", "device_id", "mode", "output", "source", "tool_call_ref"}
-    elif mode in ("command_status", "result"):
-        expected = {"subject_id", "run_id", "dispatch_id", "mode"}
-    else:
-        return _error(400, "claw_engine_files_invalid_body")
-    if not (expected <= set(payload) <= expected | optional):
-        return _error(400, "claw_engine_files_invalid_body")
-    if not all(
-        isinstance(payload.get(name), str) and 0 < len(payload[name]) <= 512
-        for name in ("subject_id", "run_id")
-    ):
-        return _error(400, "claw_engine_files_invalid_body")
-    if requested_mode == "job_start":
-        operation = payload.get("operation")
-        if not isinstance(operation, dict) or operation.get("op") not in _PC_FILES_OPS:
-            return _error(422, "oracle_mesh_file_op_invalid")
-        op = operation["op"]
-        operation_fields = ({"op", "path"}
-                            | ({"content"} if op == "write" else
-                               {"old_text", "new_text", "replace_all"} if op == "edit" else
-                               {"destination"} if op == "move" else set()))
-        operation_optional = {"mode"} if op == "write" else set()
-        if not (operation_fields <= set(operation)
-                <= operation_fields | operation_optional):
-            return _error(400, "claw_engine_files_invalid_body")
-        # The operation's own `mode` is the write spelling (overwrite/append),
-        # not this body's transport leg. It must never replace the leg name,
-        # and an append must reach the dispatch below as the `append` boolean:
-        # dropping it here would turn a requested append into an overwrite.
-        operation = dict(operation)
-        write_mode = operation.pop("mode", None)
-        if write_mode not in (None, "overwrite", "append"):
-            return _error(422, "oracle_mesh_file_mode_invalid")
-        payload = {**payload, **operation}
-        if write_mode == "append":
-            payload["append"] = True
-        mode = "dispatch"
-    elif requested_mode in ("job_status", "job_output"):
-        payload["dispatch_id"] = payload["job_id"]
-        mode = "command_status" if requested_mode == "job_status" else "result"
-    new_mode = requested_mode in {"job_start", "job_status", "job_output", "read_output", "search_output", "store_output"}
-    if new_mode and scope_claim is None:
-        return _error(403, "pc_scope_required")
-    if new_mode and (not isinstance(payload.get("device_id"), str) or not payload["device_id"]):
-        return _error(422, "oracle_mesh_device_invalid")
-    if requested_mode in ("job_output", "read_output") and (
-        type(payload.get("offset")) is not int or payload["offset"] < 0
-        or type(payload.get("length")) is not int or not 0 <= payload["length"] <= 65536
-    ):
-        return _error(422, "pc_output_range_invalid")
-    selected = payload.get("device_id")
-    if selected is not None and (
-        not isinstance(selected, str) or not 0 < len(selected) <= 128
-    ):
-        return _error(422, "oracle_mesh_device_invalid")
-    uid, session, owner_error = await _engine_pc_files_owner(
-        request, product=product, subject_id=payload["subject_id"],
-    )
-    if owner_error is not None:
-        return owner_error
-    history_store = getattr(request.app.state, "history_store", None)
-    if history_store is None or not callable(
-        getattr(history_store, "get_claw_run", None)
-    ):
-        return _error(503, "oracle_mesh_unconfigured")
-    try:
-        run_row = await history_store.get_claw_run(uid, payload["run_id"])
-        if run_row is None and product == "chat" and mode == "context" and scope_claim is not None:
-            from .chat_pc_drive import promote_chat_pc_stream_run
-            run_row = await promote_chat_pc_stream_run(
-                request, uid=uid, run_id=payload["run_id"], device_id=selected,
-                action="pc_files_query",
-            )
-    except Exception:
-        return _error(503, "oracle_mesh_run_unavailable")
-    if (
-        not isinstance(run_row, dict)
-        or run_row.get("run_id") != payload["run_id"]
-        or not isinstance(run_row.get("conversation_id"), str)
-        or not run_row["conversation_id"]
-    ):
-        return _error(404, "oracle_mesh_run_unavailable")
-
-    scope_reader = getattr(history_store, "get_pc_run_scope", None)
-    try:
-        saved_scope = await scope_reader(user_id=uid, run_id=payload["run_id"]) if callable(scope_reader) else None
-    except Exception:
-        return _error(503, "pc_scope_store_unavailable")
-    if saved_scope is not None and scope_claim != saved_scope:
-        return _error(403, "pc_scope_required" if scope_claim is None else "pc_scope_frozen")
-
-    # The status/result legs carry only the dispatch id; adding a device hint
-    # is a malformed body by contract. The dispatch itself names the PC that
-    # ran the step, so use that node for the target check. Re-resolving a
-    # multi-link owner without it can only answer "ambiguous" and refuse a
-    # step that already ran.
-    if mode in ("command_status", "result") and selected is None:
-        # The private owner-scoped reader is the dispatch authority that also
-        # names its PC; the public read intentionally keeps the normal row's
-        # shape. Neither leg accepts a device hint from the Engine.
-        reader = getattr(history_store, "get_pc_output_dispatch_for_owner", None)
-        if not callable(reader):
-            reader = getattr(history_store, "get_oracle_mesh_dispatch_for_owner", None)
-        if callable(reader) and isinstance(payload.get("dispatch_id"), str):
-            try:
-                status_dispatch = await reader(
-                    user_id=uid, dispatch_id=payload["dispatch_id"],
-                )
-            except Exception:
-                status_dispatch = None
-            if isinstance(status_dispatch, dict):
-                hint = status_dispatch.get("node_ref") or status_dispatch.get("device_id")
-                if isinstance(hint, str) and hint:
-                    selected = hint
-
-    resolved, target_error = await _engine_pc_files_target(
-        request, session=session, selected_device_id=selected, user_id=uid,
-    )
-    if target_error is not None:
-        return target_error
-    if resolved is None:
-        # No PC for this account: tool discovery answers honestly instead of
-        # failing the turn, and only a call that needs a device is refused.
-        if mode == "context":
-            return _response({
-                "ok": True,
-                "roots": [],
-                "device": {"device_id": selected, "status": "not_connected",
-                           "online_verified": False},
-                "tools": [],
-                "run_id": payload["run_id"],
-            })
-        return _error(403, "oracle_mesh_device_unverified")
-    target = resolved["target"]
-    roots = resolved["roots"]
-    device_id = target.get("device_id") or target["node_ref"]
+    resp, bundle = await _engine_pc_files_call_verify(request, product=product)
+    if resp is not None:
+        return resp
+    scope_claim = bundle["scope_claim"]
+    payload = bundle["payload"]
+    requested_mode = bundle["requested_mode"]
+    mode = bundle["mode"]
+    selected = bundle["selected"]
+    uid = bundle["uid"]
+    session = bundle["session"]
+    history_store = bundle["history_store"]
+    run_row = bundle["run_row"]
+    new_mode = bundle["new_mode"]
+    resolved = bundle["resolved"]
+    target = bundle["target"]
+    roots = bundle["roots"]
+    device_id = bundle["device_id"]
 
     if mode in ("context", "dispatch") and scope_claim is not None:
         scope_pinner = getattr(history_store, "pin_pc_run_scope", None)
@@ -5509,245 +5687,13 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         except Exception:
             pass
 
-    if mode == "dispatch":
-        op = payload.get("op")
-        if op not in _PC_FILES_OPS:
-            return _error(422, "oracle_mesh_file_op_invalid")
-        search_mode = None
-        claim_op = op
-        if op == "search":
-            search_mode = pc_search_mode(payload.get("search_mode"))
-            claim_op = _pc_files_claim_op(op, search_mode)
-            if claim_op is None:
-                return _error(422, "oracle_mesh_file_search_invalid")
-        # The independently signed ceiling is enforced before either dispatch
-        # constructor. The existing owner/path/size/idempotency checks follow.
-        if scope_claim is not None and claim_op not in scope_claim["ops"]:
-            return _error(403, "pc_scope_denied")
-        search_roots = None
-        if op == "search":
-            # No folder named means every approved root, in order: the owner's
-            # grant is the whole set, so a search never has to guess one and is
-            # never refused for not naming one.
-            search_path = pc_search_path(payload.get("path"))
-            if search_path is None:
-                return _error(422, "oracle_mesh_file_path_invalid")
-            if search_path:
-                picked = _pc_files_pick_root(roots, search_path)
-                if picked is None:
-                    return _error(422, "oracle_mesh_file_path_invalid")
-                picked_root, picked_relative = picked
-                label = next(
-                    (entry["label"] for entry in roots if entry["path"] == picked_root),
-                    None,
-                )
-                if label is None:
-                    return _error(422, "oracle_mesh_file_path_invalid")
-                search_roots = [{
-                    "label": label,
-                    "path": picked_root.rstrip("/") + (
-                        "/" + picked_relative if picked_relative else ""
-                    ),
-                }]
-            else:
-                search_roots = [
-                    {"label": entry["label"], "path": entry["path"]}
-                    for entry in roots
-                ]
-            if pc_search_roots(search_roots) is None:
-                return _error(503, "oracle_mesh_file_root_unavailable")
-            root = relative = None
-        else:
-            picked = _pc_files_pick_root(roots, payload.get("path"))
-            if picked is None:
-                return _error(422, "oracle_mesh_file_path_invalid")
-            root, relative = picked
-            if op == "read" and not relative:
-                return _error(422, "oracle_mesh_file_path_invalid")
-        tool_call_ref = payload.get("tool_call_ref")
-        if (
-            not isinstance(tool_call_ref, str)
-            or _PC_FILES_SAFE_REF.fullmatch(tool_call_ref) is None
-        ):
-            return _error(422, "oracle_mesh_file_call_invalid")
-        command_workspace = await _dispatch_workspace_id(request, uid, session)
-        if not command_workspace:
-            return _error(503, "oracle_mesh_workspace_unavailable")
-        job_operation = {"op": op, "path": payload["path"]} if requested_mode == "job_start" else None
-        if op in _PC_WRITE_OPS:
-            # One write step, one account. The path the PC will change is built
-            # the way the listing builds its folder - the root the server picked
-            # plus the relative path the caller named - so a request never
-            # carries an absolute target of its own.
-            resolved = root.rstrip("/") + ("/" + relative if relative else "")
-            content_b64 = None
-            append = False
-            if op == "write":
-                content = payload.get("content")
-                if not isinstance(content, str):
-                    return _error(422, "oracle_mesh_file_content_invalid")
-                if "append" in payload and type(payload["append"]) is not bool:
-                    return _error(422, "oracle_mesh_file_mode_invalid")
-                append = payload.get("append") is True
-                content_b64 = base64.b64encode(content.encode("utf-8")).decode("ascii")
-                if job_operation is not None:
-                    job_operation.update(expected_bytes=len(content.encode("utf-8")),
-                                         expected_sha256=hashlib.sha256(content.encode("utf-8")).hexdigest())
-                    if append:
-                        job_operation["mode"] = "append"
-            old_text_b64 = new_text_b64 = None
-            if op == "edit":
-                # #7065: the two byte sequences are carried the same way the
-                # write carries its bytes, so no console code page or quoting
-                # rule can change what is searched for or what is written.
-                old_text, new_text = payload.get("old_text"), payload.get("new_text")
-                if not isinstance(old_text, str) or not isinstance(new_text, str):
-                    return _error(422, "oracle_mesh_file_edit_invalid")
-                if not old_text:
-                    return _error(422, "oracle_mesh_file_edit_invalid")
-                replace_all = payload.get("replace_all")
-                if replace_all is not None and not isinstance(replace_all, bool):
-                    return _error(422, "oracle_mesh_file_edit_invalid")
-                if job_operation is not None:
-                    job_operation["edit"] = True
-                old_text_b64 = base64.b64encode(old_text.encode("utf-8")).decode("ascii")
-                new_text_b64 = base64.b64encode(new_text.encode("utf-8")).decode("ascii")
-            destination_path = None
-            if op == "move":
-                picked_destination = _pc_files_pick_root(roots, payload.get("destination"))
-                if picked_destination is None:
-                    return _error(422, "oracle_mesh_file_path_invalid")
-                destination_root, destination_relative = picked_destination
-                if destination_root != root or not destination_relative:
-                    # A move stays inside the folder this link was granted, and
-                    # never onto the granted root itself: replacing a whole
-                    # folder is not what moving one file means.
-                    return _error(422, "oracle_mesh_file_path_invalid")
-                destination_path = destination_root.rstrip("/") + "/" + destination_relative
-                if job_operation is not None:
-                    job_operation["destination"] = payload["destination"]
-            command = _pc_write_command(
-                op=op,
-                root=root,
-                target=resolved,
-                backup_dir=_pc_backup_dir(
-                    root, datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-                ),
-                relative=relative,
-                destination=destination_path,
-                content_b64=content_b64,
-                old_text_b64=old_text_b64,
-                new_text_b64=new_text_b64,
-                append=append,
-                replace_all=bool(payload.get("replace_all")),
-            )
-            response = await dispatch_oracle_mesh_command_intent(
-                request, command=command,
-                wire={
-                    "run_id": payload["run_id"],
-                    "device_id": selected,
-                    "confirmed": True,
-                },
-                trusted_owner=(session, uid, command_workspace),
-                tool_call_ref=tool_call_ref,
-                files_target=target,
-                background=requested_mode == "job_start",
-                job_operation=job_operation,
-            )
-            return _engine_pc_job_response(response, requested_mode)
-        if op == "read":
-            # #5015: the read reuses the existing kind="read" MeshCentral
-            # download lane. No shell command is built for it.
-            response = await dispatch_oracle_mesh_file_read_intent(
-                request,
-                wire={
-                    "run_id": payload["run_id"],
-                    "device_id": selected,
-                    "confirmed": True,
-                },
-                trusted_owner=(session, uid, command_workspace),
-                tool_call_ref=tool_call_ref,
-                target=target,
-                root=root,
-                relative=relative,
-                background=requested_mode == "job_start",
-                job_operation=job_operation,
-            )
-            return _engine_pc_job_response(response, requested_mode)
-        if op == "read_chunk":
-            offset = pc_read_offset(payload.get("offset"))
-            length = pc_read_length(payload.get("length"))
-            if offset is None or length is None or not relative:
-                return _error(422, "oracle_mesh_file_range_invalid")
-            command = pc_read_chunk_command(
-                root=root, relative=relative, offset=offset, length=length,
-            )
-            return await dispatch_oracle_mesh_command_intent(
-                request, command=command,
-                wire={
-                    "run_id": payload["run_id"],
-                    "device_id": selected,
-                    "confirmed": True,
-                },
-                trusted_owner=(session, uid, command_workspace),
-                tool_call_ref=tool_call_ref,
-                files_target=target,
-                read_only=True,
-            )
-        if op == "search":
-            query = pc_search_query(payload.get("query"))
-            if query is None:
-                return _error(422, "oracle_mesh_file_search_invalid")
-            command = pc_search_command(
-                roots=search_roots, query=query, mode=search_mode,
-                limit=PC_SEARCH_MAX_LIMIT,
-            )
-            return await dispatch_oracle_mesh_command_intent(
-                request, command=command,
-                wire={
-                    "run_id": payload["run_id"],
-                    "device_id": selected,
-                    "confirmed": True,
-                },
-                trusted_owner=(session, uid, command_workspace),
-                tool_call_ref=tool_call_ref,
-                files_target=target,
-                read_only=True,
-            )
-        depth = payload.get("depth")
-        if "depth" in payload and (
-            type(depth) is not int or isinstance(depth, bool) or not 1 <= depth <= 3
-        ):
-            return _error(422, "oracle_mesh_file_depth_invalid")
-        recursive = payload.get("recursive")
-        if "recursive" in payload and type(recursive) is not bool:
-            return _error(422, "oracle_mesh_file_recursive_invalid")
-        if recursive is True:
-            # This leg carries no name fragment, and the recursive builder
-            # refuses to walk without one. A recursive name search travels as
-            # the search op instead, so the flag is refused here by name rather
-            # than left to fail inside the builder.
-            return _error(422, "oracle_mesh_file_recursive_unsupported")
-        command = _pc_files_command(
-            op=op, root=root, relative=relative,
-            depth=depth if depth is not None else 1,
-        )
-        response = await dispatch_oracle_mesh_command_intent(
-            request, command=command,
-            wire={
-                "run_id": payload["run_id"],
-                "device_id": selected,
-                "confirmed": True,
-            },
-            trusted_owner=(session, uid, command_workspace),
-            tool_call_ref=tool_call_ref,
-            files_target=target,
-            # #7602: only a read is handed out again after a run-out lease.
-            read_only=_pc_files_read_only(op),
-            background=requested_mode == "job_start",
-                job_operation=job_operation,
-        )
-        return _engine_pc_job_response(response, requested_mode)
+    resp, _bundle = await _engine_pc_files_call_dispatch(
+        request, payload=payload, requested_mode=requested_mode, mode=mode,
+        scope_claim=scope_claim, roots=roots, selected=selected,
+        session=session, uid=uid, target=target,
+    )
+    if resp is not None:
+        return resp
 
     dispatch_id = payload.get("dispatch_id")
     if not isinstance(dispatch_id, str) or not 0 < len(dispatch_id) <= 128:
@@ -5921,10 +5867,500 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
     })
 
 
+def _pc_files_search_roots(roots: Any, value: Any) -> list[dict[str, str]] | None:
+    """Resolve the optional search folder to the roots the command may scan.
+
+    A label or relative folder uses ``pc_search_path`` as before. #8048: an
+    external connector names a recursive search folder as an absolute path
+    inside an owner's registered drive, which Engine folds to the same
+    ``<drive>:/<relative>`` shape the list route already accepts. Fall back to
+    that route's ``_pc_files_pick_root`` for those paths; an unregistered drive
+    is still refused there, so no grant is widened.
+    """
+    if not isinstance(roots, list) or not roots:
+        return None
+    path = pc_search_path(value)
+    if path is None:
+        path = value
+    if not path:
+        return [{"label": entry["label"], "path": entry["path"]} for entry in roots]
+    picked = _pc_files_pick_root(roots, path)
+    if picked is None:
+        return None
+    root, relative = picked
+    label = next((entry["label"] for entry in roots if entry["path"] == root), None)
+    if label is None:
+        return None
+    return [{"label": label,
+             "path": root.rstrip("/") + ("/" + relative if relative else "")}]
+
+
+async def _engine_pc_files_call_dispatch(
+    request: Request, *, payload: dict, requested_mode: str, mode: str,
+    scope_claim: dict | None, roots: list, selected: str | None,
+    session: Any, uid: str, target: dict,
+) -> tuple[JSONResponse | None, dict[str, object]]:
+    """디스패치 분기 구간.
+
+    본문은 리팩터 전 `_engine_pc_files_call`의 연속 구간을 글자 그대로 옮긴다.
+    검사 순서·실패 응답·await 순서·디스패치 생성 인자를 그대로 지킨다.
+    """
+    if mode == "dispatch":
+        op = payload.get("op")
+        if op not in _PC_FILES_OPS:
+            return _error(422, "oracle_mesh_file_op_invalid"), {}
+        search_mode = None
+        claim_op = op
+        if op == "search":
+            search_mode = pc_search_mode(payload.get("search_mode"))
+            claim_op = _pc_files_claim_op(op, search_mode)
+            if claim_op is None:
+                return _error(422, "oracle_mesh_file_search_invalid"), {}
+        # The independently signed ceiling is enforced before either dispatch
+        # constructor. The existing owner/path/size/idempotency checks follow.
+        if scope_claim is not None and claim_op not in scope_claim["ops"]:
+            return _error(403, "pc_scope_denied"), {}
+        search_roots = None
+        if op == "search":
+            # No folder named means every approved root, in order: the owner's
+            # grant is the whole set, so a search never has to guess one and is
+            # never refused for not naming one.
+            search_roots = _pc_files_search_roots(roots, payload.get("path"))
+            if search_roots is None:
+                return _error(422, "oracle_mesh_file_path_invalid"), {}
+            if pc_search_roots(search_roots) is None:
+                return _error(503, "oracle_mesh_file_root_unavailable"), {}
+            root = relative = None
+        else:
+            picked = _pc_files_pick_root(roots, payload.get("path"))
+            if picked is None:
+                return _error(422, "oracle_mesh_file_path_invalid"), {}
+            root, relative = picked
+            if op == "read" and not relative:
+                return _error(422, "oracle_mesh_file_path_invalid"), {}
+        tool_call_ref = payload.get("tool_call_ref")
+        if (
+            not isinstance(tool_call_ref, str)
+            or _PC_FILES_SAFE_REF.fullmatch(tool_call_ref) is None
+        ):
+            return _error(422, "oracle_mesh_file_call_invalid"), {}
+        command_workspace = await _dispatch_workspace_id(request, uid, session)
+        if not command_workspace:
+            return _error(503, "oracle_mesh_workspace_unavailable"), {}
+        job_operation = {"op": op, "path": payload["path"]} if requested_mode == "job_start" else None
+        if op in _PC_WRITE_OPS:
+            # One write step, one account. The path the PC will change is built
+            # the way the listing builds its folder - the root the server picked
+            # plus the relative path the caller named - so a request never
+            # carries an absolute target of its own.
+            resolved = root.rstrip("/") + ("/" + relative if relative else "")
+            content_b64 = None
+            append = False
+            if op == "write":
+                content = payload.get("content")
+                if not isinstance(content, str):
+                    return _error(422, "oracle_mesh_file_content_invalid"), {}
+                if "append" in payload and type(payload["append"]) is not bool:
+                    return _error(422, "oracle_mesh_file_mode_invalid"), {}
+                append = payload.get("append") is True
+                content_b64 = base64.b64encode(content.encode("utf-8")).decode("ascii")
+                if job_operation is not None:
+                    job_operation.update(expected_bytes=len(content.encode("utf-8")),
+                                         expected_sha256=hashlib.sha256(content.encode("utf-8")).hexdigest())
+                    if append:
+                        job_operation["mode"] = "append"
+            old_text_b64 = new_text_b64 = None
+            if op == "edit":
+                # #7065: the two byte sequences are carried the same way the
+                # write carries its bytes, so no console code page or quoting
+                # rule can change what is searched for or what is written.
+                old_text, new_text = payload.get("old_text"), payload.get("new_text")
+                if not isinstance(old_text, str) or not isinstance(new_text, str):
+                    return _error(422, "oracle_mesh_file_edit_invalid"), {}
+                if not old_text:
+                    return _error(422, "oracle_mesh_file_edit_invalid"), {}
+                replace_all = payload.get("replace_all")
+                if replace_all is not None and not isinstance(replace_all, bool):
+                    return _error(422, "oracle_mesh_file_edit_invalid"), {}
+                if job_operation is not None:
+                    job_operation["edit"] = True
+                old_text_b64 = base64.b64encode(old_text.encode("utf-8")).decode("ascii")
+                new_text_b64 = base64.b64encode(new_text.encode("utf-8")).decode("ascii")
+            destination_path = None
+            if op == "move":
+                picked_destination = _pc_files_pick_root(roots, payload.get("destination"))
+                if picked_destination is None:
+                    return _error(422, "oracle_mesh_file_path_invalid"), {}
+                destination_root, destination_relative = picked_destination
+                if destination_root != root or not destination_relative:
+                    # A move stays inside the folder this link was granted, and
+                    # never onto the granted root itself: replacing a whole
+                    # folder is not what moving one file means.
+                    return _error(422, "oracle_mesh_file_path_invalid"), {}
+                destination_path = destination_root.rstrip("/") + "/" + destination_relative
+                if job_operation is not None:
+                    job_operation["destination"] = payload["destination"]
+            command = _pc_write_command(
+                op=op,
+                root=root,
+                target=resolved,
+                backup_dir=_pc_backup_dir(
+                    root, datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                ),
+                relative=relative,
+                destination=destination_path,
+                content_b64=content_b64,
+                old_text_b64=old_text_b64,
+                new_text_b64=new_text_b64,
+                append=append,
+                replace_all=bool(payload.get("replace_all")),
+            )
+            response = await dispatch_oracle_mesh_command_intent(
+                request, command=command,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                files_target=target,
+                background=requested_mode == "job_start",
+                job_operation=job_operation,
+            )
+            return _engine_pc_job_response(response, requested_mode), {}
+        if op == "read":
+            # #5015: the read reuses the existing kind="read" MeshCentral
+            # download lane. No shell command is built for it.
+            response = await dispatch_oracle_mesh_file_read_intent(
+                request,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                target=target,
+                root=root,
+                relative=relative,
+                background=requested_mode == "job_start",
+                job_operation=job_operation,
+            )
+            return _engine_pc_job_response(response, requested_mode), {}
+        if op == "read_chunk":
+            offset = pc_read_offset(payload.get("offset"))
+            length = pc_read_length(payload.get("length"))
+            if offset is None or length is None or not relative:
+                return _error(422, "oracle_mesh_file_range_invalid"), {}
+            command = pc_read_chunk_command(
+                root=root, relative=relative, offset=offset, length=length,
+            )
+            return await dispatch_oracle_mesh_command_intent(
+                request, command=share_command_prefix([root]) + command,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                files_target=target,
+                read_only=True,
+                share_roots=share_roots_of([root]),
+            ), {}
+        if op == "search":
+            query = pc_search_query(payload.get("query"))
+            if query is None:
+                return _error(422, "oracle_mesh_file_search_invalid"), {}
+            command = pc_search_command(
+                roots=search_roots, query=query, mode=search_mode,
+                limit=PC_SEARCH_MAX_LIMIT,
+            )
+            return await dispatch_oracle_mesh_command_intent(
+                request, command=share_command_prefix(search_roots) + command,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                files_target=target,
+                read_only=True,
+                share_roots=share_roots_of(search_roots),
+            ), {}
+        depth = payload.get("depth")
+        if "depth" in payload and (
+            type(depth) is not int or isinstance(depth, bool) or not 1 <= depth <= 3
+        ):
+            return _error(422, "oracle_mesh_file_depth_invalid"), {}
+        offset = payload.get("offset")
+        if "offset" in payload and (
+            type(offset) is not int or isinstance(offset, bool) or not 0 <= offset <= 10_000
+        ):
+            return _error(422, "oracle_mesh_file_offset_invalid"), {}
+        if (depth or 1) > 1 and (offset or 0) != 0:
+            return _error(422, "oracle_mesh_file_offset_invalid"), {}
+        recursive = payload.get("recursive")
+        if "recursive" in payload and type(recursive) is not bool:
+            return _error(422, "oracle_mesh_file_recursive_invalid"), {}
+        if recursive is True:
+            # This leg carries no name fragment, and the recursive builder
+            # refuses to walk without one. A recursive name search travels as
+            # the search op instead, so the flag is refused here by name rather
+            # than left to fail inside the builder.
+            return _error(422, "oracle_mesh_file_recursive_unsupported"), {}
+        command = _pc_files_command(
+            op=op, root=root, relative=relative,
+            depth=depth if depth is not None else 1,
+            offset=offset if offset is not None else 0,
+        )
+        response = await dispatch_oracle_mesh_command_intent(
+            request, command=share_command_prefix([root]) + command,
+            wire={
+                "run_id": payload["run_id"],
+                "device_id": selected,
+                "confirmed": True,
+            },
+            trusted_owner=(session, uid, command_workspace),
+            tool_call_ref=tool_call_ref,
+            files_target=target,
+            # #7602: only a read is handed out again after a run-out lease.
+            read_only=_pc_files_read_only(op),
+            share_roots=share_roots_of([root]),
+            background=requested_mode == "job_start",
+                job_operation=job_operation,
+        )
+        return _engine_pc_job_response(response, requested_mode), {}
+    return None, {}
+
+
+async def _engine_pc_files_call_verify(
+    request: Request, *, product: str,
+) -> tuple[JSONResponse | None, dict[str, object]]:
+    """서명·본문 파싱·모드 검증·소유자/대상 확인 구간.
+
+    본문은 리팩터 전 `_engine_pc_files_call`의 연속 구간을 글자 그대로 옮긴다.
+    검사 순서와 실패 응답, await 순서를 그대로 지킨다.
+    """
+    raw, proof_error = await _verify_engine_proof(request, max_body_bytes=None)
+    if proof_error is not None or raw is None:
+        return (proof_error if proof_error is not None else _error(
+            401, "claw_engine_proof_required",
+        )), {}
+    scope_claim, scope_error = _engine_pc_scope_claim(request, raw, product=product)
+    if scope_error is not None:
+        return scope_error, {}
+    try:
+        payload = json.loads(raw)
+    except (ValueError, TypeError):
+        return _error(400, "claw_engine_files_invalid_body"), {}
+    if not isinstance(payload, dict):
+        return _error(400, "claw_engine_files_invalid_body"), {}
+    requested_mode = mode = payload.get("mode")
+    # Only the dispatch leg has optional fields today; every other leg is exact.
+    optional = set()
+    if mode == "context":
+        expected = {"subject_id", "run_id", "device_id", "mode"}
+    elif mode == "dispatch":
+        expected = {
+            "subject_id", "run_id", "device_id", "op", "path",
+            "tool_call_ref", "mode",
+        }
+        # A write names its bytes and a move names where the file lands. Nothing
+        # else may add a field, and the operation itself is validated below.
+        # A search names its query and which side of the file it looks at.
+        extra_fields = {"write": {"content"}, "move": {"destination"},
+                        "search": {"query", "search_mode"},
+                        "read_chunk": {"offset", "length"}}
+        # #7603: a write may name the append spelling. It is its own boolean
+        # because `mode` in this body already names the transport leg.
+        optional_fields = {"write": {"append"}}
+        named = payload.get("op")
+        if isinstance(named, str) and named in extra_fields:
+            expected = expected | extra_fields[named]
+        if isinstance(named, str) and named in optional_fields:
+            optional = optional_fields[named]
+        else:
+            optional = set()
+        if named == "list":
+            # The widened read-only listing carries its depth and recursive
+            # flag only when the caller named them; both are re-validated
+            # (type and range) below before any command is built.
+            for key in ("depth", "recursive"):
+                if key in payload:
+                    expected = expected | {key}
+    elif mode == "job_start":
+        expected = {"subject_id", "run_id", "device_id", "mode", "operation", "tool_call_ref"}
+    elif mode == "job_status":
+        expected = {"subject_id", "run_id", "device_id", "mode", "job_id"}
+    elif mode == "job_output":
+        expected = {"subject_id", "run_id", "device_id", "mode", "job_id", "offset", "length"}
+    elif mode == "read_output":
+        expected = {"subject_id", "run_id", "device_id", "mode", "handle", "offset", "length"}
+    elif mode == "search_output":
+        expected = {"subject_id", "run_id", "device_id", "mode", "handle", "query"}
+    elif mode == "store_output":
+        expected = {"subject_id", "run_id", "device_id", "mode", "output", "source", "tool_call_ref"}
+    elif mode in ("command_status", "result"):
+        expected = {"subject_id", "run_id", "dispatch_id", "mode"}
+    else:
+        return _error(400, "claw_engine_files_invalid_body"), {}
+    if not (expected <= set(payload) <= expected | optional):
+        return _error(400, "claw_engine_files_invalid_body"), {}
+    if not all(
+        isinstance(payload.get(name), str) and 0 < len(payload[name]) <= 512
+        for name in ("subject_id", "run_id")
+    ):
+        return _error(400, "claw_engine_files_invalid_body"), {}
+    if requested_mode == "job_start":
+        operation = payload.get("operation")
+        if not isinstance(operation, dict) or operation.get("op") not in _PC_FILES_OPS:
+            return _error(422, "oracle_mesh_file_op_invalid"), {}
+        op = operation["op"]
+        operation_fields = ({"op", "path"}
+                            | ({"content"} if op == "write" else
+                               {"old_text", "new_text", "replace_all"} if op == "edit" else
+                               {"destination"} if op == "move" else set()))
+        operation_optional = {"mode"} if op == "write" else set()
+        if not (operation_fields <= set(operation)
+                <= operation_fields | operation_optional):
+            return _error(400, "claw_engine_files_invalid_body"), {}
+        # The operation's own `mode` is the write spelling (overwrite/append),
+        # not this body's transport leg. It must never replace the leg name,
+        # and an append must reach the dispatch below as the `append` boolean:
+        # dropping it here would turn a requested append into an overwrite.
+        operation = dict(operation)
+        write_mode = operation.pop("mode", None)
+        if write_mode not in (None, "overwrite", "append"):
+            return _error(422, "oracle_mesh_file_mode_invalid"), {}
+        payload = {**payload, **operation}
+        if write_mode == "append":
+            payload["append"] = True
+        mode = "dispatch"
+    elif requested_mode in ("job_status", "job_output"):
+        payload["dispatch_id"] = payload["job_id"]
+        mode = "command_status" if requested_mode == "job_status" else "result"
+    new_mode = requested_mode in {"job_start", "job_status", "job_output", "read_output", "search_output", "store_output"}
+    if new_mode and scope_claim is None:
+        return _error(403, "pc_scope_required"), {}
+    if new_mode and (not isinstance(payload.get("device_id"), str) or not payload["device_id"]):
+        return _error(422, "oracle_mesh_device_invalid"), {}
+    if requested_mode in ("job_output", "read_output") and (
+        type(payload.get("offset")) is not int or payload["offset"] < 0
+        or type(payload.get("length")) is not int or not 0 <= payload["length"] <= 65536
+    ):
+        return _error(422, "pc_output_range_invalid"), {}
+    selected = payload.get("device_id")
+    if selected is not None and (
+        not isinstance(selected, str) or not 0 < len(selected) <= 128
+    ):
+        return _error(422, "oracle_mesh_device_invalid"), {}
+    uid, session, owner_error = await _engine_pc_files_owner(
+        request, product=product, subject_id=payload["subject_id"],
+    )
+    if owner_error is not None:
+        return owner_error, {}
+    history_store = getattr(request.app.state, "history_store", None)
+    if history_store is None or not callable(
+        getattr(history_store, "get_claw_run", None)
+    ):
+        return _error(503, "oracle_mesh_unconfigured"), {}
+    try:
+        run_row = await history_store.get_claw_run(uid, payload["run_id"])
+        if run_row is None and product == "chat" and mode == "context" and scope_claim is not None:
+            from .chat_pc_drive import promote_chat_pc_stream_run
+            run_row = await promote_chat_pc_stream_run(
+                request, uid=uid, run_id=payload["run_id"], device_id=selected,
+                action="pc_files_query",
+            )
+    except Exception:
+        return _error(503, "oracle_mesh_run_unavailable"), {}
+    if (
+        not isinstance(run_row, dict)
+        or run_row.get("run_id") != payload["run_id"]
+        or not isinstance(run_row.get("conversation_id"), str)
+        or not run_row["conversation_id"]
+    ):
+        return _error(404, "oracle_mesh_run_unavailable"), {}
+
+    scope_reader = getattr(history_store, "get_pc_run_scope", None)
+    try:
+        saved_scope = await scope_reader(user_id=uid, run_id=payload["run_id"]) if callable(scope_reader) else None
+    except Exception:
+        return _error(503, "pc_scope_store_unavailable"), {}
+    if saved_scope is not None and scope_claim != saved_scope:
+        return _error(403, "pc_scope_required" if scope_claim is None else "pc_scope_frozen"), {}
+
+    # The status/result legs carry only the dispatch id; adding a device hint
+    # is a malformed body by contract. The dispatch itself names the PC that
+    # ran the step, so use that node for the target check. Re-resolving a
+    # multi-link owner without it can only answer "ambiguous" and refuse a
+    # step that already ran.
+    if mode in ("command_status", "result") and selected is None:
+        # The private owner-scoped reader is the dispatch authority that also
+        # names its PC; the public read intentionally keeps the normal row's
+        # shape. Neither leg accepts a device hint from the Engine.
+        reader = getattr(history_store, "get_pc_output_dispatch_for_owner", None)
+        if not callable(reader):
+            reader = getattr(history_store, "get_oracle_mesh_dispatch_for_owner", None)
+        if callable(reader) and isinstance(payload.get("dispatch_id"), str):
+            try:
+                status_dispatch = await reader(
+                    user_id=uid, dispatch_id=payload["dispatch_id"],
+                )
+            except Exception:
+                status_dispatch = None
+            if isinstance(status_dispatch, dict):
+                hint = status_dispatch.get("node_ref") or status_dispatch.get("device_id")
+                if isinstance(hint, str) and hint:
+                    selected = hint
+
+    resolved, target_error = await _engine_pc_files_target(
+        request, session=session, selected_device_id=selected, user_id=uid,
+    )
+    if target_error is not None:
+        return target_error, {}
+    if resolved is None:
+        # No PC for this account: tool discovery answers honestly instead of
+        # failing the turn, and only a call that needs a device is refused.
+        if mode == "context":
+            return _response({
+                "ok": True,
+                "roots": [],
+                "device": {"device_id": selected, "status": "not_connected",
+                           "online_verified": False},
+                "tools": [],
+                "run_id": payload["run_id"],
+            }), {}
+        return _error(403, "oracle_mesh_device_unverified"), {}
+    target = resolved["target"]
+    roots = resolved["roots"]
+    device_id = target.get("device_id") or target["node_ref"]
+    return None, {
+        "scope_claim": scope_claim,
+        "payload": payload,
+        "requested_mode": requested_mode,
+        "mode": mode,
+        "selected": selected,
+        "uid": uid,
+        "session": session,
+        "history_store": history_store,
+        "run_row": run_row,
+        "new_mode": new_mode,
+        "resolved": resolved,
+        "target": target,
+        "roots": roots,
+        "device_id": device_id,
+    }
+
+
 async def oracle_mesh_engine_claw_files_call(request: Request) -> JSONResponse:
     return await _engine_pc_files_call(request, product="claw")
 
 
+@chat_pc_dispatch_ttl
 async def oracle_mesh_engine_chat_files_call(request: Request) -> JSONResponse:
     return await _engine_pc_files_call(request, product="chat")
 
@@ -6213,6 +6649,7 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
     )
 
 
+@chat_pc_dispatch_ttl
 async def oracle_chat_engine_pc_drive_call(request: Request) -> JSONResponse:
     """Engine-only Chat product PC drive lane; browser cookies never act as proof.
 

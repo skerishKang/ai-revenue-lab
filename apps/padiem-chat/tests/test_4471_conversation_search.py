@@ -31,14 +31,19 @@ from app.history import (  # noqa: E402
     _normalize_search_query,
     _search_snippet,
 )
-from test_b66_conversation_isolation_4657 import (  # noqa: E402
+from _support.b66_conversation_isolation import (  # noqa: E402
     D1Sqlite,
     OWNER as REAL_OWNER,
     setup_database,
 )
-
-STATIC = ROOT / "static"
-SEARCH_JS = STATIC / "conversation-search.js"
+from _support.conversation_search_4471 import (  # noqa: E402
+    app_opener_facts,
+    search_css_declarations,
+    search_function_facts,
+    search_listener_facts,
+    search_module_facts,
+    search_route_facts,
+)
 
 # Cloudflare documents this ceiling; a longer pattern is refused as "too
 # complex". https://developers.cloudflare.com/d1/platform/limits/ (2026-10-30)
@@ -241,175 +246,173 @@ class TestSearchOnRealSqlite:
 
 # --- route -------------------------------------------------------------------
 def test_search_route_is_registered_with_owner_auth_contract():
-    factory = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
-    assert '"/api/conversations/search"' in factory
-    assert "api_conversation_search" in factory
-    routes = (ROOT / "app" / "conversation_routes.py").read_text(encoding="utf-8")
-    body = routes[routes.index("async def api_conversation_search"):]
-    body = body[: body.index("async def api_conversation_detail")]
-    # Same fail-closed auth contract as the list route.
-    assert "auth_ready(request)" in body
-    assert "current_user_id(request)" in body
-    assert "status_code=401" in body
+    facts = search_route_facts()
+    assert facts["factory_search_routes"] == [
+        ("/api/conversations/search", "api_conversation_search", ("GET",))
+    ]
+    # Same fail-closed auth contract as the list route (AST calls).
+    assert ("auth_ready", ("request",)) in facts["called"]
+    assert ("current_user_id", ("request",)) in facts["called"]
+    assert "auth_ready" in facts["guard_calls"]
+    assert 401 in facts["status_codes"]
     # Bounded query: rejects oversized input rather than silently widening.
-    assert "query_too_long" in body
+    assert "query_too_long" in facts["string_constants"]
 
 
 # --- sidebar entry (static contract) -----------------------------------------
 def test_search_module_is_fail_closed_and_independent_of_web_search():
-    # Guard executable code, not the boundary-documenting comments.
-    source = "\n".join(
-        line for line in SEARCH_JS.read_text(encoding="utf-8").splitlines()
-        if not line.lstrip().startswith("//")
-    )
+    # Parsed from executable code (comments stripped in the helper).
+    facts = search_module_facts()
     # Fail-closed default and availability from the canonical capability
     # projection (never a client-side fetch or stored flag).
-    assert "let available = false;" in source
-    assert "window.PadiemProductCapabilities" in source
-    assert "auth.loaded === true" in source
-    assert "auth.authenticated === true" in source
-    assert "auth.historyReady === true" in source
+    assert facts["available_initial"] is False
+    assert "window.PadiemProductCapabilities" in facts["member_chains"]
+    assert facts["auth_flags"] == {
+        "loaded": True,
+        "authenticated": True,
+        "historyReady": True,
+    }
     # Never reads or toggles web-search / research controls or the center card.
     for forbidden in ("webSearchButton", "webSearchStarterButton", "deepResearchButton", "웹에서 찾아줘"):
-        assert forbidden not in source, forbidden
+        assert forbidden not in facts["identifiers"], forbidden
+        assert forbidden not in facts["string_literals"], forbidden
+        assert forbidden not in facts["member_chains"], forbidden
     # No client-side credential or storage authority.
     for forbidden in ("localStorage", "sessionStorage", "document.cookie"):
-        assert forbidden not in source, forbidden
+        assert forbidden not in facts["identifiers"], forbidden
+        assert forbidden not in facts["string_literals"], forbidden
+        assert forbidden not in facts["member_chains"], forbidden
     # Opening a hit goes through the canonical loader app.js publishes, not a
     # recent-list DOM row: a hit outside the recent page must still open.
-    assert "window.PadiemChatConversationOpener" in source
-    assert "opener.open(conversationId)" in source
-    assert "openThroughHistory" not in source
-    assert 'querySelectorAll(".history-item")' not in source
+    assert "window.PadiemChatConversationOpener" in facts["member_chains"]
+    assert ("opener.open", "conversationId") in facts["call_args"]
+    assert "openThroughHistory" not in facts["identifiers"]
+    assert not any(callee.startswith("querySelectorAll") for callee in facts["calls"])
+    assert ".history-item" not in facts["string_literals"]
     # The search query is encoded, never concatenated raw into a URL.
-    assert "encodeURIComponent(query)" in source
+    assert ("encodeURIComponent", "query") in facts["call_args"]
 
 
 def test_search_module_reapplies_its_copy_on_locale_change():
-    source = "\n".join(
-        line for line in SEARCH_JS.read_text(encoding="utf-8").splitlines()
-        if not line.lstrip().startswith("//")
-    )
+    facts = search_module_facts()
     # Module-owned dynamic copy follows the document language and is re-applied
     # on the app's locale-change event (the same convention other modules use).
-    assert "document.documentElement.lang" in source
-    assert 'addEventListener("padiem:localechange"' in source
+    assert "document.documentElement.lang" in facts["member_chains"]
+    assert ("window", "padiem:localechange") in facts["event_listeners"]
 
 
 # --- MUST FIX 1: canonical open path -----------------------------------------
-def _executable(path: Path) -> str:
-    """Comment-stripped source: these guards bind behavior, not prose."""
-    return "\n".join(
-        line for line in path.read_text(encoding="utf-8").splitlines()
-        if not line.lstrip().startswith("//")
-    )
-
-
-def _fn(source: str, signature: str) -> str:
-    start = source.index(signature)
-    return source[start : source.index("\n  }", start)]
-
-
 def test_app_js_publishes_the_canonical_opener_and_search_uses_it() -> None:
-    app = _executable(STATIC / "app.js")
-    opener = _fn(app, "window.PadiemChatConversationOpener = Object.freeze({")
+    opener = app_opener_facts()
     # The handle forwards to the one loader that already owns auth, the inFlight
     # lock, project restore and the server-verified Claw set.
-    assert "openSavedConversation(conversationId)" in opener
+    assert opener["frozen"] is True
+    assert (opener["open_param"], opener["open_callee"], opener["open_arg"]) == (
+        "conversationId",
+        "openSavedConversation",
+        "conversationId",
+    )
 
-    search = _executable(SEARCH_JS)
-    assert "window.PadiemChatConversationOpener" in search
-    assert "opener.open(conversationId)" in search
+    facts = search_module_facts()
+    assert "window.PadiemChatConversationOpener" in facts["member_chains"]
+    assert ("opener.open", "conversationId") in facts["call_args"]
     # The hit id is validated before it can reach the loader.
-    assert "/^chat_[a-f0-9]{32}$/.test(conversationId)" in search
+    assert ("^chat_[a-f0-9]{32}$", "conversationId") in facts["regex_tests"]
     # No second conversation route: the module fetches the search endpoint only.
-    assert "conversationId}" not in search
-    assert "SEARCH_ENDPOINT" in search
-    assert search.count("await fetch(") == 1
+    assert not any("conversationId}" in literal for literal in facts["string_literals"])
+    assert facts["endpoint"] == "/api/conversations/search"
+    assert "SEARCH_ENDPOINT" in facts["identifiers"]
+    assert len(facts["fetch_calls"]) == 1
+    assert facts["fetch_calls"][0]["awaited"] is True
+    assert "SEARCH_ENDPOINT" in facts["fetch_calls"][0]["target"]
+    assert "conversationId" not in facts["fetch_calls"][0]["target"]
 
 
 def test_opener_is_called_for_every_hit_not_only_recent_list_rows() -> None:
-    search = _executable(SEARCH_JS)
-    render = _fn(search, "  function renderResults(conversations, query) {")
+    render = search_function_facts("renderResults")
     # Each rendered row binds the canonical opener directly, so membership in the
     # recent list can no longer decide whether a hit is clickable.
-    assert 'row.addEventListener("click", () => openHit(conversation.id));' in render
-    assert "match.click()" not in search
-    assert "data-conversation-id" not in search
+    assert ("row", "click") in render["event_listeners"]
+    assert ("openHit", "conversation.id") in render["call_args"]
+    facts = search_module_facts()
+    assert "match.click" not in facts["calls"]
+    assert "data-conversation-id" not in facts["string_literals"]
     # The recent-list row no longer carries the id attribute the delegation used.
-    assert "data-conversation-id" not in _executable(STATIC / "app.js")
+    assert app_opener_facts()["data_conversation_id_literals"] == set()
 
 
 # --- MUST FIX 2: query / auth race and stale results -------------------------
 def test_generation_is_superseded_at_the_keystroke_not_when_the_call_starts() -> None:
-    search = _executable(SEARCH_JS)
-    listener = search[
-        search.index('input.addEventListener("input"') : search.index('input.addEventListener("keydown"')
-    ]
+    listener = search_listener_facts("input", "input")
+    events = listener["events"]
     # The old request is superseded before the debounce is even scheduled, so a
     # response to the previous query can never land after a newer keystroke.
-    assert listener.index("++generation") < listener.index("setTimeout(")
+    assert events.index("++generation") < events.index("setTimeout")
     # Any pending debounce is cancelled, and the previous rows are dropped at the
     # same instant rather than lingering under a "searching" label.
-    assert "clearTimeout(debounceTimer)" in listener
-    assert "results.replaceChildren()" in listener
-    assert listener.index("results.replaceChildren()") < listener.index("setTimeout(")
+    assert ("clearTimeout", "debounceTimer") in listener["call_args"]
+    assert "results.replaceChildren" in listener["calls"]
+    assert events.index("results.replaceChildren") < events.index("setTimeout")
     # The captured generation is handed to the request, not re-read later.
-    assert "runSearch(rawQuery, seq)" in listener
+    assert ("runSearch", "rawQuery, seq") in listener["call_args"]
 
 
 def test_every_async_continuation_refuses_a_superseded_generation() -> None:
-    search = _executable(SEARCH_JS)
-    run = _fn(search, "  async function runSearch(rawQuery, seq) {")
+    run = search_function_facts("runSearch")
+    events = run["events"]
     # Entry, after the response, and after a rejection: all three compare, so no
     # path lets a stale response write results or status.
-    assert run.count("seq !== generation") >= 3
-    assert run.index("seq !== generation") < run.index("await fetch(")
-    for continuation in ("renderResults(data.conversations, query)", 'showStatus("검색을 사용할 수 없습니다."'):
-        assert run.index("seq !== generation") < run.index(continuation)
+    assert run["comparisons"].count("seq!==generation") >= 3
+    assert events.index("seq!==generation") < events.index("fetch")
+    assert ("renderResults", "data.conversations, query") in run["call_args"]
+    assert events.index("seq!==generation") < events.index("renderResults")
+    show_status_args = [args for callee, args in run["call_args"] if callee == "showStatus"]
+    assert len(show_status_args) == 2
+    assert all("검색을 사용할 수 없습니다." in args for args in show_status_args)
+    assert events.index("seq!==generation") < events.index("showStatus")
 
 
 def test_close_and_session_flip_invalidate_and_erase_the_panel() -> None:
-    search = _executable(SEARCH_JS)
-    close = _fn(search, "function closeSearch() {")
-    assert "invalidate()" in close
-    assert 'input.value = ""' in close
-    assert close.index("invalidate()") < close.index("panel.hidden = true")
+    close = search_function_facts("closeSearch")
+    assert "invalidate" in close["calls"]
+    assert close["assignments"].get("input.value") == '""'
+    assert close["events"].index("invalidate") < close["events"].index("assign:panel.hidden=true")
 
-    availability = _fn(search, "function applyAvailability() {")
-    assert "if (!available) closeSearch();" in availability
+    availability = search_function_facts("applyAvailability")
+    assert "if:!available" in availability["if_conditions"]
+    assert "closeSearch" in availability["calls"]
+    assert availability["events"].index("if:!available") < availability["events"].index("closeSearch")
 
-    auth = _fn(search, "function applyAuthState(auth) {")
+    auth = search_function_facts("applyAuthState")
     # Only a real transition clears: the projection re-dispatches on every window
     # focus, and clearing then would erase results the owner is reading.
-    assert "signature !== authSignature" in auth
-    assert "if (changed) invalidate();" in auth
+    assert "signature!==authSignature" in auth["comparisons"]
+    assert "if:changed" in auth["if_conditions"]
+    assert "invalidate" in auth["calls"]
+    assert auth["events"].index("if:changed") < auth["events"].index("invalidate")
 
-    invalidate = _fn(search, "function invalidate() {")
-    assert "generation += 1" in invalidate
-    assert "clearTimeout(debounceTimer)" in invalidate
-    assert "results.replaceChildren()" in invalidate
-    assert "clearStatus()" in invalidate
+    invalidate = search_function_facts("invalidate")
+    assert "generation+=1" in invalidate["events"]
+    assert ("clearTimeout", "debounceTimer") in invalidate["call_args"]
+    assert "results.replaceChildren" in invalidate["calls"]
+    assert "clearStatus" in invalidate["calls"]
 
 
 # --- quality: scoped sidebar styling ----------------------------------------
 def test_search_input_and_snippet_have_scoped_sidebar_styles() -> None:
-    css = (STATIC / "history.css").read_text(encoding="utf-8")
-    panel = css[css.index(".conversation-search-panel {") :]
+    input_decls = search_css_declarations(".conversation-search-input")
+    assert input_decls.get("width") == "100%"
+    assert input_decls.get("box-sizing") == "border-box"
+    assert input_decls.get("min-width") == "0"
+    assert input_decls.get("min-height") == "44px"
+    assert input_decls.get("color") == "inherit"
 
-    input_block = panel[panel.index(".conversation-search-input {") : panel.index(".conversation-search-results {")]
-    assert "width: 100%" in input_block
-    assert "box-sizing: border-box" in input_block
-    assert "min-width: 0" in input_block
-    assert "min-height: 44px" in input_block
-    assert "color: inherit" in input_block
-
-    hit = panel[panel.index(".conversation-search-hit {") : panel.index(".conversation-search-title {")]
+    hit_decls = search_css_declarations(".conversation-search-hit")
     # The inherited .history-item nowrap/ellipsis would flatten a two-line hit.
-    assert "white-space: normal" in hit
-    assert "min-width: 0" in hit
+    assert hit_decls.get("white-space") == "normal"
+    assert hit_decls.get("min-width") == "0"
 
-    snippet = panel[panel.index(".conversation-search-snippet {") :]
-    assert "-webkit-line-clamp: 2" in snippet
-    assert "overflow: hidden" in snippet
-    assert "overflow-wrap: anywhere" in snippet
+    snippet_decls = search_css_declarations(".conversation-search-snippet")
+    assert snippet_decls.get("-webkit-line-clamp") == "2"
+    assert snippet_decls.get("overflow") == "hidden"
+    assert snippet_decls.get("overflow-wrap") == "anywhere"

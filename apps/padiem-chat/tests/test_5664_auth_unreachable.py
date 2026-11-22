@@ -37,6 +37,7 @@ The Node test evaluates the shipped ``static/app.js`` bytes; the tests below
 pin the call sites and the copy that ships with them.
 """
 from __future__ import annotations
+import locale_bundle
 
 import shutil
 import subprocess
@@ -49,7 +50,7 @@ from _r5_auth_module_harness import observations
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 APP_JS = STATIC / "app.js"
-LOCALE_JS = STATIC / "locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 NODE_TEST = ROOT / "tests" / "test_5664_auth_unreachable_node.mjs"
 
 
@@ -93,7 +94,7 @@ def test_the_unreachable_copy_is_not_the_generic_sign_in_message():
 
 def test_the_worker_startup_race_is_documented_as_the_trigger():
     """The copy's reason is the runtime race, not a guess about the account."""
-    app_js = APP_JS.read_text(encoding="utf-8")
-    note = app_js.split("// #5664:", 1)[1].split("const AUTH_SERVER_UNREACHABLE", 1)[0]
+    dialog = (APP_JS.parent / "chat-login-dialog-module.js").read_text(encoding="utf-8")
+    note = (APP_JS.read_text(encoding="utf-8") + dialog).split("// #5664:", 1)[1].split("const AUTH_SERVER_UNREACHABLE", 1)[0]
     assert "NoGilError" in note
     assert "cloudflare/workerd#6624" in note

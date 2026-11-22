@@ -5,12 +5,14 @@ app.js는 15개 한 줄 전달 함수와 clawRunModule() 팩토리만 유지한�
 """
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
 from pathlib import Path
 
 import pytest
+from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -36,10 +38,8 @@ NAMES = (
 )
 
 EXPECTED_GETTERS = {
-    "clawResultDocx", "clawArtifactMeta", "clawArtifactName", "clawArtifactSize",
-    "clawResultSuccessNote", "clawResultEmpty", "clawResultHint", "clawResultCard",
-    "clawResultKind", "clawResultBadge", "clawApprovalActions", "clawResultPreview",
-    "clawRequestEcho", "clawRequestEchoText", "clawExecuteButton", "input",
+    "clawResultDocx", "clawResultEmpty", "clawResultHint", "clawResultCard",
+    "clawResultBadge", "clawResultPreview", "clawExecuteButton", "input",
     "clawT", "setClawStatus", "setClawAreaState", "setClawButtonsBusy",
     "clawBoundedRefusalCopy", "approvalDecisionErrorMessage", "mappedUiError",
     "safeLocalUiMessage", "failureCodeNote", "loadClawRunHistory",
@@ -63,6 +63,14 @@ MOVED_MARKERS = (
     "const CLAW_DISPATCH_KEY_WINDOW_MS = 10000;",
     "let clawPdfPreviewController = null;",
     "deps.clawLastDispatchKey = deps.clawExecuteWireKey(executePayload);",
+    'const clawResultKind = document.getElementById("clawResultKind");',
+    'const clawApprovalActions = document.getElementById("clawApprovalActions");',
+    'const clawRequestEcho = document.getElementById("clawRequestEcho");',
+    'const clawRequestEchoText = document.getElementById("clawRequestEchoText");',
+    'const clawArtifactMeta = document.getElementById("clawArtifactMeta");',
+    'const clawArtifactName = document.getElementById("clawArtifactName");',
+    'const clawArtifactSize = document.getElementById("clawArtifactSize");',
+    'const clawResultSuccessNote = document.getElementById("clawResultSuccessNote");',
 )
 
 
@@ -74,12 +82,83 @@ def test_index_loads_claw_run_module_before_app() -> None:
 
 
 def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
+    """이동 본문은 모듈에만 살고 app.js는 등록부 경유로 연결한다(이중 소유 금지).
+
+    실행 검사는 "어디에 살아 있는지"를 대신하지 못한다. 같은 본문이 양쪽에
+    생기면 어느 쪽이 실제로 도는지 알 수 없으므로 구조 계약으로 유지한다.
+    B7: 전달 함수는 등록부(app.provide("clawRun")) 경유로 대체됐다 —
+    app.js에 같은 이름 정의가 없고 등록된 조각에 이름이 있다.
+    """
+    assert 'app.provide("clawRun",' in APP
     for name in NAMES:
-        line = f"function {name}(...a) {{ return clawRunModule().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
-    assert "function clawRunModule() {" in APP
-    assert "window.PadiemChatClawRunModule.create({" in APP
+        assert f"function {name}(" not in APP, name
+        assert MODULE.count(f"function {name}(") == 1, name
+    assert "function clawRunModule() { return clawRun; }" in APP
+    assert "window.PadiemChatClawRunModule.create(Object.setPrototypeOf({" in APP
+
+
+def test_claw_run_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("clawRun"))로 같은 이름을 찾을 수 있다.
+
+    app.js 전달 함수가 없어도 소비자(app.js 호출자·deps getter)는 등록된 조각의
+    같은 이름 API에 도달한다. 실제 모듈 본문을 node vm에서 문맥에 등록해
+    NAMES 15개가 전부 함수로 조회되는지 본다(동작 단언은 node vm 하네스가
+    직접 호출로 증명한다).
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const byId = new Map();
+const fakeEl = () => ({
+  hidden: true, textContent: "", children: [], dataset: {},
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, removeChild() {},
+});
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, setAttribute() {} }),
+  },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-claw-run-module.js", "utf8"), sandbox,
+  { filename: "chat-claw-run-module.js" });
+const names = __NAMES_JSON__;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("clawRun", window.PadiemChatClawRunModule.create(Object.setPrototypeOf({}, app)));
+  const out = {};
+  for (const n of __NAMES_JSON__) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("__NAMES_JSON__", json.dumps(list(NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines() -> None:
@@ -92,12 +171,13 @@ def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines()
 
 
 def test_deps_getters_and_setters_match_exact_closure_surface() -> None:
-    start = APP.index("window.PadiemChatClawRunModule.create({")
-    block = APP[start:APP.index("});", start)]
+    block = create_receives_app_context(APP, "window.PadiemChatClawRunModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert gets == EXPECTED_GETTERS
-    assert sets == EXPECTED_SETTERS
+    assert gets <= EXPECTED_GETTERS
+    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
+    assert sets <= EXPECTED_SETTERS
+    assert sets | (EXPECTED_SETTERS & context_names(APP)) == EXPECTED_SETTERS
 
 
 def test_all_fifteen_functions_execute_in_node_vm_with_strict_live_deps() -> None:
@@ -137,20 +217,23 @@ const el = () => ({
   focus() { this.focused = (this.focused || 0) + 1; },
 });
 
+const registry = new Map();
+const reg = (id, elm) => { registry.set(id, elm); return elm; };
+
 const clawResultDocx = el();
-const clawArtifactMeta = el();
-const clawArtifactName = el();
-const clawArtifactSize = el();
-const clawResultSuccessNote = el();
+const clawArtifactMeta = reg("clawArtifactMeta", el());
+const clawArtifactName = reg("clawArtifactName", el());
+const clawArtifactSize = reg("clawArtifactSize", el());
+const clawResultSuccessNote = reg("clawResultSuccessNote", el());
 const clawResultEmpty = el();
 const clawResultHint = el();
 const clawResultCard = el();
-const clawResultKind = el();
+const clawResultKind = reg("clawResultKind", el());
 const clawResultBadge = el();
-const clawApprovalActions = el();
+const clawApprovalActions = reg("clawApprovalActions", el());
 const clawResultPreview = el();
-const clawRequestEcho = el();
-const clawRequestEchoText = el();
+const clawRequestEcho = reg("clawRequestEcho", el());
+const clawRequestEchoText = reg("clawRequestEchoText", el());
 const clawExecuteButton = el();
 const input = el();
 
@@ -182,7 +265,10 @@ const pdfPreview = { created: 0, set: [], cleared: 0 };
 const ctx = vm.createContext({
   window: { PadiemClawPdfPreview: { create() { pdfPreview.created += 1; return {
     set(a) { pdfPreview.set.push(a); }, clear() { pdfPreview.cleared += 1; } }; } } },
-  document: { createElement: (t) => el(), body: el(), documentElement: { lang: "ko" } },
+  document: {
+    createElement: (t) => el(), body: el(), documentElement: { lang: "ko" },
+    getElementById: (id) => registry.get(id) || null,
+  },
   fetch: fetchImpl,
   URL: { createObjectURL: () => "blob:x", revokeObjectURL() {} },
   setTimeout: (fn) => { fn(); return 1; },
@@ -195,10 +281,8 @@ vm.runInContext(modSrc, ctx);
 const notes = [];
 const areaStates = [];
 const mod = ctx.window.PadiemChatClawRunModule.create(ctx.r5StrictDeps({
-  clawResultDocx, clawArtifactMeta, clawArtifactName, clawArtifactSize,
-  clawResultSuccessNote, clawResultEmpty, clawResultHint, clawResultCard,
-  clawResultKind, clawResultBadge, clawApprovalActions, clawResultPreview,
-  clawRequestEcho, clawRequestEchoText, clawExecuteButton, input,
+  clawResultDocx, clawResultEmpty, clawResultHint, clawResultCard,
+  clawResultBadge, clawResultPreview, clawExecuteButton, input,
   get clawApprovalInFlight() { return clawApprovalInFlight; },
   set clawApprovalInFlight(v) { clawApprovalInFlight = v; },
   get clawApprovalEpoch() { return clawApprovalEpoch; },

@@ -8,7 +8,9 @@ global.window = globalThis;
 vm.runInThisContext(fs.readFileSync(path.join(staticDir, "chat-transport.js"), "utf8"));
 const app = fs.readFileSync(path.join(staticDir, "app.js"), "utf8");
 const start = app.indexOf("  const FAILURE_CODE_PATTERN =");
-const end = app.indexOf("\n  function renderStreamError(", start);
+// B7 18차+19차: the renderStreamError forwarder is gone from app.js; the
+// app-owned error renderers end at renderCancelled.
+const end = app.indexOf("\n  function renderCancelled(", start);
 assert.ok(start >= 0 && end > start);
 // #7216 R5 step 5a: renderStreamError moved into the conversation module;
 // deps. prefixes strip back to the exact pre-move body this harness executes.
@@ -19,6 +21,9 @@ assert.ok(convStart >= 0 && convEnd > convStart);
 const context = {
   document: {createElement: (tag) => ({tag})},
   uiT: (key) => key === "error-code-reference" ? "참고 코드" : key,
+  // B7 (12차, core 등록부): sliced error renderers reach copy through the
+  // registry, so mirror the same path.
+  coreModule: () => ({ uiT: (key) => key === "error-code-reference" ? "참고 코드" : key }),
   MESSAGE_LIFECYCLE: {FAILED: "failed", TIMED_OUT: "timed_out"},
   PadiemChatLifecycle: {set: (article, value) => { article.state = value; }},
   window: {PadiemChatLifecycle: {applyRuntimeLabel: () => {}}},
@@ -36,6 +41,7 @@ for (const [code, status, expected] of [
   ["byok_auth_failed", 400, "API 키를 확인해 주세요."],
   ["entitlement_unavailable", 503, "지금은 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요."],
   ["invalid_request", 400, "요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요."],
+  ["chat_pc_b54_session_expired", 401, "로그인이 오래돼 PC 연결 확인이 필요합니다. 로그아웃 후 다시 로그인해 주세요."],
   ["unknown_failure", 500, "요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요."],
 ]) {
   const data = {ok: false, error: {code, message: "private provider error " + code}};

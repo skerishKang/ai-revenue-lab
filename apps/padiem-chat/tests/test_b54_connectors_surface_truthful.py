@@ -10,7 +10,8 @@ browser never receives provider tokens, workspace authority, or send/write scope
 former string-slicing contracts now EXECUTE the real shipped module sources in
 Node (window stub + strict deps) and assert the same boundaries as behavior:
 request inventory, response guards, safe sinks, closed state vocabulary.
-Static UI contracts (markup, locale, CSS) keep their source assertions.
+Source contracts (markup, locale, CSS) assert parsed attribute and rule values
+through the _support sheet reader.
 """
 
 from __future__ import annotations
@@ -26,15 +27,21 @@ from pathlib import Path
 
 # R5 0단계(R-01): 모듈로 옮겨진 정의도 함께 본다(index.html 로드 순서).
 from _r5_function_source import combined_source
+from _support.connectors_surface import (
+    capability_css_text,
+    connectors_module_text,
+    dialog_cards,
+    dialog_element,
+    dialog_element_attrs,
+    locale_table,
+    nav_attributes,
+    nav_markup,
+    shipped_connector_constants,
+    strict_deps_text,
+    calendar_module_text,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
-APP_JS = ROOT / "static/app.js"
-INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
-CAPABILITY_CSS = ROOT / "static/capability-nav.css"
-CALENDAR_MODULE = ROOT / "static/chat-calendar-module.js"
-CONNECTORS_MODULE = ROOT / "static/chat-connectors-module.js"
-STRICT_DEPS = Path(__file__).resolve().parent / "_r5_strict_deps.js"
 
 NAV_ID = "connectorsNavButton"
 DIALOG_ID = "connectorsDialog"
@@ -79,78 +86,20 @@ LOCALE_KEYS = (
 CARD_RE = re.compile(r'<div class="capability-card"([^>]*)>(.*?)</div>', re.DOTALL)
 
 
-def _index() -> str:
-    return INDEX_HTML.read_text(encoding="utf-8")
-
-
 def _dialog_element() -> str:
-    index = _index()
-    before, _ = index.split(f'id="{DIALOG_ID}"', 1)
-    start = before.rindex("<dialog")
-    return index[start:].split("</dialog>", 1)[0] + "</dialog>"
+    return dialog_element()
 
 
-def _nav_markup() -> str:
-    index = _index()
-    marker = f'id="{NAV_ID}"'
-    assert marker in index
-    before, after = index.split(marker, 1)
-    return "<button" + before.rsplit("<button", 1)[1] + marker + after.split("</button>", 1)[0] + "</button>"
-
-
-def _cards() -> dict[str, dict[str, str]]:
-    cards: dict[str, dict[str, str]] = {}
-    for attrs, inner in CARD_RE.findall(_dialog_element()):
-        slug = re.search(r'data-connector="([^"]+)"', attrs)
-        if not slug:
-            continue
-        connector_id = re.search(r'data-connector-id="([^"]+)"', attrs)
-        status = re.search(r'data-connector-status="([^"]+)"', attrs)
-        cards[slug.group(1)] = {
-            "attrs": attrs,
-            "inner": inner,
-            "connector_id": connector_id.group(1) if connector_id else "",
-            "status": status.group(1) if status else "",
-        }
-    return cards
+def _cards() -> dict[str, dict]:
+    return dialog_cards()
 
 
 def _locale_table() -> dict[str, dict[str, str]]:
-    source = LOCALE_JS.read_text(encoding="utf-8")
-    pattern = re.compile(r'"([A-Za-z0-9_\-]+)":\s*"((?:[^"\\]|\\.)*)"')
-
-    def unescape(value: str) -> str:
-        return value.replace('\\"', '"').replace("\\n", "\n").replace("\\t", "\t").replace("\\\\", "\\")
-
-    assert "en: {" in source
-    ko_part, en_part = source.split("en: {", 1)
-    return {
-        "ko": {key: unescape(value) for key, value in pattern.findall(ko_part)},
-        "en": {key: unescape(value) for key, value in pattern.findall(en_part)},
-    }
+    return locale_table()
 
 
 def _shipped_connector_constants() -> dict[str, str]:
-    """Read the connector route constants from the shipped sources.
-
-    R5 2부 B2: the Drive/Gmail constants moved into chat-connectors-module.js;
-    the Calendar constants stay in app.js.
-    """
-    app = APP_JS.read_text(encoding="utf-8") + "\n" + CONNECTORS_MODULE.read_text(encoding="utf-8")
-    constants: dict[str, str] = {}
-    for name in (
-        "GOOGLE_CALENDAR_CONNECTOR",
-        "GOOGLE_CALENDAR_TICKET_ENDPOINT",
-        "GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT",
-        "GOOGLE_DRIVE_CONNECTOR",
-        "GOOGLE_DRIVE_TICKET_ENDPOINT",
-        "GOOGLE_GMAIL_CONNECTOR",
-        "GOOGLE_GMAIL_TICKET_ENDPOINT",
-    ):
-        match = re.search(rf'\bconst {name} = "([^"]+)";', app)
-        assert match, name
-        constants[name] = match.group(1)
-    return constants
+    return shipped_connector_constants()
 
 
 # --- Node behavior harness -------------------------------------------------
@@ -357,9 +306,9 @@ const LIVE_IDS = {
 };
 """
 
-_CONNECTORS_MODULE_TEXT = CONNECTORS_MODULE.read_text(encoding="utf-8")
-_CALENDAR_MODULE_TEXT = CALENDAR_MODULE.read_text(encoding="utf-8")
-_STRICT_TEXT = STRICT_DEPS.read_text(encoding="utf-8")
+_CONNECTORS_MODULE_TEXT = connectors_module_text()
+_CALENDAR_MODULE_TEXT = calendar_module_text()
+_STRICT_TEXT = strict_deps_text()
 
 
 def _run_connector_node_script(body: str) -> dict:
@@ -396,14 +345,14 @@ def _run_connector_node_script(body: str) -> dict:
 
 
 def test_connectors_nav_is_enabled_and_bound_to_standalone_page() -> None:
-    nav = _nav_markup()
-    assert 'type="button"' in nav
-    assert "disabled" not in nav
-    assert 'aria-disabled="true"' not in nav
+    attrs = nav_attributes()
+    assert attrs.get("type") == "button"
     # Standalone page, never a popup: no dialog popup semantics on the nav.
-    assert 'aria-haspopup="dialog"' not in nav
-    assert 'aria-controls="connectorsView"' in nav
-    assert 'aria-expanded="false"' not in nav
+    assert "disabled" not in attrs
+    assert "aria-disabled" not in attrs
+    assert "aria-haspopup" not in attrs
+    assert "aria-expanded" not in attrs
+    assert attrs.get("aria-controls") == "connectorsView"
 
 
 def test_live_cards_are_exactly_the_reviewed_canonical_connector_ids() -> None:
@@ -417,33 +366,33 @@ def test_live_cards_are_exactly_the_reviewed_canonical_connector_ids() -> None:
         card = cards[slug]
         assert card["connector_id"] == connector_id
         assert card["status"] == "loading"
-        assert "data-connector-support" in card["inner"]
-        assert "data-connector-workspace" in card["inner"]
+        assert card["has_support"] is True
+        assert card["has_workspace"] is True
 
     # The permanently "preparing" Discord / Kakao Business cards are gone: the
     # server projection never carried them, so they could never activate.
-    dialog = _dialog_element()
     for slug in REMOVED_PREPARING_CARDS:
         assert slug not in cards
-        assert f'data-connector="{slug}"' not in dialog
 
     assert "google-calendar" in cards
-    assert 'data-google-connector-connect="google-calendar"' in cards["google-calendar"]["inner"]
+    assert cards["google-calendar"]["connect_actions"] == {"google-calendar"}
     # #3289: Drive is the second reviewed connection action.
-    assert 'data-google-connector-connect="google-drive"' in cards["google-drive"]["inner"]
+    assert cards["google-drive"]["connect_actions"] == {"google-drive"}
     # #7088: Gmail is the third reviewed connection action (gmail.readonly).
-    assert 'data-google-connector-connect="gmail"' in cards["gmail"]["inner"]
+    assert cards["gmail"]["connect_actions"] == {"gmail"}
     for slug in ("telegram", "slack"):
-        assert "data-google-connector-connect" not in cards[slug]["inner"]
+        assert cards[slug]["connect_actions"] == set()
 
 
 def test_dialog_has_bounded_loading_error_retry_surface() -> None:
-    dialog = _dialog_element()
+    live_status = dialog_element_attrs("connectorsLiveStatus")
+    assert live_status.get("role") == "status"
+    assert live_status.get("aria-live") == "polite"
+    assert live_status.get("aria-atomic") == "true"
+    retry = dialog_element_attrs("connectorsRetry")
+    assert retry.get("data-locale-key") == "retry"
     for element_id in ("connectorsLiveStatus", "connectorsLoading", "connectorsError", "connectorsRetry"):
-        assert f'id="{element_id}"' in dialog
-    assert 'id="connectorsLiveStatus" role="status" aria-live="polite" aria-atomic="true"' in dialog
-    assert 'id="connectorsRetry"' in dialog
-    assert 'data-locale-key="retry"' in dialog
+        assert dialog_element_attrs(element_id) is not None
 
 
 def test_markup_fallbacks_match_shipped_korean_locale() -> None:
@@ -906,12 +855,22 @@ def test_connectors_dialog_markup_is_well_formed() -> None:
 
 
 def test_status_styles_keep_support_and_workspace_visually_separate() -> None:
-    css = CAPABILITY_CSS.read_text(encoding="utf-8")
+    # Parse the sheet: strip comments, flatten @media/@supports wrappers so
+    # inner rules read like top-level ones.
+    css = re.sub(r"/\*.*?\*/", "", capability_css_text(), flags=re.S)
+    css = re.sub(r"@[\w-]+[^{]*\{", "", css)
+    selectors = set()
+    rules = []
+    for group, body in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+        rules.append((group, body))
+        selectors.update(selector.strip() for selector in group.split(","))
     for selector in (".connector-live-status", ".connector-retry", ".capability-workspace"):
-        assert selector in css
-    assert ".capability-read" in css
-    assert ".capability-soon" in css
-    assert "var(--accent-strong" in css
+        assert selector in selectors
+    assert ".capability-read" in selectors
+    assert ".capability-soon" in selectors
+    # The sheet highlights its affordances with the reviewed accent token:
+    # a parsed declaration check, not a raw substring of the sheet text.
+    assert any("var(--accent-strong" in body for _group, body in rules)
 
 
 def test_web_claw_connector_acceptance_markers() -> None:

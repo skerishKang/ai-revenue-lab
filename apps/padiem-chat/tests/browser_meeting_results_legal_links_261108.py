@@ -109,19 +109,26 @@ class MeetingResultsAndLegalLinks(unittest.TestCase):
             httpd.shutdown()
 
     def open_meeting(self, page):
+        # #7365 이후 회의 도구는 유틸 '회의정리·활동집' 안으로 moved —
+        # 유틸 → 회의정리·활동집 → 회의 항목(#meetingNavButton) → 회의 화면.
+        page.click("#utilNavButton")
+        page.wait_for_timeout(300)
+        page.click(".util-submenu-item:has-text('회의')")
+        page.wait_for_timeout(600)
         page.click("#meetingNavButton")
         page.wait_for_selector("#meetingView:not([hidden])")
 
     def test_guest_first_screen_shows_the_links_in_the_sidebar_only(self):
         def checks(page):
-            links = page.locator(".sidebar-legal-links")
+            links = page.locator(".sidebar-legal")
             assert links.is_visible(), "sidebar bottom carries the legal line"
             assert links.locator('a[href="./privacy.html"]').is_visible()
             assert links.locator('a[href="./terms.html"]').is_visible()
-            # Above the account row (guest login button), not under the cards.
+            # #7953/#7961: the legal line sits directly BELOW the account row
+            # (계정 단추 바로 아래 상시 한 줄), not above it.
             account_top = page.locator(".sidebar-account").bounding_box()["y"]
             links_top = links.bounding_box()["y"]
-            assert links_top < account_top
+            assert links_top > account_top
             assert page.locator(".guest-legal-links").count() == 0
             # The login dialog carries the one-line consent with both nouns linked.
             page.click("#loginButton")
@@ -135,7 +142,7 @@ class MeetingResultsAndLegalLinks(unittest.TestCase):
 
     def test_signed_in_sidebar_still_shows_the_links(self):
         def checks(page):
-            assert page.locator(".sidebar-legal-links").is_visible()
+            assert page.locator(".sidebar-legal").is_visible()
             assert page.locator(".sidebar-account").is_visible()
         self.run_page(SIGNED_IN_STATUS, checks)
 

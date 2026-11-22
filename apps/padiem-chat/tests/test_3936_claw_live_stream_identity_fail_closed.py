@@ -15,8 +15,8 @@ from padiem_ai_core.orchestration_events import (
     public_orchestration_event,
 )
 
-from test_3930_b54_live_sse_relay import _call, _streaming_adapter
-from test_b54_claw_general_p01_routing import _make_outcome
+from _support.live_sse_relay import _call, _streaming_adapter
+from _support.claw_general_routing import _make_outcome
 
 
 RUN = "orch_verified_1"

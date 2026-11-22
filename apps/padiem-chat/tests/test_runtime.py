@@ -1,4 +1,5 @@
 from __future__ import annotations
+import locale_bundle
 
 import json
 from pathlib import Path
@@ -14,6 +15,12 @@ def _signed_in_chat(monkeypatch):
 
     monkeypatch.setattr(chat_routes, "auth_ready", lambda request: True)
     monkeypatch.setattr(chat_routes, "current_user_id", lambda request: "usr_" + "7" * 32)
+
+# #8060 57차: 시트 원문 읽기는 _support/claw_static이 담당하고 시험은 파싱 값
+# (id·data-skill 속성 맵)과 문구·부재 경계 계약을 단언한다. 이 모듈은 원문
+# read를 갖지 않는다.
+from _support import claw_static
+from _support.html_tags import tags_for_page
 
 from app.b14_client import B14Client, ChatRuntimeError, PADIEM_IDENTITY_INSTRUCTION
 from app.config import ConfigError, Settings
@@ -361,16 +368,16 @@ async def test_api_chat_b14_adapter_with_mocked_transport():
 
 
 def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
-    root = Path(__file__).resolve().parents[1]
-    html = (root / "static/index.html").read_text(encoding="utf-8")
-    js = (root / "static/app.js").read_text(encoding="utf-8")
-    conv_js = (root / "static/chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
-    stream_js = (root / "static/chat-streaming-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5b
-    locale = (root / "static/locale.js").read_text(encoding="utf-8")
-    capabilities = (root / "static/attachment-capabilities.js").read_text(encoding="utf-8")
-    product_capabilities = (root / "static/product-capabilities.js").read_text(encoding="utf-8")
-    transport = (root / "static/chat-transport.js").read_text(encoding="utf-8")
-    conversation_state = (root / "static/conversation-state.js").read_text(encoding="utf-8")
+    # #8060 57차: 원문 읽기는 claw_static이 담당한다.
+    html = claw_static.sheet("index.html")
+    js = claw_static.sheet("app.js")
+    conv_js = claw_static.sheet("chat-conversation-module.js")  # #7216 R5 step 5a
+    stream_js = claw_static.sheet("chat-streaming-module.js")  # #7216 R5 step 5b
+    locale = claw_static.locale_source()
+    capabilities = claw_static.sheet("attachment-capabilities.js")
+    product_capabilities = claw_static.sheet("product-capabilities.js")
+    transport = claw_static.sheet("chat-transport.js")
+    conversation_state = claw_static.sheet("conversation-state.js")
     assert "무엇을 도와드릴까요" in html
     assert "무엇이든 물어보세요" in html
     assert "자동 추천" not in html
@@ -379,21 +386,25 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert '<div class="starter-grid" aria-label="추천 질문">' in html
     # #5634: the first card is the computer connection entry, so the simple
     # prompt anchor leaves the first screen. The remaining cards keep the
-    # skill routing.
-    assert 'id="pcConnectStarter"' in html
-    assert 'data-skill="explain"' not in html
-    assert 'data-skill="auto"' in html
-    assert 'data-skill="plan"' in html
-    assert 'id="recentTitle"' not in html
-    assert 'id="attachmentButton"' in html
+    # skill routing. The ids and skill routing are checked on parsed
+    # attribute maps.
+    by_id = {attrs.get("id"): attrs for tag, attrs in tags_for_page("index.html")
+             if attrs.get("id")}
+    assert "pcConnectStarter" in by_id
+    assert "recentTitle" not in by_id
+    assert "attachmentButton" in by_id
+    for identifier in ("webSearchButton", "deepResearchButton", "webSearchStarterButton"):
+        assert identifier not in by_id
+    skills = {attrs.get("data-skill") for _tag, attrs in tags_for_page("index.html")
+              if attrs.get("data-skill")}
+    assert "explain" not in skills
+    assert {"auto", "plan"} <= skills
     assert "<span>파일</span>" in html
     assert "지원 형식" in html
     for label in ["TXT", "Markdown", "CSV", "JSON", "PDF", "DOCX", "PPTX", "XLSX"]:
         assert f'label: "{label}"' in capabilities
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in html
     assert "웹 검색 · 준비 중" not in html
-    for identifier in ("webSearchButton", "deepResearchButton", "webSearchStarterButton"):
-        assert f'id="{identifier}"' not in html
     assert 'uiT("mock-response")' in conv_js
     assert '"mock-response": "모의 응답 · 실제 모델 호출 없음"' in locale
     assert "deps.chatTransport.requestCompleted(payload, signal)" in stream_js

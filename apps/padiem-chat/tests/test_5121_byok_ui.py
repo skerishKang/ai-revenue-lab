@@ -3,9 +3,14 @@
 The browser transport is executed in a Node vm with an injected fetch stub, so
 this test proves the custom lane skips B14 orchestration without contacting a
 provider, Engine or B14 endpoint. No paid provider call is made.
+
+#8060 26차: 시트 원문 읽기는 _support 헬퍼(claw_static·css_rules)가 담당하고
+시험은 파싱 값(CSS 선언 값·함수 범위 소스·로케일 키)과 부재 금지 경계 계약
+(README §3, 이유는 각 단언 위에)을 단언한다. 이 모듈은 원문 read를 갖지 않는다.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import shutil
@@ -18,15 +23,28 @@ import pytest
 # R5 0단계(R-01): 함수 선언은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import definition_source
 from _r5_product_capabilities_harness import run_capabilities_scenario
+from _support import claw_static
+from css_rules import declaration, find_rules_with_selector, rules_for_sheet
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-CAPABILITIES = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-CSS = (STATIC / "mode-presentation.css").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+
+
+def _capabilities() -> str:
+    return claw_static.sheet("product-capabilities.js")
+
+
+def _app() -> str:
+    return claw_static.sheet("app.js")
+
+
+def _stream() -> str:
+    return claw_static.sheet("chat-streaming-module.js")
+
+
+def _transport() -> str:
+    return claw_static.sheet("chat-transport.js")
+
 
 CUSTOM_PROVIDER = "opencode-go"
 CUSTOM_MODEL = "opencode-go/beam-free"
@@ -44,12 +62,16 @@ def test_model_card_adds_a_custom_lane_separate_from_padiem_tiers() -> None:
     # 칩 위쪽 안내는 제목과 설명 두 요소뿐이다.
     assert member["customHeadingChildren"] == ["STRONG", "SMALL"]
 
-    section = CSS.split(".mode-custom-section {", 1)[1].split("}", 1)[0]
-    assert "border-top: 1px solid var(--line)" in section
-    panel = CSS.split(".mode-presentation-panel {", 1)[1].split("}", 1)[0]
-    assert "max-height: min(72vh, 640px)" in panel
-    assert "overflow-y: auto" in panel
-    assert "overscroll-behavior: contain" in panel
+    css = rules_for_sheet("mode-presentation.css")
+    section = find_rules_with_selector(css, ".mode-custom-section")
+    assert len(section) == 1
+    assert declaration(section[0], "border-top") == "1px solid var(--line)"
+    panel = [rule for rule in find_rules_with_selector(css, ".mode-presentation-panel")
+             if rule.media is None]
+    assert len(panel) == 1
+    assert declaration(panel[0], "max-height") == "min(72vh, 640px)"
+    assert declaration(panel[0], "overflow-y") == "auto"
+    assert declaration(panel[0], "overscroll-behavior") == "contain"
 
 
 def test_custom_tier_row_shows_no_supplier_or_model_name() -> None:
@@ -77,11 +99,11 @@ def test_custom_tier_row_shows_no_supplier_or_model_name() -> None:
 
 
 def _custom_copy_block() -> str:
-    return CAPABILITIES.split("const CUSTOM_COPY", 1)[1].split("let customSelection", 1)[0]
+    return _capabilities().split("const CUSTOM_COPY", 1)[1].split("let customSelection", 1)[0]
 
 
 def _custom_section() -> str:
-    return CAPABILITIES.split("function createCustomSection()", 1)[1].split(
+    return _capabilities().split("function createCustomSection()", 1)[1].split(
         "function createModeOption", 1
     )[0]
 
@@ -100,7 +122,7 @@ def test_picker_title_and_byok_copy_match_the_owner_contract() -> None:
     # One explanation per language, with no second copy of it on selection.
     assert custom_copy.count("description:") == 2
     assert "truth:" not in custom_copy
-    assert "custom.truth" not in CAPABILITIES
+    assert "custom.truth" not in _capabilities()
 
 
 def test_byok_heading_has_no_decorative_icon() -> None:
@@ -123,7 +145,7 @@ def test_connection_test_is_real_and_only_shown_for_server_supported_providers()
     flow = run_capabilities_scenario("custom_flow")
     assert flow["testHiddenWithCredential"] is False  # 능력 + 자격증명이 있으면 보인다
     assert flow["testCall"] == ["/api/chat/custom/credential/test?provider=prov-a"]
-    assert flow["testOkMessage"] == "공급사 연결을 확인했습니다."
+    assert flow["testOkMessage"] == "키가 잘 연결되었습니다."
     assert flow["testOkState"] == "ok"
     assert flow["testFailMessage"] == "서버가 거절했습니다"
     assert flow["testFailState"] == "error"
@@ -135,10 +157,10 @@ def test_connection_test_is_real_and_only_shown_for_server_supported_providers()
     assert [c["url"] for c in register["registerCalls"]] == ["/api/byok/detect", "/api/byok/register"]
     # 구조 계약(부재 금지): 자동 확인 단추·PATCH·업데이트 내역 문구는
     # 소스에 다시 생기면 안 된다. 실행으로는 "없어야 할 것"을 증명할 수 없다.
-    assert '"자동 확인"' not in CAPABILITIES
-    assert 'method: "PATCH"' not in CAPABILITIES
+    assert '"자동 확인"' not in _capabilities()
+    assert 'method: "PATCH"' not in _capabilities()
     for forbidden in ("업데이트 내역", "Update history"):
-        assert forbidden not in CAPABILITIES, forbidden
+        assert forbidden not in _capabilities(), forbidden
 
 
 def test_picker_renders_only_server_reported_providers_models_and_capabilities() -> None:
@@ -157,7 +179,7 @@ def test_picker_renders_only_server_reported_providers_models_and_capabilities()
     # 구조 계약(부재 금지): 클라이언트가 공급자 목록을 갖지 않는다는 것은
     # 소스에서만 증명할 수 있어 문자열로 남긴다.
     for provider in ("openai", "anthropic", "openrouter", "gemini", "opencode-go"):
-        assert provider not in CAPABILITIES.lower(), provider
+        assert provider not in _capabilities().lower(), provider
 
 
 def test_manual_model_requires_an_explicit_model_before_custom_selection() -> None:
@@ -187,7 +209,7 @@ def test_tier_rows_keep_existing_order_status_and_badges() -> None:
     assert member["optionValues"] == ["free", "plus", "pro", "max"]
     assert member["optionIcons"] == ["✓", "✓", "↑", "↑"]
     # 구조 계약(부재 금지): 상태 반짝이·이미지·브랜드 아이콘은 다시 생기면 안 된다.
-    option = CAPABILITIES.split("function createModeOption", 1)[1].split(
+    option = _capabilities().split("function createModeOption", 1)[1].split(
         "function syncModeCopy", 1
     )[0]
     for forbidden in ("status-spark", "<img", "<svg", "brand-icon"):
@@ -195,14 +217,20 @@ def test_tier_rows_keep_existing_order_status_and_badges() -> None:
 
 
 def test_mobile_picker_scroll_stays_inside_the_panel() -> None:
-    panel = CSS.split(".mode-presentation-panel {", 1)[1].split("}", 1)[0]
-    assert "overflow-y: auto" in panel
-    assert "overscroll-behavior: contain" in panel
-    assert "-webkit-overflow-scrolling: touch" in panel
-    assert "scroll-padding-block: 12px" in panel
-    mobile = CSS.split("@media (max-width: 720px)", 1)[1]
-    mobile_panel = mobile.split(".mode-presentation-panel {", 1)[1].split("}", 1)[0]
-    assert "max-height: min(62dvh, 520px)" in mobile_panel
+    css = rules_for_sheet("mode-presentation.css")
+    panel = [rule for rule in find_rules_with_selector(css, ".mode-presentation-panel")
+             if rule.media is None]
+    assert len(panel) == 1
+    assert declaration(panel[0], "overflow-y") == "auto"
+    assert declaration(panel[0], "overscroll-behavior") == "contain"
+    assert declaration(panel[0], "-webkit-overflow-scrolling") == "touch"
+    assert declaration(panel[0], "scroll-padding-block") == "12px"
+    mobile = [rule for rule in find_rules_with_selector(css, ".mode-presentation-panel")
+              if rule.media == "(max-width: 720px)"]
+    assert len(mobile) == 1
+    # dvh 값이 같은 칸의 vh 값을 덮어쓴다(파서는 마지막 값을 유지한다) — 두 줄
+    # 중 뒤 것이 실제 적용값이다.
+    assert declaration(mobile[0], "max-height") == "min(62dvh, 520px)"
 
 
 def test_customer_key_is_write_only_and_only_last_four_are_rendered() -> None:
@@ -225,10 +253,10 @@ def test_customer_key_is_write_only_and_only_last_four_are_rendered() -> None:
     assert register["keyClearedAfterRegister"] is True
     # 구조 계약(부재 금지): 키·쿠키·콘솔 저장과 마지막 4자 이상 렌더는
     # 소스에서만 증명할 수 있어 문자열로 남긴다.
-    assert 'customInput' not in CAPABILITIES
+    assert 'customInput' not in _capabilities()
     for forbidden in ("localStorage", "sessionStorage", "document.cookie", "console."):
-        assert forbidden not in CAPABILITIES, forbidden
-    assert 'copy.credential + String(credential.key_last4' not in CAPABILITIES
+        assert forbidden not in _capabilities(), forbidden
+    assert 'copy.credential + String(credential.key_last4' not in _capabilities()
     # #5824: the registered state is one line; no key material is rendered and
     # the first open (no credential yet) shows no status line at all — observed.
     assert flow["statusText"] == "등록됨 · 사용 가능"
@@ -251,9 +279,9 @@ def test_custom_endpoint_and_provider_model_controls_follow_server_capabilities(
     assert flow["endpointPlaceholder"] == "https://<your-endpoint>/v1"
     # 구조 계약(부재 금지): 서버가 준 기본 주소를 화면에 보여 주는 일은
     # 소스에서만 증명할 수 있어 문자열로 남긴다.
-    assert "provider.default_endpoint" not in CAPABILITIES
-    assert "stored.endpoint_is_default === false" in CAPABILITIES
-    assert 'setCustomMessage(copy.keyRequired, "info");' in CAPABILITIES
+    assert "provider.default_endpoint" not in _capabilities()
+    assert "stored.endpoint_is_default === false" in _capabilities()
+    assert 'setCustomMessage(copy.keyRequired, "info");' in _capabilities()
 
 
 def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() -> None:
@@ -264,35 +292,40 @@ def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() 
         "provider": "prov-m", "model": "my-model", "reasoning_effort": None}
     assert gate["selectionWithReasoning"] == {
         "provider": "prov-m", "model": "my-model", "reasoning_effort": "high"}
+    stream_fn = definition_source("requestStreamingAnswer")
     assert (
         'const payload = { messages: outboundMessages, tier: deps.selectedProductTier(), skill };'
-        in STREAM
+        in stream_fn
     )
-    assert "const customSelection = window.PadiemCustomSelection?.get?.();" in STREAM
-    assert "delete payload.tier;" in STREAM
-    assert "payload.custom = { provider: customSelection.provider, model: customSelection.model };" in STREAM
-    assert "if (customSelection.reasoning_effort) {" in STREAM
-    assert "payload.custom.reasoning_effort = customSelection.reasoning_effort;" in STREAM
+    assert "const customSelection = window.PadiemCustomSelection?.get?.();" in stream_fn
+    assert "delete payload.tier;" in stream_fn
+    assert "payload.custom = { provider: customSelection.provider, model: customSelection.model };" in stream_fn
+    assert "if (customSelection.reasoning_effort) {" in stream_fn
+    assert "payload.custom.reasoning_effort = customSelection.reasoning_effort;" in stream_fn
     # #7297: Custom is shared between Chat and Claw; text-only refusal preserves the typed prompt.
-    assert 'setNote(uiT("custom-chat-only"), "error");' not in APP
-    assert 'setNote(uiT("custom-text-only"), "error");' in APP
-    assert LOCALE.count('"custom-text-only":') == 2
+    app = _app()
+    assert 'setNote(uiT("custom-chat-only"), "error");' not in app
+    assert 'coreModule().setNote(coreModule().uiT("custom-text-only"), "error");' in app
+    assert "custom-text-only" in locale_bundle.keys("ko")
+    assert "custom-text-only" in locale_bundle.keys("en")
 
 
 def test_custom_failures_reopen_the_existing_model_card() -> None:
     assert "function handleCustomRequestFailure(error)" in definition_source(
         "handleCustomRequestFailure"
     )
-    assert 'const CUSTOM_AUTH_FAILURE_CODE = "custom_provider_auth_failed";' in APP
-    assert 'code === "custom_credential_required" || code === CUSTOM_AUTH_FAILURE_CODE' in APP
-    assert "window.PadiemCustomSelection?.open?.();" in APP
-    assert 'code === "unauthorized" && window.PadiemCustomSelection?.get?.()' in APP
-    assert "deps.handleCustomRequestFailure(error);" in STREAM
+    app = _app()
+    assert 'const CUSTOM_AUTH_FAILURE_CODE = "custom_provider_auth_failed";' in app
+    assert 'code === "custom_credential_required" || code === CUSTOM_AUTH_FAILURE_CODE' in app
+    assert "window.PadiemCustomSelection?.open?.();" in app
+    assert 'code === "unauthorized" && window.PadiemCustomSelection?.get?.()' in app
+    assert "deps.handleCustomRequestFailure(error);" in _stream()
 
 
 def test_custom_lane_keeps_direct_path_without_server_owned_byok_opt_in() -> None:
-    assert "payload && payload.custom && !byokViaB14" in TRANSPORT
-    assert "window.PadiemCustomSelection?.viaEngine?.() === true" in TRANSPORT
+    transport = _transport()
+    assert "payload && payload.custom && !byokViaB14" in transport
+    assert "window.PadiemCustomSelection?.viaEngine?.() === true" in transport
 
 
 _HARNESS = r"""
@@ -495,7 +528,7 @@ def test_byok_single_register_flow_includes_the_check_and_never_renders_key():
     assert '"자동 확인"' not in section
     assert 'autoDetectButton' not in section
     assert 'autoCard' not in section
-    flow = CAPABILITIES.split('async function detectAndRegister', 1)[1].split('async function saveCustomKey', 1)[0]
+    flow = _capabilities().split('async function detectAndRegister', 1)[1].split('async function saveCustomKey', 1)[0]
     assert 'innerHTML' not in flow
     assert 'localStorage' not in flow and 'sessionStorage' not in flow
 

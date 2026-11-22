@@ -32,7 +32,7 @@ from app.main import create_app
 from app.password_auth import hash_password
 from app.queue_store_proxy import QueueForwardingHistoryStore
 
-from test_6446_account_isolation_sweep import apply_all_migrations
+from _support.account_isolation_sweep import apply_all_migrations
 
 BASE = "https://chat.example.test"
 SECRET = "chat-test-password-rpc-secret-value-000000"

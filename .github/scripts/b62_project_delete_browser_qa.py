@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from playwright.async_api import Page, Route, async_playwright
+from playwright.async_api import Page, Route, TimeoutError as PlaywrightTimeoutError, async_playwright
 
 from b62_product_confirm_helpers import (
     accept_product_confirm,
@@ -337,6 +337,17 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         raise AssertionError("fixture conversation was not detached from deleted Project")
     if await page.locator("#messageList").inner_text() != baseline_messages:
         raise AssertionError("active Project deletion erased current conversation content")
+    # app.js restores composer focus after awaiting loadProjects(), which is
+    # later than the dialog/banner state above. Wait for the focus itself, so
+    # a slow list reload cannot be sampled as a missing focus. The assertion
+    # below is unchanged; a timeout still reports the observed focus.
+    try:
+        await page.wait_for_function(
+            "() => document.activeElement && document.activeElement.id === 'messageInput'",
+            timeout=5_000,
+        )
+    except PlaywrightTimeoutError:
+        pass
     focused = await page.evaluate("document.activeElement && document.activeElement.id")
     if focused != "messageInput":
         raise AssertionError(f"composer focus not restored after active Project delete: {focused!r}")

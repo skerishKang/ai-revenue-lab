@@ -188,7 +188,7 @@ def _client(
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, user_id),
+        create_session_token(settings, user_id, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )
@@ -510,7 +510,7 @@ def test_the_capability_is_reported_truthfully_without_a_push_authority():
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, SIGNED_IN_USER_ID),
+            create_session_token(settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -531,7 +531,7 @@ def test_a_configured_public_key_is_advertised():
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, SIGNED_IN_USER_ID),
+            create_session_token(settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )

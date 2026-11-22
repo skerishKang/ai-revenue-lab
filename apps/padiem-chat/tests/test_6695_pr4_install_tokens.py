@@ -34,7 +34,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-import test_5573_pc_device_pairing as pairing            # noqa: E402
+import _support.pc_device_pairing as pairing            # noqa: E402
 
 from app import queue_store_proxy as proxy               # noqa: E402
 from app.pc_device_pairing_routes import (               # noqa: E402
@@ -59,10 +59,14 @@ from app.pc_device_pairing_store import (                # noqa: E402
 )
 
 REPO = Path(__file__).resolve().parents[3]
-STATIC = Path(__file__).resolve().parents[1] / "static"
 QUEUE_MODULE = REPO / "apps" / "padiem-mesh-queue" / "internal_store.py"
 SCHEMA_MODULE = REPO / "apps" / "padiem-mesh-queue" / "schema.py"
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "093_pc_install_tokens.sql"
+
+from _support.pc_install_source import (  # noqa: E402
+    card as card_source, locale as locale_source,
+    migration_statements,
+)
 
 OWNER = pairing.OWNER
 OTHER = pairing.OTHER
@@ -547,7 +551,11 @@ def test_the_install_file_and_the_name_reader_agree_on_the_token() -> None:
 # -- 6. migration 093 is idempotent and the queue ledger covers it ----------
 
 def test_migration_093_is_idempotent_and_only_hash_shaped() -> None:
-    sql = MIGRATION.read_text(encoding="utf-8")
+    statements = migration_statements()
+    sql = ";\n".join(statements)
+    assert len(statements) == 2
+    assert statements[0].startswith("CREATE TABLE IF NOT EXISTS pc_install_tokens")
+    assert statements[1].startswith("CREATE INDEX IF NOT EXISTS")
     conn = sqlite3.connect(":memory:")
     conn.row_factory = sqlite3.Row
     conn.executescript(sql)
@@ -616,8 +624,8 @@ def test_the_queue_schema_ledger_applies_093_and_the_proxy_may_ask_for_it(tmp_pa
 # -- 7. the screen says it in both languages, and never renders the token ---
 
 def test_the_install_controls_and_strings_are_wired_for_both_languages() -> None:
-    card = (STATIC / "pc-pairing-card.js").read_text(encoding="utf-8")
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    card = card_source()
+    locale = locale_source()
     for key in (
         "pc-pairing-install-cancel", "pc-pairing-install-reprepare",
         "pc-pairing-install-cancelled", "pc-pairing-install-reprepared",

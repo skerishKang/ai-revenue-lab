@@ -38,6 +38,25 @@ def fake_event(event_type="pull_request"):
 
 
 class B62ScopeTests(unittest.TestCase):
+    def test_tests_only_runner_requires_first_attempt_same_repo_and_proven_scope(self):
+        event = fake_event()
+        event["pull_request"]["head"]["repo"] = {"full_name": REPO}
+        cases = [
+            ("pull_request", module.TESTS_ONLY, False, "1", "self-hosted"),
+            ("pull_request", module.TESTS_ONLY, False, "2", "hosted"),
+            ("pull_request", module.TESTS_ONLY, True, "1", "hosted"),
+            ("pull_request", module.FULL, False, "1", "hosted"),
+            ("push", module.TESTS_ONLY, False, "1", "hosted"),
+            ("schedule", module.TESTS_ONLY, False, "1", "hosted"),
+            ("workflow_dispatch", module.TESTS_ONLY, False, "1", "hosted"),
+        ]
+        for kind, scope, source, attempt, expected in cases:
+            with self.subTest(kind=kind, scope=scope, source=source, attempt=attempt):
+                self.assertEqual(module.tests_only_runner(event, kind, REPO, scope, source, attempt), expected)
+        event["pull_request"]["head"]["repo"]["full_name"] = "fork/repo"
+        self.assertEqual(module.tests_only_runner(event, "pull_request", REPO, module.TESTS_ONLY, False, "1"), "hosted")
+        self.assertEqual(module.tests_only_runner({}, "pull_request", REPO, module.TESTS_ONLY, False, "1"), "hosted")
+
     def test_b14_attempt_policy_uses_focused_lane(self):
         paths = [file("apps/padiem-chat/app/b14_client.py"), file("apps/padiem-chat/tests/test_owner_tier_fallback_dispatch_261015.py")]
         self.assertEqual(module.impact_scope(paths), module.B14_ATTEMPT_ONLY)
@@ -332,7 +351,9 @@ class B62ScopeTests(unittest.TestCase):
         tests = Path(tmp) / "apps/padiem-chat/tests"
         tests.mkdir(parents=True)
         for name, source in modules.items():
-            (tests / name).write_text(source, encoding="utf-8")
+            target = tests / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(source, encoding="utf-8")
         for name in docs:
             (tests / name).write_text("# note\n", encoding="utf-8")
         return tests
@@ -362,12 +383,130 @@ class B62ScopeTests(unittest.TestCase):
                 "tests/test_from_import.py",
                 "tests/test_plain_import.py",
             ))
-            values = self._run_main(files, tmp)
+            values = self._run_main( files, tmp)
         self.assertEqual(values["scope"], "tests_only")
         self.assertEqual(values["chat_source_changed"], "false")
         self.assertEqual(values["tests_only_tests"],
                          "tests/test_dynamic_import.py tests/test_from_import.py "
                          "tests/test_plain_import.py")
+
+    def test_support_change_selects_direct_and_transitive_consumers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tests_tree(tmp, {
+                "_support/__init__.py": "",
+                "_support/shared.py": "VALUE = 1\n",
+                "_support/other.py": "OTHER = 2\n",
+                "_support/bridge.py": "from .shared import VALUE\n",
+                "test_direct.py": "from _support.shared import VALUE\n",
+                "test_package.py": "from _support import shared as fixture\n",
+                "test_dotted.py": "import tests._support.shared\n",
+                "test_dynamic.py": "import importlib\nfixture = importlib.import_module('_support.shared')\n",
+                "test_transitive.py": "from _support.bridge import VALUE\n",
+                "test_test_consumer.py": "from test_transitive import VALUE\n",
+                "test_unrelated.py": "from _support.other import OTHER\n",
+            })
+            files = [file("apps/padiem-chat/tests/_support/shared.py")]
+            expected = (
+                "tests/test_direct.py", "tests/test_dotted.py", "tests/test_dynamic.py",
+                "tests/test_package.py", "tests/test_test_consumer.py", "tests/test_transitive.py",
+            )
+            self.assertEqual(module.tests_only_modules(files, Path(tmp)), expected)
+            self.assertEqual(module.impact_scope(files, Path(tmp)), module.TESTS_ONLY)
+            values = self._run_main( files, tmp)
+        self.assertEqual(values["scope"], "tests_only")
+        self.assertEqual(values["chat_source_changed"], "false")
+        self.assertEqual(values["tests_only_tests"], " ".join(expected))
+
+    def test_indirect_staging_e2e_consumers_are_deferred_but_direct_changes_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tests_tree(tmp, {
+                "_support/shared.py": "VALUE = 1\n",
+                "test_local.py": "from _support.shared import VALUE\n",
+                "test_routing_staging.py": "from _support.shared import VALUE\n",
+                "test_e2e_routing.py": "from test_local import VALUE\n",
+                "test_restaging.py": "from _support.shared import VALUE\n",
+            })
+            files = [file("apps/padiem-chat/tests/_support/shared.py")]
+            expected = ("tests/test_local.py", "tests/test_restaging.py")
+            self.assertEqual(module.tests_only_modules(files, Path(tmp)), expected)
+            self.assertEqual(module.impact_scope(files, Path(tmp)), module.TESTS_ONLY)
+            self.assertEqual(self._run_main(files, tmp)["tests_only_tests"], " ".join(expected))
+            files += [file("apps/padiem-chat/tests/test_routing_staging.py"),
+                      file("apps/padiem-chat/tests/test_e2e_routing.py")]
+            self.assertEqual(module.tests_only_modules(files, Path(tmp)), (
+                "tests/test_e2e_routing.py", "tests/test_local.py",
+                "tests/test_restaging.py", "tests/test_routing_staging.py",
+            ))
+            self.assertEqual(module.tests_only_modules(files[1:], Path(tmp)), (
+                "tests/test_e2e_routing.py", "tests/test_routing_staging.py",
+            ))
+
+    def test_proven_deferred_only_helper_keeps_manifest_guard_not_full_fallback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tests_tree(tmp, {
+                "_support/shared.py": "VALUE = 1\n",
+                "test_routing_e2e.py": "from _support.shared import VALUE\n",
+            })
+            files = [file("apps/padiem-chat/tests/_support/shared.py")]
+            expected = ("tests/test_5002_model_path_classification.py",)
+            self.assertEqual(module.tests_only_modules(files, Path(tmp)), expected)
+            self.assertEqual(module.impact_scope(files, Path(tmp)), module.TESTS_ONLY)
+            self.assertEqual(self._run_main(files, tmp)["tests_only_tests"], " ".join(expected))
+
+    def test_unknown_support_change_fails_closed_to_full_suite(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tests_tree(tmp, {
+                "_support/orphan.py": "VALUE = 1\n",
+                "_support/shared.py": "VALUE = 2\n",
+                "test_consumer.py": "from _support.shared import VALUE\n",
+            })
+            for change in (
+                file("apps/padiem-chat/tests/_support/orphan.py"),
+                file("apps/padiem-chat/tests/_support/missing.py"),
+                file("apps/padiem-chat/tests/_support/shared.py", "removed"),
+                file("apps/padiem-chat/tests/_support/data.json"),
+                file("apps/padiem-chat/tests/_support/conftest.py"),
+            ):
+                with self.subTest(change=change):
+                    files = [change, file("apps/padiem-chat/tests/test_consumer.py")]
+                    self.assertEqual(module.tests_only_modules(files, Path(tmp)), ())
+                    self.assertEqual(module.impact_scope(files, Path(tmp)), module.FULL)
+                    values = self._run_main( files, tmp)
+                    self.assertEqual(values["scope"], "full")
+                    self.assertEqual(values["chat_source_changed"], "true")
+                    self.assertEqual(values["tests_only_tests"], "")
+
+    def test_unparseable_consumer_invalidates_support_import_graph(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tests_tree(tmp, {
+                "_support/shared.py": "VALUE = 1\n",
+                "test_consumer.py": "from _support.shared import VALUE\n",
+                "test_invalid.py": "from _support.shared import (\n",
+            })
+            files = [file("apps/padiem-chat/tests/_support/shared.py")]
+            values = self._run_main( files, tmp)
+        self.assertEqual(values["scope"], "full")
+        self.assertEqual(values["chat_source_changed"], "true")
+        self.assertEqual(values["tests_only_tests"], "")
+
+    def test_static_discovery_follows_support_imports_and_legacy_harness_pair(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tests = self._tests_tree(tmp, {
+                "_support/static_source.py": 'APP = "static/app.js"\n',
+                "_support/bridge.py": "from .static_source import APP\n",
+                "_support/common.py": "VALUE = 1\n",
+                "_support/other.py": "OTHER = 2\n",
+                "test_static_consumer.py": "from _support.bridge import APP\n",
+                "test_hub.py": "from _support.common import VALUE\n",
+                "test_hub_consumer.py": "from _support.common import VALUE\n",
+                "test_unrelated.py": "from _support.other import OTHER\n",
+                "test_prose.py": 'NOTE = "test_hub"\n',
+            })
+            (tests / "test_hub.cjs").write_text(
+                'const x = require("../static/app.js");', encoding="utf-8")
+            self.assertEqual(module.ui_contract_tests(Path(tmp)), (
+                "tests/test_hub.py", "tests/test_hub_consumer.py", "tests/test_static_consumer.py",
+            ))
 
     def test_tests_tree_test_module_with_a_doc_still_runs_the_module(self):
         files = [
@@ -384,7 +523,7 @@ class B62ScopeTests(unittest.TestCase):
             files = [file("apps/padiem-chat/tests/orphan_helper.py")]
             self.assertEqual(module.impact_scope(files, Path(tmp)), module.FULL)
             self.assertEqual(module.tests_only_modules(files, Path(tmp)), ())
-            values = self._run_main(files, tmp)
+            values = self._run_main( files, tmp)
         self.assertEqual(values["scope"], "full")
         self.assertEqual(values["chat_source_changed"], "true")
         self.assertEqual(values["tests_only_tests"], "")
@@ -448,6 +587,8 @@ class B62ScopeTests(unittest.TestCase):
         self.assertIn("TESTS_ONLY_MODULES: ${{ needs.registry-ci-plan.outputs.tests_only_tests }}", text)
         self.assertIn('if [ -z "$TESTS_ONLY_MODULES" ]; then', text)
         self.assertIn('test "${#modules[@]}" -le 100', text)
+        self.assertIn('python -u ../../.github/scripts/b62_run_tests_only_modules.py "${modules[@]}"', text)
+        self.assertIn("test_b62_run_tests_only_modules.py", text)
         self.assertIn("needs.b62-tests-only-tests.result", text)
         self.assertIn('test "$TESTS_RESULT" = success', text)
         self.assertIn("B62_CI_MODE=TESTS_ONLY_TARGETED", text)
@@ -866,6 +1007,17 @@ class B62ScopeTests(unittest.TestCase):
             module.main()
         self.assertEqual(out.getvalue().strip(), "tests/a.py tests/b.py")
 
+    def test_static_ui_contract_module_cap_matches_workflow(self):
+        text = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
+        contract = text.split("  b62-ui-contract-tests:\n", 1)[1].split(
+            "  b62-ui-mixed-tests:\n", 1
+        )[0]
+        bounds = [line.strip() for line in contract.splitlines()
+                  if line.strip().startswith('test "${#modules[@]}" -le ')]
+        self.assertEqual(
+            bounds, [f'test "${{#modules[@]}}" -le {module.UI_CONTRACT_MAX_MODULES}']
+        )
+
     def test_workflow_runs_all_static_contracts_and_requires_their_result(self):
         text = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
         self.assertIn("ui_contract: ${{ steps.classify-b62.outputs.ui_contract }}", text)
@@ -901,3 +1053,70 @@ class B62ScopeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SourceReadScopeTests(unittest.TestCase):
+    """#8212: tests that read a changed source as text must be selected even
+    when they never import it. The import graph alone cannot see this edge."""
+
+    @staticmethod
+    def _reader(name, target):
+        return (
+            "from pathlib import Path\n"
+            "ROOT = Path(__file__).resolve().parents[3]\n"
+            f"CHANGED = ROOT / \"{target}\"\n"
+            "source = CHANGED.read_text(encoding=\"utf-8\")\n"
+            "def test_source():\n    assert source\n"
+        )
+
+    def test_executor_change_selects_its_verbatim_reader(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py"
+            B62ScopeTests._tests_tree(tmp, {
+                "test_5479_longpoll_bounded_wait.py": self._reader("5479", target),
+                "test_unrelated.py": self._reader("unrelated", "apps/padiem-chat/app/other.py"),
+            })
+            files = [file(target)]
+            selected = module.source_read_tests(files, Path(tmp))
+            self.assertEqual(selected, ("tests/test_5479_longpoll_bounded_wait.py",))
+            values = B62ScopeTests._run_main(self, files, tmp)
+        self.assertEqual(values["scope"], "full")
+        self.assertEqual(values["source_read_tests"], "tests/test_5479_longpoll_bounded_wait.py")
+
+    def test_unrelated_change_selects_no_source_reader(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            B62ScopeTests._tests_tree(tmp, {
+                "test_5479_longpoll_bounded_wait.py": self._reader(
+                    "5479", "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py"),
+            })
+            selected = module.source_read_tests(
+                [file("apps/padiem-chat/app/chat_routes.py")], Path(tmp))
+            self.assertEqual(selected, ())
+
+    def test_cap_overflow_fails_closed_to_full_suite(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = "apps/padiem-chat/app/chat_routes.py"
+            modules = {
+                f"test_reader_{i}.py": self._reader(str(i), target)
+                for i in range(module.SOURCE_READ_MAX_MODULES + 1)
+            }
+            B62ScopeTests._tests_tree(tmp, modules)
+            files = [file(target)]
+            self.assertIsNone(module.source_read_tests(files, Path(tmp)))
+            values = B62ScopeTests._run_main(self, files, tmp)
+        self.assertEqual(values["scope"], "chat_only")
+        self.assertEqual(values["chat_source_changed"], "true")
+        self.assertEqual(values["source_read_tests"], "")
+
+    def test_unparseable_reader_fails_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            B62ScopeTests._tests_tree(tmp, {
+                "test_broken.py": (
+                    "CHANGED.read_text(encoding='utf-8')\n"
+                    "def test(:  # apps/padiem-chat/app/chat_routes.py\n"
+                ),
+                "test_reader.py": self._reader(
+                    "ok", "apps/padiem-chat/app/chat_routes.py"),
+            })
+            self.assertIsNone(
+                module.source_read_tests([file("apps/padiem-chat/app/chat_routes.py")], Path(tmp)))

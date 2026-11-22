@@ -554,6 +554,13 @@ else {
     }
     Write-Info "COM2_DEPLOY_SUMMARY=$summaryLine"
     Add-Summary "COM2_DEPLOY_SUMMARY=$summaryLine"
+    # #8010: the file-lane installer is never run by this release. When this
+    # SHA changes the file-lane source, the deploy unit reports the approval
+    # action; carry it into the report so the next step is visible.
+    if ($journal -match 'FILE_LANE_INSTALL_ACTION=APPROVAL_REQUIRED') {
+        Add-Summary "FILE_LANE_INSTALL=APPROVAL_REQUIRED"
+        Write-Info "file-lane source changed: installer needs approval (not run here)"
+    }
     # chat:SKIP is a valid outcome: deploy_from_main.sh skips the chat unit
     # when the release changes no chat-runtime path (e.g. a pages/build-only
     # release). Any :FAIL, or a chat state other than PASS/SKIP, aborts.
@@ -828,6 +835,12 @@ if ($Script:PagesVerifyFailed.Count -gt 0) {
 }
 Write-Info "release complete; the summary below is the deploy record"
 Show-Summary
+if (-not $DryRun -and $Script:PagesVerifyFailed.Count -eq 0) {
+    # #7847 4번: 성공한 배포마다 그 배포분 새 소식 초안을 쓰는 자리표시.
+    # 절차는 deploy/chat-release/README.md, 발행은
+    # apps/padiem-chat/tools/chat_news_publish.py (dry-run 먼저).
+    Write-Info "next: write the release '새 소식' draft and publish it (deploy/chat-release/README.md)"
+}
 if ($DryRun) {
     Write-Host "DRYRUN: nothing was deployed."
 }

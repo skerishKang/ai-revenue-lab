@@ -27,14 +27,21 @@ daypart/interval/cron reveal parity all unchanged.
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
 import pytest
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-FOCUS_CSS = STATIC / "claw-focus-layout.css"
-WORKSPACE_CSS = STATIC / "claw-workspace.css"
-CALENDAR_CSS = STATIC / "calendar.css"
+# #8060: 원문 읽기·CSS 규칙 파싱은 _support(automation_touch_source)가 담당하고
+# 시험은 그 값으로 단언한다.
+from _support.automation_touch_source import (  # noqa: E402
+    css_text as _css,
+    declares as _declares,
+    index_html,
+    rule_body as _rule,
+)
+
+FOCUS_CSS = "claw-focus-layout.css"
+WORKSPACE_CSS = "claw-workspace.css"
+CALENDAR_CSS = "calendar.css"
 
 # The Automation block of claw-focus-layout.css is glass-gated; the disclosure
 # floor is deliberately not (the 20.8px box was theme-independent).
@@ -45,22 +52,6 @@ GLASS_TOGGLE = 'html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #c
 GLASS_RETRY = 'html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.claw-inbox-retry, .claw-inbox-status-action) {'
 GLASS_SUBMIT = 'html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-submit {'
 GLASS_CANCEL = 'html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-cancel {'
-
-
-def _css(path: Path) -> str:
-    """CSS with comments removed, so prose cannot satisfy a declaration guard."""
-    return re.sub(r"/\*.*?\*/", "", path.read_text(encoding="utf-8"), flags=re.DOTALL)
-
-
-def _rule(css: str, header: str) -> str:
-    match = re.search(re.escape(header), css)
-    assert match is not None, f"rule not found: {header}"
-    open_brace = css.index("{", match.start())
-    return css[open_brace + 1 : css.index("}", open_brace)]
-
-
-def _declares(body: str, declaration: str) -> bool:
-    return re.search(rf"(?<![\w-]){re.escape(declaration)}(?![\w-])", body) is not None
 
 
 # --- the fix ------------------------------------------------------------------
@@ -211,7 +202,7 @@ def test_the_calendar_hit_target_and_stacking_fixes_are_preserved() -> None:
 
 
 def test_the_automation_markup_still_owns_its_controls() -> None:
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = index_html()
     band = html[html.index('id="clawAutomation"') : html.index('<section class="calendar-view"')]
     for selector in (
         "clawAutomationCreateToggle",
@@ -234,7 +225,7 @@ def test_the_automation_markup_still_owns_its_controls() -> None:
 def test_the_stored_setting_is_still_never_presented_as_live_execution() -> None:
     # The floor must not drag the copy with it: the scheduler note and the
     # owner-gating wording are the #2833 hold, not decoration.
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = index_html()
     band = html[html.index('id="clawAutomation"') : html.index('<section class="calendar-view"')]
     assert 'id="clawAutomationSchedulerNote"' in band
     assert "자동 실행이 이미 활성화되어" in band

@@ -38,7 +38,7 @@ from app.pc_device_pairing_routes import (
 )
 from app.pc_device_pairing_store import D1PcPairingStore
 
-from test_6446_account_isolation_sweep import clients
+from _support.account_isolation_sweep import clients
 
 BOOKAI_PATH = "/api/bookai/records"
 BOOKAI_SECRET = "synthetic-bookai-sync-secret-6446-not-real"

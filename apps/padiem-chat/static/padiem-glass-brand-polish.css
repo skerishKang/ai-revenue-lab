@@ -3,17 +3,17 @@
  * assistant mark's much brighter Glass surface so the mark remains visible.
  */
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-message .assistant-avatar {
-  width: 32px !important;
-  height: 32px !important;
-  border: 1px solid rgba(255, 255, 255, .48) !important;
-  border-radius: var(--radius-sm) !important;
-  background: rgba(73, 84, 94, .52) !important;
-  color: #ffffff !important;
-  box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .16) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  font-size: 15px !important;
-  font-weight: 800 !important;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, .48);
+  border-radius: var(--radius-sm);
+  background: rgba(73, 84, 94, .52);
+  color: #ffffff;
+  box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .16);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  font-size: 15px;
+  font-weight: 800;
 }
 
 /* Owner composition pass ---------------------------------------------------
@@ -87,11 +87,11 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
  * composer look like a separate footer layer. Keep the runtime note node for
  * JS state, but remove it from ordinary Glass presentation. */
 html[data-theme="padiem-glass"] body .app-shell .composer-wrap {
-  background: transparent !important;
+  background: transparent;
 }
 
 html[data-theme="padiem-glass"] body .app-shell .composer-note {
-  display: none !important;
+  display: none;
 }
 
 /* Match the quieter modern chat-input treatment: no browser-blue textarea
@@ -99,17 +99,17 @@ html[data-theme="padiem-glass"] body .app-shell .composer-note {
  * composer, preserving keyboard accessibility without the bright blue box. */
 html[data-theme="padiem-glass"] body .app-shell .composer textarea:focus,
 html[data-theme="padiem-glass"] body .app-shell .composer textarea:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
+  outline: none;
+  box-shadow: none;
 }
 
 html[data-theme="padiem-glass"] body .app-shell .composer:focus-within,
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer:focus-within {
-  border-color: rgba(79, 91, 101, .22) !important;
+  border-color: rgba(79, 91, 101, .22);
   box-shadow:
     0 20px 54px rgba(28, 36, 44, .16),
     inset 0 1px 0 rgba(255, 255, 255, .80),
-    0 0 0 1px rgba(255, 255, 255, .34) !important;
+    0 0 0 1px var(--inset-veil-mist);
 }
 
 /* Live conversation motion polish (#1376) ---------------------------------
@@ -129,8 +129,8 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer:foc
  * changes only what is inside the frame. */
 
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .message-list {
-  gap: 22px !important;
-  padding-top: 2px !important;
+  gap: 22px;
+  padding-top: 2px;
 }
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
@@ -147,26 +147,26 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
  * screen's values: the Glass surface, the first-use border and shadow, and
  * the same row of controls. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer {
-  background: linear-gradient(165deg, rgba(255, 255, 255, .94), var(--glass-composer-surface)) !important;
-  border-color: rgba(255, 255, 255, .22) !important;
+  background: linear-gradient(165deg, rgba(255, 255, 255, .94), var(--glass-composer-surface));
+  border-color: var(--line-veil-faint);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, .07),
     0 22px 64px rgba(0, 0, 0, .22),
-    0 0 0 1px rgba(136, 201, 255, .035) !important;
-  color: #17202a !important;
+    0 0 0 1px rgba(136, 201, 255, .035);
+  color: #17202a;
 }
 
 /* The fixed composer keeps the first screen's lane, so the input row does not
  * jump when the conversation starts. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer-wrap {
-  padding-top: 26px !important;
+  padding-top: 26px;
 }
 
 /* The narrow window's first-screen composer is a flat frosted sheet, so the
  * chat state uses the same one instead of the wide-window gradient. */
 @media (max-width: 920px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer {
-    background: rgba(249, 251, 252, .94) !important;
+    background: rgba(249, 251, 252, .94);
   }
 }
 
@@ -176,32 +176,32 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer-wra
  * screen's (padiem-first-use.css), so the input does not resize when the
  * conversation starts. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer textarea {
-  min-height: 50px !important;
-  font-size: 17px !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: #17202a !important;
-  caret-color: #17202a !important;
+  min-height: 50px;
+  font-size: 17px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #17202a;
+  caret-color: #17202a;
 }
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer textarea::placeholder {
-  color: rgba(37, 48, 58, .48) !important;
+  color: rgba(37, 48, 58, .48);
 }
 
 /* The composer buttons keep the first screen's skin, so the input row reads
  * the same before and after the conversation starts. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer .tool-button {
-  background: rgba(255, 255, 255, .26) !important;
-  color: #25333e !important;
-  border-color: rgba(45, 69, 87, .08) !important;
+  background: rgba(255, 255, 255, .26);
+  color: #25333e;
+  border-color: rgba(45, 69, 87, .08);
 }
 
 /* During generation, the cancel action occupies the send-control position as
  * a compact stop button instead of adding a second text-heavy control. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .cancel-stream-button:not([hidden]) + .send-button {
-  display: none !important;
+  display: none;
 }
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .cancel-stream-button {
@@ -235,37 +235,37 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .cancel-strea
  * frame. Avoid pale text on a low-opacity pink card: keep the red signal but
  * use a near-white tint and dark burgundy foreground. */
 html[data-theme="padiem-glass"] body .error-box {
-  border: 1px solid rgba(126, 48, 48, .24) !important;
-  background: linear-gradient(155deg, rgba(255, 249, 249, .96), rgba(246, 229, 229, .90)) !important;
-  color: #5f2929 !important;
-  box-shadow: 0 12px 28px rgba(73, 35, 35, .08) !important;
+  border: 1px solid rgba(126, 48, 48, .24);
+  background: linear-gradient(155deg, rgba(255, 249, 249, .96), rgba(246, 229, 229, .90));
+  color: #5f2929;
+  box-shadow: 0 12px 28px rgba(73, 35, 35, .08);
 }
 
 html[data-theme="padiem-glass"] body .error-box strong {
-  color: #7f2828 !important;
+  color: #7f2828;
 }
 
 html[data-theme="padiem-glass"] body .error-box p {
-  color: #633333 !important;
+  color: #633333;
 }
 
 html[data-theme="padiem-glass"] body .error-box .retry-button {
-  border-color: rgba(126, 48, 48, .28) !important;
-  background: rgba(255, 255, 255, .82) !important;
-  color: #762626 !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .80) !important;
+  border-color: rgba(126, 48, 48, .28);
+  background: rgba(255, 255, 255, .82);
+  color: #762626;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .80);
 }
 
 html[data-theme="padiem-glass"] body .error-box .retry-button:hover:not(:disabled) {
-  background: #ffffff !important;
-  border-color: rgba(126, 48, 48, .40) !important;
+  background: #ffffff;
+  border-color: rgba(126, 48, 48, .40);
 }
 
 /* Canned starter prompts belong on the home surface. Once a real conversation
  * exists, signed-in history/projects may remain, but unrelated suggestions do
  * not compete with the active thread. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .recent-section[aria-labelledby="recentTitle"] {
-  display: none !important;
+  display: none;
 }
 
 /* CENTRAL_CHAT_CLAW_COMPOSER_PARITY_20261015

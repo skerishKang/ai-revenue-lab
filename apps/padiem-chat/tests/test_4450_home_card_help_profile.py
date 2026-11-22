@@ -1,3 +1,4 @@
+import locale_bundle
 """Owner-requested home screen cleanup: four cards, help moved to Settings, one profile entry."""
 from pathlib import Path
 
@@ -6,9 +7,10 @@ HTML = (ROOT / "index.html").read_text(encoding="utf-8")
 FIRST_USE = (ROOT / "padiem-first-use.css").read_text(encoding="utf-8")
 POLISH = (ROOT / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
 APP = (ROOT / "app.js").read_text(encoding="utf-8")
+DIALOG = (ROOT / "chat-login-dialog-module.js").read_text(encoding="utf-8")
 # R5 1단계: 설정 dialog의 열기/닫기 ARIA는 설정 모듈이 소유한다.
 SETTINGS = (ROOT / "chat-settings-module.js").read_text(encoding="utf-8")
-LOCALE = (ROOT / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 def test_four_cards_fit_one_desktop_row_and_mobile_keeps_two_or_one():
@@ -53,7 +55,8 @@ def test_name_avatar_opens_one_settings_dialog_no_duplicate_settings_row():
     assert 'class="sidebar-account account-controls"' in sidebar
     assert 'profileToggle.setAttribute("aria-controls", "profileMenu")' in (ROOT / "chat-profile-menu-module.js").read_text(encoding="utf-8")
     assert 'profileToggle.setAttribute("aria-haspopup", "menu")' in (ROOT / "chat-profile-menu-module.js").read_text(encoding="utf-8")
-    click = APP.split('profileToggle.addEventListener("click"', 1)[1].split("});", 1)[0]
+    assert 'loginDialogModule().wireProfileToggle();' in APP
+    click = (APP + DIALOG).split('deps.profileToggle.addEventListener("click"', 1)[1].split("});", 1)[0]
     assert 'PadiemChatProfileMenu?.toggle?.()' in click
     assert 'profilePanel.hidden = !opening' not in click
     assert 'profileToggle.setAttribute("aria-expanded", "true")' in SETTINGS

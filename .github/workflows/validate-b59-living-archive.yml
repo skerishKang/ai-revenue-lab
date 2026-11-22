@@ -17,7 +17,7 @@ concurrency:
 jobs:
   browser:
     name: Hybrid reader browser contract
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
       - name: Check out reviewed revision

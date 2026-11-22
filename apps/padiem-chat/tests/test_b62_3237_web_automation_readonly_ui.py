@@ -13,19 +13,24 @@ Two layers:
 from __future__ import annotations
 
 import json
-import re
 import shutil
 import subprocess
 from pathlib import Path
 
-# R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
-from _r5_function_source import definition_source
+# #8060: 원문 read는 _support(web_automation_readonly_source)가 담당하고,
+# 이 모듈은 이름붙인 팩트와 하네스 동작으로 단언한다.
+from _support.web_automation_readonly_source import (  # noqa: E402
+    inner_html_facts,
+    locale_key_facts,
+    markup_facts,
+    mutation_module_facts,
+    scheduler_locale_facts,
+    skill_surface_facts,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 CAPABILITIES_JS = ROOT / "static/attachment-capabilities.js"
-INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
 
 RULES_PATH = "/api/claw/automation/rules"
 
@@ -34,50 +39,26 @@ RULES_PATH = "/api/claw/automation/rules"
 
 
 def test_sidebar_entry_and_section_exist() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
-    assert 'id="automationNavButton"' in html
-    assert 'data-locale-key="nav-automation"' in html
-    assert 'id="clawAutomation"' in html
-    assert 'id="clawAutomationList"' in html
-    assert 'id="clawAutomationLoading"' in html
-    assert 'id="clawAutomationError"' in html
-    assert 'id="clawAutomationEmpty"' in html
-    assert 'id="clawAutomationRetry"' in html
-    # The signed-out note is static markup with a locale key in both languages.
-    assert 'id="automationViewSignedOut"' in html
-    assert 'data-locale-key="claw-automation-signed-out"' in html
-    # The section is a real labelled region, not a bare div.
-    assert 'aria-labelledby="clawAutomationTitle"' in html
-    assert 'id="clawAutomationTitle"' in html
-    # Status region announces the load outcome.
-    assert 'aria-live="polite"' in html
+    assert markup_facts()["missing_markup"] == []
 
 
 def test_scheduler_live_disclaimer_is_present_and_persistent() -> None:
     """#2833 is HOLD for Production scheduler: 'On' must not imply it is live."""
-
-    html = INDEX_HTML.read_text(encoding="utf-8")
-    assert 'id="clawAutomationSchedulerNote"' in html
-    assert 'data-locale-key="claw-automation-scheduler-note"' in html
-    # It is static content, not something a failed load can remove.
-    assert 'id="clawAutomationLoading"' in html
-    locale = LOCALE_JS.read_text(encoding="utf-8")
+    facts = scheduler_locale_facts()
+    assert facts["missing_markup"] == []
     # Both languages carry the disclaimer and the two vocabulary keys.
-    assert locale.count('"claw-automation-scheduler-note"') == 2
-    assert locale.count('"claw-automation-signed-out"') == 2
-    assert locale.count('"automation-rule-setting"') == 2
-    assert locale.count('"automation-rule-quarantined"') == 2
+    assert facts["key_counts"] == {
+        "claw-automation-scheduler-note": 2,
+        "claw-automation-signed-out": 2,
+        "automation-rule-setting": 2,
+        "automation-rule-quarantined": 2,
+    }
     # The bare on/off keys are gone: the setting is always labelled.
-    assert '"automation-rule-enabled"' not in locale
-    assert '"automation-rule-disabled"' not in locale
+    assert facts["bare_keys_present"] == []
 
 
 def test_quarantined_legacy_rule_is_rendered_as_not_runnable() -> None:
-    """#3043: 레거시 행은 실행 가능한 규칙처럼 보이지 않는다.
-
-    R2(#7186): 소스 블록을 자르는 대신 실제 행 렌더 결과에서 격리 표시와
-    로케일 키를 읽는다.
-    """
+    """#3043: 레거시 행은 실행 가능한 규칙처럼 보이지 않는다."""
     payload = _run("legacy_mixed", auth=_SIGNED_IN, rules=_LEGACY_RULES)
     assert payload["rows"] == 3
     assert payload["legacyNoticeKeys"] == [1], payload["legacyNoticeKeys"]
@@ -86,7 +67,6 @@ def test_quarantined_legacy_rule_is_rendered_as_not_runnable() -> None:
 
 
 def test_ui_reads_only_the_read_only_endpoint() -> None:
-    # R2(#7186): fetch 호출 글자 대신 실제 요청의 메서드·헤더·캐시 모드를 본다.
     payload = _run("ready", auth=_SIGNED_IN, rules=_RULES)
     requests = payload["ruleRequests"]
     assert requests, "the catalogue must load through the rules endpoint"
@@ -98,69 +78,29 @@ def test_ui_reads_only_the_read_only_endpoint() -> None:
 
 
 def test_no_rule_mutation_control_exists_in_the_ui() -> None:
-    """#3237: 읽기 전용 카탈로그에는 규칙 변경 도우미가 없다.
-
-    R2(#7186): 블록 슬라이스 대신 두 가지를 실제 실행으로 고정한다 — 렌더는
-    네트워크를 건드리지 않고, 모듈에는 규칙 변경 도우미/동사가 존재하지 않는다.
-    변경 동작 자체의 계약은 #3257·#3262·#3270 시험이 서버 왕복으로 검증한다.
-    """
+    """#3237: 읽기 전용 카탈로그에는 규칙 변경 도우미가 없다."""
     payload = _run("ready", auth=_SIGNED_IN, rules=_RULES)
     for request in payload["ruleRequests"]:
         assert request["method"] == "GET", request
-    source = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
-    for forbidden in (
-        "createRule",
-        "updateRule",
-        "deleteRule",
-        "runNow",
-        "set_rule_enabled",
-        "PUT",
-        "DELETE",
-    ):
-        assert forbidden not in source, forbidden
+    assert mutation_module_facts()["forbidden_tokens"] == []
 
 
 def test_skill_surface_untouched_and_no_b66_import() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
-    html = INDEX_HTML.read_text(encoding="utf-8")
-    # #3235 Skills work is on HOLD and must not leak into this slice.
-    assert "/api/claw/skills" not in source
-    assert "claw_skill_routes" not in source
-    assert "business-66" not in source
-    assert "quote-skill" not in html
+    facts = skill_surface_facts()
+    assert facts["forbidden_tokens"] == []
+    assert facts["forbidden_markup"] == []
 
 
 def test_locale_keys_exist_in_both_languages() -> None:
-    locale = LOCALE_JS.read_text(encoding="utf-8")
-    for key in (
-        "nav-automation",
-        "claw-automation-title",
-        "claw-automation-help",
-        "claw-automation-loading",
-        "claw-automation-error",
-        "claw-automation-empty",
-        "claw-automation-scheduler-note",
-        "automation-rule-setting",
-        "automation-rule-on",
-        "automation-rule-off",
-        "automation-rule-quarantined",
-    ):
-        assert f'"{key}"' in locale, key
-    # Korean and English tables each define the Automation copy.
-    assert locale.count('"nav-automation"') == 2
+    facts = locale_key_facts()
+    assert facts["missing_keys"] == []
+    assert facts["nav_automation_count"] == 2
 
 
 def test_app_js_never_uses_inner_html() -> None:
     """금지 계약(R2 규칙 3): 서버 투영 문자열을 HTML sink로 넣지 않는다."""
-    for path in (
-        APP_JS,
-        APP_JS.parent / "chat-automation-module.js",
-        APP_JS.parent / "chat-automation-form-module.js",
-        APP_JS.parent / "chat-local-pc-panel-module.js",
-    ):
-        source = path.read_text(encoding="utf-8")
-        assert "innerHTML" not in source, path.name
-        assert "insertAdjacentHTML" not in source, path.name
+    offenders = [item for item in inner_html_facts() if item["sinks"]]
+    assert offenders == []
 
 
 # ── behavioral proof via Node harness executing real app.js ────────────────

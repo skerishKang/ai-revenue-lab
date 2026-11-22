@@ -36,17 +36,23 @@ from __future__ import annotations
 
 import json
 import re
-from pathlib import Path
 
 from _r5_auth_module_harness import observations, presentation_table
+from _support.auth_status_entry import (
+    app_source,
+    auth_module_source,
+    capabilities_source,
+    locale_source,
+    outputs_source,
+    password_auth_source,
+)
 
-BASE = Path(__file__).resolve().parents[1] / "static"
-APP = (BASE / "app.js").read_text(encoding="utf-8")
+APP = app_source()
 #7216 R5 step 4: this contract moved into chat-auth-module.js.
-AUTH = (BASE / "chat-auth-module.js").read_text(encoding="utf-8")
-CAPABILITIES = (BASE / "product-capabilities.js").read_text(encoding="utf-8")
-LOCALE = (BASE / "locale.js").read_text(encoding="utf-8")
-OUTPUTS = (BASE / "outputs.js").read_text(encoding="utf-8")
+AUTH = auth_module_source()
+CAPABILITIES = capabilities_source()
+LOCALE = locale_source()
+OUTPUTS = outputs_source()
 
 #: Every session state the client can be in.
 SESSION_STATES = (
@@ -60,22 +66,22 @@ SESSION_STATES = (
 
 
 def _presentation_table() -> dict:
-    """Read the shipped presentation rule out of ``app.js``.
+    """Read the shipped presentation rule out of ``chat-auth-module.js``.
 
     The literal is written as strict JSON so the test evaluates the rule the
     browser runs, not a re-implementation of it.
     """
-    start = APP.index("const SESSION_PRESENTATION = {")
-    start = APP.index("{", start)
+    start = AUTH.index("const SESSION_PRESENTATION = {")
+    start = AUTH.index("{", start)
     depth = 0
-    for index in range(start, len(APP)):
-        char = APP[index]
+    for index in range(start, len(AUTH)):
+        char = AUTH[index]
         if char == "{":
             depth += 1
         elif char == "}":
             depth -= 1
             if depth == 0:
-                literal = APP[start : index + 1]
+                literal = AUTH[start : index + 1]
                 break
     else:  # pragma: no cover - a malformed app.js fails every other test too
         raise AssertionError("SESSION_PRESENTATION literal is not closed")
@@ -175,7 +181,7 @@ def test_the_rule_is_read_from_the_table_and_shared_with_the_other_projections()
     # Structure kept as text: one shared rule is exposed for the other
     # projections (product-capabilities.js), and the moved bodies are not
     # re-inlined in app.js.
-    assert "window.PadiemSessionPresentation = resolveSessionPresentation;" in APP
+    assert "window.PadiemSessionPresentation = authModule().resolveSessionPresentation;" in APP
     assert "loginButton.hidden = presentation.loginHidden;" not in APP
     assert "loginButton.disabled = presentation.loginDisabled;" not in APP
     assert "accountContainer.hidden = presentation.accountHidden;" not in APP
@@ -219,10 +225,11 @@ def test_an_unreadable_status_is_a_distinct_session_state():
 
 def test_the_login_button_retries_the_status_instead_of_being_a_dead_end():
     """Clicking the button while the state is unknown re-reads the status."""
-    handler = APP.split('loginButton.addEventListener("click", async () => {', 1)[1]
+    assert 'authModule().wireLoginButton();' in APP
+    handler = (APP + AUTH).split('deps.loginButton.addEventListener("click", async () => {', 1)[1]
     handler = handler.split("});", 1)[0]
-    assert "if (!authState.ready) {" in handler
-    assert "await loadAuthStatus();" in handler
+    assert "if (!deps.authState.ready) {" in handler
+    assert "await deps.loadAuthStatus();" in handler
     assert "setNote(" in handler
     # The old handler returned without doing anything at all.
     assert "if (!authState.ready) return;" not in handler
@@ -268,9 +275,7 @@ def test_the_account_identity_is_not_invented_for_an_unknown_state():
 
 def test_the_session_contract_is_not_weakened():
     """The fix is presentation only: no check, cookie or hash rule changes."""
-    assert "PBKDF2_ALGORITHM" in (BASE.parent / "app" / "password_auth.py").read_text(
-        encoding="utf-8"
-    )
+    assert "PBKDF2_ALGORITHM" in password_auth_source()
     # The server still owns the session verdict. A stale "authenticated: true"
     # that never became ready is projected as a non-signed-in state — observed
     # on the executed module, with the shipped presentation table injected.

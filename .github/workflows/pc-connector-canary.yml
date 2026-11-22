@@ -5,7 +5,7 @@ name: PC Connector Canary
 # The deploy gates prove a version is served and that one chat completes. Nothing
 # proved that a paired PC still ANSWERS, which is the thing an owner feels as "the
 # connector broke". This workflow signs in as the existing production QA identity,
-# asks that account's PC for a top-level listing of its C: drive, and waits until the
+# asks that account's PC for its drive list, and waits until the
 # result arrives — then records one line: verdict, entry count, elapsed seconds,
 # failure code.
 #
@@ -112,6 +112,15 @@ jobs:
     # so an answered hour is always recorded as an answer.
     timeout-minutes: 35
     environment: production
+    # 2026-11-16: the verdict is published as a commit status on the exact main
+    # SHA this run already checked out. A job's token carries no status scope
+    # unless the job asks for it, which is why run 43862546352 answered
+    # "Resource not accessible by integration" and the signal was never
+    # recorded. Job-level permissions replace the workflow-level
+    # `contents: read`, so both scopes are declared here.
+    permissions:
+      contents: read
+      statuses: write
     env:
       # 2026-11-16: the QA identity whose account holds the PC pairing. The job's
       # own variable names are the script's contract; only the secret source moves.
@@ -137,7 +146,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Ask the PC for the C-drive root listing and wait for the stored result
+      - name: Ask the PC for its drive list and wait for the stored result
         shell: bash
         run: |
           set -euo pipefail

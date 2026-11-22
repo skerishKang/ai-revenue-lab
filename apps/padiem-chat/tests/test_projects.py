@@ -194,7 +194,7 @@ class MemoryProjectFileStore:
 
 async def client_with_session(app, app_settings, user: UserProfile):
     client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test")
-    client.cookies.set(SESSION_COOKIE, create_session_token(app_settings, user.id), domain="chat.example.test", path="/")
+    client.cookies.set(SESSION_COOKIE, create_session_token(app_settings, user.id, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
     return client
 
 
@@ -480,7 +480,7 @@ def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     assert 'id="projectBanner"' in html
     assert 'href="./projects.css"' in html
     assert 'payload.project_id = contextSnapshot.project.id' in stream_js
-    assert 'newChatButton.addEventListener("click", () => resetConversation(true))' in js
+    assert 'newChatButton.addEventListener("click", () => conversationModule().resetConversation(true))' in js
     assert 'exitProjectButton.addEventListener("click", exitProject)' in js
     assert 'projectDeleteButton.addEventListener("click", deleteProject)' in js
     assert 'manage.addEventListener("click", () => openProjectDialog(project))' in js

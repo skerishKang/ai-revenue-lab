@@ -2,83 +2,62 @@ from __future__ import annotations
 
 import shutil
 import subprocess
-from pathlib import Path
 
-
-def sources():
-    root = Path(__file__).resolve().parents[1]
-    return (
-        root,
-        (root / "static/index.html").read_text(encoding="utf-8"),
-        (root / "static/rich-response.js").read_text(encoding="utf-8"),
-        (root / "static/rich-response.css").read_text(encoding="utf-8"),
-        (root / "static/app.js").read_text(encoding="utf-8"),
-        (root / "static/outputs.js").read_text(encoding="utf-8"),
-    )
+from _support.rich_response import (
+    STRUCTURE_CONSTANTS,
+    css_facts,
+    js_facts,
+    markup_facts,
+    outputs_facts,
+    static_root,
+)
 
 
 def test_rich_response_assets_are_additive_and_ordered():
-    _, html, _, _, _, _ = sources()
-    assert '<link rel="stylesheet" href="./rich-response.css" />' in html
-    app_index = html.index('<script src="./app.js"></script>')
-    rich_index = html.index('<script src="./rich-response.js"></script>')
-    outputs_index = html.index('<script src="./outputs.js"></script>')
-    assert app_index < rich_index < outputs_index
+    facts = markup_facts()
+    assert "./rich-response.css" in facts["stylesheets"]
+    scripts = facts["scripts"]
+    assert scripts.index("./app.js") < scripts.index("./rich-response.js") < scripts.index("./outputs.js")
 
 
 def test_rich_renderer_is_dom_safe_and_has_no_execution_path():
-    _, _, js, _, _, _ = sources()
-    assert "document.createElement" in js
-    assert "document.createTextNode" in js
-    assert ".textContent =" in js
-    assert "innerHTML" not in js
-    assert "insertAdjacentHTML" not in js
-    assert "eval(" not in js
-    assert "new Function" not in js
-    assert "setAttribute(\"onclick\"" not in js
-    assert "fetch(" not in js
-    assert "WebSocket" not in js
-    assert "EventSource" not in js
+    facts = js_facts()
+    assert facts["create_element_tags"]
+    assert facts["text_node_used"] is True
+    assert facts["text_content_assignments"] > 0
+    assert facts["unsafe_sinks"] == ()
 
 
 def test_supported_structures_and_local_actions_are_present():
-    _, _, js, css, _, _ = sources()
-    assert "HEADING_PATTERN" in js
-    assert "UNORDERED_PATTERN" in js and "ORDERED_PATTERN" in js
-    assert "QUOTE_PATTERN" in js
-    assert "FENCE_PATTERN" in js and "FENCE_CLOSE_PATTERN" in js
-    assert "TABLE_SEPARATOR_CELL" in js and "tableAt(" in js
-    assert 'document.createElement("blockquote")' in js
-    assert 'document.createElement("table")' in js
-    assert 'document.createElement("code")' in js
-    assert 'copy.textContent = "복사"' in js
-    assert 'download.textContent = "CSV 다운로드"' in js
-    assert "window.PadiemAnswerCopy || window.SharedAnswerCopy" in js
-    assert "navigator.clipboard" not in js and "document.execCommand" not in js
-    assert 'new Blob(["\\uFEFF", csv], { type: "text/csv;charset=utf-8" })' in js
-    assert "URL.createObjectURL" in js and "URL.revokeObjectURL" in js
-    assert "rich-code-block" in css and "rich-table-block" in css
-    assert "overflow-x: auto" in css
+    js = js_facts()
+    assert set(js["structure_constants"]) == set(STRUCTURE_CONSTANTS)
+    assert {"blockquote", "table", "code"}.issubset(js["create_element_tags"])
+    assert js["copy_button_text"] == ("복사",)
+    assert js["download_button_text"] == ("CSV 다운로드",)
+    assert js["copy_api_fallback"] == ("window.PadiemAnswerCopy || window.SharedAnswerCopy",)
+    assert js["legacy_clipboard"] == ()
+    assert "\\uFEFF" in js["blob_arguments"][0]
+    assert js["blob_arguments"][1] == "text/csv;charset=utf-8"
+    assert set(js["object_url_apis"]) == {"URL.createObjectURL", "URL.revokeObjectURL"}
+    css = css_facts()
+    assert {"rich-code-block", "rich-table-block"}.issubset(css["classes"])
+    assert "auto" in css["overflow_x"]
 
 
 def test_raw_answer_is_kept_once_in_an_inert_source_after_visual_enhancement():
-    _, _, js, _, app_js, outputs_js = sources()
     # The completed answer text exists exactly once in the DOM: the visible
     # rich blocks. The raw markdown source lives in an inert <template> that
     # is never rendered, announced, or selected by copy/scan queries — the
     # retired hidden-paragraph contract duplicated the text for the DOM.
-    assert 'document.createElement("template")' in js
-    assert "source.content.appendChild(document.createTextNode(rawParagraph.textContent))" in js
-    assert "rawParagraph.replaceWith(source, rich)" in js
-    assert "rawParagraph.hidden = true" not in js
-    assert 'rawParagraph.classList.add("rich-response-source")' not in js
-    assert "NON_ANSWER_PARAGRAPH_CLASSES" in js  # statuses are never taken for the answer
-    import shutil
-    import subprocess
-    from pathlib import Path
+    js = js_facts()
+    assert js["template_created"] is True
+    assert js["source_text_node"] is True
+    assert js["raw_replaced"] is True
+    assert js["retired_hidden_source"] == ()
+    assert "NON_ANSWER_PARAGRAPH_CLASSES" in js["structure_constants"]
     node = shutil.which("node")
     if node is not None:
-        static_dir = Path(__file__).resolve().parents[1] / "static"
+        static_dir = static_root() / "static"
         script = r"""
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
@@ -113,30 +92,25 @@ assert.equal(appended[0].textContent, "raw markdown **answer**");
             capture_output=True, text=True, encoding="utf-8", timeout=30,
         )
         assert completed.returncode == 0, completed.stdout + completed.stderr
-    assert 'Array.from(content.children).find((node) => node.tagName === "P")' in outputs_js
-    assert "template.rich-response-source" in outputs_js
-    assert "outputContent.textContent = activeOutput.content" in outputs_js
+    outputs = outputs_facts()
+    assert outputs["find_paragraph"] is True
+    assert outputs["template_query"] is True
+    assert outputs["text_content_copy"] is True
 
 
 def test_inline_markdown_is_supported_without_unsafe_html_or_links():
-    _, _, js, _, _, _ = sources()
-    assert "INLINE_PATTERN" in js
-    assert "INLINE_LINK_PATTERN" in js
-    assert "appendInline(" in js
-    assert 'document.createElement("strong")' in js
-    assert 'document.createElement("em")' in js
-    assert 'document.createElement("code")' in js
-    assert 'document.createElement("a")' in js
-    assert "safeInlineLink(" in js
-    assert 'parsed.protocol !== "http:" && parsed.protocol !== "https:"' in js
-    assert 'anchor.target = "_blank"' in js
-    assert 'anchor.rel = "noopener noreferrer"' in js
-    assert "innerHTML" not in js
-    assert "insertAdjacentHTML" not in js
+    js = js_facts()
+    constants = set(js["structure_constants"])
+    assert {"INLINE_PATTERN", "INLINE_LINK_PATTERN", "appendInline", "safeInlineLink"}.issubset(constants)
+    assert {"strong", "em", "code", "a"}.issubset(js["create_element_tags"])
+    assert js["link_protocol_guard"] is True
+    assert js["anchor_target"] == ("_blank",)
+    assert js["anchor_rel"] == ("noopener noreferrer",)
+    assert js["unsafe_sinks"] == ()
 
 
 def test_phase1_styles_remain_byte_identical():
-    root, _, _, _, _, _ = sources()
+    root = static_root()
     repo = root.parents[1]
     from style_contract import assert_phase1_styles_match
     assert_phase1_styles_match(
@@ -146,11 +120,10 @@ def test_phase1_styles_remain_byte_identical():
 
 
 def test_rich_response_javascript_syntax():
-    root, _, _, _, _, _ = sources()
     node = shutil.which("node")
     assert node is not None
     result = subprocess.run(
-        [node, "--check", str(root / "static/rich-response.js")],
+        [node, "--check", str(static_root() / "static/rich-response.js")],
         capture_output=True,
         text=True, encoding="utf-8",
         check=False,

@@ -22,6 +22,12 @@ from app.auth import (
 )
 from app.config import ConfigError, Settings
 from app.history import D1HistoryStore, HistoryForbidden, UserProfile, PRODUCT_SCOPE_CHAT
+# #8060: 시트·서버 모듈 원문 읽기는 _support/claw_static이 담당하고 시험은
+# 파싱 값(id·link)과 구조·부재 경계 핀을 단언한다. 이 모듈은 원문 read를
+# 갖지 않는다.
+from _support import claw_static
+from _support.html_tags import tags_for_page
+
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
 
@@ -139,7 +145,7 @@ def test_auth_defaults_off_and_google_mode_validation():
 
 def test_signed_session_and_state_reject_tamper_and_expiry():
     settings = google_settings()
-    token = create_session_token(settings, "usr_" + "a" * 32, now=100)
+    token = create_session_token(settings, "usr_" + "a" * 32, now=100, canonical_session_id="session_test_a")
     assert decode_session_token(settings, token, now=101) == "usr_" + "a" * 32
     assert decode_session_token(settings, token + "x", now=101) is None
     assert decode_session_token(settings, token, now=3701) is None
@@ -248,7 +254,7 @@ async def test_logout_clears_session_cookie():
     settings = google_settings()
     app = create_app(settings, history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id, canonical_session_id=None), domain="chat.example.test", path="/")
         response = await client.post("/api/auth/logout")
     assert response.status_code == 200
     assert SESSION_COOKIE in response.headers["set-cookie"]
@@ -282,7 +288,7 @@ async def test_authenticated_chat_creates_and_appends_owner_scoped_history():
     settings = google_settings()
     app = create_app(settings, history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         first = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "첫 질문"}]})
         cid = first.json()["conversation_id"]
         second_messages = [
@@ -310,7 +316,7 @@ async def test_cross_user_conversation_is_rejected_before_answer_and_anonymous_i
     cid = await store.append_exchange(owner.id, None, "owner question", "owner answer", product_scope=PRODUCT_SCOPE_CHAT)
     app = create_app(settings, history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, other.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, other.id, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         denied = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "침범"}], "conversation_id": cid})
     assert denied.status_code == 404
     assert len(store.conversations[cid]["messages"]) == 2
@@ -333,7 +339,7 @@ async def test_conversation_delete_is_owner_scoped_and_bounded():
     app = create_app(settings, history_store=store)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, other.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, other.id, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         foreign = await client.delete(f"/api/conversations/{cid}")
         malformed = await client.delete("/api/conversations/not-a-conversation")
     assert foreign.status_code == 404
@@ -341,7 +347,7 @@ async def test_conversation_delete_is_owner_scoped_and_bounded():
     assert cid in store.conversations
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner.id, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         deleted = await client.delete(f"/api/conversations/{cid}")
         missing = await client.delete(f"/api/conversations/{cid}")
     assert deleted.status_code == 200
@@ -362,7 +368,7 @@ async def test_failed_model_call_does_not_persist_and_image_base64_never_persist
         return httpx.Response(500, json={"private": "not exposed"})
     fail_app = create_app(failing_settings, transport=httpx.MockTransport(fail_handler), history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=fail_app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(failing_settings, profile.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(failing_settings, profile.id, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         failed = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "실패"}]})
     if DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS:
         assert failed.status_code == 502
@@ -378,7 +384,7 @@ async def test_failed_model_call_does_not_persist_and_image_base64_never_persist
     attachment = png_attachment()
     secret_b64 = attachment[0]["base64"]
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         ok = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "이 사진 설명"}], "attachments": attachment})
     assert ok.status_code == 200
     dumped = json.dumps(store.conversations, ensure_ascii=False)
@@ -437,21 +443,24 @@ async def test_d1_adapter_uses_prepared_bound_values_not_interpolation():
 
 
 def test_auth_history_frontend_contract_and_phase1_css_unchanged():
-    root = Path(__file__).resolve().parents[1]
-    html = (root / "static/index.html").read_text(encoding="utf-8")
-    js = (root / "static/app.js").read_text(encoding="utf-8")
+    html = claw_static.sheet("index.html")
+    js = claw_static.sheet("app.js")
     # #7216 R5 step 3/4: the history list fetch/render moved into
     # chat-history-module.js and the execute payload into
     # chat-claw-status-module.js; the contract spans shipped sources.
-    js += (root / "static/chat-history-module.js").read_text(encoding="utf-8")
-    js += (root / "static/chat-claw-status-module.js").read_text(encoding="utf-8")
+    js += claw_static.sheet("chat-history-module.js")
+    js += claw_static.sheet("chat-claw-status-module.js")
     # #7216 R5 A7 후속: the status read moved into chat-auth-module.js.
-    js += (root / "static/chat-auth-module.js").read_text(encoding="utf-8")
-    locale = (root / "static/locale.js").read_text(encoding="utf-8")
-    a11y = (root / "static/a11y.js").read_text(encoding="utf-8")
-    assert 'id="loginButton"' in html
-    assert 'id="historySection"' in html and 'id="historyList"' in html
-    assert 'href="./history.css"' in html
+    js += claw_static.sheet("chat-auth-module.js")
+    locale = claw_static.locale_source()
+    a11y = claw_static.sheet("a11y.js")
+    ids = {attrs.get("id") for _tag, attrs in tags_for_page("index.html")
+           if attrs.get("id")}
+    assert "loginButton" in ids
+    assert {"historySection", "historyList"} <= ids
+    stylesheets = [attrs.get("href") for _tag, attrs in tags_for_page("index.html")
+                   if _tag == "link" and attrs.get("rel") == "stylesheet"]
+    assert "./history.css" in stylesheets
     assert 'fetch("/api/auth/status"' in js
     assert 'fetch("/api/conversations"' in js
     assert 'method: "DELETE"' in js
@@ -462,9 +471,11 @@ def test_auth_history_frontend_contract_and_phase1_css_unchanged():
     assert 'dialog.id = "confirmDialog"' in a11y
     assert "history-delete" in js
     assert "conversationId" in js and "payload.conversation_id" in js
-    assert 'window.location.assign("/auth/google/start")' in js
+    assert 'window.location.assign("/auth/google/start")' in (
+        js + claw_static.sheet("chat-login-dialog-module.js"))
     assert "access_token" not in js
     assert "GOOGLE_CLIENT" not in html and "GOOGLE_CLIENT" not in js
-    repo = root.parents[1]
     from style_contract import assert_phase1_styles_match
-    assert_phase1_styles_match(root / "static/styles.css", repo / "reference/business-62-padiem-chat-v1/styles.css")
+    assert_phase1_styles_match(
+        Path(__file__).resolve().parents[1] / "static/styles.css",
+        Path(__file__).resolve().parents[3] / "reference/business-62-padiem-chat-v1/styles.css")

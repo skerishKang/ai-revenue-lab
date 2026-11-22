@@ -1,7 +1,8 @@
 """#7216 R5 step 5a — 대화 모듈 계약 (목록·표시·첨부·리셋 19함수).
 
-app.js의 대화 구역 19개 함수가 chat-conversation-module.js로 이동했고, app.js는
-같은 이름의 한 줄 전달 함수를 유지한다. #7186 R2: 원문 줄·모양을 고정하던 문자열
+app.js의 대화 구역 19개 함수가 chat-conversation-module.js로 이동했고, B7
+18차+19차에 19개 전부 등록부(app.provide("conversation")) 경유로 대체됐다.
+#7186 R2: 원문 줄·모양을 고정하던 문자열
 검사를 실행 검사로 바꾼다. 이 시험은 (1) 실제 모듈 본문을 Node vm에서 실행해
 showConversation·addUserMessage·renderAnswer·renderStreamError·resetConversation
 과 첨부 도우미의 반환값·DOM·aria·locale 키를 직접 확인하고, (2) deps getter가
@@ -13,7 +14,6 @@ showConversation·addUserMessage·renderAnswer·renderStreamError·resetConversa
 """
 from __future__ import annotations
 
-from html.parser import HTMLParser
 import json
 import re
 import shutil
@@ -23,11 +23,13 @@ from pathlib import Path
 
 import pytest
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+from _support.conversation_module_source import (  # noqa: E402
+    contains, function_block, function_counts, index_script_sources,
+    static_path, strict_deps_harness,
+)
+
+MODULE_SHEET = "chat-conversation-module.js"
+APP_SHEET = "app.js"
 
 NAMES = (
     "attachmentCopy", "showComposerInlineHint", "updateComposer", "showConversation",
@@ -38,11 +40,17 @@ NAMES = (
     "approvalDecisionErrorMessage", "approvedMemoryErrorMessage",
 )
 
+# B7 18차+19차: all 19 one-line forwarders are gone — every name is reached
+# through the registry (app.provide("conversation")) and app.js keeps no
+# same-name definitions.
+REGISTRY_NAMES = NAMES
+FORWARDER_NAMES = ()
+
 MOVED_MARKERS = (
     "deps.conversationEpoch += 1;",
     'deps.activeRequestCancelReason = "conversation_reset";',
     "deps.selectedAttachments = [];",
-    "deps.composerInlineHintTimer = window.setTimeout(",
+    "composerInlineHintTimer = window.setTimeout(",
     'window.PadiemChatConversationModule = {',
 )
 
@@ -80,53 +88,6 @@ DEPS_SETTERS = (
 )
 
 
-class _ScriptSources(HTMLParser):
-    def __init__(self) -> None:
-        super().__init__()
-        self.sources: list[str] = []
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        if tag != "script":
-            return
-        source = dict(attrs).get("src")
-        if source:
-            self.sources.append(source)
-
-
-def _script_sources(html: str) -> list[str]:
-    parser = _ScriptSources()
-    parser.feed(html)
-    return parser.sources
-
-
-def _function_block(source: str, name: str) -> str:
-    """Return a function declaration without pinning its whitespace or order."""
-    match = re.search(rf"function\s+{re.escape(name)}\s*\(", source)
-    assert match, f"{name} function not found"
-    start = match.start()
-    index = source.index("{", match.end())
-    depth = 0
-    quote = ""
-    while index < len(source):
-        char = source[index]
-        if quote:
-            if char == "\\":
-                index += 2
-                continue
-            if char == quote:
-                quote = ""
-        elif char in "\"'`":
-            quote = char
-        elif char == "{":
-            depth += 1
-        elif char == "}":
-            depth -= 1
-            if depth == 0:
-                return source[start:index + 1]
-        index += 1
-    raise AssertionError(f"unbalanced function body for {name}")
-
-
 def _run_node(script: str) -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required"
@@ -138,30 +99,35 @@ def _run_node(script: str) -> dict:
 
 
 def test_index_loads_the_conversation_module_before_app() -> None:
-    sources = _script_sources(INDEX)
+    sources = index_script_sources()
     assert sources.count("./chat-conversation-module.js") == 1
     assert sources.index("./chat-conversation-module.js") < sources.index("./app.js")
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:
-    # 소유 구조 계약(#7186 R2 4단계와 같다): 옮겨진 본문은 모듈에만 살아 있고
-    # app.js에는 각 이름의 정의가 전달 함수 하나뿐이다. 원문 모양이 아니라
-    # "어디에 살아 있는지"를 검사한다.
+    # 소유 구조 계약(#7186 R2 4단계와 같다): 옮겨진 본문은 모듈에만 살아 있다.
+    # B7 18차+19차: 19개 전부 등록부(app.provide("conversation")) 경유로 대체돼
+    # app.js에 같은 이름 정의가 없다.
     for marker in MOVED_MARKERS:
-        assert marker in MODULE, marker
+        assert contains(MODULE_SHEET, marker), marker
     for name in NAMES:
-        assert MODULE.count(f"function {name}(") == 1, name
-        assert APP.count(f"function {name}(") == 1, name
+        assert function_counts(MODULE_SHEET).get(name) == 1, name
+        # the registry provide is the structural owner of all 19 names.
+        assert (function_counts(APP_SHEET).get(name, 0) == 0
+                and contains(APP_SHEET, 'app.provide("conversation",')), name
 
 
 def test_app_forwarders_delegate_every_moved_function() -> None:
     # 포워더의 정확한 한 줄 문자열을 찾지 않고, app.js에서 추출한 전달 함수를
     # 실행해 같은 이름의 모듈 메서드로 같은 인자를 그대로 넘기는지 확인한다.
-    blocks = "\n".join(_function_block(APP, name) for name in NAMES)
-    export = ", ".join(NAMES)
+    # B7 18차+19차: 19개 전부 등록부 경유로 대체돼 전달 함수가 소멸했다 —
+    # 이 시험의 FORWARDER_NAMES는 빈 집합이고, 구조·동작 계약은 아래
+    # test_moved_bodies_live_only_in_the_module·reachability 시험이 소유한다.
+    blocks = "\n".join(function_block(APP_SHEET, name) for name in FORWARDER_NAMES)
+    export = ", ".join(FORWARDER_NAMES)
     payload = _run_node(f"""
 const blocks = {json.dumps(blocks)};
-const names = {json.dumps(list(NAMES))};
+const names = {json.dumps(list(FORWARDER_NAMES))};
 const counts = {json.dumps(FORWARDER_ARG_COUNTS)};
 const api = new Function("conversationModule", blocks + "\\nreturn {{{export}}};")(() => fake);
 const fake = {{}};
@@ -177,9 +143,71 @@ console.log(JSON.stringify(rows));
 """)
     expected = [
         [name, name, [f"a{i}" for i in range(FORWARDER_ARG_COUNTS[name])]]
-        for name in NAMES
+        for name in FORWARDER_NAMES
     ]
     assert payload == expected
+
+
+def test_attachment_apis_are_reachable_through_the_registry() -> None:
+    """B7 18차+19차 보강: 등록부(app.provide("conversation"))로 19개 이름을 조회한다.
+
+    app.js 전달 함수가 없어도 소비자(공유 접근자·conv/streaming deps getter·
+    부팅 직접 호출)는 등록된 조각의 같은 이름 API에 도달한다. 실제 모듈 본문을
+    node vm에서 문맥에 등록해 19개 이름이 전부 함수로 조회되는지 본다(동작
+    단언은 하네스가 직접 호출로 증명한다).
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, append() {}, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, append() {}, setAttribute() {} }),
+  },
+  location: { search: "", hash: "", pathname: "/", href: "https://example.test/" },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-conversation-module.js", "utf8"), sandbox,
+  { filename: "chat-conversation-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("conversation", window.PadiemChatConversationModule.create(Object.setPrototypeOf({}, app)));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(REGISTRY_NAMES))), static_path()],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
 
 
 def test_module_loads_one_factory_and_touches_no_dom_at_load() -> None:
@@ -192,10 +220,10 @@ const domTouches = [];
 const document = new Proxy({{}}, {{
   get(target, prop) {{ domTouches.push(String(prop)); return () => null; }},
 }});
-const window = {{}};
+const window = {{}}; const app = {{}};
 const ctx = {{ document, window, console }};
 vm.createContext(ctx);
-const source = fs.readFileSync({json.dumps(str(STATIC / 'chat-conversation-module.js'))}, "utf8");
+const source = fs.readFileSync({json.dumps(static_path('chat-conversation-module.js'))}, "utf8");
 vm.runInContext(source, ctx, {{ filename: "chat-conversation-module.js" }});
 const moduleGlobal = window.PadiemChatConversationModule;
 console.log(JSON.stringify({{
@@ -211,20 +239,30 @@ def test_deps_wiring_reads_and_writes_the_live_closure() -> None:
     # 값을 호출 시점에 읽고, setter는 대입을 클로저 변수에 써야 하며, 표면(이름
     # 집합)은 이동 분석과 정확히 같아야 한다 — deps 이름 집합이 모듈이 만질 수
     # 있는 표면이므로 개수 세기보다 강한 계약이다.
-    factory = _function_block(APP, "conversationModule")
+    factory = function_block(APP_SHEET, "conversationModule")
     gets = sorted(set(re.findall(r"get (\w+)\(\)", factory)))
     sets = sorted(set(re.findall(r"set (\w+)\(value\)", factory)))
     decls = "\n".join([f"let {name};" for name in gets] + ["let conversationModuleInstance;"])
     reads_setup = "\n".join(f"{name} = {json.dumps(f'r-{name}')};" for name in gets)
     writes_setup = "\n".join(f"captured.{name} = {json.dumps(f'w-{name}')};" for name in sets)
     writes_check = "\n".join(f"writes.{name} = {name} === {json.dumps(f'w-{name}')};" for name in sets)
+    provided_piece = ",\n".join(f"get {name}() {{ return {name}; }}" for name in gets)
     payload = _run_node(f"""
 const window = {{}};
+// B7 (18차, conversation 등록부): factory is app.provide(...) — the provide stub
+// returns a piece whose getters read the same live closure values, so the
+// registry-delegating getters keep their live-read contract in this harness.
+const providedPiece = {{{provided_piece}}};
+const app = {{ provide(name, piece) {{ return providedPiece; }} }};
 let captured = null;
 window.PadiemChatConversationModule = {{
   create(deps) {{ captured = deps; return {{}}; }},
 }};
 {decls}
+const navModuleInstance = {{ get switchConversationProduct() {{ return switchConversationProduct; }} }};
+// B7 (12차, core 등록부): deps getter가 coreModule() 값을 읽는다.
+const coreModule = () => ({{ formatBytes: formatBytes, formatClockTime: formatClockTime, extensionOf: extensionOf, selectImage: selectImage, readDocumentFile: readDocumentFile }});
+const authModule = () => ({{ get accountInitial() {{ return accountInitial; }} }});
 {factory}
 conversationModule();
 const names = Object.getOwnPropertyNames(captured);
@@ -423,6 +461,13 @@ let api;
 for (const name of INTERNAL) {
   Object.defineProperty(deps, name, { get() { return api[name]; } });
 }
+// #7812 R5 B5: the module owns these nodes, so register the same live elements
+// its create() lookup must return.
+Object.assign(domRegistry, {
+  attachmentTray: live.attachmentTray,
+  attachmentChipList: live.attachmentChipList,
+  composerInlineHint: live.composerInlineHint,
+});
 api = ctx.window.PadiemChatConversationModule.create(r5StrictDeps(deps, "step5.deps"));
 const results = {};
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -472,11 +517,11 @@ results.setter = { epoch: live.conversationEpoch, cancelReason: live.activeReque
   controllerNull: live.activeRequestController === null, aborted: live.abortCount,
   stateReset: live.stateReset, inputCleared: live.input.value === "" };
 
-// 7. Getter contract: an element installed before the call is the one shown.
-const late = makeElement("lateHint");
-live.composerInlineHint = late;
+// 7. B5 (rule (a)): the hint node is module-owned now, so the hint lands on the
+// element create() holds, not on a late deps replacement.
+const hintNode = domRegistry.composerInlineHint;
 api.showComposerInlineHint("some-key");
-results.getter = { text: late.textContent, hidden: late.hidden };
+results.getter = { text: hintNode.textContent, hidden: hintNode.hidden };
 
 // 8. clearAttachment writes the emptied selection back through the setter.
 live.selectedAttachments = [{ name: "x.txt", previewUrl: "blob:9" }];
@@ -893,9 +938,9 @@ def _run_harness() -> dict:
         pytest.skip("node is not available for the module harness")
     with tempfile.TemporaryDirectory() as tmp:
         harness = Path(tmp) / "harness.js"
-        harness.write_text(STRICT + "\n" + _HARNESS, encoding="utf-8", newline="\n")
+        harness.write_text(strict_deps_harness() + "\n" + _HARNESS, encoding="utf-8", newline="\n")
         completed = subprocess.run(
-            [node, str(harness), str(STATIC / "chat-conversation-module.js")],
+            [node, str(harness), static_path("chat-conversation-module.js")],
             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,
         )
     assert completed.returncode == 0, completed.stderr

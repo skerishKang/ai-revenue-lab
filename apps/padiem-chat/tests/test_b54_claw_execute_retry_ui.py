@@ -40,6 +40,7 @@ policy change, auto-retry, or Engine/P01 retry semantics are introduced.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import os
@@ -51,6 +52,7 @@ from pathlib import Path
 import pytest
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+from _support import claw_retry_static as static_assets
 
 # R5 0단계(R-01): 함수 정의·본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import (
@@ -68,7 +70,7 @@ APP_JS = ROOT / "static/app.js"
 # #7216 R5 A5a: Claw 실행 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
 RUN_MODULE = ROOT / "static/chat-claw-run-module.js"
 INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
 CLAW_ROUTES = ROOT / "app/claw_routes.py"
 
@@ -83,44 +85,45 @@ EXECUTE_ROUTE = '"/api/claw/manual-intake/execute"'
 
 
 def _app_source() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    return static_assets.app_source()
 
 
 # ── static structural contracts ────────────────────────────────────────────
 
 
 def test_recovery_surface_is_declared_inside_the_claw_form() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
-    for token in (
-        'id="clawRetryHint"',
-        'id="clawRetryBox"',
-        'id="clawRetryCopy"',
-        'id="clawRetryButton"',
+    for element_id in (
+        "clawRetryHint",
+        "clawRetryBox",
+        "clawRetryCopy",
+        "clawRetryButton",
     ):
-        assert token in html
+        assert static_assets.element(element_id) is not None, element_id
     # The retry action is an explicit button, never a form submit, and it starts
     # hidden and disabled: nothing can be sent until the cooldown expires.
-    assert (
-        '<button type="button" class="claw-retry-button" id="clawRetryButton"'
-        ' data-locale-key="claw-btn-retry" disabled aria-disabled="true">' in html
-    )
-    assert html.count("<h1") == 1
-    assert 'id="clawRetryBox" hidden' in html
-    assert 'id="clawRetryHint" hidden' in html
+    tag, attrs = static_assets.element("clawRetryButton")
+    assert tag == "button"
+    assert attrs["type"] == "button"
+    assert "claw-retry-button" in attrs["class"].split()
+    assert attrs["data-locale-key"] == "claw-btn-retry"
+    assert "disabled" in attrs and attrs["aria-disabled"] == "true"
+    assert "hidden" in static_assets.element("clawRetryBox")[1]
+    assert "hidden" in static_assets.element("clawRetryHint")[1]
+    assert sum(1 for tag, _attrs in static_assets.index_tags() if tag == "h1") == 1
 
 
 def test_consumes_the_existing_retry_after_header_without_new_authority() -> None:
     app = _app_source()
     retry_source = definition_source("clawRetryAfterFromResponse")
     assert 'headers.get("Retry-After")' in retry_source
-    run_module = RUN_MODULE.read_text(encoding="utf-8")
+    run_module = static_assets.run_module_source()
     assert 'response.status === 429 ? deps.clawRetryAfterFromResponse(response)' in run_module
     # Exactly one execute POST target survives the refactor.
     assert app.count(EXECUTE_ROUTE) == 0
     assert run_module.count(EXECUTE_ROUTE) == 1
     assert run_module.count('fetch("/api/claw/manual-intake/execute"') == 1
     # The server contract that produces the header is unchanged and untouched.
-    routes = CLAW_ROUTES.read_text(encoding="utf-8")
+    routes = static_assets.claw_routes_source()
     assert 'headers["Retry-After"] = str(decision.retry_after_seconds)' in routes
     assert "async def _usage_gate_denial(request: Request)" in routes
 
@@ -151,12 +154,12 @@ def test_the_retry_after_bound_lives_on_the_server() -> None:
         int(match)
         for path in sorted((ROOT / "app").glob("*.py"))
         for match in re.findall(
-            r"retry_after_seconds\s*=\s*(\d+)", path.read_text(encoding="utf-8")
+            r"retry_after_seconds\s*=\s*(\d+)", static_assets.text(str(path.relative_to(ROOT)))
         )
     ]
     assert values, "no production retry_after_seconds literal found"
     assert max(values) <= 900, max(values)
-    routes = CLAW_ROUTES.read_text(encoding="utf-8")
+    routes = static_assets.claw_routes_source()
     assert 'if decision.retry_after_seconds is not None:' in routes
     assert 'headers["Retry-After"] = str(decision.retry_after_seconds)' in routes
 
@@ -166,7 +169,7 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     # Both the primary button and the retry button funnel through one function.
     # R5 A5b: the execute/retry wiring moved to chat-claw-form-module.js; the
     # two explicit invocation sites stay exactly two (no timers, no auto-run).
-    form_module = (ROOT / "static" / "chat-claw-form-module.js").read_text(encoding="utf-8")
+    form_module = static_assets.form_module_source()
     assert app.count("void runClawExecution();") == 0
     assert form_module.count("void deps.runClawExecution();") == 2
     assert definition_count("runClawExecution") == 1
@@ -182,7 +185,7 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     assert_session_storage_is_handoff_only(app)
     # A cooldown, and an unresolved dispatch of the request currently composed,
     # both strictly gate the single execute entry point.
-    run_module = RUN_MODULE.read_text(encoding="utf-8")
+    run_module = static_assets.run_module_source()
     assert "if (deps.clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown" in run_module
     assert "if (deps.clawCurrentDispatchIsUncertain()) return; // #3382: no re-send of an unresolved request" in run_module
     busy_source = definition_source("setClawButtonsBusy")
@@ -213,7 +216,7 @@ def test_uncertain_latch_keys_on_wire_content_not_unused_form_fields() -> None:
     # The model ID selector never reaches this request. Counting it as new work
     # was the bypass CTO review found on #3382, so it must stay out of the key.
     assert "clawModelIdInput" not in builder
-    run_module = RUN_MODULE.read_text(encoding="utf-8")
+    run_module = static_assets.run_module_source()
     assert "const executePayload = deps.clawVisibleExecutePayload();" in run_module
     # One assembly point only: a second inline literal is how the key and the
     # wire bytes diverge again.
@@ -228,7 +231,7 @@ def test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance() -> None
     assert 'return status === 502 || code === "engine_execution_failed";' in classifier_source
     # #3933: a bounded pre-dispatch refusal (model HOLD) is a proven non-dispatch,
     # so it is excluded at the call site as well as in the classifier above.
-    run_module = RUN_MODULE.read_text(encoding="utf-8")
+    run_module = static_assets.run_module_source()
     assert "else if (!boundedFailure && deps.isAmbiguousClawFailure(data, response)) deps.showClawAmbiguousRecoveryHint();" in run_module
     assert "deps.showClawAmbiguousRecoveryHint();" in run_module.split("} catch {", 1)[1]
     # Closed allowlist: no other bounded failure on this route may claim that a
@@ -311,15 +314,13 @@ def test_auth_loss_and_navigation_clear_recovery_state(behavioral_harness_payloa
 
 
 def test_locale_keys_are_declared_for_both_languages() -> None:
-    locale = LOCALE_JS.read_text(encoding="utf-8")
-    ko_block = locale.split("en: {", 1)[0]
-    en_block = locale.split("en: {", 1)[1]
     for key in RECOVERY_KEYS:
-        assert f'"{key}"' in ko_block, key
-        assert f'"{key}"' in en_block, key
-    html = INDEX_HTML.read_text(encoding="utf-8")
+        assert key in static_assets.locale_keys("ko"), key
+        assert key in static_assets.locale_keys("en"), key
     app = _app_source()
-    assert 'data-locale-key="claw-btn-retry"' in html
+    retry_button = static_assets.element("clawRetryButton")
+    assert retry_button is not None
+    assert retry_button[1]["data-locale-key"] == "claw-btn-retry"
     # Runtime-resolved keys go through the Claw locale helper, with the seconds
     # value passed as a variable rather than concatenated into a key.
     retry_source = definition_source("renderClawRetryBox")
@@ -338,23 +339,25 @@ def test_runtime_copy_stays_locale_driven() -> None:
 
 
 def test_recovery_roles_inherit_shared_tokens() -> None:
-    css = WORKSPACE_CSS.read_text(encoding="utf-8")
-    block = css.split("#2760 execute recovery", 1)[-1].split(".claw-result[data-claw-state", 1)[0]
-    assert block
-    assert "var(--text)" in block
-    assert "var(--muted)" in block
-    assert "var(--line)" in block
-    assert "var(--card-bg)" in block
-    assert "var(--accent)" in block
-    assert "var(--accent-soft)" in block
-    assert "var(--accent-contrast)" in block
-    assert "--claw-" not in block
-    assert 'html[data-theme="padiem-glass"]' not in block
-    assert "min-height: 44px" in block
-    assert "@media (max-width: 920px)" in block
+    rules = static_assets.recovery_rules()
+    assert rules
+    values = [value for rule in rules for value in rule.declarations.values()]
+    selectors = [selector for rule in rules for selector in rule.selectors]
+    media = [rule.media or "" for rule in rules]
+    for token in ("var(--text)", "var(--muted)", "var(--line)", "var(--card-bg)",
+                  "var(--accent)", "var(--accent-soft)", "var(--accent-contrast)"):
+        assert any(token in value for value in values), token
+    assert not any("--claw-" in value for value in values)
+    assert not any("padiem-glass" in selector for selector in selectors)
+    assert "44px" in values
+    assert any("max-width: 920px" in item for item in media)
     # Hidden outside the Claw shell state, like every other Claw-only node.
-    assert '.app-shell:not([data-state="claw"]) .claw-retry,' in css
-    assert '.app-shell:not([data-state="claw"]) .claw-recovery-hint,' in css
+    all_selectors = [selector for rule in static_assets.workspace_rules()
+                     for selector in rule.selectors]
+    assert any('.app-shell:not([data-state="claw"])' in selector
+               and ".claw-retry" in selector for selector in all_selectors)
+    assert any('.app-shell:not([data-state="claw"])' in selector
+               and ".claw-recovery-hint" in selector for selector in all_selectors)
 
 
 # ── behavioral proof via Node harness executing real app.js ─────────────────

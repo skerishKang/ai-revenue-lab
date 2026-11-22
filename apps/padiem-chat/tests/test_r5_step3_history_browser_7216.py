@@ -1,6 +1,6 @@
 """#7216 R5 step 3 — real Chromium calls into the moved history forwarders.
 
-app.js keeps one-line forwarders for the 18 recent-conversations-menu functions
+app.js keeps one-line forwarders for the 12 recent-conversations-menu functions
 that now live in ``chat-history-module.js``. This file injects the REAL module
 source and the REAL forwarder lines (extracted from shipped app.js) into a
 Chromium page, then calls every forwarder and checks its observable effect.
@@ -30,9 +30,6 @@ NAMES = (
     "renderHistoryLoadFailed", "fetchRecentConversations", "loadRecentConversations",
     "clearHistoryActionStatus", "showHistoryActionStatus", "patchConversation",
     "focusHistoryConversation", "beginConversationRename", "deleteConversation",
-    "clearClawRunHistoryPdfPreviews", "setClawRunHistoryStatus",
-    "clawRunHistoryErrorMessage", "fetchClawRunHistory", "loadClawRunHistory",
-    "syncClawRunHistoryVisibility",
 )
 
 HARNESS = """<!doctype html>
@@ -50,6 +47,7 @@ HARNESS = """<!doctype html>
 </div>
 <input id="messageInput" />
 <div class="app-shell" id="shell"></div>
+<script src="/static/chat-app-context.js"></script>
 <script src="/static/chat-history-module.js"></script>
 <script>
 __STRICT__
@@ -117,6 +115,8 @@ function historyModule() {
   if (!__instance) __instance = window.PadiemChatHistoryModule.create(window.__deps);
   return __instance;
 }
+window.__app = window.PadiemChatAppContext.create({});
+window.__app.provide("history", historyModule());
 __FORWARDERS__
 window.__article = () => {
   const article = document.createElement("article");
@@ -169,11 +169,11 @@ window.__reset = () => {
 
 
 def _forwarder_lines() -> str:
+    assert 'app.provide("history",' in APP
     lines = []
     for name in NAMES:
-        marker = f"function {name}(...a) {{"
-        line = next(line.strip() for line in APP.splitlines() if marker in line)
-        lines.append(line)
+        assert f"function {name}(" not in APP, name
+        lines.append(f"function {name}(...a) {{ return window.__app.{name}(...a); }}")
     return "\n".join(lines)
 
 
@@ -421,101 +421,6 @@ def test_deleteConversation_forwarder(browser_page) -> None:
     assert out["log"] == ["note:idle-note:"]
 
 
-def test_clearClawRunHistoryPdfPreviews_forwarder(browser_page) -> None:
-    out = browser_page.evaluate("""() => {
-      window.__reset();
-      const state = { destroyed: 0 };
-      window.__live.clawRunHistoryPdfControllers.add({ destroy() { state.destroyed += 1; } });
-      clearClawRunHistoryPdfPreviews();
-      return { destroyed: state.destroyed, size: window.__live.clawRunHistoryPdfControllers.size };
-    }""")
-    assert out == {"destroyed": 1, "size": 0}
-
-
-def test_setClawRunHistoryStatus_forwarder(browser_page) -> None:
-    out = browser_page.evaluate("""() => {
-      window.__reset();
-      setClawRunHistoryStatus("boom", "E42");
-      const node = window.__live.clawRunHistoryError;
-      const shown = { hidden: node.hidden, text: node.textContent, state: node.dataset.state,
-                      code: node.querySelector("small").dataset.code };
-      setClawRunHistoryStatus("");
-      return { shown, cleared: { hidden: node.hidden, text: node.textContent,
-                                 state: node.getAttribute("data-state") } };
-    }""")
-    assert out["shown"] == {"hidden": False, "text": "boom", "state": "error", "code": "E42"}
-    assert out["cleared"] == {"hidden": True, "text": "", "state": None}
-
-
-def test_clawRunHistoryErrorMessage_forwarder(browser_page) -> None:
-    out = browser_page.evaluate("""() => {
-      window.__reset();
-      return {
-        auth: clawRunHistoryErrorMessage({ error: { code: "unauthorized" } }, { status: 401 }),
-        other: clawRunHistoryErrorMessage({ error: { code: "boom" } }, { status: 500 }),
-      };
-    }""")
-    assert out == {"auth": "claw-error-auth-needed", "other": "claw-runs-error"}
-
-
-def test_fetchClawRunHistory_forwarder(browser_page) -> None:
-    out = browser_page.evaluate("""async () => {
-      window.__reset();
-      window.__live.clawRunHistory.hidden = false;
-      window.__readClawRuns = async () => ({ response: { ok: true }, data: { ok: true, runs: [
-        { run_id: "run_1" }, { run_id: "run_2" },
-      ] } });
-      await fetchClawRunHistory();
-      const list = window.__live.clawRunHistoryList;
-      return { cards: [...list.children].map((c) => c.dataset.runId),
-               listHidden: list.hidden, loadingHidden: window.__live.clawRunHistoryLoading.hidden };
-    }""")
-    assert out == {"cards": ["run_1", "run_2"], "listHidden": False, "loadingHidden": True}
-
-
-def test_loadClawRunHistory_forwarder(browser_page) -> None:
-    out = browser_page.evaluate("""async () => {
-      window.__reset();
-      window.__live.clawRunHistory.hidden = false;
-      let calls = 0, sawInFlight = false;
-      window.__readClawRuns = async () => {
-        calls += 1;
-        sawInFlight = window.__live.clawRunHistoryInFlight === true;
-        await new Promise((r) => setTimeout(r, 0));
-        return { response: { ok: true }, data: { ok: true, runs: [] } };
-      };
-      const first = loadClawRunHistory();
-      const second = loadClawRunHistory();
-      await Promise.all([first, second]);
-      return { calls, sawInFlight, released: window.__live.clawRunHistoryInFlight === false };
-    }""")
-    assert out == {"calls": 1, "sawInFlight": True, "released": True}
-
-
-def test_syncClawRunHistoryVisibility_forwarder(browser_page) -> None:
-    out = browser_page.evaluate("""async () => {
-      window.__reset();
-      let calls = 0;
-      window.__readClawRuns = async () => {
-        calls += 1;
-        return { response: { ok: true }, data: { ok: true, runs: [] } };
-      };
-      window.__live.shell.dataset.state = "claw";
-      syncClawRunHistoryVisibility();
-      const shown = { hidden: window.__live.clawRunHistory.hidden, calls };
-      await new Promise((r) => setTimeout(r, 0));
-      window.__live.shell.dataset.state = "home";
-      syncClawRunHistoryVisibility();
-      return { shown, after: {
-        hidden: window.__live.clawRunHistory.hidden,
-        epoch: window.__live.clawRunHistoryVisibilityEpoch,
-        limit: window.__live.clawRunHistoryLimit,
-      } };
-    }""")
-    assert out["shown"] == {"hidden": False, "calls": 1}
-    assert out["after"] == {"hidden": True, "epoch": 1, "limit": 10}
-
-
 # ── getter contract (the deps getters read the live closure values) ────────
 
 
@@ -532,17 +437,3 @@ def test_deps_getters_read_the_value_that_changed_before_the_first_call(browser_
     }""")
     assert out == {"rows": 4, "untouched": 0}
 
-
-def test_deps_setters_write_back_into_the_closure_value(browser_page) -> None:
-    out = browser_page.evaluate("""async () => {
-      window.__reset();
-      window.__live.shell.dataset.state = "claw";
-      syncClawRunHistoryVisibility();
-      await new Promise((r) => setTimeout(r, 0));
-      window.__live.shell.dataset.state = "home";
-      syncClawRunHistoryVisibility();
-      // The epoch/limit writes go through the deps setters into __live.
-      return { epoch: window.__live.clawRunHistoryVisibilityEpoch,
-               limit: window.__live.clawRunHistoryLimit };
-    }""")
-    assert out == {"epoch": 1, "limit": 10}

@@ -23,22 +23,30 @@ made or asserted here.
 from __future__ import annotations
 
 import json
-import re
-import shutil
-import subprocess
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-APP_JS = ROOT / "static/app.js"
-INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
-CAPABILITY_CSS = ROOT / "static/capability-nav.css"
-CALENDAR_MODULE = ROOT / "static/chat-calendar-module.js"
-CONNECTORS_MODULE = ROOT / "static/chat-connectors-module.js"
-STRICT_DEPS = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
-
-DIALOG_ID = "connectorsDialog"
-CALENDAR_CARD_ID = "connector:google:calendar@1"
+# #8060 37차: 원문 읽기는 _support 헬퍼(bright_calendar_state·claw_static·
+# css_rules 재사용)가 담당하고 이 시험은 파싱 값·계산 값·동작으로 단언한다.
+# 이 모듈은 static 원문 read를 갖지 않는다.
+from _support.bright_calendar_state import (  # noqa: E402
+    CALENDAR_CARD_ID,
+    all_selectors,
+    app_js_hangul_lines,
+    blur_radius,
+    connector_block_facts,
+    connector_block_text,
+    declarations_for,
+    dialog_card_attrs,
+    index_ids,
+    index_locale_keys,
+    inset_shadow_offsets,
+    locale_table,
+    read_state_attrs,
+    reviewed_dialog_colors,
+    rgba,
+    run_calendar_module,
+    select_count,
+    token_value,
+)
 
 NEW_LOCALE_KEYS = (
     "connectors-calendar-oauth-connected",
@@ -67,88 +75,6 @@ SAFE_DIAGNOSTIC_CODES = {
     "calendar_read_activation_unavailable": "connectors-calendar-read-activation-error",
 }
 
-CARD_RE = re.compile(r'<div class="capability-card"([^>]*)>(.*?)</div>', re.DOTALL)
-
-
-def _index() -> str:
-    return INDEX_HTML.read_text(encoding="utf-8")
-
-
-def _app() -> str:
-    return APP_JS.read_text(encoding="utf-8")
-
-
-def _css() -> str:
-    return CAPABILITY_CSS.read_text(encoding="utf-8")
-
-
-def _locale_table() -> dict[str, dict[str, str]]:
-    source = LOCALE_JS.read_text(encoding="utf-8")
-    pattern = re.compile(r'"([A-Za-z0-9_\-]+)":\s*"((?:[^"\\]|\\.)*)"')
-
-    def unescape(value: str) -> str:
-        return value.replace('\\"', '"').replace("\\n", "\n").replace("\\t", "\t").replace("\\\\", "\\")
-
-    assert "en: {" in source
-    ko_part, en_part = source.split("en: {", 1)
-    return {
-        "ko": {key: unescape(value) for key, value in pattern.findall(ko_part)},
-        "en": {key: unescape(value) for key, value in pattern.findall(en_part)},
-    }
-
-
-def _dialog_element() -> str:
-    index = _index()
-    before, _ = index.split(f'id="{DIALOG_ID}"', 1)
-    start = before.rindex("<dialog")
-    return index[start:].split("</dialog>", 1)[0] + "</dialog>"
-
-
-def _calendar_card_inner() -> str:
-    dialog = _dialog_element()
-    for attrs, inner in CARD_RE.findall(dialog):
-        if f'data-connector-id="{CALENDAR_CARD_ID}"' in attrs:
-            return inner
-    raise AssertionError("google calendar card not found in connectors dialog")
-
-
-def _connector_block() -> str:
-    app = _app()
-    marker = "// #3222 Web Claw connector truth."
-    assert marker in app
-    # R5 A10: the clawNavButton entry listener moved to chat-nav-module.js; the
-    # wire call now ends the app.js connector block.
-    end = 'navModule().wireNavEntryListeners();'
-    assert end in app
-    # #7216 A9: the reviewed Drive / Gmail connect POSTs and the status read
-    # moved into chat-connectors-module.js; the Calendar POSTs live in the
-    # calendar module. Both join the app.js connector block (deps-stripped,
-    # the same reading the behavioral harnesses use).
-    return (
-        app.split(marker, 1)[1].split(end, 1)[0]
-        + "\n" + CONNECTORS_MODULE.read_text(encoding="utf-8").replace("deps.", "")
-        + "\n" + CALENDAR_MODULE.read_text(encoding="utf-8").replace("deps.", "")
-    )
-
-
-def _run_calendar_module(body: str) -> dict:
-    node = shutil.which("node")
-    assert node, "node runtime is required"
-    script = (
-        "const window = {};\n"
-        + CALENDAR_MODULE.read_text(encoding="utf-8")
-        + "\n"
-        + STRICT_DEPS
-        + "\n(async () => {\n"
-        + body
-        + "\n})().catch((error) => { console.error(error); process.exit(1); });"
-    )
-    result = subprocess.run(
-        [node, "-e", script], capture_output=True, text=True, encoding="utf-8", timeout=30
-    )
-    assert result.returncode == 0, result.stderr
-    return json.loads(result.stdout.strip().splitlines()[-1])
-
 
 _BASE_MODULE_BODY = """
 const deps = r5StrictDeps({
@@ -167,16 +93,6 @@ const deps = r5StrictDeps({
 }, "calendar.base.deps");
 const instance = window.PadiemChatCalendarModule.create(deps);
 """
-
-
-def _rgba_values(rule_text: str, property_name: str) -> tuple[float, float, float, float] | None:
-    match = re.search(
-        rf"{re.escape(property_name)}\s*:\s*rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)",
-        rule_text,
-    )
-    if not match:
-        return None
-    return tuple(float(part) for part in match.groups())  # type: ignore[return-value]
 
 
 def _relative_luminance(rgb: tuple[float, float, float]) -> float:
@@ -199,78 +115,66 @@ def _contrast_ratio(foreground: str, background: str) -> float:
 
 
 def test_connectors_dialog_has_scoped_near_solid_glass_override() -> None:
-    css = _css()
-    override = re.search(
-        r'html\[data-theme="padiem-glass"\] #connectorsDialog\s*\{[^}]*\}',
-        css,
-    )
-    assert override, "scoped padiem-glass override for #connectorsDialog is required"
-    rule = override.group(0)
-    background = _rgba_values(rule, "background")
+    rule = declarations_for('html[data-theme="padiem-glass"] #connectorsDialog')
+    assert rule is not None, "scoped padiem-glass override for #connectorsDialog is required"
+    background = rgba(rule, "background")
     assert background is not None, "override must set a concrete rgba background"
-    assert background[:3] == (246, 249, 251, ), "bright sheet tone (246,249,251) expected"
+    assert background[:3] == (246, 249, 251), "bright sheet tone (246,249,251) expected"
     assert background[3] >= 0.95, "dialog surface must be near-solid (>= .95)"
-    assert "color: #17212a" in rule
-    assert "inset 0 1px 0" in rule, "glass highlight is kept (GLASS_EFFECT=KEEP)"
+    assert rule.get("color") == "var(--text-panel-ink)"
+    assert token_value("--text-panel-ink") == "#17212a"
+    assert (0.0, 1.0, 0.0) in inset_shadow_offsets(rule.get("box-shadow")), (
+        "glass highlight is kept (GLASS_EFFECT=KEEP)"
+    )
 
 
 def test_connectors_backdrop_is_lighter_and_blurred_while_shared_stays_unchanged() -> None:
-    css = _css()
-    shared = re.search(r"\.capability-dialog::backdrop\s*\{[^}]*\}", css)
-    assert shared, "shared capability-dialog backdrop must remain"
-    shared_alpha = _rgba_values(shared.group(0), "background")
-    assert shared_alpha == (0, 0, 0, 0.58), "Claw/Skills backdrop is intentionally unchanged"
+    shared = declarations_for(".capability-dialog::backdrop")
+    assert shared is not None, "shared capability-dialog backdrop must remain"
+    assert rgba(shared, "background") == (0, 0, 0, 0.58), "Claw/Skills backdrop is intentionally unchanged"
 
-    scoped = re.search(r"#connectorsDialog::backdrop\s*\{[^}]*\}", css)
-    assert scoped, "#connectorsDialog needs its own lighter backdrop"
-    rule = scoped.group(0)
-    backdrop = _rgba_values(rule, "background")
+    scoped = declarations_for("#connectorsDialog::backdrop")
+    assert scoped is not None, "#connectorsDialog needs its own lighter backdrop"
+    backdrop = rgba(scoped, "background")
     assert backdrop is not None
     assert backdrop[3] <= 0.45, f"backdrop darkness must drop below .45, got {backdrop[3]}"
     assert backdrop[3] >= 0.3, "backdrop must still focus the dialog"
-    assert "backdrop-filter: blur(" in rule
+    assert blur_radius(scoped.get("backdrop-filter")) is not None, "backdrop stays blurred"
 
 
 def test_connectors_cards_are_brighter_than_the_shared_card_surface() -> None:
-    css = _css()
-    override = re.search(
-        r"#connectorsDialog \.capability-card\s*\{[^}]*\}",
-        css,
-    )
-    assert override, "scoped bright card override for the connectors grid is required"
-    background = _rgba_values(override.group(0), "background")
+    override = declarations_for("#connectorsDialog .capability-card", with_property="background")
+    assert override is not None, "scoped bright card override for the connectors grid is required"
+    background = rgba(override, "background")
     assert background is not None
-    assert background[:3] == (255, 255, 255, )
+    assert background[:3] == (255, 255, 255)
     assert background[3] >= 0.86, "card surface must be bright (>= .86)"
 
 
 def test_small_text_uses_solid_aa_colors_instead_of_opacity_mutting() -> None:
-    css = _css()
-    assert "#connectorsDialog .capability-workspace" in css
-    muted = re.search(
-        r"#connectorsDialog \.capability-kicker,[^}]*#connectorsDialog \.capability-soon\s*\{[^}]*\}",
-        css,
-        re.DOTALL,
-    )
-    assert muted, "small-type group must get solid colors inside the dialog"
-    rule = muted.group(0)
-    assert "opacity: 1" in rule
-    assert "color: #3d4c59" in rule
+    assert declarations_for("#connectorsDialog .capability-workspace") is not None
+    muted = declarations_for("#connectorsDialog .capability-kicker", with_property="opacity")
+    assert muted is not None, "small-type group must get solid colors inside the dialog"
+    assert muted.get("opacity") == "1"
+    assert muted.get("color") == "#3d4c59"
     # The muted gray and every READ-state color must pass AA (>= 4.5) on the
     # bright card surface (approximated by its near-white effective tone).
-    for color in ("#3d4c59", "#8a5300", "#175cd3", "#16794c", "#b3261e"):
+    colors = reviewed_dialog_colors()
+    for state in ("small_type", "pending", "activating", "active", "failed", "unavailable"):
+        assert state in colors, state
+    for color in colors.values():
         assert _contrast_ratio(color, "#f2f6f8") >= 4.5, color
 
 
 def test_claw_and_skills_dialogs_gain_no_new_rescoping() -> None:
-    css = _css()
-    assert "#skillsDialog" not in css, "Skills dialog must not be touched"
+    assert "#skillsDialog" not in all_selectors(), "Skills dialog must not be touched"
     # The permanently disabled Skills dialog is gone from the DOM, and its
     # locale keys are gone from both tables, rather than only absent from CSS.
-    html = INDEX_HTML.read_text(encoding="utf-8")
-    locale = LOCALE_JS.read_text(encoding="utf-8")
-    assert "skillsDialog" not in html
-    assert "skillsNavButton" not in html
+    ids = index_ids()
+    assert "skillsDialog" not in ids
+    assert "skillsNavButton" not in ids
+    locale = locale_table()
+    declared_keys = index_locale_keys() | set(locale["ko"]) | set(locale["en"])
     for key in (
         "nav-skills",
         "skills-kicker",
@@ -279,33 +183,35 @@ def test_claw_and_skills_dialogs_gain_no_new_rescoping() -> None:
         "skill-custom",
         "skills-grid-aria",
     ):
-        assert f'"{key}"' not in locale, key
-    assert css.count('html[data-theme="padiem-glass"] #clawDialog {') == 1, (
+        assert key not in declared_keys, key
+    assert select_count('html[data-theme="padiem-glass"] #clawDialog') == 1, (
         "the existing Claw override must stay exactly as it was"
     )
-    app_block = _connector_block()
-    assert "clawDialog" not in app_block
+    assert "clawDialog" not in connector_block_text()
 
 
 # ── B. Calendar state UX ──────────────────────────────────────────────────
 
 
 def test_calendar_card_has_a_bounded_read_state_line_only_for_calendar() -> None:
-    inner = _calendar_card_inner()
-    assert 'class="capability-read-state" data-connector-read-state' in inner
-    assert 'role="status"' in inner, "activation state changes are announced politely"
-    assert 'data-read-state="pending"' in inner
-    assert "hidden" in inner
-    assert 'data-locale-key="connectors-calendar-read-pending"' in inner
-    dialog = _dialog_element()
-    for attrs, _inner in CARD_RE.findall(dialog):
-        if f'data-connector-id="{CALENDAR_CARD_ID}"' in attrs:
-            continue
-        assert "data-connector-read-state" not in attrs
+    read = read_state_attrs()
+    assert read.get("class") == "capability-read-state"
+    assert "data-connector-read-state" in read
+    assert read.get("role") == "status", "activation state changes are announced politely"
+    assert read.get("data-read-state") == "pending"
+    assert "hidden" in read
+    assert read.get("data-locale-key") == "connectors-calendar-read-pending"
+    cards = dialog_card_attrs()
+    assert CALENDAR_CARD_ID in cards
+    assert all(
+        "data-connector-read-state" not in attrs
+        for card_id, attrs in cards.items()
+        if card_id != CALENDAR_CARD_ID
+    )
 
 
 def test_locale_state_copy_is_complete_and_oauth_preserving_in_ko_and_en() -> None:
-    table = _locale_table()
+    table = locale_table()
     for language in ("ko", "en"):
         missing = [key for key in NEW_LOCALE_KEYS if not table[language].get(key)]
         assert missing == [], f"{language} missing {missing}"
@@ -331,7 +237,7 @@ def test_locale_state_copy_is_complete_and_oauth_preserving_in_ko_and_en() -> No
 
 
 def test_safe_diagnostic_copy_keeps_the_oauth_connection_explicit() -> None:
-    table = _locale_table()
+    table = locale_table()
     # auth_failed / workspace / binding: the OAuth link stays intact, only the
     # activation service/workspace/binding check failed.
     for key in (
@@ -355,7 +261,7 @@ const codes = __CODES__;
 const mapped = codes.map((code) => instance.calendarReadActivationErrorKey({ calendarReadErrorCode: code }));
 console.log(JSON.stringify(mapped));
 """.replace("__CODES__", json.dumps(list(SAFE_DIAGNOSTIC_CODES)))
-    payload = _run_calendar_module(body)
+    payload = run_calendar_module(body)
     assert payload == list(SAFE_DIAGNOSTIC_CODES.values())
 
 
@@ -366,13 +272,7 @@ def test_app_js_is_locale_only_and_contains_no_korean_anywhere() -> None:
     # Repository invariant: app.js carries runtime code and English identifiers
     # only. Every user-facing Korean lives in locale.js (ko table), so this
     # file must not contain Hangul — comments included.
-    source = _app()
-    hangul = re.compile(r"[\uac00-\ud7af\u1100-\u11ff\u3130-\u318f]")
-    offenders = [
-        (index + 1, line.strip())
-        for index, line in enumerate(source.splitlines())
-        if hangul.search(line)
-    ]
+    offenders = app_js_hangul_lines()
     assert offenders == [], f"app.js must be Korean-free (locale-only): {offenders[:5]}"
 
 
@@ -406,7 +306,7 @@ const fallbackErrors = [
 ].map(instance.calendarReadActivationErrorKey);
 console.log(JSON.stringify({ states, transitions, safeErrors, fallbackErrors }));
 """.replace("__CODES__", json.dumps(list(SAFE_DIAGNOSTIC_CODES)))
-    payload = _run_calendar_module(body)
+    payload = run_calendar_module(body)
     assert payload["states"] == [
         "connectors-calendar-read-pending",
         "connectors-calendar-read-activating",
@@ -434,10 +334,10 @@ def test_app_state_machine_is_in_session_scope_and_fail_safe() -> None:
     # Forbidden contract (R2 rule 3): the old request-receipt flags must not
     # return, because a fresh page would then present a stale done/in-flight
     # truth. Absence is the contract, so it stays source-level.
-    block = _connector_block()
+    block = connector_block_text()
     assert "googleCalendarReadActivationDone" not in block
     assert "googleCalendarReadActivationInFlight" not in block
-    payload = _run_calendar_module(
+    payload = run_calendar_module(
         """
 function element(dataset) {
   const node = {
@@ -670,7 +570,7 @@ def test_no_secret_or_authority_material_enters_the_calendar_state_surface() -> 
     """Forbidden contract (R2 rule 3): no credential/authority field or HTML sink
     may enter this surface, even after a refactor. Source-level absence is the
     contract here, so it stays pinned instead of being rewritten as behavior."""
-    block = _connector_block()
+    block = connector_block_text()
     lowered = block.lower()
     for forbidden in (
         "binding_ref",
@@ -690,10 +590,10 @@ def test_existing_surface_truth_pins_still_hold() -> None:
     POSTs may exist on this surface, and the post-OAuth Calendar continuation
     must stay wired. This spans app.js and the module, so the pin stays
     source-level with its reason recorded here."""
-    block = _connector_block()
+    facts = connector_block_facts()
     # #3289 adds the Drive connect POST; #7088 adds the Gmail connect POST.
     # Nothing else may post from this block.
-    assert block.count('method: "POST"') == 4, "exactly the status + activation + drive + gmail connect endpoints"
-    assert "googleCalendarReadActivationAfterConnectReturn = true" in block
-    assert "await activateGoogleCalendarRead()" in block
-    assert "connectorWorkspaceKey(row.workspace_state)" in block
+    assert facts["method_values"].count("POST") == 4, "exactly the status + activation + drive + gmail connect endpoints"
+    assert ("googleCalendarReadActivationAfterConnectReturn", "true") in facts["assignments"]
+    assert "activateGoogleCalendarRead" in facts["awaited_calls"]
+    assert ("connectorWorkspaceKey", "row.workspace_state") in facts["calls"]

@@ -30,6 +30,7 @@ from starlette.responses import JSONResponse, Response
 from .auth_routes import current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_local_access_source import MESH_PRESENCE_MAX_AGE_SECONDS
+from .pc_command_ready import load_command_ready, unknown_command_ready
 from .pc_device_pairing_store import (
     INSTALL_TOKEN_HEX_CHARS,
     INSTALL_TOKEN_PREFIX,
@@ -37,8 +38,10 @@ from .pc_device_pairing_store import (
     drive_root,
     normalize_root_label,
     normalize_root_path,
+    share_candidate,
 )
 from .pc_pairing_adopt_service import AdoptError, adopt_pc_link
+from .pc_helper_update import render_helper_updater_installer_block
 from .pc_pairing_agent_install import (
     render_agent_install_block,
     render_user_helper_install_block,
@@ -177,6 +180,8 @@ _REASONS = {
     "root reference invalid": "pc_pairing_root_invalid",
     "root label invalid": "pc_pairing_root_invalid",
     "root label exists": "pc_pairing_root_label_taken",
+    "share candidate not found": "pc_pairing_share_candidate_not_found",
+    "share approval not stored": "pc_pairing_unavailable",
     "link roots too large": "pc_pairing_root_limit",
     "link roots unreadable": "pc_pairing_unavailable",
     "link id invalid": "pc_pairing_link_not_found",
@@ -496,6 +501,11 @@ async def pc_pairing_list(request: Request) -> JSONResponse:
         return refused
     presence = getattr(request.app.state, "mesh_device_presence_store", None)
     now = _now()
+    # #7987: what each of this account's own PCs reported about its user-session
+    # helper. The row is read through the device store's public call - the one
+    # both the queue-backed and the local store serve - and only for a PC that
+    # is connected now; nothing here reads a dispatch or sends a PC command.
+    readiness = getattr(request.app.state, "mesh_device_drive_store", None)
     for link in links:
         node = link.get("mesh_node_id") if isinstance(link, dict) else None
         if not isinstance(node, str) or not node:
@@ -503,6 +513,51 @@ async def pc_pairing_list(request: Request) -> JSONResponse:
         view = await _presence_view(presence, device_id=node, now=now)
         link["online"] = view["online"]
         link["last_seen_at"] = view["last_seen_at"]
+        link.update(
+            await load_command_ready(readiness, device_id=node, now=now)
+            if view["online"] else unknown_command_ready()
+        )
+    # #8211: one word per PC about its user-session helper, from the same
+    # readiness row the executor reports and the deployment's reviewed release:
+    #   missing  -> the executor finds no helper task on the PC (install it);
+    #   outdated -> the running helper's digest differs from the reviewed
+    #               release, so the screen can ask for the new file;
+    #   current  -> the running helper matches the reviewed release;
+    #   None     -> nothing can be claimed (offline, no release, no row).
+    # Display evidence only: it grants nothing and sends no command.
+    from .pc_helper_version_routes import helper_manifest
+    manifest = helper_manifest(request.app.state)
+    from .pc_helper_rollout import device_offer
+    from .pc_helper_update_policy import version_parts
+    for link in links:
+        if not isinstance(link, dict):
+            continue
+        helper_state = None
+        if (link.get("command_ready") == "not_ready"
+                and link.get("command_ready_reason") == "helper_missing"):
+            helper_state = "missing"
+        elif link.get("online") is True and manifest:
+            node = link.get("mesh_node_id")
+            loader = getattr(readiness, "load_helper_ready", None)
+            row = None
+            if callable(loader) and isinstance(node, str) and node:
+                try:
+                    row = await loader(device_id=node, include_versions=True)
+                except Exception:
+                    row = None
+            sha = row.get("helper_sha256") if isinstance(row, dict) else None
+            if isinstance(sha, str) and sha:
+                try:
+                    selected = await device_offer(request.app.state, manifest, device_id=node)
+                except Exception:
+                    selected = None
+                if selected:
+                    current = version_parts(manifest["version"] if sha == manifest["sha256"] else row.get("helper_version"))
+                    offered = version_parts(selected["version"])
+                    helper_state = ("current" if sha == selected["sha256"] or
+                                    (current is not None and offered is not None and current > offered)
+                                    else "outdated")
+        link["helper_state"] = helper_state
     # One boolean for the settings screen: the 관리 PC toggle renders only for
     # the platform administrator (the same verdict the mark route enforces).
     from .platform_admin_authority import platform_authority_for
@@ -785,6 +840,24 @@ def personalized_install_url(*, agent_url: Any, install_token: Any) -> str | Non
     return url + separator + "padiem_install_token=" + install_token
 
 
+
+async def _install_helper_pair(state):
+    # A new installation has no claimed device identity yet. During a
+    # staged release give it the stable artifact, like an unidentified updater.
+    from .pc_helper_version_routes import helper_manifest
+    from .pc_helper_rollout import device_offer
+
+    pair = user_helper_config(getattr(state, "pc_pairing_user_helper_url", None),
+                              getattr(state, "pc_pairing_user_helper_sha256", None))
+    manifest = helper_manifest(state)
+    if manifest is None:
+        return pair
+    try:
+        selected = await device_offer(state, manifest)
+    except Exception:
+        return None
+    return selected["download_url"], selected["sha256"]
+
 async def pc_pairing_handoff(request: Request) -> JSONResponse:
     """Turn a code the PC already holds into the tag and installer it needs.
 
@@ -804,10 +877,7 @@ async def pc_pairing_handoff(request: Request) -> JSONResponse:
     agent_url = install_url_from_config(
         getattr(request.app.state, "pc_pairing_install_url", None),
     )
-    helper = user_helper_config(
-        getattr(request.app.state, "pc_pairing_user_helper_url", None),
-        getattr(request.app.state, "pc_pairing_user_helper_sha256", None),
-    )
+    helper = await _install_helper_pair(request.app.state)
     body = await _body(request)
     if body is None or set(body) != {"code"}:
         return _error(400, "pc_pairing_body_invalid")
@@ -1015,12 +1085,29 @@ _INSTALL_SCRIPT_TEMPLATE = (
     "  }\n"
     "}\n"
     "\n"
+    "function Get-PadiemShareCandidates {\n"
+    "  # #8036: a mapped drive or shared folder is only a candidate. Its real UNC\n"
+    "  # address is reported so an administrator can approve one share unit.\n"
+    "  try {\n"
+    "    return @(Get-PSDrive -PSProvider FileSystem -ErrorAction Stop |\n"
+    "      Where-Object { $null -ne $_.DisplayRoot -and $_.DisplayRoot -match '^\\\\\\\\[^\\\\]+\\\\[^\\\\]+' } |\n"
+    "      Select-Object -First 8 |\n"
+    "      ForEach-Object {\n"
+    "        $root = '//' + $_.DisplayRoot.TrimStart('\\').Replace('\\', '/')\n"
+    "        $_.Name.ToUpperInvariant() + ':=' + $root\n"
+    "      } | Sort-Object -Unique)\n"
+    "  } catch {\n"
+    "    return @()\n"
+    "  }\n"
+    "}\n"
+    "\n"
     # The install sequence itself is the one definition both .ps1 lanes read:
     # the same constants and the same stop - copy - install - start - check walk
     # the double-click program runs. A lane that drifts is a test failure, not
     # a smaller version of the same answer.
     + render_agent_install_block()
     + "\n"
+    + render_helper_updater_installer_block()
     + render_user_helper_install_block()
     + "\n"
     "# One approval covers the whole sequence: the service work below needs the\n"
@@ -1061,6 +1148,10 @@ _INSTALL_SCRIPT_TEMPLATE = (
     "  $letters = @(Get-PadiemDriveLetters)\n"
     "  if ($letters.Count -gt 0) {\n"
     "    $reported = $reported + \" [\" + ($letters -join \" \") + \"]\"\n"
+    "  }\n"
+    "  $shares = @(Get-PadiemShareCandidates)\n"
+    "  if ($shares.Count -gt 0) {\n"
+    "    $reported = $reported + \" {\" + ($shares -join \";\") + \"}\"\n"
     "  }\n"
     "  $reported = $reported + \" \" + $machine\n"
     "  if (-not (Install-PadiemAgentService -SourceExe $agent -AgentName $reported)) {\n"
@@ -1110,6 +1201,7 @@ async def _install_artifact(
             "code_id": issued["code_id"],
             "install_tag": issued["install_tag"],
             "install_token": issued["install_token"],
+            "expires_at": issued["expires_at"],
         }, None
     code = body.get("code")
     if not isinstance(code, str) or not code:
@@ -1126,17 +1218,20 @@ async def _install_artifact(
         "code_id": peeked["code_id"],
         "install_tag": peeked["install_tag"],
         "install_token": token,
+        "expires_at": peeked["expires_at"],
     }, None
 
 
-def _install_headers(filename: str, code_id: str) -> dict[str, str]:
-    # The browser needs to know which install it just downloaded so the owner
-    # can cancel or replace exactly that one. A code id is not a possession
-    # proof; the code and token themselves never ride in a header.
+def _install_headers(filename: str, code_id: str, expires_at: str) -> dict[str, str]:
+    # The browser needs to know which install it just downloaded and when it
+    # stops being usable, so the owner can cancel/replace it and see the same
+    # 10-minute clock the server enforces. A code id and an expiry timestamp
+    # are not possession proofs; the code and token never ride in a header.
     return {
         **_NO_STORE,
         "Content-Disposition": f'attachment; filename="{filename}"',
         "X-PC-Pairing-Code-Id": code_id,
+        "X-PC-Pairing-Expires-At": expires_at,
     }
 
 
@@ -1179,10 +1274,7 @@ async def pc_pairing_install_file(request: Request) -> Response:
         personalized_install_url(agent_url=agent_url, install_token=token)
         if token is not None else agent_url
     )
-    helper = user_helper_config(
-        getattr(request.app.state, "pc_pairing_user_helper_url", None),
-        getattr(request.app.state, "pc_pairing_user_helper_sha256", None),
-    )
+    helper = await _install_helper_pair(request.app.state)
     script = render_install_script(
         install_tag=issued["install_tag"], agent_url=rendered_url, install_token=token,
         user_helper_url=helper[0] if helper is not None else None,
@@ -1193,7 +1285,8 @@ async def pc_pairing_install_file(request: Request) -> Response:
     return Response(
         content=script,
         media_type="text/plain; charset=utf-8",
-        headers=_install_headers(PC_PAIRING_INSTALL_FILENAME, issued["code_id"]),
+        headers=_install_headers(
+            PC_PAIRING_INSTALL_FILENAME, issued["code_id"], issued["expires_at"]),
     )
 
 
@@ -1241,10 +1334,7 @@ async def pc_pairing_install_exe(request: Request) -> Response:
         personalized_install_url(agent_url=agent_url, install_token=token)
         if token is not None else agent_url
     )
-    helper = user_helper_config(
-        getattr(request.app.state, "pc_pairing_user_helper_url", None),
-        getattr(request.app.state, "pc_pairing_user_helper_sha256", None),
-    )
+    helper = await _install_helper_pair(request.app.state)
     program = render_install_exe(
         install_tag=issued["install_tag"], agent_url=rendered_url,
         user_helper_url=helper[0] if helper is not None else None,
@@ -1255,7 +1345,8 @@ async def pc_pairing_install_exe(request: Request) -> Response:
     return Response(
         content=program,
         media_type="application/octet-stream",
-        headers=_install_headers(PC_PAIRING_INSTALL_EXE_FILENAME, issued["code_id"]),
+        headers=_install_headers(
+            PC_PAIRING_INSTALL_EXE_FILENAME, issued["code_id"], issued["expires_at"]),
     )
 
 
@@ -1281,7 +1372,7 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
     # binding in the store; a claim without it keeps working for an install
     # whose token still stands, including codes minted before tokens existed.
     required = {"code", "mesh_node_id"}
-    allowed = required | {"label", "drives", "install_token"}
+    allowed = required | {"label", "drives", "install_token", "shares"}
     if body is None or not required <= set(body) or not set(body) <= allowed:
         return _error(400, "pc_pairing_body_invalid")
     code = body.get("code")
@@ -1305,6 +1396,17 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
                 return _error(400, "pc_pairing_body_invalid")
             if single not in drives:
                 drives.append(single)
+    reported_shares = body.get("shares")
+    shares: list[dict[str, str | None]] = []
+    if reported_shares is not None:
+        if not isinstance(reported_shares, list) or len(reported_shares) > 8:
+            return _error(400, "pc_pairing_body_invalid")
+        for entry in reported_shares:
+            candidate = share_candidate(entry)
+            if candidate is None:
+                return _error(400, "pc_pairing_body_invalid")
+            if candidate not in shares:
+                shares.append(candidate)
     # The Mesh observation that proves a node exists is PR-2's directory. Without
     # it a link is recorded and stays `pending_verification`: a claimed code must
     # never become an executable target on the strength of the claim alone.
@@ -1338,6 +1440,14 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
             window_start=window_start, now=now,
         )
         return refused
+    if shares:
+        seeded, refused_shares = await _await_store(
+            store.seed_share_candidates,
+            owner=user_id, link=link, candidates=shares, moment=_stamp(_now()),
+        )
+        if refused_shares is not None:
+            return refused_shares
+        link = seeded
     # #6460: the account just gained a PC; its cached connector scope is stale.
     if link.get("_superseded_mesh_node_ids"):
         from .claw_pc_device_selection_store import sync_superseded_device_selections
@@ -1495,18 +1605,34 @@ async def pc_pairing_approve_root(request: Request) -> JSONResponse:
     if store is None:
         return _error(503, "pc_pairing_unavailable")
     body = await _body(request)
-    if body is None or not set(body) <= {"path", "label"} or "path" not in body:
+    if body is None or not set(body) <= {"path", "label", "root_ref", "consent"}:
         return _error(400, "pc_pairing_body_invalid")
-    path = normalize_root_path(body.get("path"))
-    if path is None:
-        return _error(400, "pc_pairing_root_invalid")
-    label = body.get("label")
-    if label is not None and normalize_root_label(label) is None:
-        return _error(400, "pc_pairing_root_invalid")
-    root, refused = await _await_store(
-        store.approve_root, user_id=user_id,
-        link_id=request.path_params.get("link_id"), path=path, now=_now(), label=label,
-    )
+    root_ref = body.get("root_ref")
+    if root_ref is not None:
+        # #8036: approving a reported share needs the explicit, visible consent
+        # that this one share folder is the whole scope. No credential is read,
+        # stored or returned here; credentials stay in the PC's user session.
+        consent = body.get("consent")
+        if (not isinstance(root_ref, str)
+                or not isinstance(consent, str)
+                or "이 공유 폴더 안만 열린다" not in consent
+                or "path" in body or "label" in body):
+            return _error(400, "pc_pairing_body_invalid")
+        root, refused = await _await_store(
+            store.approve_share_candidate, user_id=user_id,
+            link_id=request.path_params.get("link_id"), root_ref=root_ref, now=_now(),
+        )
+    else:
+        path = normalize_root_path(body.get("path"))
+        if path is None:
+            return _error(400, "pc_pairing_root_invalid")
+        label = body.get("label")
+        if label is not None and normalize_root_label(label) is None:
+            return _error(400, "pc_pairing_root_invalid")
+        root, refused = await _await_store(
+            store.approve_root, user_id=user_id,
+            link_id=request.path_params.get("link_id"), path=path, now=_now(), label=label,
+        )
     if refused is not None:
         return refused
     drop_cached_owner_scope_of(request, user_id)

@@ -77,12 +77,14 @@ _JOB_ID = {
     "type": "string", "minLength": 36, "maxLength": 36,
     "description": "이전 호출이 돌려준 PC 작업 ID입니다. 이 값을 주면 새 작업을 만들지 않고 그 작업의 상태나 결과를 읽습니다.",
 }
-#: The two read-only file tools whose answer may arrive after the first call
-#: (a large folder listing or a file read). Mutations and the name search keep
-#: one answer per call: a write must report its own verification, and a search
-#: projects its rows against the query the call carried.
-PC_FILES_RESUME_TOOLS = frozenset({"pc_list", "pc_read"})
+#: The read-only file tools whose answer may arrive after the first call:
+#: a large folder listing, a file read, or a shallow/recursive name search.
+#: A write still reports its own verification and keeps one answer per call.
+PC_FILES_RESUME_TOOLS = frozenset({"pc_list", "pc_read", "pc_search"})
 _PC_FILE_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
+#: The furthest page a listing may start at. The PC always sends one capped
+#: page, so an offset past this is a caller mistake, not a longer walk.
+_PC_LIST_OFFSET_MAX = 10_000
 
 
 def _browser_tool_definitions():
@@ -134,15 +136,17 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False,
                   "지정 폴더 안의 파일과 폴더를 한 번에 50개씩 봅니다. 각 항목은 이름·종류(파일/폴더)·크기·수정 시각입니다. "
                   "다음 페이지는 offset으로 이어 봅니다. 첫 응답에서 기다리는 시간이 지나면 작업 ID를 돌려주며, "
                   "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다. "
-                  "depth를 2 또는 3으로 주면 요청 폴더부터 그 깊이까지의 항목을 한 번에 봅니다. 각 행에는 요청 폴더 기준 "
-                  "상대 경로와 깊이가 담기고 최대 200행에서 잘립니다(truncated 참). 깊이 2 이상에서는 offset 이어 보기를 "
-                  "지원하지 않습니다. 숨김·시스템 폴더와 바로가기(재분석 지점, 심볼릭 링크)는 따라 들어가지 않습니다. "
-                  "path를 비우면 이 PC에 등록된 폴더 목록(표시 이름·실제 루트)을 돌려줍니다. "
-                  "절대 경로도 등록 폴더 안이면 상대 경로로 바꿔 처리합니다. 먼저 path 없이 등록 폴더를 확인하세요.",
-                  {"path": _PATH,
-                   "depth": {"type": "integer", "minimum": 1, "maximum": 3, "default": 1,
-                             "description": "몇 단계 아래까지 볼지입니다. 1은 바로 아래만, 2·3은 그 깊이까지입니다."},
-                   "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
+                   "depth를 2 또는 3으로 주면 요청 폴더부터 그 깊이까지의 항목을 한 번에 봅니다. 각 행에는 요청 폴더 기준 "
+                   "상대 경로와 깊이가 담기고 최대 200행에서 잘립니다(truncated 참). 깊이 2 이상에서는 offset 이어 보기를 "
+                   "지원하지 않습니다. 숨김·시스템 폴더와 바로가기(재분석 지점, 심볼릭 링크)는 따라 들어가지 않습니다. "
+                   "path를 비우면 이 PC에 등록된 폴더 목록(표시 이름·실제 루트)을 돌려줍니다. "
+                   "절대 경로도 등록 폴더 안이면 상대 경로로 바꿔 처리합니다. 먼저 path 없이 등록 폴더를 확인하세요.",
+                   {"path": _PATH,
+                    "depth": {"type": "integer", "minimum": 1, "maximum": 3, "default": 1,
+                              "description": "몇 단계 아래까지 볼지입니다. 1은 바로 아래만, 2·3은 그 깊이까지입니다."},
+                    "offset": {"type": "integer", "minimum": 0, "maximum": _PC_LIST_OFFSET_MAX,
+                               "description": "건너뛸 항목 수입니다. 한 번에 50개씩 보며 첫 응답의 total과 has_more로 이어 봅니다."},
+                    "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
         _tool("pc_search", "폴더 안 이름 검색", "지정 폴더 바로 아래 이름에서 검색어를 찾습니다. 하위 폴더 전체 검색은 아닙니다. "
                   "recursive를 true로 주면 하위 폴더까지 이름을 찾습니다. 이때 최대 2,000개 항목을 훑고 결과는 50건에서 "
                   "끊깁니다(has_more 참), 각 행에는 요청 폴더 기준 상대 경로가 담기고, 숨김·시스템 폴더와 바로가기"
@@ -151,8 +155,8 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False,
                   {"path": _PATH, "query": {"type": "string", "minLength": 1},
                    "recursive": {"type": "boolean", "default": False,
                                  "description": "true면 하위 폴더까지 이름을 찾습니다."},
-                   "device": _DEVICE},
-                  required=["path", "query"]),
+                   "job_id": _JOB_ID, "device": _DEVICE},
+                  required=[]),
         _tool("pc_read", "파일 읽기",
                   "연결 PC의 파일을 읽습니다. 첫 응답에서 기다리는 시간이 지나면 작업 ID를 돌려주며, "
                   "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다. "
@@ -271,22 +275,49 @@ def validate_tool_arguments(name, arguments, *, user_mode_enabled: bool | None =
             or not set(arguments) <= set(properties)):
         return False
     if name in PC_FILES_RESUME_TOOLS:
-        # Exactly one of a target path and a job id: a call that names both is
-        # ambiguous, and a call that names neither is not a request at all.
+        # Either a target path (with its own tuning keys) or a job id: a call
+        # that names both is ambiguous, and a call that names neither is not a
+        # request at all. pc_list alone still asks for the approved folders.
         names = set(arguments) - {"device"}
         if names == {"job_id"}:
             job_id = arguments.get("job_id")
             return isinstance(job_id, str) and _PC_FILE_JOB_ID.fullmatch(job_id) is not None
-        if names != {"path"}:
-            # pc_list alone may name nothing: that asks which approved folders
-            # this PC has, so the caller can name a relative path at all.
-            return name == "pc_list" and not names
-    valid = all(
-        isinstance(arguments[key], str)
-        and len(arguments[key]) >= schema.get("minLength", 0)
-        and ("enum" not in schema or arguments[key] in schema["enum"])
-        for key, schema in properties.items() if key in arguments
-    )
+        if name == "pc_list":
+            target_keys = {"path", "offset", "depth"}
+        elif name == "pc_search":
+            target_keys = {"path", "query", "recursive"}
+        else:
+            target_keys = {"path", "offset", "length"}
+        if not names:
+            return name == "pc_list"
+        if "path" not in names or not names <= target_keys:
+            return False
+        if name == "pc_search" and "query" not in names:
+            return False
+        depth = arguments.get("depth", 1)
+        if (name == "pc_list" and type(depth) is int and depth > 1
+                and arguments.get("offset", 0) != 0):
+            return False
+    valid = True
+    for key, schema in properties.items():
+        if key not in arguments:
+            continue
+        value, kind = arguments[key], schema.get("type")
+        if kind == "string":
+            valid = (isinstance(value, str)
+                     and len(value) >= schema.get("minLength", 0)
+                     and ("maxLength" not in schema or len(value) <= schema["maxLength"])
+                     and ("enum" not in schema or value in schema["enum"]))
+        elif kind == "boolean":
+            valid = type(value) is bool
+        elif kind == "integer":
+            valid = (type(value) is int and not isinstance(value, bool)
+                     and ("minimum" not in schema or value >= schema["minimum"])
+                     and ("maximum" not in schema or value <= schema["maximum"]))
+        else:
+            valid = False
+        if not valid:
+            break
     if valid and name.startswith("pc_browser_"):
         try:
             from .claw_pc_browser_command import browser_arguments

@@ -162,9 +162,15 @@ def test_the_live_transcript_reaches_the_input_box_and_nothing_is_sent() -> None
             page.evaluate("() => window.__live.sockets[0].open()")
             page.wait_for_timeout(200)
             socket_url = page.evaluate("() => window.__live.sockets[0].url")
-            assert "access_token=auth_tokens%2Ffake" in socket_url
+            # #6828 이후 안전 계약: 브라우저는 same-origin 릴레이 경로만 알고,
+            # access_token·provider 주소·모델명은 URL에 없다(토큰·모델은 COM2
+            # 릴레이가 보유). 제품을 URL 토큰 방식으로 되돌리지 않는다.
+            assert "access_token" not in socket_url
+            assert "/api/voice/relay" in socket_url
+            assert "models/" not in socket_url
             setup = page.evaluate("() => window.__live.sockets[0].sent[0].setup")
-            assert setup["model"] == "models/gemini-3.5-transcribe-live"
+            # 모델은 브라우저 setup에 없다 — COM2 릴레이가 주입한다(#6828).
+            assert "model" not in setup
             assert setup["generationConfig"]["responseModalities"] == ["TEXT"]
             assert setup["realtimeInputConfig"]["automaticActivityDetection"]["silenceDurationMs"] == 1300
             assert setup["inputAudioTranscription"] == {"languageCodes": [], "mode": "VERBATIM"}

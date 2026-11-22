@@ -26,6 +26,7 @@ Two layers, mirroring the established presentation-slice test style:
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from functools import lru_cache
 
@@ -41,7 +42,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"  # R5 B1: 모듈 소스 읽기용
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
 
 CREATE_PATH = "/api/claw/automation/rules"

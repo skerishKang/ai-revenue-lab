@@ -63,6 +63,10 @@
 
     <p id="mcpOauthStatus" class="mcp-oauth-error" role="status" hidden></p>
   </main>
+  <!-- #7995: register the copy groups this page uses before the locale bootstrap.
+       Order matches index.html so the merged label map is identical. -->
+  <script src="/locale-common.js"></script>
+  <script src="/locale-pc-connect.js"></script>
   <script src="/locale.js"></script>
   <script src="/mcp-oauth-consent.js"></script>
 </body>

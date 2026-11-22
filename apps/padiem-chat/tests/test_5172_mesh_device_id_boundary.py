@@ -172,7 +172,7 @@ def _get(app, settings):
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             client.cookies.set(
-                SESSION_COOKIE, create_session_token(settings, OWNER),
+                SESSION_COOKIE, create_session_token(settings, OWNER, canonical_session_id="session_test_a"),
                 domain="chat.example.test", path="/",
             )
             return await client.get(CLAW_DEVICE_DIRECTORY_PATH)
@@ -184,7 +184,7 @@ def _post_select(app, settings, body):
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             client.cookies.set(
-                SESSION_COOKIE, create_session_token(settings, OWNER),
+                SESSION_COOKIE, create_session_token(settings, OWNER, canonical_session_id="session_test_a"),
                 domain="chat.example.test", path="/",
             )
             return await client.post(

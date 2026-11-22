@@ -15,7 +15,7 @@ from app.account_cleanup_pending import (
     pending_insert_statements,
 )
 from app.account_deletion import _finish_auth_account_deletion, _prepare_auth_account_deletion
-from test_account_deletion_261103 import (
+from _support.account_deletion import (
     BASE,
     DELETER_EMAIL,
     _pending_shared_complete_rows,

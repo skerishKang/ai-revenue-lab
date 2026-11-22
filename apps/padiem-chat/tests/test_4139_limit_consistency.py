@@ -29,7 +29,7 @@ from test_4139_mesh_command import (
     ACCOUNT, CONVERSATION, DEVICE, NODE, OWNER, RUN, SECRET, TENANT_WS, WORKSPACE,
     Request, _dispatch, _state, _submit, setup_auth,
 )
-from test_4139_mesh_original import (
+from _support.mesh_dispatch import (
     CONVERSATION as STORE_CONVERSATION,
     OWNER as STORE_OWNER,
     _dispatch_kwargs,

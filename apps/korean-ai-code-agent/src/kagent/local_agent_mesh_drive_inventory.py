@@ -117,7 +117,9 @@ _AGENT_WATCHER_JS = r"""
 """
 
 # This bridge has one operation: request the fixed inventory expression from
-# the target nodes. Credentials and source enter on stdin, never OS argv.
+# the target nodes - and, when the caller supplies one, a second fixed
+# read-only expression in the same session (#7987). Credentials and source
+# enter on stdin, never OS argv.
 # MeshCentral's official CLI accepts a self-signed local tunnel certificate;
 # preserve that behavior only on loopback, and verify TLS for remote hosts.
 _NODE_BRIDGE_JS = r"""
@@ -137,14 +139,36 @@ const socket = new WebSocket(url.toString(), {rejectUnauthorized: !local, header
 input.password = '';
 const pending = new Map();
 const rows = [];
+// #7987: an optional second fixed expression rides the same session. Without
+// it every line below behaves, and prints, exactly as it did before.
+const second = typeof input.helper_source === 'string' && input.helper_source.length > 0;
+const helperPending = new Map();
+const helperRows = [];
+let grace = null;
 let finished = false;
 let requested = false;
 function finish() {
     if (finished) return;
     finished = true;
     clearTimeout(deadline);
+    if (grace) clearTimeout(grace);
     try { socket.terminate(); } catch (_) {}
-    process.stdout.write(JSON.stringify(rows), () => process.exit(0));
+    const output = second ? {drives: rows, helper: helperRows} : rows;
+    process.stdout.write(JSON.stringify(output), () => process.exit(0));
+}
+function settle() {
+    if (pending.size) return;
+    if (!helperPending.size) return finish();
+    // The second answer follows the drives on the same agent. It gets a short
+    // bound of its own so an agent that stays silent cannot hold the drives.
+    if (!grace) grace = setTimeout(finish, input.helper_grace_ms > 0 ? input.helper_grace_ms : 3000);
+}
+function consoleCommand(nodeId, text, requestId) {
+    const source = text.replace('__PADIEM_REQUEST_ID__', JSON.stringify(requestId));
+    const encoded = Buffer.from(source, 'utf8').toString('base64');
+    // MeshAgent's console parser does not support escaped double quotes.
+    const value = 'eval "eval(Buffer.from(\'' + encoded + '\',\'base64\').toString())"';
+    return JSON.stringify({action: 'msg', type: 'console', nodeid: nodeId, value: value});
 }
 const deadline = setTimeout(finish, input.timeout_ms);
 socket.on('error', finish);
@@ -158,11 +182,12 @@ function request(domain) {
         if (nodeId.split('/')[1] !== domain || pending.has(nodeId)) continue;
         const requestId = crypto.randomBytes(16).toString('hex');
         pending.set(nodeId, {requestId: requestId, deviceId: deviceId});
-        const source = input.agent_source.replace('__PADIEM_REQUEST_ID__', JSON.stringify(requestId));
-        const encoded = Buffer.from(source, 'utf8').toString('base64');
-        // MeshAgent's console parser does not support escaped double quotes.
-        const value = 'eval "eval(Buffer.from(\'' + encoded + '\',\'base64\').toString())"';
-        commands.push(JSON.stringify({action: 'msg', type: 'console', nodeid: nodeId, value: value}));
+        commands.push(consoleCommand(nodeId, input.agent_source, requestId));
+        if (second) {
+            const helperId = crypto.randomBytes(16).toString('hex');
+            helperPending.set(nodeId, {requestId: helperId, deviceId: deviceId});
+            commands.push(consoleCommand(nodeId, input.helper_source, helperId));
+        }
     }
     if (!pending.size) finish();
     for (const command of commands) socket.send(command);
@@ -178,16 +203,34 @@ socket.on('message', function(raw) {
         return;
     }
     if (message.action !== 'msg' || message.type !== 'console' ||
-        !pending.has(message.nodeid) || typeof message.value !== 'string') return;
+        typeof message.value !== 'string') return;
+    const drive = pending.get(message.nodeid), helper = helperPending.get(message.nodeid);
+    if (!drive && !helper) return;
     try { result = JSON.parse(message.value); } catch (_) { return; }
-    if (!result || result.protocol !== 'padiem-drives-v1' ||
-        result.request_id !== pending.get(message.nodeid).requestId) return;
-    const deviceId = pending.get(message.nodeid).deviceId;
-    pending.delete(message.nodeid);
-    if (result.ok === true && Array.isArray(result.drives)) {
-        rows.push({device_id: deviceId, drives: result.drives});
+    if (!result) return;
+    if (drive && result.protocol === 'padiem-drives-v1' &&
+        result.request_id === drive.requestId) {
+        pending.delete(message.nodeid);
+        if (result.ok === true && Array.isArray(result.drives)) {
+            rows.push({device_id: drive.deviceId, drives: result.drives});
+        }
+    } else if (helper && result.protocol === input.helper_protocol &&
+               result.request_id === helper.requestId) {
+        helperPending.delete(message.nodeid);
+        if (result.ok === true) {
+            // Only the declared keys are copied; anything else stays on the PC side.
+            const state = {};
+            for (const key of input.helper_keys) {
+                if ((key === "helper_sha256" || key === "helper_version" || key === "mesh_agent_version") &&
+                    result[key] === undefined) continue;
+                state[key] = result[key] === undefined ? null : result[key];
+            }
+            helperRows.push({device_id: helper.deviceId, helper: state});
+        }
+    } else {
+        return;
     }
-    if (!pending.size) finish();
+    settle();
 });
 """
 
@@ -218,6 +261,24 @@ class MeshDriveInventorySource:
         self._login_user, self._password_provider = login_user, password_provider
         self._command_runner = command_runner or subprocess.run
         self._node_executable, self._timeout_seconds = node_executable, timeout_seconds
+        self._second: tuple[Callable[..., Any], str, str, list[str]] | None = None
+
+    def observe_helper_ready(
+        self, observer: Callable[..., Any], *, source: str, protocol: str,
+        keys: Iterable[str],
+    ) -> None:
+        """#7987: evaluate one more fixed, read-only expression on this same round.
+
+        No second sign-in, socket or schedule: the expression is sent to the PCs
+        this call was already asking, and ``observer(rows, targets)`` receives
+        what they answered. It is strictly additive - an observer that fails, or
+        an agent that never answers it, leaves the drive rows as they were.
+        """
+        names = [key for key in keys if isinstance(key, str) and key.isidentifier()]
+        if (not callable(observer) or not isinstance(source, str) or not source.strip()
+                or not isinstance(protocol, str) or not protocol or not names):
+            raise ValueError("the helper readiness observation is incomplete")
+        self._second = (observer, source, protocol, names)
 
     def __call__(self, device_ids: Iterable[str]) -> list[dict[str, Any]]:
         # MeshCtrl listdevices uses a bare hash; other callers already hold the
@@ -226,6 +287,7 @@ class MeshDriveInventorySource:
                           and re.fullmatch(r"(?:node/[A-Za-z0-9_.-]*/)?[A-Za-z0-9_@$+.-]+", value)})
         if not targets:
             return []
+        second = self._second
         try:
             password = self._password_provider()
             if not isinstance(password, str) or not password or "\n" in password or "\r" in password:
@@ -234,6 +296,9 @@ class MeshDriveInventorySource:
                        "login_user": self._login_user, "password": password,
                        "device_ids": targets, "agent_source": _AGENT_WATCHER_JS,
                        "timeout_ms": self._timeout_seconds * 1000}
+            if second is not None:
+                request.update(helper_source=second[1], helper_protocol=second[2],
+                               helper_keys=second[3])
             result = self._command_runner(
                 [self._node_executable, "-e", _NODE_BRIDGE_JS],
                 input=json.dumps(request, ensure_ascii=True), capture_output=True,
@@ -245,6 +310,11 @@ class MeshDriveInventorySource:
         except Exception:
             # Never attach child stderr/stdout or credentials to an exception/log.
             return []
+        helper_values: Any = None
+        if second is not None:
+            if not isinstance(values, dict):
+                return []
+            helper_values, values = values.get("helper"), values.get("drives")
         if not isinstance(values, list):
             return []
         rows, seen = [], set()
@@ -260,4 +330,10 @@ class MeshDriveInventorySource:
                 continue
             seen.add(device_id)
             rows.append({"device_id": device_id, "drives": drives})
+        if second is not None:
+            try:
+                second[0](helper_values if isinstance(helper_values, list) else [], targets)
+            except Exception:
+                # Readiness is a second observation; it may never cost the drives.
+                pass
         return rows

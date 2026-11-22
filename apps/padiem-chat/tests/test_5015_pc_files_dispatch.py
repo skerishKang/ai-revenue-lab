@@ -7,6 +7,8 @@ database; no live Mesh, Identity or Broker is involved.
 from __future__ import annotations
 
 import asyncio
+import base64
+import re
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
@@ -19,6 +21,13 @@ from app.history import D1HistoryStore, HistoryError
 ROOT = "C:/Users/limone/AppData/Local/Padiem/MeshCentralTrial"
 OWNER = "usr_" + "a" * 32
 RUN = "run_" + "b" * 24
+
+
+def _carried(command: str) -> list[str]:
+    return [
+        base64.b64decode(blob, validate=True).decode("utf-8")
+        for blob in re.findall(r"FromBase64String\('([A-Za-z0-9+/=]+)'\)", command)
+    ]
 
 
 def test_approved_root_is_the_mapped_file_parent():
@@ -79,7 +88,9 @@ def test_file_commands_are_server_built_literals():
     quoted = routes._pc_files_command(
         op="list", root=ROOT + "/it's", relative=".",
     )
-    assert "it''s" in quoted
+    # #7973: the path travels as base64 of its UTF-8 bytes, not as characters.
+    assert ROOT + "/it's/." in _carried(quoted)
+    assert quoted.isascii()
 
 
 class _DB:

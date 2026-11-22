@@ -184,8 +184,19 @@ def build_session_material(operation, *, cwd=None, marker=None, session_scope=No
     return json.dumps(frame, separators=(",", ":"))
 
 
+PC_USER_SESSION_HELP = (
+    "이 PC 에 Windows 로 로그인돼 있는지 확인하고, "
+    "PC 도우미를 다시 설치해 주세요."
+)
+
+
 def _failure(code, *, status="failed"):
-    return {"status": status, "code": code, "answer": "대화형 PC 세션 요청을 완료하지 못했습니다."}
+    answer = "대화형 PC 세션 요청을 완료하지 못했습니다."
+    if code == "user_session_unavailable":
+        # #7975: keep the code; add the same plain-language remedy the PC card
+        # shows. This is guidance text only, never a new permission or retry.
+        answer += " " + PC_USER_SESSION_HELP
+    return {"status": status, "code": code, "answer": answer}
 
 
 def _valid_metadata(row):

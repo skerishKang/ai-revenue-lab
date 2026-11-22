@@ -52,13 +52,13 @@
     </div>
     <div class="lib-copy"><strong>읽기의 흔적이 다음 질문의 맥락이 됩니다.</strong>밑줄·인물·장소·메모는 기억에 남고, AI는 그 기억과 지금 읽는 문장을 함께 보며 대화를 이어갑니다.</div>
   </div>
-  <button class="today-entry" id="todayEntry" type="button"><span>오늘</span><b id="todayEntryCount">0</b></button>
+  <button class="today-entry" id="todayEntry" type="button"><span>오늘 떠올릴 기억</span><b id="todayEntryCount">0</b></button>
   <div class="motion-control" id="motionControl">
     <button class="motion-toggle" id="motionToggle" type="button" aria-expanded="false">
-      <span>움직임</span><b id="motionValue">1.00×</b>
+      <span>움직임</span><b id="motionValue">보통</b>
     </button>
     <div class="motion-popover" id="motionPopover">
-      <div class="motion-popover-head"><span>책 움직임 속도</span><b id="motionValueDetail">1.00×</b></div>
+      <div class="motion-popover-head"><span>책 움직임 속도</span><b id="motionValueDetail">보통</b></div>
       <input id="motionRange" type="range" min="0.65" max="1.35" step="0.05" value="1" aria-label="책 이동 애니메이션 속도">
       <div class="motion-scale"><span>빠르게</span><i></i><span>천천히</span></div>
     </div>
@@ -2893,16 +2893,31 @@ function setStoryMemoryAuthSession({authenticated,user,getToken}={}){
   updateAuthGateUI();
   saveAuthBridgeUIState();
 }
+/* #7836: a guest's cloud notice is a one-time explanation. Once dismissed it
+   stays closed on this device; if storage is blocked, only for this session. */
+var AUTH_GATE_DISMISS_KEY='storymemory.authGate.dismissed.v1';
+var __smAuthGateDismissedSession=false;
+function authGateDismissed(){
+  if(__smAuthGateDismissedSession)return true;
+  try{return BookAIStorage.getItem(AUTH_GATE_DISMISS_KEY)==='1';}catch(_){return false;}
+}
+function markAuthGateDismissed(){
+  __smAuthGateDismissedSession=true;
+  try{BookAIStorage.setItem(AUTH_GATE_DISMISS_KEY,'1');}catch(_){}
+}
 function openAuthGate(){
+  if(!__smAuthBridge.authenticated&&authGateDismissed())return;
   updateAuthGateUI();
   document.body.classList.add('auth-gate-open');
   document.getElementById('authGateSheet')?.setAttribute('aria-hidden','false');
   requestAnimationFrame(()=>document.getElementById('authGatePrimary')?.focus());
 }
 function closeAuthGate(){
+  if(!__smAuthBridge.authenticated)markAuthGateDismissed();
   document.body.classList.remove('auth-gate-open');
   document.getElementById('authGateSheet')?.setAttribute('aria-hidden','true');
 }
+window.storyMemoryDismissAuthGate=markAuthGateDismissed;
 function updateAuthGateUI({syncing=false,error=false}={}){
   const cloud=document.getElementById('todayCloudButton');
   const label=document.getElementById('todayCloudLabel');
@@ -4916,8 +4931,15 @@ const motionRange=document.getElementById('motionRange');
 const motionValue=document.getElementById('motionValue');
 const motionValueDetail=document.getElementById('motionValueDetail');
 
+/* #7837: the visible value is a word a reader already knows; the multiplier
+   itself (range value, stored factor, animation length) is unchanged. */
+function __smMotionWord(factor){
+  if(factor<0.9)return '빠르게';
+  if(factor>1.1)return '느리게';
+  return '보통';
+}
 function __smRenderMotionControl(){
-  const value=__smMotionFactor.toFixed(2)+'×';
+  const value=__smMotionWord(__smMotionFactor);
   motionRange.value=String(__smMotionFactor);
   motionValue.textContent=value;
   motionValueDetail.textContent=value;
@@ -6083,6 +6105,18 @@ function storyMemoryPassageMarkup(p,index,content){
   }
   return `<p ${attrs}>${escapeHtml(text)}</p>`;
 }
+/* #7837 — 본문 아래 출처 줄: 기본은 짧은 한국어 번역본 이름만 보이고, 구절 코드와
+   영역본 이름(영어)은 눌러서 펼칠 때만 보인다. 펼친 안의 표기는 출처가 정확해야
+   하므로 원문 표기를 그대로 둔다. */
+function storyMemorySourceNoteMarkup({range,lang,isStaticBible,hasKo}){
+  const short=isStaticBible?'개역한글(1961)':(hasKo?'한국어 본문':'영어 원문');
+  return '<div class="reader-page-note sm-verified-source-note">'
+    +'<details class="sm-source-detail">'
+    +'<summary><span class="sm-source-short">'+escapeHtml(short)+'</span>'
+    +'<span class="sm-source-more">출처 자세히</span></summary>'
+    +'<div class="sm-source-full"><b>번역본 · 출처</b>'+escapeHtml(range)+' · '+escapeHtml(lang)+'</div>'
+    +'</details></div>';
+}
 function storyMemoryBuildDynamicReaderPages(bundle,{targetChars,pageMaxPassages}={}){
   const content=bundle?.content||null,passages=(bundle?.passages||[]).filter(x=>String(x?.text||'').trim());
   const maxChars=Math.max(600,Number(targetChars)||STORYMEMORY_READER_BINDING_CONTRACT.pageTargetChars);
@@ -6099,8 +6133,9 @@ function storyMemoryBuildDynamicReaderPages(bundle,{targetChars,pageMaxPassages}
     const first=items[0]?.sourceRef,last=items[items.length-1]?.sourceRef;
     const firstLabel=first?storyMemoryFormatSourceRef(first):'';const lastLabel=last?storyMemoryFormatSourceRef(last):'';
     const rangeLabel=firstLabel&&lastLabel&&firstLabel!==lastLabel?`${firstLabel} → ${lastLabel}`:(firstLabel||lastLabel||'VERIFIED SOURCE');
-    const lang=bundle?.mode==='static' && bundle?.work?.work_key==='bible-web' ? '한국어 KRV-1961 · 영어 WEB (World English Bible) · 출처 표기 KRV-1961 / eBible ENGWEBP' : (items.some(x=>x.language==='ko')?'한국어 본문 · 원문 연결':'영어 원문');
-    return `${body}<div class="reader-page-note sm-verified-source-note"><b>번역본 · 출처</b>${escapeHtml(rangeLabel)} · ${escapeHtml(lang)}</div>`;
+    const isStaticBible=bundle?.mode==='static' && bundle?.work?.work_key==='bible-web';
+    const lang=isStaticBible ? '한국어 KRV-1961 · 영어 WEB (World English Bible) · 출처 표기 KRV-1961 / eBible ENGWEBP' : (items.some(x=>x.language==='ko')?'한국어 본문 · 원문 연결':'영어 원문');
+    return body+storyMemorySourceNoteMarkup({range:rangeLabel,lang,isStaticBible,hasKo:items.some(x=>x.language==='ko')});
   });
   return {pages,groups,pageSourceRefs:groups.map(g=>g.map(x=>x.sourceRef).filter(Boolean)),passages};
 }
@@ -7701,7 +7736,7 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
     var range=(fl&&ll&&fl!==ll)?(fl+' → '+ll):(fl||ll||'VERIFIED SOURCE');
     var isStaticBible=__smDynamicReaderState.mode==='static' && __smDynamicReaderState.work && __smDynamicReaderState.work.work_key==='bible-web';
     var lang=isStaticBible?'한국어 KRV-1961 · 영어 WEB (World English Bible) · 출처 표기 KRV-1961 / eBible ENGWEBP':(items.some(function(x){return x.language==='ko';})?'한국어 본문 · 원문 연결':'영어 원문');
-    return '<div class="reader-page-note sm-verified-source-note"><b>번역본 · 출처</b>'+escapeHtml(range)+' · '+escapeHtml(lang)+'</div>';
+    return storyMemorySourceNoteMarkup({range:range,lang:lang,isStaticBible:!!isStaticBible,hasKo:items.some(function(x){return x.language==='ko';})});
   }
   function sentenceParts(p){
     var text=String(p.text||'');
@@ -8038,6 +8073,19 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
   .paper-inner{padding-left:40px!important;padding-right:40px!important}
 }
 #readerPageBody>.sm-verified-source-note{position:sticky;bottom:0;margin-top:14px;border-top:1px solid rgba(94,72,50,.12);padding-top:8px}
+/* #7837 — 출처 줄 글자 크기 하한: 390에서 12px 이상, 1440에서 13px 이상. */
+.sm-verified-source-note{font-size:12px}
+.sm-source-detail summary{display:flex;align-items:center;gap:8px;min-height:32px;cursor:pointer;list-style:none;font:600 12px/1.45 var(--sans);letter-spacing:0;color:#8a7c6d}
+.sm-source-detail summary::-webkit-details-marker{display:none}
+.sm-source-detail summary::after{content:"＋";font:600 12px/1 var(--sans);color:#a06b4d}
+.sm-source-detail[open] summary::after{content:"－"}
+.sm-source-more{font:500 11px/1.4 var(--sans);color:#a06b4d}
+.sm-source-detail[open] .sm-source-more{color:#8a7c6d}
+.sm-source-full{margin-top:6px;font:400 12px/1.6 var(--serif);color:#8a7c6d;overflow-wrap:anywhere}
+.sm-source-full b{display:block;margin-bottom:4px;font:600 11px var(--sans);letter-spacing:.08em;color:#a06b4d}
+@media(min-width:721px){
+  .sm-verified-source-note,.sm-source-detail summary{font-size:13px}
+}
 #readerPageBody .verse-en{color:#6e675c;opacity:.95}
 </style>
 <style id="sm-mobile-ai-sheet-v1">
@@ -8669,6 +8717,7 @@ body.smr-theme-dark .bible-search-panel{background:rgba(38,33,26,.97);border-col
 <link id="bookai-7574-copy-v1-style" rel="stylesheet" href="./styles/bookai-7574-copy-v1.css">
 <link id="bookai-7574-polish-v1-style" rel="stylesheet" href="./styles/bookai-7574-polish-v1.css">
 <link id="bookai-glass-theme-v1-style" rel="stylesheet" href="./styles/bookai-glass-theme-v1.css">
+<link id="bookai-7838-clearance-v1" rel="stylesheet" href="./styles/bookai-7838-clearance-v1.css">
 <script type="application/x-bookai" data-bookai-script src="./bookai-7574-polish-v1.js"></script>
 <script src="./bookai-7573-layout-v1.js"></script>
 </body>

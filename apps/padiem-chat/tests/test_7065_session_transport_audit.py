@@ -137,7 +137,7 @@ def test_key_only_input_records_zero_text_bytes(gateway):
 
 @pytest.mark.asyncio
 async def test_real_audit_db_stores_input_length_without_granting_job_ownership():
-    from test_mcp_gateway_account import setup, issued
+    from _support.mcp_gateway_account import setup, issued
 
     db, owner, _other, store = setup()
     migrations = Path(__file__).resolve().parents[1] / "migrations"

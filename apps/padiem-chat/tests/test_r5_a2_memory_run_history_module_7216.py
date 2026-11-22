@@ -51,6 +51,15 @@ RUN_HISTORY_NAMES = (
     "renderClawRunCard",
 )
 
+# R5 B3+B7: the Claw run-history panel functions moved here from the history
+# module and are reached through the registry (app.provide("runHistory"));
+# app.js keeps no same-named function.
+RUN_HISTORY_PANEL_NAMES = (
+    "clearClawRunHistoryPdfPreviews",
+    "clawRunHistoryErrorMessage",
+    "fetchClawRunHistory",
+)
+
 MOVED_MARKERS = (
     'fetch("/api/claw/memory/approve", {',
     'fetch("/api/claw/memory/reject", {',
@@ -70,6 +79,13 @@ OWN_DECLARATIONS = (
     "let clawRunsRead = emptyClawRunsRead();",
     'const clawRunHistoryRefresh = document.getElementById("clawRunHistoryRefresh");',
     'const clawRunHistoryFilter = document.getElementById("clawRunHistoryFilter");',
+    'const clawRunHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");',
+    'const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");',
+    'const clawRunHistoryError = document.getElementById("clawRunHistoryError");',
+    'const clawRunHistoryList = document.getElementById("clawRunHistoryList");',
+    'const clawRunHistoryEmpty = document.getElementById("clawRunHistoryEmpty");',
+    "let clawRunHistoryLeftSurface = false;",
+    "let clawRunHistoryVisibilityEpoch = 0;",
 )
 
 LISTENER_LINES = (
@@ -106,19 +122,18 @@ SHARED_READS = (
     "emptyState",
     "uiT",
     "clawT",
-    "syncClawRunHistoryVisibility",
     "mappedUiError",
     "approvedMemoryErrorMessage",
     "safeLocalUiMessage",
     "failureCodeNote",
     "openSavedConversation",
     "downloadClawArtifact",
-    "setClawRunHistoryStatus",
     "clawRunHistoryPdfControllers",
     "renderClawApprovalControls",
-    "loadClawRunHistory",
     "clawRunHistoryInFlight",
     "clawRunHistoryLimit",
+    "authViewEpoch",
+    "pendingClawRunFocusId",
 )
 
 
@@ -170,8 +185,29 @@ def test_registry_replaces_one_line_forwarders_and_modules_fit_budget() -> None:
         assert f"function {name}(" in MEMORY, name
     for name in RUN_HISTORY_NAMES:
         assert f"function {name}(" in RUN_HISTORY, name
+    for name in RUN_HISTORY_PANEL_NAMES:
+        assert f"function {name}(" in RUN_HISTORY, name
+        assert f"function {name}(" not in APP, name
+        assert 'app.provide("runHistory",' in APP, name
+    # B7 (12차, core 등록부): uiT·clawT·mappedUiError 접근자는 coreModule() 값을 반환한다.
+    # B7 (13차, clawRun 등록부): downloadClawArtifact·renderClawApprovalControls
+    # 접근자는 clawRun 조각 값을 반환한다.
+    _core_shared = ("uiT", "clawT", "mappedUiError")
+    _clawrun_shared = ("downloadClawArtifact", "renderClawApprovalControls")
+    _conversation_shared = ("approvedMemoryErrorMessage", "safeLocalUiMessage")
     for name in SHARED_READS:
-        assert f"get {name}() {{ return {name}; }}" in APP, name
+        bare = f"get {name}() {{ return {name}; }}"
+        core_form = f"get {name}() {{ return coreModule().{name}; }}"
+        run_form = f"get {name}() {{ return clawRun.{name}; }}"
+        conversation_form = f"get {name}() {{ return conversationModule().{name}; }}"
+        if name in _core_shared:
+            assert core_form in APP, name
+        elif name in _clawrun_shared:
+            assert run_form in APP, name
+        elif name in _conversation_shared:
+            assert conversation_form in APP, name
+        else:
+            assert bare in APP, name
     assert "set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; }" in APP
 
 
@@ -224,6 +260,8 @@ for (const id of [
   "clawApprovedLoading", "clawApprovedError", "clawApprovedList",
   "clawApprovedEmpty", "clawMemoryReview",
   "clawRunHistory", "clawRunHistoryRefresh", "clawRunHistoryFilter", "clawRunHistoryExpand",
+  "clawRunHistoryDisclosure", "clawRunHistoryLoading", "clawRunHistoryError",
+  "clawRunHistoryList", "clawRunHistoryEmpty",
 ]) {
   byId[id] = makeElement(id.endsWith("Disclosure") ? "details" : "div", id);
 }
@@ -245,6 +283,8 @@ let fetchImpl = async () => ({ ok: true, status: 200, json: async () => ({ ok: t
 
 const live = {
   authState: { authenticated: true },
+  authViewEpoch: 1,
+  pendingClawRunFocusId: "",
   shell: byId.shell,
   clawWorkspace: makeElement("div"),
   emptyState: byId.emptyState,
@@ -483,9 +523,13 @@ vm.runInContext(`
   assert.equal(byId.clawApprovedRefresh.listeners.click.length, 1);
   M.wireMemoryReviewContract();
   assert.ok(sandbox.window.PadiemChatMemoryReview);
-  live.calls.length = 0;
+  // R5 B3: syncClawRunHistoryVisibility is registered by the run-history module
+  // now, so the memory contract is proven by its real DOM effect.
+  live.authState.authenticated = true;
+  live.shell.dataset.state = "home";
+  byId.clawRunHistory.hidden = false;
   sandbox.window.PadiemChatMemoryReview.sync();
-  assert.deepEqual(live.calls, ["syncClawRunHistoryVisibility"]);
+  assert.equal(byId.clawRunHistory.hidden, true);
   checks.memory_visibility_and_wire = true;
 
   // 8) Direct call: readClawRuns & invalidateClawRunsRead
@@ -534,7 +578,46 @@ vm.runInContext(`
   assert.equal(live.downloads.length, 1);
   checks.run_card = true;
 
-  // 10) Rule (b) + live setter: wireRunHistoryListeners
+  // 10) R5 B3: the panel functions moved here from the history module
+  R.setClawRunHistoryStatus("패널 오류", "E42");
+  assert.equal(byId.clawRunHistoryError.hidden, false);
+  assert.equal(byId.clawRunHistoryError.textContent, "패널 오류");
+  assert.equal(byId.clawRunHistoryError.dataset.state, "error");
+  R.setClawRunHistoryStatus("");
+  assert.equal(byId.clawRunHistoryError.hidden, true);
+  assert.equal(R.clawRunHistoryErrorMessage({ error: { code: "unauthorized" } }, { status: 401 }),
+    "CLAW:claw-error-auth-needed");
+  assert.equal(R.clawRunHistoryErrorMessage({}, { status: 500 }), "CLAW:claw-runs-error");
+  let destroyed = 0;
+  live.clawRunHistoryPdfControllers.add({ destroy() { destroyed += 1; } });
+  R.clearClawRunHistoryPdfPreviews();
+  assert.equal(destroyed, 1);
+  assert.equal(live.clawRunHistoryPdfControllers.size, 0);
+
+  fetchImpl = async (url) => {
+    if (String(url).startsWith("/api/claw/runs")) {
+      return { ok: true, status: 200, json: async () => ({ ok: true, runs: [{
+        run_id: "run_panel", title: "패널 실행", status: "completed", channel: "web",
+        action: "quote", created_at: "2026-11-11T00:00:00Z", result_summary: "요약",
+      }] }) };
+    }
+    return { ok: true, status: 200, json: async () => ({ ok: true }) };
+  };
+  live.authState.authenticated = true;
+  live.shell.dataset.state = "claw";
+  byId.clawRunHistory.hidden = false;
+  await R.loadClawRunHistory();
+  assert.equal(byId.clawRunHistoryList.children.length, 1);
+  assert.equal(byId.clawRunHistoryList.hidden, false);
+
+  byId.clawRunHistory.hidden = false;
+  live.shell.dataset.state = "home";
+  R.syncClawRunHistoryVisibility();
+  assert.equal(byId.clawRunHistory.hidden, true);
+  assert.equal(byId.clawRunHistoryEmpty.hidden, true);
+  checks.panel_functions = true;
+
+  // 11) Rule (b) + live setter: wireRunHistoryListeners
   R.wireRunHistoryListeners();
   assert.equal(byId.clawRunHistoryFilter.listeners.click.length, 1);
   assert.equal(byId.clawRunHistoryRefresh.listeners.click.length, 1);
@@ -546,6 +629,9 @@ vm.runInContext(`
 
   byId.clawRunHistoryRefresh.click();
   assert.equal(live.clawRunHistoryLimit, 10);
+  // The refresh now runs the module's real single-flight load, so let it settle
+  // before the expand click (which is correctly ignored while a read is open).
+  await new Promise((resolve) => setTimeout(resolve, 0));
   byId.clawRunHistory.hidden = false;
   byId.clawRunHistoryExpand.click();
   assert.equal(live.clawRunHistoryLimit, 30, "expand click writes back through live setter");
@@ -593,5 +679,6 @@ def test_vm_executes_all_16_a2_functions_and_wire_contracts() -> None:
         "runs_cache",
         "run_card",
         "run_history_wire",
+        "panel_functions",
     ):
         assert payload["checks"].get(key) is True, key

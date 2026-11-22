@@ -74,6 +74,60 @@ def _epoch(value: str | None) -> float | None:
         return None
 
 
+# --------------------------------------------------------------- qa setup
+#: 설치·승인 구간은 토큰 값 자체가 아니라 존재와 형식만 본다. 형식만 고정하고
+#: 값은 어디에도 출력·기록하지 않는다(#6724 2번 1단계).
+_QA_TOKEN_FORMAT = re.compile(r"^[A-Za-z0-9._-]{16,256}$")
+
+
+def _qa_setup_lookup(token_path: str):
+    """시험용 페어링 응답: 토큰 파일 옆의 `.setup.json` 만 읽는다.
+
+    실제 PC·운영 토큰·네트워크에 닿지 않는다. 파일에는 승인 여부와 승인된
+    폴더 수만 들어 있다.
+    """
+    path = token_path + ".setup.json"
+    with open(path, "r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def verify_qa_pc_setup(token_path: str, lookup=None) -> dict:
+    """QA PC 설치·승인 구간을 존재·형식·승인 결과로 검증한다.
+
+    ``lookup`` 은 가짜 조회 콜백이다. 기본 조회는 시험 파일만 읽는다. 반환에는
+    토큰 값이 없고 존재 여부·형식 판정·승인 여부·폴더 수만 담긴다.
+    """
+    out = {
+        "verdict": "FAIL", "code": "setup_token_missing",
+        "token_present": False, "token_format_ok": False,
+        "approved": False, "roots": 0,
+    }
+    try:
+        with open(token_path, "r", encoding="utf-8") as handle:
+            token = handle.read().strip()
+    except OSError:
+        return out
+    out["token_present"] = True
+    if _QA_TOKEN_FORMAT.fullmatch(token) is None:
+        out["code"] = "setup_token_format_invalid"
+        return out
+    out["token_format_ok"] = True
+    try:
+        row = lookup() if lookup is not None else _qa_setup_lookup(token_path)
+    except Exception as exc:
+        out["code"] = "setup_lookup_error_" + type(exc).__name__
+        return out
+    if not isinstance(row, dict) or row.get("approved") is not True:
+        out["code"] = "setup_not_approved"
+        return out
+    roots = row.get("roots")
+    if type(roots) is not int or roots < 1:
+        out["code"] = "setup_no_approved_root"
+        return out
+    out.update(verdict="PASS", code="setup_ok", approved=True, roots=roots)
+    return out
+
+
 # --------------------------------------------------------------------- send
 def send_probe(token: str, path: str) -> dict:
     body = json.dumps({

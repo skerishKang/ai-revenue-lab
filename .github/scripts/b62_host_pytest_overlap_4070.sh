@@ -32,7 +32,7 @@ trap cleanup EXIT
 if (( run_core == 1 )); then
   (
     cd "$ROOT/packages/padiem-ai-core"
-    uv run --extra dev python -m pytest -q
+    uv run --extra dev python -m pytest -q --durations=20
   ) > "$logdir/core.log" 2>&1 &
   core_pid="$!"
   echo "B62_CORE_PYTEST=STARTED"
@@ -42,7 +42,9 @@ fi
 
 (
   cd "$ROOT/apps/padiem-chat"
-  uv run --locked python -m pytest -q
+  # #8060/timeout triage: report the 20 slowest tests so the nightly full
+  # regression can be trimmed; this only adds a report, no deselect/skip.
+  uv run --locked python -m pytest -q --durations=20
 ) > "$logdir/chat.log" 2>&1 &
 chat_pid="$!"
 echo "B62_CHAT_PYTEST=STARTED"

@@ -151,7 +151,9 @@ function streamingModule() {
   return window.__instance;
 }
 for (const key of ["applyStreamDone", "requestCompletedAnswer", "requestStreamingAnswer"]) {
-  Object.defineProperty(window.__deps, key, { get() { return globalThis[key]; } });
+  // B7: app.js re-points these deps getters to the registry piece; the harness
+  // mirrors that by reading the same methods off the (wrapped) module instance.
+  Object.defineProperty(window.__deps, key, { get() { return streamingModule()[key]; } });
 }
 const __real = streamingModule();
 for (const key of Object.keys(__real)) {
@@ -173,11 +175,13 @@ window.__call = async (name, args) => {
 
 
 def _forwarder_lines() -> str:
+    # B7: the forwarders are gone from app.js — the harness mirrors the
+    # registry path (app.provide("streaming") → streamingModule() piece).
+    async_names = {"requestCompletedAnswer", "requestStreamingAnswer", "requestAnswer"}
     lines = []
     for name in CALLS:
-        marker = f"function {name}(...a) {{"
-        line = next(line.strip() for line in APP.splitlines() if marker in line)
-        lines.append(line)
+        prefix = "async function" if name in async_names else "function"
+        lines.append(f"{prefix} {name}(...a) {{ return streamingModule().{name}(...a); }}")
     return "\n".join(lines)
 
 

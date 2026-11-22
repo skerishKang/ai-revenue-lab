@@ -31,6 +31,7 @@ DOM shim. The harness proves actual behavior:
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 import re
@@ -40,7 +41,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
 
 KIND_KEY = "claw-runs-kind-aria"

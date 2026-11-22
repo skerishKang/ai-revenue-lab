@@ -343,6 +343,78 @@ class CommittedPages(unittest.TestCase):
         self.assertIn("tutorials_up_to_date", done.stdout)
 
 
+class PartialShotsTest(unittest.TestCase):
+    """#7943 후속: 부분 모드는 캡처가 있는 단계만 다시 만든다.
+
+    일일 캡처 흐름은 대표 세션으로 촬영한 단계(01-first-visit 의 4단계)를
+    못 찍는다. 부분 모드에서는 없는 단계의 커밋된 webp 를 그대로 두고,
+    기본 모드는 지금처럼 모든 단계를 요구한다.
+    """
+
+    def setUp(self):
+        self.root = Path(tempfile.mkdtemp(prefix="partial-shots-test-"))
+        self.addCleanup(shutil.rmtree, self.root, ignore_errors=True)
+        self.docs, self.pages = self.root / "docs", self.root / "pages"
+        generator.build(self.docs, self.pages, None)
+        shutil.copytree(PAGES / "assets", self.pages / "assets")
+        self.shots = self.root / "shots"
+        scene = self.shots / "01-first-visit"
+        scene.mkdir(parents=True)
+        for number in (1, 2, 3):
+            self._write_png(scene / f"step-{number:02d}.png")
+
+    def _write_png(self, path: Path) -> None:
+        from PIL import Image
+        Image.new("RGB", (24, 18), (170, 40, 40)).save(path, format="PNG")
+
+    def _asset(self, name: str) -> Path:
+        return self.pages / "assets" / "01-first-visit" / name
+
+    def _committed(self, name: str) -> Path:
+        return PAGES / "assets" / "01-first-visit" / name
+
+    def test_partial_mode_regenerates_captured_steps_and_keeps_the_rest(self):
+        written = generator.convert_shots(
+            self.shots, self.pages / "assets", generator.load_scenarios(),
+            partial=True,
+        )
+        self.assertEqual(
+            [path.name for path in written],
+            ["step-01.webp", "step-02.webp", "step-03.webp"],
+        )
+        for name in ("step-01.webp", "step-02.webp", "step-03.webp"):
+            # 가짜 단색 PNG 는 커밋된 스크린샷 webp 와 같을 수 없다 → 재생성됨.
+            self.assertNotEqual(
+                self._asset(name).read_bytes(), self._committed(name).read_bytes(),
+                name,
+            )
+        # 캡처가 없는 4단계는 커밋된 webp 그대로(kept).
+        self.assertEqual(
+            self._asset("step-04.webp").read_bytes(),
+            self._committed("step-04.webp").read_bytes(),
+        )
+        # 보존한 자산만 있으면 계약 검사도 통과한다.
+        self.assertEqual(generator.check(self.docs, self.pages), [])
+
+    def test_full_mode_still_requires_every_step(self):
+        with self.assertRaises(SystemExit) as caught:
+            generator.convert_shots(
+                self.shots, self.pages / "assets", generator.load_scenarios(),
+            )
+        self.assertIn("missing screenshot", str(caught.exception))
+
+    def test_partial_plan_reports_regenerated_and_kept_steps(self):
+        plan = {scene["scene"]: scene
+                for scene in generator.partial_plan(self.shots, generator.load_scenarios())}
+        first = plan["01-first-visit"]
+        self.assertEqual(first["regenerated"], [1, 2, 3])
+        self.assertEqual(first["kept"], [4])
+        # 일일 캡처가 없는 장면은 전부 kept 다.
+        other = plan["02-pc-connection"]
+        self.assertEqual(other["regenerated"], [])
+        self.assertTrue(other["kept"])
+
+
 class RecorderPlan(unittest.TestCase):
     def test_vtt_cues_follow_the_step_offsets(self):
         vtt = capture.build_vtt(

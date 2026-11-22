@@ -16,7 +16,9 @@ Two layers of proof:
 """
 from __future__ import annotations
 
+import base64
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -63,6 +65,14 @@ def _doubled(value: str) -> str:
     for quote in QUOTES:
         value = value.replace(quote, quote + quote)
     return value
+
+
+def _carried_values(script: str) -> list[str]:
+    """Every value a builder carries as ASCII base64 of UTF-8 (#7973/#7974)."""
+    return [
+        base64.b64decode(blob, validate=True).decode("utf-8")
+        for blob in re.findall(r"FromBase64String\('([A-Za-z0-9+/=]+)'\)", script)
+    ]
 
 ROOT = "C:/Users/qa/문서"
 WIN_ROOT = "C:\\Users\\qa\\문서\\"
@@ -144,9 +154,16 @@ BUILDERS = {
 
 @pytest.mark.parametrize("name", sorted(BUILDERS))
 @pytest.mark.parametrize("value", HOSTILE)
-def test_a_hostile_value_reaches_the_command_only_as_the_shared_literal(name, value):
+def test_a_hostile_value_reaches_the_command_only_as_safe_data(name, value):
     command = BUILDERS[name](value)
-    assert _doubled(value) in command
+    if name in ("files_list", "search"):
+        # #7973/#7974: a path or search term is carried as base64 of its UTF-8
+        # bytes, so it never appears in the command text at all. This is at
+        # least as safe as a doubled literal: no character can end a string.
+        assert value in _carried_values(command)
+        assert command.isascii()
+    else:
+        assert _doubled(value) in command
     # No quote character from the value survives undoubled next to the injected name.
     for quote in QUOTES:
         assert quote + ";" + INJECTED not in command.replace(quote + quote, "")

@@ -1,17 +1,19 @@
 """#7216 R5 A4 (claw-status) — Claw 상태·대기·재시도 모듈 계약 (24함수).
 
 app.js의 Claw 상태·대기·재시도 구역 24개 함수가 chat-claw-status-module.js로
-이동했고, app.js는 19개 한 줄 전달 함수와 clawStatusModule() 팩토리 호출만
-유지한다. 5개 내부 전용 함수는 모듈 안에만 있다.
+이동했다. B7 14차+15차: 19개 전부 등록부(app.provide("clawStatus")) 경유로
+연결되고 app.js에는 같은 이름 정의가 없다. 5개 내부 전용 함수는 모듈 안에만 있다.
 """
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
 from pathlib import Path
 
 import pytest
+from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -39,6 +41,11 @@ NAMES = (
     "beginClawWait",
     "clearClawWait",
 )
+
+# B7 14차+15차: all 19 one-line forwarders are gone — every name is reached
+# through the registry (app.provide("clawStatus")) and app.js keeps no
+# same-name definitions.
+REGISTRY_NAMES = NAMES
 
 INTERNAL_NAMES = (
     "parseClawRetryAfter",
@@ -96,13 +103,87 @@ def test_index_loads_claw_status_module_before_app() -> None:
     assert INDEX.index("./chat-claw-status-module.js") < INDEX.index("./app.js")
 
 
-def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
-    for name in NAMES:
-        line = f"function {name}(...a) {{ return clawStatusModule().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
-    assert "function clawStatusModule() {" in APP
-    assert "window.PadiemChatClawStatusModule.create({" in APP
+def test_registry_chunk_lives_through_the_registry_and_forwarders_stay() -> None:
+    """이동 본문은 모듈에만 살고 app.js는 등록부 경유로 연결한다(이중 소유 금지).
+
+    실행 검사는 "어디에 살아 있는지"를 대신하지 못한다. 같은 본문이 양쪽에
+    생기면 어느 쪽이 실제로 도는지 알 수 없으므로 구조 계약으로 유지한다.
+    B7 14차+15차: 19개 전부 등록부(app.provide("clawStatus")) 경유로 대체됐다 —
+    app.js에 같은 이름 정의가 없고 등록된 조각에 이름이 있다.
+    """
+    assert (
+        'app.provide("clawStatus",' in APP
+        and "function clawStatusModule() {" in APP
+        and "window.PadiemChatClawStatusModule.create(Object.setPrototypeOf({" in APP
+    )
+    # the module-side single-definition check for all 19 names is owned by
+    # test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines
+    assert all(
+        f"function {name}(" not in APP for name in REGISTRY_NAMES
+    ), "registry names must have no app.js definition"
+
+
+def test_claw_status_registry_chunk_is_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("clawStatus"))로 같은 이름을 찾을 수 있다.
+
+    app.js 전달 함수가 없어도 소비자(app.js 호출자·clawRun deps getter·공유
+    접근자)는 등록된 조각의 같은 이름 API에 도달한다. 실제 모듈 본문을 node vm에서
+    문맥에 등록해 19개 이름이 전부 함수로 조회되는지 본다(동작 단언은
+    node vm 하네스와 브라우저 하네스가 직접 호출로 증명한다).
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const byId = new Map();
+const fakeEl = () => ({
+  hidden: true, textContent: "", children: [], dataset: {},
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, removeChild() {},
+});
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, setAttribute() {} }),
+  },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-claw-status-module.js", "utf8"), sandbox,
+  { filename: "chat-claw-status-module.js" });
+const names = __NAMES_JSON__;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("clawStatus", window.PadiemChatClawStatusModule.create(Object.setPrototypeOf({}, app)));
+  const out = {};
+  for (const n of __NAMES_JSON__) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("__NAMES_JSON__", json.dumps(list(REGISTRY_NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
 
 
 def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines() -> None:
@@ -118,12 +199,13 @@ def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines()
 
 
 def test_deps_getters_and_setters_match_exact_closure_surface() -> None:
-    start = APP.index("window.PadiemChatClawStatusModule.create({")
-    block = APP[start:APP.index("});", start)]
+    block = create_receives_app_context(APP, "window.PadiemChatClawStatusModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert gets == EXPECTED_GETTERS
-    assert sets == EXPECTED_SETTERS
+    assert gets <= EXPECTED_GETTERS
+    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
+    assert sets <= EXPECTED_SETTERS
+    assert sets | (EXPECTED_SETTERS & context_names(APP)) == EXPECTED_SETTERS
 
 
 def test_all_nineteen_functions_execute_in_node_vm_with_strict_live_deps() -> None:

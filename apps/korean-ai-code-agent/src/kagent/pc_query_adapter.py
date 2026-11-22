@@ -216,6 +216,13 @@ PC_REQUEST_SCOPE_TOOLS = {
     # A content search and a range read both read text files, so they sit
     # with the read grant.
     "files": PC_FILE_TOOL_IDS | PC_SEARCH_TOOL_IDS | frozenset({PC_READ_CHUNK_TOOL_ID}),
+    # #8048: the three read-only single-step names the gateway already declares
+    # must be real scopes. A recursive name search, a content search or a byte
+    # range each grants exactly its own step; without these entries the scope
+    # gate admitted "none" and dropped the dispatch before the PC saw it.
+    "files_search": frozenset({PC_SEARCH_FILES_TOOL_ID}),
+    "files_search_contents": frozenset({PC_SEARCH_CONTENT_TOOL_ID}),
+    "files_chunk": frozenset({PC_READ_CHUNK_TOOL_ID}),
     "files_write": PC_FILE_WRITE_TOOL_IDS,
     "query_drives": frozenset({PC_DRIVES_TOOL_ID}),
     # #3782: one public page opened, read and captured in the dedicated work
@@ -483,8 +490,12 @@ def pc_drives_tool_spec() -> ToolSpec:
 #: (``_pc_files_resume_dispatch`` and ``_validate_pc_step_arguments``).
 _PC_FILE_TOOL_RESUME_START = re.compile(r"dsp_[0-9a-f]{32}\Z")
 #: Only the read-only file tools answer later; a mutation must report its own
-#: verification, so it never continues by job id.
-_PC_FILE_RESUME_TOOL_IDS = frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID})
+#: verification, so it never continues by job id. A long name/content search
+#: also hands back a dispatch id, so the same tool can read that result.
+_PC_FILE_RESUME_TOOL_IDS = frozenset({
+    PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
+    PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID,
+})
 
 def _pc_file_tool_input_schema() -> dict:
     return {
@@ -498,12 +509,28 @@ def _pc_file_tool_input_schema() -> dict:
     }
 
 
+def _pc_list_files_tool_input_schema() -> dict:
+    """The listing adds two read-only tuning keys to the shared file shape.
+
+    #8048: the MCP gateway already admits ``depth`` (1..3) and ``offset``
+    (0..10000), and the driver's list validator and the PC command table
+    implement both. The registered ToolSpec was the one closed table that did
+    not name them, so the runtime refused the call before any PC dispatch.
+    Every value is still re-checked by the driver and the command builder.
+    """
+    schema = _pc_file_tool_input_schema()
+    properties = dict(schema["properties"])
+    properties["depth"] = {"type": "integer", "minimum": 1, "maximum": 3}
+    properties["offset"] = {"type": "integer", "minimum": 0, "maximum": 10_000}
+    return {**schema, "properties": properties}
+
+
 def pc_list_files_tool_spec() -> ToolSpec:
     return ToolSpec(id=PC_LIST_FILES_TOOL_ID, title="List files in the verified PC folder",
         description="List files inside the approved folder on the verified owner PC",
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_LIST_FILES_SCOPE,),
-        input_schema=_pc_file_tool_input_schema(),
+        input_schema=_pc_list_files_tool_input_schema(),
         output_contract={"type":"object"}, timeout_seconds=None)
 
 
@@ -628,11 +655,20 @@ def pc_search_files_tool_spec() -> ToolSpec:
                      "the file is still only in the cloud"),
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_SEARCH_FILES_SCOPE,),
-        input_schema={"type":"object","properties":{
-            "query":{"type":"string","minLength":1,"maxLength":200},
-            "path":{"type":"string","maxLength":2048}},
-            "required":["query"],"additionalProperties":False},
+        input_schema=_pc_search_tool_input_schema(),
         output_contract={"type":"object"}, timeout_seconds=None)
+
+
+def _pc_search_tool_input_schema() -> dict:
+    """A search names a query, or only the job id it left running.
+
+    The closed schema has no "one of": the handler and the driver refuse any
+    other argument set, so a continuation can carry nothing but ``job_id``.
+    """
+    schema = _pc_file_tool_input_schema()
+    properties = dict(schema["properties"])
+    properties["query"] = {"type": "string", "minLength": 1, "maxLength": 200}
+    return {**schema, "properties": properties}
 
 
 def pc_search_content_tool_spec() -> ToolSpec:
@@ -644,10 +680,7 @@ def pc_search_content_tool_spec() -> ToolSpec:
                      "reported but never downloaded"),
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_SEARCH_CONTENT_SCOPE,),
-        input_schema={"type":"object","properties":{
-            "query":{"type":"string","minLength":1,"maxLength":200},
-            "path":{"type":"string","maxLength":2048}},
-            "required":["query"],"additionalProperties":False},
+        input_schema=_pc_search_tool_input_schema(),
         output_contract={"type":"object"}, timeout_seconds=None)
 
 
@@ -842,8 +875,9 @@ class StructuredPCQueryStepDriver:
         self.scope_state: dict[str, Any] = {}
         self.request_context = ""
         self.declared_plan: str | None = None
+        self._allow_absolute_paths = False
 
-    def configure_request_scope(self, authorization: ToolAuthorizationContext, *, ceiling_tool_ids=None, request_context=None, declared_plan=None) -> None:
+    def configure_request_scope(self, authorization: ToolAuthorizationContext, *, ceiling_tool_ids=None, request_context=None, declared_plan=None, allow_absolute_paths=False) -> None:
         """Engine-only: intersect the trusted plan with actual server grants."""
         if declared_plan is not None and (
             not isinstance(declared_plan, str)
@@ -851,6 +885,12 @@ class StructuredPCQueryStepDriver:
         ):
             raise ValueError("invalid declared PC request plan")
         self._request_scope_enabled = True
+        # A server-authored gateway request may name an absolute folder path
+        # (the external connector's caller-chosen root). The signed handler and
+        # the registered-root check, not this model-output validator, decide
+        # whether that path is in scope. Legacy model steps keep the strict
+        # relative-path check below.
+        self._allow_absolute_paths = bool(allow_absolute_paths)
         self.request_context = request_context if isinstance(request_context, str) else ""
         shared = PC_QUERY_RUN_SCOPE.get()
         self.scope_state = shared if shared is not None else {}
@@ -1069,7 +1109,8 @@ class StructuredPCQueryStepDriver:
                     or not 0 < len(query.strip()) <= 200
                     or not isinstance(path, str) or len(path) > 2048
                     or any(ord(ch) < 32 for ch in path)
-                    or (path.strip() not in ("", ".")
+                    or (not getattr(self, "_allow_absolute_paths", False)
+                        and path.strip() not in ("", ".")
                         and (path.strip().startswith("/")
                              or (len(path.strip()) >= 2 and path.strip()[1] == ":")))
                 ):
@@ -1088,12 +1129,14 @@ class StructuredPCQueryStepDriver:
             if (
                 tool_id in PC_FILE_TOOL_IDS or tool_id in PC_FILE_WRITE_TOOL_IDS
             ) and isinstance(arguments, Mapping):
-                if not set(arguments) <= (
-                    # `job_id` is the continuation shape, and it is only ever
-                    # accepted alone (the branch below); this table stays the
-                    # exact path/bytes shape the remote wrappers compare against.
-                    PC_FILE_TOOL_ARGUMENT_KEYS[tool_id] | {"intent", "job_id"}
-                ):
+                # The remote wrappers compare their closed operation shape
+                # with exact equality, so the shared table stays narrow. This
+                # step policy also admits the listing's bounded tuning keys
+                # (#8048); the handler and PC command re-check their values.
+                extra_keys = {"intent", "job_id"}
+                if tool_id == PC_LIST_FILES_TOOL_ID:
+                    extra_keys |= {"depth", "offset"}
+                if not set(arguments) <= PC_FILE_TOOL_ARGUMENT_KEYS[tool_id] | extra_keys:
                     raise PCQueryStepError(
                         "model tool selection is invalid or unauthorized",
                         detail="tool_selection_invalid",
@@ -1136,7 +1179,7 @@ class StructuredPCQueryStepDriver:
                         detail="tool_scope_denied",
                     )
                 step_arguments = {"path": path}
-                for name in ("content", "destination", "mode"):
+                for name in ("content", "destination", "mode", "depth", "offset"):
                     if name in arguments:
                         step_arguments[name] = arguments[name]
                 if pc_file_arguments_acceptable(tool_id, step_arguments):

@@ -20,7 +20,7 @@ from datetime import datetime, timedelta, timezone
 
 from app.pc_device_pairing_store import D1PcPairingStore, PcPairingError, derive_install_tag
 
-from test_5573_pc_device_pairing import (
+from _support.pc_device_pairing import (
     NODE,
     OTHER,
     OTHER_NODE,
@@ -147,12 +147,7 @@ def test_an_expired_codes_tag_never_promotes():
     _claim(store, c2["code"])
     stale = _issue(store, OWNER, issued_at=NOW - timedelta(
         seconds=601 + 60))
-    with_error = None
-    try:
-        _observe(store, stale["code"])
-    except PcPairingError as exc:
-        with_error = str(exc)
-    assert with_error is not None and "expired" in with_error
+    assert _observe(store, stale["code"]) is None
     row = _raw_row(conn, user_id=OWNER, node=NODE)
     assert row["state"] == "pending_verification"
 

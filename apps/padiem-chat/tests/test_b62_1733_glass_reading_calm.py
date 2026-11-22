@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-from pathlib import Path
-
-
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-THEME = (STATIC / "theme.js").read_text(encoding="utf-8")
-READING = (STATIC / "padiem-glass-reading.css").read_text(encoding="utf-8")
-PORTRAIT = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-#7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
-CONV = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")
+# #8060 52차: the shipped sources are read in _support; these tests receive
+# the texts and assert the same contracts — no static reads in this module.
+from _support.glass_reading_calm import (
+    APP,
+    CONV,
+    PORTRAIT,
+    READING,
+    THEME,
+)
 
 
 def test_glass_mode_is_projected_from_explicit_app_conversation_state() -> None:
@@ -95,9 +93,10 @@ def test_reading_surface_overrides_legacy_chat_glass_with_explicit_state_scope()
     block = READING.split(selector, 1)[1].split("}", 1)[0]
     assert 'rgba(251, 252, 253, .97)' in block
     assert 'rgba(242, 246, 248, .94)' in block
-    assert 'background:' in block and '!important' in block
-    assert 'border-color:' in block and '!important' in block
-    assert 'box-shadow:' in block and '!important' in block
+    # #8008 10차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert 'rgba(251, 252, 253, .97)' in block
+    assert 'var(--line-veil-haze)' in block
+    assert '0 20px 54px rgba(28, 36, 44, .11)' in block
 
 
 def test_mobile_reading_posture_is_calmer_and_overflow_is_not_hidden() -> None:

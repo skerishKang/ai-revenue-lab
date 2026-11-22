@@ -1,0 +1,73 @@
+{
+ "issue": "7811",
+ "pr": 8007,
+ "date": "2026-11-18",
+ "title": "첫 화면(home) 입력창 그림자 3색을 쓰임새 토큰으로 — 5테마 × 1440·390 × 시스템 라이트/다크",
+ "before": "origin/main 92ad489c6",
+ "after": "code head 3b49104b1",
+ "pixel": {
+  "combos": 20,
+  "nonzero": [],
+  "target_nonzero": [],
+  "max_raw_pixels": 63,
+  "max_noise_pixels": 4,
+  "target_max_raw_pixels": 0,
+  "target_max_noise_pixels": 0,
+  "target_region": "입력창 bounding box + 80px(그림자 포함)",
+  "noise_note": "light/light 1440에서 사이드바 가장자리 ±1-2 LSB 4픽셀. 입력창 영역은 20조합 모두 0.",
+  "noise_rule": "채널별 ±1 반올림 제외, 잔차 8픽셀 이하 = 무차이"
+ },
+ "control": {
+  "combos": 10,
+  "nonzero": [],
+  "max_raw_pixels": 90,
+  "max_noise_pixels": 0
+ },
+ "tamper": [
+  {
+   "token": "--composer-home-shadow",
+   "mutation": "inset 0 1px 0 ... -> 0 0 0 12px #ff00ff",
+   "theme": "light",
+   "scheme": "light",
+   "pixel": 97360
+  }
+ ],
+ "theme_shadow": {
+  "cinematic/system-dark": "rgba(93, 178, 246, 0.14) 0px 0px 40px 0px, rgba(0, 0, 0, 0.28) 0px 18px 44px 0px, rgba(255, 255, 255, 0.08) 0px 1px 0px 0px inset",
+  "cinematic/system-light": "rgba(93, 178, 246, 0.14) 0px 0px 40px 0px, rgba(0, 0, 0, 0.28) 0px 18px 44px 0px, rgba(255, 255, 255, 0.08) 0px 1px 0px 0px inset",
+  "dark/system-dark": "rgba(0, 0, 0, 0.31) 0px 10px 34px 0px",
+  "dark/system-light": "rgba(0, 0, 0, 0.31) 0px 10px 34px 0px",
+  "light/system-dark": "rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, rgba(136, 201, 255, 0.035) 0px 0px 0px 1px",
+  "light/system-light": "rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, rgba(136, 201, 255, 0.035) 0px 0px 0px 1px",
+  "padiem-glass/system-dark": "rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, rgba(136, 201, 255, 0.035) 0px 0px 0px 1px",
+  "padiem-glass/system-light": "rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, rgba(136, 201, 255, 0.035) 0px 0px 0px 1px",
+  "padiem-home/system-dark": "rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, rgba(136, 201, 255, 0.035) 0px 0px 0px 1px",
+  "padiem-home/system-light": "rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, rgba(136, 201, 255, 0.035) 0px 0px 0px 1px"
+ },
+ "notes": [
+  "dark는 padiem-dark-contrast.css의 .composer 그림자가, cinematic은 padiem-bright-readability.css의 .composer 그림자가 홈까지 덮는다. 두 테마는 기존 값을 유지한다(C3에서 다룬다).",
+  "glass home은 이 토큰을 쓰고, glass chat은 padiem-glass-brand-polish.css가 같은 값을 !important로 고정한다."
+ ],
+ "files": [
+  "dark__cinematic__1440x950__home.png",
+  "dark__cinematic__390x844__home.png",
+  "dark__dark__1440x950__home.png",
+  "dark__dark__390x844__home.png",
+  "dark__light__1440x950__home.png",
+  "dark__light__390x844__home.png",
+  "dark__padiem-glass__1440x950__home.png",
+  "dark__padiem-glass__390x844__home.png",
+  "dark__padiem-home__1440x950__home.png",
+  "dark__padiem-home__390x844__home.png",
+  "light__cinematic__1440x950__home.png",
+  "light__cinematic__390x844__home.png",
+  "light__dark__1440x950__home.png",
+  "light__dark__390x844__home.png",
+  "light__light__1440x950__home.png",
+  "light__light__390x844__home.png",
+  "light__padiem-glass__1440x950__home.png",
+  "light__padiem-glass__390x844__home.png",
+  "light__padiem-home__1440x950__home.png",
+  "light__padiem-home__390x844__home.png"
+ ]
+}

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import shutil
 import subprocess
 import threading
@@ -13,7 +14,7 @@ import httpx
 import pytest
 
 from app.password_auth import verify_password
-from test_email_recovery_7606 import BASE, EMAIL, EPOCH, PASSWORD, build
+from _support.email_recovery import BASE, EMAIL, EPOCH, PASSWORD, SECRET, build
 
 
 @pytest.mark.parametrize("scenario", ["normal", "rollback", "response_lost"])
@@ -70,6 +71,7 @@ def test_real_auth_and_migrated_chat_restore_same_account_across_failures(scenar
         result = subprocess.run(
             [node, str(Path(__file__).parent / "fixtures/email_recovery_auth_bridge_7606.mjs"),
              str(server.server_port), scenario], capture_output=True, text=True, timeout=30,
+            env=dict(os.environ, PADIEM_TEST_RECOVERY_PASSWORD=PASSWORD, PADIEM_TEST_RECOVERY_SECRET=SECRET),
         )
         assert result.returncode == 0, result.stderr
         report = json.loads(result.stdout)

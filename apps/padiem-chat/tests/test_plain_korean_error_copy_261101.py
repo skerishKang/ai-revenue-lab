@@ -15,6 +15,7 @@
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import re
 from pathlib import Path
@@ -23,7 +24,7 @@ CHAT = Path(__file__).resolve().parents[1]
 STATIC = CHAT / "static"
 FRONT = CHAT.parent / "padiem-chat-front"
 
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
 MEMORY_JS = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
 RUN_HISTORY_JS = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
@@ -86,7 +87,7 @@ def test_upstream_timeout_reaches_the_screen_as_a_korean_sentence():
     # The code is classified, the classification chooses the copy, and the copy
     # key exists in the Korean table.
     assert 'error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT' in APP_JS
-    assert 'lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout")' in APP_JS
+    assert 'lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? coreModule().uiT("timeout")' in APP_JS
     assert re.search(r'"timeout":\s*"[^"]*[가-힣][^"]*"', LOCALE)
 
 

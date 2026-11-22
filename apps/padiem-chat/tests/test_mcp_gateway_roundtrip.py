@@ -21,9 +21,9 @@ from padiem_ai_engine_client import EngineTransportResponse, PadiemAiEngineClien
 from app import mcp_gateway_execution as execution
 from app.orchestration_bridge import B62EngineOrchestrationBridge
 from app.pc_delegation_routes import load_pc_delegation
-from test_5222_account_model_selection import BASE, client_for, session
-from test_mcp_gateway_account import account_app, setup
-from test_mcp_gateway_execution import DEVICE, harness
+from _support.account_selection import BASE, client_for, session
+from _support.mcp_gateway_account import account_app, setup
+from _support.mcp_gateway_execution import DEVICE, harness
 
 
 REPO = Path(__file__).resolve().parents[3]

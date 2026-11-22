@@ -1,0 +1,283 @@
+[
+  {
+    "case": "Custom_선택_거부",
+    "kind": "error",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": {
+          "code": "custom_provider_unsupported",
+          "message": "fake selection failure"
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "83"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    }
+  },
+  {
+    "case": "Custom_공급자_오류",
+    "kind": "error",
+    "response": {
+      "status": 502,
+      "body": {
+        "error": {
+          "code": "fake_provider_code",
+          "message": "fake provider failure"
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "73"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    }
+  },
+  {
+    "case": "드라이브_오류",
+    "kind": "error",
+    "response": {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "fake_drive_code",
+          "message": "fake drive failure"
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "67"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    }
+  },
+  {
+    "case": "사용량_거부",
+    "kind": "error",
+    "response": {
+      "status": 429,
+      "body": {
+        "error": {
+          "code": "fake_usage_code",
+          "message": "fake usage denial"
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "66"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ],
+        [
+          "retry-after",
+          "7"
+        ]
+      ]
+    }
+  },
+  {
+    "case": "캘린더_저장소_없음",
+    "kind": "error",
+    "response": {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "calendar_store_unavailable",
+          "message": "Calendar storage is unavailable"
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "91"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    }
+  },
+  {
+    "case": "캘린더_어댑터_오류",
+    "kind": "error",
+    "response": {
+      "status": 400,
+      "body": {
+        "error": {
+          "code": "fake_calendar_code",
+          "message": "fake calendar failure"
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "73"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    }
+  },
+  {
+    "case": "캘린더_결과_없음",
+    "kind": "error",
+    "response": {
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "calendar_unavailable",
+          "message": "native calendar unavailable"
+        }
+      },
+      "headers": [
+        [
+          "content-length",
+          "81"
+        ],
+        [
+          "content-type",
+          "application/json"
+        ]
+      ]
+    }
+  },
+  {
+    "case": "Custom_성공",
+    "kind": "success",
+    "response": {
+      "status": 200,
+      "headers": [
+        [
+          "cache-control",
+          "no-cache, no-store"
+        ],
+        [
+          "content-type",
+          "text/event-stream; charset=utf-8"
+        ],
+        [
+          "x-accel-buffering",
+          "no"
+        ]
+      ],
+      "sse": [
+        "event: delta\ndata: {\"delta\":\"fake custom answer\"}\n\n",
+        "event: done\ndata: {\"done\":true,\"conversation_id\":\"chat_1fffffffffffffffffffffffffffffff\"}\n\n"
+      ]
+    },
+    "calls": [
+      {
+        "call": "custom.complete",
+        "messages": [
+          {
+            "role": "user",
+            "content": "custom fake"
+          }
+        ],
+        "reference_context": null
+      },
+      {
+        "call": "store.append_exchange",
+        "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "conversation_id": null,
+        "user_text": "custom fake",
+        "answer": "fake custom answer",
+        "kwargs": {
+          "product_scope": "b62-chat"
+        }
+      },
+      {
+        "call": "store.record_claw_run",
+        "kwargs": {
+          "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "channel": "web",
+          "action": "general",
+          "title": "Chat: custom fake",
+          "status": "completed",
+          "result_summary": "fake custom answer",
+          "artifact_document_id": null,
+          "artifact_filename": null,
+          "artifact_media_type": null,
+          "conversation_id": null
+        }
+      }
+    ]
+  },
+  {
+    "case": "캘린더_성공",
+    "kind": "success",
+    "response": {
+      "status": 200,
+      "headers": [
+        [
+          "cache-control",
+          "no-cache, no-store"
+        ],
+        [
+          "content-type",
+          "text/event-stream; charset=utf-8"
+        ],
+        [
+          "x-accel-buffering",
+          "no"
+        ]
+      ],
+      "sse": [
+        "event: delta\ndata: {\"delta\":\"fake calendar answer\"}\n\n",
+        "event: done\ndata: {\"done\":true,\"conversation_id\":\"chat_1fffffffffffffffffffffffffffffff\"}\n\n"
+      ]
+    },
+    "calls": [
+      {
+        "call": "external.drive",
+        "text": "내일 오전 9시 회의 일정 등록해줘 fake"
+      },
+      {
+        "call": "external.pc",
+        "owner_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "call": "calendar.native",
+        "user_text": [
+          {
+            "role": "user",
+            "content": "내일 오전 9시 회의 일정 등록해줘 fake"
+          }
+        ]
+      },
+      {
+        "call": "store.append_exchange",
+        "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "conversation_id": null,
+        "user_text": "내일 오전 9시 회의 일정 등록해줘 fake",
+        "answer": "fake calendar answer",
+        "kwargs": {
+          "product_scope": "b62-chat"
+        }
+      }
+    ]
+  }
+]

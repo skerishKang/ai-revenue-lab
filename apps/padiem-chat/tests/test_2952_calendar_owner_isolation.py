@@ -58,7 +58,7 @@ def client_for(user_id: str):
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), user_id),
+        create_session_token(_settings(), user_id, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )
@@ -115,7 +115,7 @@ def _two_users():
         c = TestClient(app, base_url="https://chat.example.test")
         c.cookies.set(
             SESSION_COOKIE,
-            create_session_token(_settings(), user_id),
+            create_session_token(_settings(), user_id, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )

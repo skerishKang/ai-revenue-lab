@@ -19,7 +19,7 @@ from types import SimpleNamespace
 import pytest
 
 from app import oracle_mesh_read_return_routes as routes
-from test_4139_mesh_original import _dispatch_kwargs, fixture
+from _support.mesh_dispatch import _dispatch_kwargs, fixture
 
 EXPIRED = "2000-01-01T00:00:00.000Z"
 OWNER = "usr_owner_4139"

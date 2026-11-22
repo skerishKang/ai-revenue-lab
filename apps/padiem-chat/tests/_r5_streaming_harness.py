@@ -343,6 +343,9 @@ SCENARIOS = {
   // 연결한다. 칩 -> 페이로드 매핑도 가짜가 아니라 실행으로 관찰한다.
   const attWindow = {};
   const attCtx = { window: attWindow, console, JSON, Object, Array, Math, Date,
+    // #7812 R5 B5: the conversation module looks up its own DOM in create().
+    document: { documentElement: { lang: "ko" }, getElementById: () => null,
+      querySelectorAll: () => [], createElement: () => ({}) },
     Error, TypeError, Number, String, Boolean, RegExp, Promise, Map, Set, WeakMap };
   vm.createContext(attCtx);
   vm.runInContext(

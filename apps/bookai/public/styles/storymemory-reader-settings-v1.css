@@ -13,6 +13,10 @@ body.smr-open #reader.active .srsg-panel{display:block}
 .srsg-seg{display:flex;gap:4px;flex-wrap:wrap}
 .srsg-seg button{font:500 12px/1.25 var(--sans);padding:6px 9px;border-radius:8px;border:1px solid rgba(45,34,24,.16);background:#fff;color:#4a443c}
 .srsg-seg button.on{background:#201e1a;color:#fffdf8;border-color:#201e1a}
+/* #7837 — 이름만으로 알기 어려운 항목의 한 줄 설명. */
+.srsg-desc{display:block;margin-top:4px;font:500 11px/1.5 var(--sans);color:#8a7d70}
+.srsg-seg button .srsg-opt-note{display:block;margin-top:2px;font:500 10px/1.35 var(--sans);letter-spacing:0;color:#7e7266;text-align:left;text-transform:none}
+.srsg-seg button.on .srsg-opt-note{color:rgba(255,253,248,.8)}
 .srsg-sw{display:flex;gap:6px}
 .srsg-sw button{width:38px;height:24px;border-radius:7px;border:1px solid rgba(45,34,24,.24);padding:0}
 .srsg-sw button.on{outline:2px solid var(--accent);outline-offset:1px}
@@ -45,6 +49,11 @@ body.smr-lh-loose #readerPageBody .verse{line-height:2.2!important}
 /* english WEB mode */
 body.smr-en-compact #readerPageBody .verse-en{font-size:12px;line-height:1.5;margin:2px 0 8px;opacity:.58}
 body.smr-en-hide #readerPageBody .verse-en{display:none!important}
+/* #7836: the page-turn curl clones .paper-inner into #curlPage / #curlUnderPage
+   and strips ids, so the #readerPageBody rule above cannot reach them. Without
+   this the next page's English is painted for a frame during the curl. */
+body.smr-en-hide #curlPage .verse-en,
+body.smr-en-hide #curlUnderPage .verse-en{display:none}
 /* verse numbers */
 body.smr-vn-hide #readerPageBody .vn{display:none!important}
 /* themes (default = untouched current look) */

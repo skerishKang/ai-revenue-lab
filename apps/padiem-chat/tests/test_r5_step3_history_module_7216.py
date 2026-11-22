@@ -18,16 +18,31 @@ from pathlib import Path
 
 import pytest
 
+from _support.r5_step3_history import (
+    history_module_source,
+    index_html,
+    run_history_source,
+    app_source,
+    strict_deps_text,
+)
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+APP = app_source()
+MODULE = history_module_source()
+RUN_HISTORY = run_history_source()
+INDEX = index_html()
 
 NAMES = (
     "renderTyping", "clearHistoryUI", "renderHistorySkeleton",
     "renderHistoryLoadFailed", "fetchRecentConversations", "loadRecentConversations",
     "clearHistoryActionStatus", "showHistoryActionStatus", "patchConversation",
     "focusHistoryConversation", "beginConversationRename", "deleteConversation",
+)
+
+# R5 B3+B7: the six Claw run-history panel functions moved on to
+# chat-run-history-module.js and are reached through the registry
+# (app.provide("runHistory")); app.js keeps no same-named function.
+PANEL_NAMES = (
     "clearClawRunHistoryPdfPreviews", "setClawRunHistoryStatus",
     "clawRunHistoryErrorMessage", "fetchClawRunHistory", "loadClawRunHistory",
     "syncClawRunHistoryVisibility",
@@ -41,8 +56,7 @@ MOVED_MARKERS = (
     "verifiedClawIds.add(run.session.conversation_id);",
     'className = "history-group-label"',
     'typing.className = "typing";',
-    "deps.clawRunHistoryVisibilityEpoch += 1;",
-    "clearClawRunHistoryPdfPreviews();",
+    "verifiedClawIds.add(run.session.conversation_id);",
 )
 
 
@@ -76,12 +90,85 @@ def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
     모듈 함수 자체의 동작은 behavior harness가 직접 호출해 증명한다. 이 시험은
     app.js 호출부 호환(이름·인자 전달)이라는 구조 계약이라 유지한다.
     """
+    assert 'app.provide("history", window.PadiemChatHistoryModule.create(Object.setPrototypeOf({' in APP
     for name in NAMES:
-        line = f"function {name}(...a) {{ return historyModule().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
+        assert f"function {name}(" not in APP, name
+        assert f"{name}," in MODULE, name
     assert "function historyModule() {" in APP
-    assert "window.PadiemChatHistoryModule.create({" in APP
+    assert "window.PadiemChatHistoryModule.create(Object.setPrototypeOf({" in APP
+
+
+def test_history_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("history"))로 12개 이름을 조회한다."""
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, append() {}, replaceChildren() {}, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, append() {}, setAttribute() {} }),
+  },
+  location: { search: "", hash: "", pathname: "/", href: "https://example.test/" },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-history-module.js", "utf8"), sandbox,
+  { filename: "chat-history-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("history", window.PadiemChatHistoryModule.create(Object.assign(Object.create(app), { uiT: (k) => k })));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
+
+
+def test_run_history_panel_and_menu_listeners_left_this_module() -> None:
+    """R5 B3+B7: panel functions live in the run-history module and are reached
+    through the registry (app.provide("runHistory")); app.js keeps no
+    same-named function. The menu listeners register from the module's wire()
+    at their original app.js position (R-11)."""
+    assert 'app.provide("runHistory",' in APP
+    for name in PANEL_NAMES:
+        assert f"function {name}(" not in MODULE, name
+        assert f"function {name}(" not in APP, name
+        assert f"        {name}," in RUN_HISTORY, name
+    assert "function wireMenuListeners() {" in MODULE
+    assert "historyModule().wireMenuListeners();" in APP
+    assert 'historyList.querySelectorAll(".history-actions[open]")' not in APP
+    assert 'document.addEventListener("keydown", (event) => {\n    if (event.key !== "Escape") return;' not in APP
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:
@@ -108,7 +195,7 @@ def test_module_exposes_one_factory_and_touches_no_dom_at_load() -> None:
         assert f"function {name}(" in MODULE, name
 
 
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+STRICT = strict_deps_text()
 
 _HARNESS = r"""
 const fs = require("fs");
@@ -239,53 +326,24 @@ api.patchConversation("chat_1", { title: "New" }).then((conversation) => {
 });
 
 function phase2() {
-  // 5. the run-history error copy is keyed, never a raw message.
-  results.copy = {
-    auth: api.clawRunHistoryErrorMessage({ error: { code: "unauthorized" } }, { status: 401 }),
-    other: api.clawRunHistoryErrorMessage({}, { status: 500 }),
-  };
-
-  // 6. setClawRunHistoryStatus shows and clears the same node.
-  api.setClawRunHistoryStatus("boom", "E42");
-  const shown2 = { hidden: live.clawRunHistoryError.hidden, text: live.clawRunHistoryError.textContent,
-    state: live.clawRunHistoryError.dataset.state };
-  api.setClawRunHistoryStatus("");
-  results.runStatus = { shown2, cleared: live.clawRunHistoryError.hidden };
-
-  // 7. the PDF previews are destroyed before the list is dropped.
-  let destroyed = 0;
-  live.clawRunHistoryPdfControllers.add({ destroy() { destroyed += 1; } });
-  api.clearClawRunHistoryPdfPreviews();
-  results.pdf = { destroyed, size: live.clawRunHistoryPdfControllers.size };
-
-  // 8. Getter contract: the element replaced BEFORE the first call wins.
+  // 7. Getter contract: the element replaced BEFORE the first call wins.
   const replacement = makeElement("lateHistoryList");
   live.historyList = replacement;
   api.renderHistorySkeleton();
   results.getter = { rows: replacement.children.length };
 
-  // 9. Getter contract 2: a constant changed before the first call is used.
-  live.HISTORY_TITLE_MAX_CHARS = 12;
-  const row = makeElement("row");
-  row.replaceChild = () => {};
-  api.beginConversationRename(row, makeElement("button"), { id: "chat_1", title: "Alpha" });
-  results.maxLength = row.children.length ? null : live.createdInput && live.createdInput.maxLength;
+  // 8. R5 B3 (rule (a)): the title cap is module-owned now, so the created input
+  // takes create()'s 80-character limit and deps no longer supplies it.
   document.createElement = ((orig) => (tag) => {
     const node = orig(tag);
     if (tag === "input") live.createdInput = node;
     return node;
   })(document.createElement);
+  live.HISTORY_TITLE_MAX_CHARS = 12;
+  const row = makeElement("row");
+  row.replaceChild = () => {};
   api.beginConversationRename(row, makeElement("button"), { id: "chat_1", title: "Alpha" });
   results.maxLength = live.createdInput.maxLength;
-
-  // 10. Setter contract: visibility bookkeeping writes back into the closure.
-  live.clawRunHistory.hidden = false;
-  live.shell.dataset.state = "home";
-  live.clawRunHistoryLimit = 30;
-  live.clawRunHistoryVisibilityEpoch = 5;
-  api.syncClawRunHistoryVisibility();
-  results.setter = { epoch: live.clawRunHistoryVisibilityEpoch,
-    limit: live.clawRunHistoryLimit, left: live.clawRunHistoryLeftSurface };
 
   process.stdout.write(JSON.stringify(results));
 }
@@ -321,22 +379,14 @@ def test_module_behavior_matches_the_closed_over_originals(observed: dict) -> No
     assert observed["clear"] == {"ids": 0, "labels": None, "section": True, "empty": True}
     assert observed["patch"] == {"title": "New", "url": "/api/conversations/chat_1",
                                  "method": "PATCH", "body": '{"title":"New"}'}
-    assert observed["copy"] == {"auth": "claw-error-auth-needed", "other": "claw-runs-error"}
-    assert observed["runStatus"]["shown2"] == {"hidden": False, "text": "boom", "state": "error"}
-    assert observed["runStatus"]["cleared"] is True
-    assert observed["pdf"] == {"destroyed": 1, "size": 0}
 
 
 def test_getters_read_the_value_changed_before_the_first_call(observed: dict) -> None:
     # The rows must land on the list node installed before the first call of
     # renderHistorySkeleton against the live deps object.
     assert observed["getter"] == {"rows": 4}
-    # And the rename input takes the cap constant as it reads it at call time.
-    assert observed["maxLength"] == 12
-
-
-def test_setters_write_the_bookkeeping_back_into_the_closure(observed: dict) -> None:
-    assert observed["setter"] == {"epoch": 6, "limit": 10, "left": True}
+    # And the rename input takes the module-owned cap, not a deps value.
+    assert observed["maxLength"] == 80
 
 
 _MENU_HARNESS = r"""
@@ -701,3 +751,64 @@ def test_failed_load_and_typing_keep_the_old_dom_contract(menu: dict) -> None:
 
 def test_verified_claw_run_labels_the_row(menu: dict) -> None:
     assert menu["clawLabel"] == "Claw \u00b7 Claw \ub300\ud654"
+
+def test_run_history_panel_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("runHistory"))로 같은 이름을 찾을 수 있다.
+
+    app.js 전달 함수가 없어도 소비자(모듈 deps·app.js 호출자)는 등록된 조각의
+    같은 이름 API에 도달한다. 실제 모듈 본문을 node vm에서 문맥에 등록해
+    PANEL_NAMES 6개가 전부 함수로 조회되는지 본다(동작 단언은 a2 하네스가
+    이미 직접 호출로 증명한다).
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const byId = new Map();
+const fakeEl = () => ({
+  hidden: true, textContent: "", children: [], dataset: {},
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, removeChild() {},
+});
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    addEventListener() {}, removeEventListener() {},
+  },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-run-history-module.js", "utf8"), sandbox,
+  { filename: "chat-run-history-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("runHistory", window.PadiemChatRunHistoryModule.create(app));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(PANEL_NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout

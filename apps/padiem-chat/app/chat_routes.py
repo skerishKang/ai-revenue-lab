@@ -19,54 +19,21 @@ from .binary_attachment_frame import decode_binary_attachment_frame
 from .auth_routes import auth_ready, current_user_id
 from .journal_host import ensure_journal_visible
 from .drive_general_grounding import DriveGroundingError, drive_general_grounding
-from .auto_grounding import (
-    AutoGroundingService,
-    auto_grounding_may_continue,
-    auto_grounding_skip_fields,
-)
+from .auto_grounding import AutoGroundingService, auto_grounding_may_continue, auto_grounding_skip_fields
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
-from .chat_connector_tools import (
-    GOOGLE_CALENDAR_CONNECT_NOTE,
-    google_calendar_named,
-    calendar_read_reachable,
-    CALENDAR_READ_TOOL_NAME,
-    CONNECTOR_UNAVAILABLE_NOTE,
-    google_connector_intent,
-    google_connector_turn_for_text,
-    is_connector_tool_name,
-)
+from .chat_connector_tools import GOOGLE_CALENDAR_CONNECT_NOTE, google_calendar_named, calendar_read_reachable, CALENDAR_READ_TOOL_NAME, CONNECTOR_UNAVAILABLE_NOTE, google_connector_intent, google_connector_turn_for_text, is_connector_tool_name
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
 from .byok_client import CustomProviderError, complete_owner_custom
 from .byok_credentials import CustomProviderSelectionError
-from .chat_pc_note import (
-    PC_TOOLS_ABSENT_NOTE,
-    PC_TOOLS_CONNECTED_NOTE,
-    PC_TOOLS_PRESENT_NOTE,
-    pc_note_applies,
-    pc_turn_note,
-)
+from .chat_pc_note import PC_TOOLS_ABSENT_NOTE, PC_TOOLS_CONNECTED_NOTE, PC_TOOLS_PRESENT_NOTE, pc_note_applies, pc_turn_note
 from .chat_stream_timing import ChatStreamTiming
 from .config import Settings
 from .conversation_routes import _history_unavailable
-from .documents import (
-    DocumentAttachment,
-    build_documents_context,
-    build_project_files_context,
-    combine_reference_context,
-)
+from .documents import DocumentAttachment, build_documents_context, build_project_files_context, combine_reference_context
 from .grounding import GroundedChatService, GroundingError, grounding_fallback_fields
-from .history import (
-    HISTORY_PREVIEW_SUFFIX,
-    MAX_HISTORY_MESSAGE_CHARS,
-    MAX_MODEL_CONTEXT_BYTES,
-    HistoryContextIncomplete,
-    HistoryForbidden,
-    HistoryStore,
-    build_project_context,
-)
-from .history import PRODUCT_SCOPE_CHAT
+from .history import HISTORY_PREVIEW_SUFFIX, MAX_HISTORY_MESSAGE_CHARS, MAX_MODEL_CONTEXT_BYTES, HistoryContextIncomplete, HistoryForbidden, HistoryStore, PRODUCT_SCOPE_CHAT, build_project_context
 from .model_policy import model_supports, request_tier_context, resolve_request_model_policy, FREE_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
 from .central_model_route_runtime import chat_request_tier_context
 from .final_dispatch_guard_wiring import apply_guard_to_client, create_guard_from_request
@@ -74,15 +41,7 @@ from .member_grade_access import selected_admin_denial, selected_grade_denial
 from .tier_identity_client import is_padiem_identity_question
 from .project_files import ProjectFileStore
 from .public_chat import public_chat_result
-from .request_contract import (
-    MAX_BROWSER_BODY_BYTES,
-    BrowserRequestError,
-    CustomModelSelection,
-    _apply_b62_model_policy,
-    _validate_payload_async,
-    declared_product_surface,
-    declared_util_scope,
-)
+from .request_contract import MAX_BROWSER_BODY_BYTES, BrowserRequestError, CustomModelSelection, _apply_b62_model_policy, _validate_payload_async, declared_product_surface, declared_util_scope
 from .request_telemetry import emit_stage_event
 from .tool_presentations import get_tool_presentation
 from .usage_gate import UsageGate
@@ -568,40 +527,9 @@ async def _complete_custom_chat(
     selection: CustomModelSelection,
     messages: list[dict[str, str]],
     reference_context: str | None,
+    conversation_id: str | None = None,
 ) -> dict[str, Any]:
-    """Route an owner's key through B14 when enabled, otherwise directly."""
-    from .byok_bridge import enabled, resolve_reference
-    if enabled(request.app.state):
-        from .orchestration_bridge import B62OrchestrationError
-        import uuid
-
-        resolved = await resolve_reference(request.app.state, uid, selection)
-        if resolved is None:
-            raise CustomProviderError(
-                422, "user_credential_unsupported_via_b14",
-                "이 공급자 또는 주소는 B14 경유를 지원하지 않습니다.",
-            )
-        bridge = getattr(request.app.state, "orchestration_bridge", None)
-        if bridge is None:
-            raise CustomProviderError(503, "orchestration_unavailable", "AI 연결을 사용할 수 없습니다.")
-        model_id, credential_ref = resolved
-        try:
-            result = await bridge.start(
-                user_id=uid, messages=messages, skill=None, model_id=model_id,
-                user_text=next((m["content"] for m in reversed(messages) if m["role"] == "user"), ""),
-                conversation_id=None, subject_id=None,
-                session_id="byok_" + uuid.uuid4().hex,
-                user_credential_ref=credential_ref,
-                byok_selection={"provider": selection.provider, "model": selection.model},
-                reasoning_effort=selection.reasoning_effort,
-                additional_system_context=reference_context,
-            )
-            answer = result.answer
-            if not isinstance(answer, str) or not answer.strip():
-                raise CustomProviderError(502, "malformed_upstream", "AI 답변을 확인할 수 없습니다.")
-            return {"answer": answer}
-        except B62OrchestrationError as exc:
-            raise CustomProviderError(exc.status_code, exc.code, exc.user_message) from None
+    """Route an owner's key directly to the explicitly selected provider."""
     return await complete_owner_custom(
         request.app.state,
         uid=uid,
@@ -609,6 +537,8 @@ async def _complete_custom_chat(
         messages=messages,
         reasoning_effort=selection.reasoning_effort,
         system_context=reference_context,
+        conversation_id=conversation_id,
+        raw_ip=request.headers.get("cf-connecting-ip"),
     )
 
 
@@ -679,7 +609,7 @@ async def api_chat_stream(request: Request):
         raise
 
 
-async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
+async def _api_chat_stream_intake(request: Request, timing: ChatStreamTiming):
     content_length = request.headers.get("content-length")
     if content_length:
         try:
@@ -687,21 +617,21 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                 MAX_BROWSER_BODY_BYTES is not None
                 and int(content_length) > MAX_BROWSER_BODY_BYTES
             ):
-                return _too_large_response()
+                return _too_large_response(), None
         except ValueError:
             _journal_browser_refusal("content_length_invalid")
-            return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422)
+            return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422), None
     try:
         body = await read_bounded_request_body(request, max_bytes=MAX_BROWSER_BODY_BYTES)
     except RequestBodyTooLarge:
-        return _too_large_response()
+        return _too_large_response(), None
 
     try:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         from .chat_pc_session import legacy_turn_error
         session_denial = legacy_turn_error(request, raw)
         if session_denial is not None:
-            return session_denial
+            return session_denial, None
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         request.state.chat_product_surface = declared_product_surface(raw, request)
         if custom is None:
@@ -716,7 +646,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         _journal_browser_refusal(_browser_refusal_reason(exc))
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
-        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
+        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422), None
     timing.mark("validated")
 
     if tool_request is not None or attachments:
@@ -724,33 +654,33 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
         return JSONResponse(
             {"error": {"code": "streaming_unsupported", "message": "스트리밍 채팅은 현재 일반 텍스트 질문만 지원합니다."}},
             status_code=422,
-        )
+        ), None
 
     uid = current_user_id(request) if auth_ready(request) else None
     # Owner decision 2026-11-05: Chat/Claw AI answers are signed-in only.
-    # "Free without a login" is gone; a signed-in member keeps the Free tier.
-    # The mock runtime is the network-free CI harness and stays available.
     if uid is None and getattr(getattr(request.app.state, "settings", None), "runtime_mode", None) != "mock":
-        return _login_required_response()
+        return _login_required_response(), None
     if custom is not None and uid is None:
         return JSONResponse(
             {"error": {"code": "unauthorized", "message": "PADIEM Custom을 사용하려면 로그인이 필요합니다."}},
             status_code=401,
-        )
+        ), None
     if "tier" in raw:
         if raw.get("tier") == "admin":
             admin_denial = await selected_admin_denial(request, uid)
             if admin_denial is not None:
-                return admin_denial
+                return admin_denial, None
         else:
             tier_denial = await selected_grade_denial(request, uid, raw["tier"])
             if tier_denial is not None:
-                return tier_denial
+                return tier_denial, None
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:
-        return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401)
+        return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401), None
+    return None, (raw, messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom, selected_model, uid, store, project_file_store)
 
+async def _api_chat_stream_context(request: Request, timing: ChatStreamTiming, uid, store, project_file_store, messages, conversation_id, browser_project_id):
     effective_project_id = browser_project_id
     if uid is not None and store is not None and conversation_id is not None:
         # The existence check and the private full-context projection are two
@@ -768,28 +698,28 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             # contract; the projection read keeps the restore contract's
             # exception types (incomplete 409, overflow 413, else 503).
             if isinstance(existing_conversation, BaseException):
-                return _history_unavailable()
+                return _history_unavailable(), None
             if existing_conversation is None:
-                return _conversation_not_found()
+                return _conversation_not_found(), None
             if isinstance(owned_context, BaseException):
                 if isinstance(owned_context, HistoryContextIncomplete):
-                    return _model_history_incomplete()
+                    return _model_history_incomplete(), None
                 if isinstance(owned_context, OverflowError):
-                    return _model_history_too_large()
-                return _history_unavailable()
+                    return _model_history_too_large(), None
+                return _history_unavailable(), None
         else:
             try:
                 existing_conversation = await existing_task
             except Exception:
-                return _history_unavailable()
+                return _history_unavailable(), None
             owned_context = None
         if existing_conversation is None:
-            return _conversation_not_found()
+            return _conversation_not_found(), None
         stored_project_id = existing_conversation.get("project_id")
         if stored_project_id is not None and not isinstance(stored_project_id, str):
-            return _conversation_not_found()
+            return _conversation_not_found(), None
         if browser_project_id is not None and browser_project_id != stored_project_id:
-            return _conversation_not_found()
+            return _conversation_not_found(), None
         if browser_project_id is None:
             effective_project_id = stored_project_id
         try:
@@ -798,11 +728,11 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                 owned_context=owned_context,
             )
         except HistoryContextIncomplete:
-            return _model_history_incomplete()
+            return _model_history_incomplete(), None
         except OverflowError:
-            return _model_history_too_large()
+            return _model_history_too_large(), None
         except Exception:
-            return _history_unavailable()
+            return _history_unavailable(), None
     timing.mark("history")
 
     project = None
@@ -811,7 +741,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     project_files_used = 0
     if effective_project_id is not None:
         if uid is None or store is None:
-            return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401)
+            return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401), None
         # The project row and its file listing are independent reads: start
         # both now, await each with its own error contract.
         project_task = store.get_project(uid, effective_project_id)
@@ -822,20 +752,22 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
         try:
             project = await project_task
         except Exception:
-            return _history_unavailable()
+            return _history_unavailable(), None
         if project is None:
-            return _project_not_found()
+            return _project_not_found(), None
         project_context = build_project_context(project)
         if files_task is not None:
             try:
                 project_files = await files_task
             except Exception:
-                return _project_files_unavailable()
+                return _project_files_unavailable(), None
             project_files_context, project_files_used = build_project_files_context(project_files)
     timing.mark("project")
 
     reference_context = combine_reference_context(project_context, project_files_context, None)
+    return None, (effective_project_id, project, project_context, project_files_context, project_files_used, reference_context, messages)
 
+async def _api_chat_stream_custom(request, timing, custom, uid, store, conversation_id, effective_project_id, messages, reference_context):
     # PADIEM Custom: the owner's key goes directly to the explicitly selected
     # provider. No B14 binding/router/registry/default/fallback/secret lookup
     # happens on this path, so it stays usable while B14 is unavailable.
@@ -847,6 +779,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                 selection=custom,
                 messages=messages,
                 reference_context=reference_context,
+                conversation_id=conversation_id,
             )
         except CustomProviderSelectionError as exc:
             return _custom_selection_unsupported(exc)
@@ -899,7 +832,9 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             media_type="text/event-stream",
             headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
         )
+    return None
 
+async def _api_chat_stream_preflight(request, timing, uid, messages, reference_context):
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
     identity_question = is_padiem_identity_question(latest_user_text)
 
@@ -937,7 +872,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     timing.mark("preflight")
 
     if isinstance(drive_result, DriveGroundingError):
-        return JSONResponse({"error": {"code": drive_result.code, "message": drive_result.message}}, status_code=drive_result.status_code)
+        return JSONResponse({"error": {"code": drive_result.code, "message": drive_result.message}}, status_code=drive_result.status_code), None
 
     if isinstance(drive_result, BaseException):
         drive_result = (None, ())
@@ -953,9 +888,11 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     if isinstance(usage_decision, BaseException):
         raise usage_decision
     if usage_decision is not None and not usage_decision.allowed:
-        return _usage_denied_response(usage_decision)
+        return _usage_denied_response(usage_decision), None
     timing.mark("usage")
+    return None, (latest_user_text, identity_question, drive_context, drive_sources, pc_work_result, reference_context)
 
+async def _api_chat_stream_calendar(request, timing, uid, messages, conversation_id, store, latest_user_text, raw, browser_project_id):
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
     util_scope = declared_util_scope(raw)
@@ -1003,7 +940,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             native_read_moved_to_connector = True
             _LOG.info("calendar_branch verdict=google_named_no_grant")
     if needs_native_calendar and calendar_store is None and not native_read_moved_to_connector:
-        return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
+        return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503), None, None
     if calendar_store is not None and util_scope is None and not native_read_moved_to_connector:
         try:
             client_turn_id = raw.get("calendar_turn_id")
@@ -1019,11 +956,11 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                 turn_key=turn_key,
             )
         except NativeCalendarAdapterError as exc:
-            return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
+            return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code), None, None
         except Exception:
             native_result = None
         if needs_native_calendar and native_result is None:
-            return JSONResponse({"error": {"code": "calendar_unavailable", "message": "native calendar unavailable"}}, status_code=503)
+            return JSONResponse({"error": {"code": "calendar_unavailable", "message": "native calendar unavailable"}}, status_code=503), None, None
         if native_result is not None:
             answer = str(native_result.get("answer", ""))
             async def native_body_iterator():
@@ -1051,7 +988,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                 status_code=200,
                 media_type="text/event-stream",
                 headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
-            )
+            ), None, None
 
     if recommended_connect_note is not None:
         # The external calendar was named and no READ grant exists. Answer
@@ -1084,9 +1021,12 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             status_code=200,
             media_type="text/event-stream",
             headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
-        )
+        ), None, None
 
     timing.mark("calendar")
+    return None, util_scope, google_connector_turn
+
+async def _api_chat_stream_grounding(request, timing, messages, skill, reference_context, drive_context, identity_question, pc_work_result, util_scope, raw):
     auto_grounding: AutoGroundingService = request.app.state.auto_grounding
     grounding_notice = {}
     auto_plan = None
@@ -1113,70 +1053,103 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
 
     client: B14Client = request.app.state.b14_client
     timing.mark("grounding")
+    return grounding_notice, auto_plan, reference_context, client
+
+async def _api_chat_stream_dispatch_prepare(request, timing, client, messages, uid, browser_project_id, google_connector_turn, skill, reference_context, tier_binding):
+    tier_id, route_model = tier_binding
+    policy = resolve_request_model_policy(messages)
+    # The dispatch guard, the PC tool offer and the connector READ offer
+    # are independent reads: run them concurrently instead of paying them
+    # serially before dispatch. The connector check is bounded (30s cache,
+    # 300ms budget) and declares nothing on a slow or failed check.
+    guard, pc_tools, connector_tools = await asyncio.gather(
+        create_guard_from_request(
+            request,
+            policy.model_id,
+            request.app.state.central_model_policy_store,
+            request.app.state.b14_catalog_source,
+        ),
+        _chat_pc_tools_for_turn(request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages))
+        if browser_project_id is None else _no_pc_tools(),
+        _chat_connector_tools_for_turn(request, uid=uid, intent=google_connector_turn, model_id=policy.model_id)
+        if browser_project_id is None else _no_connector_tools(),
+    )
+    if isinstance(guard, BaseException):
+        raise guard
+    if isinstance(pc_tools, BaseException):
+        raise pc_tools
+    if isinstance(connector_tools, BaseException):
+        # The connector offer must never fail the turn: declare nothing.
+        connector_tools = ()
+    # A connector-intent turn that answers without its tools must not
+    # invent schedules, files or mail: the bounded note makes the model
+    # state the miss instead (#7088 후속).
+    connector_note = (
+        CONNECTOR_UNAVAILABLE_NOTE
+        if google_connector_turn and not connector_tools else ""
+    )
+    client = apply_guard_to_client(client, guard)
+    turn_tools = pc_tools + connector_tools
+    # #7165: the context sentence follows the tools on this turn (PC tools
+    # present or absent), so the model can never answer "remote AI cannot
+    # reach the computer" on a PC-capable turn, and never invents PC
+    # capability on a turn without the tools.
+    turn_user_text = _last_user_text(messages)
+    note_applies = pc_note_applies(turn_user_text, pc_tools)
+    pc_connected = bool(pc_tools)
+    if note_applies and not pc_connected:
+        from .chat_pc_drive import chat_pc_connection_available
+        pc_connected = await chat_pc_connection_available(request, uid=uid)
+    pc_note = (
+        pc_turn_note(pc_tools, pc_connected=pc_connected) if note_applies else ""
+    )
+    # #5573 (3-B-2): only a verified PC account on a tools-declaring route
+    # receives the PC tools; every other turn keeps the request bytes it
+    # had before this slice. A project turn runs on its own reference
+    # context and is never offered a PC tool, so it can neither be deferred
+    # nor handed to the PC lane. Connector READ tools join the same
+    # declaration only when the bounded grant check said "granted".
+    stream = client.stream_text_auto(
+        messages,
+        skill=skill,
+        additional_system_context=join_system_context(
+            reference_context, pc_note, connector_note
+        ),
+        **({"tools": turn_tools, "tool_choice": "auto"} if turn_tools else {}),
+    )
+    timing.mark("lane")
+    latest_user = next((item["content"] for item in reversed(messages) if item["role"] == "user"), None)
+    return tier_id, route_model, policy, client, stream, latest_user
+
+def _api_chat_stream_response(body_iterator):
+    return StreamingResponse(
+        body_iterator,
+        status_code=200,
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache, no-store",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
+    intake_response, intake_values = await _api_chat_stream_intake(request, timing)
+    if intake_response is not None: return intake_response
+    raw, messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom, selected_model, uid, store, project_file_store = intake_values
+    context_response, context_values = await _api_chat_stream_context(request, timing, uid, store, project_file_store, messages, conversation_id, browser_project_id)
+    if context_response is not None: return context_response
+    effective_project_id, project, project_context, project_files_context, project_files_used, reference_context, messages = context_values
+    custom_response = await _api_chat_stream_custom(request, timing, custom, uid, store, conversation_id, effective_project_id, messages, reference_context)
+    if custom_response is not None: return custom_response
+    preflight_response, preflight_values = await _api_chat_stream_preflight(request, timing, uid, messages, reference_context)
+    if preflight_response is not None: return preflight_response
+    latest_user_text, identity_question, drive_context, drive_sources, pc_work_result, reference_context = preflight_values
+    calendar_response, util_scope, google_connector_turn = await _api_chat_stream_calendar(request, timing, uid, messages, conversation_id, store, latest_user_text, raw, browser_project_id)
+    if calendar_response is not None: return calendar_response
+    grounding_notice, auto_plan, reference_context, client = await _api_chat_stream_grounding(request, timing, messages, skill, reference_context, drive_context, identity_question, pc_work_result, util_scope, raw)
     async with chat_request_tier_context(request, raw.get("tier", "free")) as tier_binding:
         tier_id, route_model = tier_binding
-        policy = resolve_request_model_policy(messages)
-        # The dispatch guard, the PC tool offer and the connector READ offer
-        # are independent reads: run them concurrently instead of paying them
-        # serially before dispatch. The connector check is bounded (30s cache,
-        # 300ms budget) and declares nothing on a slow or failed check.
-        guard, pc_tools, connector_tools = await asyncio.gather(
-            create_guard_from_request(
-                request,
-                policy.model_id,
-                request.app.state.central_model_policy_store,
-                request.app.state.b14_catalog_source,
-            ),
-            _chat_pc_tools_for_turn(request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages))
-            if browser_project_id is None else _no_pc_tools(),
-            _chat_connector_tools_for_turn(request, uid=uid, intent=google_connector_turn, model_id=policy.model_id)
-            if browser_project_id is None else _no_connector_tools(),
-        )
-        if isinstance(guard, BaseException):
-            raise guard
-        if isinstance(pc_tools, BaseException):
-            raise pc_tools
-        if isinstance(connector_tools, BaseException):
-            # The connector offer must never fail the turn: declare nothing.
-            connector_tools = ()
-        # A connector-intent turn that answers without its tools must not
-        # invent schedules, files or mail: the bounded note makes the model
-        # state the miss instead (#7088 후속).
-        connector_note = (
-            CONNECTOR_UNAVAILABLE_NOTE
-            if google_connector_turn and not connector_tools else ""
-        )
-        client = apply_guard_to_client(client, guard)
-        turn_tools = pc_tools + connector_tools
-        # #7165: the context sentence follows the tools on this turn (PC tools
-        # present or absent), so the model can never answer "remote AI cannot
-        # reach the computer" on a PC-capable turn, and never invents PC
-        # capability on a turn without the tools.
-        turn_user_text = _last_user_text(messages)
-        note_applies = pc_note_applies(turn_user_text, pc_tools)
-        pc_connected = bool(pc_tools)
-        if note_applies and not pc_connected:
-            from .chat_pc_drive import chat_pc_connection_available
-            pc_connected = await chat_pc_connection_available(request, uid=uid)
-        pc_note = (
-            pc_turn_note(pc_tools, pc_connected=pc_connected) if note_applies else ""
-        )
-        # #5573 (3-B-2): only a verified PC account on a tools-declaring route
-        # receives the PC tools; every other turn keeps the request bytes it
-        # had before this slice. A project turn runs on its own reference
-        # context and is never offered a PC tool, so it can neither be deferred
-        # nor handed to the PC lane. Connector READ tools join the same
-        # declaration only when the bounded grant check said "granted".
-        stream = client.stream_text_auto(
-            messages,
-            skill=skill,
-            additional_system_context=join_system_context(
-                reference_context, pc_note, connector_note
-            ),
-            **({"tools": turn_tools, "tool_choice": "auto"} if turn_tools else {}),
-        )
-        timing.mark("lane")
-        latest_user = next((item["content"] for item in reversed(messages) if item["role"] == "user"), None)
+        tier_id, route_model, policy, client, stream, latest_user = await _api_chat_stream_dispatch_prepare(request, timing, client, messages, uid, browser_project_id, google_connector_turn, skill, reference_context, tier_binding)
 
         async def body_iterator():
             # The model dispatch runs here, after the response headers and the
@@ -1454,15 +1427,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                     await _close_stream(stream)
                     timing.emit()
 
-        return StreamingResponse(
-            body_iterator(),
-            status_code=200,
-            media_type="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache, no-store",
-                "X-Accel-Buffering": "no",
-            },
-        )
+        return _api_chat_stream_response(body_iterator())
 
 
 # #2505: the frame decoder moved to ``app/binary_attachment_frame.py`` so the
@@ -1470,8 +1435,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
 # Chat import (and its test) working unchanged.
 _decode_completed_binary_attachment = decode_binary_attachment_frame
 
-
-async def api_chat(request: Request) -> JSONResponse:
+async def _api_chat_intake(request: Request):
     content_length = request.headers.get("content-length")
     if content_length:
         try:
@@ -1479,21 +1443,21 @@ async def api_chat(request: Request) -> JSONResponse:
                 MAX_BROWSER_BODY_BYTES is not None
                 and int(content_length) > MAX_BROWSER_BODY_BYTES
             ):
-                return _too_large_response()
+                return _too_large_response(), None
         except ValueError:
             _journal_browser_refusal("content_length_invalid")
-            return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422)
+            return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422), None
     try:
         body = await read_bounded_request_body(request, max_bytes=MAX_BROWSER_BODY_BYTES)
     except RequestBodyTooLarge:
-        return _too_large_response()
+        return _too_large_response(), None
 
     try:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         from .chat_pc_session import legacy_turn_error
         session_denial = legacy_turn_error(request, raw)
         if session_denial is not None:
-            return session_denial
+            return session_denial, None
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         request.state.chat_product_surface = declared_product_surface(raw, request)
         if custom is None:
@@ -1508,7 +1472,7 @@ async def api_chat(request: Request) -> JSONResponse:
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         _journal_browser_refusal(_browser_refusal_reason(exc))
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
-        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
+        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422), None
 
     settings: Settings = request.app.state.settings
     if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments) and not model_supports(selected_model, "image") and model_supports(FREE_FALLBACK_B14_MODEL_ID, "image"):
@@ -1523,40 +1487,43 @@ async def api_chat(request: Request) -> JSONResponse:
                     }
                 },
                 status_code=503,
-            )
+            ), None
 
     if tool_request is not None and tool_request.tool.id == "deep_research":
         if settings.runtime_mode != "b14" or settings.web_provider not in {"mock", "firecrawl"}:
             return JSONResponse(
                 {"error": {"code": "deep_research_unavailable", "message": "심층 리서치를 현재 사용할 수 없습니다."}},
                 status_code=503,
-            )
+            ), None
 
     uid = current_user_id(request) if auth_ready(request) else None
     # Owner decision 2026-11-05: Chat/Claw AI answers are signed-in only.
-    # "Free without a login" is gone; a signed-in member keeps the Free tier.
-    # The mock runtime is the network-free CI harness and stays available.
     if uid is None and getattr(getattr(request.app.state, "settings", None), "runtime_mode", None) != "mock":
-        return _login_required_response()
+        return _login_required_response(), None
     if custom is not None and uid is None:
         return JSONResponse(
             {"error": {"code": "unauthorized", "message": "PADIEM Custom을 사용하려면 로그인이 필요합니다."}},
             status_code=401,
-        )
+        ), None
     if "tier" in raw:
         if raw.get("tier") == "admin":
             admin_denial = await selected_admin_denial(request, uid)
             if admin_denial is not None:
-                return admin_denial
+                return admin_denial, None
         else:
             tier_denial = await selected_grade_denial(request, uid, raw["tier"])
             if tier_denial is not None:
-                return tier_denial
+                return tier_denial, None
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:
-        return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401)
+        return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401), None
+    return None, (raw, messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom, selected_model, uid, store, project_file_store)
 
+async def api_chat(request: Request) -> JSONResponse:
+    intake_response, intake_values = await _api_chat_intake(request)
+    if intake_response is not None: return intake_response
+    raw, messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom, selected_model, uid, store, project_file_store = intake_values
     effective_project_id = browser_project_id
     if uid is not None and store is not None and conversation_id is not None:
         try:
@@ -1624,6 +1591,7 @@ async def api_chat(request: Request) -> JSONResponse:
                 selection=custom,
                 messages=messages,
                 reference_context=reference_context,
+                conversation_id=conversation_id,
             )
         except CustomProviderSelectionError as exc:
             return _custom_selection_unsupported(exc)

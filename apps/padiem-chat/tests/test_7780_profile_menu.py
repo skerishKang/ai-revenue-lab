@@ -1,48 +1,47 @@
 """#7780 — 사이드바 아래 메뉴를 프로필 메뉴로 모으는 계약.
 
 바깥: 새 소식 · 의견 보내기 · 사용 안내 → 구분선 → [아바타] 이름 ▾.
-프로필 메뉴(위로): 설정 · 앱 연결 · Padiem Home / 구분선 / 로그아웃 /
-개인정보처리방침 · 이용약관. 게스트는 로그인 버튼 + 작은 메뉴 버튼으로
-같은 메뉴를 열고, 로그아웃만 없다.
+프로필 메뉴(위로): 설정 · 앱 연결 · Padiem Home / 구분선 / 로그아웃.
+약관(개인정보처리방침 · 이용약관)은 #7953 대표 결정(11-18 08:38)에 따라
+메뉴 밖 계정 단추 바로 아래 상시 한 줄이다. 게스트는 로그인 버튼 + 작은
+메뉴 버튼으로 같은 메뉴를 열고, 로그아웃만 없다.
+
+#8060: the raw sheet reads live in ``_support/profile_menu.py``; these tests
+receive the shipped sources and parsed CSS rules and assert on those.
 """
 from __future__ import annotations
 
 import json
 import subprocess
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-profile-menu-module.js").read_text(encoding="utf-8")
-CSS = (STATIC / "sidebar-utility.css").read_text(encoding="utf-8")
-TOKENS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
-
-
-def _bottom() -> str:
-    return HTML.split('class="sidebar-bottom"', 1)[1].split("</aside>", 1)[0]
+from _support import profile_menu as pm
 
 
 def test_outer_three_in_owner_order_then_divider_then_account() -> None:
-    bottom = _bottom()
+    bottom = pm.bottom_section()
     assert bottom.index('id="newsButton"') < bottom.index('id="feedbackButton"') < bottom.index('id="helpNavLink"')
     assert bottom.index('id="helpNavLink"') < bottom.index('class="sidebar-bottom-divider"')
     assert bottom.index('class="sidebar-bottom-divider"') < bottom.index('class="sidebar-account account-controls"')
 
 
 def test_profile_menu_items_in_owner_order() -> None:
-    menu = _bottom().split('id="profileMenu"', 1)[1]
+    # The menu ends at its own closing div: the legal line lives outside it.
+    menu = pm.bottom_section().split('id="profileMenu"', 1)[1].split("</div>", 1)[0]
     assert menu.index('id="settingsButton"') < menu.index('id="connectorsNavButton"') < menu.index('class="home-link"')
     assert menu.index('class="home-link"') < menu.index('class="profile-menu-divider"')
     assert menu.index('class="profile-menu-divider"') < menu.index('id="profileLogoutButton"')
-    assert menu.index('id="profileLogoutButton"') < menu.index('data-locale-key="legal-privacy"')
-    assert menu.index('data-locale-key="legal-privacy"') < menu.index('data-locale-key="legal-terms"')
-    assert 'role="menu"' in HTML.split('id="profileMenu"', 1)[0].split("<div")[-1] or 'id="profileMenu" role="menu"' in HTML
+    # #7953 대표 결정: 약관 줄은 메뉴 밖 계정 단추 바로 아래 상시 한 줄이다.
+    assert 'data-locale-key="legal-privacy"' not in menu
+    assert 'data-locale-key="legal-terms"' not in menu
+    bottom = pm.bottom_section()
+    legal_at = bottom.index('class="sidebar-legal"')
+    assert bottom.index('id="profileLogoutButton"') < legal_at
+    assert bottom.index('data-locale-key="legal-privacy"') < bottom.index('data-locale-key="legal-terms"')
+    assert 'role="menu"' in pm.HTML.split('id="profileMenu"', 1)[0].split("<div")[-1] or 'id="profileMenu" role="menu"' in pm.HTML
 
 
 def test_guest_has_login_button_and_small_menu_button_no_logout_in_menu() -> None:
-    bottom = _bottom()
+    bottom = pm.bottom_section()
     assert 'id="loginButton"' in bottom
     assert 'id="profileGuestMenuButton"' in bottom
     guest = bottom.split('id="profileGuestMenuButton"', 1)[1].split(">", 1)[0]
@@ -50,39 +49,40 @@ def test_guest_has_login_button_and_small_menu_button_no_logout_in_menu() -> Non
     assert 'aria-controls="profileMenu"' in guest
     assert 'aria-expanded="false"' in guest
     # 로그아웃은 게스트에서 모듈이 숨긴다(마크업에는 signed_in 전용으로 둔다).
-    assert 'logout.hidden = !(state === "signed_in")' in MODULE
+    assert 'logout.hidden = !(state === "signed_in")' in pm.MODULE
 
 
 def test_profile_toggle_menu_aria_and_settings_connectors_entries_kept() -> None:
-    assert 'profileToggle.setAttribute("aria-controls", "profileMenu")' in MODULE
-    assert 'profileToggle.setAttribute("aria-haspopup", "menu")' in MODULE
-    assert 'settingsButton.addEventListener("click", () => { closeProfilePanel(); openSettings(); })' in APP
-    connectors = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8") if (STATIC / "chat-connectors-module.js").exists() else APP
+    assert 'profileToggle.setAttribute("aria-controls", "profileMenu")' in pm.MODULE
+    assert 'profileToggle.setAttribute("aria-haspopup", "menu")' in pm.MODULE
+    # B7: the settings API is reached through the registry (app.provide("settings")).
+    assert 'settingsButton.addEventListener("click", () => { authModule().closeProfilePanel(); settings.openSettings(); })' in pm.APP
+    connectors = pm.CONNECTORS
     assert 'connectorsNavButton.addEventListener("click", openConnectorsView)' in connectors
-    assert 'settingsLogoutButton' in HTML
-    assert 'settingsLogoutButton' in MODULE
+    assert 'settingsLogoutButton' in pm.HTML
+    assert 'settingsLogoutButton' in pm.MODULE
 
 
 def test_dividers_and_chevron_use_existing_tokens_only() -> None:
-    outer = CSS.split(".sidebar-bottom-divider {", 1)[1].split("}", 1)[0]
+    outer = pm.CSS.split(".sidebar-bottom-divider {", 1)[1].split("}", 1)[0]
     assert "var(--input-border-strong)" in outer
     assert "#" not in outer
-    menu_divider = CSS.split(".sidebar-account .profile-menu-divider {", 1)[1].split("}", 1)[0]
+    menu_divider = pm.CSS.split(".sidebar-account .profile-menu-divider {", 1)[1].split("}", 1)[0]
     assert "var(--input-border-strong)" in menu_divider
     assert "#" not in menu_divider
     # Glass 사이드바는 어두워 밝은 선 토큰으로 겹친다.
-    assert 'html[data-theme="padiem-glass"] .sidebar-bottom-divider' in CSS
-    chevron = CSS.split(".sidebar-account .account-profile-toggle::after {", 1)[1].split("}", 1)[0]
+    assert 'html[data-theme="padiem-glass"] .sidebar-bottom-divider' in pm.CSS
+    chevron = pm.CSS.split(".sidebar-account .account-profile-toggle::after {", 1)[1].split("}", 1)[0]
     assert "font-size: 16px" in chevron
     assert "color: inherit" in chevron
-    assert '[aria-expanded="true"]::after' in CSS
-    assert "rotate(180deg)" in CSS
+    assert '[aria-expanded="true"]::after' in pm.CSS
+    assert "rotate(180deg)" in pm.CSS
     for token in ("--input-border-strong", "--line", "--panel", "--accent-soft"):
-        assert token in TOKENS
+        assert token in pm.TOKENS
 
 
 def test_menu_items_share_size_weight_and_icon_size() -> None:
-    block = CSS.split("/* 메뉴 항목은 글자 크기·굵기·아이콘 크기를 한 가지로 맞춘다. */", 1)[1].split(".sidebar-account .profile-menu-logout:hover", 1)[0]
+    block = pm.CSS.split("/* 메뉴 항목은 글자 크기·굵기·아이콘 크기를 한 가지로 맞춘다. */", 1)[1].split(".sidebar-account .profile-menu-logout:hover", 1)[0]
     for sel in (".profile-menu .settings-button", ".profile-menu .side-item", ".profile-menu .home-link", ".profile-menu .profile-menu-logout"):
         assert sel in block
     assert block.count("font-size: 14px") == 1
@@ -90,14 +90,14 @@ def test_menu_items_share_size_weight_and_icon_size() -> None:
     assert "font-size: 16px" in block
     assert "width: 22px" in block
     # 설정·로그아웃 아이콘도 같은 아이콘 칸을 쓴다.
-    assert '<span class="side-icon" aria-hidden="true">⚙</span>' in HTML
-    assert '<span class="side-icon" aria-hidden="true">→</span>' in HTML
+    assert '<span class="side-icon" aria-hidden="true">⚙</span>' in pm.HTML
+    assert '<span class="side-icon" aria-hidden="true">→</span>' in pm.HTML
 
 
 def _token_hex(name: str) -> tuple[int, int, int]:
     import re
 
-    match = re.search(rf"{re.escape(name)}:\s*(#[0-9a-fA-F]{{6}})", TOKENS)
+    match = re.search(rf"{re.escape(name)}:\s*(#[0-9a-fA-F]{{6}})", pm.TOKENS)
     assert match, name
     value = match.group(1)
     return tuple(int(value[i:i + 2], 16) for i in (1, 3, 5))
@@ -114,11 +114,11 @@ def _contrast(fg: tuple[int, int, int], bg: tuple[int, int, int]) -> float:
 
 
 def test_light_theme_hero_second_line_and_empty_text_contrast() -> None:
-    themes = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
+    themes = pm.THEMES
     # #7817: the second line reads one theme token, so the light value lives in
     # the token sheet and no theme sheet overrides the rule any more.
     assert 'html[data-theme="light"] .empty-state h1 br + span' not in themes
-    light = TOKENS.split('html[data-theme="light"] {', 1)[1].split("}", 1)[0]
+    light = pm.TOKENS.split('html[data-theme="light"] {', 1)[1].split("}", 1)[0]
     assert "--hero-sub-color: var(--muted);" in light
     hero = "--hero-sub-color: var(--muted);"
     assert "#" not in hero
@@ -128,7 +128,7 @@ def test_light_theme_hero_second_line_and_empty_text_contrast() -> None:
     assert "#" not in empty
     # 실제 계산 색: cinematic-workspace의 .history-empty !important 흰 규칙이
     # 라이트에서 이기면 묻힌다. 라이트 규칙이 !important로 이기는지 확인한다.
-    cinematic = (STATIC / "padiem-cinematic-workspace.css").read_text(encoding="utf-8")
+    cinematic = pm.CINEMATIC
     assert ".history-empty," in cinematic and "rgba(255, 255, 255, .52) !important" in cinematic
     # 홈 두 번째 줄은 페이지 표면 위에, 빈 문구는 페이지 표면 위에 놓인다.
     assert _contrast(_token_hex("--muted"), _token_hex("--page-bg")) >= 4.5
@@ -136,7 +136,7 @@ def test_light_theme_hero_second_line_and_empty_text_contrast() -> None:
 
 
 def test_glass_connectors_icon_inherits_menu_text_color() -> None:
-    block = CSS.split('html[data-theme="padiem-glass"] .sidebar-account .profile-menu .side-icon,', 1)[1].split("}", 1)[0]
+    block = pm.CSS.split('html[data-theme="padiem-glass"] .sidebar-account .profile-menu .side-icon,', 1)[1].split("}", 1)[0]
     assert "color: inherit" in block
 
 
@@ -244,12 +244,13 @@ def test_profile_menu_keyboard_and_close_behaviour() -> None:
     import os
     import tempfile
 
+    module_path = pm.ROOT / "static" / "chat-profile-menu-module.js"
     handle = tempfile.NamedTemporaryFile("w", suffix=".cjs", delete=False, encoding="utf-8", newline="\n")
     try:
         handle.write(HARNESS)
         handle.close()
         completed = subprocess.run(
-            ["node", handle.name, str(STATIC / "chat-profile-menu-module.js")],
+            ["node", handle.name, str(module_path)],
             check=True, capture_output=True, text=True, encoding="utf-8",
         )
     finally:

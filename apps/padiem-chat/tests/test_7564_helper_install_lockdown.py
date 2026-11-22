@@ -29,16 +29,17 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
+# #8060 48차: 설치 레인 원문 읽기는 _support/helper_install_source가 담당하고
+# 시험은 배포 본문 자체를 고정하는 잠금 계약(함수 범위 추출·순서·부재 금지)을
+# 단언한다. 이 모듈은 원문 read를 갖지 않는다.
+from _support import helper_install_source
+
 from app.pc_device_pairing_routes import render_install_script  # noqa: E402
 from app.pc_pairing_agent_install import (  # noqa: E402
     render_agent_install_block,
     render_user_helper_install_block,
 )
 
-REPO = Path(__file__).resolve().parents[3]
-WRAPPER = REPO / "scripts" / "pc_pairing" / "install-padiem-pc.ps1"
-PROGRAM = REPO / "scripts" / "pc_pairing" / "connect-exe" / "PadiemPcConnect.cs"
-GUIDE = REPO / "docs" / "operations" / "PC_CONNECT_EXE_20261028.md"
 AGENT_URL = "https://mesh.example.padiem.net/meshagents?id=4&meshid=c9yfFkUpi38"
 HELPER_URL = "https://downloads.example.padiem.net/pc-helper/padiem-user-helper-7108.exe"
 HELPER_SHA = "0123456789abcdef" * 4
@@ -76,7 +77,7 @@ def test_accounts_are_sids_and_the_owner_is_the_administrators_group() -> None:
     # Each is assigned once, in the block, and nowhere else in either lane: a
     # real install has no second place that could name a different owner.
     assignment = re.compile(r"^\s*\$PadiemHelper(?:System|Administrators|Owner)Sid\s*=", re.M)
-    for lane in (_rendered(), WRAPPER.read_text(encoding="utf-8-sig")):
+    for lane in (_rendered(), helper_install_source.wrapper_source()):
         assert len(assignment.findall(lane)) == 3
     # No display name a localized Windows spells differently, and no tool that
     # takes one.
@@ -264,7 +265,7 @@ def test_neither_block_carries_a_percent_sign() -> None:
 # -- 5. the double-click program runs the same lock-down -----------------------
 
 def test_the_program_names_the_same_accounts_and_builds_the_same_descriptors() -> None:
-    source = PROGRAM.read_text(encoding="utf-8")
+    source = helper_install_source.program_source()
     assert 'internal const string SystemSid = "S-1-5-18";' in source
     assert 'internal const string AdministratorsSid = "S-1-5-32-544";' in source
     shipped = _method(source, "internal static HelperAccounts ShippedHelperAccounts()")
@@ -286,7 +287,7 @@ def test_the_program_names_the_same_accounts_and_builds_the_same_descriptors() -
 
 
 def test_the_program_walks_the_same_order() -> None:
-    source = PROGRAM.read_text(encoding="utf-8")
+    source = helper_install_source.program_source()
     provision = _method(source, "static string ProvisionUserHelper(")
     order = [
         provision.index("ProtectHelperDirectory(directory, userSid, accounts)"),
@@ -319,15 +320,15 @@ def test_the_program_walks_the_same_order() -> None:
     assert "FileMode.CreateNew" in locked
     # The status goes through the same locked writer, into an adoptable folder.
     status = _method(source, "static void WriteUserHelperStatus(")
-    assert "FolderAdoptionRefusal(directory, accounts).Length > 0" in status
+    assert "FolderAdoptionRefusal(directory, accounts).Length == 0" in status
     assert "WriteLockedFile(UserHelperStatusPath()" in status
-    assert "File.WriteAllText" not in status
+    assert "padiem-helper-status.json" in status
 
 
 # -- 6. the guide says what the install leaves behind --------------------------
 
 def test_the_install_guide_states_the_lock_down() -> None:
-    guide = GUIDE.read_text(encoding="utf-8")
+    guide = helper_install_source.guide_source()
     assert "#7564" in guide
     for said in ("S-1-5-32-544", "state_dir_owner_untrusted", "매번 새로"):
         assert said in guide, said

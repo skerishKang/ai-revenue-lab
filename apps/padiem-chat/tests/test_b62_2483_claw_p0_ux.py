@@ -6,6 +6,7 @@ synthetic successes, and the approved-memory surface has complete KO/EN copy.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import re
 from pathlib import Path
@@ -16,7 +17,7 @@ APP = (STATIC / "app.js").read_text(encoding="utf-8")
 # R5 A5b: the preview transport and its bounded error copy moved to the form module.
 FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 INTAKE_CSS = (STATIC / "claw-manual-intake.css").read_text(encoding="utf-8")
 
@@ -128,7 +129,9 @@ def test_locale_keys_are_not_rendered_when_claw_locale_is_missing() -> None:
     # #7216 R5 A7: clawT lives in chat-core-module.js.
     core_mod = (STATIC / "chat-core-module.js").read_text(encoding="utf-8").replace("deps.", "")
     memory_mod = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
-    fallback = APP[APP.index("const clawFallbackCopy"):APP.index("function setClawStatus")]
+    # B7 15차: the setClawStatus one-line forwarder is gone — the copy dict
+    # is now followed by the claw-status registry accessor in app.js.
+    fallback = APP[APP.index("const clawFallbackCopy"):APP.index("function clawStatusModule")]
     assert '"claw-memory-approve": "Approve"' in fallback
     assert 'return clawFallbackCopy[key] ||' in (APP + "\n" + core_mod)
     assert re.search(r"textContent = deps\.clawT\(\"claw-memory-(approve|reject|detail|close)\"\)", memory_mod)

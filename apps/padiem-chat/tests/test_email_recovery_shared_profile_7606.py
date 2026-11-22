@@ -6,7 +6,7 @@ import pytest
 
 from app.history import D1HistoryStore, _password_user_id
 from app.shared_profile_provision import provision_shared_profile
-from test_email_recovery_7606 import ACCOUNT, EMAIL, EPOCH, build, complete, issue
+from _support.email_recovery import ACCOUNT, EMAIL, EPOCH, build, complete, issue
 
 
 class Verifier:

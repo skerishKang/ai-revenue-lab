@@ -6,6 +6,7 @@ import asyncio
 import importlib
 import json
 from pathlib import Path
+import secrets
 import time
 from types import SimpleNamespace
 from urllib.parse import urlsplit
@@ -15,7 +16,8 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[3]
 CONTROL = ROOT / "packages/padiem-control-plane"
-SECRET = "synthetic-account-read-transport-secret-0123456789"
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+SECRET = secrets.token_urlsafe(32)
 READS = frozenset({
     "resolve_connector_owner_scope_for_subject",
     "resolve_connector_enrollment_consent_for_subject_device",

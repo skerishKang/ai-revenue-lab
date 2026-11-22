@@ -65,17 +65,17 @@ def test_leaving_claw_strips_the_route() -> None:
 def test_boot_restores_both_routes() -> None:
     src = _source()
     assert "if (window.location.hash === AUTOMATION_ROUTE_HASH) app.openClawAutomation();" in src  # R5 B1: 등록부 경로
-    assert f"else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();" in src
+    assert f"else if (window.location.hash === CLAW_ROUTE_HASH) navModuleInstance.openClawWorkspace();" in src
     # Automation must keep priority when both could never match, and the
     # automation restore must stay a strict equality test so an unknown or
     # tampered fragment restores nothing.
     assert src.count("openClawAutomation();") == 1
     # 2026-11-01: the council app's connect button adds a third restorable
     # route (Connectors). Every restore still happens before the ready flag.
-    assert "else if (window.location.hash === CONNECTORS_ROUTE_HASH) openConnectorsView();" in src
+    assert "else if (window.location.hash === CONNECTORS_ROUTE_HASH) connectors.openConnectorsView();" in src
     restore = src.split("if (window.location.hash === AUTOMATION_ROUTE_HASH)", 1)[1]
-    assert restore.index("openClawWorkspace();") < restore.index("openConnectorsView();")
-    assert restore.index("openConnectorsView();") < restore.index("automationDestinationReady = true;")
+    assert restore.index("openClawWorkspace();") < restore.index("connectors.openConnectorsView();")
+    assert restore.index("connectors.openConnectorsView();") < restore.index("automationDestinationReady = true;")
 
 
 def test_route_carries_no_identity_or_storage() -> None:

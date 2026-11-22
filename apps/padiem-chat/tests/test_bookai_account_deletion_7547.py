@@ -6,6 +6,7 @@ import asyncio
 import hashlib
 import hmac
 import json
+import secrets
 import time
 import uuid
 from pathlib import Path
@@ -15,14 +16,15 @@ import httpx
 import pytest
 
 from app.bookai_account_deletion import DELETE_PATH, install_bookai_account_deletion_route
-from test_account_deletion_261103 import (
+from _support.account_deletion import (
     BASE, DELETER_EMAIL, CanonicalAuthority, _bookai_rows, _seed_bookai,
     build_app, call, seed_db, token_for,
 )
 
 SUBJECT = "sub_withdrawal_fixture"
 OTHER = "sub_withdrawal_other_fixture"
-SECRET = "synthetic-bookai-delete-secret-no-real-value"
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+SECRET = secrets.token_urlsafe(32)
 SOURCE = Path(__file__).resolve().parents[3] / "packages/padiem-control-plane/identity_authority_worker.py"
 
 

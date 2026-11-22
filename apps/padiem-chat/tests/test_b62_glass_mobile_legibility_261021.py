@@ -41,15 +41,19 @@ requires_browser = pytest.mark.skipif(
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
-GLASS_CSS = STATIC / "padiem-glass.css"
-PORTRAIT_CSS = STATIC / "padiem-glass-portrait.css"
-VIEWS_CSS = STATIC / "standalone-views.css"
+
+from css_rules import declaration, rules_for_sheet  # noqa: E402
+
+NARROW = "(max-width: 920px)"
 
 AUTH_ENDPOINT = "/api/auth/status"
 RULES_ENDPOINT = "/api/claw/automation/rules"
 
 PHONE_WIDTHS = (320, 390)
 DESKTOP_WIDTH = 1440
+
+BOOT_READY_TIMEOUT_MS = 15_000
+SURFACES_READY_TIMEOUT_MS = 10_000
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -62,6 +66,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 class Server(http.server.ThreadingHTTPServer):
     daemon_threads = True
+    # Chromium opens many resources in parallel; the default listen backlog of
+    # five drops connections and leaves the page without its boot scripts.
+    request_queue_size = 128
 
 
 @pytest.fixture(scope="module")
@@ -128,7 +135,12 @@ def _open_view(page, server, *, view: str = "automation", theme: str = "padiem-g
         ),
     )
     page.goto(server, wait_until="domcontentloaded")
-    page.wait_for_timeout(1200)
+    page.wait_for_function(
+        "() => window.PadiemAppSwitch !== undefined &&"
+        " window.PadiemAuthSession?.get?.()?.authenticated === true",
+        timeout=BOOT_READY_TIMEOUT_MS,
+        polling=100,
+    )
     page.evaluate(
         "(t) => { document.documentElement.setAttribute('data-theme', t);"
         " if (document.body) document.body.setAttribute('data-theme', t); }",
@@ -138,7 +150,7 @@ def _open_view(page, server, *, view: str = "automation", theme: str = "padiem-g
         "(id) => document.getElementById(id).click()",
         "automationNavButton" if view == "automation" else "connectorsNavButton",
     )
-    page.wait_for_timeout(1200)
+    _wait_for_surfaces_ready(page)
 
 
 # ---------------------------------------------------------------------------
@@ -146,84 +158,70 @@ def _open_view(page, server, *, view: str = "automation", theme: str = "padiem-g
 # ---------------------------------------------------------------------------
 
 
-def _alpha(text: str) -> float:
+def _alpha(value: str) -> float:
     """CSS alphas are written without the leading zero in this codebase."""
-    text = text.strip()
+    text = value.strip().rstrip(";").strip()
     if text.startswith("."):
         text = "0" + text
     return float(text)
 
 
-def _media_blocks(css: str) -> list[tuple[str, str]]:
-    """Every @media (condition, body) pair, matched with its own braces."""
-    blocks: list[tuple[str, str]] = []
-    for match in re.finditer(r"@media(?P<condition>[^{]*)\{", css):
-        depth = 1
-        index = match.end()
-        while index < len(css) and depth:
-            if css[index] == "{":
-                depth += 1
-            elif css[index] == "}":
-                depth -= 1
-            index += 1
-        blocks.append((match.group("condition"), css[match.end() : index - 1]))
-    return blocks
+def _rgba_alpha(value: str) -> float | None:
+    match = re.search(r"rgba\([^)]*?,\s*([0-9.]+)\s*\)", value)
+    return _alpha(match.group(1)) if match else None
 
 
-def _rules(css: str) -> list[tuple[str, str]]:
-    """Every (selector, declarations) pair in a flat block."""
-    return [(m.group(1), m.group(2)) for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", css)]
-
-
-def _narrow_window_block(css: str) -> str:
-    for condition, body in _media_blocks(css):
-        if "max-width: 920px" in condition:
-            return body
-    raise AssertionError("the narrow-window block is missing")
+def _rules(sheet: str, *, media: str | None = "__any__"):
+    rules = rules_for_sheet(sheet)
+    if media != "__any__":
+        rules = [rule for rule in rules if rule.media == media]
+    return rules
 
 
 def test_the_narrow_window_raises_the_theme_surface_alpha() -> None:
     """The cards have to stop showing the artwork through them."""
-    body = _narrow_window_block(PORTRAIT_CSS.read_text(encoding="utf-8"))
     alphas: dict[str, float] = {}
-    for _selector, declarations in _rules(body):
+    for rule in _rules("padiem-glass-portrait.css", media=NARROW):
         for name in ("--card-bg", "--glass-card-surface"):
-            match = re.search(
-                rf"{re.escape(name)}: rgba\([^)]*?,\s*(?P<alpha>[0-9.]+)\);", declarations
-            )
-            if match is not None:
-                alphas[name] = _alpha(match.group("alpha"))
+            value = declaration(rule, name)
+            if value is not None:
+                alpha = _rgba_alpha(value)
+                if alpha is not None:
+                    alphas[name] = alpha
     assert alphas.get("--card-bg", 0) >= 0.9, alphas
     assert alphas.get("--glass-card-surface", 0) >= 0.9, alphas
 
 
 def test_the_standalone_views_take_a_sheet_on_a_narrow_window() -> None:
     """Their header and tagline sit straight on the page, not on a card."""
-    body = _narrow_window_block(PORTRAIT_CSS.read_text(encoding="utf-8"))
     # #5028: the sheet went fully opaque so the whole standalone page family
     # (Automation, Connectors, Meeting, Library) shares one frame colour.
     opaque = None
-    for selector, declarations in _rules(body):
-        if ".standalone-view" not in selector:
+    for rule in _rules("padiem-glass-portrait.css", media=NARROW):
+        if not any(".standalone-view" in selector for selector in rule.selectors):
             continue
-        match = re.search(r"background: (?P<col>#f2f5f7|rgb\(242, 245, 247\)|rgba\(242, 245, 247, (?P<alpha>[0-9.]+)\));", declarations)
-        if match is not None:
-            col = match.group("col")
-            opaque = 1.0 if (col.startswith("#") or col.startswith("rgb(")) else _alpha(match.group("alpha"))
+        value = declaration(rule, "background")
+        if value is None:
+            continue
+        opaque = 1.0 if not value.startswith("rgba(") else _rgba_alpha(value)
     assert opaque is not None, "the standalone views have no narrow-window sheet"
     assert opaque >= 0.96, opaque
 
 
 def test_the_wide_screen_keeps_the_theme_surfaces() -> None:
     """The desktop Glass composition is untouched."""
-    css = PORTRAIT_CSS.read_text(encoding="utf-8")
-    base = re.search(r"--glass-card-surface: rgba\(244, 247, 249, (?P<alpha>[0-9.]+)\);", css)
-    assert base is not None
-    assert _alpha(base.group("alpha")) == 0.72, base.group("alpha")
-    theme = GLASS_CSS.read_text(encoding="utf-8")
-    card = re.search(r"--card-bg: rgba\(239, 243, 246, (?P<alpha>[0-9.]+)\);", theme)
-    assert card is not None
-    assert _alpha(card.group("alpha")) == 0.48, card.group("alpha")
+    portrait = next(
+        rule
+        for rule in _rules("padiem-glass-portrait.css", media=None)
+        if any(selector == 'html[data-theme="padiem-glass"]' for selector in rule.selectors)
+    )
+    assert _rgba_alpha(declaration(portrait, "--glass-card-surface")) == 0.72
+    theme = next(
+        rule
+        for rule in _rules("padiem-glass.css", media=None)
+        if any(selector == 'html[data-theme="padiem-glass"]' for selector in rule.selectors)
+    )
+    assert _rgba_alpha(declaration(theme, "--card-bg")) == 0.48
 
 
 def test_the_shell_portrait_keeps_its_reveal_channel() -> None:
@@ -233,26 +231,25 @@ def test_the_shell_portrait_keeps_its_reveal_channel() -> None:
     full opacity on a touch device, so a narrow-window treatment may not take
     that channel. The fade belongs to the surfaces instead.
     """
-    for path in (GLASS_CSS, PORTRAIT_CSS):
-        css = path.read_text(encoding="utf-8")
-        for _condition, block in _media_blocks(css):
-            for selector, declarations in _rules(block):
-                if ".glass-shell-portrait" not in selector:
-                    continue
-                assert "opacity" not in declarations, (
-                    f"{path.name} takes the shell portrait's opacity in a media query"
-                )
+    for sheet in ("padiem-glass.css", "padiem-glass-portrait.css"):
+        for rule in _rules(sheet, media=NARROW):
+            if not any(".glass-shell-portrait" in selector for selector in rule.selectors):
+                continue
+            assert declaration(rule, "opacity") is None, (
+                f"{sheet} takes the shell portrait's opacity in a media query"
+            )
 
 
 def test_the_primary_action_uses_the_shared_primary_tokens() -> None:
     """A translucent accent fill left the label below the 4.5:1 it needs."""
-    css = VIEWS_CSS.read_text(encoding="utf-8")
-    primary = re.search(r"\.claw-inbox-primary \{(?P<body>.*?)\n\}", css, re.S)
-    assert primary is not None
-    body = primary.group("body")
-    assert "background: var(--accent);" in body
-    assert "color: var(--accent-contrast);" in body
-    assert "rgba(121, 188, 231, .18)" not in body
+    primary = next(
+        rule
+        for rule in _rules("standalone-views.css", media=None)
+        if any(".claw-inbox-primary" in selector for selector in rule.selectors)
+    )
+    assert declaration(primary, "background") == "var(--accent)"
+    assert declaration(primary, "color") == "var(--accent-contrast)"
+    assert "rgba(121, 188, 231, .18)" not in " ".join(primary.declarations.values())
 
 
 # ---------------------------------------------------------------------------
@@ -308,6 +305,40 @@ SURFACES = """() => {
     portraitOpacity: portrait ? parseFloat(getComputedStyle(portrait).opacity) : null,
   };
 }"""
+
+
+def _surfaces_ready_script(timeout_ms: int) -> str:
+    return (
+        "() => new Promise((resolve) => {\n"
+        f"  const sample = {SURFACES};\n"
+        f"  const deadline = performance.now() + {timeout_ms};\n"
+        "  let previous = JSON.stringify(sample());\n"
+        "  let settled = false;\n"
+        "  const finish = (value) => { if (!settled) { settled = true; resolve(value); } };\n"
+        "  const tick = () => {\n"
+        "    if (settled) return;\n"
+        "    const current = sample();\n"
+        "    const key = JSON.stringify(current);\n"
+        "    if (key === previous) { finish(current); return; }\n"
+        "    previous = key;\n"
+        "    if (performance.now() >= deadline) { finish(current); return; }\n"
+        "    requestAnimationFrame(tick);\n"
+        "  };\n"
+        "  requestAnimationFrame(tick);\n"
+        f"  setTimeout(() => finish(sample()), {timeout_ms + 250});\n"
+        "})"
+    )
+
+
+def _wait_for_surfaces_ready(page) -> None:
+    """Wait for the entry animations to settle instead of a fixed sleep.
+
+    The five computed surface values are sampled once per animation frame;
+    two consecutive identical samples are the readiness signal. The deadline
+    is a hang guard, not the completion mechanism: if it passes, the caller
+    still asserts on the last sampled values with the original thresholds.
+    """
+    page.evaluate(_surfaces_ready_script(SURFACES_READY_TIMEOUT_MS))
 
 
 @requires_browser

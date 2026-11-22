@@ -6,12 +6,14 @@ app.js는 같은 이름의 한 줄 전달 함수 5개, connectorsModule() 팩토
 """
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
 from pathlib import Path
 
 import pytest
+from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -101,18 +103,81 @@ def test_index_loads_connectors_module_before_app() -> None:
     assert INDEX.index("./chat-connectors-module.js") < INDEX.index("./app.js")
 
 
-def test_app_keeps_forwarders_factory_and_a_single_wire_call() -> None:
+def test_app_registers_connectors_and_keeps_a_single_wire_call() -> None:
+    assert 'app.provide("connectors", window.PadiemChatConnectorsModule.create(Object.setPrototypeOf({' in APP
     for name in FORWARDERS:
-        line = f"function {name}(...a) {{ return connectorsModule().{name}(...a); }}"
-        assert line in APP, name
-    assert "function connectorsModule() {" in APP
-    assert "window.PadiemChatConnectorsModule.create({" in APP
+        assert f"function {name}(" not in APP, name
+        assert f"{name}," in MODULE, name
+    assert "function connectorsModule() { return connectors; }" in APP
+    assert "window.PadiemChatConnectorsModule.create(Object.setPrototypeOf({" in APP
     # 리스너 등록 10개는 모듈 wire로 옮겨졌고 app.js는 원래 자리에서 1회 호출한다.
     assert APP.count("connectorsModule().wireConnectorsListeners();") == 1
-    # 옮긴 함수의 정의는 app.js에 남지 않는다(전달 함수는 ...a 한 줄뿐).
+    # 옮긴 함수의 정의는 app.js에 남지 않는다.
     for name in NAMES:
         prefix = "async function" if name in ASYNC_NAMES else "function"
-        assert APP.count(f"{prefix} {name}(") == (1 if name in FORWARDERS else 0), name
+        assert APP.count(f"{prefix} {name}(") == 0, name
+
+
+def test_connector_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("connectors"))로 5개 이름을 조회한다.
+
+    app.js 전달 함수가 없어도 app.js 호출자(라우트 복귀·OAuth 복귀)와
+    calendar deps getter는 등록된 조각의 같은 이름 API에 도달한다.
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, setAttribute() {} }),
+  },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-connectors-module.js", "utf8"), sandbox,
+  { filename: "chat-connectors-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("connectors", window.PadiemChatConnectorsModule.create(app));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(FORWARDERS))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines() -> None:
@@ -126,12 +191,13 @@ def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines()
 
 
 def test_deps_getters_and_setters_match_exact_closure_surface() -> None:
-    start = APP.index("window.PadiemChatConnectorsModule.create({")
-    block = APP[start:APP.index("});", start)]
+    block = create_receives_app_context(APP, "window.PadiemChatConnectorsModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert gets == EXPECTED_GETTERS
-    assert sets == EXPECTED_SETTERS
+    assert gets <= EXPECTED_GETTERS
+    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
+    assert sets <= EXPECTED_SETTERS
+    assert sets | (EXPECTED_SETTERS & context_names(APP)) == EXPECTED_SETTERS
 
 
 def test_all_23_functions_execute_in_node_vm_with_strict_live_deps() -> None:

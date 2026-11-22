@@ -31,12 +31,27 @@
   <link rel="stylesheet" href="./chat-pc-session.css" />
   <link rel="stylesheet" href="./chat-feedback.css" />
   <link rel="stylesheet" href="./chat-news.css" />
+  <link rel="stylesheet" href="./chat-news-cards.css" />
+  <!-- #7811 C1: padiem-cinematic-chat.css가 @import로 부르던 8개 시트를
+       같은 순서로 link로 펼쳤다(@import는 부르는 시트보다 앞에 온다). -->
+  <link rel="stylesheet" href="./padiem-foundation.css" />
+  <link rel="stylesheet" href="./padiem-surfaces.css" />
+  <link rel="stylesheet" href="./padiem-editorial.css" />
+  <link rel="stylesheet" href="./padiem-rich.css" />
+  <link rel="stylesheet" href="./padiem-first-use.css" />
+  <link rel="stylesheet" href="./padiem-bright-readability.css" />
+  <link rel="stylesheet" href="./padiem-glass-brand-polish.css" />
+  <link rel="stylesheet" href="./padiem-glass-gutter-alignment.css" />
   <link rel="stylesheet" href="./padiem-cinematic-chat.css" />
   <link rel="stylesheet" href="./padiem-cinematic-workspace.css" />
   <link rel="stylesheet" href="./padiem-themes.css" />
+  <!-- #7811 C1: sidebar-utility.css가 @import로 부르던 시트를 같은 방법으로
+       sidebar-utility.css 바로 앞에 link로 펼쳤다. -->
+  <link rel="stylesheet" href="./accessibility-polish.css" />
   <link rel="stylesheet" href="./sidebar-utility.css" />
   <link rel="stylesheet" href="./capability-nav.css" />
   <link rel="stylesheet" href="./pc-pairing-card.css" />
+  <link rel="stylesheet" href="./pc-helper-update.css" />
   <link rel="stylesheet" href="./pc-connect-flow.css" />
   <link rel="stylesheet" href="./pc-delegation-settings.css" />
   <link rel="stylesheet" href="./mcp-gateway-settings.css" />
@@ -108,6 +123,7 @@
        screen). Last, because it corrects sizes the theme sheets pin. -->
   <link rel="stylesheet" href="./mobile-target-legibility.css" data-mobile-target-legibility="true" />
   <link rel="stylesheet" href="./padiem-settings.css" />
+  <link rel="stylesheet" href="./panel-cells-8001.css" />
 </head>
 <body>
   <div class="app-shell" data-state="home" data-page-id="home" data-layout-variant="conversation">
@@ -165,14 +181,14 @@
         <p class="history-empty" id="historyEmpty" data-locale-key="history-empty" hidden>저장된 대화가 없습니다.</p>
       </section>
       <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span> <a href="./third-party-licenses.html">오픈소스 고지</a></div>
-      <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
-        <!-- #7780: 바깥은 새 소식·의견 보내기·사용 안내 3개만. 설정·앱 연결·
-             Padiem Home·로그아웃·약관은 프로필 메뉴(위로 열림) 안으로 모았다.
-             기존 id·동작은 그대로 재사용한다. -->
+      <div class="sidebar-bottom-tools">
         <button class="side-item" id="newsButton" type="button" aria-haspopup="dialog" aria-controls="newsDialog" aria-expanded="false" hidden><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="news-entry">새 소식</span><span class="news-dot" id="newsDot" aria-hidden="true" hidden></span><span class="visually-hidden" id="newsDotText" role="status" aria-live="polite" hidden></span></button>
         <button class="side-item" id="feedbackButton" type="button" aria-haspopup="dialog" aria-controls="feedbackDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✎</span><span data-locale-key="feedback-entry">의견 보내기</span></button>
         <a class="side-item" id="helpNavLink" href="./help.html"><span class="side-icon" aria-hidden="true">?</span><span data-locale-key="nav-help">사용 안내</span></a>
         <hr class="sidebar-bottom-divider" aria-hidden="true">
+      </div>
+      <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
+        <!-- #7780: 설정·앱 연결·Padiem Home·로그아웃은 프로필 메뉴(위로 열림) 안으로 모았다. -->
         <div class="sidebar-account account-controls" data-account-state="pending">
           <span class="account-avatar" id="accountAvatar" aria-hidden="true" hidden></span>
           <span class="account-name" id="accountName" hidden></span>
@@ -185,17 +201,16 @@
             <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
             <hr class="profile-menu-divider" aria-hidden="true">
             <button class="profile-menu-logout" id="profileLogoutButton" type="button"><span class="side-icon" aria-hidden="true">→</span><span data-locale-key="logout">로그아웃</span></button>
-            <p class="profile-menu-legal"><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a> · <a href="./terms.html" data-locale-key="legal-terms">이용약관</a></p>
           </div>
         </div>
+        <!-- #7953 대표 결정(11-18 08:38): 약관 줄은 메뉴 밖 계정 단추 바로 아래
+             상시 한 줄. 게스트·로그인·만료 모두 같은 자리에 보인다. -->
+        <p class="sidebar-legal"><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a> · <a href="./terms.html" data-locale-key="legal-terms">이용약관</a></p>
       </div>
     </aside>
     <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
     <main class="main-panel">
-      <aside class="feedback-notice" id="feedbackNotice" role="status" aria-live="polite" hidden>
-        <p id="feedbackNoticeText" data-locale-key="feedback-fixed-notice">보내주신 의견의 상태가 ‘고침’으로 바뀌었습니다. 내 의견에서 확인해 주세요.</p>
-        <button type="button" id="feedbackNoticeOpen" data-locale-key="feedback-own">내 의견</button>
-      </aside>
+      <div id="pcHelperUpdateBanner" class="pc-helper-update-banner" role="status" aria-live="polite" hidden></div>
       <dialog class="feedback-dialog" id="feedbackDialog" aria-labelledby="feedbackTitle">
         <div class="feedback-panel">
           <header class="feedback-header">
@@ -206,6 +221,7 @@
             <button class="feedback-button" id="feedbackComposeTab" type="button" role="tab" aria-selected="true" aria-controls="feedbackComposePanel" data-locale-key="feedback-compose">의견 쓰기</button>
             <button class="feedback-button" id="feedbackOwnTab" type="button" role="tab" aria-selected="false" aria-controls="feedbackOwnPanel" data-locale-key="feedback-own">내 의견</button>
             <button class="feedback-button" id="feedbackAdminTab" type="button" role="tab" aria-selected="false" aria-controls="feedbackAdminPanel" data-locale-key="feedback-inbox" hidden>받은 의견</button>
+            <button class="feedback-button" id="feedbackUsageTab" type="button" role="tab" aria-selected="false" aria-controls="feedbackUsagePanel" data-locale-key="usage-tab" hidden>사용 일지</button>
           </nav>
           <section id="feedbackComposePanel" aria-labelledby="feedbackComposeTab">
             <p class="feedback-help" data-locale-key="feedback-help">불편했던 점이나 바라는 기능을 알려 주세요.</p>
@@ -232,6 +248,11 @@
             <ul class="feedback-list" id="feedbackAdminList"></ul>
             <button class="feedback-button" id="feedbackAdminMore" type="button" data-locale-key="feedback-more" hidden>더 보기</button>
           </section>
+          <section id="feedbackUsagePanel" aria-labelledby="feedbackUsageTab" hidden>
+            <div class="usage-metrics" aria-label="사용 지표"></div>
+            <p class="usage-empty" data-locale-key="usage-empty" hidden>사용 기록이 아직 없습니다. AI 명예회원이 첫 질문을 보내면 여기에 표시됩니다.</p>
+            <ol class="usage-list" hidden></ol>
+          </section>
           <p class="feedback-status-line" id="feedbackStatus" role="status" aria-live="polite"></p>
         </div>
       </dialog>
@@ -239,17 +260,33 @@
         <div class="news-panel">
           <header class="news-header">
             <h2 id="newsTitle" data-locale-key="news-entry">새 소식</h2>
-            <button class="feedback-button" id="newsClose" type="button" data-locale-aria-label="news-close" aria-label="새 소식 창 닫기">×</button>
+            <button class="feedback-button news-close" id="newsClose" type="button" data-locale-aria-label="news-close" aria-label="새 소식 창 닫기">×</button>
           </header>
-          <p class="news-help" data-locale-key="news-help">새로워진 것과 고친 것을 쉬운 말로 알려 드립니다.</p>
-          <ul class="news-list" id="newsList"></ul>
-          <p class="news-status-line" id="newsStatus" role="status" aria-live="polite"></p>
+          <div class="news-body" id="newsBody">
+            <p class="news-help" data-locale-key="news-help">새로워진 것과 고친 것을 쉬운 말로 알려 드립니다.</p>
+            <ul class="news-list" id="newsList" tabindex="-1"></ul>
+            <p class="news-status-line" id="newsStatus" role="status" aria-live="polite"></p>
+            <section class="news-history" aria-labelledby="newsHistoryTitle">
+              <header class="news-header news-history-header">
+                <h2 id="newsHistoryTitle" data-locale-key="news-history-title">Chat이 걸어온 길</h2>
+              </header>
+              <p class="news-help news-history-help" data-locale-key="news-history-help">Chat과 Claw가 함께 만든 주요 순간을 날짜순으로 모았습니다.</p>
+              <p class="news-status-line news-history-status" id="newsHistoryStatus" role="status" aria-live="polite" hidden></p>
+              <ol class="news-list news-history-list" id="newsHistoryList"></ol>
+            </section>
+          </div>
         </div>
       </dialog>
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="open-menu" aria-label="메뉴 열기">☰</button>
         <button class="sidebar-restore-button" id="sidebarRestoreButton" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="sidebar-expand" aria-label="사이드바 펼치기" data-locale-title="sidebar-expand" title="사이드바 펼치기"><span aria-hidden="true">☰</span></button>
       </header>
+      <!-- #8056: 모바일 폭에서는 알림이 흐름 안에서 자리를 차지해 인사말을 덮지 않는다.
+           데스크톱(1440)은 chat-feedback.css 의 fixed 규칙 그대로라 DOM 위치가 그림에 없다. -->
+      <aside class="feedback-notice" id="feedbackNotice" role="status" aria-live="polite" hidden>
+        <p id="feedbackNoticeText" data-locale-key="feedback-fixed-notice">보내주신 의견의 상태가 ‘고침’으로 바뀌었습니다. 내 의견에서 확인해 주세요.</p>
+        <button type="button" id="feedbackNoticeOpen" data-locale-key="feedback-own">내 의견</button>
+      </aside>
       <dialog class="auth-dialog" id="authDialog" aria-labelledby="authDialogTitle">
         <div class="auth-panel">
           <div class="auth-header">
@@ -483,7 +520,7 @@
                 <small class="claw-automation-create-cron-help" data-locale-key="claw-automation-create-cron-help">고급 입력입니다. 표준 5필드 cron(분 시 일 월 요일)을 그대로 입력합니다.</small>
               </label>
               <label class="calendar-record-field" for="clawAutomationCreateTimezone">
-                <span data-locale-key="claw-automation-create-timezone-label">시간대 (IANA, 예: Asia/Seoul)</span>
+                <span data-locale-key="claw-automation-create-timezone-label">시간대 (예: Asia/Seoul)</span>
                 <input type="text" id="clawAutomationCreateTimezone" name="schedule_timezone" autocomplete="off" spellcheck="false" />
               </label>
               <label class="calendar-record-field" for="clawAutomationCreateTarget">
@@ -557,7 +594,7 @@
               <input type="text" id="clawAutomationEditCron" name="cron" autocomplete="off" spellcheck="false" placeholder="0 9 * * *" />
             </label>
             <label class="calendar-record-field" for="clawAutomationEditTimezone">
-              <span data-locale-key="claw-automation-create-timezone-label">시간대 (IANA, 예: Asia/Seoul)</span>
+              <span data-locale-key="claw-automation-create-timezone-label">시간대 (예: Asia/Seoul)</span>
               <input type="text" id="clawAutomationEditTimezone" name="schedule_timezone" autocomplete="off" spellcheck="false" />
             </label>
             <div class="calendar-record-actions">
@@ -673,7 +710,7 @@
               <button type="submit" class="calendar-record-submit" id="calendarAppointmentSubmit" data-locale-key="calendar-appointment-submit">일정 저장</button>
             </div>
           </form>
-          <p class="calendar-appointment-note" data-locale-key="calendar-appointment-timezone-note">시간 지정 일정은 명시적 IANA 시간대가 필요합니다. 브라우저나 서버 시간대로 추측하지 않습니다.</p>
+          <p class="calendar-appointment-note" data-locale-key="calendar-appointment-timezone-note">시간 지정 일정은 시간대를 직접 골라 주세요. 브라우저나 서버 시간대로 추측하지 않습니다.</p>
           <p class="calendar-record-status" id="calendarAppointmentStatus" role="status" aria-live="polite" hidden></p>
         </details>
         <div class="calendar-tabs" id="calendarTabs" role="tablist" data-locale-aria-label="calendar-tabs-aria" aria-label="캘린더 보기 선택">
@@ -1347,6 +1384,13 @@
   <script src="./theme.js"></script>
   <script src="./padiem-glass-shell.js"></script>
   <script src="./attachment-capabilities.js"></script>
+  <script src="./locale-common.js"></script>
+  <script src="./locale-chat.js"></script>
+  <script src="./locale-claw.js"></script>
+  <script src="./locale-pc-connect.js"></script>
+  <script src="./locale-settings.js"></script>
+  <script src="./locale-utility.js"></script>
+  <script src="./locale-feedback-news.js"></script>
   <script src="./locale.js"></script>
   <script src="./connector-vocabulary.js"></script>
   <script src="./connector-pages.js" defer></script>
@@ -1371,7 +1415,9 @@
   <script src="./claw-mesh-capture.js"></script>
   <script src="./pc-browser-progress.js"></script>
   <script src="./auth-session.js"></script>
+  <script src="./admin-session-shared.js"></script>
   <script src="./chat-feedback-module.js"></script>
+  <script src="./chat-usage-log-module.js"></script>
   <script src="./chat-news-module.js"></script>
   <script src="./chat-pc-session-module.js"></script>
   <script src="./chat-session.js"></script>
@@ -1401,7 +1447,10 @@
   <script src="./chat-sidebar-module.js"></script>
   <script src="./chat-calendar-module.js"></script>
   <script src="./chat-history-module.js"></script>
+  <script src="./chat-account-module.js"></script>
   <script src="./chat-auth-module.js"></script>
+  <!-- R5 B4-2: login dialog DOM, listeners and dialog requests load before app.js. -->
+  <script src="./chat-login-dialog-module.js"></script>
   <script src="./chat-profile-menu-module.js"></script>
   <script src="./chat-conversation-module.js"></script>
   <script src="./chat-streaming-module.js"></script>
@@ -1465,7 +1514,11 @@
   <script src="./claw-web-xlsx-sources.js" defer></script>
   <!-- #4139 read-only, opt-in multi-PC selection UI; unavailable until server is configured. -->
   <script src="./claw-device-manager.js"></script>
+  <script src="./pc-install-deadline.js"></script>
+  <script src="./pc-pairing-share-approval.js"></script>
   <script src="./pc-pairing-card.js"></script>
+  <script src="./pc-command-ready.js"></script>
+  <script src="./pc-helper-update-ui.js"></script>
   <script src="./shared-session-retry.js"></script>
   <script src="./pc-connect-flow.js"></script>
   <script src="./pc-delegation-settings.js"></script>

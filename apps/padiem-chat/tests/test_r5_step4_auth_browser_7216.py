@@ -1,8 +1,10 @@
 """#7216 R5 step 4 — 실제 Chromium에서 app.js 로그인 세션 전달 함수 호출 계약.
 
-app.js에서 추출한 39개 한 줄 전달 함수를 실제 Chromium 페이지에 주입하고, 실제
-모듈 소스와 deps를 연결해 각 전달 함수를 직접 호출한다. 전달 함수마다 1개 이상의
-호출 검사와 라이브 deps getter 검사를 둔다. 문자열 검사가 아니라 실행 검사다.
+app.js에서 추출한 20개 한 줄 전달 함수를 실제 Chromium 페이지에 주입하고, 실제
+모듈 소스와 deps를 연결해 각 전달 함수를 직접 호출한다. B7 16차+17차: account
+19개 전체(비밀번호 재설정+변경 12·계정 삭제 7)는 전달 함수가 사라져 등록부
+(app.provide("account")) 미러 경유로 호출한다. 전달 함수마다 1개 이상의 호출
+검사와 라이브 deps getter 검사를 둔다. 문자열 검사가 아니라 실행 검사다.
 """
 from __future__ import annotations
 
@@ -18,6 +20,29 @@ from playwright.sync_api import sync_playwright  # noqa: E402
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+DIALOG_NAMES = (
+    "setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog",
+    "authServerUnreachableError", "passwordAuthAnswer", "passwordAuthRequest",
+    "setAuthStatusMessage",
+)
+AUTH_NAMES = (
+    "closeProfilePanel", "accountInitial", "resolveSessionPresentation",
+    "setLoginButtonCopy", "applyAuthState", "authMethodEnabled", "loadAuthStatus",
+    "requireSessionForModelUse", "signOutCurrentAccount",
+    "invalidateClawApprovalSession", "noteClawApprovalSession",
+    "reviewedGoogleAuthorizationUrl",
+)
+# B7 16차+17차: all 19 account names are on the registry
+# (app.provide("account")); the harness mirrors that path for them.
+ACCOUNT_REGISTRY_NAMES = (
+    "passwordResetTokenFromLocation", "clearPasswordResetFragment",
+    "showPasswordResetView", "hidePasswordResetViews", "openPasswordResetRequest",
+    "openPasswordResetConfirm", "closePasswordResetViews", "submitPasswordResetRequest",
+    "submitPasswordResetConfirm", "openPasswordChangeDialog", "closePasswordChangeDialog",
+    "submitPasswordChange", "resetAccountDeleteConfirm", "resetAccountSharedDeleteConfirm",
+    "openAccountDeleteConfirm", "openAccountSharedDeleteConfirm", "syncAccountDeleteButton",
+    "syncAccountSharedDeleteButton", "submitAccountDelete",
+)
 STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
 # name -> (js args expression, expected argument count)
@@ -71,7 +96,10 @@ HARNESS = """<!doctype html>
 <input id="passwordLoginPassword" /><button id="passwordLoginSubmit"></button>
 <div id="passwordLoginError"></div></form></dialog>
 <div class="app-shell" id="shell"></div>
+<script src="/static/chat-app-context.js"></script>
+<script src="/static/chat-account-module.js"></script>
 <script src="/static/chat-auth-module.js"></script>
+<script src="/static/chat-login-dialog-module.js"></script>
 <script>
 __STRICT__
 const el = (id) => {
@@ -147,12 +175,44 @@ for (const key of Object.keys(state)) {
   });
 }
 window.__instance = null;
+window.__accountInstance = null;
+window.__dialogInstance = null;
 function authModule() {
   if (!window.__instance) window.__instance = window.PadiemChatAuthModule.create(window.__deps);
   return window.__instance;
 }
-// The moved functions call each other through deps (the app.js factory serves
-// the forwarders there); serve the module's own exports the same way.
+function dialogModule() {
+  if (!window.__dialogInstance) {
+    window.__dialogInstance = window.PadiemChatLoginDialogModule.create(window.__deps);
+  }
+  return window.__dialogInstance;
+}
+const loginDialogModule = () => dialogModule();
+const accountSharedKeys = [
+  "uiT", "authMethodEnabled", "passwordAuthRequest", "setAuthFormError",
+  "setAuthStatusMessage", "syncAuthDialogMethods", "loadAuthStatus", "openAuthDialog",
+  "closeAuthDialog", "closeSettings", "authState", "authDialog", "passwordResetToken",
+  "authDialogView", "passwordResetOpen", "passwordResetPanel", "passwordResetRequestView",
+  "passwordResetConfirmView", "passwordResetEmail", "passwordResetNew", "passwordResetConfirm",
+  "passwordResetRequestError", "passwordResetRequestStatus", "passwordResetConfirmError",
+  "passwordResetConfirmStatus", "passwordResetRequestSubmit", "passwordResetConfirmSubmit",
+  "accountDeleteConfirm", "passwordLoginError", "passwordLoginContinue"
+];
+const accountDeps = {};
+for (const key of accountSharedKeys) {
+  Object.defineProperty(accountDeps, key, {
+    get() { return key in state ? state[key] : (window.__dialogInstance[key] || window.__instance[key]); },
+    set(value) { state[key] = value; },
+  });
+}
+function accountModule() {
+  if (!window.__accountInstance) {
+    window.__accountInstance = window.PadiemChatAccountModule.create(accountDeps);
+  }
+  return window.__accountInstance;
+}
+// The moved functions call across the two module factories through deps.
+let api;
 for (const key of ["applyAuthState", "authMethodEnabled", "authServerUnreachableError",
   "clearPasswordResetFragment", "closeAuthDialog", "closePasswordChangeDialog",
   "closeProfilePanel", "hidePasswordResetViews", "invalidateClawApprovalSession",
@@ -161,22 +221,37 @@ for (const key of ["applyAuthState", "authMethodEnabled", "authServerUnreachable
   "resetAccountSharedDeleteConfirm", "resolveSessionPresentation", "setAuthFormError",
   "setAuthStatusMessage", "setLoginButtonCopy", "showPasswordResetView",
   "syncAuthDialogMethods"]) {
-  Object.defineProperty(window.__deps, key, { get() { return window.__instance[key]; } });
+  Object.defineProperty(window.__deps, key, { get() { return api[key]; } });
 }
 // Spy: every direct forwarder call must reach the same-named module function
 // with the same arguments.
 const __real = authModule();
-for (const key of Object.keys(__real)) {
-  const real = __real[key];
-  __real[key] = (...args) => {
-    window.__calls.push({ name: key, argc: args.length });
-    return real(...args);
-  };
+const __accountReal = accountModule();
+const __dialogReal = dialogModule();
+for (const source of [__real, __accountReal, __dialogReal]) {
+  for (const key of Object.keys(source)) {
+    const real = source[key];
+    source[key] = (...args) => {
+      window.__calls.push({ name: key, argc: args.length });
+      return real(...args);
+    };
+  }
 }
+api = Object.assign({}, __dialogReal, __real, __accountReal);
+window.__app = window.PadiemChatAppContext.create({});
+window.__app.provide("loginDialog", window.__dialogInstance);
+window.__app.provide("auth", window.__instance);
+// B7 16차+17차: the account piece is on the registry too — all 19 account
+// names are called through app[name], mirroring app.provide("account") in app.js.
+window.__app.provide("account", window.__accountInstance);
+const __registryNames = new Set([...__DIALOG_NAMES__, ...__AUTH_NAMES__, ...__ACCOUNT_REGISTRY_NAMES__]);
 __FORWARDERS__
 window.__call = async (name, args) => {
   window.__calls = [];
-  const out = await globalThis[name](...args);
+  const out = __registryNames.has(name)
+    ? await window.__app[name](...args)
+    : await globalThis[name](...args);
+
   // The first spy entry is the direct forwarder call; later entries are the
   // module's own calls back through the deps wiring.
   return { last: window.__calls[0] || null, out: String(out) };
@@ -187,8 +262,13 @@ window.__call = async (name, args) => {
 
 
 def _forwarder_lines() -> str:
+    assert 'app.provide("loginDialog",' in APP
+    assert 'app.provide("auth",' in APP
     lines = []
     for name in CALLS:
+        if name in DIALOG_NAMES or name in AUTH_NAMES or name in ACCOUNT_REGISTRY_NAMES:
+            assert f"function {name}(" not in APP, name
+            continue
         marker = f"function {name}(...a) {{"
         line = next(line.strip() for line in APP.splitlines() if marker in line)
         lines.append(line)
@@ -206,7 +286,11 @@ class _StaticHandler(SimpleHTTPRequestHandler):
 @pytest.fixture(scope="module")
 def page_url():
     harness = STATIC / "_r5_auth_forwarder_harness.html"
-    harness.write_text(HARNESS.replace("__STRICT__", STRICT).replace("__FORWARDERS__", _forwarder_lines()),
+    harness.write_text(HARNESS.replace("__STRICT__", STRICT)
+                       .replace("__DIALOG_NAMES__", json.dumps(list(DIALOG_NAMES)))
+                       .replace("__AUTH_NAMES__", json.dumps(list(AUTH_NAMES)))
+                       .replace("__ACCOUNT_REGISTRY_NAMES__", json.dumps(list(ACCOUNT_REGISTRY_NAMES)))
+                       .replace("__FORWARDERS__", _forwarder_lines()),
                        encoding="utf-8", newline="\n")
     server = ThreadingHTTPServer(("127.0.0.1", 0), _StaticHandler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)

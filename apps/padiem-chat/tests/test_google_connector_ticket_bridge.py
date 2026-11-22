@@ -19,154 +19,17 @@ from app.history import UserProfile
 from app.main import create_app
 
 
-SESSION_SECRET = "connector-ticket-session-secret-not-real-000000000"
-NOW = datetime.now(timezone.utc).replace(microsecond=0)
-
-
-def settings() -> Settings:
-    return Settings.from_values(
-        runtime_mode="mock",
-        auth_mode="google",
-        public_base_url="https://chat.example.test",
-        google_client_id="connector-test.apps.googleusercontent.com",
-        google_client_secret="unit-test-only-google-secret",
-        session_secret=SESSION_SECRET,
-        session_max_age_seconds=3600,
-    )
-
-
-class MemoryHistoryStore:
-    def __init__(self) -> None:
-        self.profile = UserProfile(
-            "usr_" + "1" * 32,
-            "user@example.test",
-            "Connector User",
-            "",
-        )
-
-    async def get_user(self, user_id):
-        return self.profile if user_id == self.profile.id else None
-
-    async def upsert_google_user(self, subject, email, name, picture):
-        del subject, email, name, picture
-        return self.profile
-
-
-class MemoryShadowStore:
-    def __init__(self, record: IdentityShadowRecord | None = None) -> None:
-        self.record = record
-        self.saved = []
-
-    async def save_projection(self, bridged) -> None:
-        self.saved.append(bridged)
-        session = bridged.auth_session
-        self.record = IdentityShadowRecord(
-            product_user_id=bridged.product_user_id,
-            canonical_subject_id=bridged.canonical_subject.subject_id,
-            auth_session_id=session.session_id,
-            session_revision=session.revision,
-            session_state=session.state.value,
-            session_expires_at=session.expires_at,
-            observed_at=NOW,
-        )
-
-    async def load_projection(self, product_user_id):
-        if self.record is None or self.record.product_user_id != product_user_id:
-            return None
-        return self.record
-
-
-def shadow(profile_id: str) -> IdentityShadowRecord:
-    return IdentityShadowRecord(
-        product_user_id=profile_id,
-        canonical_subject_id="sub_test",
-        auth_session_id="sess_test",
-        session_revision=1,
-        session_state="active",
-        session_expires_at=NOW + timedelta(hours=1),
-        observed_at=NOW,
-    )
-
-
-class FakeControlPlaneBinding:
-    def __init__(self) -> None:
-        self.calls: list[tuple[str, dict]] = []
-        self.ticket = "opaque-connect-ticket-that-never-appears-in-headers"
-        self.ticket_error: dict | None = None
-
-    async def resolve_or_create_product_link(self, payload):
-        self.calls.append(("link", dict(payload)))
-        return {
-            "ok": True,
-            "link": {
-                "product_id": "b62",
-                "product_user_id": payload["product_user_id"],
-                "canonical_subject_id": "sub_test",
-                "state": "active",
-            },
-        }
-
-    async def establish_auth_session(self, payload):
-        self.calls.append(("establish", dict(payload)))
-        return {
-            "ok": True,
-            "session": {
-                "session_id": "sess_test",
-                "product_id": "b62",
-                "subject": {"subject_type": "user", "subject_id": "sub_test"},
-                "issued_at": payload["authenticated_at"],
-                "expires_at": payload["not_after"],
-                "state": "active",
-                "revision": 1,
-            },
-        }
-
-    async def resolve_auth_session(self, payload):
-        self.calls.append(("resolve", dict(payload)))
-        return {
-            "ok": True,
-            "session": {
-                "session_id": payload["session_id"],
-                "product_id": "b62",
-                "subject": {"subject_type": "user", "subject_id": "sub_test"},
-                "issued_at": NOW.isoformat(),
-                "expires_at": (NOW + timedelta(hours=1)).isoformat(),
-                "state": "active",
-                "revision": 1,
-            },
-        }
-
-    async def issue_google_connect_ticket(self, payload):
-        self.calls.append(("ticket", dict(payload)))
-        if self.ticket_error is not None:
-            return {"ok": False, "error": dict(self.ticket_error)}
-        return {
-            "ok": True,
-            "ticket": {
-                "connect_ticket": self.ticket,
-                "connector_id": payload["connector_id"],
-                "expires_at": (NOW + timedelta(minutes=3)).isoformat(),
-            },
-        }
-
-
-def cookie_for(profile_id: str) -> str:
-    return create_session_token(settings(), profile_id)
-
-
-def app_fixture(*, with_shadow=True, binding=None, auth_transport=None):
-    history = MemoryHistoryStore()
-    shadow_store = MemoryShadowStore(shadow(history.profile.id) if with_shadow else None)
-    binding = binding or FakeControlPlaneBinding()
-    authority = CloudflareControlPlaneIdentityAuthority(binding)
-    app = create_app(
-        settings(),
-        auth_transport=auth_transport,
-        history_store=history,
-        control_plane_identity_authority=authority,
-        identity_shadow_store=shadow_store,
-    )
-    return app, history, shadow_store, binding, authority
+from _support.google_connector_ticket_bridge import (
+    SESSION_SECRET as SESSION_SECRET,
+    NOW as NOW,
+    settings as settings,
+    MemoryHistoryStore as MemoryHistoryStore,
+    MemoryShadowStore as MemoryShadowStore,
+    shadow as shadow,
+    FakeControlPlaneBinding as FakeControlPlaneBinding,
+    cookie_for as cookie_for,
+    app_fixture as app_fixture,
+)
 
 
 @pytest.mark.asyncio
@@ -248,7 +111,7 @@ async def test_authenticated_same_origin_ticket_request_uses_shadow_session_only
     body = response.json()
     assert body["ticket"]["connect_ticket"] == binding.ticket
     assert body["ticket"]["connector_id"] == "gmail"
-    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "gmail"})]
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "gmail"})]
     assert response.headers["cache-control"].startswith("no-store")
     assert response.headers["referrer-policy"] == "no-referrer"
     assert binding.ticket not in json.dumps(dict(response.headers), ensure_ascii=False)
@@ -277,7 +140,7 @@ async def test_authenticated_same_origin_calendar_ticket_uses_reviewed_readonly_
     body = response.json()
     assert body["ticket"]["connector_id"] == "google-calendar"
     assert body["ticket"]["connect_ticket"] == binding.ticket
-    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-calendar"})]
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "google-calendar"})]
 
 
 @pytest.mark.asyncio
@@ -337,12 +200,12 @@ async def test_calendar_start_posts_private_ticket_server_side_and_returns_only_
     }
     assert binding.ticket not in response.text
     assert len(seen) == 1
-    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-calendar"})]
-
-
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "google-calendar"})]
 
 @pytest.mark.asyncio
+
 async def test_drive_start_posts_private_ticket_server_side_and_returns_only_authorization():
+
     binding = FakeControlPlaneBinding()
     seen: list[httpx.Request] = []
 
@@ -399,7 +262,7 @@ async def test_drive_start_posts_private_ticket_server_side_and_returns_only_aut
     }
     assert binding.ticket not in response.text
     assert len(seen) == 1
-    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
 
 
 @pytest.mark.asyncio
@@ -428,7 +291,7 @@ async def test_oauth_start_stays_closed_to_every_unreviewed_connector():
             )
             assert response.status_code == 403
             assert response.json()["error"]["code"] == expected_code
-    assert binding.calls == []
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"})] * 2
 
 
 @pytest.mark.asyncio
@@ -444,7 +307,7 @@ async def test_client_cannot_assert_account_workspace_scopes_or_actor():
             )
             assert response.status_code == 400
             assert response.json()["error"]["code"] == "connector_ticket_body_invalid"
-    assert binding.calls == []
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"})] * 4
 
 
 @pytest.mark.asyncio
@@ -472,7 +335,7 @@ async def test_ticket_route_rejects_anonymous_cross_origin_unreviewed_and_missin
             json={"connector_id": "calendar"},
         )
         assert unreviewed.status_code == 403
-    assert binding.calls == []
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"})]
 
     missing_app, missing_history, _, missing_binding, _ = app_fixture(with_shadow=False)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=missing_app), base_url="https://chat.example.test") as client:
@@ -484,7 +347,7 @@ async def test_ticket_route_rejects_anonymous_cross_origin_unreviewed_and_missin
         )
     assert missing.status_code == 503
     assert missing.json()["error"]["code"] == "control_plane_identity_not_linked"
-    assert missing_binding.calls == []
+    assert missing_binding.calls == [("resolve", {"session_id": "session_test_a"})]
 
 
 @pytest.mark.asyncio
@@ -506,7 +369,7 @@ async def test_revoked_canonical_session_fails_closed_and_does_not_leak_rpc_mess
     dumped = response.text
     assert "internal authority detail" not in dumped
     assert binding.ticket not in dumped
-    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
+    assert binding.calls == [("resolve", {"session_id": "session_test_a"}), ("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
 
 
 @pytest.mark.asyncio

@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   real-usage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     # #7449 (2026-11-11 CTO 결정): QA 계정은 용도별로 분리됐다. 이 점검은
     # daily_real_usage_check.py 가 import 하는 smoke 모듈의 env 이름
@@ -65,6 +65,11 @@ jobs:
           python-version: "3.12"
       - name: Install the two QA-only packages (voice flow)
         run: python -m pip install --quiet websockets gTTS
+      # #6724 시나리오 6: 복구 스모크는 임시 백업과 시험 키만 쓴다. offsite.py의
+      # 봉투를 만들기 위해 암호화 패키지만 추가로 필요하고, 운영 키 파일은
+      # 읽지 않는다.
+      - name: Install the restore smoke package
+        run: python -m pip install --quiet cryptography
       # The voice flow transcodes gTTS's MP3 to 16 kHz mono PCM with ffmpeg.
       # Run 42635577928 failed with voice_ffmpeg_missing: the hosted runner
       # image no longer ships ffmpeg on every lane, so install it explicitly
@@ -112,6 +117,12 @@ jobs:
           # 느려짐 비교용 직전 실행 이력(읽기 전용).
           GITHUB_TOKEN: ${{ github.token }}
         run: python .github/scripts/daily_real_usage_check.py
+      # #6724 시나리오 6: 격리 복구 스모크를 같은 작업에 편입한다. 실패하면
+      # USAGE_FLOW name=restore_smoke 줄이 남고 작업이 FAIL 로 끝나
+      # nightly-qa-failure-issue 가 흐름 이름을 붙여 이슈를 만든다.
+      - name: Scenario 6 isolated restore smoke
+        if: always()
+        run: python .github/scripts/daily_restore_smoke.py
       # 캡처·튜토리얼 초안은 판정이 FAIL 이어도 진단 자료로 남긴다. 계정 표시는
       # 찍기 전에 가리므로, 캡처에는 대화 내용만 남는다. 저장소에 커밋하지 않고
       # 산출물로만 올린다(#6724 2차).
@@ -132,3 +143,28 @@ jobs:
           path: usage-metrics.json
           if-no-files-found: warn
           retention-days: 14
+      # #7935 후속: 재생성 빌드는 Pillow 로 캡처 스크린샷을 다룬다(실행
+      # 44149178180: 미설치로 build_failed). 버전은 저장소 기존 요구사항의
+      # 고정값(apps/b66-sol61-multipage/requirements-test.txt 의 Pillow==11.3.0,
+      # b66-pdf-preview-parity.yml 도 같은 핀). 흐름이 FAIL 인 날에도 갱신
+      # 단계가 실행되므로 설치도 항상 한다.
+      - name: Install Pillow for the tutorial refresh build
+        if: always()
+        run: python -m pip install --quiet 'Pillow==11.3.0'
+      # #6724 3번: 캡처 원본도 재생성 자산도 저장소에 커밋하지 않는다. 아티팩트로만
+      # 올리고 PR은 사람이 확인한 뒤 연다.
+      # #7935 마무리: 이 단계는 일일 점검 판정에 영향을 주지 않는다. 스크립트는
+      # 알려진 실패도 상태를 CHANGE_SUMMARY.md 에 적고 0 으로 끝나고, 예상 밖
+      # 종료는 continue-on-error 가 흡수한다. 실패 내용은 아티팩트로 확인한다.
+      - name: Stage tutorial refresh artifact
+        if: ${{ always() && env.QA_SMOKE_USERNAME != '' && env.QA_SMOKE_PASSWORD != '' }}
+        continue-on-error: true
+        run: python tools/tutorial/daily_capture_refresh.py --captures usage-browser-captures --out tutorial-daily-refresh
+      - name: Upload the tutorial refresh artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-tutorial-refresh
+          path: tutorial-daily-refresh
+          if-no-files-found: warn
+          retention-days: 7

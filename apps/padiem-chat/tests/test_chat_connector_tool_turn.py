@@ -25,6 +25,7 @@ from typing import Any
 
 import pytest
 
+from _support.connector_tool_turn import registry_rows
 from app import chat_connector_tools as tools_module
 from app.connector_tool_engine_client import (
     CloudflareConnectorToolEngineClient,
@@ -497,10 +498,7 @@ def test_the_max_route_passes_the_native_tools_gate():
     #7088 후속). The row shape mirrors the normalized catalog view the gate
     reads, with capabilities taken verbatim from the canonical registry.
     """
-    import json as _json
-    import os as _os
-    from pathlib import Path as _Path
-
+    # #8060 61차: the registry read lives in _support (the same env overrides).
     from padiem_control_plane.product_tier_routes import ProductTierLabel
     from padiem_control_plane.product_tier_routes_private import (
         effective_active_route_for,
@@ -508,13 +506,7 @@ def test_the_max_route_passes_the_native_tools_gate():
 
     from app.chat_pc_drive import chat_pc_route_declares_tools  # noqa: F401 — gate under test
 
-    _raw = (_os.environ.get("PADIEM_MODELS_REGISTRY_OVERRIDE", "").strip()
-            or _os.environ.get("PADIEM_MODELS_REGISTRY", "").strip())
-    _registry_path = (_Path(_raw).expanduser() if _raw else
-                      (_Path(__file__).resolve().parents[3] / "apps" / "korean-ai-platform"
-                       / "app" / "pilot" / "b14_models.json"))
-    registry = _json.loads(_registry_path.read_text(encoding="utf-8"))
-    rows = registry if isinstance(registry, list) else registry.get("models", [])
+    rows = registry_rows()
     max_route = effective_active_route_for(ProductTierLabel.MAX)
     assert max_route is not None and max_route.model_id
     max_model_id = max_route.model_id

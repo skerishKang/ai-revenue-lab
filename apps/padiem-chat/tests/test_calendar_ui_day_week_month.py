@@ -3,86 +3,75 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
-import re
 import subprocess
+from pathlib import Path
 
+from _support.calendar_range import (
+    RANGE_ELEMENT_IDS,
+    RANGE_LOCALE_KEYS,
+    RANGE_STATUSES,
+    RANGE_TABS,
+    calendar_items_route_contract,
+    css_range_facts,
+    element_ids_in_markup,
+    js_range_facts,
+    locale_range_keys,
+    range_tabs_in_markup,
+    registered_calendar_routes,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-INDEX_PATH = STATIC / "index.html"
 CALENDAR_JS_PATH = STATIC / "calendar.js"
-CALENDAR_CSS_PATH = STATIC / "calendar.css"
-LOCALE_PATH = STATIC / "locale.js"
-
-
-def _source() -> str:
-    return CALENDAR_JS_PATH.read_text(encoding="utf-8")
+INDEX_PATH = STATIC / "index.html"
 
 
 def test_existing_calendar_surface_exposes_all_range_tabs_and_navigation() -> None:
-    html = INDEX_PATH.read_text(encoding="utf-8")
-    for tab in ("today", "day", "week", "month", "upcoming"):
-        assert f'data-calendar-tab="{tab}"' in html
-    for element_id in (
-        "calendarRangeNavigation",
-        "calendarPreviousRange",
-        "calendarRangeLabel",
-        "calendarRangeToday",
-        "calendarNextRange",
-    ):
-        assert f'id="{element_id}"' in html
-    assert 'id="calendarPanel"' in html
+    tabs = range_tabs_in_markup()
+    ids = element_ids_in_markup()
+    assert set(RANGE_TABS).issubset(tabs)
+    assert set(RANGE_ELEMENT_IDS).issubset(ids)
 
 
 def test_range_ui_reuses_the_existing_read_only_authority() -> None:
-    source = _source()
-    assert 'const ITEMS_ROUTE = "/api/calendar/items"' in source
-    assert "buildItemsQuery" in source
-    assert "start_date=" in source and "end_date=" in source
-    assert 'credentials: "same-origin"' in source
-    assert 'cache: "no-store"' in source
-    assert source.count('method: method') == 2  # Existing create path now also supports authorized edit.
-    assert 'method: "DELETE"' in source
-    assert 'method === "PUT"' in source
-    assert not re.search(r"\bPATCH\b", source)
-    assert "workspace_id" not in source
-    assert "owner_id" not in source
-    assert "tenant_id" not in source
-    assert "source_ref" not in source
-    assert "innerHTML" not in source
-    assert 'fetch(`${ITEMS_ROUTE}${buildItemsQuery' in source
-    assert "isRenderableItem" in source
+    facts = js_range_facts()
+    assert facts["items_route"] == ("/api/calendar/items",)
+    assert facts["query_builder_present"] is True
+    assert set(facts["query_keys"]) == {"timezone", "start_date", "end_date"}
+    assert facts["fetch_uses_items_query"] is True
+    assert facts["read_credentials"] == ("same-origin",)
+    assert facts["read_cache"] == ("no-store",)
+    assert facts["all_credentials"] == ("same-origin",)
+    assert facts["all_cache"] == ("no-store",)
+    assert facts["read_has_method"] is False
+    assert facts["write_method_calls"] == 2
+    assert facts["has_delete"] is True
+    assert facts["has_put"] is True
+    assert facts["has_patch"] is False
+    assert facts["scope_fields"] == ()
+    assert facts["dom_sinks"] == ()
+    assert facts["renderable_filter_used"] is True
 
 
 def test_range_ui_has_bounded_states_and_explicit_timezone() -> None:
-    source = _source()
-    for state in ('setStatus("loading")', 'setStatus("empty")', 'setStatus("error")', 'setStatus("ready")'):
-        assert state in source
-    assert "browserTimezone()" in source
-    assert "localDateInZone(timezone)" in source
-    assert 'if (!timezone)' in source
-    for key in ("calendar-empty-day", "calendar-empty-week", "calendar-empty-month"):
-        assert f'"{key}"' in source
+    facts = js_range_facts()
+    assert set(RANGE_STATUSES).issubset(facts["statuses"])
+    assert facts["browser_timezone_used"] is True
+    assert facts["local_date_in_zone_used"] is True
+    assert facts["timezone_guard_present"] is True
+    assert {"calendar-empty-day", "calendar-empty-week", "calendar-empty-month"}.issubset(
+        facts["locale_keys_used"])
 
 
 def test_range_locale_and_responsive_controls_are_defined_in_both_languages() -> None:
-    locale = LOCALE_PATH.read_text(encoding="utf-8")
-    for key in (
-        "calendar-day",
-        "calendar-week",
-        "calendar-month",
-        "calendar-empty-day",
-        "calendar-empty-week",
-        "calendar-empty-month",
-        "calendar-previous-aria",
-        "calendar-next-aria",
-    ):
-        assert locale.count(f'"{key}":') >= 2
-    css = CALENDAR_CSS_PATH.read_text(encoding="utf-8")
-    assert ".calendar-range-navigation" in css
-    assert ".calendar-range-button" in css
-    assert "overflow-x: auto" in css
+    keys = locale_range_keys()
+    for key in RANGE_LOCALE_KEYS:
+        assert key in keys["ko"]
+        assert key in keys["en"]
+    css = css_range_facts()
+    assert ".calendar-range-navigation" in css["selectors"]
+    assert ".calendar-range-button" in css["selectors"]
+    assert "auto" in css["overflow_x"]
 
 
 def test_range_helpers_use_plain_calendar_dates_and_are_dst_independent() -> None:
@@ -125,16 +114,15 @@ def test_range_helpers_use_plain_calendar_dates_and_are_dst_independent() -> Non
 
 
 def test_range_read_is_get_only_and_registered_server_route_is_canonical() -> None:
-    source = _source()
-    routes = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
-    contracts = (ROOT / "app" / "calendar_routes.py").read_text(encoding="utf-8")
-    assert 'Route("/api/calendar/items", calendar_items, methods=["GET"])' in routes
-    assert 'async def calendar_items' in contracts
-    assert "start_date" in contracts and "end_date" in contracts
-    range_block = source.split("if (isRangeTab(currentTab))", 1)[1].split("function selectTab", 1)[0]
-    assert "method:" not in range_block
-    assert 'credentials: "same-origin"' in range_block
-    assert 'cache: "no-store"' in range_block
+    routes = registered_calendar_routes()
+    assert routes.get("/api/calendar/items") == ("GET",)
+    contract = calendar_items_route_contract()
+    assert contract["defined"] is True
+    assert set(contract["query_params"]) == {"start_date", "end_date"}
+    facts = js_range_facts()
+    assert facts["read_has_method"] is False
+    assert facts["read_credentials"] == ("same-origin",)
+    assert facts["read_cache"] == ("no-store",)
 
 
 def test_real_calendar_module_drives_range_navigation_states_and_bounded_month_groups() -> None:

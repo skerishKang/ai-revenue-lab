@@ -19,20 +19,37 @@ from __future__ import annotations
 
 from pathlib import Path
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
+from _support.claw_continuity import (
+    app_source,
+    calendar_css,
+    claw_form_source,
+    claw_run_source,
+    claw_status_source,
+    frame_css,
+    glass_css,
+    index_html,
+    library_css,
+    library_js_source,
+    locale_phrases,
+    locale_source,
+    portrait_css,
+    standalone_css,
+    workspace_css,
+)
+
+INDEX = index_html()
+APP = app_source()
 # #7216 R5 A5a: Claw 실행 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
-CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
+CLAW_RUN = claw_run_source()
 # R5 A5b: the manual form submit/preview handler lives in its own module.
-CLAW_FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
-CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
-WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
-GLASS_CSS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
-STANDALONE_CSS = (STATIC / "standalone-views.css").read_text(encoding="utf-8")
-CALENDAR_CSS = (STATIC / "calendar.css").read_text(encoding="utf-8")
-LIBRARY_CSS = (STATIC / "library.css").read_text(encoding="utf-8")
-PORTRAIT_CSS = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
+CLAW_FORM = claw_form_source()
+CLAW_STATUS = claw_status_source()
+WORKSPACE_CSS = workspace_css()
+GLASS_CSS = glass_css()
+STANDALONE_CSS = standalone_css()
+CALENDAR_CSS = calendar_css()
+LIBRARY_CSS = library_css()
+PORTRAIT_CSS = portrait_css()
 
 
 # ── CLAW_BOTTOM_COMPOSER_VISIBLE ─────────────────────────────────────────────
@@ -131,16 +148,17 @@ def test_page_eyebrow_shares_the_hero_vertical_origin() -> None:
     that declared the same origin; the row now reads the shared token, so one
     edit moves Chat, Claw and every page together.
     """
-    frame = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
+    frame = frame_css()
     decl = frame.split("use the Chat/Claw eyebrow origin", 1)[1].split("!important", 1)[0]
     padding = [line for line in decl.splitlines() if line.strip().startswith("padding:")][0]
     assert "calc(var(--padiem-first-screen-inset) - 7px)" in padding
     assert "clamp(52px, 7.4vh, 88px)" not in padding, "a copied inset drifts from the hero"
     assert "78px" not in padding, "a fixed inset cannot track the height-relative hero inset"
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
-    assert locale.count('"connectors-kicker": "Padiem Connectors"') == 2
-    assert locale.count('"automation-view-kicker": "Padiem Automation"') == 2
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    for key, expected in (("connectors-kicker", "Padiem Connectors"),
+                          ("automation-view-kicker", "Padiem Automation")):
+        phrases = locale_phrases(key)
+        assert phrases["ko"] == expected and phrases["en"] == expected, key
+    html = index_html()
     assert ">Padiem Chat</span>" in html
     assert ">Padiem Claw</span>" in html
 
@@ -155,7 +173,7 @@ def test_every_destination_shares_one_glass_eyebrow() -> None:
                if c in STANDALONE_CSS.split("One Glass page eyebrow", 1)[1]]
     assert len(classes) == 4, classes
     # Library now carries its own brand rather than borrowing Chat's.
-    library_js = (STATIC / "library.js").read_text(encoding="utf-8")
+    library_js = library_js_source()
     assert 'copy("Padiem Library", "Padiem Library")' in library_js
     assert 'copy("Padiem Chat", "Padiem Chat")' not in library_js
 
@@ -247,7 +265,7 @@ def test_disabled_controls_disclosure_is_gone() -> None:
     assert 'class="claw-disabled-controls"' not in INDEX
     assert 'class="claw-disabled-control"' not in INDEX
     assert "준비 중인 기능 5개" not in INDEX
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_source()
     for key in (
         "claw-disabled-summary",
         "coming-features-aria",
@@ -269,7 +287,7 @@ def test_disabled_controls_disclosure_is_gone() -> None:
 
 
 def test_auth_unavailable_copy_distinct_from_relogin() -> None:
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_source()
     # KO + EN parity for the new key.
     assert locale.count('"claw-error-auth-unavailable"') == 2
     assert locale.count('"claw-error-auth-needed"') == 2

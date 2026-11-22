@@ -138,7 +138,7 @@ def _post(app, payload: dict[str, Any] | None = None):
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(app.state.settings, SIGNED_IN_USER_ID),
+            create_session_token(app.state.settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -352,7 +352,7 @@ async def test_concurrent_failures_refund_only_their_own_receipts() -> None:
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
-        cookies={SESSION_COOKIE: create_session_token(app.state.settings, SIGNED_IN_USER_ID)},
+        cookies={SESSION_COOKIE: create_session_token(app.state.settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a")},
     ) as client:
         responses = await asyncio.gather(
             *(
@@ -428,7 +428,7 @@ def test_execute_route_has_no_body_driven_refund_authority() -> None:
     source = (Path(__file__).resolve().parents[1] / "app" / "claw_routes.py").read_text(
         encoding="utf-8"
     )
-    execute_handler = source.split("async def claw_manual_intake_execute", 1)[1].split(
+    execute_handler = source.split("async def _claw_manual_intake_validate", 1)[1].split(
         "async def claw_manual_intake_artifact", 1
     )[0]
 

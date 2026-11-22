@@ -14,17 +14,23 @@ STATIC = ROOT / "static"
 TEST_DIR = ROOT / "tests"
 sys.path.insert(0, str(TEST_DIR))
 
-from test_3929_claw_conversation_artifact_d1 import (  # noqa: E402
+from _support.conversation_artifact_d1 import (  # noqa: E402
     CHAT, OWNER, RUN, RUN2, WORKSPACE, call, canonical, setup_database,
     D1HistoryStore, D1Sqlite,
 )
 
+# #8060: 원문 읽기는 _support(conversation_artifact_source)가 담당하고 시험은
+# 토큰·파싱 값·동작으로 단언한다.
+from _support.conversation_artifact_source import (  # noqa: E402
+    has,
+    lacks,
+    locale_has_key,
+    script_src_before,
+    script_src_count,
+    tokens,
+)
+
 CONTRACT = "claw-conversation-artifact-followup.v1"
-
-
-def _module() -> str:
-    return (STATIC / "claw-conversation-artifact-context.js").read_text(
-        encoding="utf-8")
 
 
 def test_completed_file_context_runs_the_shipped_module_network_free():
@@ -47,52 +53,45 @@ def test_completed_file_context_runs_the_shipped_module_network_free():
 
 
 def test_context_module_is_get_only_and_uses_no_dom_sink():
-    module = _module()
-    assert '"/artifact-followup?"' in module
-    assert "selector: params.selector" in module
-    assert 'method: "GET"' in module
-    assert "POST" not in module
-    assert "innerHTML" not in module
-    assert "insertAdjacentHTML" not in module
+    module_tokens = tokens("context")
+    assert "/artifact-followup?" in module_tokens
+    assert has("context", "selector: params.selector")
+    assert has("context", 'method: "GET"')
+    for forbidden in (
+        "POST", "innerHTML", "insertAdjacentHTML", "base64", "arrayBuffer",
+        "artifact-followup/adopt", "adopted_from_artifact_id",
+    ):
+        assert lacks("context", forbidden)
     # A reference is never presented as a download/byte operation.
-    assert 'createElement("a")' not in module
-    assert "read_grant_issued !== false" in module
-    assert "source_material_loaded !== false" in module
+    assert lacks("context", 'createElement("a")')
+    assert has("context", "read_grant_issued !== false")
+    assert has("context", "source_material_loaded !== false")
     # #3933: continuing from a completed result is delegated to the shipped
     # panel module. This read-only module never owns the adopt route, the
     # adopted document identity or a transport of its own.
-    assert "adoptFromArtifact" in module
-    assert "artifact-followup/adopt" not in module
-    assert "adopted_from_artifact_id" not in module
-    assert "base64" not in module
-    assert "arrayBuffer" not in module
+    assert "adoptFromArtifact" in module_tokens
 
 
 def test_app_shell_mounts_and_clears_the_context_for_the_open_conversation():
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
-    nav = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")  # R5 A10: the clear call moved here
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
-    assert "PadiemClawConversationArtifactContext?.init?." in app
-    assert "conversationArtifactContext?.show?.(data.conversation.id)" in app
-    assert "deps.conversationArtifactContext?.clear?.()" in nav
-    assert html.count('src="./claw-conversation-artifact-context.js"') == 1
+    assert has("app", "PadiemClawConversationArtifactContext?.init?.")
+    assert has("app", "conversationArtifactContext?.show?.(data.conversation.id)")
+    # R5 A10: the clear call moved to the nav module.
+    assert has("nav", "deps.conversationArtifactContext?.clear?.()")
+    assert script_src_count("./claw-conversation-artifact-context.js") == 1
     # The module registers before app.js executes so init() can bind the host.
-    assert (html.index('src="./claw-conversation-artifact-context.js"')
-            < html.index('src="./app.js"'))
+    assert script_src_before("./claw-conversation-artifact-context.js", "./app.js")
     # The conversation-only handoff shape stays a separate, validated case.
-    assert '"claw-web-work-conversation-opened-read"' in (STATIC / "locale.js").read_text(
-        encoding="utf-8")
-    assert "claw-web-work-conversation-opened-read" in app
+    assert locale_has_key("claw-web-work-conversation-opened-read")
+    assert "claw-web-work-conversation-opened-read" in tokens("app")
 
 
 def test_web_panel_exposes_only_server_verified_read_handoff():
-    panel = (STATIC / "claw-web-xlsx-sources.js").read_text(encoding="utf-8")
-    assert "function validateWorkConversation" in panel
-    assert "validateWorkConversation(" in panel
-    assert "detail: { conversationId: handle.conversationId }" in panel
-    assert "workConversationReady: workConversationHandle !== null" in panel
+    assert has("panel", "function validateWorkConversation")
+    assert has("panel", "validateWorkConversation(")
+    assert has("panel", "detail: { conversationId: handle.conversationId }")
+    assert has("panel", "workConversationReady: workConversationHandle !== null")
     # The READ handoff never re-checks the revision artifact index or posts.
-    assert "openReadWorkConversation" in panel
+    assert has("panel", "openReadWorkConversation")
 
 
 class TestFollowupProjectionContext:

@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from _r2_chat_transport_harness import observe
+from _support.js_constants import sheet_text
 from padiem_ai_engine_client import PadiemAiEngineClientError
 
 from app.orchestration_bridge import (
@@ -322,7 +323,7 @@ def test_worker_and_schema_keep_activation_fail_closed() -> None:
 
 
 def test_browser_transport_never_calls_engine_internal_routes_directly() -> None:
-    lifecycle = (APP_ROOT / "static" / "message-lifecycle.js").read_text(encoding="utf-8")
+    lifecycle = sheet_text("message-lifecycle.js")
 
     # 실제로 나가는 요청으로 확인한다: 브라우저는 Chat 서버의 공개 경로만
     # 호출하고, 재개·취소는 POST 본문을 그대로 신는다.
@@ -355,7 +356,7 @@ def test_browser_transport_never_calls_engine_internal_routes_directly() -> None
     # 부재 계약: 엔진 내부 경로·비공개 판단 근거·오케스트레이션 UI 직접 렌더·
     # DOM 접촉은 전송 계층에 있어서는 안 된다. 이는 "없음"이 계약이라
     # 실행 관찰로 바꿀 수 없으므로 이유를 남기고 소스 부재로 유지한다.
-    transport = (APP_ROOT / "static" / "chat-transport.js").read_text(encoding="utf-8")
+    transport = sheet_text("chat-transport.js")
     for forbidden in (
         "/internal/v1/",
         "authority_ref",
@@ -854,26 +855,19 @@ def test_byok_stream_reference_is_only_on_wire_and_resume_requires_fresh_owner_k
     asyncio.run(run())
 
 
-def test_byok_switch_off_does_not_read_credentials_and_supported_on_uses_owner(monkeypatch):
-    from types import SimpleNamespace
+def test_chat_byok_does_not_use_b14_bridge(monkeypatch):
+    import inspect
     import app.byok_bridge as byok
-    from app.config import Settings
-    calls = []
-    async def resolve(state, *, uid, selection):
-        calls.append(uid)
-        return SimpleNamespace(endpoint='https://generativelanguage.googleapis.com/v1beta', api_key='unit-secret-no-real-key')
-    monkeypatch.setattr(byok, 'resolve_owner_custom_credential', resolve)
-    selection = SimpleNamespace(provider='gemini', model='gemini-unit-model')
-    state = SimpleNamespace(settings=Settings(byok_via_b14=False))
-    assert asyncio.run(byok.resolve_reference(state, 'usr_owner', selection)) is None
-    assert calls == []
-    state.settings = Settings(byok_via_b14=True)
-    model, ref = asyncio.run(byok.resolve_reference(state, 'usr_owner', selection))
-    assert model == 'google/gemini-unit-model'
-    assert calls == ['usr_owner']
-    assert 'unit-secret-no-real-key' not in repr(ref)
-    assert asyncio.run(byok.resolve_reference(state, 'usr_owner', SimpleNamespace(provider='anthropic',model='claude-unit'))) is None
-    assert calls == ['usr_owner']
+    from app import chat_routes
+
+    assert not hasattr(byok, 'resolve_reference')
+    assert not hasattr(byok, 'enabled')
+    assert not hasattr(byok, 'resolve_owner_custom_credential')
+    source = inspect.getsource(chat_routes._complete_custom_chat)
+    assert 'byok_bridge' not in source
+    assert 'resolve_reference' not in source
+    ref = byok.UserCredentialReference('test-only-reference-do-not-log')
+    assert 'test-only-reference-do-not-log' not in repr(ref)
 
 
 @pytest.mark.asyncio

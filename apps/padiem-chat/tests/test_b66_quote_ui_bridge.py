@@ -1,14 +1,25 @@
-"""Static/security contracts for the Padiem Chat -> canonical B66 UI bridge (#3313)."""
+"""Static/security contracts for the Padiem Chat -> canonical B66 UI bridge (#3313).
 
-from pathlib import Path
+#8060: 원문 read는 _support(b66_quote_bridge_source)가 담당하고, 계약은
+이름붙인 팩트( Missing-token 목록·불리언·개수·블록 순서)로 단언한다.
+"""
+
+from __future__ import annotations
 
 import pytest
 
 from app.config import ConfigError, Settings
 
-
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
+from _support.b66_quote_bridge_source import (  # noqa: E402
+    asset_facts,
+    authority_facts,
+    iframe_guard_facts,
+    index_facts,
+    launcher_facts,
+    linked_pc_facts,
+    preview_facts,
+    startup_facts,
+)
 
 
 def test_b66_quote_runtime_url_is_https_root_only_and_default_off() -> None:
@@ -31,104 +42,67 @@ def test_b66_quote_runtime_url_is_https_root_only_and_default_off() -> None:
 
 
 def test_index_loads_hidden_quote_bridge_before_capability_projection() -> None:
-    index = (STATIC / "index.html").read_text(encoding="utf-8")
-    assert './b66-quote-runtime.css' in index
-    assert './b66-quote-runtime.js' in index
-    assert index.index('./b66-quote-runtime.js') < index.index('./product-capabilities.js')
+    facts = index_facts()
+    assert facts["css_ref"] is True
+    assert facts["js_ref"] is True
+    assert facts["js_before_capabilities"] is True
     # Manual merge-forward must preserve real HTML newlines. A literal "\\n"
     # becomes visible body text and can shift visual layout by one line.
-    assert '</script>\\n' not in index
-    assert '/>\\n  <link' not in index
+    assert facts["newline_artifacts"] == []
 
 
 def test_quote_ui_bridge_does_not_duplicate_quote_authorities_or_persist_skill() -> None:
-    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
-
-    for forbidden in (
-        "localStorage",
-        "sessionStorage",
-        "indexedDB",
-        "computeTotals",
-        "buildRenderModel",
-        "QuoteCore",
-        "SavedQuoteSkill",
-        "QuoteTemplateRenderer",
-        "FileReader",
-        "FormData",
-    ):
-        assert forbidden not in source
-
-    assert "quick-quote-kr.pages.dev" not in source
-    assert "PADIEM_CHAT_B66_QUOTE_BASE_URL" not in source
-    assert '"/api/b66/runtime-config"' in source
-    assert '"/api/b66/saved-skills?limit=20"' in source
-    assert '"/api/b66/quote/interpret"' in source
+    facts = authority_facts()
+    assert facts["forbidden_tokens"] == []
+    assert facts["hardcoded_host"] is False
+    assert facts["env_var"] is False
+    assert facts["missing_endpoints"] == []
 
 
 def test_quote_ui_bridge_uses_exact_iframe_source_and_origin() -> None:
-    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
-    assert "event.source !== frame.contentWindow" in source
-    assert "event.origin !== runtime.origin" in source
-    assert "}, runtime.origin);" in source
-    assert 'type: "b66.embed.render.v1"' in source
-    assert '"b66.embed.rendered.v1"' in source
-    assert '"b66.embed.error.v1"' in source
+    assert iframe_guard_facts()["missing_guards"] == []
 
 
 def test_signed_out_startup_is_network_silent_for_b66() -> None:
-    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    facts = startup_facts()
     # #6100: signedIn comes from the capability event; refresh() only on it.
-    assert "signedIn = !!(auth && auth.authenticated === true);" in source
-    assert "if (signedIn) refresh();" in source
-    assert "ensureUi();\n      refresh();" not in source
+    assert facts["signed_in_assignment"] is True
+    assert facts["refresh_on_signed_in"] is True
+    assert facts["eager_startup"] is False
     # API access is centralized behind refresh/readJson rather than eager top-level fetch.
-    assert source.count('readJson("/api/b66/runtime-config")') == 1
+    assert facts["runtime_config_reads"] == 1
 
 
 def test_launcher_stays_hidden_without_a_runtime_skills_or_a_linked_pc() -> None:
-    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    facts = launcher_facts()
     # #6056: one condition, and the PC flag it reads. Nothing else may turn the
     # launcher on: no runtime, no saved skill and no linked PC keeps it hidden.
-    assert "launcher.hidden = !(runtime && (skills.length > 0 || pcAccountLinked));" in source
-    assert "launcher.disabled = launcher.hidden" in source
-    assert "skills = safeSkills(listResult.data)" in source
-    assert "let pcAccountLinked = false;" in source
-    assert "const next = linked === true;" in source
+    for key in ("hidden_rule", "disabled_rule", "skills_assignment", "pc_flag_init", "linked_flag_rule"):
+        assert facts[key] is True
 
 
 def test_a_linked_pc_alone_shows_the_launcher_for_its_own_excel_form() -> None:
-    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    facts = linked_pc_facts()
     # #5895: with a linked PC and no saved skill the screen still opens, says what it
     # is for, and the skill-only controls step aside so the PC form is the action.
-    assert "const entryOnly = skills.length === 0 && pcAccountLinked;" in source
-    assert "launcherLabel.textContent = entryOnly ? pcCopy().entry : copy().launcher;" in source
-    assert "selectLabelNode.hidden = entryOnly" in source
-    assert "generateButton.hidden = entryOnly" in source
-    assert "void refreshPcAccount();" in source
+    assert facts["missing_rules"] == []
+
 
 def test_quote_ui_bridge_loads_only_bounded_private_quote_assets() -> None:
-    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
-    assert 'B66_ASSET_ID = /^b66asset_' in source
-    assert '"/api/b66/assets/" + encodeURIComponent(assetId)' in source
-    assert 'PRIVATE_ASSET_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"])' in source
-    assert "MAX_PRIVATE_ASSET_BYTES = 256 * 1024" in source
-    assert "response.arrayBuffer()" in source
-    assert "data:" in source and ";base64," in source
-    assert "FileReader" not in source
-    assert "FormData" not in source
+    facts = asset_facts()
+    assert facts["missing_rules"] == []
+    assert facts["data_uri"] is True
+    assert facts["forbidden_tokens"] == []
 
 
 def test_quote_preview_is_created_only_after_successful_request_and_never_same_origin() -> None:
-    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
-    ensure = source.split("  function ensureUi() {", 1)[1].split("  function ensurePreviewFrame()", 1)[0]
-    assert 'document.createElement("iframe")' not in ensure
-    creation = source.split("  function ensurePreviewFrame() {", 1)[1].split("  function waitForFrame(", 1)[0]
-    assert 'document.createElement("iframe")' in creation
-    assert 'frame.referrerPolicy = "no-referrer"' in creation
-    assert 'frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals")' in creation
-    render = source.split("  async function generate(event)", 1)[1].split("  function receiveEmbedMessage(", 1)[0]
-    assert render.index("const assets = await loadPrivateAssets(skill)") < render.index("const frame = ensurePreviewFrame()")
-    assert render.index("const frame = ensurePreviewFrame()") < render.index("await waitForFrame(frame, runtime.embedUrl)")
-    assert "if (embed.origin === window.location.origin) return null" in source
-    assert 'event.source !== frame.contentWindow' in source
-    assert 'event.origin !== runtime.origin' in source
+    facts = preview_facts()
+    assert facts["iframe_in_ensure"] is False
+    assert facts["iframe_in_creation"] is True
+    assert facts["referrer_policy"] is True
+    assert facts["sandbox"] is True
+    assert facts["assets_before_frame"] is True
+    assert facts["frame_before_wait"] is True
+    assert facts["same_origin_guard"] is True
+    assert facts["source_guard"] is True
+    assert facts["origin_guard"] is True

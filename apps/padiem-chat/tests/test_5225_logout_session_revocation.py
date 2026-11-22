@@ -17,6 +17,7 @@ Plane session authority — no new session store, no second login system:
 
 from __future__ import annotations
 
+import secrets
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 
@@ -34,6 +35,8 @@ from padiem_control_plane.tenants import (
     TenantMembershipState,
 )
 
+import app.auth as auth_module
+import app.session_revocation_guard as guard_module
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.control_plane_identity import IdentityBridgeError
@@ -46,7 +49,8 @@ from app.shared_login_flow import (
     REFRESH_COOKIE,
     STATE_COOKIE,
 )
-SESSION_SECRET = "logout-revocation-session-secret-not-real-000000"
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+SESSION_SECRET = secrets.token_urlsafe(32)
 BASE_URL = "https://chat.example.test"
 
 
@@ -417,15 +421,30 @@ async def test_unavailable_canonical_authority_is_not_reported_as_signed_out():
 
 
 @pytest.mark.asyncio
-async def test_a_session_without_a_canonical_session_keeps_its_reviewed_behaviour():
-    """A session the canonical authority never confirmed is not a revocation gap.
+@pytest.mark.parametrize(
+    "moment,expected_status",
+    [
+        (int(datetime(2026, 11, 18, 23, 59, 58, tzinfo=timezone.utc).timestamp()), 200),
+        (int(datetime(2026, 11, 18, 23, 59, 59, tzinfo=timezone.utc).timestamp()), 401),
+    ],
+)
+async def test_sidless_session_cutoff(monkeypatch, moment, expected_status):
+    """The sid-less transition has a fixed cutoff, injected with no real clock.
 
-    #3240 established that a canonical authority or shadow failure must not
-    break the B62 login. Such a session carries no canonical session id, so
-    there is no canonical session that could be revoked for it. It keeps the
-    pre-existing cookie-only behaviour instead of being refused.
+    Before the reviewed deadline a cookie without a canonical session id keeps
+    its cookie-only behaviour; at the deadline the guard refuses it.
     """
+    class _FrozenTime:
+        @staticmethod
+        def time():
+            return float(moment)
 
+    monkeypatch.setattr(auth_module, "time", _FrozenTime)
+    monkeypatch.setattr(
+        guard_module,
+        "sidless_session_cutoff_passed",
+        lambda: auth_module.sidless_session_cutoff_passed(now=moment),
+    )
     store = MemoryStore()
     authority = CanonicalAuthority()
     app = build_app(store=store, authority=authority, shadow=ShadowStore())
@@ -435,7 +454,7 @@ async def test_a_session_without_a_canonical_session_keeps_its_reviewed_behaviou
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
         protected = await client.get("/api/conversations", headers=_cookie_header(unbound))
 
-    assert protected.status_code == 200
+    assert protected.status_code == expected_status
 
 
 @pytest.mark.asyncio
@@ -452,6 +471,28 @@ async def test_a_deployment_without_the_canonical_authority_keeps_its_cookie_beh
     assert protected.status_code == 200
     assert logout.status_code == 200
     assert logout.json()["ok"] is True
+
+
+@pytest.mark.asyncio
+async def test_authorityless_logout_with_a_sid_cookie_succeeds_and_clears_it():
+    """#8097 — without a canonical authority there is no session to revoke.
+
+    The sid in the cookie makes no difference: logout is a local sign-out and
+    has to succeed and drop the cookie exactly like the sid-less case.
+    """
+    app = build_app(authority=None)
+    sid = "sess_" + "a" * 32
+    cookie = create_session_token(
+        password_settings(), "usr_" + ("0" * 32), canonical_session_id=sid,
+    )
+
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
+        logout = await client.post("/api/auth/logout", headers=_cookie_header(cookie))
+
+    assert logout.status_code == 200
+    assert logout.json()["ok"] is True
+    cleared = _set_cookie_headers(logout)
+    assert any(SESSION_COOKIE in h and "Max-Age=0" in h for h in cleared)
 
 
 @pytest.mark.asyncio
@@ -538,3 +579,34 @@ async def test_logout_clears_the_shared_login_cookies_too():
         for name in (SESSION_COOKIE, ACCESS_COOKIE, REFRESH_COOKIE,
                      MARKER_COOKIE, STATE_COOKIE, LOGIN_RETURN_COOKIE):
             assert any(c.startswith(name + "=") and "Max-Age=0" in c for c in cleared), name
+
+
+def test_no_sidless_session_cookie_outside_the_transition_contracts() -> None:
+    import ast
+    from pathlib import Path
+
+    tests_dir = Path(__file__).resolve().parent
+    allowed = {
+        Path(__file__).name,
+        "test_261110_sidless_session_policy.py",
+        "test_261110_duplicate_session_cookie_guard.py",
+    }
+    offenders: list[str] = []
+    for path in tests_dir.rglob("*.py"):
+        if path.name in allowed:
+            continue
+        try:
+            tree = ast.parse(path.read_bytes().decode("utf-8", errors="replace"))
+        except SyntaxError:
+            continue
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            fn = node.func
+            name = fn.id if isinstance(fn, ast.Name) else (fn.attr if isinstance(fn, ast.Attribute) else "")
+            if name != "create_session_token":
+                continue
+            if any(k.arg == "canonical_session_id" for k in node.keywords):
+                continue
+            offenders.append(f"{path.relative_to(tests_dir)}:{node.lineno}")
+    assert not offenders, offenders

@@ -19,8 +19,14 @@ captures, not a restatement of the report:
 The phone press floor in mobile-target-legibility.css is deliberately NOT
 weakened: the polish sheet is linked before it, and the browser checks measure
 the resolved value on a phone.
+
+#8060 25차: the static guards read sheets through _support helpers
+(css_rules declarations, html_tags attribute maps, locale_bundle values) and
+assert parsed values; this module keeps no raw sheet text. The production
+CSS and JS are untouched by this lane.
 """
 from __future__ import annotations
+import locale_bundle
 
 import http.server
 import json
@@ -29,6 +35,17 @@ import threading
 from pathlib import Path
 
 import pytest
+
+# #8060 25차: 시트 원문 읽기는 _support 헬퍼(css_rules·claw_static·
+# html_tags·locale_bundle)가 담당하고 시험은 파싱 값(규칙·선언·속성 맵·
+# 로케일 값)을 단언한다. 운영 CSS·JS는 이 레인에서 손대지 않는다.
+from _support import claw_static
+from _support.html_tags import tags_for_page
+from css_rules import (
+    declaration,
+    find_rules_with_selector,
+    rules_for_sheet,
+)
 
 try:  # pragma: no cover - environment dependent
     from playwright.sync_api import sync_playwright
@@ -41,14 +58,6 @@ requires_browser = pytest.mark.skipif(
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-NAV = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
-HELP = (STATIC / "help.html").read_text(encoding="utf-8")
-POLISH = (STATIC / "chat-screen-polish.css").read_text(encoding="utf-8")
-CALENDAR_CSS = (STATIC / "calendar.css").read_text(encoding="utf-8")
-LIBRARY_CSS = (STATIC / "library.css").read_text(encoding="utf-8")
 
 # The Library surface closes itself when the session is signed out, so the
 # browser checks run against a signed-in projection.
@@ -128,15 +137,21 @@ def _open(browser, url, width, height, mobile):
 
 
 def test_send_button_is_right_aligned_on_the_phone() -> None:
-    assert "@media (max-width: 620px)" in POLISH
-    assert ".composer-actions .send-button" in POLISH
-    assert "margin-left: auto" in POLISH
+    polish = rules_for_sheet("chat-screen-polish.css")
+    phone = [rule for rule in polish if rule.media == "(max-width: 620px)"]
+    send = find_rules_with_selector(phone, ".composer-actions .send-button")
+    assert len(send) == 1
+    assert declaration(send[0], "margin-left") == "auto"
     # The first-screen reservations belong to attachments.css and are
     # untouched by this lane.
-    preview = (STATIC / "attachments.css").read_text(encoding="utf-8")
-    assert "width: 116px" in preview
-    assert "width: 112px; min-width: 112px; height: 44px;" in preview
-    assert ".send-button { flex: 0 0 44px;" in preview
+    reserved = rules_for_sheet("attachments.css")
+    assert any(declaration(rule, "width") == "116px" for rule in reserved)
+    assert any(declaration(rule, "width") == "112px"
+               and declaration(rule, "min-width") == "112px"
+               and declaration(rule, "height") == "44px"
+               for rule in reserved)
+    assert "0 0 44px" in [declaration(rule, "flex") for rule in
+                          find_rules_with_selector(reserved, ".send-button")]
 
 
 @requires_browser
@@ -164,13 +179,19 @@ def test_send_button_sits_on_the_composer_right_edge_at_390(browser, server) -> 
 def test_phone_home_cards_keep_two_description_lines() -> None:
     # #7827: one clipped line cut the copy short on every theme, so the
     # description now shows up to two lines (line-clamp 2).
-    block = POLISH.split("@media (max-width: 620px)", 1)[1]
-    assert ".starter small" in block
-    assert "-webkit-line-clamp: 2;" in block
-    assert "line-clamp: 2;" in block
-    assert "text-overflow: ellipsis" not in block
-    assert "white-space: nowrap" not in block
-    assert "padding-top: 60px !important" in block
+    phone = [rule for rule in rules_for_sheet("chat-screen-polish.css")
+             if rule.media == "(max-width: 620px)"]
+    clamp = [rule for rule in phone
+             if any(".starter small" in selector for selector in rule.selectors)]
+    assert len(clamp) == 1
+    assert declaration(clamp[0], "-webkit-line-clamp") == "2"
+    assert declaration(clamp[0], "line-clamp") == "2"
+    # 한 줄 절삭(ellipsis·nowrap)은 이 구역에 없다 — 두 줄 클램프가 유일한 형태다.
+    assert all(declaration(rule, "text-overflow") is None
+               and declaration(rule, "white-space") is None
+               for rule in phone)
+    assert [rule for rule in phone
+            if declaration(rule, "padding-top") == "60px !important"]
 
 
 @requires_browser
@@ -220,44 +241,66 @@ def test_badge_does_not_cover_the_card_content_on_a_phone(browser, server) -> No
 
 
 def test_calendar_entry_is_tinted_only_while_it_is_current() -> None:
-    base = CALENDAR_CSS.split("#calendarNavButton {", 1)[1].split("}", 1)[0]
-    assert "background" not in base, base
-    assert "border" not in base, base
-    current = CALENDAR_CSS.split('#calendarNavButton[aria-current="page"] {', 1)[1].split("}", 1)[0]
-    assert "background" in current, current
-    glass_current = CALENDAR_CSS.split(
-        'html[data-theme="padiem-glass"] #calendarNavButton[aria-current="page"] {', 1
-    )[1].split("}", 1)[0]
-    assert "background" in glass_current, glass_current
+    rules = rules_for_sheet("calendar.css")
+    # 선택되지 않은 항목: base 규칙(#calendarNavButton)은 칠하기·테두리를
+    # 선언하지 않는다.
+    base = find_rules_with_selector(rules, "#calendarNavButton")
+    assert base
+    assert all(not any(key.startswith(("background", "border"))
+                       for key in rule.declarations)
+               for rule in base)
+    current = find_rules_with_selector(rules, '#calendarNavButton[aria-current="page"]')
+    assert current
+    assert all(any(key.startswith("background") for key in rule.declarations)
+               for rule in current)
+    glass_current = find_rules_with_selector(
+        rules, 'html[data-theme="padiem-glass"] #calendarNavButton[aria-current="page"]')
+    assert glass_current
+    assert all(any(key.startswith("background") for key in rule.declarations)
+               for rule in glass_current)
     # A glass rule must not exist for the unselected entry any more.
-    assert 'html[data-theme="padiem-glass"] #calendarNavButton {' not in CALENDAR_CSS
+    assert not find_rules_with_selector(
+        rules, 'html[data-theme="padiem-glass"] #calendarNavButton')
 
 
 def test_new_chat_stops_claiming_the_calendar_and_library_screens() -> None:
     # R5 A10: the aria-current rows moved to chat-nav-module.js with setNavActive.
-    lines = [l for l in NAV.splitlines() if 'chatNav.setAttribute("aria-current"' in l]
+    nav = claw_static.sheet("chat-nav-module.js")
+    lines = [line for line in nav.splitlines()
+             if 'chatNav.setAttribute("aria-current"' in line]
     assert len(lines) == 2, lines
     assert '"calendar"' in lines[1] and '"library"' in lines[1], lines
-    assert 'chatNav.setAttribute("aria-current"' not in APP
+    assert 'chatNav.setAttribute("aria-current"' not in claw_static.sheet("app.js")
 
 
 def test_every_panel_screen_names_its_own_fragment() -> None:
+    app = claw_static.sheet("app.js")
     for fragment in ("#padiem-calendar", "#padiem-library", "#padiem-meeting"):
-        assert fragment in APP, fragment
-    assert "PANEL_ROUTE_HASH_BY_STATE" in APP
-    assert "window.PadiemChatRouting = Object.freeze({ syncRouteHash });" in APP
-    assert "restoreShellRouteFromHash" in APP
+        assert fragment in app, fragment
+    # R5 B2-4: 조각 표는 chat-nav-module.js 로 옮겼다(app.js 는 공유 조각 상수만 보관).
+    assert "PANEL_ROUTE_HASH_BY_STATE" not in app
+    table = dict(re.findall(r"(\w+):\s*deps\.(\w+_ROUTE_HASH),",
+                            claw_static.sheet("chat-nav-module.js")))
+    assert table == {
+        "calendar": "CALENDAR_ROUTE_HASH",
+        "library": "LIBRARY_ROUTE_HASH",
+        "meeting": "MEETING_ROUTE_HASH",
+        "settings": "ADVANCED_SETTINGS_ROUTE_HASH",
+    }
+    assert ("window.PadiemChatRouting = Object.freeze("
+            "{ syncRouteHash: navModuleInstance.syncRouteHash });") in app
+    assert "restoreShellRouteFromHash" in app
     # The module-owned entries stay module-owned: app.js publishes the request
     # and the fragment table, it does not drive the other modules' DOM, and it
     # adds no browser-side watcher (#3232 entry contract, #1728/#2340/#54
     # interception boundary).
-    assert 'getElementById("filesNavButton")' not in APP
-    assert 'getElementById("calendarNavButton")' not in APP
-    assert "MutationObserver" not in APP
-    for module in ("calendar.js", "library.js"):
-        source = (STATIC / module).read_text(encoding="utf-8")
-        assert '"padiem:route-restore"' in source, module
-        assert "window.PadiemChatRouting?.syncRouteHash?.()" in source, module
+    assert 'getElementById("filesNavButton")' not in app
+    assert 'getElementById("calendarNavButton")' not in app
+    assert "MutationObserver" not in app
+    for module_name in ("calendar.js", "library.js"):
+        source = claw_static.sheet(module_name)
+        assert '"padiem:route-restore"' in source, module_name
+        assert "window.PadiemChatRouting?.syncRouteHash?.()" in source, module_name
 
 
 @requires_browser
@@ -322,16 +365,19 @@ def test_a_shared_fragment_opens_the_screen_it_names(browser, server, fragment) 
 
 
 def test_answer_actions_get_a_40px_press_box() -> None:
-    assert (
-        "html[data-theme=\"padiem-glass\"] body .assistant-message .answer-actions .answer-action"
-        in POLISH
-    )
-    assert "width: 40px !important" in POLISH
-    assert "min-height: 40px" in POLISH
+    polish = rules_for_sheet("chat-screen-polish.css")
+    glass = find_rules_with_selector(
+        polish,
+        'html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-action')
+    assert glass
+    # #8008 13차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert [declaration(rule, "width") for rule in glass] == ["40px"]
+    assert [declaration(rule, "min-height") for rule in glass] == ["40px"]
     # The hints are locale keys, never literals in the builder.
-    outputs = (STATIC / "outputs.js").read_text(encoding="utf-8")
-    assert 'button.setAttribute("data-padiem-tooltip", label);' in outputs
-    assert "answer-copy" in LOCALE and "answer-regenerate" in LOCALE
+    assert 'button.setAttribute("data-padiem-tooltip", label);' in claw_static.sheet("outputs.js")
+    for key in ("answer-copy", "answer-regenerate"):
+        assert key in locale_bundle.keys("ko")
+        assert key in locale_bundle.keys("en")
 
 
 @requires_browser
@@ -370,20 +416,24 @@ def test_answer_action_press_box_measures_the_floor(browser, server, width, heig
 
 
 def test_home_card_icons_share_svg_stroke_and_theme_plates() -> None:
-    icon_attributes = re.findall(r'<svg class="starter-card-icon"([^>]*)>', INDEX)
-    assert len(icon_attributes) == 4, icon_attributes
-    for attributes in icon_attributes:
-        assert 'viewBox="0 0 24 24"' in attributes
-        assert 'width="20"' in attributes and 'height="20"' in attributes
-        assert 'stroke="currentColor"' in attributes
-        assert 'stroke-width="1.8"' in attributes
-        assert 'stroke-linecap="round"' in attributes
-        assert 'stroke-linejoin="round"' in attributes
-    assert 'class="status-spark"' not in INDEX
-    assert 'background: #eef3f7;' in POLISH
-    assert 'color: #2d4557;' in POLISH
-    assert 'background: #29485f;' in POLISH
-    assert 'color: #e5f3fd;' in POLISH
+    icons = [attrs for _tag, attrs in tags_for_page("index.html")
+             if attrs.get("class") == "starter-card-icon"]
+    assert len(icons) == 4, icons
+    for attrs in icons:
+        # html.parser는 속성 이름을 소문자로 정규화하고, 브라우저의 SVG 속성
+        # 조정도 viewBox 대소문자를 되돌리므로 파싱 값은 같은 계약이다.
+        assert attrs.get("viewbox") == "0 0 24 24"
+        assert attrs.get("width") == "20" and attrs.get("height") == "20"
+        assert attrs.get("stroke") == "currentColor"
+        assert attrs.get("stroke-width") == "1.8"
+        assert attrs.get("stroke-linecap") == "round"
+        assert attrs.get("stroke-linejoin") == "round"
+    assert all("status-spark" not in (attrs.get("class") or "")
+               for _tag, attrs in tags_for_page("index.html"))
+    plates = {(declaration(rule, "background"), declaration(rule, "color"))
+              for rule in rules_for_sheet("chat-screen-polish.css")}
+    assert ("#eef3f7", "#2d4557") in plates
+    assert ("#29485f", "#e5f3fd") in plates
 
 
 @requires_browser
@@ -463,8 +513,10 @@ def test_tier_chip_text_is_centered_without_spark_and_stays_in_reserved_slot(
 
 
 def test_desktop_hero_size_is_capped() -> None:
-    assert "@media (min-width: 621px)" in POLISH
-    assert "clamp(36px, 4.1vw, 60px)" in POLISH
+    hero = [rule for rule in rules_for_sheet("chat-screen-polish.css")
+            if rule.media == "(min-width: 621px)"
+            and declaration(rule, "font-size") == "clamp(36px, 4.1vw, 60px)"]
+    assert hero
 
 
 @requires_browser
@@ -492,13 +544,21 @@ def test_desktop_greeting_renders_two_lines(browser, server) -> None:
 
 
 def test_small_control_floors_are_raised() -> None:
-    assert ".sidebar .section-add-button" in POLISH
-    assert "width: 32px" in POLISH
-    assert ".starter-grid .document-formats-toggle" in POLISH
-    assert ".composer-pc-status-face" in POLISH
-    assert "height: 32px" in POLISH
-    assert "opacity: .78" in POLISH
-    assert "#filesNavButton {\n  position: relative;\n  min-height: 44px;\n}" in LIBRARY_CSS
+    polish = rules_for_sheet("chat-screen-polish.css")
+    add_button = find_rules_with_selector(polish, ".sidebar .section-add-button")
+    assert add_button
+    assert [declaration(rule, "width") for rule in add_button] == ["32px"]
+    assert find_rules_with_selector(polish, ".starter-grid .document-formats-toggle")
+    face = find_rules_with_selector(polish, ".composer-pc-status-face")
+    assert face
+    assert [declaration(rule, "height") for rule in face] == ["32px"]
+    search = find_rules_with_selector(
+        polish, ".sidebar .sidebar-actions-row.sidebar-unified-row > .sidebar-search-item:disabled")
+    assert [declaration(rule, "opacity") for rule in search] == [".78"]
+    files_base = [rule for rule in find_rules_with_selector(
+        rules_for_sheet("library.css"), "#filesNavButton") if rule.media is None]
+    assert len(files_base) == 1
+    assert files_base[0].declarations == {"position": "relative", "min-height": "44px"}
 
 
 @requires_browser
@@ -542,24 +602,30 @@ def test_raised_controls_measure_their_floor(browser, server) -> None:
 
 
 def test_copy_corrections_live_in_locale_keys() -> None:
-    assert '"nav-connectors": "앱 연결"' in LOCALE
-    assert '"nav-connectors": "Connected apps"' in LOCALE
-    assert '"pc-delegation-send-note": "메일·메시지 보내기와 외부 서비스에 기록할 때는 항상 확인합니다."' in LOCALE
-    assert '"stored-conversation-hint": "이전에 저장한 대화를 불러왔습니다.' in LOCALE
-    assert '"stored-conversation-hint": "Loaded from a conversation you saved earlier.' in LOCALE
+    assert claw_static.locale_value("nav-connectors", "ko") == "앱 연결"
+    assert claw_static.locale_value("nav-connectors", "en") == "Connected apps"
+    assert claw_static.locale_value(
+        "pc-delegation-send-note", "ko") == "메일·메시지 보내기와 외부 서비스에 기록할 때는 항상 확인합니다."
+    assert (claw_static.locale_value("stored-conversation-hint", "ko") or "").startswith(
+        "이전에 저장한 대화를 불러왔습니다.")
+    assert (claw_static.locale_value("stored-conversation-hint", "en") or "").startswith(
+        "Loaded from a conversation you saved earlier.")
     # The static fallbacks agree with the keys, and the guide lost its typo.
-    assert 'data-locale-key="nav-connectors">앱 연결<' in INDEX
-    assert "외부 서비스에 기록할 때는 항상 확인합니다." in INDEX
-    assert "채트로 돌아가기" not in HELP
-    assert "채팅으로 돌아가기" not in HELP
+    index = claw_static.sheet("index.html")
+    assert 'data-locale-key="nav-connectors">앱 연결<' in index
+    assert "외부 서비스에 기록할 때는 항상 확인합니다." in index
+    help_text = claw_static.sheet("help.html")
+    assert "채트로 돌아가기" not in help_text
+    assert "채팅으로 돌아가기" not in help_text
     # #7174: the guide returns through the app's own wording, not a web-page back link.
-    assert HELP.count("채팅 화면 열기") == 2
+    assert help_text.count("채팅 화면 열기") == 2
 
 
 def test_stored_conversation_hint_is_a_key_not_a_literal() -> None:
-    assert 'uiT("stored-conversation-hint")' in APP
-    assert 'chip.dataset.localeTitle = "stored-conversation-hint"' in APP
-    assert "이전에 저장한 대화를 불러왔습니다" not in APP
+    app = claw_static.sheet("app.js")
+    assert 'uiT("stored-conversation-hint")' in app
+    assert 'chip.dataset.localeTitle = "stored-conversation-hint"' in app
+    assert "이전에 저장한 대화를 불러왔습니다" not in app
 
 
 @requires_browser

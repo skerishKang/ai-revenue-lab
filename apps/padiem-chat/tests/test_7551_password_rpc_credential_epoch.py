@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 
 from app.history import D1HistoryStore
-from test_6446_account_isolation_sweep import ThreadSafeSqliteD1, apply_all_migrations
+from _support.account_isolation_sweep import ThreadSafeSqliteD1, apply_all_migrations
 
 
 def _db():

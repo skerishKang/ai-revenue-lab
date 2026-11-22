@@ -7,11 +7,13 @@ const feedbackSource = fs.readFileSync(path.join(STATIC, "chat-feedback-module.j
 const newsSource = fs.readFileSync(path.join(STATIC, "chat-news-module.js"), "utf8");
 const html = fs.readFileSync(path.join(STATIC, "index.html"), "utf8");
 const ID = "fb_" + "a".repeat(32), NEWS_ID = "fb_" + "b".repeat(32);
+const HISTORY_FIXTURE = { number: 987654321, published_at: "2099-01-01T00:00:00Z",
+  title: "fixture history title", detail: "fixture history detail" };
 const record = (values = {}) => ({ id: ID, body: "fixture feedback", status: "new", created_at: "2026-11-15T01:00:00Z",
   updated_at: "2026-11-15T01:00:00Z", screen: null, fixed_version: 0, unread_fixed: false,
   replies: [], unread_ops_replies: 0, is_ai_tester: false, sender_display: "", news: null, ...values });
 const newsItem = (values = {}) => ({ number: 3, kind: "improved", title: "fixture news title", detail: "fixture news detail",
-  source: "none", published_at: "2026-11-15T09:00:00Z", ...values });
+  source: "none", published_at: "2026-11-15T09:00:00Z", version: "", ...values });
 const response = (status, data) => ({ status, json: async () => data });
 const settle = async () => { for (let i = 0; i < 8; i += 1) await new Promise(setImmediate); };
 
@@ -72,10 +74,16 @@ function setup(options = {}) {
       throw new Error("unexpected fixture request");
     } };
   for (const name of ["localStorage", "sessionStorage"]) Object.defineProperty(window, name, { get() { throw new Error("browser storage is forbidden"); } });
-  const context = { window, document, URL, URLSearchParams, AbortController,
+  // Both modules load into one page: the feedback module bounds its requests with a
+  // timer, exactly as a browser page provides one (#7835).
+  const context = { window, document, URL, URLSearchParams, AbortController, setTimeout, clearTimeout,
     console: { log: (...args) => errors.push(args), error: (...args) => errors.push(args) } };
   vm.runInNewContext(feedbackSource, context);
-  vm.runInNewContext(newsSource, context);
+  const newsProgram = options.emptyHistory
+    ? newsSource.replace(/const HISTORY_EVENTS = Object\.freeze\(\[[\s\S]*?\]\);/, "const HISTORY_EVENTS = Object.freeze([]);")
+    : newsSource;
+  if (options.emptyHistory) assert.notEqual(newsProgram, newsSource, "empty-history fixture replaces production milestones only in the test harness");
+  vm.runInNewContext(newsProgram, context);
   return { ids, calls, server, errors,
     event(name) { for (const callback of events[name] || []) callback(); },
     auth(value) { auth = value; this.event("padiem:auth-state"); },
@@ -104,7 +112,9 @@ const scenarios = {
     app.ids.newsButton.click(); await settle();
     assert.equal(app.ids.newsDialog.open, true);
     assert.equal(app.calls.filter((call) => call.url === "/api/chat/news").length, 1);
-    assert.equal(app.ids.newsList.children.length, 2);
+    assert.equal(app.ids.newsList.children.length, 1);
+    assert.equal(app.ids.newsList.children[0].className, "news-group");
+    assert.equal(app.ids.newsList.children[0].children[0].children[0].textContent, "ko:news-other");
     const text = app.ids.newsList.textContent;
     assert.ok(text.includes("ko:news-kind-improved") && text.includes("ko:news-kind-fixed"));
     assert.ok(text.includes("ko:news-source-user"));
@@ -114,7 +124,7 @@ const scenarios = {
     assert.equal(app.ids.newsDialog.open, false);
   },
 
-  async source_label_shows_once_per_run() {
+  async source_label_marks_each_attributed_item() {
     const app = setup({ news: [
       newsItem({ number: 5, source: "ai_tester" }),
       newsItem({ number: 4, kind: "fixed", source: "ai_tester" }),
@@ -126,11 +136,9 @@ const scenarios = {
     app.ids.newsButton.click(); await settle();
     const text = app.ids.newsList.textContent;
     const count = (label) => text.split(label).length - 1;
-    // A run of consecutive same-source items carries its label once, on the
-    // last row of the run; "none" items never carry one and break the run.
-    assert.equal(count("ko:news-source-ai-tester"), 2);
+    assert.equal(count("ko:news-source-ai-tester"), 3);
     assert.equal(count("ko:news-source-user"), 1);
-    assert.ok(!app.newsRow(5).textContent.includes("ko:news-source-ai-tester"));
+    assert.ok(app.newsRow(5).textContent.includes("ko:news-source-ai-tester"));
     assert.ok(app.newsRow(4).textContent.includes("ko:news-source-ai-tester"));
     assert.ok(app.newsRow(3).textContent.includes("ko:news-source-user"));
     assert.ok(!app.newsRow(2).textContent.includes("news-source"));
@@ -176,6 +184,67 @@ const scenarios = {
     assert.equal(app.ids.newsButton.hidden, true);
     assert.equal(app.ids.newsDot.hidden, true);
     assert.equal(app.ids.newsDialog.open, false);
+  },
+
+  async version_groups_newest_first_with_other_last() {
+    const app = setup({ news: [
+      newsItem({ number: 6, version: "2026.11.16" }),
+      newsItem({ number: 5, kind: "fixed", source: "user", version: "2026.11.16" }),
+      newsItem({ number: 4, version: "2026.11.02" }),
+      newsItem({ number: 3, kind: "fixed" }),
+      newsItem({ number: 2, version: "not-a-date" }),
+      newsItem({ number: 8, published_at: "2026-11-13T12:00:00Z" }),
+      newsItem({ number: 1, kind: "fixed", source: "user", version: "2025.12.01" }),
+    ] });
+    await settle();
+    app.ids.newsButton.click(); await settle();
+    const list = app.ids.newsList;
+    const cards = list.children;
+    const headings = cards.map((card) => card.children[0].children[0].textContent);
+    assert.deepEqual(headings, [
+      'ko:news-version{"version":"2026.11.16"}',
+      'ko:news-version{"version":"2026.11.02"}',
+      'ko:news-version{"version":"2025.12.01"}',
+      "ko:news-other", "ko:news-other",
+    ]);
+    const order = cards.map((card) => card.all().filter((node) => node.dataset?.newsNumber).map((node) => node.dataset.newsNumber));
+    assert.deepEqual(order, [["6", "5"], ["4"], ["1"], ["2", "3"], ["8"]]);
+    assert.equal(cards[3].children[0].children[1].attrs.datetime, "2026-11-15");
+    assert.equal(cards[4].children[0].children[1].attrs.datetime, "2026-11-13");
+    assert.deepEqual(cards[0].children.slice(1).map((section) => section.children[0].textContent),
+      ["ko:news-kind-improved", "ko:news-kind-fixed"]);
+    assert.ok(!app.newsRow(6).textContent.includes("news-version"));
+    app.language("en"); await settle();
+    assert.equal(list.children[0].children[0].children[0].textContent, 'en:news-version{"version":"2026.11.16"}');
+    assert.equal(list.children[4].children[0].children[0].textContent, "en:news-other");
+  },
+
+  async history_is_chronological_and_separate_from_news_fixtures() {
+    const app = setup({ news: [newsItem({ number: HISTORY_FIXTURE.number, title: HISTORY_FIXTURE.title,
+      detail: HISTORY_FIXTURE.detail, published_at: HISTORY_FIXTURE.published_at })] });
+    await settle();
+    app.ids.newsButton.click(); await settle();
+    const rows = app.ids.newsHistoryList.children;
+    const dates = rows.map((node) => node.dataset.historyDate);
+    assert.equal(rows.length, 17);
+    assert.deepEqual(dates, [...dates].sort());
+    assert.equal(dates[0], "2026-08-26");
+    assert.equal(dates.at(-1), "2026-11-16");
+    assert.ok(app.newsRow(HISTORY_FIXTURE.number), "server news fixtures remain in the news list");
+    assert.ok(!app.ids.newsHistoryList.textContent.includes(HISTORY_FIXTURE.title));
+    assert.ok(!app.ids.newsHistoryList.textContent.includes(HISTORY_FIXTURE.detail));
+    assert.ok(!app.ids.newsHistoryList.textContent.includes("2099"));
+    assert.ok(app.ids.newsHistoryList.textContent.includes("Padiem Chat을 웹에서 공개했어요."));
+    app.language("en"); await settle();
+    assert.ok(app.ids.newsHistoryList.textContent.includes("Padiem Chat went live on the web."));
+  },
+
+  async history_empty_state_when_no_entries() {
+    const app = setup({ emptyHistory: true, news: [] }); await settle();
+    app.ids.newsButton.click(); await settle();
+    assert.equal(app.ids.newsStatus.textContent, "ko:news-empty");
+    assert.equal(app.ids.newsHistoryStatus.textContent, "ko:news-history-empty");
+    assert.equal(app.ids.newsHistoryList.children.length, 0);
   },
 };
 

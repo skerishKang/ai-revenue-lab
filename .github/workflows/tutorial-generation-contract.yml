@@ -32,6 +32,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: tutorial-generation-contract-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   tutorial-generation:
     name: Tutorial generation
@@ -44,6 +48,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install Pillow for the shot conversion tests
+        # #7943 후속: 부분 모드 시험이 실제 PNG→webp 변환을 돌린다. 버전은
+        # daily-real-usage-check.yml 과 같은 저장소 고정값.
+        run: python -m pip install --quiet 'Pillow==11.3.0'
       - name: Screenplays, documents, pages and images agree
         # Reads the committed webp files by name and size; no encoder needed,
         # so this step cannot drift with a Pillow version.

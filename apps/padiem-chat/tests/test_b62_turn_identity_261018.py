@@ -57,7 +57,7 @@ LANE_STAYS_CHAT_ONLY = [
              '  --padiem-chat-reading-measure: 76ch;'),
     (GUTTER, '--padiem-chat-inner-gutter: clamp(24px, 2.5vw, 35px);'),
     (GUTTER, 'html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {\n'
-             '  padding-inline: var(--padiem-chat-inner-gutter) !important;'),
+             '  padding-inline: var(--padiem-chat-inner-gutter);'),
 ]
 
 

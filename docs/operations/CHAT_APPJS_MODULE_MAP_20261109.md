@@ -554,3 +554,337 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **모듈 크기**: chat-claw-status-module.js 395 → 415줄(500 이하 유지).
 - **동작·문구·DOM 변경 0**: 옮긴 본문은 deps 접두사 제거와 들여쓰기만 바뀌고 문자는 동일. create() 즉시 생성으로 DOM 조회 시점이 원래 선언 자리와 같다.
 - **공유로 남긴 이름(목록만 — B6 몫)**: ClawStatus 공유 16개 — `input`·`shell`·`clawStatus`·`clawResultArea`·`clawExecuteButton`·`clawChannel`·`clawAction`·`clawSender`·`clawRetryBox`·`clawRetryButton`·`clawRetryHint`·`clawWorkspace`·`clawInFlight`·`clawLastDispatchKey`·`clawWaitStartedAt`·`conversationState`. 모듈 API 3개(`clawT`·`localeOr`·`selectedProductTier`)와 ClawForm 의 deps 24항목도 현상 유지(B7 몫).
+
+### B2-3 진행 — ClawRun 자기 선언 이동 (2026-11-16)
+
+- **대상**: ClawRun(자기 선언 8: 결과 화면 DOM `clawResultKind`·`clawApprovalActions`·`clawRequestEcho`·`clawRequestEchoText`·`clawArtifactMeta`·`clawArtifactName`·`clawArtifactSize`·`clawResultSuccessNote`; deps 자기 8). AndroidHandoff 는 대표 결정으로 보류.
+- **방식**: 자기 선언을 모듈 `create()` 안으로(보강 1). 모듈은 원래 선언 자리에서 즉시 생성(`create({...})` — lazy 헬퍼 제거), `create()` 는 deps 를 읽지 않는다(#7832·#7844 와 같다). 자기 리스너 블록이 0개여서 `wire()` 이동은 없다(보강 2는 해당 없음). deps 에서 자기 것 8개 항목이 빠졌다 — 47→39항목(getter 45→37, setter 2 불변).
+- **app.js**: 3,032 → 3,014(−18: 선언 8줄 이동 + 팩토리 축소 54줄 + 생성 블록 44줄). `appjs_deps_total` 516 → 508, `appjs_dom_lookups` 192 → 184. `appjs_forwarders` 174·`appjs_function_decls` 233·`appjs_listeners` 83 불변.
+- **래칫 기준선**: `structure_baseline.json` 3키 실측 하향 — `appjs_lines` 3032 → 3014, `appjs_deps_total` 516 → 508, `appjs_dom_lookups` 192 → 184(감사 도구 실측; 래칫 시험 통과). 늘어난 키 없음. `index_script_tags` 는 HEAD 기준 이미 121(기준선 119는 기존 차이)이며 이 카드가 건드리지 않았다.
+- **시험**: `test_r5_a5a_claw_run_module_7216.py`·`test_r5_a5a_claw_run_browser_7216.py` 갱신(deps 축소 + 옮긴 선언 마커 + vm 하니스 레지스트리 등록 + 브라우저 하니스 와이어링 추출 대상을 생성 블록으로). 옮긴 선언은 전부 DOM 참조라 밖의 엘리먼트 스텁과 모듈 조회가 같은 노드를 가리키며, 행동 단정은 그대로 유지했다(약화 없음). 파급 정적 계약은 깨진 것이 없어 변경 없음. 로컬 관련 시험 228 passed.
+- **뮤테이션 적발 확인**: (a) 옮긴 선언(`const clawResultKind = document.getElementById("clawResultKind");`)을 app.js 에 되살리기 → 구조 계약 실패. (b) 모듈 `formatClawBytes` 단위 변형(B→bytes) → vm 동작 시험 실패. 각 원복 후 재통과 확인.
+- **초기 화면 장부**: `tools/r5_boot_ledger.py` 1440 — 이동 전후 `body_structure_hash`·`listener_multiset_hash`(614건)·`window_names`(116)·`request_addresses_hash` 모두 동일. 390 은 환경 변동이라 참고만 한다.
+- **모듈 크기**: chat-claw-run-module.js 437 → 448줄(500 이하 유지).
+- **동작·문구·DOM 변경 0**: 옮긴 본문은 deps 접두사 제거와 들여쓰기만 바뀌고 문자는 동일. create() 즉시 생성으로 DOM 조회 시점이 원래 선언 자리와 같다.
+- **공유로 남긴 이름(목록만 — B6 몫)**: ClawRun 공유 17개 — `input`·`app`·`authState`·`chatTransport`·`conversationState`·`PRODUCT_CLAW`·`clawApprovalEpoch`·`clawApprovalInFlight`·`clawExecuteButton`·`clawInFlight`·`clawLastDispatchKey`·`clawResultBadge`·`clawResultCard`·`clawResultDocx`·`clawResultEmpty`·`clawResultHint`·`clawResultPreview`. 그중 #7844 ClawStatus 공유 목록과 겹치는 5개: `input`·`clawExecuteButton`·`clawInFlight`·`clawLastDispatchKey`·`conversationState`. 모듈 API 21개도 현상 유지(B7 몫).
+
+### B2-4 진행 — Nav 자기 선언 이동 (2026-11-17)
+
+- **대상**: Nav(A10 모듈). 최신 main(`7dd775b6` 기준 카드 시작 `fd7f365e` 시점)에서 `tools/r5_appjs_map.py --modules` 로 다시 쟀다 — (가) 자기 선언 5개: `PANEL_ROUTE_HASH_BY_STATE`(779–784)·`OWNED_PANEL_HASHES`(785)·`PAGE_VIEWS`(795–806)·`PAGE_VIEW_BY_ID`(807–809)·`clawNavButton`(2461), (나) 자기 리스너 블록 **0개**(A10 이 이미 `wireNavRouteListener`·`wireNavEntryListeners` 로 옮겼고 app.js 는 원래 자리에서 wire 호출만 한다), (다) deps 자기 5 / 공유 20 / 모듈 API 6.
+- **방식(보강 1)**: 자기 선언을 모듈 `create()` 안으로 옮겼다. 모듈은 원래 선언 자리(`PAGE_VIEWS` 가 있던 곳)에서 바로 만든다 — lazy `navModule()` 팩토리를 없애고 `const navModuleInstance = window.PadiemChatNavModule.create({…})` 로 즉시 생성하며, `create()` 는 deps 를 읽지 않는다(엄격 빈 deps 시험이 그대로 통과한다). Claw 진입 단추 조회도 모듈 안으로 들어갔고 조회 시점은 같은 부팅 구간이다.
+- **조각 표**: `PANEL_ROUTE_HASH_BY_STATE` 는 `CALENDAR`·`LIBRARY`·`MEETING`·`ADVANCED_SETTINGS` 조각 상수에서 만들어지고 그 상수는 app.js 부팅 경로(`restoreShellFromHash` 계열, 2976–2995)가 계속 읽는다. 그래서 표는 모듈 안에서 **처음 쓸 때** deps 의 조각 상수로 만들어 `Object.freeze` 모양을 그대로 유지한다(생성 시점만 첫 사용으로 미뤘고 값·동작은 같다). app.js 에는 네 조각 상수만 남는다.
+- **보강 2**: 옮길 자기 리스너 블록이 없어 app.js 는 기존 wire 호출 2줄(`navModuleInstance.wireNavRouteListener();`·`…EntryListeners();`)을 원래 블록 자리에 그대로 둔다(등록 시점·순서 보존). 전달 함수 7개는 `navModuleInstance.<이름>(...a)` 한 줄로 남는다(B7 몫).
+- **app.js**: 3,014 → 2,978(−36). `appjs_deps_total` 508 → 507(Nav 33→32 항목: getter 30→29, setter 3 불변 — 자기 5개가 빠지고 공유 조각 상수 4개가 들어왔다), `appjs_dom_lookups` 184 → 183, `appjs_function_decls` 233 → 232(lazy 팩토리 제거). `appjs_forwarders` 174·`appjs_listeners` 83 불변.
+- **래칫 기준선**: `structure_baseline.json` 4키 실측 하향 — `appjs_lines` 3014 → 2978, `appjs_deps_total` 508 → 507, `appjs_dom_lookups` 184 → 183, `appjs_function_decls` 233 → 232. 늘어난 키 0. `index_script_tags` 는 HEAD 기준 121(기준선 119는 기존 차이)이며 이 카드가 건드리지 않았다.
+- **도구**: `tools/chat_structure_audit.py` 의 전달 함수 판정에 즉시 생성 인스턴스 형태(`모듈인스턴스.이름(...)`)를 추가했다. 이 보정이 없으면 B2 이후 전달 함수가 0으로 잘못 세어져 B7 완료 판정이 앞당겨진다. 같은 이유로 시험 도우미 `tests/_r5_function_source.py` 의 전달 함수 패턴도 두 형태를 모두 인식한다(이 보정으로 함수 본문을 모듈에서 찾는다).
+- **시험**: `test_r5_a10_nav_module_7216.py` 갱신 — 즉시 생성·인스턴스 전달 함수·deps 표면(공유 조각 상수 4개 추가, 자기 5개 제거)·vm 엄격 deps 동작(빈 deps 로 `create()` 통과, 8함수·wire 2개 행동 단정 유지) + 옮긴 선언 마커 시험 추가. 파급 정적 계약은 읽는 대상만 모듈로 전환: `test_3531`·`test_4422`·`test_4647`(wire 호출·panelId)·`test_4765`·`test_calendar_ui`·`test_connectors_bright_calendar_state_ui`·`test_chat_screen_polish`·`test_b62_glass_home_chat_parity`. 로컬 관련 시험 **127 passed**.
+- **뮤테이션 적발 확인**: (a) 옮긴 선언(`const clawNavButton = document.getElementById("clawNavButton");`)을 app.js 에 되살리기 → 구조 계약 실패. (b) 모듈 `pageViewFor` 폴백 변형(home→claw) → vm 동작 시험 실패. 각 원복 후 127 passed 재확인.
+- **초기 화면 장부**: `tools/r5_boot_ledger.py` 로컬 실행이 **같은 트리 재실행에서도 비결정적**이다(after1 vs after3: 1440·390 모두 body 해시·리스너 순서 변동). 1440 한 실행에서 `PadiemClawDeviceDirectory` 창 이름 1개와 `document DOMContentLoaded` 리스너 1개가 더 잡혔는데, 이는 카드가 건드리지 않는 지연 로드 모듈의 경합이다. 이동 전 기록(before)과 390 은 창 이름 116개·리스너 614건·초기 요청 집합이 같고, 요청 주소 해시는 모든 실행에서 동일하다. 장부 동일성 증명은 CI 환경에서 한다.
+- **동작·문구·DOM 변경 0**: 옮긴 페이지 계약 표는 문자 그대로, 조각 표는 같은 값·같은 동결 모양이다. 모듈 안 배치는 `deps.` 접두사가 사라지고 들여쓰기만 바뀌었다. AndroidHandoff 는 대표 결정대로 이 카드에서도 손대지 않았다.
+- **공유로 남긴 이름(목록만 — B6 몫)**: Nav 24개 — `AUTOMATION_ROUTE_HASH`·`CLAW_ROUTE_HASH`·`CONNECTORS_ROUTE_HASH`·`CALENDAR_ROUTE_HASH`·`LIBRARY_ROUTE_HASH`·`MEETING_ROUTE_HASH`·`ADVANCED_SETTINGS_ROUTE_HASH`·`PRODUCT_CHAT`·`PRODUCT_CLAW`·`app`·`authState`·`automationDestinationReady`·`clawArtifactShownFor`·`clawManualForm`·`clawResultArea`·`clawWorkspace`·`conversationArtifactContext`·`conversationProduct`·`conversationState`·`emptyState`·`input`·`messageList`·`pendingClawRunFocusId`·`shell`. 앞 카드들과 겹치는 이름은 `input`·`shell`·`app`·`authState`·`conversationState`·`conversationProduct`·`PRODUCT_CLAW`·`clawResultArea`·`clawWorkspace`·`clawManualForm`·`clawArtifactShownFor` 등이다.
+
+### B2 완료 요약 (카드 1~4, 2026-11-17)
+
+| 카드 | PR | app.js 줄 수 | deps 총계 |
+|---|---|---:|---:|
+| B2-1 PcRun + Connectors | #7832 | 3,113 → 3,059 | 546 → 530 |
+| B2-2 ClawStatus (+ClawForm 동행) | #7844 | 3,063 → 3,032 | 530 → 516 |
+| B2-3 ClawRun | #7850 | 3,032 → 3,014 | 516 → 508 |
+| B2-4 Nav | #7869 | 3,014 → 2,978 | 508 → 507 |
+
+- **합계**: app.js 3,119(B2-0 기준) → 2,978(−141줄). `appjs_deps_total` 546 → 507(−39). `appjs_forwarders` 174·`appjs_listeners` 83 은 카드 내내 불변 — B2 는 선언·리스너만 옮기고 등록부(B7)를 만들지 않는다.
+- **뮤테이션**: 카드마다 2건(되살리기·동작 변형) 적발 확인 후 원복.
+- **보류**: AndroidHandoff 는 대표 결정으로 T2(B2·B6·B7)에서 옮기지 않는다 — 안드로이드 작업 때 처리한다.
+- **B6 로 넘긴 공유 이름 전체(중복 제거 48개)**: `MESSAGE_LIFECYCLE`, `input`, `shell`, `app`, `authState`, `conversationProduct`, `conversationState`, `PRODUCT_CHAT`, `PRODUCT_CLAW`, `connectorsError`, `googleCalendarReadActivationAfterConnectReturn`, `googleConnectorConnectInFlight`, `clawAction`, `clawApprovalEpoch`, `clawApprovalInFlight`, `clawArtifactShownFor`, `clawChannel`, `clawExecuteButton`, `clawInFlight`, `clawLastDispatchKey`, `clawManualForm`, `clawResultArea`, `clawResultBadge`, `clawResultCard`, `clawResultDocx`, `clawResultEmpty`, `clawResultHint`, `clawResultPreview`, `clawRetryBox`, `clawRetryButton`, `clawRetryHint`, `clawSender`, `clawStatus`, `clawWaitStartedAt`, `clawWorkspace`, `chatTransport`, `emptyState`, `messageList`, `pendingClawRunFocusId`, `automationDestinationReady`, `conversationArtifactContext`, `AUTOMATION_ROUTE_HASH`, `CLAW_ROUTE_HASH`, `CONNECTORS_ROUTE_HASH`, `CALENDAR_ROUTE_HASH`, `LIBRARY_ROUTE_HASH`, `MEETING_ROUTE_HASH`, `ADVANCED_SETTINGS_ROUTE_HASH`.
+- **다음**: B3(최근 대화·실행 기록) → B5(설정·사이드바·대화·달력) → B4(로그인·계정) → B6(공유 문맥) → B7(등록부).
+
+### B3 진행 (2026-11-17)
+
+| 항목 | 전 | 후 |
+|---|---:|---:|
+| app.js | 2,978 | 2,933 |
+| `appjs_deps_total` | 507 | 480 |
+| `appjs_dom_lookups` | 183 | 175 |
+| `appjs_listeners` | 83 | 81 |
+| `chat-history-module.js` | 542 | 444 |
+| `chat-run-history-module.js` | 309 | 447 |
+
+- **history 모듈 자기 선언**: `historyReadSequence`·`HISTORY_TITLE_MAX_CHARS` 를 `create()` 로 옮겼다(create()는 deps 를 읽지 않는다). 최근 대화 메뉴 리스너 2개(document click·keydown)는 `wireMenuListeners()` 로 옮기고 app.js 가 원래 블록 자리에서 부른다. R-11 확인: 장부의 document click·keydown 15쌍이 이동 전후 같은 상대 순서다.
+- **모듈 사이 이동**: 실행 목록 함수 6개(`clearClawRunHistoryPdfPreviews`·`setClawRunHistoryStatus`·`clawRunHistoryErrorMessage`·`fetchClawRunHistory`·`loadClawRunHistory`·`syncClawRunHistoryVisibility`)와 패널 DOM·상태 7개(`clawRunHistoryDisclosure`·`Loading`·`Error`·`List`·`Empty`·`LeftSurface`·`VisibilityEpoch`)를 `chat-run-history-module.js` 로 옮겼다.
+- **공유 목록**: B6 48개 목록에는 `clawRunHistory*` 이름이 없어 목록은 그대로다. 공유 컨텍스트 접근자 3개(`setClawRunHistoryStatus`·`loadClawRunHistory`·`syncClawRunHistoryVisibility`)는 지우고 run-history 모듈 API 등록으로 대체했고, history 모듈 deps 에서 `clawRunHistory*` 항목 13개가 사라졌다.
+- **시험**: 두 r5 계약 시험을 새 구조로 갱신하고(전달 함수 대상 `runHistory`, 패널 소유 선언, `wireMenuListeners()` 호출), 3932·b54·7297·execute-progress·plain-korean 의 위치 단정만 새 위치로 옮겼다. 행동 단정은 그대로다.
+- **뮤테이션**: (a) 옮긴 패널 선언을 app.js 에 되살리기 → 구조 계약 실패. (b) `fetchClawRunHistory` 의 일반 실행 필터 제거 → 7297 실행 기록 필터 시험 실패. 각 원복 후 관련 287 passed.
+
+### B5 진행 — 설정·사이드바·대화·달력 자기 선언 이동 (2026-11-17)
+
+| 항목 | 전 | 후 |
+|---|---:|---:|
+| app.js | 2,933 | 2,870 |
+| `appjs_deps_total` | 480 | 459 |
+| `appjs_dom_lookups` | 175 | 161 |
+| `appjs_listeners` | 81 | 69 |
+| `chat-settings-module.js` | 69 | 114 |
+| `chat-sidebar-module.js` | 77 | 94 |
+| `chat-conversation-module.js` | 474 | 482 |
+| `chat-calendar-module.js` | 245 | 251 |
+
+- **설정**: `advancedSettingsReturnState`·`settingsCloseButton`·`settingsAdvancedOpen`·`advancedSettingsBack`·`advancedMenuButtons`·`advancedPageBlocks` 를 `create()` 로 옮겼다. 리스너는 `wireTierChange()`·`wireAdvancedSettings()`·`wireSettingsDialog()` 로 나눠 app.js 가 원래 자리에서 부른다(순서 보존).
+- **사이드바**: `mobileMenu`·`mobileClose`·`sidebarCollapseButton`·`sidebarRestoreButton`·`sidebarScrim` 를 `create()` 로, 클릭 리스너 5개를 `wire()` 로 옮겼다.
+- **대화**: `attachmentTray`·`attachmentChipList`·`attachmentKeyCounter`·`composerInlineHint`·`composerInlineHintTimer` 만 이동. `newChatButton`·`composerForm`·`cancelStreamButton` 은 app.js 리스너가 직접 읽어 공유로 남겼다(B6 몫).
+- **달력**: `GOOGLE_CALENDAR_CONNECTOR`·`GOOGLE_CALENDAR_TICKET_ENDPOINT`·`GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT` 상수만 `create()` 로 옮겼다. `googleCalendarReadState` 는 app.js 소유(세션 내 grant 진실)와 deps getter/setter 경로를 그대로 유지한다.
+- **스트리밍**: 모듈 전용 선언이 없어 이동 없음(리스너 1개만 있고 `cancelStreamButton` 은 공유).
+- **시험**: 두 r5 계약 시험의 하네스가 모듈 소유 DOM 을 만들도록 바꾸고(create() 조회와 같은 노드), `wire*()` 를 모듈 표면 목록에 추가했다. deps getter 계약은 모듈 소유 상태의 행동 단정으로 바꿨다. 파급 정적 계약(7297·b62)은 읽는 대상만 새 위치로 옮겼다.
+- **장부(1440)**: 화면 구조 해시·리스너 멀티셋·창 이름·초기 요청 동일. document click·keydown 15쌍의 상대 순서 동일(절대 index 는 DOMContentLoaded 비결정으로 1칸 이동, after 반복 실행도 서로 다름).
+- **뮤테이션**: (a) 옮긴 설정 리스너를 app.js 에 되살리기 → 래칫 실패(appjs_lines +2, dom +1, listeners +1). (b) `mobileClose.focus()` → `mobileMenu.focus()` → 휴대폰 오버레이 포커스 시험 실패. 각 원복 후 통과.
+
+### B4-1 진행 — 계정 함수 `chat-account-module.js` 분리 (2026-11-17)
+
+- **대상**: `chat-auth-module.js`의 재설정 9함수·변경 3함수·삭제 7함수와 삭제 공통 `syncDeleteButton`을 계정 모듈로 이동했다. 재설정은 `passwordResetTokenFromLocation`·`clearPasswordResetFragment`·`showPasswordResetView`·`hidePasswordResetViews`·`openPasswordResetRequest`·`openPasswordResetConfirm`·`closePasswordResetViews`·`submitPasswordResetRequest`·`submitPasswordResetConfirm` 다. 변경은 `openPasswordChangeDialog`·`closePasswordChangeDialog`·`submitPasswordChange`, 삭제는 `resetAccountDeleteConfirm`·`resetAccountSharedDeleteConfirm`·`openAccountDeleteConfirm`·`openAccountSharedDeleteConfirm`·`syncAccountDeleteButton`·`syncAccountSharedDeleteButton`·`submitAccountDelete` 다. app.js는 기존 호출 호환을 위해 19개 한 줄 전달 함수를 `accountModule()`로 연결하고 `syncDeleteButton`은 모듈 안에서만 부른다.
+- **자기 DOM 25개**: 삭제 관련 9개(`accountDeleteOpen`·`accountSharedDeleteOpen`·두 확인 이메일 입력·두 삭제 버튼·두 오류·`accountSharedDeleteConfirm`), 변경 관련 9개(`passwordChangeOpen`·`Dialog`·`DialogClose`·`Form`·`Current`·`New`·`Confirm`·`Error`·`Submit`), 재설정 관련 7개(`passwordResetRequestForm`·`RequestSubmit`·`ConfirmForm`·`Confirm`·`ConfirmSubmit`·`Back`·`ConfirmBack`)를 `create()`에서 조회한다. 로드 시 조회는 없다.
+- **리스너 15개**: 재설정 열기 click·요청/확인 submit·뒤로 가기 2click, 변경 열기/닫기 click·form submit·dialog cancel, 단일/공통 삭제 열기 click·확인 이메일 input 2개·삭제 실행 click 2개를 `wire()`가 원래 app.js 블록 자리 호출로 같은 순서 등록한다. 이전 WIP 보고의 13개는 재확인 결과 실제 등록 수와 달라 15개로 정정했다.
+- **공유 DOM은 deps로 유지(B6 몫)**: `accountDeleteConfirm`, `authDialog`, `passwordLoginContinue`, `passwordLoginError`, `passwordResetOpen`, `passwordResetPanel`, `passwordResetEmail`, `passwordResetNew`, `passwordResetRequestView`, `passwordResetRequestError`, `passwordResetRequestStatus`, `passwordResetConfirmView`, `passwordResetConfirmError`, `passwordResetConfirmStatus`다. 특히 `passwordLoginContinue`는 계정 모듈이 직접 조회하지 않고 `deps.passwordLoginContinue`로 받으며, app.js getter는 auth 모듈의 `emailContinueElement()`를 그대로 사용한다. 공유 하네스 DOM 레지스트리에는 새 이름을 추가하지 않았다.
+- **로그인 상태는 소유 이전 없음**: app.js의 `authDialogView`는 `showPasswordResetView`·`hidePasswordResetViews`가 request/confirm/login으로 쓰고, app.js의 `passwordResetToken`은 `openPasswordResetConfirm`에서 설정하며 hide/close/confirm 성공에서 비운다. 각각 기존 deps getter+setter 경로만 쓴다. `authState`는 읽기만 한다. 계정 모듈로 소유를 옮긴 로그인 화면 단계·입력값·진행 플래그는 없다.
+- **계정 deps**: 27 getter + 2 setter(`authDialogView`, `passwordResetToken`). 계정·auth 두 모듈 API 사이 호출은 기존 app.js 전달 함수와 deps 경로를 유지한다. `emailContinueElement`는 auth 모듈 반환 API로 추가해 공유 요소 조회를 한 곳에 고정했다. `accountModule` 팩토리는 화살표 함수로 만들어 app.js 함수 선언 수가 늘지 않게 했다.
+- **수치**: app.js 2,878 → **2,811**줄, `appjs_deps_total` 461 → **451**, `appjs_dom_lookups` 161 → **136**, `appjs_listeners` 69 → **54**, `appjs_forwarders` 174 불변, `appjs_function_decls` 232 불변. auth 모듈 794 → **499**줄, 계정 모듈 **387**줄. `APP_JS_CAP` 3,216 → **2,911**(실측+100), `structure_baseline.json`도 같은 실측으로 내렸다. `index_script_tags` 121 → 122(새 모듈 1개, 래칫 제외 항목).
+- **골든**: `test_r5_step4_auth_module_7216.py::test_b4_account_golden_paths_preserve_requests_and_screen_copy`(`_r5_b4_account_golden.py` helper)가 재설정 요청·변경 성공/실패·삭제 미확인/확정 5경로의 요청 주소·메서드·본문 키·화면 문구를 합성 응답으로 고정한다. 이동 전 main `1af36230`과 이동 후 결과 JSON이 byte-identical 했다(경로 5, SHA-256 `0a3f5d8d5317099435c95d10d43ca0d038031a3af2e2029d260fe9cd12a64501`). 운영 로그인·계정은 사용하지 않았다.
+- **장부(1440)**: 반복 실행의 기존 `PadiemClawDeviceDirectory`/`document DOMContentLoaded` 경합은 같은 트리 재실행 대조로 확인했다. 대조 실행에서 구조 해시 `906933a36c9195b8dc3d784063ee7fd6d61aeff7ecf95b810cc004903494e938`, 리스너 멀티셋 해시 `26f345104d94a382c0cdf8b3a919fef91799ffd3082ee357c968a8907a3ff557`(614건), 초기 요청 집합이 전후 동일했다. 창 이름은 새 팩토리 `PadiemChatAccountModule` 1개 외 변동 없고, document click 6·keydown 9의 상대 순서도 동일하다.
+- **시험 읽기 대상만 이동**: step4 auth module/browser 계약은 두 모듈을 모두 생성해 기존 기대값을 유지하고, 4416·5479·7647·5434·5481·b62_3084·account_deletion도 기대값 변경 없이 읽는 파일만 계정 모듈로 옮겼다(5481은 auth+account 합성). 새 골든만 B4-1 증거로 추가했다. 뮤테이션: (a) `syncDeleteButton`의 확인 조건을 `button.disabled = false`로 바꾸면 미확인 `POST /api/account/delete`를 골든이 적발, (b) 옮긴 `passwordResetOpen` 리스너를 app.js에 되살리면 래칫이 `appjs_lines` +1·`appjs_listeners` +1로 적발했다. 각 원복 후 골든·래칫 통과.
+
+### B4-2 계획 — 로그인 흐름 잔여분 (2026-11-17, 코드 수정 전 확정)
+
+기준: `origin/main` `7628d3c5f`(B4-1 병합 `b421195a1` 포함). 근거 출력: `tools/r5_appjs_map.py`(`b42-map.json`)·`--modules`(`b42-modules.json`).
+
+**남은 항목 표** (로그인 세션 구역: 최상위 함수 40개 129줄 · 변수 54개 96줄 · 모듈 자체 선언 13개 20줄 · 자체 리스너 5블록 12줄):
+
+| 흐름 | app.js 잔여 항목 | 분류 |
+| --- | --- | --- |
+| 세션 상태 확인·갱신 | `SESSION_PRESENTATION`(1502–1509, 8줄), `AUTH_SERVER_UNREACHABLE`(1669), `AUTH_UNREACHABLE_RETRY_DELAY_MS`(1674), `CUSTOM_AUTH_FAILURE_CODE`(835), `document visibilitychange`(1779–1781), `padiem:auth-state`(2806), `loginButton` click(2165–2185), 상태 getter/setter 9개 | 상수·리스너 **옮김**, `authState`·`authViewEpoch`·`authDialogView`·`passwordResetToken`·`pendingNotification*` getter/setter **app.js 유지(B6 몫)** |
+| 로그인 대화상자 열기·닫기·전환 | `authDialogClose`(466), `authDivider`(476), 대화상자 함수 9개(`setAuthFormError`·`emailContinueElement`·`syncAuthDialogMethods`·`openAuthDialog`·`closeAuthDialog`·`authServerUnreachableError`·`passwordAuthAnswer`·`passwordAuthRequest`·`setAuthStatusMessage`), `authDialogClose` click(2202), `authDialog` cancel(2204–2208), `googleLoginButton` click(2210–2218), `guestLoginEntryButton`(2163)·click(2164) | **옮김 → `chat-login-dialog-module.js`(신설)** |
+| 이메일·Google 로그인 시작 | 위 `loginButton`·`googleLoginButton`·`guestLoginEntryButton` 리스너, `passwordAuthRequest`(이미 auth 모듈) | 리스너 **옮김**, 요청 함수는 대화상자 모듈로 이동 |
+| 가입 | `passwordRegister*`·`age_confirm` 관련 함수는 B4-1에서 계정 모듈로 이전 완료, app.js에는 한 줄 전달 함수만 | **이번 변경 없음**(전달 함수는 B7 몫) |
+| 로그아웃 | `settingsLogoutButton` click(2187–2200), `signOutCurrentAccount`(이미 auth 모듈) | 리스너 **옮김**, 함수는 auth 모듈 유지 |
+| 프로필 단추·패널 생성 | 생성 블록(524–537), `accountAvatar`(506), `profileToggle`·`profileSettingsAction` click(2230–2234), `document pointerdown`(2235–2237), `keydown` Escape 중 프로필 패널 부분(2254–2260), `closeProfilePanel` | 생성 블록·리스너 **옮김**(`keydown` 블록은 사이드바 부분과 합치지 않고 원래 자리에서 분리 호출) |
+| 나이 확인 안내(#7853) | 클라이언트 전용 코드 없음(서버가 확인 화면 서빙). 세션 확인 성공/401 경로로만 표현 | **해당 없음**, 세션 확인 경로에서 검증 |
+| 공용 로그인 대기 문구(#7647) | `loginPending`(auth 모듈 148–149), 계정 모듈 273 재시도 항목 | **이번 변경 없음**, 골든에서 문구 유지 확인 |
+| 모듈 연결부 | `authModule`(146–235, 90줄), `accountModule`(242–272, 36줄), 한 줄 전달 함수 174개 | **app.js 유지(B7 몫)**. 초기화 호출·저장소 접근도 §2.2대로 유지 |
+
+**파일 나눔 결정**: 옮길 줄은 자체 선언 20 + 생성 블록 14 + 리스너约70 + 대화상자 함수 160 + 모듈 머리말约30 = **约294줄**로 450줄 미만 → B4-2a/b 분할 없이 한 PR. 반면 현 `chat-auth-module.js` 499줄에 잔여 session 리스너·선언约135줄을 더하면 **约634줄로 600줄 초과** → 설계 §2.1의 "셋째 파일" 안을 택해 `chat-login-dialog-module.js`(대화상자 함수+대화상자 DOM+대화상자 리스너, 约330줄)로 분리하고, `chat-auth-module.js`는 세션 상태·로그인·로그아웃 约400줄로 유지한다. B6 몫 공유 DOM 14개(`accountDeleteConfirm`·`authDialog`·`passwordLoginContinue`·`passwordLoginError`·`passwordResetOpen`·`passwordResetPanel`·`passwordResetEmail`·`passwordResetNew`·`passwordResetRequestView`·`passwordResetRequestError`·`passwordResetRequestStatus`·`passwordResetConfirmView`·`passwordResetConfirmError`·`passwordResetConfirmStatus`)는 새 하네스 레지스트리에 추가하지 않고 deps로만 받는다. UI 계약 모듈 수 현재 401 / 상한 450 → 새 계약 시험 2개 추가 후 403으로 상한 내.
+
+
+### B4-2 결과 — 로그인 흐름 모듈 분리 (2026-11-17)
+
+- **대상**: `origin/main` `7628d3c5f` → rebase 후 `043a31450`. 브랜치 `refactor/7812-t2-b4-2`. 워드마크·문구·요청 주소·대화상자 흐름·오류 순서 변경 0.
+- **옮긴 것**: 대화상자 함수 9개(`setAuthFormError`·`emailContinueElement`·`syncAuthDialogMethods`·`openAuthDialog`·`closeAuthDialog`·`authServerUnreachableError`·`passwordAuthAnswer`·`passwordAuthRequest`·`setAuthStatusMessage`)를 `chat-auth-module.js` → 신규 `chat-login-dialog-module.js`(**227줄**). app.js의 자체 선언 13개(20줄), 프로필 패널 생성 블록(14줄), 리스너 10개를 두 모듈의 `create()`·`wire*()`로 이전. `auth 모듈 499 → 425줄`.
+- **app.js 유지**: `authState`·`authViewEpoch`·`authDialogView`·`passwordResetToken`·`pendingNotification*` 등 공유 상태 getter/setter, 모듈 연결부, 한 줄 전달 함수 174개, 초기화 호출, 저장소 접근. 초기화 순서(`PadiemChatSession.bind` 등)는 그대로다.
+- **B6 몫 공유 DOM 14개**: B4-1의 14개 이름을 하네스 레지스트리에 추가하지 않고 deps로만 전달. 대화상자 모듈의 자기 DOM은 `authDialogClose`·`authDivider`·`guestLoginEntryButton`·`accountProfilePanel` 4개.
+- **호출 순서**: `wire*()`를 원래 리스너 블록 자리에서 호출해 document click·keydown 상대 순서를 보존했다. 분리 불가능한 프로필 Escape 분기는 app.js에 남기고 새 모듈의 `profilePanelElement()`를 읽는다.
+- **수치**: app.js 2,811 → **2,731**줄, `appjs_deps_total` 451 → **449**, `appjs_dom_lookups` 136 → **133**, `appjs_listeners` 54 → **44**, `appjs_forwarders` 174·`appjs_function_decls` 232 불변, `index_script_tags` 122 → 123. `APP_JS_CAP` 2,911 → **2,831**(실측+100), `structure_baseline.json`도 실측으로 하향. rebase 충돌은 감사 도구 실측으로 덮어썼다.
+- **창 이름**: main과 같은 방법으로 3회씩 측정. `__padiemClawRunHistoryIncludeGeneral`은 양쪽 3회 모두 관측된 측정 시점 노이즈였다. 증가분은 새 팩토리 `PadiemChatLoginDialogModule` **1개뿐**, 감소 0.
+- **장부(1440·390, 3회 재측정)**: 구조 해시 `ea5c5290d6015d70ab218f28bceb948b1cbb0a8c9c60177a72385ae105bc0366`, 리스너 멀티셋 `9f19c65f772e28121c3122c242ca60fff41a7dc795b541dc3c5f02964072598c`, 초기 요청 `0ee76abdcf29d74d99caa725567ae0b6a303ab4765b92372f4fb4d0d984f321d` — main과 전부 동일. 리스너 615건.
+- **골든**: `test_r5_b4_2_login_flow_golden_7216.py` + `_r5_b4_2_login_golden.py`. 같은 하네스를 clean main(`043a31450`)과 이 브랜치에 적용해 로그인 성공·실패, 로그아웃, 세션 만료, 대화상자 열고 닫기 5경로의 요청·문구를 비교 — byte-identical. 스냅샷 `fixtures/r5_b4_2_login_golden.json` SHA-256 `080188e4277bc8bf…`. 운영 계정 미사용.
+- **시험**: 신규 계약 2종(vm 하네스 · Chromium) 통과, UI 계약 모듈 401 → **402/450**. 기존 시험은 읽는 범위를 `app.js + 새 모듈 본문`으로 넓히고 `app.js가 wire*()를 호출한다` 단언을 추가했다(대상 교체·축소·제거 없음). clean main 기준 기존 실패: `5115` 1건, `7065` 2건, `7543` 2건, `r5_a3` 1건, `r5_a9` 1건 — this PR에서 건드리지 않음.
+- **뮤테이션**: (a) 옮긴 리스너를 app.js에 되살리면 래칫이 `appjs_listeners` +1로 적발, (b) 로그아웃 요청 1개를 빼면 골든이 적발. 각 원복 후 통과.
+
+
+### B6 계획 — 공유 문맥 가: 공유 상태·단일 객체 (2026-11-17, 코드 수정 전 확정)
+
+**선택 이유**: B5는 이미 이 지도의 "B5 진행" 절(2026-11-17)에서 완료됐고 design §3.5는 B6의 선행을 B2~B5로 정한다. B7(등록부)은 B6 뒤에 온다. 따라서 다음 묶음은 B6이다.
+
+**근거 자료**: design §1.7(바뀌는 공유 상태 24개 + 읽기 전용 단일 객체·상수 54개 = 78개, 선언 147줄), §2.3(전역 상태를 모을 곳), §3.5 B6. 현 `chat-app-context.js`는 42줄로 이미 `Object.create(shared)` 기반 단일 이름 공간과 등록부를 갖고 있으며, app.js가 `authState`·`shell`·`uiT` 등 22개를 live accessor로 넘기는 중이다.
+
+| 분류 | 항목 |
+| --- | --- |
+| 옮김 | 각 모듈 연결부에서 중복된 공유 getter·setter를 지우고 `Object.setPrototypeOf(자기 getter 목록, app)`으로 공유 문맥을 물려받는다. 현재 app.js의 18개 연결부에 걸친 중복 공유 이름은 104개( B4-2로 늘어난 대화상자 이름 포함). 공유 문맥 쪽에는 이 이름들의 live accessor를 모은다. **소유 이전은 하지 않는다** — 설계 §3.5 B6의 선언 이전 안은 "공유 상태 소유는 app.js" 원칙과 충돌하므로 이번 묶음에서는 접근자 통합만 수행. |
+| app.js 유지 | 모듈 생성과 `wire*()` 호출, 한 줄 전달 함수 174개, 초기화 순서(`PadiemChatSession.bind` 등), 보안 감사가 파일을 고정한 저장소 접근(`readStoredAndroidHandoff`·`storeAndroidHandoff`·`resumeAndroidHandoff`). 공유 상태의 **소유权**을 옮기는 것이 아니라 접근 경로를 문맥으로 모으는 것이므로 초기값·대입 의미는 그대로다. |
+| 공유 | 78개 이름은 문맥 접근자로만 노출. 하네스 DOM 레지스트리에 새 이름을 추가하지 않는다. 같은 이름이 두 번 등록되면 기존 등록부가 예외를 낸다. |
+
+**원칙 확인**: 상태 소유는 app.js 유지( B4와 동일), 공유 DOM은 deps로만, 하네스 레지스트리에 이름 추가 없음, 한 줄 전달 함수 유지.
+**위험·확인**: `activeProject`(읽기 6·쓰기 5), `authState`(읽기 16), `authViewEpoch`, `clawApprovalEpoch`, `inFlight`의 읽기·쓰기가 모든 경로에서 같은 값을 보는지. 원래 app.js 클로저 변수와 문맥 접근자의 초기값 및 대입 시점이 동일한지. B5에서 상태 소유를 모듈로 옮겼다 되돌린 전례가 있으므로 소유 이전 없이 접근자만 통합한다.
+
+**증거 계획**: 부팅 장부 1440·390 3회(구조·리스너·창 이름·초기 요청), 골든(clean main에서 생성한 로그인 흐름 5경로 + 공유 상태 경로), 뮤테이션 2건, 루트 e2e 3098·5573, 구조 래칫 실측 하향.
+
+
+### B6 결과 — 공유 문맥 접근자 통합 (2026-11-17)
+
+- **선택/원칙**: B5는 이미 완료(지도 "B5 진행" 절)라 B6. 소유 이전은 하지 않고 "공유 상태 소유는 app.js" 원칙을 유지. 공유 DOM은 deps로만, 하네스 레지스트리 이름 추가 0, 한 줄 전달 함수 174개 유지.
+- **구현**: 18개 모듈 연결부 중 2개 이상이 갖던 공유 getter·setter 103개를 각 연결부에서 제거하고 `create(Object.setPrototypeOf({자기 것}, app))`로 공유 문맥을 상속. `chat-app-context.js`에 87개 live accessor 추가(쓰기 가능 20개는 getter+setter), 등록부는 모듈 API가 기존 accessor를 덮어쓰되 같은 이름을 두 모듈이 제공하면 계속 예외.
+- **수치**: app.js 2,811 → **2,582**줄, `appjs_deps_total` 451 → **161**, `appjs_dom_lookups` 136 → 133, `appjs_listeners` 54 → 44, `index_script_tags` 123 불변. `APP_JS_CAP` 2,831 → **2,682**(실측+100), `structure_baseline.json` 실측 하향.
+- **장부(1440·390, 3회)**: 구조 해시 `ea5c5290d6…`, 리스너 멀티셋 `9f19c65f77…`, 초기 요청 `0ee76abdcf…` — clean main과 동일. 창 이름 증가는 B4-2의 `PadiemChatLoginDialogModule` 1개뿐, B6으로 인한 변동 0.
+- **시험**: R5 계약 시험의 `create({` 리터럴을 `create(`로 넓히고(_r5_b6_wiring.create_block으로 두 형태 모두 파싱), deps 표면 단언을 "자기 것 ∪ 문맥 상속"으로 넓힘. VM 하네스에 `app` 스텁 주입. 기대값·동작 단언 축소 없음. 골든 5경로(main 생성 스냅샷) 유지, 전체 관련 시험 2,076건 통과. clean main에서 재현되는 기존 실패는 `7065` 2건뿐.
+- **뮤테이션**: (a) 옮긴 공유 getter를 모듈 연결부에 되살리면 래칫이 deps +1로 적발, (b) 문맥의 `authState` accessor를 오값으로 바꾸면 부팅 장부의 구조·초기 요청이 달라져 적발. 각 원복 후 통과.
+
+### B6 리뷰 반영 — 시험 정확도 복원 + 문맥 이름 충돌 가드 (2026-11-18)
+
+- **시험 정확도 복원(넓히기만)**: 모듈 시험 8건·스트리밍 2건의 deps 단언을 `gets ⊆ EXPECTED` 그리고 `gets ∪ (EXPECTED ∩ context_names) == EXPECTED`(setter 동일)로 복원. 스트리밍은 main 의 43개 getter 이름을 `EXPECTED_GETTERS`로 명시해 개수 비교(len ≤ 43)를 삭제. `_r5_b6_wiring.create_receives_app_context`를 추가해 create 가 실제 공유 문맥을 deps prototype(`}, app))`)으로 받는지도 단언 — 문맥 어딘가에 이름이 있는 것만으로 통과하지 않는다. `create(` 로 넓혔던 리터럴 단언은 `create(Object.setPrototypeOf({` 로 원형 복원(test_5015·5573·step3·step4 포함).
+- **중복 이름 실측**: provide() API ∩ 문맥 접근자 = **1개**(`runHistory.syncClawRunHistoryVisibility`), deps 리터럴 get/set ∩ 문맥 접근자 = **0개**, 문맥 소유 참조(공유 DOM 5개·provide) ∩ 모듈 API = **0개**.
+- **충돌 가드**: `chat-app-context.js`에 `ACCESSOR_SHADOW_ALLOWLIST` 도입. 목록 안 1개 이름의 근거 — runHistory 가 실제 소유자: app.js 접근자와 한 줄 전달 함수가 최종 위임하는 대상이 `runHistory.syncClawRunHistoryVisibility`이고 모듈 구현은 `this`를 읽지 않아 어느 경로든 같은 동작. 목록 밖 접근자 겹침과 문맥 소유 참조 겹침은 오류. 기존 모듈 중복 등록·중복 이름 오류 유지. 새 시험 `test_r5_b6_context_name_guard_7216.py`.
+- **증거(재측정)**: 부팅 장부 1440·390 3회 — 리스너 멀티셋·초기 요청 주소는 branch=main 3/3 일치. 구조 해시는 같은 트리 안에서도 두 변형(`ea5c5290…`/`906933a3…`)이 번갈아 관측되는 부팅 시점 비동기 렌더 경합(MCP 게이트웨이 클라이언트 행 빈/로그인 + 컴포저 PC 칩 액션 span 렌더 시점)이며 변형 집합이 main·branch 동일 — 브랜치가 새 변형을 만들지 않았다. 골든 5경로 스냅샷 통과, 뮤테이션 2건 검출((a) 문맥 accessor 제거 → 복원된 정확 비교 3건 적발, (b) allowlist 면제 제거 → 이름 가드 시험 적발; 각 원복 후 통과).
+
+### B7 계획 — 모듈 등록부, PR 단위 분해 (2026-11-18, 코드 수정 전 확정)
+
+- **app.js 분류(2,582줄 기준)**:
+  - (가) 모듈 생성·`wire()`·초기화 순서(라우트 복원, 세션 bind, 창 계약) — **남긴다**(B7 최종 형태의 본체). sessionStorage 보안 감사 3함수도 R-06에 따라 남긴다.
+  - (나) 모듈 연결부(팩토리 함수 + deps 리터럴) — 1차 PR 은 전달 함수만 등록부 경유로 전환하고 연결부는 유지한다. 연결부 소멸은 후속 PR.
+  - (다) 한 줄 전달 함수 **174개**(감사 도구 기준, 17개 대상): conversationModule 19 · accountModule 19 · clawStatusModule 19 · clawRunModule 15 · coreModule 14 · authModule 12 · historyModule 12 · androidHandoffModule 9(보류 — 지도 B3 기록대로 안드로이드 작업 때 처리) · calendarModule 8 · loginDialogModule 8 · navModuleInstance 7 · pcRunModule 7 · runHistory 6 · streamingModule 5 · settingsModule 5 · connectorsModule 5 · sidebarModule 4.
+  - (라) 그 밖: 창 계약 4종(`PadiemChatRouting`·`PadiemAppSwitch`·`PadiemChatSession.bind`·`PadiemClawSession.bind`)·해시 복원·locale/attachment 상수.
+- **등록부 설계**: 새 추상화를 만들지 않는다 — B6 문맥의 `app.provide(이름, 인스턴스)` 가 곧 등록부다(automation·automationForm·memory·runHistory·localPcPanel 은 이미 등록됨). 전달 함수 삭제 후 호출자 3종 전환: (1) app.js 내부 호출자는 등록된 조각 직접 호출(`runHistory.foo(...)` — provide 위치가 원래 팩토리 생성 위치라 실행 순서 불변), (2) 다른 모듈 deps 리터럴 getter 는 등록부 값을 반환(`get loadClawRunHistory() { return runHistory.loadClawRunHistory; }` — getter 를 지우지 않아 deps 표면 시험 불변), (3) 문맥 접근자도 같은 방식. 대상 메서드는 전부 클로저형(`this` 미사용)이라 수신자 변화가 없다. 하네스에 새 이름 등록 없음.
+- **PR 단위표(각 반나절 이하)**: 1차 runHistory 6(기존 등록) → 2차 sidebar 4(신규 provide "sidebar") → 3차 settings 5 → 4차 streaming 5 → 5차 connectors 5 → 6차 nav 7 → 7차 pcRun 7 → 8차 calendar 8 → 9차 loginDialog 8 → 10차 history 12 → 11차 auth 12 → 12차 core 14 → 13차 clawRun 15 → 14차 clawStatus 11(재시도·복구·대기 — 19개를 상한 15에 맞춰 기능 덩어리로 분할, 잔여 8개는 후속 차) → 15차 account 19(같은 방식으로 분할) → 16차 conversation 19. androidHandoff 9는 보류. nav 이후 묶음은 조각 API 가 공유 접근자(setNavActive·closeSidebar 등)와 겹치므로, 그때마다 접근자를 등록부 값으로 재지시하거나 allowlist 근거를 매긴다(B6 가드 규칙 유지).
+- **1차 PR 범위**: runHistory 6개 — 모듈이 이미 `app.provide("runHistory", …)` 로 등록되어 있어 등록부 경로가 존재하고, 소비자가 가장 단순하다(내부 호출 1곳, deps getter 1개, 문맥 접근자 1개, 외부 소비자 없는 전달 함수 4개). 전달 함수 6개 삭제 + 내부 호출 직접화 + getter·접근자 2개 재지시. 시험: step3 전달 단언 → "등록부로 같은 이름을 찾을 수 있다 + app.js 에 정의가 없다"(단언 수 증가), a2 패널 3명 동일, a5a 브라우저 하네스에 `runHistory` 스텁 배선 추가(단언 수 불변), 기준선 실측 하향(forwarders 174→168).
+- **위험·확인**: TDZ — 문맥 접근자·getter 본문이 `runHistory` 를 읽는 시점은 이벤트 시점뿐(모듈 create()는 deps 를 읽지 않음이 a1/a2에서 증명). 수신자 — 6개 메서드 모두 `this` 미사용 확인. 장부로 초기화 순서 변동 감시.
+
+### B7 2차 — sidebar 등록 + closeSidebar allowlist (2026-11-18)
+
+- **allowlist 항목 목록(현시점)**: `syncClawRunHistoryVisibility`(runHistory 소유, B6 리뷰) + `closeSidebar`(CTO 승인, 2026-11-18 — sidebar 모듈이 소유자: app.js 접근자(17행)·1줄 전달 함수(1939행)가 최종 위임하는 대상이 `sidebarModule().closeSidebar` 본인, `this` 미사용). 두 항목 모두 **B7 마지막 단계에서 app.js 접근자를 제거하면 목록에서 뺀다**(목록은 임시 장치).
+- **구현**: sidebar 모듈을 원래 팩토리 위치(app.js 176행)에서 `app.provide("sidebar", …)` 등록(실행 순서 불변, 팩토리는 등록부 조각 반환 alias 유지). 전달 함수 4개(sidebarActionIcon·setSidebarCollapsed·closeSidebar·openSidebar) 삭제. 호출자 전환: app.js 내부 3곳(1722·2055·2077행)+wire 1곳(2071행)은 조각 직접 호출, 문맥 접근자(17행)와 history deps getter(216행)는 등록부 값 반환(getter 유지 — deps 표면 불변). deps.sidebarActionIcon 소비자는 history 모듈 4곳.
+- **수치**: app.js 2,573 → **2,567**줄, `appjs_forwarders` 168 → **164**, `appjs_function_decls` 226 → **222**. deps·listeners·dom 불변. 기준선 실측 하향.
+- **시험(넓히기만)**: step1 전달 단언을 "등록부로 찾을 수 있다 + app.js 에 정의가 없다 + 모듈 조각에 이름이 있다"로 전환(settings 4개는 기존 단언 유지), 등록부 도달성 신규 시험 1건(step1), 가드 시험에 closeSidebar 목록 안 사례 추가, step1 브라우저 하네스를 등록부 경로로 적응, ui_request_speed openSavedConversation 절편 하네스에 sidebar 배선.
+- **wire 중복 결정(CTO 06:41)**: sidebar 조각의 `wire` → **`wireSidebarListeners`** 로 변경(다른 조각의 관례 wireViewListeners·wireMemoryListeners·wireRunHistoryListeners에 맞춤). localPcPanel의 `wire`는 그 모듈을 옮기는 차수에서 처리. 변경 범위: 모듈 정의·export, app.js 호출 1곳, step1 이름 목록 — 단언 수·범위 불변. 등록 순서·위치는 원래 팩토리 위치 유지.
+
+### B7 4차 — streaming 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: app.js 를 읽는 chat 정적 계약 시험 중 5개 전달 함수 관련 — (1) test_3531:75 전달 존재 단언 → 등록부 단언으로 전환, (2) test_3935:182 호출점 서브스트링 단언(`requestAnswer(retryMessages, retrySkill` — `streaming.requestAnswer(...)` 전환 후에도 매치) 불변, (3) 절편 경계로 5개 이름을 쓰는 시험 **0건**(모든 .index/.split 경계는 STREAM 모듈 소스). route-ordering 의 `const advancedSettingsView` 경계는 스트리밍 전달 함수(앞쪽)와 무관.
+- **구현**: streaming 모듈을 원래 팩토리 위치(app.js:172)에서 `app.provide("streaming", …)` 등록(실행 순서 불변). 전달 함수 5개(requestCompletedAnswer·applyStreamDone·requestStreamingAnswer·cancelActiveStream·requestAnswer) 삭제. 호출자 전환 — app.js 내부 3곳(requestAnswer: 재시도·복구·제출)+cancelStreamButton 리스너는 조각 직접 호출, 스트리밍 deps 리터럴 getter 3개(applyStreamDone·requestCompletedAnswer·requestStreamingAnswer — 모듈이 자기 API를 deps로 재판정하는 형태)는 등록부 값 반환(getter 유지). 조각 5키는 문맥 접근자와 충돌 0(allowlist 불필요), 대상 메서드 this-free(모듈 내 this 2건은 DOM 셈 폴백 객체 메서드로 자기 수신자 호출).
+- **수치**: app.js 2,563 → **2,557**줄, `appjs_forwarders` 159 → **154**, `appjs_function_decls` 217 → **212**. deps·listeners·dom 불변. 기준선 실측 하향.
+- **시험(넓히기만)**: step5b 모듈·behavior 2종의 전달 단언을 등록부 단언으로 전환(단어 수 증가), 등록부 도달성 신규 시험 1건(step5b 모듈), 3531 적응.
+
+### B7 4차 — streaming 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: app.js 를 읽는 chat 정적 계약 시험 중 5개 전달 함수 관련 — (1) test_3531:75 전달 존재 단언 → 등록부 단언으로 전환, (2) test_3935:182 호출점 서브스트링 단언(`requestAnswer(retryMessages, retrySkill` — `streaming.requestAnswer(...)` 전환 후에도 매치) 불변, (3) 절편 경계로 5개 이름을 쓰는 시험 **0건**(모든 .index/.split 경계는 STREAM 모듈 소스). route-ordering 의 `const advancedSettingsView` 경계는 스트리밍 전달 함수(앞쪽)와 무관.
+- **구현**: streaming 모듈을 원래 팩토리 위치(app.js:172)에서 `app.provide("streaming", …)` 등록(실행 순서 불변). 전달 함수 5개(requestCompletedAnswer·applyStreamDone·requestStreamingAnswer·cancelActiveStream·requestAnswer) 삭제. 호출자 전환 — app.js 내부 3곳(requestAnswer: 재시도·복구·제출)+cancelStreamButton 리스너는 조각 직접 호출, 스트리밍 deps 리터럴 getter 3개(applyStreamDone·requestCompletedAnswer·requestStreamingAnswer — 모듈이 자기 API를 deps로 재판정하는 형태)는 등록부 값 반환(getter 유지). 조각 5키는 문맥 접근자와 충돌 0(allowlist 불필요), 대상 메서드 this-free(모듈 내 this 2건은 DOM 셈 폴백 객체 메서드로 자기 수신자 호출).
+- **수치**: app.js 2,563 → **2,557**줄, `appjs_forwarders` 159 → **154**, `appjs_function_decls` 217 → **212**. deps·listeners·dom 불변. 기준선 실측 하향.
+- **시험(넓히기만)**: step5b 모듈·behavior 2종의 전달 단언을 등록부 단언으로 전환(단어 수 증가), 등록부 도달성 신규 시험 1건(step5b 모듈), 3531 적응. CI 정합성: streaming 브라우저 하네스(deps getter·forwarder 라인을 등록부 경유), route-ordering·rate_limit·3936 vm 하네스에 streaming 스텁 배선(requestAnswer 카운팅 위임).
+
+### B7 5차 — connectors 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 5개 이름(setConnectorCopy·connectorTicketErrorKey·connectorsScope·openConnectorsView·openConnectorsDialog)마다 `grep -rn`으로 app.js를 읽는 시험·절편 경계·리터럴 단언을 목록화. APP 독자 단언 4건(test_r5_a9 모듈 전달 단언, test_7365 라우트 단언, test_4862 라우트 순서 단언, calendar vm 하네스 getter)을 등록부 경로로 적응. 절편 경계 3건(test_7607 커넥터 도우미, test_google_drive `_function`, test_chat_claw_answer_views `definition_source`)은 모듈 소스를 읽어 불변.
+- **구현**: connectors 모듈을 원래 팩토리 위치(app.js:2324)에서 `app.provide("connectors", …)` 등록(실행 순서 불변). 전달 함수 5개 삭제. 호출자 전환 — app.js 라우트 복귀·OAuth 복귀 2곳은 조각 직접 호출, calendar deps getter 3개는 등록부 값 반환(getter 유지). 조각 24키는 기존 등록 이름·문맥 접근자와 충돌 0(allowlist 추가 없음), 대상 메서드 this-free.
+- **수치**: app.js 2,557 → **2,552**줄, `appjs_forwarders` 154 → **149**, `appjs_function_decls` 212 → **207**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: test_r5_a9 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, 라우트·리터럴 단언 3건 등록부 경로 적응, calendar vm 하네스에 connectors 스텁 배선. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
+
+### B7 6차 — nav 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 7개 이름(syncRouteHash·setNavActive·switchConversationProduct·openClawWorkspace·openChatWorkspace·openClawManual·openClawRunTarget)마다 `grep -rn` 전수 조사. APP 독자 단언 8건(a10 모듈 2, chat_screen_polish 창 계약, 4862 라우트, util_app 창 계약, 3936/vm 2, calendar deps vm, ui_request_speed 절편)을 등록부 경로·스텁으로 적응. 절편 경계는 전부 nav 모듈 소스를 읽어 불변.
+- **구현**: nav 모듈을 원래 팩토리 위치(app.js:637)에서 `app.provide("nav", …)` 등록(실행 순서 불변). 전달 함수 7개 삭제. 호출자 전환 — 라우트 복귀·창 계약·history/Claw 진입 5곳은 조각 직접 호출, app.js 문맥 접근자 1개(setNavActive)와 deps getter 2개(openClawRunTarget·switchConversationProduct)는 등록부 값 반환(getter 유지). `wireNavRouteListener`·`wireNavEntryListeners`는 원래 자리에서 1회씩 호출.
+- **allowlist 5번째 — `setNavActive`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자와 모든 호출자가 nav 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. B7 마지막 단계에서 app.js 접근자 제거 시 함께 뺀다.
+- **수치**: app.js 2,552 → **2,545**줄, `appjs_forwarders` 149 → **142**, `appjs_function_decls` 207 → **200**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: a10 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, 창 계약·라우트·vm 하네스 8건 적응, 문맥 이름 가드에 setNavActive 사례 추가. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
+
+### B7 7차 — pcRun 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 7개 이름(showPcRuntimeStatus·waitForAcceptedPcRun·pcWaitElapsed·findUnfinishedPcRun·resumeUnfinishedPcRun·renderStoredPcAnswer·recoverStoredPcResult)마다 `grep -rn` 전수 조사. APP 독자 단언 2건(a3 모듈 전달 단언, 5895 복구 호출 절편)을 등록부 경로로 적응. 5015·4485·5573은 pcRun 모듈 소스를 읽어 불변.
+- **구현**: pcRun 모듈을 원래 팩토리 위치(app.js:1791)에서 `app.provide("pcRun", …)` 등록(실행 순서 불변). 전달 함수 7개 삭제. 호출자 전환 — 복구 절편 1곳은 조각 직접 호출, deps getter 6개(streaming 2·pcRun 자체 4)는 등록부 값 반환(getter 유지). 조각 7키는 기존 등록 이름·문맥 접근자와 충돌 0(allowlist 추가 없음), 대상 메서드 this-free.
+- **수치**: app.js 2,543(main rebase 기준) → **2,535**줄, `appjs_forwarders` 142 → **135**, `appjs_function_decls` 200 → **193**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향(CSS는 main 값 1,953/1,229 유지).
+- **시험(넓히기만)**: a3 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, 5895 절편·ui_request_speed 하네스 배선. allowlist는 5개 그대로.
+
+### B7 8차 — calendar 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 8개 이름(calendarReadStateKey·calendarReadActivationErrorKey·googleCalendarConnectButton·googleCalendarCard·renderCalendarReadState·syncGoogleCalendarConnectButton·beginGoogleCalendarConnect·activateGoogleCalendarRead)마다 `grep -rn` 전수 조사. APP 독자 단언 3건(step2 전달 블록 2·브라우저 하네스 1)을 등록부 경로로 적응. connectors·b54·bright_calendar의 적중은 전부 모듈 deps 스텁으로 불변.
+- **구현**: calendar 모듈을 원래 팩토리 위치(app.js:181)의 lazy 생성 블록 안에서 `app.provide("calendar", …)` 등록 — 생성 시점과 deps 표면을 그대로 유지. 전달 함수 8개 삭제. 호출자 전환 — connectors deps getter 4개는 등록부 값 반환(getter 유지). 조각 9키(전달 8 + `calendarServerGrantSessionState`)는 기존 등록 이름·문맥 접근자와 충돌 0(allowlist 추가 없음), 대상 메서드 this-free.
+- **수치**: app.js 2,535 → **2,527**줄, `appjs_forwarders` 135 → **127**, `appjs_function_decls` 193 → **185**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: step2 deps 하네스를 등록부 조각 블록으로 전환, 도달성 신규 시험 1건, 브라우저 하네스를 등록부 조회로 적응. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발. allowlist는 5개 그대로.
+
+### B7 9차 — loginDialog 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 8개 이름(setAuthFormError·syncAuthDialogMethods·openAuthDialog·closeAuthDialog·authServerUnreachableError·passwordAuthAnswer·passwordAuthRequest·setAuthStatusMessage)마다 `grep -rn` 전수 조사. APP 독자 단언은 step4 브라우저 하네스 전달 추출과 stage0 전달 위치 단언 2건 — 등록부 경로로 적응. step4 모듈·golden·connectors·streaming의 적중은 전부 deps 스텁으로 불변.
+- **구현**: login-dialog 모듈을 원래 팩토리 위치(app.js:385)의 lazy 생성 블록 안에서 `app.provide("loginDialog", …)` 등록(생성 시점 불변). 전달 함수 8개 삭제. 호출자 전환 — app.js 문맥 접근자 4개와 auth deps getter 2개는 등록부 값 반환(getter 유지), 라우트 복귀 1곳은 조각 직접 호출. 조각 15키(전달 8 + 자체 DOM·wire 7) 중 문맥 접근자와 겹치는 4개를 allowlist에 추가.
+- **allowlist 6~9번째 — `setAuthFormError`·`syncAuthDialogMethods`·`openAuthDialog`·`closeAuthDialog`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 모두 login-dialog 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. B7 마지막 단계에서 접근자 제거 시 함께 뺀다. 현재 allowlist 9개.
+- **수치**: app.js 2,527 → **2,511**줄, `appjs_forwarders` 127 → **119**, `appjs_function_decls` 185 → **177**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: step4 모듈·브라우저 하네스를 등록부 조회로 전환, 등록부 도달성 신규 시험 1건, stage0 절편 경계 적응, 문맥 가드에 4개 이름 추가. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
+
+### B7 10차 — history 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 12개 이름(renderTyping·clearHistoryUI·renderHistorySkeleton·renderHistoryLoadFailed·fetchRecentConversations·loadRecentConversations·clearHistoryActionStatus·showHistoryActionStatus·patchConversation·focusHistoryConversation·beginConversationRename·deleteConversation)마다 `grep -rn` 전수 조사. APP 독자 참조는 app.js 문맥 접근자 1개(loadRecentConversations), streaming deps getter 1개(renderTyping), 세션 바인딩 1곳(clearHistoryUI) — 모두 등록부 경로로 적응. step3 브라우저 하네스의 전달 추출도 등록부 조회로 전환.
+- **구현**: history 모듈을 원래 팩토리 위치(app.js:203)의 lazy 생성 블록 안에서 `app.provide("history", …)` 등록(생성 시점 불변). 전달 함수 12개 삭제. 조각 13키(전달 12 + `wireMenuListeners`)는 기존 등록 이름과 충돌 0. 대상 메서드 this-free.
+- **allowlist 10번째 — `loadRecentConversations`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 history 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. 현재 allowlist 10개.
+- **수치**: app.js 2,511 → **2,491**줄, `appjs_forwarders` 119 → **107**, `appjs_function_decls` 177 → **165**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: step3 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, step3 브라우저 하네스 등록부 조회, 문맥 가드에 loadRecentConversations 추가. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
+
+### B7 11차 — auth 등록 (2026-11-18)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 12개 이름(closeProfilePanel·accountInitial·resolveSessionPresentation·setLoginButtonCopy·applyAuthState·authMethodEnabled·loadAuthStatus·requireSessionForModelUse·signOutCurrentAccount·invalidateClawApprovalSession·noteClawApprovalSession·reviewedGoogleAuthorizationUrl)마다 `grep -rn` 전수 조사. APP 독자 참조는 문맥 접근자 4개·account deps getter 4개·직접 호출 5곳·창 공개 계약 1곳 — 전부 등록부 경로로 적응. step4 브라우저 하네스와 4488·b54·7780·5479·google_drive 절편도 같은 경로로 갱신.
+- **구현**: auth 모듈을 원래 팩토리 위치(app.js:219)의 lazy 생성 블록 안에서 `app.provide("auth", …)` 등록(생성 시점 불변). 전달 함수 12개 삭제. 조각 18키(전달 12 + 자체 헬퍼 3 + wire 3)는 기존 등록 이름과 충돌 0. 대상 메서드 this-free.
+- **allowlist 11~14번째 — `closeProfilePanel`·`authMethodEnabled`·`loadAuthStatus`·`reviewedGoogleAuthorizationUrl`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 auth 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. 현재 allowlist 14개.
+- **수치**: app.js 2,491 → **2,478**줄, `appjs_forwarders` 107 → **95**, `appjs_function_decls` 165 → **153**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향(CSS는 main 값 1,930/1,219).
+- **시험(넓히기만)**: step4 모듈·브라우저 하네스를 등록부 조회로 전환 + auth 도달성 신규 시험 1건, 문맥 가드에 4개 이름 추가, 4488·b54·7780·5479·google_drive·step5 하네스 배선. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
+
+### B7 12차 — core 등록 (2026-11-19)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 14개 이름(uiT·idleNote·setNote·hwpLegacyGuidance·formatClockTime·formatBytes·extensionOf·documentMediaType·readAsText·readDocumentFile·selectImage·mappedUiError·clawT·localeOr)마다 `grep -rn` 전수 조사. APP 독자 참조는 문맥 접근자 5개(uiT·clawT·mappedUiError·idleNote·setNote)·deps getter 6개(conversation 5·clawStatus 1)·app.js 직접 호출 약 90곳(대부분 `coreModule().uiT`·`setNote`·`mappedUiError`·`clawT`) — 전부 등록부 경로로 적응. 4379·attachments·browser_streaming 절편 경계는 모듈 소스를 읽어 불변. 3935· plain_korean_error_display 하네스 절편과 ui_request_speed·b54 라우팅 하네스에 core registry 스텁을 배선했다.
+- **구현**: core 모듈을 원래 팩토리 위치(app.js:143)의 lazy 생성 블록 안에서 `app.provide("core", …)` 등록(생성 시점 불변). 전달 함수 14개 삭제. 조각 14키는 기존 등록 이름과 충돌 0. 대상 메서드 this-free(모듈 내 `this`는 문자열·주석뿐).
+- **allowlist 15~19번째 — `uiT`·`clawT`·`mappedUiError`·`idleNote`·`setNote`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 core 모듈의 같은 메서드와 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. 현재 allowlist 19개.
+- **수치**: app.js 2,478 → **2,464**줄, `appjs_forwarders` 95 → **81**, `appjs_function_decls` 153 → **139**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: step7(a7) 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, 문맥 가드에 5개 이름 추가, 위 문자열 단언·절편 12파일 적응, 3935·plain_korean 하네스에 core 스텁 배선. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
+
+### B7 13차 — clawRun 등록 (2026-11-19)
+
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 15개 이름(setClawDocumentAction·clearClawArtifact·formatClawBytes·renderClawArtifactMeta·safeClawErrorMessage·downloadClawArtifact·revealClawCard·setApprovalControlsBusy·renderClawApprovalControls·clearImmediateApprovalControls·applyImmediateApprovalDecision·renderClawRequestEcho·clawClaimDispatchKey·releaseClawDispatchKey·runClawExecution)마다 `grep -rn` 전수 조사. APP 독자 참조는 문맥 접근자 2개(downloadClawArtifact·renderClawApprovalControls)·clawForm deps getter 4개(clearClawArtifact·renderClawRequestEcho·revealClawCard·runClawExecution)·부팅 직접 호출 1곳(clearClawArtifact) — 전부 등록부 경로로 적응. b62_2322의 APP 이름 단언 1건과 a2 접근자 형태 단언은 등록부 단언으로 전환. 4차 교훈에 따라 app.js 전체를 읽는 시험의 리터럴·절편 경계도 선행 확인(충돌 0).
+- **구현**: clawRun 모듈을 원래 팩토리 위치(app.js:2019)의 즉시 생성 블록 안에서 `app.provide("clawRun", …)` 등록(생성 시점 불변). 전달 함수 15개 삭제. 조각 15키(전달 15와 동일) 중 문맥 접근자와 겹치는 2개를 allowlist에 추가. 대상 메서드 15개 전부 this-free.
+- **allowlist 20~21번째 — `downloadClawArtifact`·`renderClawApprovalControls`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 clawRun 모듈의 같은 메서드로 위임 ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. 현재 allowlist 21개.
+- **수치**: app.js 2,464 → **2,454**줄, `appjs_forwarders` 81 → **66**, `appjs_function_decls` 139 → **124**. deps 161·listeners 44·dom 133 불변. 기준선 숫자 3줄만 하향.
+- **시험(넓히기만)**: a5a 모듈 전달 단언을 등록부 단언으로 전환 + 도달성 신규 시험 1건, a5a 브라우저 하네스를 등록부 미러로 전환(clawRunModule() → app.provide("clawRun"), 대상 15명 대역 생성), 문맥 가드에 2개 이름 추가, b62_2322·a2 접근자 형태 적응. 뮤테이션 2건(provide 제거, 조각 API 누락) 적발.
+
+### B7 14차 — clawStatus 등록(재시도·복구·대기 11개) (2026-11-20)
+
+- **단위표 조정**: clawStatus 전달 함수는 19개라 CTO 상한(10~15개)을 넘으므로 기능 덩어리로 둘로 나눈다. 14차는 모듈 주석의 구획("Claw status, pre-dispatch retry, and the in-flight elapsed wait") 가운데 재시도·복구·대기 덩어리 11개(clawRetryRemaining·clawRetryAfterFromResponse·isAmbiguousClawFailure·clearClawRecovery·renderClawRetryBox·beginClawRetryCooldown·showClawAmbiguousRecoveryHint·applyClawWaitStageCopy·renderClawWait·beginClawWait·clearClawWait), 작곡·상태 전파 4개(syncComposerForClaw·setClawStatus·setClawAreaState·setClawButtonsBusy)와 실행 전 판단 4개(clawVisibleExecutePayload·clawExecuteWireKey·clawCurrentDispatchIsUncertain·noteClawContentEdited)는 다음 차. 15차 account 19도 같은 방식으로 나눈다.
+- **착수 전 스윕(CTO 요구)**: 삭제 대상 11개 이름 grep 전수 조사. APP 독자 참조는 공유 문맥 접근자 2개(clearClawWait·clearClawRecovery)·clawRun deps getter 6개(clawRetryRemaining·clawRetryAfterFromResponse·isAmbiguousClawFailure·beginClawRetryCooldown·showClawAmbiguousRecoveryHint·beginClawWait)·localechange 리스너 직접 호출 3곳(renderClawWait·applyClawWaitStageCopy·renderClawRetryBox)·PadiemClawSession.bind 값 2개(clearRecovery·clearWait) — 전부 등록부 경로로 적응. 대상 메서드 11개 전부 this-free(모듈 본문 정규식 스캔 0건). 조각 19키 중 공유 접근자와 겹치는 이름은 5개(setClawStatus·setClawAreaState·setClawButtonsBusy·clearClawRecovery·clearClawWait).
+- **구현**: clawStatus 모듈을 원래 팩토리 위치(app.js:2045)의 즉시 생성 블록 안에서 `app.provide("clawStatus", …)` 등록(생성 시점 불변). 등록 핸들은 DOM 요소 const `clawStatus`(app.js:2058)와의 충돌을 피해 기존 인스턴스 이름 `clawStatusModuleInstance`를 유지(calendar·history·nav·pcRun 선례) — 접근자 함수 `clawStatusModule()`은 그대로고 나머지 8개 전달 함수도 유지된다. 전달 함수 11개 삭제, 호출자 전환: 공유 접근자 2개·clawRun deps getter 6개는 `clawStatusModule().<이름>` 반환, 리스너 직접 호출 3곳·세션 bind 2값은 등록부 경유 호출.
+- **allowlist 22~26번째 — `setClawStatus`·`setClawAreaState`·`setClawButtonsBusy`·`clearClawRecovery`·`clearClawWait`** (CTO 승인 + 상시 승인 3조건 충족): ① app.js 접근자가 clawStatus 모듈의 같은 메서드로 위임(전달 함수 경유 포함 — 2차 closeSidebar 선례) ② 메서드가 `this` 미사용 ③ 모듈을 원래 팩토리 위치에서 등록. 현재 allowlist 26개. B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+- **수치**: app.js 2,454 → **2,450**줄, `appjs_forwarders` 66 → **55**, `appjs_function_decls` 124 → **113**. deps 161·listeners 44·dom 133 불변.
+- **시험(넓히기만) + 기존 파손 복구**: a4 모듈 전달 단언을 등록부 단언으로 전환(REGISTRY_NAMES 11은 app.js 정의 없음 + 도달성 신규 1건, FORWARDER_NAMES 8은 기존 형태 유지). a4·a5a 브라우저 하네스가 **B6(#7938) 때부터 로컬에서 수집조차 못 했다** — B6가 deps 블록을 `Object.setPrototypeOf({...}, app)` 형태로 바꾸면서 하네스의 `"\n  });"` 절편 경계가 create 블록 끝을 못 찾아 DOM const 구역까지 overshoot, 페이지 const 재선언 SyntaxError(`window.__exercise is not a function`). CI 브라우저 레인이 이 두 파일을 선택하지 않아 잠복했다. 14차에서 절편 경계를 실제 블록 끝(`"\n  }, app)));")로 좁히고(app stub=provide 미러+proto 접근자 14·24개, clawStatus 조각 스텁), 단언은 그대로 유지 — 두 하네스 모두 실제 Chromium에서 처음으로 녹색. 원문 단언 래칫(#8073)이 문장 수를 세므로 신규 단언은 기존 루프 형태(문장 1개)로 합쳐 base 이하 유지(8→8).
+- **검증**: 래칫 4종(#8058·#8073·#8065·#8087) 13 passed — head가 base를 안 넘는다. 부팅 장부 3회×2폭+증분(main 42·branch 18 샘플): 구조 해시·리스너 다중집합·요청 주소·창 이름 변형 풀 일치. ±1 DOMContentLoaded 레이스와 장치 디렉터리 스냅샷 레이스(PadiemClawDeviceDirectory 없는 변형)는 양쪽 트리에서 모두 재현되는 base 자체 변이(장비 스크립트 4개는 이동 이름 참조 0). 골든 로그인 5경로 main/branch byte-identical. 뮤테이션 2건 적발(provide 제거→구조 계약 실패, 조각 API 누락→vm·브라우저·도달성 3건 실패). e2e 14 passed. 광역 스위트 14,639 passed+42 failed — 31 실패 파일을 main·branch 격리 재실행한 결과 시험 단위까지 동일(기존 실패, a3/a9 브라우저 하네스는 같은 B6 절편 가족). 머지·배포 없음 — CTO 승인 후 머지.
+
+### B7 15차 — clawStatus 등록 완료(잔여 8개) (2026-11-20)
+
+- **범위**: 14차에 이어 clawStatus 잔여 8개(syncComposerForClaw·setClawStatus·setClawAreaState·setClawButtonsBusy·clawVisibleExecutePayload·clawExecuteWireKey·clawCurrentDispatchIsUncertain·noteClawContentEdited)를 삭제해 clawStatus 등록을 완료한다. account 19는 기능 덩어리(비밀번호 재설정+변경 12 / 계정 삭제 7)로 나눠 16차·17차에서 처리.
+- **착수 전 스윕(CTO 요구)**: 8개 전부 this-free. app.js 호출부는 공유 접근자 3(setClawStatus·setClawAreaState·setClawButtonsBusy — 14차 allowlist 등재분)·nav deps getter 1(syncComposerForClaw)·clawRun deps getter 3(clawCurrentDispatchIsUncertain·clawVisibleExecutePayload·clawExecuteWireKey)·clawForm deps getter 1(noteClawContentEdited)·부팅 직접 호출 2(localechange syncComposerForClaw·부팅 setClawAreaState("idle")). allowlist 추가/제거 0.
+- **구현**: 전달 함수 8개 삭제, 호출자 10곳을 `clawStatusModule().<이름>` 경유로 전환. b62_2532·a5b 단언은 전환 후에도 원문이 살아 무변경, b62_2483 절편 앵커 1건(`function setClawStatus` 소멸)만 `function clawStatusModule`로 교체.
+- **수치**: app.js 2,450 → **2,440**줄, `appjs_forwarders` 55 → **47**, `appjs_function_decls` 113 → **105**. deps 161·listeners 44·dom 133 불변.
+- **시험(넓히기만)**: a4 모듈 REGISTRY_NAMES를 19개로 확장(FORWARDER_NAMES 소멸), a4 브라우저 하네스 주석 갱신, a5a 브라우저 하네스의 clawStatus 조각 스텁에 deps getter가 등록부 경유로 읽는 3개 추가. 원문 단언 문장 수 감소(래칫 안전).
+- **검증**: 래칫 4종 13 passed. 부팅 장부 변형 풀 일치(main 30·branch 6 샘플 — branch 변형 3종 전부 main 풀에 포함, 신규 변형 0). 골든 5경로 byte-identical. 뮤테이션 2건 적발(provide 제거→구조 계약, setClawStatus 조각 누락→도달성·vm·브라우저 3건). e2e 14 passed. 광역 스위트 14,638 passed+142 failed — 실패 142건 중 127건은 14차 스위트와 동일 목록, 나머지 15건(전체 스위트 문맥 오염 플레이크)은 5파일을 main·branch 격리 재실행에서 84/84 전부 통과로 귀속 확인 — 신규 실패 0. 머지·배포 없음 — CTO 승인 후 머지.
+
+### B7 16차 — account 비밀번호 재설정+변경 12개를 등록부로 (2026-11-20)
+
+- **범위**: account 19 중 비밀번호 재설정+변경 덩어리 12개(passwordResetTokenFromLocation·clearPasswordResetFragment·showPasswordResetView·hidePasswordResetViews·openPasswordResetRequest·openPasswordResetConfirm·closePasswordResetViews·submitPasswordResetRequest·submitPasswordResetConfirm·openPasswordChangeDialog·closePasswordChangeDialog·submitPasswordChange)를 등록부로 옮긴다. 계정 삭제 7은 17차에서 처리. 선정 이유: 15차 계획(기능 덩어리 분할, 상한 15)대로 비밀번호 덩어리는 재설정 메일 링크→요청→확인→변경의 독립 기능군이고, 삭제 덩어리는 별도 확인 단계·공유 계정 경로를 가져 다음 차로 분리한다.
+- **착수 전 스윕**: 12개 전부 this-free. app.js 호출부는 loginDialog deps getter 1(passwordResetTokenFromLocation)·부팅 직접 호출 1(resetLinkOnLoad)뿐. 공유 접근자 충돌 0 → allowlist 추가/제거 0(27개 유지). 등록 이름 충돌은 조각의 `wire` 키가 localPcPanel의 `wire`와 중복 1건 → 내보내기 이름을 `wireAccountControls`로 변경(내부 함수 이름 wire 유지, 유일 호출부 app.js 부팅도 함께 전환).
+- **구현**: 원래 lazy 팩토리 블록 안에서 `app.provide("account", …)` 등록(accountModule() 첫 호출 = 부팅 wire 자리, 생성 시점·순서 불변). 전달 함수 12개 삭제, #5434 주석은 모듈 submitPasswordChange 위로 이관. deps getter·부팅 호출은 등록부 경유로 전환.
+- **수치**: app.js 2,440 → **2,420**줄, `appjs_forwarders` 47 → **35**, `appjs_function_decls` 105 → **93**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,199 불변.
+- **시험(넓히기만)**: step4 모듈 전달 단언을 등록부 단언으로 전환(ACCOUNT_REGISTRY_NAMES 12: app.js 정의 없음+조각 이름 존재)+provide("account") 구조 단언+도달성 신규 1건. step4 브라우저 하네스에 account 조각 provide 미러+등록부 라우팅 12 추가(추출 전달 함수 39→27). a6 androidHandoff 절편 앵커 1건 교체(`accountModule().wire()` 소멸 → `wireAccountControls()`, 등록 순서 단언 유지).
+- **검증**: 래칫 4종 13 passed+파일 가드 5. 부팅 장부 변형 풀 일치(main 30·branch 6 샘플 — branch 변형 3종 전부 main 풀 포함, 신규 변형 0; ±1 DOMContentLoaded·noDevDir 레이스는 base 변이). 골든 로그인 5경로 byte-identical, account 골든 일치. 뮤테이션 2건 적발(provide 제거→구조 계약 1건, submitPasswordChange 조각 누락→구조·도달성·vm 골든·브라우저 4건+fixture 연쇄 10). e2e 14 passed, 오프라인 레인 node --test 74+pytest 13 passed. 머지·배포 없음 — CTO 승인 후 머지.
+
+### B7 17차 — account 계정 삭제 7개를 등록부로, account 등록 완료 (2026-11-20)
+
+- **범위**: account 잔여 계정 삭제 7개(resetAccountDeleteConfirm·resetAccountSharedDeleteConfirm·openAccountDeleteConfirm·openAccountSharedDeleteConfirm·syncAccountDeleteButton·syncAccountSharedDeleteButton·submitAccountDelete) 전달 함수를 삭제해 account 등록을 완료한다. account 모듈에 남은 전달 함수가 없어 17차는 7개(상한 15 이내, 다른 모듈 혼합 없음). 삭제 덩어리는 별도 확인 단계(이메일 정확히 일치)와 공유 계정(all-service) 경로가 있어 본문은 모듈에 그대로 두고 연결 경로만 바꾼다.
+- **착수 전 스윕**: 7개 전부 this-free. app.js 호출부는 auth deps getter 1(resetAccountDeleteConfirm — chat-auth-module applyAuthState가 소비)뿐. 공유 접근자 충돌 0 → allowlist 추가/제거 0(27개 유지). 7개 이름은 16차 app.provide("account") 조각에 이미 등록되어 있어 신규 등록 불필요.
+- **구현**: 전달 함수 7개 삭제, auth deps getter를 등록부 경유로 전환. 삭제 확인 주석은 모듈 resetAccountDeleteConfirm 위로 이관. 생성 시점·순서 불변(account 첫 호출 = 부팅 wire 자리).
+- **수치**: app.js 2,420 → **2,403**줄, `appjs_forwarders` 35 → **28**, `appjs_function_decls` 93 → **86**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,199 불변.
+- **시험(넓히기만)**: step4 모듈 ACCOUNT_REGISTRY_NAMES를 19개로 확장(전달 함수 분기 소멸, 미분류 이름 가드 추가), 도달성 19개 커버. step4 브라우저 하네스 등록부 라우팅 19(추출 전달 함수 27→20).
+- **검증**: 래칫 4종 13 passed+파일 가드 5. 부팅 장부 변형 풀 일치(main 30·branch 6 샘플 — branch 변형 4종 전부 main 풀 포함, 신규 변형 0). 골든 로그인 5경로 byte-identical, account 골든 일치. 뮤테이션 2건 적발(provide 제거→구조 계약 1건, submitAccountDelete 조각 누락→구조·도달성·vm 골든·브라우저 4건). e2e 14 passed, 오프라인 레인 node --test 74+pytest 13, 계정 삭제 백엔드 시험 47 passed. 머지·배포 없음 — CTO 승인 후 머지.
+
+### B7 18차 — conversation 첨부 덩어리 8개를 등록부로 (2026-11-20)
+
+- **범위**: 남은 전달 함수 28개(conversation 19·androidHandoff 9) 중 conversation의 첨부 8개(attachmentCopy·clearAttachment·attachmentCountLimit·attachmentTrayNote·removeAttachmentItem·renderAttachmentChips·addAttachmentFiles·attachmentPayload)를 등록부로 옮긴다. 선정 이유: androidHandoff 9는 이슈 기록상 보류 유지(세션 스토리지 경계·stage0 계약), conversation 19는 상한 15 초과 → 기능 덩어리 분할. 첨부 덩어리는 파일 첨부 UI(복사·제한·트레이·칩·추가·제거·페이로드·해제)의 자족적 기능군으로 상한 이내다. 다른 모듈은 섞지 않는다.
+- **착수 전 스윕**: 8개 전부 this-free(모듈 전체 this 0). 호출부는 공유 접근자 1(attachmentCopy)+conv deps getter 4·streaming deps getter 1(attachmentPayload)+부팅직접 5(clearAttachment 3·addAttachmentFiles 2)뿐. 조각 20키 중 공유 접근자 충돌 6개(approvedMemoryErrorMessage·attachmentCopy·renderStreamError·resetConversationView·safeLocalUiMessage·updateComposer) → allowlist 27→34(+6). 상시 승인 3조건 충족: 같은 모듈 메서드 위임(accessor→forwarder→모듈 메서드, 2차 closeSidebar 선례)·this-free·원래 lazy 팩토리 위치 등록.
+- **구현**: 원래 lazy 팩토리 블록 안 app.provide("conversation") 등록(생성 시점·순서 불변), 전달 함수 8개 삭제+호출자 11곳 등록부 경유 전환. allowlist 6개 등재 주석에 근거 명시.
+- **수치**: app.js 2,403 → **2,398**줄, `appjs_forwarders` 28 → **20**, `appjs_function_decls` 86 → **78**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,199 불변(신규 등록부 단언은 기존 문장에 합쳐 증가 억제).
+- **시험(넓히기만)**: step5 모듈 전달 단언 REGISTRY 8/FORWARDER 11 분리+도달성 신규 1건+provide 구조 단언(기존 문장에 결합), step5 브라우저 하네스 app.provide 미러+등록부 라우팅 8(추출 전달 19→11), 스트리밍 계약 절편 앵커 1건 교체(`function clearAttachment` 소멸→`clearProjectsUI`, 단언 유지), ui_request_speed 절편 하네스에 conversation 등록부 스텁 1건 추가(같은 clearAttachment 스텁 미러).
+- **검증**: 래칫 4종 13 passed+파일 가드 5, 부팅 장부 변형 풀 일치(main 30·branch 6 샘플, 신규 변형 0), 골든 로그인 5경로 byte-identical+account 골든 일치, 뮤테이션 2건 적발(provide 제거→구조 2건, clearAttachment 조각 누락→도달성·브라우저 5건+fixture 연쇄 18), e2e 14 passed, 오프라인 node --test 74+pytest 13, 스트리밍 계약 13 passed. 머지·배포 없음 — CTO 승인 후 머지.
+
+### B7 19차 — conversation 잔여 11개를 등록부로, conversation 등록 완료 (2026-11-20)
+
+- **범위**: 18차 첨부 8개에 이어 conversation 잔여 11개(showComposerInlineHint·updateComposer·showConversation·addUserMessage·renderAnswer·renderStreamError·safeLocalUiMessage·resetConversationView·resetConversation·approvalDecisionErrorMessage·approvedMemoryErrorMessage) 전달 함수를 삭제해 **conversation 등록을 완료**한다(11개, 상한 15 이내, 다른 모듈 미혼합). androidHandoff 9는 이슈 기록대로 보류 유지.
+- **allowlist 변동 0(34개 유지)**: 19차 대상의 공유 접근자 충돌 5개(approvedMemoryErrorMessage·renderStreamError·safeLocalUiMessage·resetConversationView·updateComposer)는 18차에서 이미 상시 승인 3조건(같은 모듈 메서드 위임·this-free·원래 위치 등록) 충족으로 등재돼 신규 추가 불필요. 18차 등록 근거 주석 그대로 유지.
+- **착수 전 스윕**: 11개 전부 this-free(모듈 전체 this 0). 호출부는 공유 접근자 5·deps getter 3(renderAnswer·approvalDecisionErrorMessage·resetConversation)·부팅/리스너 직접 호출 다수(showComposerInlineHint 2·updateComposer 4+입력 리스너·showConversation 2·addUserMessage 2·safeLocalUiMessage 1·resetConversationView 2+세션 bind·resetConversation 1).
+- **구현**: 등록 자체는 18차 app.provide("conversation") 유지(생성 시점·순서 불변), 전달 함수 11개 삭제+호출자 전환(입력 리스너는 `(event) => conversationModule().updateComposer(event)` 형태로 인자 보존).
+- **수치**: app.js 2,398 → **2,385**줄, `appjs_forwarders` 20 → **9**, `appjs_function_decls` 78 → **67**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,199 불변.
+- **시험(넓히기만)**: step5 REGISTRY 19/FORWARDER 소멸(도달성 19 커버), 브라우저 하네스 라우팅 19(추출 전달 소멸). 절편 하네스 4건 적응 — 스트리밍 계약 renderCancelled 앵커, plain_korean_cjs renderCancelled 앵커, ui_request_speed conversation 스텁 확장(showConversation/addUserMessage), e2e 3098 renderStreamError 로컬 미러, static UI contract에서 발견된 5파일 추가 적응(test_4422·test_projects resetConversation 단언, test_4469 CLAW_BOUNDED 앵커, test_b54 route-ordering conversation 스텁 4개, test_r5_a2 공유 접근자 2개 형태). 모두 단언 유지.
+- **검증**: 래칫 4종 13 passed+가드 5, 부팅 장부 변형 풀 일치(main 30·branch 6 샘플, 신규 변형 0), 골든 로그인 5경로 byte-identical+account 골든 일치, 뮤테이션 2건 적발(provide 제거→구조·하네스 2건, showConversation 조각 누락→도달성·브라우저 2건+fixture 연쇄 18), e2e 14 passed, 오프라인 node --test 74+pytest 13, ui_request_speed 5 passed. 머지·배포 없음 — CTO 승인 후 머지.
+
+### B7 20차 — androidHandoff 잔여 9개를 등록부로, B7 등록 이관 완료 (2026-11-20)
+
+- **보류 사유 확인**: #7812 대표 결정(261116)은 "안드로이드 작업 때까지 T2에서 옮기지 않는다"는 일정상 보류였고, 코드상 경계는 R-06(세션 스토리지 reader/writer와 resumeAndroidHandoff는 app.js 소유, 모듈에 sessionStorage 접근 0)과 stage0 TDZ 제약(`let androidHandoffModuleInstance`가 wire 호출 1906·resume 정의 1493보다 앞)이었다. 9개 전달 함수 자체는 이 경계에 해당하지 않는다.
+- **생성·호출 시점 표(9개 공통)**: 레지스트리 `app`은 app.js 첫 문장(8줄)에 생성된다. 모듈 인스턴스는 lazy factory가 처음 호출되는 부팅 1906줄(`wireAndroidHandoffListeners()`)에 생성되며, 이는 등록부 생성(8줄) 이후다. 개별 호출부: isAndroidWebView(resume 1494·loginDialog deps getter), renderAndroidHandoff(resume 1503·localechange 1931·deps getter), startAndroidHandoffPolling(resume 1504), pollAndroidHandoff(resume 1505), startAndroidHandoff(deps getter), clearAndroidHandoff(session bind 2272), stopAndroidHandoffPolling·androidHandoffPhaseKey·claimAndroidHandoff(app.js 호출부 없음 — 모듈 내부 전용). 전부 등록부 생성 이후 호출되고 조각 키 충돌 0·this-free → **9개 전부 옮김**(강제 잔여 0).
+- **구현**: 원래 lazy factory 자리에서 `app.provide("androidHandoff", create(...))` 감싸기(생성 시점·순서 불변), 전달 함수 9개 삭제, 호출자 전환(deps getter 3·resume 4·localechange 1·session bind 1).
+- **allowlist 변동 0(34개 유지)**: 조각 10키가 공유 접근자·타 모듈 조각과 충돌 0.
+- **수치**: app.js 2,385 → **2,378**줄, `appjs_forwarders` 9 → **0**(B7 완료), `appjs_function_decls` 67 → **58**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,167 불변.
+- **시험(넓히기만)**: a6 전달 단언을 등록부 단언으로 전환+도달성 신규 1건, sessionStorage/TDZ/wire 순서 단언 유지.
+- **검증**: 래칫 4종 13 passed+가드 5, 부팅 장부 변형 풀 일치(main 30·branch 6 샘플, 신규 변형 0 — 시점 불변 증거), 골든 로그인 5경로 byte-identical+account 골든 일치, 뮤테이션 2건 적발(provide 제거→구조 1건, isAndroidWebView 조각 누락→구조·vm·도달성 3건), a6 8 passed, e2e 14, 오프라인 node --test 74+pytest 13, ui_request_speed 5 passed.

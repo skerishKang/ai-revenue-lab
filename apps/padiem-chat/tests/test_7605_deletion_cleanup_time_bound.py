@@ -23,7 +23,7 @@ from pathlib import Path
 
 from app.local_r2 import LocalDiskR2
 
-from test_account_deletion_261103 import (
+from _support.account_deletion import (
     BASE,
     DELETER_EMAIL,
     CanonicalAuthority,

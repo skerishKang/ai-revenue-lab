@@ -35,6 +35,7 @@ from padiem_ai_core.tool_channel import ToolDefinition
 
 from .auth_routes import auth_ready, current_user_id
 from .chat_pc_errors import ChatPCApprovalPause, ChatPCDriveError
+from .pc_dispatch_wait_window import PC_DISPATCH_NO_RESULT_TEXT, await_pc_dispatch
 from .connector_account_shadow import mode_connector_read
 from .history import (
     HistoryForbidden,
@@ -360,6 +361,61 @@ _PC_WRITE_INTENT = re.compile(
     re.IGNORECASE,
 )
 
+#: #7841: a write word the sentence denies is not a write request.
+#: "변경하지 않습니다" opened the write lane on a read-only turn, because the
+#: matcher saw only the verb. The denial is read where it attaches: right after
+#: the matched word, in the same clause.
+_PC_WRITE_DENIAL = re.compile(
+    r"^[가-힣]{0,4}\s*(?:"
+    r"지\s*(?:않|안|말|마)"              # 하지 않습니다 / 하지 말고 / 하지 마
+    r"|(?:않|안|말)(?:습니다|고|는다|음|아|\s)"   # 않습니다 / 않고 / 말고 / 안 
+    r"|\s*것\s*(?:이|은|을)?\s*없"      # 할 것이 없이
+    r")"
+)
+
+#: The same denial in English, before the word ("do not delete", "without
+#: editing") and after it ("delete it? no, just list").
+_PC_WRITE_DENIAL_EN_BEFORE = re.compile(
+    r"(?:do\s+not|don't|does\s+not|doesn't|never|no|without)\s+$",
+    re.IGNORECASE,
+)
+_PC_WRITE_DENIAL_EN_AFTER = re.compile(
+    r"^\s*(?:n't|not\b|never\b|nothing\b)", re.IGNORECASE
+)
+
+#: #7841: the words a turn uses when it wants to look at something on the PC.
+#: Paired with a PC word they mean "do PC work", not "tell me about PCs".
+_PC_ACTION_WORD = re.compile(
+    r"(목록|나열|리스트|보여|찾아|검색|열어|열람|확인|읽어|조회"
+    r"|\b(list|show|open|find|search|read|display|browse|enumerate)\b)",
+    re.IGNORECASE,
+)
+
+#: #7841: an Engine refusal that means "that place is outside what this account
+#: may see", not "the PC broke". The visible range is the owner's granted folders
+#: (a whole drive only when the account holds that drive), and this module never
+#: widens it. The turn is answered with the guidance below instead of an error
+#: card, so a top-level drive request becomes an explanation rather than a fault.
+PC_PATH_SCOPE_REFUSALS = frozenset({
+    "pc_files_path_invalid",
+    "oracle_mesh_file_path_invalid",
+})
+PC_PATH_SCOPE_GUIDANCE = (
+    "연결된 PC에서 그 위치는 열어 볼 수 없습니다. "
+    "지금 볼 수 있는 곳은 연결된 폴더 안쪽과 드라이브 목록입니다. "
+    "드라이브 목록을 먼저 확인하시거나 연결된 폴더 이름을 말씀해 주세요."
+)
+
+#: #7841: the cloud services a turn names when it is NOT asking for the PC.
+#: "구글 드라이브에서 파일 찾아 줘" reads like PC work to the two shapers below
+#: (파일 + 찾아), and pressing a PC tool on that turn would answer the wrong
+#: service. The names are the exclusion, not a second lane.
+_PC_EXTERNAL_SERVICE = re.compile(
+    r"(구글|google|지메일|gmail|캘린더|calendar|원드라이브|onedrive"
+    r"|드롭박스|dropbox|노션|notion)",
+    re.IGNORECASE,
+)
+
 #: #7065: the narrower reading of the same words — replace one piece of a file.
 _PC_EDIT_INTENT = re.compile(
     r"(찾아.{0,6}바꿔|일부.{0,6}(?:바꿔|수정|편집)|고쳐|바꿔\s*줘"
@@ -395,7 +451,7 @@ def pc_explicit_request(user_text: Any, *, named_device: bool, requested_device:
     if named_device or requested_device:
         return True
     return isinstance(user_text, str) and bool(
-        _PC_EXPLICIT_REQUEST.search(user_text) or _PC_WRITE_INTENT.search(user_text)
+        _PC_EXPLICIT_REQUEST.search(user_text) or pc_write_intent(user_text)
     )
 
 
@@ -457,8 +513,59 @@ def _close_pc_lane(request: Any, code: str) -> None:
 
 
 def pc_write_intent(user_text: Any) -> bool:
-    """True only when this turn's own words asked for a change."""
-    return isinstance(user_text, str) and bool(_PC_WRITE_INTENT.search(user_text))
+    """True only when this turn's own words asked for a change.
+
+    #7841: a denial attached to the verb ("변경하지 않습니다", "do not delete")
+    is not a request. Each match is read on its own, so a sentence that denies
+    one change and asks for another is still a write turn.
+    """
+
+    if not isinstance(user_text, str):
+        return False
+    for match in _PC_WRITE_INTENT.finditer(user_text):
+        if _write_word_denied(user_text, match):
+            continue
+        return True
+    return False
+
+
+def _write_word_denied(user_text: str, match: "re.Match[str]") -> bool:
+    """True when this one matched write word is denied in its own clause."""
+
+    if _PC_WRITE_DENIAL.match(user_text[match.end():]):
+        return True
+    if _PC_WRITE_DENIAL_EN_AFTER.match(user_text[match.end():]):
+        return True
+    return bool(_PC_WRITE_DENIAL_EN_BEFORE.search(user_text[:match.start()]))
+
+
+def pc_task_intent(
+    user_text: Any, *, named_device: bool = False, requested_device: bool = False,
+) -> bool:
+    """True when the turn clearly asks for work on the PC (#7841).
+
+    Two shapers decide: the turn names a device (linked or chosen in the
+    composer), or it carries both a PC word and an action word ("목록 나열",
+    "list the files"). A general question — "파일 형식 설명해 줘", "PC가 뭐야" —
+    has no action word and stays False, so those turns keep answering as before.
+
+    #7841: a turn naming a cloud service (구글 드라이브, Gmail, 캘린더 …) is not
+    PC work, because those words make "파일 찾아 줘" mean someone else's
+    drive. An explicitly named device still wins: the owner pointed at a
+    machine, so the turn is PC work whatever else it says.
+    """
+
+    if named_device or requested_device:
+        return True
+    if not isinstance(user_text, str):
+        return False
+    if _PC_EXTERNAL_SERVICE.search(user_text):
+        return False
+    if not _PC_EXPLICIT_REQUEST.search(user_text):
+        return False
+    # A change request is the clearest PC work there is, so its own words count
+    # as the action half of the pair.
+    return bool(_PC_ACTION_WORD.search(user_text) or pc_write_intent(user_text))
 
 
 #: #7065: the words that ask to change *part* of a file. They live inside the
@@ -649,6 +756,7 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
     # original order below so every refusal condition and its precedence is
     # unchanged.
     from padiem_control_plane.b54_identity_bridge import (
+        B54IdentityBridgeError,
         resolve_current_b54_canonical_session as resolve_b54_session,
     )
     from .claw_memory_routes import _resolve_memory_workspace
@@ -659,9 +767,28 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
         return_exceptions=True,
     )
     if isinstance(b54_result, BaseException):
-        _pc_owner_journal(
-            "resolve_b54", getattr(b54_result, "code", "") or type(b54_result).__name__,
+        # #7960: the b62 gate above already passed, so this person is signed in -
+        # but the shared B54 canonical session is its own lifetime and can expire
+        # while the product session lives on. Collapsing that case into the same
+        # "identity unavailable" refusal left the person staring at an error they
+        # could not act on (2026-11-18 06:33-08:06: resolved only by a re-login).
+        # The bridge's own inactive-session verdict is therefore named as a login
+        # refresh need; every other bridge failure stays fail-closed as before.
+        expired = (
+            isinstance(b54_result, B54IdentityBridgeError)
+            and b54_result.code == "b54_control_plane_session_inactive"
         )
+        _pc_owner_journal(
+            "resolve_b54",
+            "b54_session_expired" if expired
+            else getattr(b54_result, "code", "") or type(b54_result).__name__,
+        )
+        if expired:
+            raise ChatPCDriveError(
+                "chat_pc_b54_session_expired",
+                "로그인이 오래돼 PC 연결 확인이 필요합니다. 로그아웃 후 다시 로그인해 주세요.",
+                401,
+            ) from b54_result
         raise ChatPCDriveError(
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
@@ -1132,6 +1259,7 @@ async def execute_chat_pc_drive_lane(
     pc_action_context: Any = None,
     declared_plan: Any = None,
     selected_tool: str | None = None,
+    result_wait_seconds: float | None = None,
 ) -> tuple[str, str | None] | None:
     """Run the lane and return ``(answer, conversation_id)``.
 
@@ -1149,6 +1277,11 @@ async def execute_chat_pc_drive_lane(
     ``declared_plan`` may only narrow it. Everything else (owner, grant, PC
     context, target) is verified again below, so the model's request is never
     an execution authority.
+
+    ``result_wait_seconds`` is the turn's own remaining answer budget (#7841).
+    The lane waits that long for the first orchestration result and, when it
+    expires, answers with the fixed PC notice while the PC work continues.
+    ``None`` keeps the older unbounded wait for callers that carry no budget.
     """
     from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 
@@ -1312,6 +1445,7 @@ async def execute_chat_pc_drive_lane(
         device_id=device_id, additional_system_context=additional_context,
         run_id=client_run_id, agent_plan=agent_plan,
         pc_action_context=pc_action_context,
+        result_wait_seconds=result_wait_seconds,
     )
 
 
@@ -1332,6 +1466,7 @@ async def _execute_chat_pc_files_lane(
     run_id: str | None = None,
     agent_plan: Mapping[str, Any],
     pc_action_context: Any = None,
+    result_wait_seconds: float | None = None,
 ) -> tuple[str, str | None]:
     """Stage and run the model-selected plan on the Chat product.
 
@@ -1340,6 +1475,10 @@ async def _execute_chat_pc_files_lane(
     device hint and records the final answer in the original conversation.
     ``user_text`` remains the stored user turn; the Engine prompt uses the
     policy-cleaned ``execution_user_text`` when supplied.
+
+    ``result_wait_seconds`` bounds only this lane's wait for the orchestration
+    result (#7841). The PC dispatch is already staged and keeps running; the
+    late result still meets the unchanged ``summary_guard``.
     """
     from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 
@@ -1386,23 +1525,35 @@ async def _execute_chat_pc_files_lane(
         else user_text
     )
     try:
-        outcome = await bridge.start(
-            user_id=uid,
-            messages=({"role": "user", "content": engine_text},),
-            skill=skill,
-            model_id=model_id,
-            user_text=user_text,
-            conversation_id=staged_conversation_id,
-            subject_id=subject_id,
-            session_id=lane_run_id,
-            agent_plan=agent_plan,
-            additional_system_context=additional_system_context,
-            tool_arguments=tool_arguments,
-            pc_action_context=(pc_action_context if pc_action_context is not None else
-                               [{"role": "user", "content": user_text}]),
-            pc_delegation=pc_delegation,
+        completed, outcome = await await_pc_dispatch(
+            bridge.start(
+                user_id=uid,
+                messages=({"role": "user", "content": engine_text},),
+                skill=skill,
+                model_id=model_id,
+                user_text=user_text,
+                conversation_id=staged_conversation_id,
+                subject_id=subject_id,
+                session_id=lane_run_id,
+                agent_plan=agent_plan,
+                additional_system_context=additional_system_context,
+                tool_arguments=tool_arguments,
+                pc_action_context=(pc_action_context if pc_action_context is not None else
+                                   [{"role": "user", "content": user_text}]),
+                pc_delegation=pc_delegation,
+            ),
+            wait_seconds=result_wait_seconds,
         )
     except B62OrchestrationError as exc:
+        if exc.code in PC_PATH_SCOPE_REFUSALS:
+            # #7841: the place asked for is outside the owner's granted folders.
+            # Nothing is widened and nothing failed: the turn answers with what
+            # can be seen, so the owner reads a way forward, not an error.
+            await _append_lane_notice(
+                request, store, uid=uid, run_id=lane_run_id,
+                content=PC_PATH_SCOPE_GUIDANCE, status="failed",
+            )
+            return PC_PATH_SCOPE_GUIDANCE, staged_conversation_id
         await _append_lane_notice(
             request, store, uid=uid, run_id=lane_run_id,
             content=(
@@ -1414,6 +1565,16 @@ async def _execute_chat_pc_files_lane(
         raise ChatPCDriveError(
             "chat_pc_engine_unavailable", exc.user_message, exc.status_code, cause=exc.code,
         ) from exc
+    if not completed:
+        # #7841: the turn window ended before any orchestration result. Answer
+        # with the fixed notice instead of letting a model summarize the wait;
+        # the PC dispatch keeps running and its late result is still refused by
+        # the unchanged summary_guard.
+        await _append_lane_notice(
+            request, store, uid=uid, run_id=lane_run_id,
+            content=PC_DISPATCH_NO_RESULT_TEXT, status="failed",
+        )
+        return PC_DISPATCH_NO_RESULT_TEXT, staged_conversation_id
     orchestration_payload = getattr(outcome, "orchestration", None)
     if (
         isinstance(orchestration_payload, Mapping)
@@ -1441,7 +1602,7 @@ async def _execute_chat_pc_files_lane(
         )
     composed = answer.strip()
     try:
-        saved = await _append_lane_answer(
+        await _append_lane_answer(
             request, store, uid=uid, run_id=lane_run_id, content=composed,
             raise_errors=True,
         )
@@ -1449,11 +1610,14 @@ async def _execute_chat_pc_files_lane(
         raise ChatPCDriveError(
             "chat_pc_store_unavailable", "대화 기록을 현재 사용할 수 없습니다.",
         ) from exc
-    if not saved:
-        raise ChatPCDriveError(
-            "chat_pc_store_unavailable",
-            "대화 기록을 현재 사용할 수 없습니다.",
-        )
+    # #7841: a `False` return means the answer is already durable, or there is
+    # nothing to append yet because the verified result leg left no summary on
+    # the run row (`pc_result stage=not_appended` in the 2026-11-16 canary
+    # turn). The existing PC lane answers that state with its conversation id
+    # (finish_chat_stream_turn), so this lane does the same: the composed
+    # answer and the turn's conversation id stand, and a completed PC turn is
+    # never reported as a store outage. A provider/store that actually raises
+    # is still the unavailable case above.
     return composed, staged_conversation_id
 
 

@@ -12,9 +12,108 @@
 // namespace, conflicts surface immediately).
 (() => {
   "use strict";
+  // B6 review: a module API key that shadows a shared-state accessor is only
+  // tolerable when the module is the real owner of the value, so reading the
+  // module value can never diverge from app.js's own state. Only the names
+  // below may shadow an accessor; any other collision is a hard error.
+  const ACCESSOR_SHADOW_ALLOWLIST = new Set([
+    // syncClawRunHistoryVisibility — runHistory is the owner: app.js's accessor
+    // and its one-line forwarder both end at
+    // runHistory.syncClawRunHistoryVisibility, which closes over the module's
+    // own state and reads no `this`, so either path behaves identically.
+    "syncClawRunHistoryVisibility",
+    // closeSidebar — B7 (CTO-approved): the sidebar module is the owner —
+    // app.js's accessor and its one-line forwarder both end at
+    // sidebarModule().closeSidebar, which closes over the module's own state
+    // and reads no `this`, so either path behaves identically.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "closeSidebar",
+    // selectedProductTier / closeSettings — B7 (CTO-approved 2026-11-18, 3차 +
+    // 상시 승인 규칙): the settings module is the owner — app.js's accessors
+    // and one-line forwarders both end at the same settings-module methods,
+    // which close over the module's own state and read no `this`.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "selectedProductTier",
+    "closeSettings",
+    // setNavActive — B7 (CTO-approved 2026-11-18, 6차 + 상시 승인 규칙):
+    // app.js accessor and every call site delegate to the nav module's own
+    // setNavActive at the original factory position; the method reads no
+    // `this`, so either path behaves identically.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "setNavActive",
+    // setAuthFormError / syncAuthDialogMethods / openAuthDialog / closeAuthDialog
+    // — B7 (CTO-approved 2026-11-18, 9차 + 상시 승인 규칙): app.js accessors
+    // delegate to the login-dialog module's own methods at the original lazy
+    // factory position; the methods read no `this`, so either path is identical.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "setAuthFormError",
+    "syncAuthDialogMethods",
+    "openAuthDialog",
+    "closeAuthDialog",
+    // loadRecentConversations — B7 (CTO-approved 2026-11-18, 10차 + 상시 승인
+    // 규칙): app.js accessor delegates to the history module's own method at
+    // the original lazy factory position; the method reads no `this`.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "loadRecentConversations",
+    // closeProfilePanel / authMethodEnabled / loadAuthStatus /
+    // reviewedGoogleAuthorizationUrl — B7 (CTO-approved 2026-11-18, 11차 +
+    // 상시 승인 규칙): app.js accessors delegate to the auth module's own
+    // methods at the original lazy factory position; the methods read no `this`.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "closeProfilePanel",
+    "authMethodEnabled",
+    "loadAuthStatus",
+    "reviewedGoogleAuthorizationUrl",
+    // uiT / clawT / mappedUiError / idleNote / setNote — B7 (CTO-approved
+    // 2026-11-18, 12차 + 상시 승인 규칙): app.js accessors delegate to the
+    // core module's own methods at the original lazy factory position; the
+    // methods read no `this`, so either path behaves identically.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "uiT",
+    "clawT",
+    "mappedUiError",
+    "idleNote",
+    "setNote",
+    // downloadClawArtifact / renderClawApprovalControls — B7 (CTO-approved
+    // 2026-11-19, 13차 + 상시 승인 규칙): app.js accessors and the (now removed)
+    // one-line forwarders both end at the claw-run module's own methods at the
+    // original factory position; the methods read no `this`, so either path
+    // behaves identically.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "downloadClawArtifact",
+    "renderClawApprovalControls",
+    // setClawStatus / setClawAreaState / setClawButtonsBusy / clearClawRecovery /
+    // clearClawWait — B7 (CTO-approved 2026-11-20, 14차 + 상시 승인 규칙): app.js
+    // accessors and their one-line forwarders both end at the claw-status
+    // module's own methods at the original factory position (app.provide
+    // "clawStatus"); the methods read no `this`, so either path behaves
+    // identically. clearClawRecovery·clearClawWait forwarders are removed this
+    // round; the composer/status three keep theirs until their registry step.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "setClawStatus",
+    "setClawAreaState",
+    "setClawButtonsBusy",
+    "clearClawRecovery",
+    "clearClawWait",
+    // approvedMemoryErrorMessage / attachmentCopy / renderStreamError /
+    // resetConversationView / safeLocalUiMessage / updateComposer — B7
+    // (CTO-approved, 18차 + 상시 승인 규칙): the conversation module is the
+    // owner — app.js accessors and their one-line forwarders both end at the
+    // conversation module's own methods at the original lazy factory position
+    // (app.provide "conversation"); the methods read no `this`, so either path
+    // behaves identically.
+    // B7 임시 — 마지막 단계에서 app.js 접근자 제거 시 목록에서 뺀다.
+    "approvedMemoryErrorMessage",
+    "attachmentCopy",
+    "renderStreamError",
+    "resetConversationView",
+    "safeLocalUiMessage",
+    "updateComposer",
+  ]);
   window.PadiemChatAppContext = {
     create(shared) {
       const registered = new Map();
+      const providedNames = new Set();
       const context = Object.create(shared || null);
       context.clawAutomation = document.getElementById("clawAutomation");
       context.clawAutomationList = document.getElementById("clawAutomationList");
@@ -29,10 +128,27 @@
         }
         registered.set(name, piece);
         for (const key of Object.keys(piece)) {
-          if (key in context) {
+          if (providedNames.has(key)) {
             throw new Error("PadiemChatAppContext: duplicate name: " + key);
           }
-          context[key] = piece[key];
+          // B6 review: shadowing a shared-state accessor is reserved for the
+          // allowlisted owners; a second module providing the same name, or a
+          // module name colliding with any other accessor, is a hard error
+          // instead of a silent overwrite.
+          if (shared && Object.prototype.hasOwnProperty.call(shared, key)
+              && !ACCESSOR_SHADOW_ALLOWLIST.has(key)) {
+            throw new Error("PadiemChatAppContext: name collides with a shared accessor: " + key);
+          }
+          if (Object.prototype.hasOwnProperty.call(context, key)) {
+            throw new Error("PadiemChatAppContext: name collides with a context-owned ref: " + key);
+          }
+          providedNames.add(key);
+          // app.js owns shared state and exposes live accessors on the prototype
+          // until B7. Only the allowlisted owner names shadow that accessor
+          // (see ACCESSOR_SHADOW_ALLOWLIST); anything else errors above.
+          Object.defineProperty(context, key, {
+            value: piece[key], writable: true, configurable: true, enumerable: true,
+          });
         }
         return piece;
       };

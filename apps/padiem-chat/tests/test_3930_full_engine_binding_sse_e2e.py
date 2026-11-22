@@ -29,7 +29,7 @@ from padiem_ai_engine_client import (
 from kagent.p01_adapter import P01_AGENT_ID, P01_APP_ID, P01CoreOrchestrationAdapter, P01RequestFactory
 from kagent.p01_orchestration_client import P01EngineOrchestrationClient
 from app.worker_orchestration import CloudflareEngineServiceTransport
-from test_b54_claw_general_p01_routing import _client, _payload
+from _support.claw_general_routing import _client, _payload
 from test_3930_engine_ndjson_stream_port import FakeRequest, FakeReader
 
 

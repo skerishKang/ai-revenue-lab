@@ -19,6 +19,7 @@ admitted. These tests pin:
 
 from __future__ import annotations
 
+import secrets
 import sqlite3
 from pathlib import Path
 
@@ -31,7 +32,7 @@ from app.usage_gate import (
     UsageDecision,
     UsageGate,
 )
-from test_5568_document_convert_routes import (
+from _support.document_convert_routes import (
     build_client,
     open_job,
     pdf_bytes,
@@ -94,8 +95,9 @@ async def test_the_real_conversion_allowance_succeeds_after_122() -> None:
         auth_mode="google",
         public_base_url="https://chat.example.test",
         google_client_id="test.apps.googleusercontent.com",
-        google_client_secret="unit-test-secret",
-        session_secret="test-session-secret-for-7799-only-00000",
+        # 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
+        google_client_secret=secrets.token_urlsafe(32),
+        session_secret=secrets.token_urlsafe(32),
         quota_salt="test-quota-salt-for-7799-only-0000000",
     )
     gate = UsageGate(settings, D1UsageCounterStore(db))
@@ -237,8 +239,8 @@ def test_the_front_end_speaks_in_user_words_and_shows_no_raw_code() -> None:
     assert "err.title = item.error_code" not in js
     assert "warnings.join" not in js
     assert "warnings.join(\", \")" not in js
-    # Stage-level progress is part of the item card and the run flow.
-    assert "STAGE_LINES" in js
-    assert "원본을 확인하고 있습니다" in js
-    assert "변환본을 만들고 있습니다" in js
+    # #7865: the duplicated stage-line block is gone (the conversion starts
+    # on upload), and the one card a still-queued row paints says so itself.
+    assert "STAGE_LINES" not in js
+    assert "바꾸는 중 — 잠시 후 결과가 이 자리에 생깁니다." in js
     assert "innerHTML" not in js

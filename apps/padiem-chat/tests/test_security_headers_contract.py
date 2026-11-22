@@ -1,9 +1,15 @@
 from __future__ import annotations
 
-import re
-from pathlib import Path
-
-from app.worker_config import CONTENT_SECURITY_POLICY, PERMISSIONS_POLICY, response_headers_for_path
+from _support.security_headers_contract import (
+    FRONT_HEADER_TOKENS,
+    front_worker_facts,
+    markup_facts,
+)
+from app.worker_config import (
+    CONTENT_SECURITY_POLICY,
+    PERMISSIONS_POLICY,
+    response_headers_for_path,
+)
 
 
 def _parse_csp(value: str) -> dict[str, tuple[str, ...]]:
@@ -60,17 +66,14 @@ def test_csp_allows_only_current_static_font_dependencies_and_attachment_preview
 
 
 def test_static_markup_is_compatible_with_self_only_script_policy():
-    root = Path(__file__).resolve().parents[1]
-    html = (root / "static/index.html").read_text(encoding="utf-8")
-
-    script_tags = re.findall(r"<script\b([^>]*)>", html, flags=re.IGNORECASE)
-    assert script_tags
-    assert all(re.search(r"\bsrc\s*=", attrs, flags=re.IGNORECASE) for attrs in script_tags)
+    facts = markup_facts()
+    assert facts["script_count"] > 0
+    assert facts["all_scripts_external"] is True
     # Existing and new styles remain same-origin link resources; no inline
     # script allowance is required by the Mode 1 microphone integration.
-    assert '<link rel="stylesheet" href="./styles.css"' in html
-    assert re.search(r'<link[^>]+rel="stylesheet"', html, flags=re.IGNORECASE)
-    assert not re.search(r"\son[a-z]+\s*=", html, flags=re.IGNORECASE)
+    assert facts["styles_css_linked"] is True
+    assert facts["stylesheet_links"]
+    assert facts["inline_handlers"] is False
 
 
 def test_permissions_policy_denies_unshipped_sensitive_capabilities():
@@ -98,18 +101,9 @@ def test_front_door_mirrors_the_reviewed_policy():
     """The front worker is the real public entry, so it must carry the exact
     reviewed header set: the body policy rides Report-Only there, and
     frame-ancestors 'none' is the one enforced CSP directive."""
-    front = (
-        Path(__file__).resolve().parents[2]
-        / "padiem-chat-front"
-        / "worker.mjs"
-    ).read_text(encoding="utf-8")
+    facts = front_worker_facts()
 
     # The report-only body policy stays byte-identical to the reviewed
     # configuration (the front test pins the same text from the other side).
-    assert CONTENT_SECURITY_POLICY in front
-    assert PERMISSIONS_POLICY in front
-    assert '"content-security-policy-report-only"' in front
-    assert '"content-security-policy": FRAME_ANCESTORS_CSP' in front
-    assert '"x-frame-options": "DENY"' in front
-    assert '"x-content-type-options": "nosniff"' in front
-    assert '"referrer-policy": "strict-origin-when-cross-origin"' in front
+    assert set(facts["present"]) == set(FRONT_HEADER_TOKENS)
+    assert facts["reviewed_policies"] == (True, True)

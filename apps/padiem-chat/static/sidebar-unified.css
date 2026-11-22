@@ -97,7 +97,10 @@ html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-ite
   border-radius: 10px 0 0 10px !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: inherit;
+  /* #7953: 유리 테마에서 상속이 어두운 본문 색을 가져와 목록 글자가
+     바탕과 같은 색이 됐다. 사이드바 글자 토큰으로 고정한다 — 없는 테마는
+     본문 토큰이 그 역할을 한다. */
+  color: var(--sidebar-text, var(--text));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

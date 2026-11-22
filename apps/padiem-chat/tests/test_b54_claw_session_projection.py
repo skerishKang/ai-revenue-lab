@@ -116,7 +116,7 @@ def _signed_in_client(store: object) -> TestClient:
     client = TestClient(_app_with(store), base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )
@@ -429,9 +429,17 @@ def test_phase_b_adds_exactly_one_additive_nullable_conversation_migration() -> 
 
 def test_phase_b_d1_select_includes_conversation_id() -> None:
     """The D1 list query now selects the persisted conversation_id column."""
-    source = Path(history_module.__file__).read_text(encoding="utf-8")
+    import inspect
+    from app.history import D1HistoryStore
+    app_dir = Path(history_module.__file__).resolve().parent
+    paths = [app_dir / "history.py"] + sorted(app_dir.glob("history_store_*.py"))
+    source = "\n".join(path.read_text(encoding="utf-8") for path in paths)
     select = source.split("SELECT run_id, channel", 1)[1].split("FROM claw_run_history", 1)[0]
     assert "conversation_id" in select
+    method_source = inspect.getsource(D1HistoryStore.list_recent_claw_runs)
+    assert "SELECT run_id, channel" in method_source
+    method_select = method_source.split("SELECT run_id, channel", 1)[1].split("FROM claw_run_history", 1)[0]
+    assert "conversation_id" in method_select
 
 
 def test_phase_b_record_claw_run_accepts_optional_conversation_id() -> None:

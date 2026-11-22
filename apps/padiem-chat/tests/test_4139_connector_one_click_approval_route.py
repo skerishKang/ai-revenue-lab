@@ -11,7 +11,7 @@ from app import connector_one_click_approval_route as page
 from app.app_factory import create_app
 from app.config import Settings
 from app.connector_one_click_approval import ONE_CLICK_ENROLLMENT_HTTP_MOUNTED
-from test_4139_connector_one_click_approval import Fixture, REQUEST, CODE, session
+from _support.connector_one_click import Fixture, REQUEST, CODE, session
 
 
 def post(*, monkeypatch, payload=None, fixture=None, signed=True, configured=True,

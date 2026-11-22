@@ -13,7 +13,7 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] {
 html[data-theme="padiem-glass"][data-glass-mode="reading"] body::before {
   background:
     linear-gradient(90deg, rgba(17, 24, 31, .06), transparent 28%, transparent 76%, rgba(17, 24, 31, .04)),
-    linear-gradient(180deg, rgba(255, 255, 255, .05), transparent 44%, rgba(17, 24, 31, .05));
+    linear-gradient(180deg, var(--surface-veil-faint), transparent 44%, rgba(17, 24, 31, .05));
   box-shadow: inset 0 0 140px 28px rgba(20, 29, 38, .07);
 }
 
@@ -35,9 +35,9 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .main-panel::before {
  * state, so match that scope explicitly instead of relying on stylesheet order.
  */
 html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation {
-  background: linear-gradient(155deg, rgba(251, 252, 253, .97), rgba(242, 246, 248, .94)) !important;
-  border-color: rgba(255, 255, 255, .78) !important;
-  box-shadow: 0 20px 54px rgba(28, 36, 44, .11), inset 0 1px 0 rgba(255, 255, 255, .84) !important;
+  background: linear-gradient(155deg, rgba(251, 252, 253, .97), rgba(242, 246, 248, .94));
+  border-color: var(--line-veil-haze);
+  box-shadow: 0 20px 54px rgba(28, 36, 44, .11), inset 0 1px 0 rgba(255, 255, 255, .84);
   backdrop-filter: blur(22px) saturate(102%);
   -webkit-backdrop-filter: blur(22px) saturate(102%);
 }
@@ -47,7 +47,7 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .assistant-content {
 }
 
 html[data-theme="padiem-glass"][data-glass-mode="reading"] .assistant-meta {
-  color: #46535f !important;
+  color: #46535f;
 }
 
 html[data-theme="padiem-glass"][data-glass-mode="reading"] .source-card,
@@ -58,7 +58,7 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .project-card,
 html[data-theme="padiem-glass"][data-glass-mode="reading"] .project-file-card,
 html[data-theme="padiem-glass"][data-glass-mode="reading"] .reference-note {
   background-color: rgba(249, 250, 251, .94) !important;
-  border-color: rgba(73, 86, 98, .12) !important;
+  border-color: rgba(73, 86, 98, .12);
   backdrop-filter: blur(18px) saturate(101%);
   -webkit-backdrop-filter: blur(18px) saturate(101%);
 }
@@ -72,7 +72,7 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .reference-note {
   }
 
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation {
-    background: rgba(247, 249, 250, .97) !important;
+    background: rgba(247, 249, 250, .97);
     box-shadow: 0 14px 38px rgba(28, 36, 44, .09), inset 0 1px 0 rgba(255, 255, 255, .82) !important;
   }
 }
@@ -102,7 +102,7 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .reference-note {
   html[data-theme="padiem-glass"][data-glass-mode="reading"] .project-card,
   html[data-theme="padiem-glass"][data-glass-mode="reading"] .project-file-card {
     background: #f7f9fa !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }

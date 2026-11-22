@@ -72,19 +72,19 @@
 
 /* A single sidebar backdrop; no outlined or separately filled cells.
    Hover/selected/focus can still identify the active row. */
-html body .app-shell .sidebar :is(.project-row, .history-row) {
+html:not([data-glass-mode]) body .app-shell .sidebar :is(.project-row, .history-row) {
   background: transparent !important;
   background-color: transparent !important;
   border: 0 !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
+  box-shadow: none;
+  backdrop-filter: none;
   -webkit-backdrop-filter: none !important;
 }
-html body .app-shell .sidebar :is(.project-row, .history-row):hover,
-html body .app-shell .sidebar :is(.project-row, .history-row):focus-within {
+html:not([data-glass-mode]) body .app-shell .sidebar :is(.project-row, .history-row):hover,
+html:not([data-glass-mode]) body .app-shell .sidebar :is(.project-row, .history-row):focus-within {
   background: rgba(255,255,255,.065) !important;
 }
-html body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]),
+html:not([data-glass-mode]) body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]),
 html body .app-shell .sidebar .history-row:has(.history-item[aria-current="page"]) {
   background: rgba(255,255,255,.12) !important;
 }

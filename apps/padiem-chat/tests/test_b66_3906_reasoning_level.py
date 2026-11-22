@@ -24,7 +24,18 @@ from app.b66_reasoning_level import (
     reasoning_parameter_for_request,
     validate_reasoning_level,
 )
-from test_b66_quote_runtime import _client, _Interpreter, _Store, SAVED_ID
+from _support.quote_runtime import _client, _Interpreter, _Store, SAVED_ID
+
+# #8060 44차: 원문 읽기는 _support 헬퍼(b66_reasoning_source)가 담당하고 시험은
+# 파싱 값(토큰·import 이름, 파싱된 레지스트리 JSON)으로 단언한다. 이 모듈은
+# 원문 read를 갖지 않는다.
+from _support.b66_reasoning_source import (  # noqa: E402
+    has_self_assignment,
+    imported_top_level_modules,
+    js_identifiers,
+    python_tokens,
+    registry_upstream_model,
+)
 
 MODEL = "test-fixture/registered-model"
 LEVEL_OPTION = {"value": "default", "label": "기본(제공자 기본값)"}
@@ -327,8 +338,7 @@ def test_capability_table_equals_the_b14_native_parameter_authority():
 
 def test_b66_never_invents_a_provider_parameter_name():
     """Only the B14-documented native field may appear in the B66 layer."""
-    module = Path(__file__).resolve().parents[1] / "app" / "b66_reasoning_level.py"
-    source = module.read_text(encoding="utf-8")
+    tokens = python_tokens("apps/padiem-chat/app/b66_reasoning_level.py")
     for forbidden in (
         "thinkingConfig",
         "thinking_budget",
@@ -337,7 +347,7 @@ def test_b66_never_invents_a_provider_parameter_name():
         "enable_thinking",
         "chat_template_kwargs",
     ):
-        assert forbidden not in source
+        assert not any(forbidden in token for token in tokens)
     # `reasoning_effort` is legitimate only as the emitted argument key.
     emitted = {
         tuple(sorted(parameters))
@@ -374,35 +384,33 @@ def test_the_quote_ui_offers_a_grade_and_no_reasoning_control():
     The grade picker stays (it carries no model identity), and the per-model
     reasoning control and its bookkeeping are gone from the shipped runtime.
     """
-    root = Path(__file__).resolve().parents[3]
-    runtime = (
-        root / "apps/padiem-chat/static/b66-quote-runtime.js"
-    ).read_text(encoding="utf-8")
-    assert "b66QuoteModelSelect" in runtime
-    assert "b66QuoteReasoningSelect" not in runtime
-    assert "b66QuoteReasoningField" not in runtime
-    assert "reasoning_levels" not in runtime
-    assert "reasoning_level" not in runtime
-    assert "syncReasoningOptions" not in runtime
+    identifiers = js_identifiers("apps/padiem-chat/static/b66-quote-runtime.js")
+    assert "b66QuoteModelSelect" in identifiers
+    assert "b66QuoteReasoningSelect" not in identifiers
+    assert "b66QuoteReasoningField" not in identifiers
+    assert "reasoning_levels" not in identifiers
+    assert "reasoning_level" not in identifiers
+    assert "syncReasoningOptions" not in identifiers
 
 
 def test_no_automatic_model_substitution_or_fallback_in_b66_sources():
-    root = Path(__file__).resolve().parents[3]
-    sources = [
-        root / "apps/padiem-chat/app/b66_quote_routes.py",
-        root / "apps/padiem-chat/app/b66_reasoning_level.py",
-        root / "reference/business-66-padiem-quote-v1/padiem-account.js",
-        root / "apps/padiem-chat/static/b66-quote-runtime.js",
-    ]
-    for src in sources:
-        content = src.read_text(encoding="utf-8")
-        assert "fallback_model" not in content
-        assert "model_fallback" not in content
-        assert "auto_select" not in content
+    sources = (
+        "apps/padiem-chat/app/b66_quote_routes.py",
+        "apps/padiem-chat/app/b66_reasoning_level.py",
+        "reference/business-66-padiem-quote-v1/padiem-account.js",
+        "apps/padiem-chat/static/b66-quote-runtime.js",
+    )
+    for relative in sources:
+        tokens = (
+            js_identifiers(relative)
+            if relative.endswith(".js")
+            else python_tokens(relative)
+        )
+        for forbidden in ("fallback_model", "model_fallback", "auto_select", "downgrade_to"):
+            assert not any(forbidden in token for token in tokens)
         # An unsupported level must never be silently coerced to another one:
         # no code path may replace a rejected level with a different value.
-        assert "downgrade_to" not in content
-        assert "reasoning_level = reasoning_level" not in content
+        assert not has_self_assignment(relative, "reasoning_level")
 
 
 # --------------------------------------------------------------------------
@@ -791,15 +799,7 @@ def test_b66_level_never_leaks_into_the_platform_request_json():
 
     emitted = reasoning_parameter_for_request(GEMINI_35, "low")
     assert emitted == {"reasoning_effort": "low"}
-    _raw = (os.environ.get("PADIEM_MODELS_REGISTRY_OVERRIDE", "").strip()
-            or os.environ.get("PADIEM_MODELS_REGISTRY", "").strip())
-    _registry_path = Path(_raw).expanduser() if _raw else (
-        Path(__file__).resolve().parents[3] / "apps" / "korean-ai-platform"
-        / "app" / "pilot" / "b14_models.json")
-    _row = next(m for m in json.loads(
-        _registry_path.read_text(encoding="utf-8")).get("models", [])
-        if m.get("id") == GEMINI_35)
-    expected_upstream = _row["upstream_model"]
+    expected_upstream = registry_upstream_model(GEMINI_35)
     platform = Path(__file__).resolve().parents[3] / "apps" / "korean-ai-platform"
     # #4070 race fix: this driver used to be written INTO the repository tree
     # (`apps/korean-ai-platform/b66_reasoning_transport_probe.py`) and deleted in
@@ -868,14 +868,12 @@ def test_transport_gate_fails_closed_without_an_injected_capability():
 
 def test_b66_never_imports_the_shared_core_package_directly():
     """B14/Core owns the transport; B66 must not become a second Core client."""
-    root = Path(__file__).resolve().parents[3]
     for relative in (
         "apps/padiem-chat/app/b66_reasoning_level.py",
         "apps/padiem-chat/app/b66_registered_model_boundary.py",
     ):
-        source = (root / relative).read_text(encoding="utf-8")
-        assert "import padiem_ai_core" not in source
-        assert "from padiem_ai_core" not in source
+        imports = imported_top_level_modules(relative)
+        assert "padiem_ai_core" not in imports
 
 
 def test_grade_rows_carry_a_grade_and_no_reasoning_menu():

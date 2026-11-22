@@ -11,7 +11,7 @@ import json
 import re
 import sqlite3
 import threading
-from pathlib import Path
+from contextlib import closing
 
 import pytest
 
@@ -40,7 +40,12 @@ from app.b66_ai_conversation import (
 )
 from app.b66_ai_conversation_store import D1ConversationStore
 
-MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "041_b66_ai_conversation.sql"
+from _support.b66_conversation_migration import (
+    MIGRATION,
+    apply_migration,
+    executable_statements as _executable_statements,
+    migration_statements,
+)
 
 A = "usr_" + "a" * 32
 B = "usr_" + "b" * 32
@@ -475,7 +480,6 @@ def test_bump_revision_advances_once():
 
 # ── real SQL migration contract ──
 
-_SQL_COMMENT_RE = re.compile(r"--[^\n]*")
 # A destructive *statement verb*. Matching is on the leading verb of an
 # executable statement only, so a column named ``updated_at`` or a referential
 # ``ON DELETE CASCADE`` action (both plain data definition) is never confused
@@ -483,14 +487,6 @@ _SQL_COMMENT_RE = re.compile(r"--[^\n]*")
 _DESTRUCTIVE_VERBS = frozenset(
     {"DROP", "ALTER", "DELETE", "UPDATE", "TRUNCATE", "GRANT", "REVOKE", "REPLACE"}
 )
-
-
-def _executable_statements(sql: str) -> list[str]:
-    """Statement-level view of a migration: comments removed, split on ';'."""
-    without_comments = "\n".join(
-        _SQL_COMMENT_RE.sub("", line) for line in sql.splitlines()
-    )
-    return [statement.strip() for statement in without_comments.split(";") if statement.strip()]
 
 
 def _destructive_statements(sql: str) -> list[str]:
@@ -504,24 +500,28 @@ def _destructive_statements(sql: str) -> list[str]:
 
 
 def test_migration_is_one_additive_owner_scoped_slot():
-    sql = MIGRATION.read_text(encoding="utf-8")
-    statements = [
-        line.strip() for line in sql.splitlines()
-        if line.strip() and not line.lstrip().startswith("--")
-    ]
-    assert statements == [
-        "PRAGMA foreign_keys = ON;",
-        "CREATE TABLE IF NOT EXISTS b66_ai_conversation (",
-        "user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,",
-        "workspace_id TEXT NOT NULL,",
-        "state_json TEXT NOT NULL,",
-        "revision INTEGER NOT NULL DEFAULT 0,",
-        "updated_at TEXT NOT NULL,",
-        "PRIMARY KEY (user_id, workspace_id)",
-        ");",
-    ]
-    # No executable statement may drop, alter, rewrite or re-grant anything.
-    assert _destructive_statements(sql) == []
+    statements = migration_statements()
+    # Exactly the two additive statements, independent of SQL formatting.
+    assert [statement.split(None, 1)[0].upper() for statement in statements] == ["PRAGMA", "CREATE"]
+    assert not any(_destructive_statements(statement) for statement in statements)
+    with closing(sqlite3.connect(":memory:")) as db:
+        db.execute("PRAGMA foreign_keys = OFF")
+        db.execute("CREATE TABLE users (id TEXT PRIMARY KEY)")
+        apply_migration(db)
+        assert db.execute("PRAGMA foreign_keys").fetchone() == (1,)
+        assert tuple(db.execute("PRAGMA table_xinfo(b66_ai_conversation)")) == (
+            (0, "user_id", "TEXT", 1, None, 1, 0),
+            (1, "workspace_id", "TEXT", 1, None, 2, 0),
+            (2, "state_json", "TEXT", 1, None, 0, 0),
+            (3, "revision", "INTEGER", 1, "0", 0, 0),
+            (4, "updated_at", "TEXT", 1, None, 0, 0),
+        )
+        assert tuple(db.execute("PRAGMA foreign_key_list(b66_ai_conversation)")) == (
+            (0, 0, "users", "user_id", "id", "NO ACTION", "CASCADE", "NONE"),
+        )
+        assert tuple(row[2:] for row in db.execute("PRAGMA index_list(b66_ai_conversation)")) == (
+            (1, "pk", 0),
+        )
     # 027 stays reserved for #3925; 040 is the previous migration.
     existing = sorted(path.name for path in MIGRATION.parent.glob("*.sql"))
     slot_027 = [name for name in existing if name.startswith("027_")]
@@ -571,8 +571,27 @@ def test_destructive_statement_after_a_benign_one_is_still_detected():
 
 
 def test_migration_creates_exactly_one_slot_table():
-    sql = MIGRATION.read_text(encoding="utf-8")
-    assert sql.upper().count("CREATE TABLE") == 1
+    with closing(sqlite3.connect(":memory:")) as db:
+        db.execute("CREATE TABLE users (id TEXT PRIMARY KEY)")
+        db.execute("INSERT INTO users VALUES (?)", (A,))
+        db.commit()
+        apply_migration(db)
+        assert db.execute(
+            "SELECT name FROM sqlite_schema WHERE type = 'table' ORDER BY name"
+        ).fetchall() == [("b66_ai_conversation",), ("users",)]
+        db.execute(
+            "INSERT INTO b66_ai_conversation (user_id, workspace_id, state_json, updated_at) VALUES (?, ?, ?, ?)",
+            (A, "owner", "{}", "fixture"),
+        )
+        db.commit()
+        # CREATE IF NOT EXISTS must preserve the row on a second application.
+        apply_migration(db)
+        assert db.execute(
+            "SELECT user_id, workspace_id, state_json, revision, updated_at FROM b66_ai_conversation"
+        ).fetchall() == [(A, "owner", "{}", 0, "fixture")]
+        assert db.execute("SELECT id FROM users").fetchall() == [(A,)]
+        db.execute("DELETE FROM users WHERE id = ?", (A,))
+        assert db.execute("SELECT count(*) FROM b66_ai_conversation").fetchone() == (0,)
 
 
 # ── private D1 slot behavior ──
@@ -620,7 +639,7 @@ def source():
     db.row_factory = sqlite3.Row
     db.execute("CREATE TABLE users (id TEXT PRIMARY KEY)")
     db.executemany("INSERT INTO users(id) VALUES (?)", [(A,), (B,)])
-    db.executescript(MIGRATION.read_text(encoding="utf-8"))
+    apply_migration(db)
     yield db, D1ConversationStore(SQLiteD1(db))
     db.close()
 
@@ -956,7 +975,7 @@ def _seed_file_slot(path):
     db.execute("PRAGMA busy_timeout=15000")
     db.execute("CREATE TABLE users (id TEXT PRIMARY KEY)")
     db.executemany("INSERT INTO users(id) VALUES (?)", [(A,), (B,)])
-    db.executescript(MIGRATION.read_text(encoding="utf-8"))
+    apply_migration(db)
     db.commit()
     db.close()
 

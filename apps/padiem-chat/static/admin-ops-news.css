@@ -1,0 +1,11 @@
+/* #8035 ④ — use existing theme tokens; no new literal colors. */
+.ops-news-form{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));align-items:end}
+.ops-news-field{display:grid;gap:4px;font-size:11px;font-weight:750;color:var(--ops-muted)}
+.ops-news-wide{grid-column:1/-1}
+.ops-news-input{border:1px solid var(--ops-line);background:var(--ops-field,var(--ops-panel-bg));color:var(--ops-text);border-radius:var(--radius-sm);padding:8px 10px;font:inherit;min-width:0}
+textarea.ops-news-input{resize:vertical}
+.ops-news-actions{display:flex;gap:9px;flex-wrap:wrap}
+.ops-news-row{display:grid;gap:6px;justify-items:start}
+.ops-news-title{color:var(--ops-text);font-size:12px;overflow-wrap:anywhere}
+.ops-news-meta{color:var(--ops-muted);font-size:10px;overflow-wrap:anywhere}
+.ops-news-detail{margin:0;color:var(--ops-text);font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere}

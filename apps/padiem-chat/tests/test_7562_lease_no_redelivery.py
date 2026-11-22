@@ -22,7 +22,7 @@ import hashlib
 
 import pytest
 
-from test_4139_mesh_original import _dispatch_kwargs, fixture
+from _support.mesh_dispatch import _dispatch_kwargs, fixture
 
 EXPIRED = "2000-01-01T00:00:00.000Z"
 LATER = "2099-01-01T00:00:00.000Z"

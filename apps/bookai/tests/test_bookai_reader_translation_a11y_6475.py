@@ -119,19 +119,28 @@ window.addEventListener('error', e => {
         page_errors.extend(page.evaluate("window.__bookaiErrors || []"))
 
         settings = page.evaluate("window.__smReaderSettingsV1.get()")
-        assert settings["englishMode"] == "compact"
+        # #7836: a Korean first visit starts with 한글만.
+        assert settings["englishMode"] == "hide"
         assert settings["fontSize"] == "base"
         assert settings["lineHeight"] == "relaxed"
         assert page.locator("#readerPageBody .verse[lang='ko']").count() > 0
         assert page.locator("#readerPageBody .verse-en[lang='en']").count() > 0
-        source_note = page.locator("#readerPageBody .sm-verified-source-note").first.inner_text()
+        # #7837: 출처 줄은 기본이 짧은 한국어 표기이고, 구절 코드·영역본 이름 같은
+        # 상세 표기는 눌러서 펼칠 때만 보인다.
+        source_note_el = page.locator("#readerPageBody .sm-verified-source-note").first
+        default_note = source_note_el.inner_text()
+        assert "개역한글(1961)" in default_note
+        assert "VERIFIED SOURCE" not in default_note
+        assert "World English Bible" not in default_note
+        source_note_el.locator("summary").click()
+        source_note = source_note_el.inner_text()
         assert "KRV-1961" in source_note
         assert "WEB" in source_note and "World English Bible" in source_note
         assert "ENGWEBP" in source_note
 
         panel = _open_settings(page)
         font = panel.get_by_role("group", name="글꼴")
-        language = panel.get_by_role("group", name="번역본 표시")
+        language = panel.get_by_role("group", name="영어 함께 보기")
         size = panel.get_by_role("group", name="글자 크기")
         spacing = panel.get_by_role("group", name="줄 간격")
         theme = panel.get_by_role("group", name="테마 · 배경")
@@ -139,7 +148,7 @@ window.addEventListener('error', e => {
         assert page.evaluate("document.activeElement.classList.contains('srsg-x')")
         page.keyboard.press("Tab")
         assert page.evaluate("document.activeElement.closest('.srsg-seg')?.dataset.field") == "font"
-        assert language.get_by_role("button", name="영어 작게").get_attribute("aria-pressed") == "true"
+        assert language.get_by_role("button", name="한글만").get_attribute("aria-pressed") == "true"
         assert theme.get_by_role("button", name="밝게").get_attribute("aria-label")
 
         contrast = page.evaluate("""() => {

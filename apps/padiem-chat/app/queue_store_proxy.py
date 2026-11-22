@@ -85,6 +85,8 @@ QUEUE_DISPATCH_METHODS = frozenset({
 QUEUE_PAIRING_METHODS = frozenset({
     "adopt_link",
     "approve_root",
+    "approve_share_candidate",
+    "seed_share_candidates",
     "claim",
     "claim_failure_counts",
     "complete_claim_from_observation",
@@ -108,17 +110,28 @@ QUEUE_PAIRING_METHODS = frozenset({
     "revoke_link",
     "revoke_root",
     "set_link_label",
+    "list_helper_update_preferences",
+    "set_helper_update_preference",
     # #7147/#7153: the managed(contract) mark — read by the SYSTEM gate,
     # written by the admin toggle. Added here together with the store server
     # allowlist so the queue path carries the whole pairing surface.
     "is_managed_link",
     "list_active_device_ids",
+    "load_helper_rollout",
+    "save_helper_rollout",
+    "list_managed_device_ids",
+    "resolve_helper_rollout_device",
     "managed_state",
     "set_managed",
 })
 
 QUEUE_PRESENCE_METHODS = frozenset({"upsert", "load"})
-QUEUE_DRIVE_METHODS = frozenset({"upsert_drives", "load_drives"})
+QUEUE_DRIVE_METHODS = frozenset({
+    "upsert_drives", "load_drives",
+    # #7987: the helper readiness the same executor round observes.
+    "upsert_helper_ready", "load_helper_ready", "load_rollout_outcomes",
+    "load_updater_registration", "reserve_updater_registration", "record_updater_registration",
+})
 #: #6460 step 2 — typed text deposited once and taken once by the executor.
 QUEUE_DESKTOP_TEXT_METHODS = frozenset({"deposit_desktop_text", "take_desktop_text"})
 QUEUE_PC_OUTPUT_METHODS = frozenset({
@@ -417,6 +430,24 @@ class QueueBackedDriveStore:
 
     async def load_drives(self, **arguments: Any) -> Any:
         return await self._client.call("load_drives", **arguments)
+
+    async def upsert_helper_ready(self, **arguments: Any) -> Any:
+        return await self._client.call("upsert_helper_ready", **arguments)
+
+    async def load_helper_ready(self, **arguments: Any) -> Any:
+        return await self._client.call("load_helper_ready", **arguments)
+
+    async def load_updater_registration(self, **arguments: Any) -> Any:
+        return await self._client.call("load_updater_registration", **arguments)
+
+    async def reserve_updater_registration(self, **arguments: Any) -> Any:
+        return await self._client.call("reserve_updater_registration", **arguments)
+
+    async def record_updater_registration(self, **arguments: Any) -> Any:
+        return await self._client.call("record_updater_registration", **arguments)
+
+    async def load_rollout_outcomes(self, **arguments: Any) -> Any:
+        return await self._client.call("load_rollout_outcomes", **arguments)
 
 
 #: Reads whose rows arrive already scoped to one owner, so they may carry the handle.

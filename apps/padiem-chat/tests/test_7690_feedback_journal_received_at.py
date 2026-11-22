@@ -7,7 +7,7 @@ import re
 from app.d1_sqlite import SqliteD1
 from app.site_feedback_routes import site_feedback
 from app.site_feedback_store import D1SiteFeedbackStore
-from test_7680_feedback_store import database
+from _support.feedback_store import database
 from test_7690_site_feedback_ops_tool import SITE_ID, TOOL, FakeSite
 from test_7690_site_feedback_routes import BODY, ORIGIN, SETTINGS_LIMIT, request
 
@@ -37,7 +37,11 @@ def test_a_receipt_journals_one_line_without_the_body(monkeypatch, capsys):
             assert created.status_code == 201
             lines = capsys.readouterr().out.strip().splitlines()
             assert len(lines) == 1 and RECEIVED.fullmatch(lines[0]), lines
-            assert MARKER not in lines[0] and ORIGIN not in lines[0] and '390' not in lines[0]
+            # The receipt id is random hex, so a width-like digit run ('390')
+            # can legitimately appear inside it; the leak check targets the
+            # label part the journal composes, never the id.
+            assert MARKER not in lines[0] and ORIGIN not in lines[0]
+            assert '390' not in lines[0].partition('id=sf_')[0]
         finally:
             db.close()
     asyncio.run(scenario())

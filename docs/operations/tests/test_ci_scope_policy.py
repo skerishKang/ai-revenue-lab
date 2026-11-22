@@ -24,7 +24,7 @@ def test_b62_browser_qa_does_not_fan_out_for_tests_or_worker_entrypoint_only() -
 
     manifest_path = REPO / ".github" / "ci" / "b62_browser_qa_paths.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))["jobs"]
-    assert len(manifest) == 16
+    assert len(manifest) == 17
     unified = (WORKFLOWS / "b62-browser-qa-unified.yml").read_text(encoding="utf-8")
     assert not list(WORKFLOWS.glob("b62-*-browser-qa.yml"))
     for job, paths in manifest.items():
@@ -87,6 +87,8 @@ B62_CHAT_EXPECTED_PATHS = (
     # #3989 scoped Chat CI source/guard changes always trigger FULL lane.
     ".github/scripts/b62_ci_impact_scope_3989.py",
     ".github/tests/test_b62_ci_impact_scope_3989.py",
+    ".github/scripts/b62_run_tests_only_modules.py",
+    ".github/tests/test_b62_run_tests_only_modules.py",
     # #5341 shared Core import-scope proof and its contract test.
     ".github/scripts/ci_core_import_scope.py",
     ".github/tests/test_5341_core_import_scope.py",
@@ -113,12 +115,14 @@ B62_CHAT_EXPECTED_JOBS = {
     "b62-ui-contract-tests",  # #6783 all static-reading UI contracts on static changes
     "b62-ui-mixed-tests",  # #4459 exact changed-test runner; required b62-test fan-in
     "b62-tests-only-tests",  # #6810 exact changed-test runner for tests-only PRs
+    "b62-source-read-tests",  # #8212 tests that read a changed source verbatim
     "b62-chat-pytest",  # #6801 app-source PRs run the full Chat pytest suite
+    "b62-date-golden-contract",  # #7981 date-dependent goldens run on every PR
     "b62-core-parser-focused",  # #5341 opt-in isolated parser focused contract
     "b62-b14-attempt-focused",  # B14 outbound attempt-policy targeted regression
     "b14-multimodal-test",
-    "engine-full-regression",  # #5678 Engine whole suite on every main push
-    "b14-full-regression",  # #5678 B14 whole suite on every main push
+    "engine-full-regression",  # #5678 Engine whole suite nightly/manual
+    "b14-full-regression",  # #5678 B14 whole suite nightly/manual
     "grade-live-smoke",  # CTO 2026-11-02 one real call per declared tier, nightly
 }
 

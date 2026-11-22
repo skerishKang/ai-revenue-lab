@@ -1,0 +1,852 @@
+{
+  "bad_subject": {
+    "body": {
+      "error": {
+        "code": "claw_engine_files_invalid_body"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 400,
+    "wait_reason": "none"
+  },
+  "device_invalid_new_mode": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_device_invalid"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_append_type_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_mode_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_call_ref_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_call_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_content_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_content_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_depth_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_depth_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_edit_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_edit_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "pin_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_move_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_path_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_op_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_op_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_path_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_path_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_read_chunk_range_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_range_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_read_no_relative": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_path_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_recursive_type_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_recursive_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_recursive_unsupported": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_recursive_unsupported"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_scope_denied": {
+    "body": {
+      "error": {
+        "code": "pc_scope_denied"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "pin_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 403,
+    "wait_reason": "none"
+  },
+  "dispatch_search_mode_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_search_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_search_query_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_search_invalid"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "dispatch_workspace_unavailable": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_workspace_unavailable"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status"
+    ],
+    "dispatch_args": null,
+    "status": 503,
+    "wait_reason": "none"
+  },
+  "field_mismatch": {
+    "body": {
+      "error": {
+        "code": "claw_engine_files_invalid_body"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 400,
+    "wait_reason": "none"
+  },
+  "history_unconfigured": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_unconfigured"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 503,
+    "wait_reason": "none"
+  },
+  "invalid_body": {
+    "body": {
+      "error": {
+        "code": "claw_engine_files_invalid_body"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 400,
+    "wait_reason": "none"
+  },
+  "invalid_mode": {
+    "body": {
+      "error": {
+        "code": "claw_engine_files_invalid_body"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 400,
+    "wait_reason": "none"
+  },
+  "job_fields_invalid": {
+    "body": {
+      "error": {
+        "code": "claw_engine_files_invalid_body"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 400,
+    "wait_reason": "none"
+  },
+  "job_op_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_op_invalid"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "no_pc_context": {
+    "body": {
+      "device": {
+        "device_id": null,
+        "online_verified": false,
+        "status": "not_connected"
+      },
+      "ok": true,
+      "roots": [],
+      "run_id": "chat_pcq_cccccccccccccccccccccccc",
+      "tools": []
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope"
+    ],
+    "dispatch_args": null,
+    "status": 200,
+    "wait_reason": "none"
+  },
+  "no_pc_dispatch": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_device_unverified"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope"
+    ],
+    "dispatch_args": null,
+    "status": 403,
+    "wait_reason": "none"
+  },
+  "non_dict_body": {
+    "body": {
+      "error": {
+        "code": "claw_engine_files_invalid_body"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 400,
+    "wait_reason": "none"
+  },
+  "normal_list": {
+    "body": {
+      "dispatch": {
+        "broker_acknowledged": false,
+        "device_id": "device-1",
+        "dispatch_id": "dsp-N",
+        "execution": "server_owned",
+        "expires_at": "<TIME>",
+        "kind": "command",
+        "run_id": "chat_pcq_cccccccccccccccccccccccc",
+        "state": "pending",
+        "user_mode": false
+      },
+      "ok": true
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status",
+      "get_claw_run",
+      "get_local_task_correlation",
+      "create_oracle_mesh_dispatch"
+    ],
+    "dispatch_args": {
+      "account_ref": "account-1",
+      "binding_ref": null,
+      "command_id": "oracle_mesh_cmd_<HEX>",
+      "command_text": "$folder = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('QzovVXNlcnMvbGltb25lL0FwcERhdGEvTG9jYWwvUEFESUVNL01lc2hDZW50cmFsVHJpYWw='));$guardRoot = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('QzovVXNlcnMvbGltb25lL0FwcERhdGEvTG9jYWwvUEFESUVNL01lc2hDZW50cmFsVHJpYWxc'));$relText = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(''));$guardHit = $null;try { $walk = $guardRoot; foreach ($seg in ($relText.Replace('/', '\\') -split '\\\\')) {  if (-not $seg) { continue };  $walk = Join-Path $walk $seg;  if (-not (Test-Path -LiteralPath $walk)) { break };  $item = Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue;  if ($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0))  { $guardHit = $walk; break } };} catch { $guardHit = $guardRoot };if ($guardHit) { @{error=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('7J20IOychOy5mOuKlCDrsJTroZzqsIDquLAg7Y+0642U66W8IOqxsOyzkOyEnCDrs7wg7IiYIOyXhuyKteuLiOuLpC4='))} | ConvertTo-Json -Compress } elseif (-not (Test-Path -LiteralPath $folder)) { @{error='path_not_found'} | ConvertTo-Json -Compress } else {$p=@(Get-ChildItem -LiteralPath $folder -Force -ErrorAction Stop);$s=@($p | Sort-Object -Property @{Expression={-not $_.PSIsContainer}}, Name);$n=$s.Count;$pg=@($s | Select-Object -Skip 0 -First 50 | Select-Object Name, Length, @{n='Modified';e={$_.LastWriteTimeUtc.ToString('o')}}, PSIsContainer);@{offset=0; total=$n; has_more=(($pg.Count + 0) -lt $n); items=@($pg)} | ConvertTo-Json -Compress -Depth 3 }",
+      "device_id": "device-1",
+      "evidence_ref": null,
+      "expires_at": "<TIME>",
+      "file_path": "command",
+      "kind": "command",
+      "node_ref": "node-1",
+      "path_relative": "command",
+      "read_only": true,
+      "request_fingerprint": "<HEX64>",
+      "request_id": "oracle_mesh_req_<HEX>",
+      "revision_ref": "oracle_mesh_rev_<HEX>",
+      "root_ref": "mesh_terminal",
+      "run_id": "chat_pcq_cccccccccccccccccccccccc",
+      "tool_call_ref": "chat_pcq_cccccccccccccccccccccccc:list_files:bbbbbbbbbbbbbbbbbbbbbbbb",
+      "tool_request_ref": "chat_pcq_cccccccccccccccccccccccc:list_files:bbbbbbbbbbbbbbbbbbbbbbbb",
+      "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "user_mode": false,
+      "workspace_ref": "connector-ws-1"
+    },
+    "status": 200,
+    "wait_reason": "none"
+  },
+  "normal_move": {
+    "body": {
+      "dispatch": {
+        "broker_acknowledged": false,
+        "device_id": "device-1",
+        "dispatch_id": "dsp-N",
+        "execution": "server_owned",
+        "expires_at": "<TIME>",
+        "kind": "command",
+        "run_id": "chat_pcq_cccccccccccccccccccccccc",
+        "state": "pending",
+        "user_mode": false
+      },
+      "ok": true
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status",
+      "get_claw_run",
+      "get_local_task_correlation",
+      "create_oracle_mesh_dispatch"
+    ],
+    "dispatch_args": {
+      "account_ref": "account-1",
+      "binding_ref": null,
+      "command_id": "oracle_mesh_cmd_<HEX>",
+      "command_text": "$ErrorActionPreference = 'Stop'; $ok = $false; $reason = 'failed'; $bytes = 0; $op = 'move'; $target = 'C:/Users/limone/AppData/Local/PADIEM/MeshCentralTrial/a.txt'; $backupDir = 'C:\\.padiem-backup\\2026-11-18'; $backup = $null; $stamp = (Get-Date -Format 'yyyyMMddHHmmss') + '-' + ([Guid]::NewGuid().ToString('N')).Substring(0,8); $destination = 'C:/Users/limone/AppData/Local/PADIEM/MeshCentralTrial/b.txt'; $verifySource = $target; $verifyTarget = $destination; $guardRoot = 'C:/Users/limone/AppData/Local/PADIEM/MeshCentralTrial\\';$guardHit = $null;try { foreach ($rel in (@($target) + $(if ($destination) { @($destination) } else { @() }))) {  if (-not $rel) { continue };  $walk = $guardRoot;  $rest = $rel.Substring($guardRoot.Length).TrimStart('/').Replace('/', '\\');  foreach ($seg in ($rest -split '\\\\')) {   $walk = Join-Path $walk $seg;   if (-not (Test-Path -LiteralPath $walk)) { break };   $item = Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue;   if ($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0))   { $guardHit = $walk; break } }; if ($guardHit) { break } }} catch { $guardHit = $guardRoot };if (-not $guardHit) { $full = [IO.Path]::GetFullPath($target); if (-not $full.StartsWith($guardRoot, [System.StringComparison]::OrdinalIgnoreCase)) { $guardHit = $guardRoot } };if ($destination -and -not $guardHit) { $fullDestination = [IO.Path]::GetFullPath($destination); if (-not $fullDestination.StartsWith($guardRoot, [System.StringComparison]::OrdinalIgnoreCase)) { $guardHit = $guardRoot } };; if ($guardHit) { $reason = '이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다.' } else { try { $source_to_keep = $target;if (-not (Test-Path -LiteralPath $source_to_keep -PathType Leaf)) { $reason = 'path_invalid'; throw 'padiem target missing' }; if (Test-Path -LiteralPath $destination) { $source_to_keep = $destination; New-Item -ItemType Directory -Force -Path $backupDir | Out-Null; $backup = Join-Path $backupDir ($stamp + '-' + ('a.txt' -replace '[^\\w.-]','_')); try { Copy-Item -LiteralPath $source_to_keep -Destination $backup -Force } catch { $backup = $null; $reason = 'backup_failed'; throw 'padiem backup failed' } }; Move-Item -LiteralPath $target -Destination $destination -Force; $target = $destination; $ok = $true; $reason = $null } catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } } }; $verification = [ordered]@{version=1; status='unavailable'}; try { $sourceExists = Test-Path -LiteralPath $verifySource -ErrorAction Stop; $targetExists = Test-Path -LiteralPath $verifyTarget -ErrorAction Stop; $targetIsFile = Test-Path -LiteralPath $verifyTarget -PathType Leaf -ErrorAction Stop; $targetBytes = $null; $targetSha256 = $null; if ($targetIsFile) { $targetItem = Get-Item -LiteralPath $verifyTarget -Force -ErrorAction Stop; $targetBytes = [int64]$targetItem.Length; if ($op -eq 'write') { $fileHash = Get-FileHash -LiteralPath $verifyTarget -Algorithm SHA256 -ErrorAction Stop; $targetSha256 = $fileHash.Hash.ToLowerInvariant() } }; $backupExists = $null; $backupIsFile = $null; if ($null -ne $backup) { $backupExists = Test-Path -LiteralPath $backup -ErrorAction Stop; $backupIsFile = Test-Path -LiteralPath $backup -PathType Leaf -ErrorAction Stop }; $verification = [ordered]@{version=1; status='observed'; source_exists=[bool]$sourceExists; target_exists=[bool]$targetExists; target_is_file=[bool]$targetIsFile; target_bytes=$targetBytes; target_sha256=$targetSha256; backup_exists=$backupExists; backup_is_file=$backupIsFile} } catch { $verification = [ordered]@{version=1; status='unavailable'} }; $account = [ordered]@{ok=$ok; op=$op; reason=$reason; target=$target; backup=$backup; bytes=$bytes; verification=$verification}; $json = ConvertTo-Json -InputObject $account -Compress; $encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json)); Write-Output ('PADIEM_PC_ACCOUNT=' + $encoded)",
+      "device_id": "device-1",
+      "evidence_ref": null,
+      "expires_at": "<TIME>",
+      "file_path": "command",
+      "kind": "command",
+      "node_ref": "node-1",
+      "path_relative": "command",
+      "read_only": false,
+      "request_fingerprint": "<HEX64>",
+      "request_id": "oracle_mesh_req_<HEX>",
+      "revision_ref": "oracle_mesh_rev_<HEX>",
+      "root_ref": "mesh_terminal",
+      "run_id": "chat_pcq_cccccccccccccccccccccccc",
+      "tool_call_ref": "chat_pcq_cccccccccccccccccccccccc:list_files:bbbbbbbbbbbbbbbbbbbbbbbb",
+      "tool_request_ref": "chat_pcq_cccccccccccccccccccccccc:list_files:bbbbbbbbbbbbbbbbbbbbbbbb",
+      "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "user_mode": false,
+      "workspace_ref": "connector-ws-1"
+    },
+    "status": 200,
+    "wait_reason": "none"
+  },
+  "normal_read": {
+    "body": {
+      "dispatch": {
+        "broker_acknowledged": false,
+        "device_id": "device-1",
+        "dispatch_id": "dsp-N",
+        "execution": "server_owned",
+        "expires_at": "<TIME>",
+        "kind": "read",
+        "run_id": "chat_pcq_cccccccccccccccccccccccc",
+        "state": "pending"
+      },
+      "ok": true
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status",
+      "get_claw_run",
+      "create_oracle_mesh_dispatch"
+    ],
+    "dispatch_args": {
+      "account_ref": "account-1",
+      "binding_ref": null,
+      "command_id": "oracle_mesh_cmd_<HEX>",
+      "device_id": "device-1",
+      "evidence_ref": null,
+      "expires_at": "<TIME>",
+      "file_path": "C:/Users/limone/AppData/Local/PADIEM/MeshCentralTrial/notes.txt",
+      "kind": "read",
+      "node_ref": "node-1",
+      "path_relative": "notes.txt",
+      "read_only": true,
+      "request_fingerprint": "<HEX64>",
+      "request_id": "oracle_mesh_req_<HEX>",
+      "revision_ref": "oracle_mesh_rev_<HEX>",
+      "root_ref": "pc_files_read",
+      "run_id": "chat_pcq_cccccccccccccccccccccccc",
+      "tool_call_ref": "chat_pcq_cccccccccccccccccccccccc:read_file:aaaaaaaaaaaaaaaaaaaaaaaa",
+      "tool_request_ref": "chat_pcq_cccccccccccccccccccccccc:read_file:aaaaaaaaaaaaaaaaaaaaaaaa",
+      "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "user_mode": false,
+      "workspace_ref": "connector-ws-1"
+    },
+    "status": 200,
+    "wait_reason": "none"
+  },
+  "normal_read_chunk": {
+    "body": {
+      "dispatch": {
+        "broker_acknowledged": false,
+        "device_id": "device-1",
+        "dispatch_id": "dsp-N",
+        "execution": "server_owned",
+        "expires_at": "<TIME>",
+        "kind": "command",
+        "run_id": "chat_pcq_cccccccccccccccccccccccc",
+        "state": "pending",
+        "user_mode": false
+      },
+      "ok": true
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status",
+      "get_claw_run",
+      "get_local_task_correlation",
+      "create_oracle_mesh_dispatch"
+    ],
+    "dispatch_args": {
+      "account_ref": "account-1",
+      "binding_ref": null,
+      "command_id": "oracle_mesh_cmd_<HEX>",
+      "command_text": "$ErrorActionPreference='SilentlyContinue'\n[Console]::OutputEncoding=New-Object Text.UTF8Encoding $false\n$OutputEncoding=New-Object Text.UTF8Encoding $false\n$path='C:/Users/limone/AppData/Local/PADIEM/MeshCentralTrial/notes.txt'\n$offset=[int64]0\n$length=[int64]16\n$items=Get-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue\nif($items -eq $null -or $items.PSIsContainer){\n  '{\"ok\":false,\"error\":\"not_a_file\"}'\n  return\n}\n$guardRoot='C:\\Users\\limone\\AppData\\Local\\PADIEM\\MeshCentralTrial\\'\n$guardHit=$null\ntry{\n  $walk=$guardRoot\n  foreach($seg in ('notes.txt'.Replace('\\','/') -split '/')){\n    if(-not $seg){continue}\n    $walk=Join-Path $walk $seg\n    if(-not (Test-Path -LiteralPath $walk)){break}\n    $item=Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue\n    if($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)){$guardHit=$walk;break}\n  }\n}catch{$guardHit=$guardRoot}\nif($guardHit){\n  '{\"ok\":false,\"error\":\"link_refused\",\"message\":\"이 위치는 바로가기 폴더를 거쳐서 읽을 수 없습니다.\"}'\n  return\n}\n$size=[int64]$items.Length\nif($offset -gt $size){\n  '{\"ok\":false,\"error\":\"offset_out_of_range\",\"size_bytes\":' + $size + '}'\n  return\n}\n$fs=[IO.File]::OpenRead($path)\n$want=[int][Math]::Min($length+3,$size-$offset)\n$buf=New-Object byte[] $want\n[void]$fs.Seek($offset,[IO.SeekOrigin]::Begin)\n[void]$fs.Read($buf,0,$want)\n$fs.Close()\n$start=0\nwhile($start -lt $want -and ($buf[$start] -band 0xC0) -eq 0x80 -and $start -lt 3){ $start++ }\n$n=$want-$start\n$cut=0\nif($n -ge 0){\n  $i=0\n  while($i -lt $n){\n    $b=$buf[$start+$i]\n    $need=1\n    if(($b -band 0xE0) -eq 0xC0){ $need=2 }\n    elseif(($b -band 0xF0) -eq 0xE0){ $need=3 }\n    elseif(($b -band 0xF8) -eq 0xF0){ $need=4 }\n    if($i+$need -gt $n){ break }\n    $i=$i+$need\n  }\n  $cut=$i\n}\nif($cut -le 0){\n  '{\"ok\":false,\"error\":\"no_complete_character\",\"size_bytes\":' + $size + '}'\n  return\n}\n$text=[Text.Encoding]::UTF8.GetString($buf,$start,$cut)\n$next=$offset+$start+$cut\n$eof=($next -ge $size)\nif($text.IndexOf([char]0) -ge 0){\n  '{\"ok\":false,\"error\":\"binary_text_rejected\",\"size_bytes\":' + $size + '}'\n  return\n}\n[ordered]@{ok=$true;unit='bytes';size_bytes=$size;offset=$offset;length_bytes=($start+$cut);next_offset=$next;eof=$eof;text=$text} | ConvertTo-Json -Compress -Depth 4",
+      "device_id": "device-1",
+      "evidence_ref": null,
+      "expires_at": "<TIME>",
+      "file_path": "command",
+      "kind": "command",
+      "node_ref": "node-1",
+      "path_relative": "command",
+      "read_only": true,
+      "request_fingerprint": "<HEX64>",
+      "request_id": "oracle_mesh_req_<HEX>",
+      "revision_ref": "oracle_mesh_rev_<HEX>",
+      "root_ref": "mesh_terminal",
+      "run_id": "chat_pcq_cccccccccccccccccccccccc",
+      "tool_call_ref": "chat_pcq_cccccccccccccccccccccccc:list_files:bbbbbbbbbbbbbbbbbbbbbbbb",
+      "tool_request_ref": "chat_pcq_cccccccccccccccccccccccc:list_files:bbbbbbbbbbbbbbbbbbbbbbbb",
+      "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "user_mode": false,
+      "workspace_ref": "connector-ws-1"
+    },
+    "status": 200,
+    "wait_reason": "none"
+  },
+  "normal_search": {
+    "body": {
+      "dispatch": {
+        "broker_acknowledged": false,
+        "device_id": "device-1",
+        "dispatch_id": "dsp-N",
+        "execution": "server_owned",
+        "expires_at": "<TIME>",
+        "kind": "command",
+        "run_id": "chat_pcq_cccccccccccccccccccccccc",
+        "state": "pending",
+        "user_mode": false
+      },
+      "ok": true
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status",
+      "get_claw_run",
+      "get_local_task_correlation",
+      "create_oracle_mesh_dispatch"
+    ],
+    "dispatch_args": {
+      "account_ref": "account-1",
+      "binding_ref": null,
+      "command_id": "oracle_mesh_cmd_<HEX>",
+      "command_text": "$ErrorActionPreference='SilentlyContinue'\n[Console]::OutputEncoding=New-Object Text.UTF8Encoding $false\n$OutputEncoding=New-Object Text.UTF8Encoding $false\n$query=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('dGVzdA=='))\n$mode='name'\n$limit=50\n$scan=2000\n$maxOffice=8\n$prefix=[int64]16777216\n$roots=@(@{label=([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('TWVzaENlbnRyYWxUcmlhbA==')));path=([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('QzovVXNlcnMvbGltb25lL0FwcERhdGEvTG9jYWwvUEFESUVNL01lc2hDZW50cmFsVHJpYWw=')))})\n$multi=($roots.Count -gt 1)\n$office=@('.docx','.xlsx','.pdf','.hwpx')\n$officeMedia=@{'.docx'='application/vnd.openxmlformats-officedocument.wordprocessingml.document';'.xlsx'='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';'.pdf'='application/pdf';'.hwpx'='application/hwp+zip'}\n$textExt=@('.txt','.md','.csv','.log','.json','.xml','.yml','.yaml','.html','.css','.js','.ts','.py','.ps1','.sql','.ini','.cfg','.bat','.sh')\n$offlineMask=4096 -bor 4194304\n$rows=New-Object System.Collections.ArrayList\n$flags=@{truncated=$false;scan=$false;engine='list';office='none';time=$false}\n$sw=[Diagnostics.Stopwatch]::StartNew()\n$timeLimit=180\n$progressFile=$null\n$lastProgress=[datetime]::MinValue\nfunction Test-Time {\n  if($sw.Elapsed.TotalSeconds -ge $timeLimit){ $flags.time=$true; return $true }\n  if($null -ne $progressFile -and $sw.Elapsed.TotalSeconds - $lastProgress.TotalSeconds -ge 15){\n    try { Set-Content -LiteralPath $progressFile -Value ([datetime]::UtcNow.ToString('o')) -Encoding ascii } catch { }\n    $lastProgress=[datetime]::UtcNow\n  }\n  return $false\n}\nfunction Add-Row([object]$item,[string]$label,[string]$kind,[object]$line,[string]$text,[string]$reason,[string]$base,[object]$byteOffset){\n  if($rows.Count -ge $limit){ $flags.truncated=$true; return }\n  $rel=$item.FullName.Substring($base.Length).TrimStart([char]92,[char]47)\n  if($multi){ $rel=$label + '/' + $rel }\n  [void]$rows.Add([ordered]@{path=$rel;size_bytes=[int64]$item.Length;modified_utc=$item.LastWriteTimeUtc.ToString('o');content_state=$kind;line=$line;snippet=$text;reason=$reason;byte_offset=$byteOffset})\n}\nif($mode -eq 'name'){\n  $es=Get-Command es.exe -ErrorAction SilentlyContinue | Select-Object -First 1\n  if($es -and -not $query.StartsWith('-')){\n    $flags.engine='everything'\n    foreach($r in $roots){\n      $hits=@(& $es.Source -path $r.path -n ($limit+1) $query)\n      foreach($p in $hits){\n        if($rows.Count -ge $limit){ $flags.truncated=$true; break }\n        $full=([string]$p).Replace('/','\\')\n        if(-not $full){ continue }\n        if(-not $full.StartsWith($r.path.Replace('/','\\'),[StringComparison]::OrdinalIgnoreCase)){ continue }\n        $i=Get-Item -LiteralPath $full -Force -ErrorAction SilentlyContinue\n        if($i -eq $null){ continue }\n        $off=(($i.Attributes -band $offlineMask) -ne 0)\n        Add-Row $i $r.label $(if($off){'not_downloaded'}else{'name_only'}) $null '' '' $r.path $null\n      }\n    }\n  } else {\n    foreach($r in $roots){\n      $seen=0\n      foreach($i in (Get-ChildItem -LiteralPath $r.path -Recurse -Force -ErrorAction SilentlyContinue)){\n        $seen++\n        if($seen -gt $scan){ $flags.scan=$true; break }\n        if($rows.Count -ge $limit){ $flags.truncated=$true; break }\n        if(Test-Time){ $flags.truncated=$true; break }\n        $nameC=$i.Name.Normalize([Text.NormalizationForm]::FormC)\n        if($nameC.IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -lt 0){ continue }\n        $off=(($i.Attributes -band $offlineMask) -ne 0)\n        Add-Row $i $r.label $(if($off){'not_downloaded'}else{'name_only'}) $null '' '' $r.path $null\n      }\n    }\n  }\n}\nif($mode -eq 'content'){\n  $texts=New-Object System.Collections.ArrayList\n  $byPath=@{}\n  $offices=New-Object System.Collections.ArrayList\n  foreach($r in $roots){\n    $seen=0\n    foreach($i in (Get-ChildItem -LiteralPath $r.path -Recurse -File -Force -ErrorAction SilentlyContinue)){\n      $seen++\n      if($seen -gt $scan){ $flags.scan=$true; break }\n      if($rows.Count -ge $limit){ $flags.truncated=$true; break }\n      if(Test-Time){ $flags.truncated=$true; break }\n      $ext=$i.Extension.ToLowerInvariant()\n      $nameHit=($i.Name.Normalize([Text.NormalizationForm]::FormC).IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -ge 0)\n      $off=(($i.Attributes -band $offlineMask) -ne 0)\n      if($off){\n        if($nameHit){ Add-Row $i $r.label 'not_downloaded' $null '' '' $r.path } $null\n        continue\n      }\n      if($office -contains $ext){\n        [void]$offices.Add([pscustomobject]@{item=$i;label=$r.label;root=$r.path;type=$officeMedia[$ext]})\n        continue\n      }\n      if($textExt -contains $ext){\n        $entry=[pscustomobject]@{item=$i;label=$r.label;root=$r.path}\n        [void]$texts.Add($entry)\n        $byPath[$i.FullName]=$entry\n        continue\n      }\n      if($nameHit){ Add-Row $i $r.label 'name_only' $null '' '' $r.path } $null\n    }\n  }\n  $rg=Get-Command rg.exe -ErrorAction SilentlyContinue | Select-Object -First 1\n  if($texts.Count -gt 0 -and $rg){\n    $flags.engine='ripgrep'\n    for($start=0; $start -lt $texts.Count; $start+=100){\n      if($rows.Count -ge $limit){ $flags.truncated=$true; break }\n      $end=[Math]::Min($start+99,$texts.Count-1)\n      $paths=@()\n      for($n=$start;$n -le $end;$n++){ $paths+=$texts[$n].item.FullName }\n      $hits=@(& $rg.Source -H --no-heading --line-number --byte-offset --color never --no-messages --fixed-strings --max-count 1 -- $query $paths)\n      foreach($line in $hits){\n        if($rows.Count -ge $limit){ $flags.truncated=$true; break }\n        if($line -match '^(.*?):(\\d+):(\\d+):(.*)$'){\n          $snippet=$matches[4].Trim()\n          if($snippet.Length -gt 200){ $snippet=$snippet.Substring(0,200) }\n          $entry=$byPath[$matches[1]]\n          if($entry -eq $null){ continue }\n          Add-Row $entry.item $entry.label 'matched' ([int]$matches[2]) $snippet '' $entry.root ([int64]$matches[3])\n        }\n      }\n    }\n  } elseif($texts.Count -gt 0){\n    $flags.engine='select-string'\n    foreach($f in $texts){\n      if($rows.Count -ge $limit){ $flags.truncated=$true; break }\n      $hit=Select-String -LiteralPath $f.item.FullName -SimpleMatch -Pattern $query -List -ErrorAction SilentlyContinue | Select-Object -First 1\n      if($hit){\n        $snippet=$hit.Line.Trim()\n        if($snippet.Length -gt 200){ $snippet=$snippet.Substring(0,200) }\n        Add-Row $f.item $f.label 'matched' $hit.LineNumber $snippet '' $f.root $null\n      }\n    }\n  }\n  if($offices.Count -gt 0){\n    $py=Get-Command python -ErrorAction SilentlyContinue | Select-Object -First 1\n    $parser=$false\n    if($py){\n      $probe=@('{ }' | & $py.Source -P -m kagent.document_parser_child 2>$null)\n      try { $parser=((($probe -join '') | ConvertFrom-Json).ok -eq $false) } catch { $parser=$false }\n    }\n    if($parser){ $flags.office='parser' } else { $flags.office='unavailable' }\n    $opened=0\n    foreach($o in $offices){\n      if($rows.Count -ge $limit){ $flags.truncated=$true; break }\n      $nameHit=($o.item.Name.Normalize([Text.NormalizationForm]::FormC).IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -ge 0)\n      if(-not $parser){\n        if($nameHit){ Add-Row $o.item $o.label 'deferred' $null '' 'extractor_unavailable' $o.root } $null\n        continue\n      }\n      if($opened -ge $maxOffice){\n        if($nameHit){ Add-Row $o.item $o.label 'deferred' $null '' 'office_cap' $o.root } $null\n        else { $flags.truncated=$true }\n        continue\n      }\n      $opened++\n      $fs=[IO.File]::OpenRead($o.item.FullName)\n      $len=[int][Math]::Min($fs.Length,$prefix)\n      $buf=New-Object byte[] $len\n      [void]$fs.Read($buf,0,$len)\n      $fs.Close()\n      $partial=([int64]$o.item.Length -gt [int64]$len)\n      $envelope=@{name=$o.item.Name;media_type=$o.type;base64=[Convert]::ToBase64String($buf)} | ConvertTo-Json -Compress\n      $report=@($envelope | & $py.Source -P -m kagent.document_parser_child 2>$null)\n      $parsed=$null\n      try { $parsed=(($report -join '') | ConvertFrom-Json) } catch { $parsed=$null }\n      if($parsed -ne $null -and $parsed.ok -eq $true -and $parsed.text -is [string]){\n        $idx=$parsed.text.IndexOf($query,[StringComparison]::OrdinalIgnoreCase)\n        if($idx -ge 0){\n          $startText=$parsed.text.LastIndexOf([char]10,$idx)+1\n          $endText=$parsed.text.IndexOf([char]10,$idx)\n          if($endText -lt 0){ $endText=$parsed.text.Length }\n          $lineText=$parsed.text.Substring($startText,$endText-$startText).Trim()\n          if($lineText.Length -gt 200){ $lineText=$lineText.Substring(0,200) }\n          Add-Row $o.item $o.label 'matched' $null $lineText $(if($partial){'prefix_only'}else{''}) $o.root $null\n        } elseif($nameHit){\n          Add-Row $o.item $o.label 'name_only' $null '' '' $o.root $null\n        }\n      } elseif($partial){\n        Add-Row $o.item $o.label 'partial' $null '' 'prefix_only' $o.root $null\n      } elseif($nameHit){\n        $code=if($parsed -ne $null -and $parsed.code){ ([string]$parsed.code -replace '[^a-z0-9_]','') } else { 'read_failed' }\n        if($code.Length -gt 40){ $code=$code.Substring(0,40) }\n        Add-Row $o.item $o.label 'deferred' $null '' $code $o.root $null\n      }\n    }\n  }\n}\n[ordered]@{ok=$true;mode=$mode;query=$query;engine=$($flags.engine);office=$($flags.office);count=$($rows.Count);truncated=$($flags.truncated);time_truncated=$($flags.time);scan_truncated=$($flags.scan);entries=$rows} | ConvertTo-Json -Compress -Depth 5\n",
+      "device_id": "device-1",
+      "evidence_ref": null,
+      "expires_at": "<TIME>",
+      "file_path": "command",
+      "kind": "command",
+      "node_ref": "node-1",
+      "path_relative": "command",
+      "read_only": true,
+      "request_fingerprint": "<HEX64>",
+      "request_id": "oracle_mesh_req_<HEX>",
+      "revision_ref": "oracle_mesh_rev_<HEX>",
+      "root_ref": "mesh_terminal",
+      "run_id": "chat_pcq_cccccccccccccccccccccccc",
+      "tool_call_ref": "chat_pcq_cccccccccccccccccccccccc:list_files:bbbbbbbbbbbbbbbbbbbbbbbb",
+      "tool_request_ref": "chat_pcq_cccccccccccccccccccccccc:list_files:bbbbbbbbbbbbbbbbbbbbbbbb",
+      "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "user_mode": false,
+      "workspace_ref": "connector-ws-1"
+    },
+    "status": 200,
+    "wait_reason": "none"
+  },
+  "normal_write": {
+    "body": {
+      "dispatch": {
+        "broker_acknowledged": false,
+        "device_id": "device-1",
+        "dispatch_id": "dsp-N",
+        "execution": "server_owned",
+        "expires_at": "<TIME>",
+        "kind": "command",
+        "run_id": "chat_pcq_cccccccccccccccccccccccc",
+        "state": "pending",
+        "user_mode": false
+      },
+      "ok": true
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope",
+      "update_claw_run_status",
+      "get_claw_run",
+      "get_local_task_correlation",
+      "create_oracle_mesh_dispatch"
+    ],
+    "dispatch_args": {
+      "account_ref": "account-1",
+      "binding_ref": null,
+      "command_id": "oracle_mesh_cmd_<HEX>",
+      "command_text": "$ErrorActionPreference = 'Stop'; $ok = $false; $reason = 'failed'; $bytes = 0; $op = 'write'; $target = 'C:/Users/limone/AppData/Local/PADIEM/MeshCentralTrial/notes.txt'; $backupDir = 'C:\\.padiem-backup\\2026-11-18'; $backup = $null; $stamp = (Get-Date -Format 'yyyyMMddHHmmss') + '-' + ([Guid]::NewGuid().ToString('N')).Substring(0,8); $payload = [Convert]::FromBase64String('aGVsbG8='); $verifySource = $target; $verifyTarget = $target; $guardRoot = 'C:/Users/limone/AppData/Local/PADIEM/MeshCentralTrial\\';$guardHit = $null;try { foreach ($rel in (@($target) + $(if ($destination) { @($destination) } else { @() }))) {  if (-not $rel) { continue };  $walk = $guardRoot;  $rest = $rel.Substring($guardRoot.Length).TrimStart('/').Replace('/', '\\');  foreach ($seg in ($rest -split '\\\\')) {   $walk = Join-Path $walk $seg;   if (-not (Test-Path -LiteralPath $walk)) { break };   $item = Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue;   if ($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0))   { $guardHit = $walk; break } }; if ($guardHit) { break } }} catch { $guardHit = $guardRoot };if (-not $guardHit) { $full = [IO.Path]::GetFullPath($target); if (-not $full.StartsWith($guardRoot, [System.StringComparison]::OrdinalIgnoreCase)) { $guardHit = $guardRoot } };if ($destination -and -not $guardHit) { $fullDestination = [IO.Path]::GetFullPath($destination); if (-not $fullDestination.StartsWith($guardRoot, [System.StringComparison]::OrdinalIgnoreCase)) { $guardHit = $guardRoot } };; if ($guardHit) { $reason = '이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다.' } else { try { if (Test-Path -LiteralPath $target -PathType Leaf) { $source_to_keep = $target; New-Item -ItemType Directory -Force -Path $backupDir | Out-Null; $backup = Join-Path $backupDir ($stamp + '-' + ('notes.txt' -replace '[^\\w.-]','_')); try { Copy-Item -LiteralPath $source_to_keep -Destination $backup -Force } catch { $backup = $null; $reason = 'backup_failed'; throw 'padiem backup failed' } } elseif (-not (Test-Path -LiteralPath ([IO.Path]::GetDirectoryName($target)))) { $reason = 'path_invalid'; throw 'padiem parent missing' }; $temp = $target + '.padiem-write'; [IO.File]::WriteAllBytes($temp, $payload); Move-Item -LiteralPath $temp -Destination $target -Force; $bytes = $payload.Length; $ok = $true; $reason = $null } catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } } }; $verification = [ordered]@{version=1; status='unavailable'}; try { $sourceExists = Test-Path -LiteralPath $verifySource -ErrorAction Stop; $targetExists = Test-Path -LiteralPath $verifyTarget -ErrorAction Stop; $targetIsFile = Test-Path -LiteralPath $verifyTarget -PathType Leaf -ErrorAction Stop; $targetBytes = $null; $targetSha256 = $null; if ($targetIsFile) { $targetItem = Get-Item -LiteralPath $verifyTarget -Force -ErrorAction Stop; $targetBytes = [int64]$targetItem.Length; if ($op -eq 'write') { $fileHash = Get-FileHash -LiteralPath $verifyTarget -Algorithm SHA256 -ErrorAction Stop; $targetSha256 = $fileHash.Hash.ToLowerInvariant() } }; $backupExists = $null; $backupIsFile = $null; if ($null -ne $backup) { $backupExists = Test-Path -LiteralPath $backup -ErrorAction Stop; $backupIsFile = Test-Path -LiteralPath $backup -PathType Leaf -ErrorAction Stop }; $verification = [ordered]@{version=1; status='observed'; source_exists=[bool]$sourceExists; target_exists=[bool]$targetExists; target_is_file=[bool]$targetIsFile; target_bytes=$targetBytes; target_sha256=$targetSha256; backup_exists=$backupExists; backup_is_file=$backupIsFile} } catch { $verification = [ordered]@{version=1; status='unavailable'} }; $account = [ordered]@{ok=$ok; op=$op; reason=$reason; target=$target; backup=$backup; bytes=$bytes; verification=$verification}; $json = ConvertTo-Json -InputObject $account -Compress; $encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json)); Write-Output ('PADIEM_PC_ACCOUNT=' + $encoded)",
+      "device_id": "device-1",
+      "evidence_ref": null,
+      "expires_at": "<TIME>",
+      "file_path": "command",
+      "kind": "command",
+      "node_ref": "node-1",
+      "path_relative": "command",
+      "read_only": false,
+      "request_fingerprint": "<HEX64>",
+      "request_id": "oracle_mesh_req_<HEX>",
+      "revision_ref": "oracle_mesh_rev_<HEX>",
+      "root_ref": "mesh_terminal",
+      "run_id": "chat_pcq_cccccccccccccccccccccccc",
+      "tool_call_ref": "chat_pcq_cccccccccccccccccccccccc:list_files:bbbbbbbbbbbbbbbbbbbbbbbb",
+      "tool_request_ref": "chat_pcq_cccccccccccccccccccccccc:list_files:bbbbbbbbbbbbbbbbbbbbbbbb",
+      "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "user_mode": false,
+      "workspace_ref": "connector-ws-1"
+    },
+    "status": 200,
+    "wait_reason": "none"
+  },
+  "output_range_invalid": {
+    "body": {
+      "error": {
+        "code": "pc_output_range_invalid"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "owner_denied": {
+    "body": {
+      "error": {
+        "code": "canonical_session_required"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 401,
+    "wait_reason": "none"
+  },
+  "proof_denied": {
+    "body": {
+      "error": {
+        "code": "claw_engine_proof_required"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 401,
+    "wait_reason": "none"
+  },
+  "run_row_missing": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_run_unavailable"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 404,
+    "wait_reason": "none"
+  },
+  "run_unavailable": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_run_unavailable"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 503,
+    "wait_reason": "none"
+  },
+  "scope_frozen": {
+    "body": {
+      "error": {
+        "code": "pc_scope_frozen"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope"
+    ],
+    "dispatch_args": null,
+    "status": 403,
+    "wait_reason": "none"
+  },
+  "scope_proof_denied": {
+    "body": {
+      "error": {
+        "code": "pc_scope_proof_invalid"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 401,
+    "wait_reason": "none"
+  },
+  "scope_required": {
+    "body": {
+      "error": {
+        "code": "pc_scope_required"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 403,
+    "wait_reason": "none"
+  },
+  "scope_store_unavailable": {
+    "body": {
+      "error": {
+        "code": "pc_scope_store_unavailable"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run"
+    ],
+    "dispatch_args": null,
+    "status": 503,
+    "wait_reason": "none"
+  },
+  "selected_device_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_device_invalid"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  },
+  "target_denied": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_unconfigured"
+      },
+      "ok": false
+    },
+    "calls": [
+      "get_claw_run",
+      "get_pc_run_scope"
+    ],
+    "dispatch_args": null,
+    "status": 503,
+    "wait_reason": "none"
+  },
+  "write_mode_invalid": {
+    "body": {
+      "error": {
+        "code": "oracle_mesh_file_mode_invalid"
+      },
+      "ok": false
+    },
+    "calls": [],
+    "dispatch_args": null,
+    "status": 422,
+    "wait_reason": "none"
+  }
+}

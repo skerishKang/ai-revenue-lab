@@ -15,7 +15,7 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.b14_client import B14Client
 from app.b66_registered_model_boundary import B14AuthorizedModelRoute
 from app.config import Settings
-from test_b66_quote_runtime import USER_A, _settings
+from _support.quote_runtime import USER_A, _settings
 
 
 MODEL = "google/gemini-3.5-flash-lite"
@@ -77,7 +77,7 @@ def payload(**override):
 def sign_in(settings, client):
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, USER_A),
+        create_session_token(settings, USER_A, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )

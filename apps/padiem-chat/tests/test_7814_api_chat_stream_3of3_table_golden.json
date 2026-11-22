@@ -1,0 +1,528 @@
+[
+  {
+    "case": "기본_SSE",
+    "kind": "success",
+    "response": {
+      "status": 200,
+      "headers": [
+        [
+          "cache-control",
+          "no-cache, no-store"
+        ],
+        [
+          "content-type",
+          "text/event-stream; charset=utf-8"
+        ],
+        [
+          "x-accel-buffering",
+          "no"
+        ]
+      ],
+      "sse": [
+        "event: meta\ndata: {\"stream\":true}\n\n",
+        "event: thought\ndata: {\"text\":\"fake thought\"}\n\n",
+        "event: delta\ndata: {\"delta\":\"fake streamed answer\"}\n\n",
+        "event: done\ndata: {\"done\":true,\"conversation_id\":\"chat_1fffffffffffffffffffffffffffffff\"}\n\n"
+      ]
+    },
+    "calls": [
+      {
+        "call": "external.drive",
+        "text": "hello fake"
+      },
+      {
+        "call": "external.pc",
+        "owner_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "call": "grounding.prepare",
+        "messages": [
+          {
+            "role": "user",
+            "content": "hello fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "util_scope": null,
+        "explicit_search": null
+      },
+      {
+        "call": "guard"
+      },
+      {
+        "call": "pc_tools",
+        "model_id": "example-provider/example-model-1"
+      },
+      {
+        "call": "connector_tools",
+        "intent": false
+      },
+      {
+        "call": "model.stream_text_auto",
+        "messages": [
+          {
+            "role": "user",
+            "content": "hello fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "tools": []
+      },
+      {
+        "call": "store.append_exchange",
+        "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "conversation_id": null,
+        "user_text": "hello fake",
+        "answer": "fake streamed answer",
+        "kwargs": {
+          "product_scope": "b62-chat"
+        }
+      },
+      {
+        "call": "store.record_claw_run",
+        "kwargs": {
+          "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "channel": "web",
+          "action": "general",
+          "title": "Chat: hello fake",
+          "status": "completed",
+          "result_summary": "fake streamed answer",
+          "artifact_document_id": null,
+          "artifact_filename": null,
+          "artifact_media_type": null,
+          "conversation_id": null
+        }
+      }
+    ]
+  },
+  {
+    "case": "웹검색_근거_SSE",
+    "kind": "success",
+    "response": {
+      "status": 200,
+      "headers": [
+        [
+          "cache-control",
+          "no-cache, no-store"
+        ],
+        [
+          "content-type",
+          "text/event-stream; charset=utf-8"
+        ],
+        [
+          "x-accel-buffering",
+          "no"
+        ]
+      ],
+      "sse": [
+        "event: meta\ndata: {\"stream\":true}\n\n",
+        "event: thought\ndata: {\"text\":\"fake thought\"}\n\n",
+        "event: delta\ndata: {\"delta\":\"fake streamed answer\"}\n\n",
+        "event: done\ndata: {\"done\":true,\"answer_status\":\"answered_with_evidence\",\"evidence\":[{\"id\":\"src-3of3\",\"title\":\"검색 근거 제목\",\"url\":\"https://example.test/source-3of3\",\"snippet\":\"검색 근거 요약\",\"retrieved_at\":\"2026-11-17T00:00:00Z\",\"source_type\":\"web\"}],\"tool\":{\"id\":\"web_search\",\"title\":\"웹 검색\"},\"conversation_id\":\"chat_1fffffffffffffffffffffffffffffff\"}\n\n"
+      ]
+    },
+    "calls": [
+      {
+        "call": "external.drive",
+        "text": "search fake"
+      },
+      {
+        "call": "external.pc",
+        "owner_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "call": "grounding.prepare",
+        "messages": [
+          {
+            "role": "user",
+            "content": "search fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "util_scope": null,
+        "explicit_search": true
+      },
+      {
+        "call": "guard"
+      },
+      {
+        "call": "pc_tools",
+        "model_id": "example-provider/example-model-1"
+      },
+      {
+        "call": "connector_tools",
+        "intent": false
+      },
+      {
+        "call": "model.stream_text_auto",
+        "messages": [
+          {
+            "role": "user",
+            "content": "search fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": "[웹 검색 근거]\n검색 근거 요약",
+        "tools": []
+      },
+      {
+        "call": "store.append_exchange",
+        "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "conversation_id": null,
+        "user_text": "search fake",
+        "answer": "fake streamed answer",
+        "kwargs": {
+          "product_scope": "b62-chat"
+        }
+      },
+      {
+        "call": "store.record_claw_run",
+        "kwargs": {
+          "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "channel": "web",
+          "action": "web_search",
+          "title": "Chat: search fake",
+          "status": "completed",
+          "result_summary": "fake streamed answer",
+          "artifact_document_id": null,
+          "artifact_filename": null,
+          "artifact_media_type": null,
+          "conversation_id": null
+        }
+      }
+    ]
+  },
+  {
+    "case": "그라운딩_오류_공지",
+    "kind": "success",
+    "response": {
+      "status": 200,
+      "headers": [
+        [
+          "cache-control",
+          "no-cache, no-store"
+        ],
+        [
+          "content-type",
+          "text/event-stream; charset=utf-8"
+        ],
+        [
+          "x-accel-buffering",
+          "no"
+        ]
+      ],
+      "sse": [
+        "event: meta\ndata: {\"stream\":true}\n\n",
+        "event: thought\ndata: {\"text\":\"fake thought\"}\n\n",
+        "event: delta\ndata: {\"delta\":\"fake streamed answer\"}\n\n",
+        "event: done\ndata: {\"done\":true,\"notice\":\"웹 검색을 사용할 수 없어 근거 없이 답변합니다\",\"metadata\":{\"web_grounding_error\":\"web_grounding_unavailable\"},\"conversation_id\":\"chat_1fffffffffffffffffffffffffffffff\"}\n\n"
+      ]
+    },
+    "calls": [
+      {
+        "call": "external.drive",
+        "text": "hello fake"
+      },
+      {
+        "call": "external.pc",
+        "owner_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "call": "grounding.prepare",
+        "messages": [
+          {
+            "role": "user",
+            "content": "hello fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "util_scope": null,
+        "explicit_search": null
+      },
+      {
+        "call": "guard"
+      },
+      {
+        "call": "pc_tools",
+        "model_id": "example-provider/example-model-1"
+      },
+      {
+        "call": "connector_tools",
+        "intent": false
+      },
+      {
+        "call": "model.stream_text_auto",
+        "messages": [
+          {
+            "role": "user",
+            "content": "hello fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "tools": []
+      },
+      {
+        "call": "store.append_exchange",
+        "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "conversation_id": null,
+        "user_text": "hello fake",
+        "answer": "fake streamed answer",
+        "kwargs": {
+          "product_scope": "b62-chat"
+        }
+      },
+      {
+        "call": "store.record_claw_run",
+        "kwargs": {
+          "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "channel": "web",
+          "action": "general",
+          "title": "Chat: hello fake",
+          "status": "completed",
+          "result_summary": "fake streamed answer",
+          "artifact_document_id": null,
+          "artifact_filename": null,
+          "artifact_media_type": null,
+          "conversation_id": null
+        }
+      }
+    ]
+  },
+  {
+    "case": "PC_도구_선언",
+    "kind": "success",
+    "response": {
+      "status": 200,
+      "headers": [
+        [
+          "cache-control",
+          "no-cache, no-store"
+        ],
+        [
+          "content-type",
+          "text/event-stream; charset=utf-8"
+        ],
+        [
+          "x-accel-buffering",
+          "no"
+        ]
+      ],
+      "sse": [
+        "event: meta\ndata: {\"stream\":true}\n\n",
+        "event: thought\ndata: {\"text\":\"fake thought\"}\n\n",
+        "event: delta\ndata: {\"delta\":\"fake streamed answer\"}\n\n",
+        "event: done\ndata: {\"done\":true,\"conversation_id\":\"chat_1fffffffffffffffffffffffffffffff\"}\n\n"
+      ]
+    },
+    "calls": [
+      {
+        "call": "external.drive",
+        "text": "hello fake"
+      },
+      {
+        "call": "external.pc",
+        "owner_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "call": "grounding.prepare",
+        "messages": [
+          {
+            "role": "user",
+            "content": "hello fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "util_scope": null,
+        "explicit_search": null
+      },
+      {
+        "call": "guard"
+      },
+      {
+        "call": "pc_tools",
+        "model_id": "example-provider/example-model-1"
+      },
+      {
+        "call": "connector_tools",
+        "intent": false
+      },
+      {
+        "call": "model.stream_text_auto",
+        "messages": [
+          {
+            "role": "user",
+            "content": "hello fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": "[PC 연결] 이번 턴에는 연결된 PC 도구가 함께 제공됩니다. 사용자가 PC·컴퓨터 작업을 요청하면 연결된 PC에서 드라이브·파일·브라우저 작업을 수행할 수 있습니다. 이 대화에 없는 셸 명령 실행은 약속하지 말고 Claw의 PC 명령 실행으로 안내하세요. '원격 AI라 컴퓨터에 접속할 수 없다'고 답하지 마세요. 실제 결과는 도구 실행 결과로만 답하세요.",
+        "tools": [
+          "fake.pc.tool"
+        ]
+      },
+      {
+        "call": "store.append_exchange",
+        "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "conversation_id": null,
+        "user_text": "hello fake",
+        "answer": "fake streamed answer",
+        "kwargs": {
+          "product_scope": "b62-chat"
+        }
+      },
+      {
+        "call": "store.record_claw_run",
+        "kwargs": {
+          "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "channel": "web",
+          "action": "general",
+          "title": "Chat: hello fake",
+          "status": "completed",
+          "result_summary": "fake streamed answer",
+          "artifact_document_id": null,
+          "artifact_filename": null,
+          "artifact_media_type": null,
+          "conversation_id": null
+        }
+      }
+    ]
+  },
+  {
+    "case": "커넥터_도구_예외",
+    "kind": "exception",
+    "exception": {
+      "type": "RuntimeError",
+      "args": [
+        "fake connector tools failure"
+      ]
+    },
+    "calls": [
+      {
+        "call": "external.drive",
+        "text": "hello fake"
+      },
+      {
+        "call": "external.pc",
+        "owner_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "call": "grounding.prepare",
+        "messages": [
+          {
+            "role": "user",
+            "content": "hello fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "util_scope": null,
+        "explicit_search": null
+      },
+      {
+        "call": "guard"
+      },
+      {
+        "call": "pc_tools",
+        "model_id": "example-provider/example-model-1"
+      },
+      {
+        "call": "connector_tools",
+        "intent": false
+      }
+    ]
+  },
+  {
+    "case": "가드_예외",
+    "kind": "exception",
+    "exception": {
+      "type": "RuntimeError",
+      "args": [
+        "fake guard failure"
+      ]
+    },
+    "calls": [
+      {
+        "call": "external.drive",
+        "text": "hello fake"
+      },
+      {
+        "call": "external.pc",
+        "owner_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "call": "grounding.prepare",
+        "messages": [
+          {
+            "role": "user",
+            "content": "hello fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "util_scope": null,
+        "explicit_search": null
+      },
+      {
+        "call": "guard"
+      },
+      {
+        "call": "pc_tools",
+        "model_id": "example-provider/example-model-1"
+      },
+      {
+        "call": "connector_tools",
+        "intent": false
+      }
+    ]
+  },
+  {
+    "case": "PC도구_예외",
+    "kind": "exception",
+    "exception": {
+      "type": "RuntimeError",
+      "args": [
+        "fake pc tools failure"
+      ]
+    },
+    "calls": [
+      {
+        "call": "external.drive",
+        "text": "hello fake"
+      },
+      {
+        "call": "external.pc",
+        "owner_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "call": "grounding.prepare",
+        "messages": [
+          {
+            "role": "user",
+            "content": "hello fake"
+          }
+        ],
+        "skill": "auto",
+        "additional_system_context": null,
+        "util_scope": null,
+        "explicit_search": null
+      },
+      {
+        "call": "guard"
+      },
+      {
+        "call": "pc_tools",
+        "model_id": "example-provider/example-model-1"
+      },
+      {
+        "call": "connector_tools",
+        "intent": false
+      }
+    ]
+  }
+]

@@ -112,5 +112,6 @@ def test_combined_source_keeps_load_order_modules_then_app() -> None:
     # 결합 소스 안에서 실제 정의(모듈)가 전달 함수(app.js)보다 먼저 나온다 —
     # 이동 뒤에도 .index 계열이 전달 함수가 아니라 실제 본문을 먼저 가리킨다.
     module_def = definition_index("openAuthDialog")
-    forwarder_in_app = len(shipped) - len(app_text) + app_text.index("function openAuthDialog(")
-    assert module_def < forwarder_in_app
+    assert "function openAuthDialog(" not in app_text, "the login-dialog API is on the registry"
+    registry_line = len(shipped) - len(app_text) + app_text.index('app.provide("loginDialog",')
+    assert module_def < registry_line

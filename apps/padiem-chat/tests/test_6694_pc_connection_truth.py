@@ -114,7 +114,7 @@ def app_with(pairing, presence=None):
 def client(app, *, user_id: str = OWNER):
     token = create_session_token(
         app.state.settings, user_id, now=int(_now().timestamp()),
-    )
+        canonical_session_id="session_test_a")
     return httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url=ORIGIN,

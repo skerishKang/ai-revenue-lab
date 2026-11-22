@@ -446,7 +446,7 @@ async def _send(
         transport=httpx.ASGITransport(app=app),
         base_url=ORIGIN,
     ) as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(cfg, OWNER))
+        client.cookies.set(SESSION_COOKIE, create_session_token(cfg, OWNER, canonical_session_id="session_test_a"))
         return await client.request(method, path, json=json_body, headers=req_headers)
 
 
@@ -836,7 +836,8 @@ async def test_gate_custom_direct_and_custom_plus_tool_or_attachment_contract():
         assert with_attachment.status_code == 422, (endpoint, with_attachment.text)
         assert with_attachment.json()["error"]["message"] == "PADIEM Custom은 현재 텍스트 대화만 지원합니다."
 
-    # (D) byok_via_b14=True일 때 /api/orchestration은 user_credential_ref를 해석해 SSE 스트림으로 중계한다.
+    # (D) byok_via_b14=True여도 /api/orchestration은 BYOK를 받지 않고,
+    #     Chat 직접 호출은 Engine을 거치지 않는다.
     cfg_via_engine = _settings(byok_via_b14=True)
     app_via_engine = _build_app(
         cfg_via_engine,
@@ -853,11 +854,17 @@ async def test_gate_custom_direct_and_custom_plus_tool_or_attachment_contract():
         json_body=custom_text_payload,
         settings_obj=cfg_via_engine,
     )
-    assert orch_via.status_code == 200, orch_via.text
-    assert orch_via.headers.get("content-type", "").startswith("text/event-stream")
-    assert len(bridge.streamed_calls) == 1
-    assert bridge.streamed_calls[0]["byok_selection"] == {
-        "provider": CUSTOM_PROVIDER_SLOT,
-        "model": CUSTOM_MODEL_SLOT,
-    }
-    assert bridge.streamed_calls[0]["user_credential_ref"] is not None
+    assert orch_via.status_code == 409
+    assert orch_via.json()["error"]["code"] == "orchestration_not_applicable"
+
+    chat_via = await _send(
+        app_via_engine,
+        "POST",
+        "/api/chat/stream",
+        json_body=custom_text_payload,
+        settings_obj=cfg_via_engine,
+    )
+    assert chat_via.status_code == 200, chat_via.text
+    assert "내 키 직접 답변" in chat_via.text
+    assert bridge.streamed_calls == []
+    assert len(provider_requests) == 3

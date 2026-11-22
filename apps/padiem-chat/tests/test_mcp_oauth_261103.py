@@ -3,16 +3,22 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import re
 import secrets
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import parse_qs, urlsplit
 
 import pytest
 from starlette.responses import Response
-from test_5222_account_model_selection import BASE, client_for, session
-from test_mcp_gateway_account import DEVICE, Pairing, account_app, setup
+from _support.account_selection import BASE, client_for, session
+from _support.mcp_gateway_account import DEVICE, Pairing, account_app, setup
+from _support.mcp_oauth_consent import (
+    consent_page_locale_keys,
+    consent_page_scripts,
+    consent_script_oauth_urls,
+    locale_phrases,
+)
 
 from app.mcp_oauth_metadata import authorization_challenge, canonical_resource
 from app.shared_login_flow import (
@@ -26,6 +32,26 @@ from app.shared_login_flow import (
 RESOURCE = BASE + "/api/mcp"
 REDIRECT = "https://claude.test/callback"
 OTHER_DEVICE = "node//other-owner-pc"
+
+
+def _challenge_params(header: str) -> dict[str, str]:
+    """The key="value" pairs of one Bearer challenge header (#8060)."""
+    return dict(re.findall(r'([A-Za-z_]+)="([^"]*)"', header.split(" ", 1)[-1]))
+
+
+def _cache_directives(header: str) -> set[str]:
+    """Lower-cased directives of one Cache-Control header (#8060)."""
+    return {token.strip().lower() for token in header.split(",")}
+
+
+def _header_tokens(header: str) -> set[str]:
+    """Trimmed comma-separated tokens of one header (#8060)."""
+    return {token.strip() for token in header.split(",")}
+
+
+def _cookie_name(header: str) -> str:
+    """The cookie name of one Set-Cookie header (#8060)."""
+    return header.split(";", 1)[0].split("=", 1)[0].strip()
 
 
 def _pkce():
@@ -108,7 +134,8 @@ async def test_metadata_documents_and_401_challenge(app_ctx):
     app, _owner, _other, _store = app_ctx
     async with client_for(app) as client:
         resource = await client.get("/.well-known/oauth-protected-resource")
-        assert resource.status_code == 200 and "no-store" in resource.headers["cache-control"]
+        assert resource.status_code == 200
+        assert "no-store" in _cache_directives(resource.headers["cache-control"])
         document = resource.json()
         assert document["resource"] == RESOURCE
         assert document["authorization_servers"] == [BASE]
@@ -131,18 +158,21 @@ async def test_metadata_documents_and_401_challenge(app_ctx):
             "Accept": "application/json, text/event-stream",
             "MCP-Protocol-Version": "2025-11-25",
         }, json={"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}})
+        denied_challenge = _challenge_params(denied.headers["www-authenticate"])
         assert denied.status_code == 401
-        assert 'resource_metadata="' + BASE + '/.well-known/oauth-protected-resource"' in denied.headers["www-authenticate"]
-        assert 'scope="mcp:pc"' in denied.headers["www-authenticate"]
+        assert denied_challenge["resource_metadata"] == BASE + "/.well-known/oauth-protected-resource"
+        assert denied_challenge["scope"] == "mcp:pc"
         invalid = await client.post("/api/mcp", headers={
             "Authorization": "Bearer mcp_" + "0" * 32 + ".invalid",
             "Accept": "application/json, text/event-stream",
             "MCP-Protocol-Version": "2025-11-25",
         }, json={"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}})
+        invalid_challenge = _challenge_params(invalid.headers["www-authenticate"])
         assert invalid.status_code == 401
-        assert 'error="invalid_token"' in invalid.headers["www-authenticate"]
+        assert invalid_challenge["error"] == "invalid_token"
     assert canonical_resource(app.state.settings) == RESOURCE
-    assert 'resource_metadata="' + BASE + '/.well-known/oauth-protected-resource"' in authorization_challenge(app.state.settings)
+    direct_challenge = _challenge_params(authorization_challenge(app.state.settings))
+    assert direct_challenge["resource_metadata"] == BASE + "/.well-known/oauth-protected-resource"
 
 
 @pytest.mark.asyncio
@@ -158,8 +188,8 @@ async def test_oauth_browser_cors_is_narrow_and_uncacheable(app_ctx):
                 response = await client.get(path, headers={"Origin": origin})
                 assert response.status_code == 200
                 assert response.headers["access-control-allow-origin"] == origin
-                assert "origin" in response.headers["vary"].lower()
-                assert "no-store" in response.headers["cache-control"]
+                assert "origin" in {token.lower() for token in _header_tokens(response.headers["vary"])}
+                assert "no-store" in _cache_directives(response.headers["cache-control"])
 
             for path, requested_headers in (
                 ("/oauth/register", "content-type"),
@@ -172,9 +202,9 @@ async def test_oauth_browser_cors_is_narrow_and_uncacheable(app_ctx):
                 })
                 assert response.status_code == 204
                 assert response.headers["access-control-allow-origin"] == origin
-                assert "POST" in response.headers["access-control-allow-methods"]
-                assert "OPTIONS" in response.headers["access-control-allow-methods"]
-                assert "no-store" in response.headers["cache-control"]
+                assert "POST" in _header_tokens(response.headers["access-control-allow-methods"])
+                assert "OPTIONS" in _header_tokens(response.headers["access-control-allow-methods"])
+                assert "no-store" in _cache_directives(response.headers["cache-control"])
 
             registered = await client.post("/oauth/register", headers={"Origin": origin}, json={
                 "client_name": "CORS contract",
@@ -186,7 +216,7 @@ async def test_oauth_browser_cors_is_narrow_and_uncacheable(app_ctx):
             })
             assert registered.status_code == 201
             assert registered.headers["access-control-allow-origin"] == origin
-            assert "no-store" in registered.headers["cache-control"]
+            assert "no-store" in _cache_directives(registered.headers["cache-control"])
 
             token_response = await client.post("/oauth/token", headers={"Origin": origin}, data={
                 "grant_type": "unsupported",
@@ -194,7 +224,7 @@ async def test_oauth_browser_cors_is_narrow_and_uncacheable(app_ctx):
             })
             assert token_response.status_code == 401
             assert token_response.headers["access-control-allow-origin"] == origin
-            assert "no-store" in token_response.headers["cache-control"]
+            assert "no-store" in _cache_directives(token_response.headers["cache-control"])
 
         rejected = await client.get(
             "/.well-known/oauth-authorization-server",
@@ -253,7 +283,7 @@ async def test_consent_page_and_info_list_only_the_signed_in_users_pc(app_ctx):
             owner_ui.cookies.update(session(app, owner))
             page = await owner_ui.get("/oauth/authorize", params=params)
             assert page.status_code == 200
-            assert 'data-locale-key="mcp-oauth-capability"' in page.text
+            assert "mcp-oauth-capability" in consent_page_locale_keys()
             info = await owner_ui.get("/oauth/authorize/info", params=params)
             assert info.status_code == 200
             body = info.json()
@@ -460,24 +490,24 @@ async def test_authorize_login_redirect_and_info_login_required(app_ctx):
         redirected = await guest.get("/oauth/authorize", params=params)
         assert redirected.status_code == 302
         assert redirected.headers["location"] == "/auth/shared/start"
-        assert "__Host-padiem-login-return" in redirected.headers.get("set-cookie", "")
+        assert _cookie_name(redirected.headers.get("set-cookie", "")) == LOGIN_RETURN_COOKIE
         info = await guest.get("/oauth/authorize/info", params=params)
         assert info.status_code == 401
         assert info.headers["x-mcp-login-url"].startswith("/oauth/authorize?")
 
 
 def test_consent_copy_is_localized_in_both_languages():
-    static = Path(__file__).resolve().parents[1] / "static"
-    locale = (static / "locale.js").read_text(encoding="utf-8")
-    page = (static / "mcp-oauth-consent.html").read_text(encoding="utf-8")
-    script = (static / "mcp-oauth-consent.js").read_text(encoding="utf-8")
-    assert locale.count('"mcp-oauth-title"') == 2
-    assert locale.count('"mcp-oauth-capability"') == 2
-    assert "이 AI가 내 PC에서 파일·명령·브라우저 작업을 할 수 있습니다." in locale
-    assert "This AI can work with files, commands, and the browser on my PC." in locale
-    assert 'data-locale-key="mcp-oauth-capability"' in page
-    assert "/locale.js" in page and "/mcp-oauth-consent.js" in page
-    assert "/oauth/authorize/info" in script and "/oauth/authorize" in script
+    title = locale_phrases("mcp-oauth-title")
+    capability = locale_phrases("mcp-oauth-capability")
+    assert title["ko"] and title["en"]
+    assert capability["ko"] == "이 AI가 내 PC에서 파일·명령·브라우저 작업을 할 수 있습니다."
+    assert capability["en"] == "This AI can work with files, commands, and the browser on my PC."
+    assert "mcp-oauth-capability" in consent_page_locale_keys()
+    assert "/locale.js" in consent_page_scripts()
+    assert "/mcp-oauth-consent.js" in consent_page_scripts()
+    script_urls = {url.split("?")[0] for url in consent_script_oauth_urls()}
+    assert "/oauth/authorize/info" in script_urls
+    assert "/oauth/authorize" in script_urls
 
 
 def test_login_return_cookie_is_same_origin_only():
@@ -488,9 +518,12 @@ def test_login_return_cookie_is_same_origin_only():
     response = Response()
     set_login_return_cookie(response, "/oauth/authorize?state=ok")
     cookie = response.headers["set-cookie"]
-    assert LOGIN_RETURN_COOKIE in cookie and "Path=/" in cookie and "HttpOnly" in cookie and "Secure" in cookie
+    assert _cookie_name(cookie) == LOGIN_RETURN_COOKIE
+    assert {"path=/", "httponly", "secure"} <= {
+        part.strip().lower() for part in cookie.split(";")[1:]
+    }
     request = SimpleNamespace(cookies={LOGIN_RETURN_COOKIE: "/oauth/authorize?state=ok"})
     assert login_return_target(request) == "/oauth/authorize?state=ok"
     cleared = clear_login_return_cookie(Response())
-    assert LOGIN_RETURN_COOKIE in cleared.headers["set-cookie"]
+    assert _cookie_name(cleared.headers["set-cookie"]) == LOGIN_RETURN_COOKIE
 

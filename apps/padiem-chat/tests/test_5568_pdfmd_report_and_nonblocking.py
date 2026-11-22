@@ -18,7 +18,7 @@ import pytest
 from app.document_convert_com2 import Com2SqliteLedger
 from app.document_convert_store import D1DocumentConvertStore, MAX_REPORT_JSON_CHARS
 
-from test_5568_document_convert_routes import (
+from _support.document_convert_routes import (
     FakeD1,
     MemoryR2,
     OWNER,

@@ -22,8 +22,8 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-import test_5573_pc_device_pairing as pairing            # noqa: E402
-import test_5015_pc_read_dispatch as lane                # noqa: E402
+import _support.pc_device_pairing as pairing            # noqa: E402
+from _support import pc_read_dispatch as lane                # noqa: E402
 
 from app.pc_device_pairing_routes import (                # noqa: E402
     PC_PAIRING_INSTALL_FILE_PATH,
@@ -229,6 +229,9 @@ def test_the_shipped_program_is_the_bytes_the_build_recorded() -> None:
     assert len(data) == PC_PAIRING_CONNECT_EXE_BYTES
     assert hashlib.sha256(data).hexdigest() == PC_PAIRING_CONNECT_EXE_SHA256
     assert data[:2] == b"MZ"
+    built = REPO / "scripts/pc_pairing/connect-exe/dist/padiem-pc-connect.exe"
+    if built.exists():
+        assert data == built.read_bytes()
     assert (REPO / "docs" / "operations" / "PC_CONNECT_EXE_20261028.md").read_text(
         encoding="utf-8",
     ).count(f"CONNECT_EXE_SHA256={PC_PAIRING_CONNECT_EXE_SHA256}") == 1
@@ -244,11 +247,13 @@ def test_the_program_was_built_from_the_source_in_this_commit() -> None:
     """
     from app.pc_pairing_connect_exe_asset import PC_PAIRING_CONNECT_EXE_SEED
 
-    inputs = ("PadiemPcConnect.cs", "app.manifest", "win32_reproducible.py")
     directory = REPO / "scripts" / "pc_pairing" / "connect-exe"
+    inputs = [directory / name for name in ("PadiemPcConnect.cs", "app.manifest", "win32_reproducible.py")]
+    inputs.append(REPO / "apps/padiem-chat/app/pc_helper_update.py")
+    inputs.append(REPO / "apps/korean-ai-code-agent/src/kagent/pc_self_heal_task.py")
     joined = "".join(
-        hashlib.sha256((directory / name).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
-        for name in inputs
+        hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+        for path in inputs
     )
     assert hashlib.sha256(joined.encode("utf-8")).hexdigest() == PC_PAIRING_CONNECT_EXE_SEED
 

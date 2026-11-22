@@ -49,7 +49,7 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.history import PRODUCT_SCOPE_CHAT
 
 import test_b54_claw_general_p01_routing as base
-from test_3930_b54_live_sse_relay import HEADERS as LIVE_HEADERS, _streaming_adapter
+from _support.live_sse_relay import HEADERS as LIVE_HEADERS, _streaming_adapter
 
 GENERAL = base.GENERAL_ROUTE_PATH
 CANONICAL_SUBJECT = "sub_" + "a" * 32
@@ -140,7 +140,7 @@ def _seam_client(store, adapter, bridge=_DEFAULT_BRIDGE):
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, base.SIGNED_IN_USER_ID),
+            create_session_token(settings, base.SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )

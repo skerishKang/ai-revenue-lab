@@ -7,44 +7,150 @@
   // until R5 B6; they are mounted here as live accessors.
   const app = window.PadiemChatAppContext.create({
     get authState() { return authState; },
+    set authState(value) { authState = value; },
     get shell() { return shell; },
     get clawWorkspace() { return clawWorkspace; },
     get emptyState() { return emptyState; },
-    get uiT() { return uiT; },
-    get clawT() { return clawT; },
-    get setNavActive() { return setNavActive; },
-    get closeSidebar() { return closeSidebar; },
-    get clearClawWait() { return clearClawWait; },
-    get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
-    get mappedUiError() { return mappedUiError; },
-    get approvedMemoryErrorMessage() { return approvedMemoryErrorMessage; },
-    get safeLocalUiMessage() { return safeLocalUiMessage; },
+    get uiT() { return coreModule().uiT; },
+    get clawT() { return coreModule().clawT; },
+    get setNavActive() { return navModuleInstance.setNavActive; },
+    get closeSidebar() { return sidebar.closeSidebar; },
+    get clearClawWait() { return clawStatusModule().clearClawWait; },
+    get mappedUiError() { return coreModule().mappedUiError; },
+    get approvedMemoryErrorMessage() { return conversationModule().approvedMemoryErrorMessage; },
+    get safeLocalUiMessage() { return conversationModule().safeLocalUiMessage; },
     get failureCodeNote() { return failureCodeNote; },
     get openSavedConversation() { return openSavedConversation; },
-    get downloadClawArtifact() { return downloadClawArtifact; },
-    get setClawRunHistoryStatus() { return setClawRunHistoryStatus; },
+    get downloadClawArtifact() { return clawRun.downloadClawArtifact; },
     get clawRunHistoryPdfControllers() { return clawRunHistoryPdfControllers; },
-    get renderClawApprovalControls() { return renderClawApprovalControls; },
-    get loadClawRunHistory() { return loadClawRunHistory; },
+    get renderClawApprovalControls() { return clawRun.renderClawApprovalControls; },
     get clawRunHistoryInFlight() { return clawRunHistoryInFlight; },
+    set clawRunHistoryInFlight(value) { clawRunHistoryInFlight = value; },
     get clawRunHistoryLimit() { return clawRunHistoryLimit; },
     set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; },
-  });
+    get authViewEpoch() { return authViewEpoch; },
+    set authViewEpoch(value) { authViewEpoch = value; },
+    get pendingClawRunFocusId() { return pendingClawRunFocusId; },
+    set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
+      get ALLOWED_IMAGE_TYPES() { return ALLOWED_IMAGE_TYPES; },
+    get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
+    get PRODUCT_CHAT() { return PRODUCT_CHAT; },
+    get PRODUCT_CLAW() { return PRODUCT_CLAW; },
+    get accountContainer() { return accountContainer; },
+    get accountDeleteConfirm() { return accountDeleteConfirm; },
+    get accountName() { return accountName; },
+    get activeClawRunId() { return activeClawRunId; },
+    set activeClawRunId(value) { activeClawRunId = value; },
+    get activeProject() { return activeProject; },
+    set activeProject(value) { activeProject = value; },
+    get activeRequestArticle() { return activeRequestArticle; },
+    set activeRequestArticle(value) { activeRequestArticle = value; },
+    get activeRequestCancelReason() { return activeRequestCancelReason; },
+    set activeRequestCancelReason(value) { activeRequestCancelReason = value; },
+    get activeRequestController() { return activeRequestController; },
+    set activeRequestController(value) { activeRequestController = value; },
+    get advancedSettingsView() { return advancedSettingsView; },
+    get attachmentCopy() { return conversationModule().attachmentCopy; },
+    get authDialog() { return authDialog; },
+    get authDialogView() { return authDialogView; },
+    set authDialogView(value) { authDialogView = value; },
+    get authMethodEnabled() { return authModule().authMethodEnabled; },
+    get chatTransport() { return chatTransport; },
+    get clawAction() { return clawAction; },
+    get clawApprovalEpoch() { return clawApprovalEpoch; },
+    set clawApprovalEpoch(value) { clawApprovalEpoch = value; },
+    get clawApprovalInFlight() { return clawApprovalInFlight; },
+    set clawApprovalInFlight(value) { clawApprovalInFlight = value; },
+    get clawArtifactShownFor() { return clawArtifactShownFor; },
+    set clawArtifactShownFor(value) { clawArtifactShownFor = value; },
+    get clawChannel() { return clawChannel; },
+    get clawExecuteButton() { return clawExecuteButton; },
+    get clawInFlight() { return clawInFlight; },
+    set clawInFlight(value) { clawInFlight = value; },
+    get clawLastDispatchKey() { return clawLastDispatchKey; },
+    set clawLastDispatchKey(value) { clawLastDispatchKey = value; },
+    get clawManualForm() { return clawManualForm; },
+    get clawResultArea() { return clawResultArea; },
+    get clawResultCard() { return clawResultCard; },
+    get clawResultDocx() { return clawResultDocx; },
+    get clawResultEmpty() { return clawResultEmpty; },
+    get clawResultHint() { return clawResultHint; },
+    get clawResultPreview() { return clawResultPreview; },
+    get clawRetryButton() { return clawRetryButton; },
+    get clawSender() { return clawSender; },
+    get clearClawRecovery() { return clawStatusModule().clearClawRecovery; },
+    get closeAuthDialog() { return loginDialogModule().closeAuthDialog; },
+    get closeProfilePanel() { return authModule().closeProfilePanel; },
+    get closeSettings() { return settings.closeSettings; },
+    get connectorsError() { return connectorsError; },
+    get conversationArtifactContext() { return conversationArtifactContext; },
+    get conversationEpoch() { return conversationEpoch; },
+    set conversationEpoch(value) { conversationEpoch = value; },
+    get conversationProduct() { return conversationProduct; },
+    set conversationProduct(value) { conversationProduct = value; },
+    get conversationState() { return conversationState; },
+    get googleConnectorConnectInFlight() { return googleConnectorConnectInFlight; },
+    set googleConnectorConnectInFlight(value) { googleConnectorConnectInFlight = value; },
+    get historyActionStatus() { return historyActionStatus; },
+    get historyEmpty() { return historyEmpty; },
+    get historyList() { return historyList; },
+    get historySection() { return historySection; },
+    get idleNote() { return coreModule().idleNote; },
+    get inFlight() { return inFlight; },
+    set inFlight(value) { inFlight = value; },
+    get input() { return input; },
+    get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
+    set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
+    get loadAuthStatus() { return authModule().loadAuthStatus; },
+    get loadProjects() { return loadProjects; },
+    get loadRecentConversations() { return historyModule().loadRecentConversations; },
+    get messageList() { return messageList; },
+    get openAuthDialog() { return loginDialogModule().openAuthDialog; },
+    get passwordLoginError() { return passwordLoginError; },
+    get passwordResetConfirmError() { return passwordResetConfirmError; },
+    get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
+    get passwordResetConfirmView() { return passwordResetConfirmView; },
+    get passwordResetEmail() { return passwordResetEmail; },
+    get passwordResetNew() { return passwordResetNew; },
+    get passwordResetOpen() { return passwordResetOpen; },
+    get passwordResetPanel() { return passwordResetPanel; },
+    get passwordResetRequestError() { return passwordResetRequestError; },
+    get passwordResetRequestStatus() { return passwordResetRequestStatus; },
+    get passwordResetRequestView() { return passwordResetRequestView; },
+    get passwordResetToken() { return passwordResetToken; },
+    set passwordResetToken(value) { passwordResetToken = value; },
+    get profileToggle() { return profileToggle; },
+    get renderProjectState() { return renderProjectState; },
+    get renderStreamError() { return conversationModule().renderStreamError; },
+    get renderWebGroundingNotice() { return renderWebGroundingNotice; },
+    get resetConversationView() { return conversationModule().resetConversationView; },
+    get revealErrorState() { return revealErrorState; },
+    get reviewedGoogleAuthorizationUrl() { return authModule().reviewedGoogleAuthorizationUrl; },
+    get selectedProductTier() { return settings.selectedProductTier; },
+    get setAuthFormError() { return loginDialogModule().setAuthFormError; },
+    get setClawAreaState() { return clawStatusModule().setClawAreaState; },
+    get setClawButtonsBusy() { return clawStatusModule().setClawButtonsBusy; },
+    get setClawStatus() { return clawStatusModule().setClawStatus; },
+    get setNote() { return coreModule().setNote; },
+    get settingsButton() { return settingsButton; },
+    get syncAuthDialogMethods() { return loginDialogModule().syncAuthDialogMethods; },
+    get syncClawRunHistoryVisibility() { return runHistory.syncClawRunHistoryVisibility; },
+    get updateComposer() { return conversationModule().updateComposer; },
+});
   // #7216 R5 A7 (core): text lookup, note, error mapping, document readers,
   // formatters live in chat-core-module.js. app.js keeps one-line forwarders
   // and passes dependencies via getters.
   let coreModuleInstance = null;
   function coreModule() {
     if (!coreModuleInstance) {
-      coreModuleInstance = window.PadiemChatCoreModule.create({
-        get activeProject() { return activeProject; },
-        get attachmentCopy() { return attachmentCopy; },
+      coreModuleInstance = app.provide("core", window.PadiemChatCoreModule.create(Object.setPrototypeOf({
+
         get runtimeNote() { return runtimeNote; },
         get ALLOWED_DOCUMENT_TYPES() { return ALLOWED_DOCUMENT_TYPES; },
         get DOCUMENT_EXTENSION_TYPES() { return DOCUMENT_EXTENSION_TYPES; },
-        get ALLOWED_IMAGE_TYPES() { return ALLOWED_IMAGE_TYPES; },
         get clawFallbackCopy() { return clawFallbackCopy; },
-      });
+      
+  }, app)));
     }
     return coreModuleInstance;
   }
@@ -52,71 +158,43 @@
   // one-line forwarders with the same names, so call sites and function-declaration
   // hoisting stay intact. deps getters/setters read the closure variables live, so a
   // value changed before the first call is still observed.
-  let settingsModuleInstance = null;
-  let sidebarModuleInstance = null;
-  function settingsModule() {
-    if (!settingsModuleInstance) {
-      settingsModuleInstance = window.PadiemChatSettingsModule.create({
-        get settingsDialog() { return settingsDialog; },
-        get settingsButton() { return settingsButton; },
-        get profileToggle() { return profileToggle; },
-        get advancedSettingsView() { return advancedSettingsView; },
-        get advancedSettingsReturnState() { return advancedSettingsReturnState; },
-        get advancedMenuButtons() { return advancedMenuButtons; },
-        get advancedPageBlocks() { return advancedPageBlocks; },
-        set advancedSettingsReturnState(value) { advancedSettingsReturnState = value; },
-        get shell() { return shell; },
-        get setNavActive() { return setNavActive; },
-      });
-    }
-    return settingsModuleInstance;
-  }
-  function sidebarModule() {
-    if (!sidebarModuleInstance) {
-      sidebarModuleInstance = window.PadiemChatSidebarModule.create({
-        get shell() { return shell; },
-        get sidebarCollapseButton() { return sidebarCollapseButton; },
-        get sidebarRestoreButton() { return sidebarRestoreButton; },
-        get mobileMenu() { return mobileMenu; },
-        get mobileClose() { return mobileClose; },
-        get sidebarScrim() { return sidebarScrim; },
-        get closeProfilePanel() { return closeProfilePanel; },
-      });
-    }
-    return sidebarModuleInstance;
-  }
+  // R5 B7: the settings module is on the registry — app.provide at the original
+  // factory position (execution order kept); its API is reached through the
+  // registry. selectedProductTier and closeSettings shadow the shared accessors
+  // through the B6 allowlist (owner = this module).
+  const settings = app.provide("settings",
+    window.PadiemChatSettingsModule.create(Object.setPrototypeOf({
+
+      get settingsDialog() { return settingsDialog; },
+
+}, app)));
+  function settingsModule() { return settings; }
+  // R5 B7: the sidebar module is on the registry — app.provide at the original
+  // factory position (execution order kept); its API is reached through the
+  // registry instead of app.js one-line forwarders. closeSidebar shadows the
+  // shared accessor through the B6 allowlist (owner = this module).
+  const sidebar = app.provide("sidebar",
+    window.PadiemChatSidebarModule.create(Object.setPrototypeOf({}, app)));
+  function sidebarModule() { return sidebar; }
   // #7216 R5 step 2: the calendar module owns the Google Calendar READ pair.
   let calendarModuleInstance = null;
   function calendarModule() {
     if (!calendarModuleInstance) {
-      calendarModuleInstance = window.PadiemChatCalendarModule.create({
-        get connectorsScope() { return connectorsScope; },
-        get authState() { return authState; },
-        get googleConnectorConnectInFlight() { return googleConnectorConnectInFlight; },
-        set googleConnectorConnectInFlight(value) { googleConnectorConnectInFlight = value; },
+      calendarModuleInstance = app.provide("calendar", window.PadiemChatCalendarModule.create(Object.setPrototypeOf({
+
+        get connectorsScope() { return connectors.connectorsScope; },
+        // #7812 R5 B5: the Calendar READ state stays app.js-owned (in-session
+        // grant truth), reached by the module only through this live pair.
         get googleCalendarReadState() { return googleCalendarReadState; },
         set googleCalendarReadState(value) { googleCalendarReadState = value; },
-        get GOOGLE_CALENDAR_CONNECTOR() { return GOOGLE_CALENDAR_CONNECTOR; },
-        get GOOGLE_CALENDAR_TICKET_ENDPOINT() { return GOOGLE_CALENDAR_TICKET_ENDPOINT; },
-        get connectorTicketErrorKey() { return connectorTicketErrorKey; },
-        get GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT() { return GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT; },
-        get setConnectorCopy() { return setConnectorCopy; },
-        get connectorsError() { return connectorsError; },
-        get openAuthDialog() { return openAuthDialog; },
+        get connectorTicketErrorKey() { return connectors.connectorTicketErrorKey; },
+        get setConnectorCopy() { return connectors.setConnectorCopy; },
         get fetch() { return fetch; },
-        get reviewedGoogleAuthorizationUrl() { return reviewedGoogleAuthorizationUrl; },
-      });
+      
+  }, app)));
     }
     return calendarModuleInstance;
   }
-  function calendarReadStateKey(state) { return calendarModule().calendarReadStateKey(state); }
-  function calendarReadActivationErrorKey(error) { return calendarModule().calendarReadActivationErrorKey(error); }
-  function googleCalendarConnectButton() { return calendarModule().googleCalendarConnectButton(); }
-  function googleCalendarCard() { return calendarModule().googleCalendarCard(); }
-  function renderCalendarReadState() { return calendarModule().renderCalendarReadState(); }
-  function syncGoogleCalendarConnectButton(row = null) { return calendarModule().syncGoogleCalendarConnectButton(row); }
-  function beginGoogleCalendarConnect() { return calendarModule().beginGoogleCalendarConnect(); }
-  function activateGoogleCalendarRead() { return calendarModule().activateGoogleCalendarRead(); }
   // #7216 R5 step 3: the recent-conversations-menu module owns the history
   // list (rename/pin/delete) and the Claw recent-run presentation. app.js keeps
   // one-line forwarders with the same names. deps getters/setters read the closure
@@ -124,54 +202,15 @@
   let historyModuleInstance = null;
   function historyModule() {
     if (!historyModuleInstance) {
-      historyModuleInstance = window.PadiemChatHistoryModule.create({
-        get historySection() { return historySection; },
-        get historyList() { return historyList; },
-        get historyEmpty() { return historyEmpty; },
-        get historyActionStatus() { return historyActionStatus; },
-        get clawRunHistory() { return app.clawRunHistory; },
-        get clawRunHistoryDisclosure() { return clawRunHistoryDisclosure; },
-        get clawRunHistoryExpand() { return app.clawRunHistoryExpand; },
-        get clawRunHistoryError() { return clawRunHistoryError; },
-        get clawRunHistoryLoading() { return clawRunHistoryLoading; },
-        get clawRunHistoryList() { return clawRunHistoryList; },
-        get clawRunHistoryEmpty() { return clawRunHistoryEmpty; },
-        get HISTORY_TITLE_MAX_CHARS() { return HISTORY_TITLE_MAX_CHARS; },
-        get authState() { return authState; },
-        get authViewEpoch() { return authViewEpoch; },
-        get shell() { return shell; },
-        get input() { return input; },
-        get conversationState() { return conversationState; },
-        get inFlight() { return inFlight; },
+      historyModuleInstance = app.provide("history", window.PadiemChatHistoryModule.create(Object.setPrototypeOf({
+
         get clawConversationIds() { return clawConversationIds; },
-        get clawRunHistoryPdfControllers() { return clawRunHistoryPdfControllers; },
-        get uiT() { return uiT; },
-        get clawT() { return clawT; },
-        get sidebarActionIcon() { return sidebarActionIcon; },
-        get openSavedConversation() { return openSavedConversation; },
+        get sidebarActionIcon() { return app.sidebarActionIcon; },
         get readClawRuns() { return app.readClawRuns; },
-        get mappedUiError() { return mappedUiError; },
-        get safeLocalUiMessage() { return safeLocalUiMessage; },
-        get failureCodeNote() { return failureCodeNote; },
-        get renderClawRunCard() { return app.renderClawRunCard; },
-        get resetConversationView() { return resetConversationView; },
-        get setNote() { return setNote; },
-        get idleNote() { return idleNote; },
-        get historyReadSequence() { return historyReadSequence; },
-        set historyReadSequence(value) { historyReadSequence = value; },
         get clawConversationLabelsRead() { return clawConversationLabelsRead; },
-        set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; },
-        get clawRunHistoryInFlight() { return clawRunHistoryInFlight; },
-        set clawRunHistoryInFlight(value) { clawRunHistoryInFlight = value; },
-        get clawRunHistoryLeftSurface() { return clawRunHistoryLeftSurface; },
-        set clawRunHistoryLeftSurface(value) { clawRunHistoryLeftSurface = value; },
-        get clawRunHistoryLimit() { return clawRunHistoryLimit; },
-        set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; },
-        get clawRunHistoryVisibilityEpoch() { return clawRunHistoryVisibilityEpoch; },
-        set clawRunHistoryVisibilityEpoch(value) { clawRunHistoryVisibilityEpoch = value; },
-        get pendingClawRunFocusId() { return pendingClawRunFocusId; },
-        set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
-      });
+        set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; }
+      
+  }, app)));
     }
     return historyModuleInstance;
   }
@@ -181,287 +220,134 @@
   let authModuleInstance = null;
   function authModule() {
     if (!authModuleInstance) {
-      authModuleInstance = window.PadiemChatAuthModule.create({
-        get AUTH_SERVER_UNREACHABLE() { return AUTH_SERVER_UNREACHABLE; },
-        get AUTH_UNREACHABLE_RETRY_DELAY_MS() { return AUTH_UNREACHABLE_RETRY_DELAY_MS; },
-        get SESSION_PRESENTATION() { return SESSION_PRESENTATION; },
+      authModuleInstance = app.provide("auth", window.PadiemChatAuthModule.create(Object.setPrototypeOf({
+
         get accountAvatar() { return accountAvatar; },
-        get accountContainer() { return accountContainer; },
         get accountDeleteActions() { return accountDeleteActions; },
-        get accountDeleteButton() { return accountDeleteButton; },
-        get accountDeleteConfirm() { return accountDeleteConfirm; },
-        get accountDeleteConfirmEmail() { return accountDeleteConfirmEmail; },
-        get accountDeleteError() { return accountDeleteError; },
-        get accountName() { return accountName; },
         get accountPasswordActions() { return accountPasswordActions; },
         get accountSettingsSection() { return accountSettingsSection; },
         get settingsAccountEmail() { return settingsAccountEmail; },
-        get accountSharedDeleteButton() { return accountSharedDeleteButton; },
-        get accountSharedDeleteConfirm() { return accountSharedDeleteConfirm; },
-        get accountSharedDeleteConfirmEmail() { return accountSharedDeleteConfirmEmail; },
-        get accountSharedDeleteError() { return accountSharedDeleteError; },
         get advancedAccountSection() { return advancedAccountSection; },
-        get advancedSettingsView() { return advancedSettingsView; },
-        get applyAuthState() { return applyAuthState; },
-        get authDialog() { return authDialog; },
-        get authDialogView() { return authDialogView; },
-        set authDialogView(value) { authDialogView = value; },
-        get authDivider() { return authDivider; },
-        get authHandoff() { return authHandoff; },
-        get authMethodEnabled() { return authMethodEnabled; },
-        get authServerUnreachableError() { return authServerUnreachableError; },
-        get authState() { return authState; },
-        set authState(value) { authState = value; },
-        get authViewEpoch() { return authViewEpoch; },
-        set authViewEpoch(value) { authViewEpoch = value; },
-        get clawApprovalEpoch() { return clawApprovalEpoch; },
-        set clawApprovalEpoch(value) { clawApprovalEpoch = value; },
-        get clawApprovalInFlight() { return clawApprovalInFlight; },
-        set clawApprovalInFlight(value) { clawApprovalInFlight = value; },
+        get applyAuthState() { return authModule().applyAuthState; },
         get clawApprovalSessionToken() { return clawApprovalSessionToken; },
         set clawApprovalSessionToken(value) { clawApprovalSessionToken = value; },
-        get clearPasswordResetFragment() { return clearPasswordResetFragment; },
         get clearProjectsUI() { return clearProjectsUI; },
-        get closeAuthDialog() { return closeAuthDialog; },
-        get closePasswordChangeDialog() { return closePasswordChangeDialog; },
-        get closeProfilePanel() { return closeProfilePanel; },
-        get closeSettings() { return closeSettings; },
-        get googleLoginButton() { return googleLoginButton; },
-        get hidePasswordResetViews() { return hidePasswordResetViews; },
-        get historyActionStatus() { return historyActionStatus; },
-        get historyEmpty() { return historyEmpty; },
-        get historyList() { return historyList; },
-        get historySection() { return historySection; },
-        get invalidateClawApprovalSession() { return invalidateClawApprovalSession; },
-        get isAndroidWebView() { return isAndroidWebView; },
-        get loadAuthStatus() { return loadAuthStatus; },
-        get loadProjects() { return loadProjects; },
-        get loadRecentConversations() { return loadRecentConversations; },
+        get invalidateClawApprovalSession() { return authModule().invalidateClawApprovalSession; },
         get loginButton() { return loginButton; },
-        get openAuthDialog() { return openAuthDialog; },
-        get openClawRunTarget() { return openClawRunTarget; },
-        get openSavedConversation() { return openSavedConversation; },
-        get passwordAuthAnswer() { return passwordAuthAnswer; },
-        get passwordAuthRequest() { return passwordAuthRequest; },
-        get passwordChangeConfirm() { return passwordChangeConfirm; },
-        get passwordChangeCurrent() { return passwordChangeCurrent; },
-        get passwordChangeDialog() { return passwordChangeDialog; },
-        get passwordChangeError() { return passwordChangeError; },
-        get passwordChangeForm() { return passwordChangeForm; },
-        get passwordChangeNew() { return passwordChangeNew; },
-        get passwordChangeSubmit() { return passwordChangeSubmit; },
-        get passwordLoginError() { return passwordLoginError; },
-        get passwordLoginForm() { return passwordLoginForm; },
-        get passwordLoginIdentifier() { return passwordLoginIdentifier; },
-        get passwordLoginPassword() { return passwordLoginPassword; },
-        get passwordLoginSubmit() { return passwordLoginSubmit; },
-        get passwordRegisterEmail() { return passwordRegisterEmail; },
-        get passwordRegisterError() { return passwordRegisterError; },
-        get passwordRegisterForm() { return passwordRegisterForm; },
-        get passwordRegisterName() { return passwordRegisterName; },
-        get passwordRegisterPassword() { return passwordRegisterPassword; },
-        get passwordRegisterSection() { return passwordRegisterSection; },
-        get passwordRegisterSubmit() { return passwordRegisterSubmit; },
-        get passwordResetConfirm() { return passwordResetConfirm; },
-        get passwordResetConfirmError() { return passwordResetConfirmError; },
-        get passwordResetConfirmForm() { return passwordResetConfirmForm; },
-        get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
-        get passwordResetConfirmSubmit() { return passwordResetConfirmSubmit; },
-        get passwordResetConfirmView() { return passwordResetConfirmView; },
-        get passwordResetEmail() { return passwordResetEmail; },
-        get passwordResetNew() { return passwordResetNew; },
-        get passwordResetOpen() { return passwordResetOpen; },
-        get passwordResetPanel() { return passwordResetPanel; },
-        get passwordResetRequestError() { return passwordResetRequestError; },
-        get passwordResetRequestForm() { return passwordResetRequestForm; },
-        get passwordResetRequestStatus() { return passwordResetRequestStatus; },
-        get passwordResetRequestSubmit() { return passwordResetRequestSubmit; },
-        get passwordResetRequestView() { return passwordResetRequestView; },
-        get passwordResetToken() { return passwordResetToken; },
-        set passwordResetToken(value) { passwordResetToken = value; },
-        get passwordResetTokenFromLocation() { return passwordResetTokenFromLocation; },
+        get openClawRunTarget() { return navModuleInstance.openClawRunTarget; },
         get pendingNotificationConversationId() { return pendingNotificationConversationId; },
         set pendingNotificationConversationId(value) { pendingNotificationConversationId = value; },
         get pendingNotificationRunId() { return pendingNotificationRunId; },
         set pendingNotificationRunId(value) { pendingNotificationRunId = value; },
-        get profilePanel() { return profilePanel; },
-        get profileToggle() { return profileToggle; },
+        get profilePanel() { return loginDialogModule().profilePanelElement(); },
         get projectsBadge() { return projectsBadge; },
-        get renderAndroidHandoff() { return renderAndroidHandoff; },
-        get resetAccountDeleteConfirm() { return resetAccountDeleteConfirm; },
-        get resetAccountSharedDeleteConfirm() { return resetAccountSharedDeleteConfirm; },
-        get resetConversationView() { return resetConversationView; },
-        get resolveSessionPresentation() { return resolveSessionPresentation; },
-        get setAuthFormError() { return setAuthFormError; },
-        get setAuthStatusMessage() { return setAuthStatusMessage; },
-        get setLoginButtonCopy() { return setLoginButtonCopy; },
-        get setNavActive() { return setNavActive; },
-        get setNote() { return setNote; },
-        get shell() { return shell; },
-        get showPasswordResetView() { return showPasswordResetView; },
-        get startAndroidHandoff() { return startAndroidHandoff; },
+        get resetAccountDeleteConfirm() { return accountModule().resetAccountDeleteConfirm; },
+        get resolveSessionPresentation() { return authModule().resolveSessionPresentation; },
+        get setLoginButtonCopy() { return authModule().setLoginButtonCopy; },
         get syncApprovedMemoryVisibility() { return app.syncApprovedMemoryVisibility; },
-        get syncAuthDialogMethods() { return syncAuthDialogMethods; },
-        get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
-        get uiT() { return uiT; },
-      });
+        get signOutCurrentAccount() { return authModule().signOutCurrentAccount; },
+        get settingsLogoutButton() { return settingsLogoutButton; },
+      
+  }, app)));
     }
     return authModuleInstance;
   }
-  // #7216 R5: the conversation module owns those sections. app.js keeps one-line
-  // forwarders with the same names. deps getters/setters read the closure
-  // variables live, so a value changed before the first call is still observed.
+  // #7812 R5 B4-1: the account module owns password reset/change and account
+  // deletion. Account-only DOM is looked up inside create() and the listeners
+  // are registered by wireAccountControls().
+  // R5 B7: the account module is on the registry — app.provide at the original
+  // lazy factory position (creation timing kept); all 19 account names (the
+  // password reset/change 12 and the account-deletion 7) are reached through
+  // the registry instead of app.js one-line forwarders. The wire export is
+  // named wireAccountControls because localPcPanel already owns the registry
+  // name "wire".
+  let accountModuleInstance = null;
+  const accountModule = () => {
+    if (!accountModuleInstance) {
+      accountModuleInstance = app.provide("account", window.PadiemChatAccountModule.create(Object.setPrototypeOf({
+
+        get passwordLoginContinue() { return loginDialogModule().emailContinueElement(); },
+        get passwordAuthRequest() { return loginDialogModule().passwordAuthRequest; },
+        get setAuthStatusMessage() { return loginDialogModule().setAuthStatusMessage; },
+      
+  }, app)));
+    }
+    return accountModuleInstance;
+  };
+  // #7216 R5: the conversation module owns those sections. deps getters/setters
+  // read the closure variables live, so a value changed before the first call
+  // is still observed.
+  // R5 B7: the conversation module is on the registry — app.provide at the
+  // original lazy factory position (creation timing kept); all 19 names (the
+  // attachment chunk 8 and the remaining 11) are reached through the registry
+  // instead of app.js one-line forwarders.
   let conversationModuleInstance = null;
   function conversationModule() {
     if (!conversationModuleInstance) {
-      conversationModuleInstance = window.PadiemChatConversationModule.create({
-        get ALLOWED_IMAGE_TYPES() { return ALLOWED_IMAGE_TYPES; },
-        get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
-        get PRODUCT_CHAT() { return PRODUCT_CHAT; },
-        get PRODUCT_CLAW() { return PRODUCT_CLAW; },
-        get accountInitial() { return accountInitial; },
-        get accountName() { return accountName; },
-        get activeClawRunId() { return activeClawRunId; },
-        set activeClawRunId(value) { activeClawRunId = value; },
-        get activeProject() { return activeProject; },
-        set activeProject(value) { activeProject = value; },
+      conversationModuleInstance = app.provide("conversation", window.PadiemChatConversationModule.create(Object.setPrototypeOf({
+
+        get accountInitial() { return authModule().accountInitial; },
         get activeProjectFileCount() { return activeProjectFileCount; },
         set activeProjectFileCount(value) { activeProjectFileCount = value; },
-        get activeRequestArticle() { return activeRequestArticle; },
-        set activeRequestArticle(value) { activeRequestArticle = value; },
-        get activeRequestCancelReason() { return activeRequestCancelReason; },
-        set activeRequestCancelReason(value) { activeRequestCancelReason = value; },
-        get activeRequestController() { return activeRequestController; },
-        set activeRequestController(value) { activeRequestController = value; },
         get attachmentButton() { return attachmentButton; },
         get attachmentCapabilities() { return attachmentCapabilities; },
-        get attachmentChipList() { return attachmentChipList; },
-        get attachmentCopy() { return attachmentCopy; },
-        get attachmentCountLimit() { return attachmentCountLimit; },
+        get attachmentCountLimit() { return conversationModule().attachmentCountLimit; },
         get attachmentFileInput() { return attachmentFileInput; },
-        get attachmentKeyCounter() { return attachmentKeyCounter; },
-        set attachmentKeyCounter(value) { attachmentKeyCounter = value; },
-        get attachmentTray() { return attachmentTray; },
-        get attachmentTrayNote() { return attachmentTrayNote; },
         get binaryDocuments() { return binaryDocuments; },
         get buildRetryBox() { return buildRetryBox; },
         get cancelStreamButton() { return cancelStreamButton; },
-        get clawArtifactShownFor() { return clawArtifactShownFor; },
-        set clawArtifactShownFor(value) { clawArtifactShownFor = value; },
-        get clawT() { return clawT; },
-        get clearAttachment() { return clearAttachment; },
-        get clearClawRecovery() { return clearClawRecovery; },
-        get clearClawWait() { return clearClawWait; },
-        get closeSidebar() { return closeSidebar; },
-        get composerInlineHint() { return composerInlineHint; },
-        get composerInlineHintTimer() { return composerInlineHintTimer; },
-        set composerInlineHintTimer(value) { composerInlineHintTimer = value; },
-        get conversationArtifactContext() { return conversationArtifactContext; },
-        get conversationEpoch() { return conversationEpoch; },
-        set conversationEpoch(value) { conversationEpoch = value; },
-        get conversationProduct() { return conversationProduct; },
-        get conversationState() { return conversationState; },
+        get clearAttachment() { return conversationModule().clearAttachment; },
         get editProjectButton() { return editProjectButton; },
-        get emptyState() { return emptyState; },
         get exitProject() { return exitProject; },
         get exitProjectButton() { return exitProjectButton; },
-        get extensionOf() { return extensionOf; },
-        get failureCodeNote() { return failureCodeNote; },
+        get extensionOf() { return coreModule().extensionOf; },
         get failureStatusLabel() { return failureStatusLabel; },
         get form() { return form; },
-        get formatBytes() { return formatBytes; },
-        get formatClockTime() { return formatClockTime; },
-        get idleNote() { return idleNote; },
-        get inFlight() { return inFlight; },
-        set inFlight(value) { inFlight = value; },
-        get input() { return input; },
-        get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
-        set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
-        get messageList() { return messageList; },
-        get readDocumentFile() { return readDocumentFile; },
-        get removeAttachmentItem() { return removeAttachmentItem; },
-        get renderAttachmentChips() { return renderAttachmentChips; },
-        get renderProjectState() { return renderProjectState; },
-        get renderWebGroundingNotice() { return renderWebGroundingNotice; },
-        get resetConversation() { return resetConversation; },
-        get resetConversationView() { return resetConversationView; },
-        get revealErrorState() { return revealErrorState; },
-        get selectImage() { return selectImage; },
+        get formatBytes() { return coreModule().formatBytes; },
+        get formatClockTime() { return coreModule().formatClockTime; },
+        get readDocumentFile() { return coreModule().readDocumentFile; },
+        get removeAttachmentItem() { return conversationModule().removeAttachmentItem; },
+        get renderAttachmentChips() { return conversationModule().renderAttachmentChips; },
+        get resetConversation() { return conversationModule().resetConversation; },
+        get selectImage() { return coreModule().selectImage; },
         get selectedAttachments() { return selectedAttachments; },
         set selectedAttachments(value) { selectedAttachments = value; },
         get sendButton() { return sendButton; },
-        get setNavActive() { return setNavActive; },
-        get setNote() { return setNote; },
-        get shell() { return shell; },
-        get switchConversationProduct() { return switchConversationProduct; },
-        get uiT() { return uiT; },
-        get updateComposer() { return updateComposer; },
-      });
+        get switchConversationProduct() { return navModuleInstance.switchConversationProduct; },
+      
+  }, app)));
     }
     return conversationModuleInstance;
   }
   // #7216 R5 5b: the streaming section owns the async request lifetime.
-  // app.js keeps one-line forwarders with the same names. deps
-  // getters/setters read the closure variables live, so a value changed
-  // before the first call is still observed.
-  let streamingModuleInstance = null;
-  function streamingModule() {
-    if (!streamingModuleInstance) {
-      streamingModuleInstance = window.PadiemChatStreamingModule.create({
-        get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
-        get activeClawRunId() { return activeClawRunId; },
-        set activeClawRunId(value) { activeClawRunId = value; },
-        get activeProject() { return activeProject; },
-        set activeProject(value) { activeProject = value; },
-        get activeRequestArticle() { return activeRequestArticle; },
-        set activeRequestArticle(value) { activeRequestArticle = value; },
-        get activeRequestCancelReason() { return activeRequestCancelReason; },
-        set activeRequestCancelReason(value) { activeRequestCancelReason = value; },
-        get activeRequestController() { return activeRequestController; },
-        set activeRequestController(value) { activeRequestController = value; },
-        get addAssistantShell() { return addAssistantShell; },
-        get applyStreamDone() { return applyStreamDone; },
-        get attachmentPayload() { return attachmentPayload; },
-        get authState() { return authState; },
-        get chatTransport() { return chatTransport; },
-        get clawGeneralFailure() { return clawGeneralFailure; },
-        get conversationEpoch() { return conversationEpoch; },
-        get conversationProduct() { return conversationProduct; },
-        get conversationState() { return conversationState; },
-        get handleCustomRequestFailure() { return handleCustomRequestFailure; },
-        get inFlight() { return inFlight; },
-        set inFlight(value) { inFlight = value; },
-        get input() { return input; },
-        get invalidateClawRunsRead() { return app.invalidateClawRunsRead; },
-        get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
-        set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
-        get lifecycleForError() { return lifecycleForError; },
-        get loadProjects() { return loadProjects; },
-        get loadRecentConversations() { return loadRecentConversations; },
-        get openAuthDialog() { return openAuthDialog; },
-        get projectById() { return projectById; },
-        get projectFileStatus() { return projectFileStatus; },
-        get projectsReady() { return projectsReady; },
-        get recoverStoredPcResult() { return recoverStoredPcResult; },
-        get renderAnswer() { return renderAnswer; },
-        get renderCancelled() { return renderCancelled; },
-        get renderError() { return renderError; },
-        get renderProjectState() { return renderProjectState; },
-        get renderStreamError() { return renderStreamError; },
-        get renderTyping() { return renderTyping; },
-        get renderWebGroundingNotice() { return renderWebGroundingNotice; },
-        get requestCompletedAnswer() { return requestCompletedAnswer; },
-        get requestStreamingAnswer() { return requestStreamingAnswer; },
-        get revealErrorState() { return revealErrorState; },
-        get selectedProductTier() { return selectedProductTier; },
-        get setNote() { return setNote; },
-        get uiT() { return uiT; },
-        get updateComposer() { return updateComposer; },
-        get waitForAcceptedPcRun() { return waitForAcceptedPcRun; },
-      });
-    }
-    return streamingModuleInstance;
-  }
+  // R5 B7: the streaming module is on the registry — app.provide at the original
+  // factory position (execution order kept); its API is reached through the
+  // registry instead of app.js one-line forwarders.
+  const streaming = app.provide("streaming",
+    window.PadiemChatStreamingModule.create(Object.setPrototypeOf({
+
+      get addAssistantShell() { return addAssistantShell; },
+      get applyStreamDone() { return streaming.applyStreamDone; },
+      get attachmentPayload() { return conversationModule().attachmentPayload; },
+      get clawGeneralFailure() { return clawGeneralFailure; },
+      get handleCustomRequestFailure() { return handleCustomRequestFailure; },
+      get invalidateClawRunsRead() { return app.invalidateClawRunsRead; },
+      get lifecycleForError() { return lifecycleForError; },
+      get projectById() { return projectById; },
+      get projectFileStatus() { return projectFileStatus; },
+      get projectsReady() { return projectsReady; },
+      set projectsReady(value) { projectsReady = value; },
+      get recoverStoredPcResult() { return pcRunModuleInstance.recoverStoredPcResult; },
+      get renderAnswer() { return conversationModule().renderAnswer; },
+      get renderCancelled() { return renderCancelled; },
+      get renderError() { return renderError; },
+      get renderTyping() { return historyModule().renderTyping; },
+      get requestCompletedAnswer() { return streaming.requestCompletedAnswer; },
+      get requestStreamingAnswer() { return streaming.requestStreamingAnswer; },
+      get waitForAcceptedPcRun() { return pcRunModuleInstance.waitForAcceptedPcRun; },
+
+}, app)));
+  function streamingModule() { return streaming; }
   // #7216 R5 A3 (pc-run): PC execution polling, unfinished-run resume, and
   // durable PC result recovery live in chat-pc-run-module.js. app.js keeps
   // one-line forwarders and reads closure state live via getters.
@@ -488,14 +374,8 @@
   const sendButton = document.getElementById("sendButton");
   const cancelStreamButton = document.getElementById("cancelStreamButton");
   const newChatButton = document.getElementById("newChatButton");
-  const mobileMenu = document.getElementById("mobileMenu");
-  const mobileClose = document.getElementById("mobileClose");
-  const sidebarCollapseButton = document.getElementById("sidebarCollapseButton");
-  const sidebarRestoreButton = document.getElementById("sidebarRestoreButton");
-  const sidebarScrim = document.getElementById("sidebarScrim");
   const settingsButton = document.getElementById("settingsButton");
   const settingsDialog = document.getElementById("settingsDialog");
-  const settingsCloseButton = document.getElementById("settingsCloseButton");
   const accountSettingsSection = document.getElementById("accountSettingsSection");
   const settingsAccountEmail = document.getElementById("settingsAccountEmail");
   const advancedAccountSection = document.getElementById("advancedAccountSection");
@@ -503,35 +383,29 @@
   // #6659: account self-deletion. The server owns the authority and
   // the exact-email confirm; the browser only mirrors the same gate.
   const accountDeleteActions = document.getElementById("accountDeleteActions");
-  const accountDeleteOpen = document.getElementById("accountDeleteOpen");
-  const accountSharedDeleteOpen = document.getElementById("accountSharedDeleteOpen");
   const accountDeleteConfirm = document.getElementById("accountDeleteConfirm");
-  const accountDeleteConfirmEmail = document.getElementById("accountDeleteConfirmEmail");
-  const accountDeleteButton = document.getElementById("accountDeleteButton");
-  const accountDeleteError = document.getElementById("accountDeleteError");
-  const accountSharedDeleteConfirm = document.getElementById("accountSharedDeleteConfirm");
-  const accountSharedDeleteConfirmEmail = document.getElementById("accountSharedDeleteConfirmEmail");
-  const accountSharedDeleteButton = document.getElementById("accountSharedDeleteButton");
-  const accountSharedDeleteError = document.getElementById("accountSharedDeleteError");
-  const settingsLogoutButton = document.getElementById("settingsLogoutButton");
-  const passwordChangeOpen = document.getElementById("passwordChangeOpen");
-  const passwordChangeDialog = document.getElementById("passwordChangeDialog");
-  const passwordChangeDialogClose = document.getElementById("passwordChangeDialogClose");
-  const passwordChangeForm = document.getElementById("passwordChangeForm");
-  const passwordChangeCurrent = document.getElementById("passwordChangeCurrent");
-  const passwordChangeNew = document.getElementById("passwordChangeNew");
-  const passwordChangeConfirm = document.getElementById("passwordChangeConfirm");
-  const passwordChangeError = document.getElementById("passwordChangeError");
-  const passwordChangeSubmit = document.getElementById("passwordChangeSubmit");
   const attachmentFileInput = document.getElementById("attachmentFileInput");
   const attachmentButton = document.getElementById("attachmentButton");
-  const attachmentTray = document.getElementById("attachmentTray");
-  const attachmentChipList = document.getElementById("attachmentChipList");
   const documentStarterButton = document.getElementById("documentStarterButton");
   const runtimeNote = document.getElementById("runtimeNote");
   const loginButton = document.getElementById("loginButton");
+  const settingsLogoutButton = document.getElementById("settingsLogoutButton");
   const authDialog = document.getElementById("authDialog");
-  const authDialogClose = document.getElementById("authDialogClose");
+  let loginDialogModuleInstance = null;
+  const loginDialogModule = () => {
+    if (!loginDialogModuleInstance) {
+      loginDialogModuleInstance = app.provide("loginDialog", window.PadiemChatLoginDialogModule.create(Object.setPrototypeOf({
+
+        get googleLoginButton() { return googleLoginButton; },
+        get passwordResetTokenFromLocation() { return accountModule().passwordResetTokenFromLocation; },
+        get renderAndroidHandoff() { return androidHandoffModule().renderAndroidHandoff; },
+        get isAndroidWebView() { return androidHandoffModule().isAndroidWebView; },
+        get startAndroidHandoff() { return androidHandoffModule().startAndroidHandoff; },
+      
+  }, app)));
+    }
+    return loginDialogModuleInstance;
+  };
   const googleLoginButton = document.getElementById("googleLoginButton");
   const androidHandoffPanel = document.getElementById("androidHandoffPanel");
   const androidHandoffCode = document.getElementById("androidHandoffCode");
@@ -541,7 +415,6 @@
   const androidHandoffCopied = document.getElementById("androidHandoffCopied");
   const androidHandoffCancel = document.getElementById("androidHandoffCancel");
   const androidHandoffError = document.getElementById("androidHandoffError");
-  const authDivider = document.getElementById("authDivider");
   const passwordLoginForm = document.getElementById("passwordLoginForm");
   const authHandoff = document.getElementById("authHandoff");
   const passwordLoginIdentifier = document.getElementById("passwordLoginIdentifier");
@@ -562,19 +435,12 @@
   const passwordResetPanel = document.getElementById("passwordResetPanel");
   const passwordResetRequestView = document.getElementById("passwordResetRequestView");
   const passwordResetConfirmView = document.getElementById("passwordResetConfirmView");
-  const passwordResetRequestForm = document.getElementById("passwordResetRequestForm");
   const passwordResetEmail = document.getElementById("passwordResetEmail");
   const passwordResetRequestError = document.getElementById("passwordResetRequestError");
   const passwordResetRequestStatus = document.getElementById("passwordResetRequestStatus");
-  const passwordResetRequestSubmit = document.getElementById("passwordResetRequestSubmit");
-  const passwordResetConfirmForm = document.getElementById("passwordResetConfirmForm");
   const passwordResetNew = document.getElementById("passwordResetNew");
-  const passwordResetConfirm = document.getElementById("passwordResetConfirm");
   const passwordResetConfirmError = document.getElementById("passwordResetConfirmError");
   const passwordResetConfirmStatus = document.getElementById("passwordResetConfirmStatus");
-  const passwordResetConfirmSubmit = document.getElementById("passwordResetConfirmSubmit");
-  const passwordResetBack = document.getElementById("passwordResetBack");
-  const passwordResetConfirmBack = document.getElementById("passwordResetConfirmBack");
   let passwordResetToken = "";
   let authDialogView = "login";
   const accountName = document.getElementById("accountName");
@@ -590,25 +456,13 @@
   profileToggle.setAttribute("aria-haspopup", "dialog");
   profileToggle.setAttribute("aria-expanded", "false");
   profileToggle.dataset.localeAriaLabel = "account-profile-toggle";
-  profileToggle.setAttribute("aria-label", uiT("account-profile-toggle"));
+  profileToggle.setAttribute("aria-label", coreModule().uiT("account-profile-toggle"));
   // Some auth fixtures mount account controls without the original avatar as a
   // direct child; prepend never assumes a particular descendant relationship.
   accountContainer?.prepend(profileToggle);
   // Keep #accountAvatar and #accountName as direct accountContainer children:
   // product-capabilities.js rehomes fallback avatars before the account name.
   // A separate accessible button overlays those text/visual nodes instead.
-  const profilePanel = document.createElement("div");
-  profilePanel.id = "accountProfilePanel";
-  profilePanel.className = "account-profile-panel";
-  profilePanel.hidden = true;
-  const profileSettingsAction = document.createElement("button");
-  profileSettingsAction.type = "button";
-  profileSettingsAction.className = "account-profile-settings";
-  profileSettingsAction.dataset.localeKey = "account-profile-settings";
-  profileSettingsAction.textContent = uiT("account-profile-settings");
-  profilePanel.append(profileSettingsAction);
-  accountContainer?.append(profilePanel);
-  function closeProfilePanel(...a) { return authModule().closeProfilePanel(...a); }
   const historySection = document.getElementById("historySection");
   const historyList = document.getElementById("historyList");
   const historyActionStatus = document.getElementById("historyActionStatus");
@@ -638,9 +492,9 @@
   projectDeleteButton.id = "projectDeleteButton";
   projectDeleteButton.type = "button";
   projectDeleteButton.className = "project-danger";
-  projectDeleteButton.textContent = uiT("project-delete");
+  projectDeleteButton.textContent = coreModule().uiT("project-delete");
   projectDeleteButton.hidden = true;
-  projectDeleteButton.setAttribute("aria-label", uiT("project-delete-aria"));
+  projectDeleteButton.setAttribute("aria-label", coreModule().uiT("project-delete-aria"));
   projectFormActions.prepend(projectDeleteButton);
   const projectFilesPanel = document.getElementById("projectFilesPanel");
   const projectFileInput = document.getElementById("projectFileInput");
@@ -698,12 +552,10 @@
   // Each chip holds its own rejection state; only valid chips reach the
   // send payload.
   let selectedAttachments = [];
-  let attachmentKeyCounter = 0;
   let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
   // UI read generations contain no account identifier. Every verified auth
   // refresh invalidates late sidebar responses from the previous session.
   let authViewEpoch = 0;
-  let historyReadSequence = 0;
   // Only the owner-scoped Claw run history can identify a Claw thread.
   const clawConversationIds = new Set();
   let clawConversationLabelsRead = null;
@@ -729,28 +581,19 @@
   let androidHandoffClaiming = false;
   let androidHandoffStarting = false;
 
-  function uiT(...a) { return coreModule().uiT(...a); }
-  function attachmentCopy(...a) { return conversationModule().attachmentCopy(...a); }
-  function idleNote(...a) { return coreModule().idleNote(...a); }
-  function setNote(...a) { return coreModule().setNote(...a); }
-  function hwpLegacyGuidance(...a) { return coreModule().hwpLegacyGuidance(...a); }
   // Short-lived overlay, not a new composer row.
-  const composerInlineHint = document.getElementById("composerInlineHint");
-  let composerInlineHintTimer = null;
-  function showComposerInlineHint(...a) { return conversationModule().showComposerInlineHint(...a); }
   window.addEventListener("padiem:composer-hint", (event) => {
     if (event && event.detail && typeof event.detail.key === "string") {
-      showComposerInlineHint(event.detail.key);
+      conversationModule().showComposerInlineHint(event.detail.key);
     }
   });
   sendButton.addEventListener("click", () => {
     // #5561: an empty composer shows the voice waveform, so the empty-message
     // notice belongs to the send arrow only.
     if (window.PadiemVoiceMenu?.isVoicePrimaryAction?.()) return;
-    if (!input.value.trim() && !inFlight) showComposerInlineHint("composer-empty-message");
+    if (!input.value.trim() && !inFlight) conversationModule().showComposerInlineHint("composer-empty-message");
   });
 
-  function updateComposer(...a) { return conversationModule().updateComposer(...a); }
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
   }
@@ -776,104 +619,38 @@
   // The full-screen settings page the compact modal links to. The fragment
   // is a destination only, exactly like the three panel routes.
   const ADVANCED_SETTINGS_ROUTE_HASH = "#padiem-settings";
-  const PANEL_ROUTE_HASH_BY_STATE = Object.freeze({
-    calendar: CALENDAR_ROUTE_HASH,
-    library: LIBRARY_ROUTE_HASH,
-    meeting: MEETING_ROUTE_HASH,
-    settings: ADVANCED_SETTINGS_ROUTE_HASH,
-  });
-  const OWNED_PANEL_HASHES = new Set(Object.values(PANEL_ROUTE_HASH_BY_STATE));
   let automationDestinationReady = false;
-  // One page contract for every shell screen. This table is the only place a
-  // screen names itself, says which dedicated panel it owns, lists the
-  // sub-views that show the shared hero and marks its navigation entry; the
-  // shell publishes `data-page-id` and `data-layout-variant` from it and the
-  // shared stylesheet selects on those two attributes. A new page therefore
-  // adds one entry here and reuses the Chat/Claw geometry instead of declaring
-  // a second set of product rules. It moves existing conditions into data and
-  // does not change which element is shown or hidden.
-  const PAGE_VIEWS = Object.freeze([
-    Object.freeze({ pageId: "home", navigationId: "newChatButton", layoutVariant: "conversation", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "chat", navigationId: "newChatButton", layoutVariant: "conversation", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "claw", navigationId: "clawNavButton", layoutVariant: "workspace", panelId: "clawWorkspace", heroViews: Object.freeze(["general"]) }),
-    Object.freeze({ pageId: "connectors", navigationId: "connectorsNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "automation", navigationId: "automationNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "meeting", navigationId: "meetingNavButton", layoutVariant: "panel", panelId: "meetingView", heroViews: null }),
-    Object.freeze({ pageId: "calendar", navigationId: "calendarNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "library", navigationId: "filesNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "settings", navigationId: "settingsButton", layoutVariant: "panel", panelId: null, heroViews: null }),
-    Object.freeze({ pageId: "util", navigationId: "utilNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
-  ]);
-  const PAGE_VIEW_BY_ID = Object.freeze(
-    PAGE_VIEWS.reduce((index, view) => Object.assign(index, { [view.pageId]: view }), {})
-  );
-  // #7216 R5 A10 (nav): the screen-switch section — the PAGE_VIEWS projection,
-  // the URL fragment rules, setNavActive, the Chat|Claw product switch and the
-  // Claw/Chat workspace entries — lives in chat-nav-module.js. app.js keeps
-  // the declarations (route hash table, PAGE_VIEWS, the shell state lets), the
-  // two window contracts, one-line forwarders and wire calls at the original
-  // listener positions.
-  let navModuleInstance = null;
-  function navModule() {
-    if (!navModuleInstance) {
-      navModuleInstance = window.PadiemChatNavModule.create({
-        get PAGE_VIEWS() { return PAGE_VIEWS; },
-        get PAGE_VIEW_BY_ID() { return PAGE_VIEW_BY_ID; },
+  // #7216 R5 A10 (nav) / R5 part 2 B2-4: the screen-switch section — the page
+  // contract table, the route-fragment table, the URL fragment rules,
+  // setNavActive, the Chat|Claw product switch and the Claw/Chat workspace
+  // entries — lives in chat-nav-module.js, which is created here, at the
+  // original declaration position (the Claw navigation lookup keeps the same
+  // boot order). app.js keeps the shared route fragments, the two window
+  // contracts, one-line forwarders and wire calls at the original listener
+  // positions.
+  const navModuleInstance = app.provide("nav", window.PadiemChatNavModule.create(Object.setPrototypeOf({
+
         get AUTOMATION_ROUTE_HASH() { return AUTOMATION_ROUTE_HASH; },
         get CLAW_ROUTE_HASH() { return CLAW_ROUTE_HASH; },
         get CONNECTORS_ROUTE_HASH() { return CONNECTORS_ROUTE_HASH; },
-        get PANEL_ROUTE_HASH_BY_STATE() { return PANEL_ROUTE_HASH_BY_STATE; },
-        get OWNED_PANEL_HASHES() { return OWNED_PANEL_HASHES; },
-        get shell() { return shell; },
+        get CALENDAR_ROUTE_HASH() { return CALENDAR_ROUTE_HASH; },
+        get LIBRARY_ROUTE_HASH() { return LIBRARY_ROUTE_HASH; },
+        get MEETING_ROUTE_HASH() { return MEETING_ROUTE_HASH; },
+        get ADVANCED_SETTINGS_ROUTE_HASH() { return ADVANCED_SETTINGS_ROUTE_HASH; },
         get automationDestinationReady() { return automationDestinationReady; },
-        get syncComposerForClaw() { return syncComposerForClaw; },
-        get uiT() { return uiT; },
-        get PRODUCT_CLAW() { return PRODUCT_CLAW; },
-        get PRODUCT_CHAT() { return PRODUCT_CHAT; },
-        get conversationProduct() { return conversationProduct; },
-        set conversationProduct(value) { conversationProduct = value; },
-        get conversationState() { return conversationState; },
-        get messageList() { return messageList; },
-        get emptyState() { return emptyState; },
-        get clawArtifactShownFor() { return clawArtifactShownFor; },
-        set clawArtifactShownFor(value) { clawArtifactShownFor = value; },
-        get conversationArtifactContext() { return conversationArtifactContext; },
-        get clawWorkspace() { return clawWorkspace; },
-        get clawManualForm() { return clawManualForm; },
-        get clawResultArea() { return clawResultArea; },
+        get syncComposerForClaw() { return clawStatusModule().syncComposerForClaw; },
         get app() { return app; },
-        get input() { return input; },
-        get closeSidebar() { return closeSidebar; },
-        get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
-        get openSavedConversation() { return openSavedConversation; },
-        get downloadClawArtifact() { return downloadClawArtifact; },
-        get clawNavButton() { return clawNavButton; },
-        get authState() { return authState; },
-        set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
-      });
-    }
-    return navModuleInstance;
-  }
-  function syncRouteHash(...a) { return navModule().syncRouteHash(...a); }
-  function setNavActive(...a) { return navModule().setNavActive(...a); }
-  function switchConversationProduct(...a) { return navModule().switchConversationProduct(...a); }
-  function openClawWorkspace(...a) { return navModule().openClawWorkspace(...a); }
-  function openChatWorkspace(...a) { return navModule().openChatWorkspace(...a); }
-  function openClawManual(...a) { return navModule().openClawManual(...a); }
-  function openClawRunTarget(...a) { return navModule().openClawRunTarget(...a); }
-  window.PadiemChatRouting = Object.freeze({ syncRouteHash });
+  
+   }, app)));
+   window.PadiemChatRouting = Object.freeze({ syncRouteHash: navModuleInstance.syncRouteHash });
   // The first user turn extends the original landing panel. Older saved
   // threads still open directly on messages instead of replaying the hero.
-  function showConversation(...a) { return conversationModule().showConversation(...a); }
   /* Owner 2026-10-20: the user avatar shows the first character of the
    * signed-in account name. The name -> avatar order is unchanged and the
    * initial is read from the live account display name, never hardcoded. */
-  function accountInitial(...a) { return authModule().accountInitial(...a); }
 
   /* One clock format for both turns: the user turn and the answer row. */
-  function formatClockTime(...a) { return coreModule().formatClockTime(...a); }
 
-  function addUserMessage(...a) { return conversationModule().addUserMessage(...a); }
   // The runtime status chip has one owner (message-lifecycle.js). A finished
   // answer releases the "answer preparing" chip, and a real status (a Claw P01
   // stage, a failure) is never removed by accident. The calls go through the
@@ -892,16 +669,15 @@
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
     return article;
   }
-  function renderTyping(...a) { return historyModule().renderTyping(...a); }
   function renderStoredAssistant(text, stored) {
-    const article = addAssistantShell(uiT("stored-conversation"), "status");
+    const article = addAssistantShell(coreModule().uiT("stored-conversation"), "status");
     // 11-03 audit: the chip named what it is without saying why it is there.
     // The hint rides the shared tooltip, so a hover, a keyboard focus and a
     // tap all read the same one line.
     const chip = article.querySelector("[data-runtime-label]");
     if (chip) {
       chip.dataset.localeTitle = "stored-conversation-hint";
-      window.PadiemSharedTooltip?.label?.(chip, uiT("stored-conversation-hint"));
+      window.PadiemSharedTooltip?.label?.(chip, coreModule().uiT("stored-conversation-hint"));
     }
     // A restored turn shows a time only when the store actually carries one.
     // Older records have no per-message time, and none is invented for them.
@@ -926,23 +702,20 @@
       content.prepend(note);
     }
     note.dataset.localeKey = key;
-    note.textContent = uiT(key);
+    note.textContent = coreModule().uiT(key);
   }
-  function renderAnswer(...a) { return conversationModule().renderAnswer(...a); }
   // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
   // must not wear the generic "this run may already have started" state. Closed
   // code→copy map only: a raw server, Engine or provider string is never shown.
   const CLAW_BOUNDED_REFUSAL_COPY = Object.freeze({
-    tier_unavailable: Object.freeze({
-      message: "claw-general-model-unavailable",
-      hint: "claw-general-model-unavailable-note",
-    }),
     // Owner decision 2026-11-05: a guest Claw request is refused with 401
     // login_required; the UI names the login step instead of a generic error.
-    login_required: Object.freeze({
-      message: "claw-error-auth-needed",
-      hint: "claw-login-required-note",
-    }),
+    tier_unavailable: Object.freeze({ message: "claw-general-model-unavailable", hint: "claw-general-model-unavailable-note" }),
+    login_required: Object.freeze({ message: "claw-error-auth-needed", hint: "claw-login-required-note" }),
+    // #7960: the Chat session is live but the shared B54 canonical session has
+    // expired, so a PC command cannot resolve its owner; the copy keeps the same
+    // re-login walk the server message states instead of a generic retry sentence.
+    chat_pc_b54_session_expired: Object.freeze({ message: "claw-b54-session-expired", hint: "claw-b54-session-expired-note" }),
   });
   // Closed server code for a rejected customer-owned key. Named here so the
   // streaming answer region keeps no provider vocabulary of its own.
@@ -958,24 +731,24 @@
       ? CLAW_BOUNDED_REFUSAL_COPY[code]
       : null;
     if (!entry) return null;
-    return Object.freeze({ message: uiT(entry.message), hint: uiT(entry.hint) });
+    return Object.freeze({ message: coreModule().uiT(entry.message), hint: coreModule().uiT(entry.hint) });
   }
   function clawGeneralFailure(code) {
     const bounded = clawBoundedRefusalCopy(code);
     if (bounded) return bounded;
     return Object.freeze({
       message: window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang)
-        || uiT("claw-general-check-runs"),
-      hint: uiT("claw-general-check-runs"),
+        || coreModule().uiT("claw-general-check-runs"),
+      hint: coreModule().uiT("claw-general-check-runs"),
     });
   }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = uiT("retry"), clawFailure = null) {
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = coreModule().uiT("retry"), clawFailure = null) {
     const box = document.createElement("div");
     box.className = "error-box";
     const strong = document.createElement("strong");
-    strong.textContent = uiT("answer-load-failed");
+    strong.textContent = coreModule().uiT("answer-load-failed");
     const p = document.createElement("p");
-    p.textContent = message || uiT("try-again");
+    p.textContent = message || coreModule().uiT("try-again");
     const retry = document.createElement("button");
     retry.type = "button";
     retry.className = "retry-button";
@@ -986,7 +759,7 @@
     // established retry behavior; this guard is Claw-general only.
     if (clawGeneralRequest) {
       const hint = document.createElement("p");
-      hint.textContent = uiT("claw-general-check-runs");
+      hint.textContent = coreModule().uiT("claw-general-check-runs");
       // A provable pre-dispatch refusal has no run to check, so its next step is
       // a different model rather than the existing run-history guidance.
       if (clawFailure && clawFailure.hint) hint.textContent = clawFailure.hint;
@@ -995,11 +768,11 @@
       const openRuns = document.createElement("button");
       openRuns.type = "button";
       openRuns.className = "claw-inbox-retry claw-check-runs-button";
-      openRuns.textContent = uiT("claw-general-open-runs");
+      openRuns.textContent = coreModule().uiT("claw-general-open-runs");
       openRuns.disabled = authState.authenticated !== true;
       openRuns.addEventListener("click", () => {
         if (authState.authenticated !== true) return;
-        openClawWorkspace(); // refresh is handled by existing owner-scoped history UI
+        navModuleInstance.openClawWorkspace(); // refresh is handled by existing owner-scoped history UI
         const history = document.getElementById("clawRunHistory");
         if (!history || history.hidden) return;
         // #4488 Phase A: the panel is progressive disclosure; open it so the
@@ -1020,8 +793,8 @@
       conversationState.setConversationId(retryContext.conversationId);
       activeProject = retryContext.project;
       renderProjectState();
-      const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, true);
-      if (success && selectedAttachments === retryAttachment) clearAttachment();
+      const success = await streaming.requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, true);
+      if (success && selectedAttachments === retryAttachment) conversationModule().clearAttachment();
     }, { once: true });
     box.append(strong, p, retry);
     return box;
@@ -1038,11 +811,11 @@
     if (typeof errorCode !== "string" || !FAILURE_CODE_PATTERN.test(errorCode)) return null;
     const note = document.createElement("small");
     note.className = "error-code";
-    note.textContent = uiT("error-code-reference") + ": " + errorCode;
+    note.textContent = coreModule().uiT("error-code-reference") + ": " + errorCode;
     return note;
   }
   function failureStatusLabel(lifecycle) {
-    return lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
+    return lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? coreModule().uiT("timeout") : coreModule().uiT("connection-error");
   }
   function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null, errorCode = "") {
     const content = article.querySelector(".assistant-content");
@@ -1058,33 +831,17 @@
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(...a) { return conversationModule().renderStreamError(...a); }
   function renderCancelled(article, retryMessages, retrySkill, retryContext, clawGeneralRequest = false) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
-    article.querySelector("[data-runtime-label]").textContent = uiT("generation-cancelled");
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("generation-cancelled"), "status");
-    content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, uiT("regenerate")));
+    article.querySelector("[data-runtime-label]").textContent = coreModule().uiT("generation-cancelled");
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, coreModule().uiT("generation-cancelled"), "status");
+    content.appendChild(buildRetryBox(coreModule().uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, coreModule().uiT("regenerate")));
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
   }
 
-  function formatBytes(...a) { return coreModule().formatBytes(...a); }
-  function extensionOf(...a) { return coreModule().extensionOf(...a); }
-  function documentMediaType(...a) { return coreModule().documentMediaType(...a); }
-  function clearAttachment(...a) { return conversationModule().clearAttachment(...a); }
-  function attachmentCountLimit(...a) { return conversationModule().attachmentCountLimit(...a); }
-  function attachmentTrayNote(...a) { return conversationModule().attachmentTrayNote(...a); }
-  function removeAttachmentItem(...a) { return conversationModule().removeAttachmentItem(...a); }
-  function renderAttachmentChips(...a) { return conversationModule().renderAttachmentChips(...a); }
-  function readAsText(...a) { return coreModule().readAsText(...a); }
-  async function readDocumentFile(...a) { return coreModule().readDocumentFile(...a); }
-  async function selectImage(...a) { return coreModule().selectImage(...a); }
-  function addAttachmentFiles(...a) { return conversationModule().addAttachmentFiles(...a); }
-  function attachmentPayload(...a) { return conversationModule().attachmentPayload(...a); }
-
-  function clearHistoryUI(...a) { return historyModule().clearHistoryUI(...a); }
   // #4489: the Library entry is owned by static/library.js. The old
   // filesNavAvailable()/syncFilesNav() gate that also required project-file
   // storage was removed, because Library navigation must work for a signed-in
@@ -1106,22 +863,22 @@
       projectsNavButton.disabled = true;
       projectsNavButton.setAttribute("aria-disabled", "true");
     }
-    if (projectsBadge) projectsBadge.textContent = authState.authenticated ? uiT("setup-needed") : uiT("login-after");
+    if (projectsBadge) projectsBadge.textContent = authState.authenticated ? coreModule().uiT("setup-needed") : coreModule().uiT("login-after");
     renderProjectState();
   }
   function renderProjectState() {
     projectBanner.hidden = !activeProject;
     activeProjectName.textContent = activeProject ? activeProject.name : "";
     activeProjectFiles.hidden = !activeProject || activeProjectFileCount < 1;
-    activeProjectFiles.textContent = activeProjectFileCount > 0 ? uiT("project-files-count", { count: activeProjectFileCount }) : "";
+    activeProjectFiles.textContent = activeProjectFileCount > 0 ? coreModule().uiT("project-files-count", { count: activeProjectFileCount }) : "";
     projectsList.querySelectorAll(".project-item").forEach((button) => {
       button.setAttribute("aria-current", activeProject && button.dataset.projectId === activeProject.id ? "true" : "false");
     });
-    if (!selectedAttachments.length) setNote(idleNote());
+    if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
   }
   // Static, accessible sidebar actions: keep the translated button text
   // and ARIA labels; only replace the low-contrast visual affordance.
-  function sidebarActionIcon(...a) { return sidebarModule().sidebarActionIcon(...a); }
+  // R5 B7: the icon renderer lives in the sidebar module (registry-provided).
   function renderProjects() {
     projectsList.replaceChildren();
     projectsSection.hidden = !projectsReady;
@@ -1139,10 +896,10 @@
       const manage = document.createElement("button");
       manage.type = "button";
       manage.className = "project-manage";
-      manage.textContent = uiT("manage");
-      manage.prepend(sidebarActionIcon("settings"));
-      manage.setAttribute("aria-label", uiT("project-manage-aria", { name: project.name }));
-      window.PadiemSharedTooltip?.label?.(manage, uiT("project-manage-aria", { name: project.name }));
+      manage.textContent = coreModule().uiT("manage");
+      manage.prepend(sidebar.sidebarActionIcon("settings"));
+      manage.setAttribute("aria-label", coreModule().uiT("project-manage-aria", { name: project.name }));
+      window.PadiemSharedTooltip?.label?.(manage, coreModule().uiT("project-manage-aria", { name: project.name }));
       manage.addEventListener("click", () => openProjectDialog(project));
       row.append(button, manage);
       projectsList.appendChild(row);
@@ -1154,14 +911,14 @@
       more.type = "button";
       more.className = "recent-item project-more";
       more.id = "projectsMore";
-      more.textContent = uiT("projects-more");
-      more.setAttribute("aria-label", uiT("projects-more-aria"));
+      more.textContent = coreModule().uiT("projects-more");
+      more.setAttribute("aria-label", coreModule().uiT("projects-more-aria"));
       more.disabled = projectsLoadingMore;
       more.addEventListener("click", () => { void loadMoreProjects(); });
       moreRow.appendChild(more);
       projectsList.appendChild(moreRow);
     }
-    if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
+    if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : coreModule().uiT("create-new");
   }
   // #6645: a stale cursor used to report through the composer note, which the
   // glass desktop frame hides (display: none). The notice belongs next to the
@@ -1190,7 +947,7 @@
         // drop it and show what is already on screen with a plain Korean notice.
         if (response.status === 400) {
           projectsNextCursor = null;
-          setProjectsListNote(uiT("projects-more-stale"));
+          setProjectsListNote(coreModule().uiT("projects-more-stale"));
         }
         return false;
       }
@@ -1218,7 +975,7 @@
       projectsNavButton.disabled = true;
       projectsNavButton.setAttribute("aria-disabled", "true");
     }
-    if (projectsBadge) projectsBadge.textContent = uiT("checking");
+    if (projectsBadge) projectsBadge.textContent = coreModule().uiT("checking");
     try {
       const response = await fetch("/api/projects", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
@@ -1262,10 +1019,8 @@
   }
 
   // Only messages constructed by our own mapping may be shown to the user.
-  function mappedUiError(...a) { return coreModule().mappedUiError(...a); }
-  function safeLocalUiMessage(...a) { return conversationModule().safeLocalUiMessage(...a); }
   function showProjectError(error, fallback) {
-    projectFormError.textContent = safeLocalUiMessage(error, fallback);
+    projectFormError.textContent = conversationModule().safeLocalUiMessage(error, fallback);
     const note = failureCodeNote(error?.code, "");
     if (note) projectFormError.appendChild(note);
     projectFormError.hidden = false;
@@ -1275,7 +1030,7 @@
     if (!authState.authenticated || !authState.project_files_ready || !projectId) return [];
     const response = await fetch(`/api/projects/${encodeURIComponent(projectId)}/files`, { headers: { "Accept": "application/json" }, cache: "no-store" });
     const data = await response.json().catch(() => null);
-    if (!response.ok || !data || !Array.isArray(data.files)) throw mappedUiError(uiT("project-files-load-failed"), data);
+    if (!response.ok || !data || !Array.isArray(data.files)) throw coreModule().mappedUiError(coreModule().uiT("project-files-load-failed"), data);
     return data.files.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
   }
   async function refreshActiveProjectFileCount() {
@@ -1297,7 +1052,7 @@
     projectFilesList.replaceChildren();
     const totalChars = dialogProjectFiles.reduce((sum, file) => sum + Number(file.content_chars || 0), 0);
     if (projectFilesUsage) {
-      projectFilesUsage.textContent = uiT("project-files-usage", {
+      projectFilesUsage.textContent = coreModule().uiT("project-files-usage", {
         count: dialogProjectFiles.length,
         chars: totalChars.toLocaleString(),
       });
@@ -1321,11 +1076,11 @@
       const strong = document.createElement("strong");
       strong.textContent = file.name;
       const small = document.createElement("small");
-      small.textContent = `${file.media_type} · ${uiT("character-count", { count: Number(file.content_chars || 0).toLocaleString() })}`;
+      small.textContent = `${file.media_type} · ${coreModule().uiT("character-count", { count: Number(file.content_chars || 0).toLocaleString() })}`;
       copy.append(strong, small);
       const remove = document.createElement("button");
       remove.type = "button";
-      remove.textContent = uiT("delete");
+      remove.textContent = coreModule().uiT("delete");
       remove.addEventListener("click", () => deleteProjectFile(file.id, file.name));
       row.append(copy, remove);
       projectFilesList.appendChild(row);
@@ -1347,7 +1102,7 @@
         renderProjectState();
       }
     } catch (error) {
-      showProjectError(error, uiT("project-files-load-failed"));
+      showProjectError(error, coreModule().uiT("project-files-load-failed"));
     }
   }
   function projectBinaryMediaType(file) {
@@ -1355,7 +1110,7 @@
     // binaries). Extension-driven to mirror document-binary.js canRead/canonicalMediaType, which
     // are themselves extension-canonical. Everything else — PPTX/XLSX and unsupported text types —
     // falls through to the text path and is rejected there BEFORE any request is made.
-    return PROJECT_BINARY_EXTENSION_MEDIA.get(extensionOf(file && file.name)) || null;
+    return PROJECT_BINARY_EXTENSION_MEDIA.get(coreModule().extensionOf(file && file.name)) || null;
   }
   let projectFileBusy = false;
   function setProjectFileBusy(busy) {
@@ -1363,7 +1118,7 @@
     if (busy) {
       projectFilesPanel.setAttribute("aria-busy", "true");
       projectFileInput.setAttribute("aria-disabled", "true");
-      if (projectFileStatus) { projectFileStatus.textContent = uiT("document-saving"); projectFileStatus.hidden = false; }
+      if (projectFileStatus) { projectFileStatus.textContent = coreModule().uiT("document-saving"); projectFileStatus.hidden = false; }
     } else {
       projectFilesPanel.removeAttribute("aria-busy");
       projectFileInput.removeAttribute("aria-disabled");
@@ -1382,12 +1137,12 @@
     // save-as-HWPX guidance as a status note (not the error row) — and a
     // mislabeled file whose bytes are a real HWPX (ZIP) package keeps working
     // as HWPX through the same binary upload the .hwpx extension uses.
-    const hwpFamily = extensionOf(file.name) === ".hwp"
+    const hwpFamily = coreModule().extensionOf(file.name) === ".hwp"
       ? (await binaryDocuments?.headerFamily?.(file)) || null
       : null;
     if (hwpFamily === "ole") {
       if (projectFileStatus) {
-        projectFileStatus.textContent = hwpLegacyGuidance();
+        projectFileStatus.textContent = coreModule().hwpLegacyGuidance();
         projectFileStatus.hidden = false;
       }
       return;
@@ -1401,7 +1156,7 @@
       if (projectBinary) {
         // #6579: every binary goes through the shared tus module, which owns the
         // progress line, the resume policy and the first-party guidance copy.
-        if (!window.PadiemProjectFileUpload) throw mappedUiError(uiT("project-file-save-failed"), null);
+        if (!window.PadiemProjectFileUpload) throw coreModule().mappedUiError(coreModule().uiT("project-file-save-failed"), null);
         const uploaded = await window.PadiemProjectFileUpload.upload({
           file,
           projectId: editingProjectId,
@@ -1409,13 +1164,13 @@
           onProgress: (sent, total) => {
             if (projectFileStatus && !projectFileStatus.hidden && total > 0) {
               const percent = Math.min(100, Math.round((sent / total) * 100));
-              projectFileStatus.textContent = `${uiT("document-saving")} ${percent}%`;
+              projectFileStatus.textContent = `${coreModule().uiT("document-saving")} ${percent}%`;
             }
           },
         });
-        if (!uploaded || !uploaded.file) throw mappedUiError(uiT("project-file-save-failed"), null);
+        if (!uploaded || !uploaded.file) throw coreModule().mappedUiError(coreModule().uiT("project-file-save-failed"), null);
       } else {
-        const documentFile = await readDocumentFile(file);
+        const documentFile = await coreModule().readDocumentFile(file);
         const payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
         const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
           method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
@@ -1423,12 +1178,12 @@
         });
         const data = await response.json().catch(() => null);
         if (!response.ok || !data || !data.file) {
-          throw mappedUiError(uiT("project-file-save-failed"), data);
+          throw coreModule().mappedUiError(coreModule().uiT("project-file-save-failed"), data);
         }
       }
       await loadProjectFilesForDialog(editingProjectId);
     } catch (error) {
-      showProjectError(error, uiT("project-file-save-failed"));
+      showProjectError(error, coreModule().uiT("project-file-save-failed"));
     } finally {
       setProjectFileBusy(false);
     }
@@ -1436,46 +1191,44 @@
   async function deleteProjectFile(fileId, name) {
     if (!editingProjectId || !authState.project_files_ready) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: uiT("project-file-delete-title"),
-      message: uiT("project-file-delete-message", { name }),
-      cancelLabel: uiT("cancel"),
-      confirmLabel: uiT("delete"),
+      title: coreModule().uiT("project-file-delete-title"),
+      message: coreModule().uiT("project-file-delete-message", { name }),
+      cancelLabel: coreModule().uiT("cancel"),
+      confirmLabel: coreModule().uiT("delete"),
     });
     if (!confirmed) return;
     try {
       const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files/${encodeURIComponent(fileId)}`, { method: "DELETE" });
-      if (!response.ok) throw mappedUiError(uiT("project-file-delete-failed"), await response.json().catch(() => null));
+      if (!response.ok) throw coreModule().mappedUiError(coreModule().uiT("project-file-delete-failed"), await response.json().catch(() => null));
       await loadProjectFilesForDialog(editingProjectId);
     } catch (error) {
-      showProjectError(error, uiT("project-file-delete-failed"));
+      showProjectError(error, coreModule().uiT("project-file-delete-failed"));
     }
   }
 
-  function resetConversationView(...a) { return conversationModule().resetConversationView(...a); }
   // #2505: the sidebar Chat entry returns to the Chat lane while the user is in
   // the Claw workspace. Inside the Chat state the same entry starts a new
   // conversation. Every other caller resets the view directly, because a
   // sign-out, a project change or a delete must clear the conversation no
   // matter which product is on screen.
-  function resetConversation(...a) { return conversationModule().resetConversation(...a); }
   function selectProject(project) {
     if (!projectsReady || !project || inFlight) return;
     activeProject = project;
     activeProjectFileCount = 0;
-    resetConversationView(true);
+    conversationModule().resetConversationView(true);
     refreshActiveProjectFileCount();
   }
   function exitProject() {
     if (inFlight) return;
     activeProject = null;
     activeProjectFileCount = 0;
-    resetConversationView(false);
+    conversationModule().resetConversationView(false);
   }
   function openProjectDialog(project = null, selectedFileId = null) {
     if (!projectsReady || !authState.authenticated || inFlight) return;
     editingProjectId = project ? project.id : null;
     highlightedProjectFileId = selectedFileId;
-    projectDialogTitle.textContent = project ? uiT("project-edit-title") : uiT("project-new");
+    projectDialogTitle.textContent = project ? coreModule().uiT("project-edit-title") : coreModule().uiT("project-new");
     projectNameInput.value = project ? project.name : "";
     projectInstructionsInput.value = project && typeof project.instructions === "string" ? project.instructions : "";
     projectFormError.textContent = "";
@@ -1517,7 +1270,7 @@
     const name = projectNameInput.value.trim();
     const instructions = projectInstructionsInput.value.trim();
     if (!name) {
-      projectFormError.textContent = uiT("project-name-required");
+      projectFormError.textContent = coreModule().uiT("project-name-required");
       projectFormError.hidden = false;
       return;
     }
@@ -1533,7 +1286,7 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.project) {
-        throw mappedUiError(uiT("project-save-failed"), data);
+        throw coreModule().mappedUiError(coreModule().uiT("project-save-failed"), data);
       }
       const saved = data.project;
       const index = projects.findIndex((item) => item.id === saved.id);
@@ -1544,7 +1297,7 @@
       closeProjectDialog();
       if (!editing) selectProject(saved);
     } catch (error) {
-      showProjectError(error, uiT("project-save-failed"));
+      showProjectError(error, coreModule().uiT("project-save-failed"));
       projectSaveButton.disabled = false;
     }
   }
@@ -1554,10 +1307,10 @@
     const project = projectById(editingProjectId);
     if (!project) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: uiT("project-delete-title"),
-      message: uiT("project-delete-message", { name: project.name }),
-      cancelLabel: uiT("cancel"),
-      confirmLabel: uiT("delete"),
+      title: coreModule().uiT("project-delete-title"),
+      message: coreModule().uiT("project-delete-message", { name: project.name }),
+      cancelLabel: coreModule().uiT("cancel"),
+      confirmLabel: coreModule().uiT("delete"),
     });
     if (!confirmed) return;
     const deletingId = editingProjectId;
@@ -1573,7 +1326,7 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || data.deleted !== true || data.project_id !== deletingId) {
-        throw mappedUiError(uiT("project-delete-failed"), data);
+        throw coreModule().mappedUiError(coreModule().uiT("project-delete-failed"), data);
       }
       projects = projects.filter((item) => item.id !== deletingId);
       if (deletingActiveProject) {
@@ -1586,11 +1339,11 @@
       await loadProjects();
       if (deletingActiveProject) {
         renderProjectState();
-        setNote(idleNote());
+        coreModule().setNote(coreModule().idleNote());
       }
       input.focus();
     } catch (error) {
-      showProjectError(error, uiT("project-delete-failed"));
+      showProjectError(error, coreModule().uiT("project-delete-failed"));
       projectDeleteButton.disabled = false;
       projectSaveButton.disabled = false;
     }
@@ -1613,17 +1366,8 @@
   //
   // The table is the rule: the projections read it, and the #5479 regression
   // test reads the same table out of this file.
-  const SESSION_PRESENTATION = {
-    "pending": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
-    "signed_in": { "accountHidden": false, "loginHidden": true, "loginDisabled": false, "accountNameHidden": false },
-    "guest": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": false },
-    "expired": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": false },
-    "unavailable": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
-    "unreachable": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": true }
-  };
-  function resolveSessionPresentation(...a) { return authModule().resolveSessionPresentation(...a); }
   // The other projections read the same rule so they cannot drift apart.
-  window.PadiemSessionPresentation = resolveSessionPresentation;
+  window.PadiemSessionPresentation = authModule().resolveSessionPresentation;
 
   // #5034: a Web Push click can be a cold start, so the run reference arrives in
   // the URL before any view exists. The query carries only the server-derived
@@ -1664,21 +1408,19 @@
     }
   }
 
-  function setLoginButtonCopy(...a) { return authModule().setLoginButtonCopy(...a); }
-  function applyAuthState(...a) { return authModule().applyAuthState(...a); }
-  function authMethodEnabled(...a) { return authModule().authMethodEnabled(...a); }
-
-  function setAuthFormError(...a) { return authModule().setAuthFormError(...a); }
 
 
   // #7216 R5 A6 (android-handoff): start/claim/poll and the handoff panel live
   // in chat-android-handoff-module.js. app.js keeps the declarations, the
-  // session-storage reader/writer and resumeAndroidHandoff (R-06), plus one-line
-  // forwarders so existing call sites and deps stay intact.
+  // session-storage reader/writer and resumeAndroidHandoff (R-06).
+  // R5 B7 round 20: the module is on the registry — app.provide inside the original
+  // lazy factory (creation timing kept: first call is the wire at boot); the
+  // 9 names are reached through the registry instead of app.js forwarders.
   let androidHandoffModuleInstance = null;
   function androidHandoffModule() {
     if (!androidHandoffModuleInstance) {
-      androidHandoffModuleInstance = window.PadiemChatAndroidHandoffModule.create({
+      androidHandoffModuleInstance = app.provide("androidHandoff", window.PadiemChatAndroidHandoffModule.create(Object.setPrototypeOf({
+
         get androidHandoff() { return androidHandoff; },
         set androidHandoff(value) { androidHandoff = value; },
         get androidHandoffTimer() { return androidHandoffTimer; },
@@ -1697,28 +1439,11 @@
         get androidHandoffError() { return androidHandoffError; },
         get ANDROID_HANDOFF_POLL_MS() { return ANDROID_HANDOFF_POLL_MS; },
         get storeAndroidHandoff() { return storeAndroidHandoff; },
-        get setAuthFormError() { return setAuthFormError; },
-        get loadAuthStatus() { return loadAuthStatus; },
-        get closeAuthDialog() { return closeAuthDialog; },
-        get uiT() { return uiT; },
-        get authState() { return authState; },
-      });
+      
+  }, app)));
     }
     return androidHandoffModuleInstance;
   }
-  function isAndroidWebView(...a) { return androidHandoffModule().isAndroidWebView(...a); }
-  function stopAndroidHandoffPolling(...a) { return androidHandoffModule().stopAndroidHandoffPolling(...a); }
-  function clearAndroidHandoff(...a) { return androidHandoffModule().clearAndroidHandoff(...a); }
-  function androidHandoffPhaseKey(...a) { return androidHandoffModule().androidHandoffPhaseKey(...a); }
-  function renderAndroidHandoff(...a) { return androidHandoffModule().renderAndroidHandoff(...a); }
-  function claimAndroidHandoff(...a) { return androidHandoffModule().claimAndroidHandoff(...a); }
-  function pollAndroidHandoff(...a) { return androidHandoffModule().pollAndroidHandoff(...a); }
-  function startAndroidHandoffPolling(...a) { return androidHandoffModule().startAndroidHandoffPolling(...a); }
-  function startAndroidHandoff(...a) { return androidHandoffModule().startAndroidHandoff(...a); }
-
-  function syncAuthDialogMethods(...a) { return authModule().syncAuthDialogMethods(...a); }
-
-  function openAuthDialog(...a) { return authModule().openAuthDialog(...a); }
 
 
   function readStoredAndroidHandoff() {
@@ -1759,7 +1484,7 @@
 
 
   function resumeAndroidHandoff() {
-    if (!isAndroidWebView()) return;
+    if (!androidHandoffModule().isAndroidWebView()) return;
     const stored = readStoredAndroidHandoff();
     if (!stored) return;
     if (Date.now() >= stored.expiresAt) {
@@ -1768,37 +1493,15 @@
     }
     if (stored.phase === "claiming") stored.phase = "waiting";
     androidHandoff = stored;
-    renderAndroidHandoff();
-    startAndroidHandoffPolling();
-    pollAndroidHandoff();
+    androidHandoffModule().renderAndroidHandoff();
+    androidHandoffModule().startAndroidHandoffPolling();
+    androidHandoffModule().pollAndroidHandoff();
   }
-
-  function closeAuthDialog(...a) { return authModule().closeAuthDialog(...a); }
-
-  // #5664: the Chat Python Worker can fail isolate startup with
-  // `NoGilError: Attempted to use PyProxy when Python GIL not held`
-  // (cloudflare/workerd#6624) and then answers a plain-text 5xx that no route
-  // produced. That body never describes the account, so it must not be shown
-  // as a rejected credential or a failed sign-in.
-  const AUTH_SERVER_UNREACHABLE = "auth_server_unreachable";
-  // One replay is safe only where the route makes it safe: the reset confirm is
-  // guarded by its one-time token, whose atomic consume applies at most once,
-  // and the failed request never reached the route. Every other auth write
-  // keeps its single attempt.
-  const AUTH_UNREACHABLE_RETRY_DELAY_MS = 600;
-
-  function authServerUnreachableError(...a) { return authModule().authServerUnreachableError(...a); }
-
-  function passwordAuthAnswer(...a) { return authModule().passwordAuthAnswer(...a); }
-
-  function passwordAuthRequest(...a) { return authModule().passwordAuthRequest(...a); }
 
   // #5481: the lost-password flow. The entry link opens the request view, the
   // mailed one-time link opens the confirm view. The token never travels in
   // a query string: it arrives in the URL fragment, which the browser does
   // not send to the server.
-  function setAuthStatusMessage(...a) { return authModule().setAuthStatusMessage(...a); }
-
   // A LoveTree sign-in ticket read from the address bar. Same shape and same
   // caution as the reset-link read below: the app shell also loads inside
   // curated VM harnesses without a location object, so this runs when the
@@ -1819,105 +1522,33 @@
     }
   }
 
-  function passwordResetTokenFromLocation(...a) { return authModule().passwordResetTokenFromLocation(...a); }
-
-  function clearPasswordResetFragment(...a) { return authModule().clearPasswordResetFragment(...a); }
-
-  function showPasswordResetView(...a) { return authModule().showPasswordResetView(...a); }
-
-  function hidePasswordResetViews(...a) { return authModule().hidePasswordResetViews(...a); }
-
-  function openPasswordResetRequest(...a) { return authModule().openPasswordResetRequest(...a); }
-
-  function openPasswordResetConfirm(...a) { return authModule().openPasswordResetConfirm(...a); }
-
-  function closePasswordResetViews(...a) { return authModule().closePasswordResetViews(...a); }
-
-  function submitPasswordResetRequest(...a) { return authModule().submitPasswordResetRequest(...a); }
-
-  function submitPasswordResetConfirm(...a) { return authModule().submitPasswordResetConfirm(...a); }
-
-  // #5434: the signed-in account changes its own password. The account is
-  // never named by the browser: the server resolves it from the session.
-  function openPasswordChangeDialog(...a) { return authModule().openPasswordChangeDialog(...a); }
-
-  function closePasswordChangeDialog(...a) { return authModule().closePasswordChangeDialog(...a); }
-
-  function submitPasswordChange(...a) { return authModule().submitPasswordChange(...a); }
-
-  // Service-only and all-service deletion both require the exact account email
-  // in the UI; the server repeats every session, origin, identity and admin check.
-  function resetAccountDeleteConfirm(...a) { return authModule().resetAccountDeleteConfirm(...a); }
-
-  function resetAccountSharedDeleteConfirm(...a) { return authModule().resetAccountSharedDeleteConfirm(...a); }
-
-  function openAccountDeleteConfirm(...a) { return authModule().openAccountDeleteConfirm(...a); }
-
-  function openAccountSharedDeleteConfirm(...a) { return authModule().openAccountSharedDeleteConfirm(...a); }
-
-
-  function syncAccountDeleteButton(...a) { return authModule().syncAccountDeleteButton(...a); }
-
-  function syncAccountSharedDeleteButton(...a) { return authModule().syncAccountSharedDeleteButton(...a); }
-
-  function submitAccountDelete(...a) { return authModule().submitAccountDelete(...a); }
-
-  function renderHistorySkeleton(...a) { return historyModule().renderHistorySkeleton(...a); }
-
-  function renderHistoryLoadFailed(...a) { return historyModule().renderHistoryLoadFailed(...a); }
-
-  function fetchRecentConversations(...a) { return historyModule().fetchRecentConversations(...a); }
-
-  function loadRecentConversations(...a) { return historyModule().loadRecentConversations(...a); }
-  document.addEventListener("click", (event) => {
-    if (event.target instanceof Element && event.target.closest(".history-actions")) return;
-    historyList.querySelectorAll(".history-actions[open]").forEach((node) => { node.open = false; });
-  });
-  document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape") return;
-    const expanded = historyList.querySelector(".history-actions[open]");
-    if (!expanded) return;
-    expanded.open = false;
-    expanded.querySelector("summary")?.focus();
-    event.stopPropagation();
-  });
+  // #7812 R5 B3 (rule (b), R-11): the module registers the recent-menu click and
+  // Escape listeners at this original position, so their order among the other
+  // document listeners is unchanged.
+  historyModule().wireMenuListeners();
   // #7175: the server owns both the title and the pin. The sidebar only sends
   // the two reviewed fields and then re-reads the owner-scoped list, so the
   // group order and every label come from the same answer.
-  const HISTORY_TITLE_MAX_CHARS = 80;
 
-  function clearHistoryActionStatus(...a) { return historyModule().clearHistoryActionStatus(...a); }
-
-  function showHistoryActionStatus(...a) { return historyModule().showHistoryActionStatus(...a); }
-
-  function patchConversation(...a) { return historyModule().patchConversation(...a); }
-
-  function focusHistoryConversation(...a) { return historyModule().focusHistoryConversation(...a); }
-
-  function beginConversationRename(...a) { return historyModule().beginConversationRename(...a); }
-
-  function deleteConversation(...a) { return historyModule().deleteConversation(...a); }
-  function loadAuthStatus(...a) { return authModule().loadAuthStatus(...a); }
-  // Background tabs may have their timers suspended beyond access expiry.
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible" && authState.shared_login_enabled === true) void loadAuthStatus();
-  });
+  // #7812 R5 B4-2 (rule (b)): the auth module registers the session-refresh
+  // listener at this original position, keeping its document order.
+  authModule().wireSessionRefresh();
   async function openSavedConversation(id) {
     if (!authState.authenticated || inFlight) return;
     const epoch = authViewEpoch;
     try {
       const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.conversation || !Array.isArray(data.conversation.messages)) throw new Error(uiT("conversation-load-failed"));
+      if (!response.ok || !data || !data.conversation || !Array.isArray(data.conversation.messages)) throw new Error(coreModule().uiT("conversation-load-failed"));
       const savedProjectId = typeof data.conversation.project_id === "string" ? data.conversation.project_id : null;
       const restoredProject = savedProjectId ? await ensureProject(savedProjectId) : null;
-      if (savedProjectId && !restoredProject) throw new Error(uiT("conversation-project-load-failed"));
+      if (savedProjectId && !restoredProject) throw new Error(coreModule().uiT("conversation-project-load-failed"));
       // Paint the list early, but preserve the existing canonical Claw lane
       // classification when the user opens a row before its labels arrive.
       const labels = clawConversationLabelsRead;
       if (labels && labels.epoch === epoch) await labels.promise;
       if (epoch !== authViewEpoch || !authState.authenticated) return false;
-      clearAttachment();
+      conversationModule().clearAttachment();
       // #2505: the saved thread is the ONE conversation, so it is loaded into
       // the shared store. A thread that has Claw turns still opens on the Claw
       // screen (its last lane), and the other screen shows the same record.
@@ -1933,29 +1564,29 @@
       activeProjectFileCount = 0;
       renderProjectState();
       if (activeProject) refreshActiveProjectFileCount();
-      if (isVerifiedClawThread) openClawWorkspace();
-      showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
+      if (isVerifiedClawThread) navModuleInstance.openClawWorkspace();
+      conversationModule().showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
       app.syncApprovedMemoryVisibility();
-      syncClawRunHistoryVisibility();
+      runHistory.syncClawRunHistoryVisibility();
       conversationArtifactContext?.show?.(data.conversation.id);
       if (isVerifiedClawThread) clawArtifactShownFor = data.conversation.id;
       data.conversation.messages.forEach((item) => {
         if (!item || typeof item.content !== "string") return;
-        if (item.role === "user") addUserMessage(item.content, null, { restored: true });
+        if (item.role === "user") conversationModule().addUserMessage(item.content, null, { restored: true });
         if (item.role === "assistant") renderStoredAssistant(item.content, item);
         if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content }, targetProduct);
       });
       // #5895: keep showing a PC turn that is still running on the server, and
       // restore the thread once its stored answer lands.
-      void resumeUnfinishedPcRun(data.conversation.id);
+      void pcRunModuleInstance.resumeUnfinishedPcRun(data.conversation.id);
       // A restored conversation opens on its newest turn with follow resumed,
       // on the same shared Chat/Claw control.
       window.__padiemConversationMotion?.resume?.();
-      closeSidebar();
+      sidebar.closeSidebar();
       input.focus();
       return true;
     } catch (error) {
-      setNote(error instanceof Error ? error.message : uiT("conversation-load-failed"), "error");
+      coreModule().setNote(error instanceof Error ? error.message : coreModule().uiT("conversation-load-failed"), "error");
       return false;
     }
   }
@@ -2021,48 +1652,30 @@
     const notice = document.createElement("p");
     notice.className = "reference-note";
     notice.setAttribute("role", "status");
-    notice.textContent = uiT(hasArtifact
+    notice.textContent = coreModule().uiT(hasArtifact
       ? "claw-web-work-conversation-opened"
       : "claw-web-work-conversation-opened-read");
     messageList.prepend(notice);
-    setNote(uiT("claw-web-work-conversation-note"));
+    coreModule().setNote(coreModule().uiT("claw-web-work-conversation-note"));
   });
 
-  async function requestCompletedAnswer(...a) { return streamingModule().requestCompletedAnswer(...a); }
-
-  function applyStreamDone(...a) { return streamingModule().applyStreamDone(...a); }
+  // R5 B7: requestCompletedAnswer·applyStreamDone are on the registry
+  // (provide("streaming")).
 
   // Transport completion does not imply a completed durable PC run. R5 part 2
   // B2: resolvedPcRuns and pcResultRecovery are owned by chat-pc-run-module.js,
   // which is created here, at the original declaration position.
-  const pcRunModuleInstance = window.PadiemChatPcRunModule.create({
-    get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
-    get authState() { return authState; },
-    get conversationProduct() { return conversationProduct; },
-    get conversationState() { return conversationState; },
-    get findUnfinishedPcRun() { return findUnfinishedPcRun; },
-    get idleNote() { return idleNote; },
-    get loadRecentConversations() { return loadRecentConversations; },
-    get openSavedConversation() { return openSavedConversation; },
-    get pcWaitElapsed() { return pcWaitElapsed; },
-    get renderStoredPcAnswer() { return renderStoredPcAnswer; },
-    get renderStreamError() { return renderStreamError; },
-    get setNote() { return setNote; },
-    get showPcRuntimeStatus() { return showPcRuntimeStatus; },
-    get uiT() { return uiT; },
-  });
-  function showPcRuntimeStatus(...a) { return pcRunModule().showPcRuntimeStatus(...a); }
-  async function waitForAcceptedPcRun(...a) { return pcRunModule().waitForAcceptedPcRun(...a); }
+  const pcRunModuleInstance = app.provide("pcRun", window.PadiemChatPcRunModule.create(Object.setPrototypeOf({
 
-  function pcWaitElapsed(...a) { return pcRunModule().pcWaitElapsed(...a); }
-  async function findUnfinishedPcRun(...a) { return pcRunModule().findUnfinishedPcRun(...a); }
-  async function resumeUnfinishedPcRun(...a) { return pcRunModule().resumeUnfinishedPcRun(...a); }
-  function renderStoredPcAnswer(...a) { return pcRunModule().renderStoredPcAnswer(...a); }
-  async function recoverStoredPcResult(...a) { return pcRunModule().recoverStoredPcResult(...a); }
+    get findUnfinishedPcRun() { return pcRunModuleInstance.findUnfinishedPcRun; },
+    get pcWaitElapsed() { return pcRunModuleInstance.pcWaitElapsed; },
+    get renderStoredPcAnswer() { return pcRunModuleInstance.renderStoredPcAnswer; },
+    get showPcRuntimeStatus() { return pcRunModuleInstance.showPcRuntimeStatus; },
+  
+  }, app)));
 
-  async function requestStreamingAnswer(...a) { return streamingModule().requestStreamingAnswer(...a); }
-
-  function cancelActiveStream(...a) { return streamingModule().cancelActiveStream(...a); }
+  // R5 B7: requestStreamingAnswer·cancelActiveStream are on the registry
+  // (provide("streaming")).
 
   // #4317: product-capabilities.js is loaded AFTER app.js and owns the tier
   // state. The universally available signed-in Free lane stays the default for
@@ -2073,8 +1686,7 @@
   // (member grade + administrator gate) before it is used.
 
   // #7216 R5 step 1: chat-settings-module.js owns the settings section body.
-  function selectedProductTier(...a) { return settingsModule().selectedProductTier(...a); }
-
+  // R5 B7: selectedProductTier is on the registry (provide("settings")).
   // A failed PADIEM Custom request that needs the customer's key reopens the
   // existing model card. No second dialog and no generic fallback to a PADIEM
   // tier: the server's error message stays in the answer bubble.
@@ -2087,11 +1699,11 @@
     }
     if (code === "unauthorized" && window.PadiemCustomSelection?.get?.()) {
       window.PadiemCustomSelection?.open?.();
-      void loadAuthStatus();
+      void authModule().loadAuthStatus();
     }
   }
 
-  async function requestAnswer(...a) { return streamingModule().requestAnswer(...a); }
+  // R5 B7: requestAnswer is on the registry (provide("streaming")).
   // #3539: the generic B54 Claw composer runs on the canonical P01 Engine lane.
   // This predicate documents the product state that selects the lane: the Claw
   // shell with the explicit manual form hidden. It must be read at submit time,
@@ -2124,7 +1736,7 @@
     regenerate(article) {
       const stored = storedRegenerateRequest(article);
       if (!stored) return false;
-      void requestAnswer(stored.outboundMessages, stored.skill, stored.attachment, stored.contextSnapshot, stored.clawGeneralRequest);
+      void streaming.requestAnswer(stored.outboundMessages, stored.skill, stored.attachment, stored.contextSnapshot, stored.clawGeneralRequest);
       return true;
     },
   });
@@ -2135,12 +1747,11 @@
   // The server is the final authority and answers a bypassing guest with 401
   // login_required. A mock/preview deployment that cannot authenticate keeps
   // its CI harness behavior through the server-owned flag.
-  function requireSessionForModelUse(...a) { return authModule().requireSessionForModelUse(...a); }
 
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
     if (!prompt || inFlight) return;
-    if (!requireSessionForModelUse()) return;
+    if (!authModule().requireSessionForModelUse()) return;
     // #3539: snapshot the canonical lane before changing presentation;
     // #3931: keep a general Claw request in the same Claw conversation.
     // Neither UI state nor the selected model ID may authorize fallback.
@@ -2158,39 +1769,31 @@
     // here, with the typed prompt preserved.
     const customSelected = Boolean(window.PadiemCustomSelection?.get?.());
     if (customSelected && attachmentSnapshot.length) {
-      setNote(uiT("custom-text-only"), "error");
+      coreModule().setNote(coreModule().uiT("custom-text-only"), "error");
       return;
     }
     // #6828: grade-only Claw execution. The grade travels as `tier` and the
     // server resolves the grade route; no per-request model id is ever sent.
     contextSnapshot.selectedModelId = "";
-    showConversation({ preserveClaw: clawGeneralRequest });
-    addUserMessage(prompt, attachmentSnapshot);
+    conversationModule().showConversation({ preserveClaw: clawGeneralRequest });
+    conversationModule().addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
     // #5561: the composer is empty again, so the primary action slot returns
     // to the voice waveform.
-    updateComposer();
+    conversationModule().updateComposer();
     const outbound = conversationState.outboundWithUser(prompt);
-    const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
-    if (success && selectedAttachments === attachmentSnapshot) clearAttachment();
+    const success = await streaming.requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
+    if (success && selectedAttachments === attachmentSnapshot) conversationModule().clearAttachment();
   }
 
-  function setSidebarCollapsed(...a) { return sidebarModule().setSidebarCollapsed(...a); }
-  function closeSidebar(...a) { return sidebarModule().closeSidebar(...a); }
-  function openSidebar(...a) { return sidebarModule().openSidebar(...a); }
-  function openSettings(...a) { return settingsModule().openSettings(...a); }
-  function closeSettings(...a) { return settingsModule().closeSettings(...a); }
+  // R5 B7: openSettings·closeSettings·openAdvancedSettingsView·
+  // closeAdvancedSettingsView are on the registry (provide("settings")).
   const advancedSettingsView = document.getElementById("advancedSettingsView");
   // The full page opens on top of the screen the user came from (home, chat or
   // claw). Its back entry must return there instead of assuming home.
-  let advancedSettingsReturnState = null;
-  function openAdvancedSettingsView(...a) { return settingsModule().openAdvancedSettingsView(...a); }
-  function closeAdvancedSettingsView(...a) { return settingsModule().closeAdvancedSettingsView(...a); }
-
-  window.addEventListener("padiem:tierchange", () => {
-    if (shell.dataset.state === "claw") shell.dataset.clawTier = selectedProductTier();
-  });
-  input.addEventListener("input", updateComposer);
+  // #7812 R5 B5 (rule (b)): settings module registers this at the original spot.
+  settings.wireTierChange();
+  input.addEventListener("input", (event) => conversationModule().updateComposer(event));
   // #3084: Korean IME regression protection. While a Hangul/IME composition is
   // active the browser still reports key === "Enter" for the candidate-confirm
   // key, so submitting on it would send a half-composed word. The guard below
@@ -2225,7 +1828,7 @@
     // handler keeps no shell-state fork and every other prompt is unaffected.
     submitPrompt(input.value);
   });
-  cancelStreamButton.addEventListener("click", cancelActiveStream);
+  cancelStreamButton.addEventListener("click", streaming.cancelActiveStream);
   attachmentButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   documentStarterButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   const documentFormatsToggle = document.getElementById("documentFormatsToggle");
@@ -2244,7 +1847,7 @@
   }
   attachmentFileInput.addEventListener("change", () => {
     const files = Array.from(attachmentFileInput.files || []);
-    if (files.length) void addAttachmentFiles(files);
+    if (files.length) void conversationModule().addAttachmentFiles(files);
   });
   // #261102: drag and drop also attaches several files at once.
   const composerForm = document.getElementById("composerForm");
@@ -2258,7 +1861,7 @@
       if (inFlight) return;
       event.preventDefault();
       const files = event.dataTransfer ? Array.from(event.dataTransfer.files || []) : [];
-      if (files.length) void addAttachmentFiles(files);
+      if (files.length) void conversationModule().addAttachmentFiles(files);
     });
   }
   if (projectsNavButton) projectsNavButton.addEventListener("click", () => {
@@ -2284,181 +1887,59 @@
   // #5560: one sign-out implementation, reached from the sidebar session
   // button and from Settings > Account. The server session invalidation and
   // the local conversation reset are the same in both paths.
-  function signOutCurrentAccount(...a) { return authModule().signOutCurrentAccount(...a); }
-  const guestLoginEntryButton = document.getElementById("guestLoginEntryButton");
-  if (guestLoginEntryButton) guestLoginEntryButton.addEventListener("click", openAuthDialog);
-  loginButton.addEventListener("click", async () => {
-    if (!authState.ready) {
-      // #5479: the session state is unknown, so the button retries it instead of
-      // doing nothing. A dead entry point is what locked people out when the
-      // Chat Worker failed to answer /api/auth/status.
-      await loadAuthStatus();
-      if (!authState.ready) {
-        setNote(uiT(authState.status_reachable === false ? "login-unreachable-title" : "login-unavailable-title"), "error");
-        return;
-      }
-    }
-    if (!authState.authenticated) {
-      openAuthDialog();
-      return;
-    }
-    await signOutCurrentAccount();
-  });
-  const settingsAdvancedOpen = document.getElementById("settingsAdvancedOpen");
-  if (settingsAdvancedOpen) settingsAdvancedOpen.addEventListener("click", () => {
-    closeSettings();
-    openAdvancedSettingsView();
-  });
-  const advancedSettingsBack = document.getElementById("advancedSettingsBack");
-  if (advancedSettingsBack) advancedSettingsBack.addEventListener("click", () => { closeAdvancedSettingsView(); });
-  // Escape takes the same close path as the back entry. An open dialog inside
-  // the page (password change, deletes) keeps Escape for itself.
-  document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape" || event.isComposing) return;
-    if (!advancedSettingsView || advancedSettingsView.hidden) return;
-    if (document.querySelector("dialog[open]")) return;
-    closeAdvancedSettingsView();
-  });
-  const advancedMenuButtons = [...document.querySelectorAll(".advanced-menu-link")];
-  const advancedPageBlocks = [...document.querySelectorAll(".advanced-page-block")];
-  settingsModule().wireAdvancedMenuListeners();
-  if (settingsLogoutButton) {
-    settingsLogoutButton.addEventListener("click", async () => {
-      if (!authState.ready || !authState.authenticated) return;
-      settingsLogoutButton.disabled = true;
-      settingsLogoutButton.setAttribute("aria-disabled", "true");
-      settingsLogoutButton.setAttribute("aria-busy", "true");
-      try {
-        closeSettings();
-        await signOutCurrentAccount();
-      } finally {
-        settingsLogoutButton.disabled = false;
-        settingsLogoutButton.setAttribute("aria-disabled", "false");
-        settingsLogoutButton.removeAttribute("aria-busy");
-      }
-    });
-  }
-  if (authDialogClose) authDialogClose.addEventListener("click", closeAuthDialog);
-  if (authDialog) {
-    authDialog.addEventListener("cancel", (event) => {
-      event.preventDefault();
-      closeAuthDialog();
-    });
-  }
-  if (googleLoginButton) {
-    googleLoginButton.addEventListener("click", () => {
-      if (!authMethodEnabled("google")) return;
-      if (isAndroidWebView()) {
-        startAndroidHandoff();
-        return;
-      }
-      window.location.assign("/auth/google/start");
-    });
-  }
+  loginDialogModule().wireGuestLogin();
+  authModule().wireLoginButton();
+  // #7812 R5 B5 (rule (b)): the settings module registers the advanced-settings
+  // click/Escape listeners at this original block.
+  settings.wireAdvancedSettings();
+  settings.wireAdvancedMenuListeners();
+  authModule().wireLogoutButton();
+  loginDialogModule().wireDialogClose();
+  loginDialogModule().wireGoogleLogin();
   androidHandoffModule().wireAndroidHandoffListeners();
-  if (passwordResetOpen) {
-    passwordResetOpen.addEventListener("click", openPasswordResetRequest);
-  }
-  if (passwordResetRequestForm) {
-    passwordResetRequestForm.addEventListener("submit", submitPasswordResetRequest);
-  }
-  if (passwordResetConfirmForm) {
-    passwordResetConfirmForm.addEventListener("submit", submitPasswordResetConfirm);
-  }
-  if (passwordResetBack) {
-    passwordResetBack.addEventListener("click", () => {
-      hidePasswordResetViews();
-      syncAuthDialogMethods();
-    });
-  }
-  if (passwordResetConfirmBack) {
-    passwordResetConfirmBack.addEventListener("click", () => {
-      hidePasswordResetViews();
-      syncAuthDialogMethods();
-    });
-  }
-  if (passwordChangeForm) passwordChangeForm.addEventListener("submit", submitPasswordChange);
-  if (passwordChangeOpen) passwordChangeOpen.addEventListener("click", openPasswordChangeDialog);
-  if (accountDeleteOpen) accountDeleteOpen.addEventListener("click", openAccountDeleteConfirm);
-  if (accountSharedDeleteOpen) {
-    accountSharedDeleteOpen.addEventListener("click", openAccountSharedDeleteConfirm);
-  }
-  if (accountDeleteConfirmEmail) {
-    accountDeleteConfirmEmail.addEventListener("input", syncAccountDeleteButton);
-  }
-  if (accountDeleteButton) {
-    accountDeleteButton.addEventListener("click", () => submitAccountDelete(false));
-  }
-  if (accountSharedDeleteConfirmEmail) {
-    accountSharedDeleteConfirmEmail.addEventListener("input", syncAccountSharedDeleteButton);
-  }
-  if (accountSharedDeleteButton) {
-    accountSharedDeleteButton.addEventListener("click", () => submitAccountDelete(true));
-  }
-  if (passwordChangeDialogClose) passwordChangeDialogClose.addEventListener("click", closePasswordChangeDialog);
-  if (passwordChangeDialog) {
-    passwordChangeDialog.addEventListener("cancel", (event) => {
-      event.preventDefault();
-      closePasswordChangeDialog();
-    });
-  }
+  // #7812 R5 B4-1 (rule (b)): the module registers the reset/change/delete
+  // listeners at this original position, so their registration order is unchanged.
+  accountModule().wireAccountControls();
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
     submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
-    closeSidebar();
+    sidebar.closeSidebar();
   }));
-  newChatButton.addEventListener("click", () => resetConversation(true));
+  newChatButton.addEventListener("click", () => conversationModule().resetConversation(true));
   // The visible account name/avatar is the one-step Settings entry.
   // Reuse the existing settings action; do not create a second settings flow.
-  profileToggle.addEventListener("click", () => { if (accountContainer?.hidden) return; window.PadiemChatProfileMenu?.toggle?.(); });
-  profileSettingsAction.addEventListener("click", () => {
-    closeProfilePanel();
-    settingsButton.click(); // keep the existing settings-dialog authority
-  });
-  document.addEventListener("pointerdown", (event) => {
-    if (!profilePanel.hidden && !accountContainer?.contains(event.target)) closeProfilePanel();
-  });
-  settingsButton.addEventListener("click", () => { closeProfilePanel(); openSettings(); });
+  loginDialogModule().wireProfileToggle();
+  loginDialogModule().wireProfileSettings();
+  loginDialogModule().wireProfileDismiss();
+  settingsButton.addEventListener("click", () => { authModule().closeProfilePanel(); settings.openSettings(); });
   settingsDialog.addEventListener("close", () => {
     settingsButton.setAttribute("aria-expanded", "false");
     profileToggle.setAttribute("aria-expanded", "false");
   });
-  settingsDialog.addEventListener("cancel", (event) => {
-    event.preventDefault();
-    closeSettings();
-  });
-  // The dialog element is the panel itself, so a backdrop click reports the
-  // dialog as the target. Any click inside the panel hits a descendant first.
-  settingsDialog.addEventListener("click", (event) => {
-    if (event.target === settingsDialog) closeSettings();
-  });
-  settingsCloseButton.addEventListener("click", closeSettings);
-  sidebarCollapseButton?.addEventListener("click", () => setSidebarCollapsed(true));
-  sidebarRestoreButton?.addEventListener("click", () => setSidebarCollapsed(false));
-  mobileMenu.addEventListener("click", openSidebar);
-  mobileClose.addEventListener("click", closeSidebar);
-  sidebarScrim.addEventListener("click", closeSidebar);
+  // #7812 R5 B5 (rule (b)): settings dialog then sidebar clicks register at the
+  // original block, keeping their document order.
+  settings.wireSettingsDialog();
+  sidebar.wireSidebarListeners();
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !profilePanel.hidden) {
-      closeProfilePanel(true);
+    if (event.key === "Escape" && !loginDialogModule().profilePanelElement().hidden) {
+      authModule().closeProfilePanel(true);
       return;
     }
-    if (event.key === "Escape" && shell.classList.contains("sidebar-open")) closeSidebar();
+    if (event.key === "Escape" && shell.classList.contains("sidebar-open")) sidebar.closeSidebar();
   });
   window.addEventListener("padiem:localechange", () => {
-    applyAuthState(authState);
-    renderAndroidHandoff();
-    setNavActive();
+    authModule().applyAuthState(authState);
+    androidHandoffModule().renderAndroidHandoff();
+    navModuleInstance.setNavActive();
     if (projectsReady) renderProjects();
     renderProjectState();
-    if (!selectedAttachments.length) setNote(idleNote());
-    syncComposerForClaw(shell.dataset.state === "claw");
+    if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
+    clawStatusModule().syncComposerForClaw(shell.dataset.state === "claw");
       });
   window.addEventListener("padiem:attachmentcapabilitychange", () => {
-    if (!selectedAttachments.length) setNote(idleNote());
+    if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
   });
 
   // Claw first-class workspace & MVP usability wiring (#2299)
-  const clawNavButton = document.getElementById("clawNavButton");
   const clawWorkspace = document.getElementById("clawWorkspace");
   // R5 B1: the automation modules own their declarations (rule (a)) and are
   // created here, at the original declaration position (lookup timing kept).
@@ -2474,48 +1955,56 @@
   const clawResultPreview = document.getElementById("clawResultPreview");
   const clawResultCard = document.getElementById("clawResultCard");
   const clawResultEmpty = document.getElementById("clawResultEmpty");
-  const clawResultKind = document.getElementById("clawResultKind");
+  // R5 part 2 B2: the result-surface declarations only this module uses are
+  // owned by chat-claw-run-module.js, which is created here, at the original
+  // declaration position.
+  // R5 B7: the clawRun module is on the registry — app.provide at the original
+  // factory position (execution order kept); its API is reached through the
+  // registry instead of app.js one-line forwarders.
+  const clawRun = app.provide("clawRun",
+    window.PadiemChatClawRunModule.create(Object.setPrototypeOf({
+
+    get clawResultBadge() { return clawResultBadge; },
+    get clawBoundedRefusalCopy() { return clawBoundedRefusalCopy; },
+    get approvalDecisionErrorMessage() { return conversationModule().approvalDecisionErrorMessage; },
+        get loadClawRunHistory() { return runHistory.loadClawRunHistory; },
+    get clawRetryRemaining() { return clawStatusModule().clawRetryRemaining; },
+    get clawCurrentDispatchIsUncertain() { return clawStatusModule().clawCurrentDispatchIsUncertain; },
+    get clawVisibleExecutePayload() { return clawStatusModule().clawVisibleExecutePayload; },
+    get clawExecuteWireKey() { return clawStatusModule().clawExecuteWireKey; },
+    get clawRetryAfterFromResponse() { return clawStatusModule().clawRetryAfterFromResponse; },
+    get isAmbiguousClawFailure() { return clawStatusModule().isAmbiguousClawFailure; },
+    get beginClawRetryCooldown() { return clawStatusModule().beginClawRetryCooldown; },
+    get showClawAmbiguousRecoveryHint() { return clawStatusModule().showClawAmbiguousRecoveryHint; },
+    get beginClawWait() { return clawStatusModule().beginClawWait; },
+    get app() { return app; },
+
+  }, app)));
   // R5 part 2 B2: the declarations only this module uses (the generate/retry/wait
   // DOM refs, retry and wait timers, and the uncertainty set) are owned by
   // chat-claw-status-module.js, which is created here, at the original
   // declaration position.
-  const clawStatusModuleInstance = window.PadiemChatClawStatusModule.create({
-    get input() { return input; },
-    get shell() { return shell; },
+  // R5 B7: the clawStatus module is on the registry — app.provide at the
+  // original factory position (execution order kept); its retry/recovery/wait
+  // API is reached through the registry instead of app.js one-line forwarders.
+  const clawStatusModuleInstance = app.provide("clawStatus",
+    window.PadiemChatClawStatusModule.create(Object.setPrototypeOf({
+
     get clawStatus() { return clawStatus; },
-    get clawResultArea() { return clawResultArea; },
-    get clawExecuteButton() { return clawExecuteButton; },
-    get clawChannel() { return clawChannel; },
-    get clawAction() { return clawAction; },
-    get clawSender() { return clawSender; },
     get clawRetryBox() { return clawRetryBox; },
-    get clawRetryButton() { return clawRetryButton; },
     get clawRetryHint() { return clawRetryHint; },
-    get clawWorkspace() { return clawWorkspace; },
-    get clawInFlight() { return clawInFlight; },
-    set clawInFlight(value) { clawInFlight = value; },
-    get clawLastDispatchKey() { return clawLastDispatchKey; },
     get clawWaitStartedAt() { return clawWaitStartedAt; },
     set clawWaitStartedAt(value) { clawWaitStartedAt = value; },
-    get clawT() { return clawT; },
-    get localeOr() { return localeOr; },
-    get selectedProductTier() { return selectedProductTier; },
-    get conversationState() { return conversationState; },
-  });
+    get localeOr() { return coreModule().localeOr; },
+
+  }, app)));
   const clawExecuteButton = document.getElementById("clawExecuteButton");
   const clawResultBadge = document.getElementById("clawResultBadge");
   const clawResultDocx = document.getElementById("clawResultDocx");
-  const clawApprovalActions = document.getElementById("clawApprovalActions");
   const clawStatus = document.getElementById("clawStatus");
   const clawRetryBox = document.getElementById("clawRetryBox");
   const clawRetryButton = document.getElementById("clawRetryButton");
   const clawRetryHint = document.getElementById("clawRetryHint");
-  const clawRequestEcho = document.getElementById("clawRequestEcho");
-  const clawRequestEchoText = document.getElementById("clawRequestEchoText");
-  const clawArtifactMeta = document.getElementById("clawArtifactMeta");
-  const clawArtifactName = document.getElementById("clawArtifactName");
-  const clawArtifactSize = document.getElementById("clawArtifactSize");
-  const clawResultSuccessNote = document.getElementById("clawResultSuccessNote");
   const clawResultHint = document.getElementById("clawResultHint");
   const clawExecuteHint = document.getElementById("clawExecuteHint");
 
@@ -2536,9 +2025,6 @@
   // user id, so the account display name is the only switch signal available.
   let clawApprovalSessionToken = "unset";
 
-  function invalidateClawApprovalSession(...a) { return authModule().invalidateClawApprovalSession(...a); }
-
-  function noteClawApprovalSession(...a) { return authModule().noteClawApprovalSession(...a); }
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
@@ -2605,110 +2091,22 @@
     "claw-approval-not-available": "This approval request is no longer available.",
   };
 
-  function clawT(...a) { return coreModule().clawT(...a); }
-  function localeOr(...a) { return coreModule().localeOr(...a); }
 
   // #7216 R5 A4 (claw-status): Claw status, pre-dispatch retry, and the
-  // in-flight elapsed wait live in chat-claw-status-module.js. app.js keeps
-  // one-line forwarders and reads/writes closure state live via getters and setters.
+  // in-flight elapsed wait live in chat-claw-status-module.js. B7: the module
+  // is on the registry (app.provide("clawStatus")) — all 19 one-line
+  // forwarders are gone and callers reach the same methods through the
+  // registry piece.
   function clawStatusModule() { return clawStatusModuleInstance; }
-
-  function syncComposerForClaw(...a) { return clawStatusModule().syncComposerForClaw(...a); }
-  function setClawStatus(...a) { return clawStatusModule().setClawStatus(...a); }
-  function setClawAreaState(...a) { return clawStatusModule().setClawAreaState(...a); }
-  function setClawButtonsBusy(...a) { return clawStatusModule().setClawButtonsBusy(...a); }
-  function clawRetryRemaining(...a) { return clawStatusModule().clawRetryRemaining(...a); }
-  function clawVisibleExecutePayload(...a) { return clawStatusModule().clawVisibleExecutePayload(...a); }
-  function clawExecuteWireKey(...a) { return clawStatusModule().clawExecuteWireKey(...a); }
-  function clawCurrentDispatchIsUncertain(...a) { return clawStatusModule().clawCurrentDispatchIsUncertain(...a); }
-  function noteClawContentEdited(...a) { return clawStatusModule().noteClawContentEdited(...a); }
-  function clawRetryAfterFromResponse(...a) { return clawStatusModule().clawRetryAfterFromResponse(...a); }
-  function isAmbiguousClawFailure(...a) { return clawStatusModule().isAmbiguousClawFailure(...a); }
-  function clearClawRecovery(...a) { return clawStatusModule().clearClawRecovery(...a); }
-  function renderClawRetryBox(...a) { return clawStatusModule().renderClawRetryBox(...a); }
-  function beginClawRetryCooldown(...a) { return clawStatusModule().beginClawRetryCooldown(...a); }
-  function showClawAmbiguousRecoveryHint(...a) { return clawStatusModule().showClawAmbiguousRecoveryHint(...a); }
-  function applyClawWaitStageCopy(...a) { return clawStatusModule().applyClawWaitStageCopy(...a); }
-  function renderClawWait(...a) { return clawStatusModule().renderClawWait(...a); }
-  function beginClawWait(...a) { return clawStatusModule().beginClawWait(...a); }
-  function clearClawWait(...a) { return clawStatusModule().clearClawWait(...a); }
 
   // A generated document always retains its original bounded download action.
   // #3932 preview is separate and only appears for an actual PDF receipt,
   // with fresh server-side tenant validation and real PDF bytes.
   // #7216 R5 A5a (claw-run): Claw manual run artifacts, approval controls, and the
-  // single execute entry point live in chat-claw-run-module.js. app.js keeps one-line
-  // forwarders and reads/writes closure state live via getters and setters.
-  let clawRunModuleInstance = null;
-  function clawRunModule() {
-    if (!clawRunModuleInstance) {
-      clawRunModuleInstance = window.PadiemChatClawRunModule.create({
-        get clawResultDocx() { return clawResultDocx; },
-        get clawArtifactMeta() { return clawArtifactMeta; },
-        get clawArtifactName() { return clawArtifactName; },
-        get clawArtifactSize() { return clawArtifactSize; },
-        get clawResultSuccessNote() { return clawResultSuccessNote; },
-        get clawResultEmpty() { return clawResultEmpty; },
-        get clawResultHint() { return clawResultHint; },
-        get clawResultCard() { return clawResultCard; },
-        get clawResultKind() { return clawResultKind; },
-        get clawResultBadge() { return clawResultBadge; },
-        get clawApprovalActions() { return clawApprovalActions; },
-        get clawResultPreview() { return clawResultPreview; },
-        get clawRequestEcho() { return clawRequestEcho; },
-        get clawRequestEchoText() { return clawRequestEchoText; },
-        get clawExecuteButton() { return clawExecuteButton; },
-        get input() { return input; },
-        get clawT() { return clawT; },
-        get setClawStatus() { return setClawStatus; },
-        get setClawAreaState() { return setClawAreaState; },
-        get setClawButtonsBusy() { return setClawButtonsBusy; },
-        get clawBoundedRefusalCopy() { return clawBoundedRefusalCopy; },
-        get approvalDecisionErrorMessage() { return approvalDecisionErrorMessage; },
-        get mappedUiError() { return mappedUiError; },
-        get safeLocalUiMessage() { return safeLocalUiMessage; },
-        get failureCodeNote() { return failureCodeNote; },
-        get loadClawRunHistory() { return loadClawRunHistory; },
-        get clawRetryRemaining() { return clawRetryRemaining; },
-        get clawCurrentDispatchIsUncertain() { return clawCurrentDispatchIsUncertain; },
-        get clawVisibleExecutePayload() { return clawVisibleExecutePayload; },
-        get clawExecuteWireKey() { return clawExecuteWireKey; },
-        get clearClawRecovery() { return clearClawRecovery; },
-        get clawRetryAfterFromResponse() { return clawRetryAfterFromResponse; },
-        get isAmbiguousClawFailure() { return isAmbiguousClawFailure; },
-        get beginClawRetryCooldown() { return beginClawRetryCooldown; },
-        get showClawAmbiguousRecoveryHint() { return showClawAmbiguousRecoveryHint; },
-        get beginClawWait() { return beginClawWait; },
-        get clearClawWait() { return clearClawWait; },
-        get conversationState() { return conversationState; },
-        get PRODUCT_CLAW() { return PRODUCT_CLAW; },
-        get authState() { return authState; },
-        get chatTransport() { return chatTransport; },
-        get app() { return app; },
-        get clawApprovalInFlight() { return clawApprovalInFlight; },
-        set clawApprovalInFlight(value) { clawApprovalInFlight = value; },
-        get clawApprovalEpoch() { return clawApprovalEpoch; },
-        get clawInFlight() { return clawInFlight; },
-        set clawLastDispatchKey(value) { clawLastDispatchKey = value; },
-      });
-    }
-    return clawRunModuleInstance;
-  }
-  function setClawDocumentAction(...a) { return clawRunModule().setClawDocumentAction(...a); }
-  function clearClawArtifact(...a) { return clawRunModule().clearClawArtifact(...a); }
-  function formatClawBytes(...a) { return clawRunModule().formatClawBytes(...a); }
-  function renderClawArtifactMeta(...a) { return clawRunModule().renderClawArtifactMeta(...a); }
-  function safeClawErrorMessage(...a) { return clawRunModule().safeClawErrorMessage(...a); }
-  function downloadClawArtifact(...a) { return clawRunModule().downloadClawArtifact(...a); }
-  function revealClawCard(...a) { return clawRunModule().revealClawCard(...a); }
-  function setApprovalControlsBusy(...a) { return clawRunModule().setApprovalControlsBusy(...a); }
-  function renderClawApprovalControls(...a) { return clawRunModule().renderClawApprovalControls(...a); }
-  function clearImmediateApprovalControls(...a) { return clawRunModule().clearImmediateApprovalControls(...a); }
-  function applyImmediateApprovalDecision(...a) { return clawRunModule().applyImmediateApprovalDecision(...a); }
-  function renderClawRequestEcho(...a) { return clawRunModule().renderClawRequestEcho(...a); }
-  function clawClaimDispatchKey(...a) { return clawRunModule().clawClaimDispatchKey(...a); }
-  function releaseClawDispatchKey(...a) { return clawRunModule().releaseClawDispatchKey(...a); }
-  function runClawExecution(...a) { return clawRunModule().runClawExecution(...a); }
+  // single execute entry point live in chat-claw-run-module.js. B7: the module
+  // is on the registry (app.provide("clawRun")) — the one-line forwarders are
+  // gone and callers reach the same methods through the registry piece.
+  function clawRunModule() { return clawRun; }
 
   // #7216 R5 A5b (claw-form): the manual form submit/preview handler and the
   // execute/retry control wiring live in chat-claw-form-module.js. app.js keeps
@@ -2717,32 +2115,16 @@
   let clawFormModuleInstance = null;
   function clawFormModule() {
     if (!clawFormModuleInstance) {
-      clawFormModuleInstance = window.PadiemChatClawFormModule.create({
-        get clawManualForm() { return clawManualForm; },
-        get clawResultDocx() { return clawResultDocx; },
-        get clawResultCard() { return clawResultCard; },
-        get clawResultEmpty() { return clawResultEmpty; },
-        get clawResultHint() { return clawResultHint; },
-        get clawResultPreview() { return clawResultPreview; },
-        get clawChannel() { return clawChannel; },
-        get clawAction() { return clawAction; },
-        get clawSender() { return clawSender; },
-        get clawExecuteButton() { return clawExecuteButton; },
-        get clawRetryButton() { return clawRetryButton; },
-        get input() { return input; },
-        get clawInFlight() { return clawInFlight; },
-        get downloadClawArtifact() { return downloadClawArtifact; },
-        get clearClawArtifact() { return clearClawArtifact; },
-        get clawT() { return clawT; },
-        get setClawStatus() { return setClawStatus; },
-        get setClawAreaState() { return setClawAreaState; },
-        get setClawButtonsBusy() { return setClawButtonsBusy; },
-        get renderClawRequestEcho() { return renderClawRequestEcho; },
-        get revealClawCard() { return revealClawCard; },
-        get runClawExecution() { return runClawExecution; },
-        get noteClawContentEdited() { return noteClawContentEdited; },
+      clawFormModuleInstance = window.PadiemChatClawFormModule.create(Object.setPrototypeOf({
+
+        get clearClawArtifact() { return clawRun.clearClawArtifact; },
+        get renderClawRequestEcho() { return clawRun.renderClawRequestEcho; },
+        get revealClawCard() { return clawRun.revealClawCard; },
+        get runClawExecution() { return clawRun.runClawExecution; },
+        get noteClawContentEdited() { return clawStatusModule().noteClawContentEdited; },
         get app() { return app; },
-      });
+      
+  }, app));
     }
     return clawFormModuleInstance;
   }
@@ -2759,64 +2141,50 @@
   // entries so the Util screen never re-implements shell state. Kept next to
   // the functions it names (some Node harnesses evaluate a source slice).
   window.PadiemAppSwitch = Object.freeze({
-    openChat: openChatWorkspace,
-    openClaw: openClawWorkspace,
+    openChat: navModuleInstance.openChatWorkspace,
+    openClaw: navModuleInstance.openClawWorkspace,
   });
 
-  navModule().wireNavRouteListener();
+  navModuleInstance.wireNavRouteListener();
   // #3222 Web Claw connector truth. The browser consumes the existing
   // read-only #2830 projection; it never becomes a connector/OAuth authority.
   // R5 part 2 B2: the connector declarations only this module uses (nav
   // button, dialog, loading, retry, the Drive/Gmail handoff constants and the
   // status/mount state) are owned by chat-connectors-module.js, whose module
   // is created here, at the original declaration position.
-  const connectorsModuleInstance = window.PadiemChatConnectorsModule.create({
-    get uiT() { return uiT; },
-    get authState() { return authState; },
-    get openAuthDialog() { return openAuthDialog; },
-    get reviewedGoogleAuthorizationUrl() { return reviewedGoogleAuthorizationUrl; },
-    get syncGoogleCalendarConnectButton() { return syncGoogleCalendarConnectButton; },
-    get activateGoogleCalendarRead() { return activateGoogleCalendarRead; },
-    get googleCalendarConnectButton() { return googleCalendarConnectButton; },
-    get beginGoogleCalendarConnect() { return beginGoogleCalendarConnect; },
-    get googleConnectorConnectInFlight() { return googleConnectorConnectInFlight; },
-    set googleConnectorConnectInFlight(value) { googleConnectorConnectInFlight = value; },
+  const connectors = app.provide("connectors", window.PadiemChatConnectorsModule.create(Object.setPrototypeOf({
+
+    get syncGoogleCalendarConnectButton() { return calendarModule().syncGoogleCalendarConnectButton; },
+    get activateGoogleCalendarRead() { return calendarModule().activateGoogleCalendarRead; },
+    get googleCalendarConnectButton() { return calendarModule().googleCalendarConnectButton; },
+    get beginGoogleCalendarConnect() { return calendarModule().beginGoogleCalendarConnect; },
     get googleCalendarReadActivationAfterConnectReturn() { return googleCalendarReadActivationAfterConnectReturn; },
     set googleCalendarReadActivationAfterConnectReturn(value) { googleCalendarReadActivationAfterConnectReturn = value; },
-    get connectorsError() { return connectorsError; },
-    get shell() { return shell; },
-    get setNavActive() { return setNavActive; },
-    get closeSidebar() { return closeSidebar; },
-  });
-  const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
-  const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
-  const GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read";
+
+  }, app)));
   let googleConnectorConnectInFlight = false;
   // In-session Calendar READ grant truth (#2952). "unknown" until this session
   // activates it; the status projection carries no persisted grant field, so
   // nothing here claims a grant the server has not just confirmed.
   let googleCalendarReadState = "unknown";
+  // In-session Calendar READ grant truth (#2952). "unknown" until this session
+  // activates it; the status projection carries no persisted grant field, so
+  // nothing here claims a grant the server has not just confirmed.
   let googleCalendarReadActivationAfterConnectReturn = false;
 
   // #7216 R5 A9 (connectors): the connector surface — status cards, the
   // reviewed Google Drive / Gmail connect handoff and the standalone
   // Connectors page mount — lives in chat-connectors-module.js. app.js keeps
-  // the declarations, the OAuth-return handling, one-line forwarders and a
-  // single wire call at the original listener position.
-  function connectorsModule() { return connectorsModuleInstance; }
-  function setConnectorCopy(...a) { return connectorsModule().setConnectorCopy(...a); }
-  function connectorTicketErrorKey(...a) { return connectorsModule().connectorTicketErrorKey(...a); }
-  function connectorsScope(...a) { return connectorsModule().connectorsScope(...a); }
+  // the declarations, the OAuth-return handling and a single wire call at the
+  // original listener position. The module API is on the registry.
+  function connectorsModule() { return connectors; }
 
   /** Projects the READ-grant axis onto the Calendar card's own state line.
    *  Only visible while the OAuth/workspace axis is "connected"; every value
    *  is one of the four closed session states, rendered through the bounded
    *  textContent sink. */
 
-  function reviewedGoogleAuthorizationUrl(...a) { return authModule().reviewedGoogleAuthorizationUrl(...a); }
 
-  function openConnectorsView(...a) { return connectorsModule().openConnectorsView(...a); }
-  function openConnectorsDialog(...a) { return connectorsModule().openConnectorsDialog(...a); }
   connectorsModule().wireConnectorsListeners();
 
   const connectorReturnSearch = typeof window.location.search === "string" ? window.location.search : "";
@@ -2828,7 +2196,7 @@
     const cleanPath = String(window.location.pathname || "/");
     const cleanHash = String(window.location.hash || "");
     window.history.replaceState(null, "", cleanPath + (cleanQuery ? `?${cleanQuery}` : "") + cleanHash);
-    openConnectorsDialog();
+    connectors.openConnectorsDialog();
   }
 
   if (connectorReturnParts.some(part => part === "claw-github=connected")) {
@@ -2836,10 +2204,10 @@
     const cleanPath = String(window.location.pathname || "/");
     const cleanHash = String(window.location.hash || "");
     window.history.replaceState(null, "", cleanPath + (cleanQuery ? "?" + cleanQuery : "") + cleanHash);
-    openClawWorkspace();
+    navModuleInstance.openClawWorkspace();
   }
 
-  navModule().wireNavEntryListeners();
+  navModuleInstance.wireNavEntryListeners();
   // #4462: background task history stays reachable from the general Claw
   // entry bar (#3531 keeps the workspace canvas hidden in general/manual
   // views, so the entry lives beside the manual-entry control instead).
@@ -2859,9 +2227,7 @@
     });
     // Keyboard: chips are buttons so Enter/Space already work; ensure roving focus stays visible.
   }
-  setNavActive();
-
-  function approvalDecisionErrorMessage(...a) { return conversationModule().approvalDecisionErrorMessage(...a); }
+  navModuleInstance.setNavActive();
 
 
   clawFormModule().wireManualForm();
@@ -2872,15 +2238,15 @@
     // Wait state owns the status region while a long-wait stage is announced:
     // re-render its copy from state so the elapsed value is preserved rather
     // than reset by a language switch.
-    if (clawWaitStartedAt && renderClawWait()) applyClawWaitStageCopy();
+    if (clawWaitStartedAt && clawStatusModule().renderClawWait()) clawStatusModule().applyClawWaitStageCopy();
     else if (clawStatus && !clawStatus.hidden && clawStatus.dataset.localeKey) {
-      clawStatus.textContent = clawT(clawStatus.dataset.localeKey);
+      clawStatus.textContent = coreModule().clawT(clawStatus.dataset.localeKey);
     }
     // Recovery copy carries runtime values, so it is re-rendered from state
     // instead of being re-resolved from a locale key.
-    if (clawRetryBox && !clawRetryBox.hidden) renderClawRetryBox();
+    if (clawRetryBox && !clawRetryBox.hidden) clawStatusModule().renderClawRetryBox();
     if (clawRetryHint && !clawRetryHint.hidden && clawRetryHint.dataset.localeKey) {
-      clawRetryHint.textContent = clawT(clawRetryHint.dataset.localeKey);
+      clawRetryHint.textContent = coreModule().clawT(clawRetryHint.dataset.localeKey);
     }
     // Re-apply badge text to current card state if visible
     if (clawResultCard && !clawResultCard.hidden && clawResultBadge) {
@@ -2889,48 +2255,46 @@
     }
   });
 
-  setNote(idleNote());
+  coreModule().setNote(coreModule().idleNote());
   renderProjectState();
-  updateComposer();
+  conversationModule().updateComposer();
   // A guide example arrives as text only: it fills the composer, sends nothing,
   // and leaves no query in the address bar for the next refresh to replay.
   const exampleOnLoad = examplePromptFromLocation();
   if (exampleOnLoad) {
     input.value = exampleOnLoad;
-    updateComposer();
+    conversationModule().updateComposer();
     try {
       window.history.replaceState(null, "", window.location.pathname);
     } catch (_) {}
   }
   window.PadiemChatSession.bind({
-    clearHistoryUI, clearProjectsUI, resetConversationView, clearAndroidHandoff,
+    clearHistoryUI: historyModule().clearHistoryUI, clearProjectsUI, resetConversationView: conversationModule().resetConversationView, clearAndroidHandoff: androidHandoffModule().clearAndroidHandoff,
     hasAndroidHandoff: () => Boolean(androidHandoff),
     clearHandoffStorage: () => {
       try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}
     },
   });
   window.PadiemClawSession.bind({
-    noteApprovalSession: noteClawApprovalSession,
-    clearRecovery: clearClawRecovery,
-    clearWait: clearClawWait,
+    noteApprovalSession: authModule().noteClawApprovalSession,
+    clearRecovery: clawStatusModule().clearClawRecovery,
+    clearWait: clawStatusModule().clearClawWait,
   });
   // #5481: a mailed one-time link opens the reset confirm view directly, so
   // the member lands on the "set a new password" step without signing in.
-  const resetLinkOnLoad = passwordResetTokenFromLocation();
+  const resetLinkOnLoad = accountModule().passwordResetTokenFromLocation();
   if (resetLinkOnLoad) {
-    void loadAuthStatus().then(() => openAuthDialog());
+    void authModule().loadAuthStatus().then(() => loginDialogModule().openAuthDialog());
   } else {
-    void loadAuthStatus();
+    void authModule().loadAuthStatus();
   }
   resumeAndroidHandoff();
   // Initial state
-  setClawAreaState("idle");
-  clearClawArtifact();
+  clawStatusModule().setClawAreaState("idle");
+  clawRun.clearClawArtifact();
 
 
   clawFormModule().wireExecuteControls();
-
-  function approvedMemoryErrorMessage(...a) { return conversationModule().approvedMemoryErrorMessage(...a); }
 
   // R5 A2: the approved-memory module owns its declarations (rule (a)) and
   // wires its refresh listener here at the original position (rule (b)).
@@ -2942,38 +2306,20 @@
   // Presentation only: the browser renders what GET /api/claw/runs already
   // exposes to the signed-in owner and never mints its own run/history truth.
   // #4488 Phase A: recent runs are progressive disclosure on the Claw entry.
-  const clawRunHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
-  const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");
-  const clawRunHistoryError = document.getElementById("clawRunHistoryError");
-  const clawRunHistoryList = document.getElementById("clawRunHistoryList");
-  const clawRunHistoryEmpty = document.getElementById("clawRunHistoryEmpty");
 
   let clawRunHistoryInFlight = false;
-  // Set when the workspace is left, so the next reveal reads again instead of
-  // reusing a list read before the person went elsewhere.
-  let clawRunHistoryLeftSurface = false;
   // #3932: server caps owner-scoped history at MAX_CLAW_RUNS=30.
   // Expanding is a read-only, explicit user action, not pagination authority.
   let clawRunHistoryLimit = 10;
   let pendingClawRunFocusId = "";
-  let clawRunHistoryVisibilityEpoch = 0;
   const clawRunHistoryPdfControllers = new Set();
-  function clearClawRunHistoryPdfPreviews(...a) { return historyModule().clearClawRunHistoryPdfPreviews(...a); }
-
-  function setClawRunHistoryStatus(...a) { return historyModule().setClawRunHistoryStatus(...a); }
-
-  function clawRunHistoryErrorMessage(...a) { return historyModule().clawRunHistoryErrorMessage(...a); }
+  // R5 B7: the run-history module is on the registry (app.provide below); its
+  // API is reached through the registry instead of app.js one-line forwarders.
 
   // R5 A2: the run-history module owns the runs-read cache, card renderer, and
   // filter/refresh/expand buttons (rule (a)), wired at the original position.
   const runHistory = app.provide("runHistory",
     window.PadiemChatRunHistoryModule.create(app));
-
-  function fetchClawRunHistory(...a) { return historyModule().fetchClawRunHistory(...a); }
-
-  function loadClawRunHistory(...a) { return historyModule().loadClawRunHistory(...a); }
-
-  function syncClawRunHistoryVisibility(...a) { return historyModule().syncClawRunHistoryVisibility(...a); }
 
   memory.wireMemoryReviewContract();
   runHistory.wireRunHistoryListeners();
@@ -2989,9 +2335,9 @@
   // #4862: restore Claw the same way. An unknown or tampered fragment matches
   // neither route, so the shell keeps its default Chat home.
   if (window.location.hash === AUTOMATION_ROUTE_HASH) app.openClawAutomation();
-  else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();
-  else if (window.location.hash === CONNECTORS_ROUTE_HASH) openConnectorsView();
-  else if (window.location.hash === ADVANCED_SETTINGS_ROUTE_HASH) openAdvancedSettingsView();
+  else if (window.location.hash === CLAW_ROUTE_HASH) navModuleInstance.openClawWorkspace();
+  else if (window.location.hash === CONNECTORS_ROUTE_HASH) connectors.openConnectorsView();
+  else if (window.location.hash === ADVANCED_SETTINGS_ROUTE_HASH) settings.openAdvancedSettingsView();
   // Calendar, Library and Meeting are reachable only through the menu, so a
   // shared link used to land on Chat with whatever fragment the previous screen
   // left behind. Each of the three now names itself, and the screen that owns

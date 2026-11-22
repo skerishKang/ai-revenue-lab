@@ -51,7 +51,7 @@ from _r5_function_source import function_body, from_definition
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 STATE_JS = ROOT / "static/conversation-state.js"
-HISTORY_PY = ROOT / "app/history.py"
+HISTORY_PY = ROOT / "app/history_constants.py"
 
 
 def _app_source() -> str:
@@ -626,7 +626,7 @@ def _client(store, adapter):
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, SIGNED_IN_USER_ID),
+        create_session_token(settings, SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )

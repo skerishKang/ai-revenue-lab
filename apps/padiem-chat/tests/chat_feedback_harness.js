@@ -27,6 +27,7 @@ class Element {
   append(...children) { this.children.push(...children); }
   replaceChildren(...children) { this.children = children; this.text = ""; }
   setAttribute(key, value) { this.attrs[key] = String(value); if (key === "open") this.open = true; }
+  getAttribute(key) { return key in this.attrs ? this.attrs[key] : null; }
   removeAttribute(key) { delete this.attrs[key]; if (key === "open") this.open = false; }
   addEventListener(name, callback) { (this.listeners[name] ||= []).push(callback); }
   emit(name) { for (const callback of this.listeners[name] || []) callback({ target: this, preventDefault() {} }); }
@@ -63,7 +64,19 @@ function setup(options = {}) {
     fetch: (url, init) => {
       const call = { url, ...init, headers: { ...init.headers } };
       calls.push(call);
-      if (server.handler) { const result = server.handler(call); if (result !== undefined) return Promise.resolve(result); }
+      if (server.handler) {
+        const result = server.handler(call);
+        if (result !== undefined) {
+          // A browser rejects a fetch whose controller aborted; the module's bounded
+          // wait relies on that, so the fixture does the same.
+          const signal = call.signal;
+          if (!signal) return Promise.resolve(result);
+          return Promise.race([Promise.resolve(result), new Promise((_, reject) => {
+            if (signal.aborted) reject(new Error("aborted"));
+            else signal.addEventListener("abort", () => reject(new Error("aborted")), { once: true });
+          })]);
+        }
+      }
       if (url === "/api/admin/session") return Promise.resolve(response(200, { authenticated: true, capabilities: { chat_admin: server.admin, site_feedback_admin: server.siteAdmin }, role: "admin", site_feedback_sites: server.siteSites }));
       if (url.startsWith("/api/admin/site-feedback") && init.method === "GET") {
         const status = new URL(url, "https://fixture.invalid").searchParams.get("status") || "all";
@@ -92,7 +105,12 @@ function setup(options = {}) {
       throw new Error("unexpected fixture request");
     } };
   for (const name of ["localStorage", "sessionStorage"]) Object.defineProperty(window, name, { get() { throw new Error("browser storage is forbidden"); } });
-  vm.runInNewContext(source, { window, document, URL, URLSearchParams, AbortController,
+  // A browser page has timers: the module bounds every request with one (#7835).
+  // fastTimers interleaves with settle() so a bounded wait can be observed inside a test.
+  const timers = options.fastTimers
+    ? { setTimeout: (fn) => setImmediate(fn), clearTimeout: (handle) => clearImmediate(handle) }
+    : { setTimeout, clearTimeout };
+  vm.runInNewContext(source, { window, document, URL, URLSearchParams, AbortController, ...timers,
     console: { log: (...args) => errors.push(args), error: (...args) => errors.push(args) } });
   return { ids, calls, server, errors,
     byId: (id) => ids[id] || dynamic.map[id] || null,
@@ -168,6 +186,64 @@ const scenarios = {
     app.server.handler = (call) => call.url.startsWith("/api/admin/feedback") ? response(403, { error: { code: "global_model_admin_forbidden" } }) : undefined;
     app.ids.feedbackAdminRefresh.click(); await settle();
     assert.equal(app.ids.feedbackAdminTab.hidden, true); assert.ok(!app.ids.feedbackAdminList.textContent.includes("f***"));
+  },
+  async fixed_ack_button_lifecycle() {
+    const item = record({ status: "fixed", fixed_version: 2, unread_fixed: true });
+    const app = setup({ own: [item], unread: 1 }); await settle();
+    const ack = () => app.rowButton("feedbackOwnList", "feedback-acknowledge");
+    assert.equal(ack().disabled, false);
+    assert.equal(app.ids.feedbackNotice.hidden, false);
+    const recorded = record({ ...item, fixed_version: 2, unread_fixed: false });
+    app.server.handler = (call) => call.url.endsWith("/read")
+      ? (app.server.own = [recorded], response(200, { ok: true, feedback: recorded })) : undefined;
+    ack().click(); await settle();
+    assert.equal(app.ids.feedbackNotice.hidden, true);
+    const done = app.rowButton("feedbackOwnList", "feedback-acknowledged");
+    assert.ok(done, "the row keeps one confirmation button");
+    assert.equal(done.disabled, true);
+    assert.equal(done.getAttribute("aria-disabled"), "true");
+    assert.equal(app.rowButton("feedbackOwnList", "feedback-acknowledge"), undefined);
+    // Closing and reopening the dialog paints the same recorded state.
+    app.ids.feedbackDialog.close(); app.ids.feedbackOwnTab.click(); await settle();
+    const again = app.rowButton("feedbackOwnList", "feedback-acknowledged");
+    assert.ok(again); assert.equal(again.disabled, true);
+  },
+  async ack_dropped_read_shows_a_message_8316() {
+    const item = record({ status: "fixed", fixed_version: 2, unread_fixed: true });
+    const app = setup({ own: [item], unread: 1 }); await settle();
+    const ack = app.rowButton("feedbackOwnList", "feedback-acknowledge");
+    assert.ok(ack); assert.equal(ack.disabled, false);
+    // The read is refused: the button must say why instead of looking dead.
+    app.server.handler = (call) => call.url.endsWith("/read") ? response(503, { error: { code: "feedback_unavailable" } }) : undefined;
+    ack.click(); await settle();
+    assert.match(app.ids.feedbackStatus.textContent, /failed/);
+    assert.equal(app.rowButton("feedbackOwnList", "feedback-acknowledge").disabled, false);
+  },
+  async read_state_survives_a_reload_and_other_statuses_have_no_button() {
+    const confirmed = record({ status: "fixed", fixed_version: 2, unread_fixed: false });
+    const app = setup({ own: [confirmed], unread: 0 }); await settle();
+    app.ids.feedbackOwnTab.click(); await settle();
+    const done = app.rowButton("feedbackOwnList", "feedback-acknowledged");
+    assert.ok(done); assert.equal(done.disabled, true);
+    assert.equal(app.ids.feedbackNotice.hidden, true);
+    for (const status of ["new", "reviewing", "deferred"]) {
+      const other = setup({ own: [record({ status, fixed_version: 0, unread_fixed: false })] }); await settle();
+      other.ids.feedbackOwnTab.click(); await settle();
+      assert.equal(other.rowButton("feedbackOwnList", "feedback-acknowledge"), undefined, status);
+      assert.equal(other.rowButton("feedbackOwnList", "feedback-acknowledged"), undefined, status);
+    }
+  },
+  async a_stalled_list_request_does_not_freeze_the_panel() {
+    const item = record({ status: "fixed", fixed_version: 2, unread_fixed: true });
+    const app = setup({ own: [item], unread: 1, fastTimers: true }); await settle();
+    assert.equal(app.ids.feedbackNotice.hidden, false);
+    app.server.handler = () => new Promise(() => {});
+    app.ids.feedbackOwnRefresh.click(); await settle();
+    assert.equal(app.ids.feedbackOwnList.getAttribute("aria-busy"), "false");
+    assert.equal(app.ids.feedbackOwnRefresh.disabled, false);
+    const ack = app.rowButton("feedbackOwnList", "feedback-acknowledge");
+    assert.ok(ack); assert.equal(ack.disabled, false);
+    assert.equal(app.ids.feedbackNotice.hidden, false);
   },
   async fixed_notification_and_version_race() {
     const item = record({ status: "fixed", fixed_version: 2, unread_fixed: true });
@@ -291,6 +367,48 @@ const scenarios = {
     app.rowButton("feedbackOwnList", "feedback-reply-send").click(); await settle();
     assert.ok(!app.text().includes("private-value"));
     assert.match(app.ids.feedbackStatus.textContent, /invalid/);
+  },
+  async ai_intro_visibility() {
+    const intro = { age_band: "30대", job: "사무", device: "노트북" };
+    const admin = setup({ admin: true, inbox: [
+      record({ id: ID, is_ai_tester: true, sender_display: "정호", sender_intro: intro }),
+      record({ id: NEXT, is_ai_tester: false, sender_label: "••••abcd" }),
+      record({ id: "fb_" + "c".repeat(32), is_ai_tester: true, sender_display: "민지" }),
+    ] });
+    await settle();
+    admin.ids.feedbackAdminTab.click(); await settle();
+    const shown = admin.ids.feedbackAdminList.all().filter((node) => node.className === "feedback-intro");
+    assert.equal(shown.length, 1);
+    for (const value of ["30대", "사무", "노트북"]) assert.ok(shown[0].textContent.includes(value), value);
+
+    const site = setup({ siteAdmin: true, siteSites: ["miraen-home"], siteInbox: [siteRecord()] });
+    await settle();
+    site.ids.feedbackAdminTab.click(); await settle();
+    assert.equal(site.ids.feedbackAdminList.all().filter((node) => node.className === "feedback-intro").length, 0);
+
+    const user = setup({ own: [record({ id: ID, is_ai_tester: true, sender_intro: intro })] });
+    await settle();
+    user.ids.feedbackOwnTab.click(); await settle();
+    assert.equal(user.ids.feedbackOwnList.all().filter((node) => node.className === "feedback-intro").length, 0);
+  },
+  async usage_tab_admin_scope() {
+    const admin = setup({ admin: true }); await settle();
+    assert.equal(admin.ids.feedbackUsageTab.hidden, false);
+    admin.ids.feedbackUsageTab.click(); await settle();
+    assert.equal(admin.ids.feedbackUsagePanel.hidden, false);
+    assert.equal(admin.ids.feedbackOwnPanel.hidden, true);
+
+    const site = setup({ siteAdmin: true, siteSites: ["miraen-home"] }); await settle();
+    assert.equal(site.ids.feedbackUsageTab.hidden, true);
+    site.ids.feedbackUsageTab.click(); await settle();
+    assert.equal(site.ids.feedbackUsagePanel.hidden, true);
+    assert.equal(site.ids.feedbackOwnPanel.hidden, false);
+
+    const user = setup(); await settle();
+    assert.equal(user.ids.feedbackUsageTab.hidden, true);
+    user.ids.feedbackUsageTab.click(); await settle();
+    assert.equal(user.ids.feedbackUsagePanel.hidden, true);
+    assert.equal(user.ids.feedbackOwnPanel.hidden, false);
   },
   async site_admin_sees_only_site_feedback() {
     const app = setup({ siteAdmin: true, siteSites: ["miraen-home"], siteInbox: [siteRecord()] }); await settle();

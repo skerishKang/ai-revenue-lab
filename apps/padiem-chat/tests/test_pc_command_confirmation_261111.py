@@ -51,7 +51,11 @@ def _row(*, title="Chat: " + SHORT_TURN, conversation=CONVERSATION, created=None
         "status": status,
         "title": title,
         "conversation_id": conversation,
-        "created_at": (created or NOW).isoformat().replace("+00:00", "Z"),
+        # Fresh clock at row construction: the confirm path compares against
+        # wall-clock now, so a module-import-time NOW goes stale in a long
+        # full-regression run (600s window) and turns an affirmative turn into
+        # a refused one. Assertions are unchanged.
+        "created_at": (created or datetime.now(timezone.utc)).isoformat().replace("+00:00", "Z"),
     }
 
 

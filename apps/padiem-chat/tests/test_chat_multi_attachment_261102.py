@@ -13,7 +13,10 @@ from __future__ import annotations
 
 import json
 from dataclasses import replace
-from pathlib import Path
+
+# #8060: 원문 read는 _support(chat_multi_attachment_source)가 담당하고,
+# 화면 계약은 파싱 팩트로 단언한다(나머지 동작 계약은 그대로 유지).
+from _support.chat_multi_attachment_source import frontend_facts, locale_facts  # noqa: E402
 
 import httpx
 import pytest
@@ -44,7 +47,6 @@ from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID
 from app.claw_attachment_context import parse_claw_turn_attachments_async
 
-ROOT = Path(__file__).resolve().parents[1]
 USER = "usr_" + "a" * 32
 
 
@@ -129,7 +131,7 @@ def b14_settings() -> Settings:
 
 
 def session_cookies(settings: Settings) -> dict[str, str]:
-    return {SESSION_COOKIE: create_session_token(settings, USER)}
+    return {SESSION_COOKIE: create_session_token(settings, USER, canonical_session_id="session_test_a")}
 
 
 def b14_app(adapter: Adapter, lane) -> create_app:  # noqa: N803 (test fixture helper)
@@ -438,14 +440,12 @@ async def test_claw_turn_carries_every_document_file_by_file(monkeypatch):
 
 
 def test_frontend_selects_and_drops_multiple_files_with_per_chip_removal():
-    html = (ROOT / "static/index.html").read_text(encoding="utf-8")
-    app_js = (ROOT / "static/app.js").read_text(encoding="utf-8")
-    css = (ROOT / "static/attachments.css").read_text(encoding="utf-8")
+    facts = frontend_facts()
     # 여러 개 선택 + 드래그
-    assert 'type="file" multiple' in html
-    assert 'id="attachmentChipList"' in html
-    assert 'composerForm.addEventListener("drop"' in app_js
-    assert 'composerForm.addEventListener("dragover"' in app_js
+    assert facts["multiple_file_input"] is True
+    assert facts["chip_list_id"] is True
+    assert facts["drop_listener"] is True
+    assert facts["dragover_listener"] is True
     # 칩 목록 + 개별 제거
     # #7216 R5 step 5a: the attachment area moved into chat-conversation-module.js.
     # #7186 R2: the chip flow is executed instead of string-matched — one chip
@@ -471,22 +471,14 @@ def test_frontend_selects_and_drops_multiple_files_with_per_chip_removal():
         assert chip["removeLocale"] == "attachment-remove"
         assert chip["removeAria"] == "attachment-remove"
     assert conv["multiChips"]["payloadCount"] == 2
-    assert ".attachment-chip" in css and ".attachment-chip-invalid" in css
+    assert facts["missing_chip_selectors"] == []
     # 프레임 표시 DOM 제거 + 구현 고정 회귀 방지
-    assert 'id="attachmentThumb"' not in html
-    assert 'id="removeAttachment"' not in html
-    assert "innerHTML" not in app_js
+    assert facts["legacy_ids"] == []
+    assert facts["no_inner_html"] is True
 
 
 def test_frontend_locale_keys_exist_for_both_languages():
-    locale_js = (ROOT / "static/locale.js").read_text(encoding="utf-8")
-    for token in (
-        "attachment-count-limit",
-        "attachment-raw-single",
-        "메시지 하나에는 파일을 최대 {count}개",
-        "사진·원본 문서는 한 번에 하나만",
-    ):
-        assert token in locale_js
+    assert locale_facts()["missing"] == []
 
 
 def test_file_lane_upload_contract_is_untouched_for_every_file():

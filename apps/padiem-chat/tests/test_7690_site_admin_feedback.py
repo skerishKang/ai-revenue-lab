@@ -11,7 +11,7 @@ from app.platform_admin_routes import platform_admin_session
 from app.site_feedback_admin_identity import D1SiteFeedbackAdminAuthorizer
 from app.site_feedback_routes import admin_site_feedback, admin_site_feedback_status
 from app.site_feedback_store import D1SiteFeedbackStore
-from test_7680_feedback_store import database
+from _support.feedback_store import database
 from test_7690_site_feedback_routes import ADMIN, SETTINGS, USER
 
 CENTRAL = ADMIN
@@ -57,7 +57,7 @@ def request(store, authorizer, *, method='GET', user=None, body=None, feedback_i
                             site_feedback_admin_authorizer=authorizer)
     headers = [(b'content-type', b'application/json')]
     if user:
-        token = create_session_token(SETTINGS, user)
+        token = create_session_token(SETTINGS, user, canonical_session_id="session_test_a")
         headers.append((b'cookie', (SESSION_COOKIE + '=' + token).encode()))
     data = json.dumps(body or {}, ensure_ascii=True).encode()
 

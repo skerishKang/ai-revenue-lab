@@ -32,13 +32,19 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
-from test_5568_document_convert_routes import (
+from _support.document_convert_routes import (
     build_client,
     open_job,
     pdf_bytes,
     run_item,
     upload,
     wait_item_terminal,
+)
+from _support.pdfmd_compare import (
+    css_view,
+    delete_button_literals,
+    failed_branch_facts,
+    js_view,
 )
 
 from app.document_convert_store import (
@@ -52,7 +58,6 @@ from app.document_convert_store import (
 ROOT = Path(__file__).resolve().parents[1]
 PDFMD_JS = ROOT / "static/util-pdfmd.js"
 PDFMD_PAGES_JS = ROOT / "static/util-pdfmd-pages.js"
-UTIL_MENU_CSS = ROOT / "static/util-menu.css"
 JPEG_MAGIC = b"\xff\xd8\xff"
 
 
@@ -143,48 +148,55 @@ def test_a_scrolled_page_is_the_page_whose_top_passed_the_pane_top() -> None:
 
 
 def test_a_control_choice_outranks_the_scroll_position() -> None:
-    source = PDFMD_JS.read_text(encoding="utf-8")
+    js = js_view("util-pdfmd.js")
     # The controls pass `fromControl`, which opens the guard window.
-    assert 'setPreviewPage(previewPageNumber - 1, true, true)' in source
-    assert 'setPreviewPage(previewPageNumber + 1, true, true)' in source
-    assert 'setPreviewPage(pageInput.value, true, true)' in source
-    assert "previewPageUntil = Date.now() + PREVIEW_PAGE_GUARD_MS;" in source
+    for args in ("previewPageNumber - 1, true, true", "previewPageNumber + 1, true, true", "pageInput.value, true, true"):
+        assert ("setPreviewPage", args) in js["call_args"]
+    assert js["assignments_full"].get("previewPageUntil") == "Date.now() + PREVIEW_PAGE_GUARD_MS"
     # The scroll listener refuses to read a page back while that window is open.
-    assert "if (Date.now() < previewPageUntil) return;" in source
+    assert "Date.now() < previewPageUntil" in js["early_returns"]
     # Typing a page is not interrupted by the pane moving under it.
-    assert "if (document.activeElement === pageInput) return;" in source
+    assert "document.activeElement === pageInput" in js["early_returns"]
     # Enter commits the typed page; `change` alone waits for a blur.
-    assert 'if (event.key !== "Enter") return;' in source
+    assert 'event.key !== "Enter"' in js["early_returns"]
 
 
 def test_the_original_pane_shows_a_rendered_page_image() -> None:
-    pages = PDFMD_PAGES_JS.read_text(encoding="utf-8")
-    assert 'image.className = "pdfmd-original-page";' in pages
-    assert 'itemUrl(item, "/original/" + number + ".jpeg")' in pages
-    assert 'itemUrl(item, "/original?display=inline")' in pages
-    assert "if (image.getAttribute(\"src\") === target) return;" in pages
+    pages = js_view("util-pdfmd-pages.js")
+    assert pages["assignments_full"].get("image.className") == chr(34) + "pdfmd-original-page" + chr(34)
+    assert ("itemUrl", 'item, "/original/" + number + ".jpeg"') in pages["call_args"]
+    assert ("itemUrl", 'item, "/original?display=inline"') in pages["call_args"]
+    # #8316: the unchanged-src branch now recovers a failed page, so it is a
+    # guarded re-request rather than a bare early return.
+    from _support.pdfmd_compare import _executable
+    assert 'image.getAttribute("src") === target' in _executable("util-pdfmd-pages.js")
     # A page that cannot be rendered says so instead of showing a broken image.
-    assert "이 쪽의 원본을 그림으로 표시하지 못했습니다." in pages
+    assert any("이 쪽의 원본을 그림으로 표시하지 못했습니다." in s for s in pages["string_literals"])
     # No pane, anywhere, frames the PDF: that is what the browser refused.
-    module = PDFMD_JS.read_text(encoding="utf-8")
-    assert "iframe" not in pages.lower()
-    assert "iframe" not in module.lower()
-    assert "window.PadiemPdfMdOriginalPane.create(el)" in module
-    css = UTIL_MENU_CSS.read_text(encoding="utf-8")
-    assert ".pdfmd-original-page {" in css
-    assert "object-fit: contain;" in css
-    assert ".pdfmd-iframe" not in css
+    module = js_view("util-pdfmd.js")
+    for view in (pages, module):
+        vocabulary = view["identifiers"] | view["string_literals"] | view["member_chains"]
+        assert not any("iframe" in token.lower() for token in vocabulary)
+    assert ("window.PadiemPdfMdOriginalPane.create", "el") in module["call_args"]
+    css = css_view("util-menu.css")
+    assert ".pdfmd-original-page" in css["selectors"]
+    assert ("object-fit", "contain") in css["declarations"]
+    assert ".pdfmd-iframe" not in css["selectors"]
 
 
 def test_a_failed_item_never_claims_completion() -> None:
-    source = PDFMD_JS.read_text(encoding="utf-8")
-    assert "pdf_scanned_no_text: SCAN_MESSAGE," in source
-    assert "convert_timed_out: " in source
-    # The stage lines describe work in progress and a result to review; a
-    # failure has its own sentence and no completion line.
-    stage_line = source[source.index("const STAGE_LINES = {"):]
-    stage_line = stage_line[: stage_line.index("};")]
-    assert "failed:" not in stage_line
+    js = js_view("util-pdfmd.js")
+    assert ("pdf_scanned_no_text", "SCAN_MESSAGE") in js["property_pairs"]
+    assert "convert_timed_out" in js["property_names"]
+    # #7865: the stage-line block is gone; the failed card branch builds the
+    # reason and the delete button only — it never claims a completion.
+    assert "STAGE_LINES" not in js["identifiers"]
+    branch = failed_branch_facts()
+    literals = branch["string_literals"]
+    assert not any("완료" in literal for literal in literals)
+    assert not any("검토" in literal for literal in literals)
+    assert ("deleteButton", "item") in branch["call_args"]
+    assert any("지우기" in literal for literal in delete_button_literals())
 
 
 # --------------------------------------------------------------------------

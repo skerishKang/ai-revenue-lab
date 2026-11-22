@@ -9,8 +9,11 @@
 // administrator approval once, look up the fixed drives this PC really has,
 // download the deployment's own agent installer over TLS 1.2 at minimum, put it in
 // a folder of the product's own, and install the service from there with the name
-// the server pairs on. An agent that is already there is stopped, replaced under the
-// same service name and started again - never registered a second time.
+// the server pairs on. An agent that is already there is stopped wherever it was
+// registered, replaced under the same service name and started again - never
+// registered a second time. (#7965: the stop is not skipped when the registered
+// path already matches this install's own folder, which is what every reinstall
+// looks like, and the stop is verified against the service's own state.)
 //
 // The install switch was measured, not assumed. This MeshCentral build's own help
 // says "-install: install the service from this location" and "-fullinstall: copy
@@ -55,6 +58,146 @@ using System.Threading;
 
 namespace Padiem.Connect
 {
+    public static class PadiemSessionLookup
+    {
+        const int WTSUserName = 5;
+        const int WTSDomainName = 7;
+        const int WTSClientProtocolType = 16;
+        const int WTSActive = 0;
+        const short RdpProtocol = 2;
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct SessionInfo
+        {
+            public uint SessionId;
+            public IntPtr StationName;
+            public int State;
+        }
+
+        [DllImport("kernel32.dll")]
+        static extern uint WTSGetActiveConsoleSessionId();
+
+        [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        static extern bool WTSQuerySessionInformation(IntPtr server, uint sessionId,
+            int infoClass, out IntPtr buffer, out int bytes);
+
+        [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        static extern bool WTSEnumerateSessions(IntPtr server, int reserved,
+            int version, out IntPtr sessions, out int count);
+
+        [DllImport("wtsapi32.dll")]
+        static extern void WTSFreeMemory(IntPtr buffer);
+
+        static T Query<T>(uint sessionId, int infoClass, Func<IntPtr, int, T> read)
+        {
+            IntPtr buffer;
+            int bytes;
+            if (!WTSQuerySessionInformation(IntPtr.Zero, sessionId, infoClass, out buffer, out bytes))
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+            try { return read(buffer, bytes); }
+            finally { WTSFreeMemory(buffer); }
+        }
+
+        static string SessionText(uint sessionId, int infoClass)
+        {
+            return Query<string>(sessionId, infoClass, delegate(IntPtr buffer, int bytes)
+            {
+                return bytes > 2 ? Marshal.PtrToStringUni(buffer) : "";
+            });
+        }
+
+        public static bool ValidName(string name)
+        {
+            return !string.IsNullOrEmpty(name)
+                && Regex.IsMatch(name, @"^[^\\/\s]+\\[^\\/\s]+$", RegexOptions.CultureInvariant);
+        }
+
+        static string SessionUser(uint sessionId)
+        {
+            string user = SessionText(sessionId, WTSUserName);
+            string domain = SessionText(sessionId, WTSDomainName);
+            string name = domain + "\\" + user;
+            return ValidName(name) ? name : null;
+        }
+
+        public static string ConsoleUser()
+        {
+            uint sessionId = WTSGetActiveConsoleSessionId();
+            return sessionId == uint.MaxValue ? null : SessionUser(sessionId);
+        }
+
+        // The cardinality is for sessions, not unique user names. Never choose
+        // an arbitrary user if more than one remote desktop is active.
+        public static uint? SingleRdpSession(IEnumerable<uint> ids)
+        {
+            uint? selected = null;
+            foreach (uint id in ids)
+            {
+                if (selected.HasValue)
+                    throw new InvalidOperationException("ambiguous_active_rdp");
+                selected = id;
+            }
+            return selected;
+        }
+
+        public static string RdpUser()
+        {
+            IntPtr sessions;
+            int count;
+            if (!WTSEnumerateSessions(IntPtr.Zero, 0, 1, out sessions, out count))
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+            try
+            {
+                List<uint> activeRdp = new List<uint>();
+                int size = Marshal.SizeOf(typeof(SessionInfo));
+                for (int i = 0; i < count; i++)
+                {
+                    SessionInfo session = (SessionInfo)Marshal.PtrToStructure(
+                        IntPtr.Add(sessions, checked(i * size)), typeof(SessionInfo));
+                    if (session.State != WTSActive || session.SessionId == 0) continue;
+                    short protocol = Query<short>(session.SessionId, WTSClientProtocolType,
+                        delegate(IntPtr buffer, int bytes)
+                        {
+                            if (bytes < 2) throw new InvalidOperationException("invalid_wts_protocol");
+                            return Marshal.ReadInt16(buffer);
+                        });
+                    if (protocol == RdpProtocol) activeRdp.Add(session.SessionId);
+                }
+                uint? selected = SingleRdpSession(activeRdp);
+                return selected.HasValue ? SessionUser(selected.Value) : null;
+            }
+            finally { WTSFreeMemory(sessions); }
+        }
+
+        public static string Resolve(Func<string> wmi, Func<string> console,
+            Func<string> rdp, out string reason)
+        {
+            List<string> failures = new List<string>();
+            Func<string>[] lookups = { wmi, console, rdp };
+            string[] names = { "wmi", "wts_console", "wts_rdp" };
+            for (int i = 0; i < lookups.Length; i++)
+            {
+                try
+                {
+                    string user = lookups[i]();
+                    if (ValidName(user))
+                    {
+                        reason = string.Join(";", failures.ToArray());
+                        return user;
+                    }
+                    failures.Add(names[i] + "_no_user");
+                }
+                catch (Exception error)
+                {
+                    // Type only: exception messages may contain account data.
+                    failures.Add(names[i] + "_failed:" + error.GetType().Name);
+                }
+            }
+            reason = string.Join(";", failures.ToArray());
+            return null;
+        }
+    }
+
     internal static class PadiemPcConnect
     {
         // ---- what the downloaded file already knows ----------------------
@@ -104,8 +247,6 @@ namespace Padiem.Connect
             new Regex("^[A-Za-z0-9._\\-]{1,128}$", RegexOptions.CultureInvariant);
         static readonly Regex Sha256HexPattern =
             new Regex("^[0-9a-f]{64}$", RegexOptions.CultureInvariant);
-        static readonly Regex ConsoleUserNamePattern =
-            new Regex("^[^\\\\/\\s]+\\\\[^\\\\/\\s]+$", RegexOptions.CultureInvariant);
 
         const int ExitOk = 0;
         const int ExitUsage = 2;
@@ -251,20 +392,24 @@ namespace Padiem.Connect
                     Say("설치 프로그램을 내려받지 못했습니다. 네트워크를 확인한 뒤 다시 시도해 주세요.");
                     return ExitDownloadUnusable;
                 }
-                // Stop the service through the binary it was registered with, so an
-                // update over a running agent does not fail on a locked file. A PC that
-                // never had the agent has nothing to stop, and that is not a failure.
+                // #7965: wherever the running agent was registered, it is stopped
+                // before its file is replaced. A reinstall always meets the service
+                // running from the very path this install is about to write, so the
+                // old "stop only when the registered path differs" rule skipped the
+                // stop on every reinstall and the copy failed on the locked file.
+                // The stop is then read back from the service itself, and sc.exe -
+                // the OS's own control - is the fallback when the agent's -stop does
+                // not land. A PC that never had the agent has nothing to stop, and
+                // that is not a failure.
                 if (installed)
                 {
-                    string running = RegisteredAgentPath();
-                    if (running != null && !running.Equals(durable, StringComparison.OrdinalIgnoreCase))
-                    {
-                        RunQuiet(running, "-stop");
-                    }
+                    StopInstalledAgent();
                 }
                 if (!Place(temp, durable))
                 {
-                    Say("에이전트를 놓을 폴더를 만들 수 없습니다. 다른 프로그램이 사용 중인지 확인해 주세요.");
+                    Say(installed
+                        ? "에이전트를 교체하지 못했습니다. PC를 다시 시작한 뒤, 새 파일을 받아 10분 안에 다시 실행해 주세요."
+                        : "에이전트를 놓을 폴더를 만들 수 없습니다. 다른 프로그램이 사용 중인지 확인해 주세요.");
                     return ExitInstallerFailed;
                 }
                 if (!StartInstaller(durable, installerArguments))
@@ -281,6 +426,14 @@ namespace Padiem.Connect
             {
                 try { File.Delete(temp); }
                 catch (Exception) { }
+            }
+            // #8193: the SYSTEM watcher is installed beside the agent through
+            // the same fixed-payload, -Force-overwrite, best-effort path as the
+            // updater. There is deliberately no computer-name exception.
+            string selfHealError = RegisterSelfHealWatcher();
+            if (selfHealError.Length != 0)
+            {
+                Say("자가 복구 감시기 등록 실패: " + selfHealError);
             }
             bool helperConfigured = !string.IsNullOrEmpty(CleanHttps(Value(KeyHelperUrl)))
                 && IsSha256((Value(KeyHelperSha256) ?? "").Trim().ToLowerInvariant());
@@ -340,28 +493,28 @@ namespace Padiem.Connect
             return Path.Combine(UserHelperStateDirectory(), UserHelperStatusName);
         }
 
-        static string ConsoleUserName()
+        static string ConsoleUserName(out string reason)
         {
-            // The account signed in at the console, not the elevated
-            // administrator token this process runs under. Registering the
-            // installer's own identity would put the helper in the wrong
-            // session, which is the one thing the logon task must not do.
-            try
+            // Never use the elevated installer's identity for a per-user task.
+            return PadiemSessionLookup.Resolve(WmiConsoleUserName,
+                PadiemSessionLookup.ConsoleUser, PadiemSessionLookup.RdpUser, out reason);
+        }
+
+        static string WmiConsoleUserName()
+        {
+            using (ManagementObjectSearcher search = new ManagementObjectSearcher(
+                "SELECT UserName FROM Win32_ComputerSystem"))
+            using (ManagementObjectCollection computers = search.Get())
             {
-                using (ManagementObject computer = new ManagementObject(
-                    "Win32_ComputerSystem.Name='.'"))
+                foreach (ManagementObject computer in computers)
                 {
-                    computer.Get();
-                    object value = computer["UserName"];
-                    string name = value == null
-                        ? null : Convert.ToString(value, CultureInfo.InvariantCulture);
-                    if (!string.IsNullOrEmpty(name) && ConsoleUserNamePattern.IsMatch(name))
+                    using (computer)
                     {
-                        return name;
+                        string name = Convert.ToString(computer["UserName"], CultureInfo.InvariantCulture);
+                        if (PadiemSessionLookup.ValidName(name)) return name;
                     }
                 }
             }
-            catch (Exception) { }
             return null;
         }
 
@@ -973,45 +1126,91 @@ namespace Padiem.Connect
             return escaped.ToString();
         }
 
+        static string HelperReleaseVersion(string url)
+        {
+            Match release = Regex.Match(url ?? "",
+                @"^https://downloads\.padiem\.net/pc-helper/([0-9]{1,5}\.[0-9]{1,5}\.[0-9]{1,5}(?:-rc[0-9]{1,5})?)/padiem-user-helper\.exe$",
+                RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            return release.Success ? release.Groups[1].Value : "";
+        }
+
+        internal static byte[] UserHelperStatusPayload(string status, string reason,
+            string deviceId, string sha256, string user, string release,
+            string updateRegistrationError)
+        {
+            StringBuilder json = new StringBuilder();
+            json.Append("{\"status\":\"").Append(JsonEscape(status)).Append("\"");
+            json.Append(",\"task\":\"").Append(JsonEscape(UserHelperTaskName)).Append("\"");
+            if (!string.IsNullOrEmpty(deviceId))
+            {
+                json.Append(",\"device_id\":\"").Append(JsonEscape(deviceId)).Append("\"");
+            }
+            if (!string.IsNullOrEmpty(sha256))
+            {
+                json.Append(",\"sha256\":\"").Append(JsonEscape(sha256)).Append("\"");
+            }
+            if (status == "installed")
+            {
+                if (release.Length != 0) json.Append(",\"version\":\"").Append(release).Append("\"");
+            }
+            if (!string.IsNullOrEmpty(user))
+            {
+                json.Append(",\"user\":\"").Append(JsonEscape(user)).Append("\"");
+            }
+            if (!string.IsNullOrEmpty(updateRegistrationError))
+            {
+                string registrationReason = "update_registration_failed:" + updateRegistrationError;
+                reason = string.IsNullOrEmpty(reason) ? registrationReason : reason + ";" + registrationReason;
+            }
+            if (!string.IsNullOrEmpty(reason))
+            {
+                json.Append(",\"reason\":\"").Append(JsonEscape(reason)).Append("\"");
+            }
+            if (!string.IsNullOrEmpty(updateRegistrationError))
+            {
+                json.Append(",\"update_result\":\"registration_failed\"");
+                json.Append(",\"update_registration_error\":\"").Append(JsonEscape(updateRegistrationError)).Append("\"");
+            }
+            json.Append("}\n");
+            return new UTF8Encoding(false).GetBytes(json.ToString());
+        }
+
         static void WriteUserHelperStatus(string status, string reason,
-            string deviceId, string sha256, string user, string userSid)
+            string deviceId, string sha256, string user, string userSid,
+            string updateRegistrationError = "")
         {
             // Local evidence only; the secret is never a member of this object.
-            // The status is written only into a folder this install would
-            // adopt, as a new file that already carries its descriptor and is
-            // then renamed into place - never through a file that was already
-            // lying there.
+            // The status is written into a folder this install would adopt, as a
+            // new file that already carries its descriptor and is then renamed
+            // into place - never through a file that was already lying there.
+            // #8043: when that folder is absent or not ours, the reason still
+            // leaves a trace in the operator's own temp rather than vanishing.
             try
             {
                 string directory = UserHelperStateDirectory();
                 HelperAccounts accounts = ShippedHelperAccounts();
-                if (!Directory.Exists(directory)
-                    || FolderAdoptionRefusal(directory, accounts).Length > 0)
+                byte[] payload = UserHelperStatusPayload(status, reason, deviceId, sha256, user,
+                    HelperReleaseVersion(CleanHttps(Value(KeyHelperUrl))), updateRegistrationError);
+                if (Directory.Exists(directory)
+                    && FolderAdoptionRefusal(directory, accounts).Length == 0)
                 {
-                    return;
+                    WriteLockedFile(UserHelperStatusPath(), "data", payload, userSid, accounts);
                 }
-                StringBuilder json = new StringBuilder();
-                json.Append("{\"status\":\"").Append(JsonEscape(status)).Append("\"");
-                json.Append(",\"task\":\"").Append(JsonEscape(UserHelperTaskName)).Append("\"");
-                if (!string.IsNullOrEmpty(deviceId))
+                else
                 {
-                    json.Append(",\"device_id\":\"").Append(JsonEscape(deviceId)).Append("\"");
+                    // #8043: the adopted folder is absent or not ours to write, so
+                    // the status would otherwise leave no trace at all. Still record
+                    // the failure reason as local evidence in the operator's own
+                    // temp. No secret is a member of this object; best-effort, and a
+                    // failure here never undoes the agent connection that stands.
+                    try
+                    {
+                        string fallback = Path.Combine(Path.GetTempPath(),
+                            "padiem-helper-status.json");
+                        File.WriteAllBytes(fallback, payload);
+                    }
+                    catch (Exception) { }
                 }
-                if (!string.IsNullOrEmpty(sha256))
-                {
-                    json.Append(",\"sha256\":\"").Append(JsonEscape(sha256)).Append("\"");
-                }
-                if (!string.IsNullOrEmpty(user))
-                {
-                    json.Append(",\"user\":\"").Append(JsonEscape(user)).Append("\"");
-                }
-                if (!string.IsNullOrEmpty(reason))
-                {
-                    json.Append(",\"reason\":\"").Append(JsonEscape(reason)).Append("\"");
-                }
-                json.Append("}\n");
-                WriteLockedFile(UserHelperStatusPath(), "data",
-                    new UTF8Encoding(false).GetBytes(json.ToString()), userSid, accounts);
             }
             catch (Exception) { }
         }
@@ -1116,6 +1315,162 @@ namespace Padiem.Connect
             }
         }
 
+        static string RegisterHelperUpdater()
+        {
+            // Fixed build-time resource, never a command from the trailer.
+            try
+            {
+                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PadiemHelperUpdater"))
+                {
+                    if (stream == null) return "missing_fixed_source";
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        return RunHelperUpdaterRegistration(reader.ReadToEnd());
+                    }
+                }
+            }
+            catch (Exception) { return "task_process_start_failed"; }
+        }
+
+        internal static string RunHelperUpdaterRegistration(string fixedSource)
+        {
+            if (string.IsNullOrEmpty(fixedSource)) return "missing_fixed_source";
+            // Pass only bounded codes across the process boundary. Exception
+            // messages can contain local paths; never put those in status.
+            string source = "$ErrorActionPreference='Stop';try{" + fixedSource
+                + ";exit 0}catch{switch -Exact ([string]$_.Exception.Message){"
+                + "'updater_running'{exit 10};'missing_fixed_source'{exit 11};"
+                + "'invalid_install_record'{exit 12};'installed_digest_mismatch'{exit 13};default{exit 1}}}";
+            try
+            {
+                string command = Convert.ToBase64String(Encoding.Unicode.GetBytes(source));
+                string powershell = Path.Combine(Environment.GetFolderPath(
+                    Environment.SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
+                ProcessStartInfo start = new ProcessStartInfo(powershell,
+                    "-NoProfile -NonInteractive -EncodedCommand " + command);
+                start.UseShellExecute = false;
+                start.CreateNoWindow = true;
+                start.EnvironmentVariables.Remove("PSModulePath");
+                using (Process process = Process.Start(start))
+                {
+                    if (process == null) return "task_process_start_failed";
+                    if (!process.WaitForExit(30000))
+                    {
+                        try { process.Kill(); } catch (Exception) { }
+                        return "task_registration_timeout";
+                    }
+                    switch (process.ExitCode)
+                    {
+                        case 0: return "";
+                        case 10: return "updater_running";
+                        case 11: return "missing_fixed_source";
+                        case 12: return "invalid_install_record";
+                        case 13: return "installed_digest_mismatch";
+                        default: return "task_registration_failed";
+                    }
+                }
+            }
+            catch (Exception) { return "task_process_start_failed"; }
+        }
+
+        static string SelfHealWatcherResource(string name)
+        {
+            // Fixed build-time payload, never text from the download trailer.
+            try
+            {
+                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name))
+                {
+                    if (stream == null) return null;
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
+            }
+            catch (Exception) { return null; }
+        }
+
+        static string SelfHealPythonExecutable()
+        {
+            string configured = Environment.GetEnvironmentVariable("PADIEM_PYTHON");
+            if (!string.IsNullOrEmpty(configured)) return configured.Trim();
+            string search = Environment.GetEnvironmentVariable("PATH") ?? "";
+            foreach (string entry in search.Split(Path.PathSeparator))
+            {
+                if (string.IsNullOrEmpty(entry)) continue;
+                string candidate = Path.Combine(entry.Trim('"'), "python.exe");
+                if (File.Exists(candidate)) return candidate;
+            }
+            return null;
+        }
+
+        internal static string RunSelfHealWatcherCommand(string fixedCommand, string pythonExecutable)
+        {
+            if (string.IsNullOrEmpty(fixedCommand)) return "missing_fixed_source";
+            // The interpreter is passed as a PowerShell literal; quotes doubled.
+            string literal = "'" + (pythonExecutable ?? "").Replace("'", "''") + "'";
+            string source = "$ErrorActionPreference='Stop';$PythonExecutable=" + literal
+                + ";try{" + fixedCommand + ";exit 0}catch{exit 1}";
+            try
+            {
+                string command = Convert.ToBase64String(Encoding.Unicode.GetBytes(source));
+                string powershell = Path.Combine(Environment.GetFolderPath(
+                    Environment.SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
+                ProcessStartInfo start = new ProcessStartInfo(powershell,
+                    "-NoProfile -NonInteractive -EncodedCommand " + command);
+                start.UseShellExecute = false;
+                start.CreateNoWindow = true;
+                start.EnvironmentVariables.Remove("PSModulePath");
+                using (Process process = Process.Start(start))
+                {
+                    if (process == null) return "task_process_start_failed";
+                    if (!process.WaitForExit(30000))
+                    {
+                        try { process.Kill(); } catch (Exception) { }
+                        return "task_registration_timeout";
+                    }
+                    return process.ExitCode == 0 ? "" : "task_registration_failed";
+                }
+            }
+            catch (Exception) { return "task_process_start_failed"; }
+        }
+
+        static string RegisterSelfHealWatcher()
+        {
+            string python = SelfHealPythonExecutable();
+            if (string.IsNullOrEmpty(python)) return "python_missing";
+            return RunSelfHealWatcherCommand(SelfHealWatcherResource("PadiemSelfHealWatcher"), python);
+        }
+
+        static string UnregisterSelfHealWatcher()
+        {
+            return RunSelfHealWatcherCommand(
+                SelfHealWatcherResource("PadiemSelfHealWatcherUnregister"), "");
+        }
+
+        // Registration reads the installed status and the verified helper.
+        // Preserve a successful helper installation even if the optional
+        // updater cannot register; report its failure to disk and console.
+        internal static bool FinishUserHelperInstall(string reason, string release,
+            Func<string> registerUpdater, Action<string> recordStatus,
+            Action<string> showHelperFailure, Action<string> showUpdaterFailure)
+        {
+            recordStatus("");
+            if (reason.Length != 0)
+            {
+                showHelperFailure(reason);
+                return false;
+            }
+            string registrationError = release.Length == 0
+                ? "version_unavailable" : registerUpdater();
+            if (registrationError.Length != 0)
+            {
+                recordStatus(registrationError);
+                showUpdaterFailure(registrationError);
+            }
+            return true;
+        }
+
         static bool InstallUserHelper(string tag)
         {
             // Lock the folder, download, verify, end a running helper, clear
@@ -1131,7 +1486,8 @@ namespace Padiem.Connect
             }
             string deviceId = tag != null && InstallTag.IsMatch(tag)
                 ? tag : Guid.NewGuid().ToString("N");
-            string user = ConsoleUserName();
+            string lookupReason;
+            string user = ConsoleUserName(out lookupReason);
             string userSid = string.IsNullOrEmpty(user) ? null : AccountSid(user);
             string reason;
             try
@@ -1139,7 +1495,7 @@ namespace Padiem.Connect
                 if (string.IsNullOrEmpty(userSid))
                 {
                     reason = string.IsNullOrEmpty(user)
-                        ? "no_console_user" : "console_user_unresolved";
+                        ? "no_console_user;" + lookupReason : "console_user_unresolved";
                 }
                 else
                 {
@@ -1150,13 +1506,16 @@ namespace Padiem.Connect
             {
                 reason = "provision_failed";
             }
-            WriteUserHelperStatus(reason.Length == 0 ? "installed" : "not_installed",
-                reason, deviceId, sha, user, userSid);
-            if (reason.Length > 0)
-            {
-                SayHelperStopped(reason);
-            }
-            return reason.Length == 0;
+            return FinishUserHelperInstall(reason, HelperReleaseVersion(url),
+                RegisterHelperUpdater,
+                delegate(string registrationError)
+                {
+                    WriteUserHelperStatus(reason.Length == 0 ? "installed" : "not_installed",
+                        reason.Length == 0 ? lookupReason : reason, deviceId, sha, user, userSid,
+                        registrationError);
+                },
+                SayHelperStopped,
+                delegate(string registrationError) { Say("자동 업데이트 작업 등록 실패: " + registrationError); });
         }
 
         static string ProvisionUserHelper(string url, string sha, string deviceId,
@@ -1307,6 +1666,9 @@ namespace Padiem.Connect
                     RunQuiet(sc, "delete \"" + AgentServiceName + "\"");
                 }
             }
+            // #8193: the SYSTEM watcher is this product's task too; the removal
+            // path takes it away with the agent and the helper updater.
+            try { UnregisterSelfHealWatcher(); } catch (Exception) { }
             DeleteUninstallRegistration();
             // This executable itself lives in the folder it must remove. Delete
             // the folder from outside the install directory after this process
@@ -1349,7 +1711,7 @@ namespace Padiem.Connect
             }
         }
 
-        static string RegisteredAgentPath()
+        internal static string RegisteredAgentPath()
         {
             // The service's own recorded binary. Reading a registry value is allowed
             // without elevation and says exactly which file is in use.
@@ -1369,20 +1731,163 @@ namespace Padiem.Connect
                     {
                         return null;
                     }
-                    text = text.Trim();
-                    if (text.StartsWith("\"", StringComparison.Ordinal))
-                    {
-                        int closing = text.IndexOf('"', 1);
-                        return closing > 1 ? text.Substring(1, closing - 1) : null;
-                    }
-                    int space = text.IndexOf(' ');
-                    return space < 0 ? text : text.Substring(0, space);
+                    return NormalizeAgentImagePath(text);
                 }
             }
             catch (Exception)
             {
                 return null;
             }
+        }
+
+        internal static string NormalizeAgentImagePath(string raw)
+        {
+            // #7965: the service record may quote the path or not, and may carry
+            // arguments after it - the surface's own record is a quoted path
+            // followed by --agentName and --installedByUser. The binary is
+            // whatever prefix names a file that is really there: the whole
+            // string first, then progressively shorter prefixes at space
+            // boundaries, longest first, because "C:\Program Files\..." unquoted
+            // cuts wrongly at its first space. The old first-space cut is only
+            // the last resort for a path nothing can confirm.
+            if (string.IsNullOrEmpty(raw))
+            {
+                return null;
+            }
+            string text = raw.Trim();
+            if (text.Length == 0)
+            {
+                return null;
+            }
+            if (text.StartsWith("\"", StringComparison.Ordinal))
+            {
+                int closing = text.IndexOf('"', 1);
+                return closing > 1 ? text.Substring(1, closing - 1) : null;
+            }
+            if (File.Exists(text))
+            {
+                return text;
+            }
+            int boundary = text.Length;
+            while (boundary > 0)
+            {
+                int space = text.LastIndexOf(' ', boundary - 1);
+                if (space <= 0)
+                {
+                    break;
+                }
+                string candidate = text.Substring(0, space);
+                if (candidate.Length > 0 && File.Exists(candidate))
+                {
+                    return candidate;
+                }
+                boundary = space;
+            }
+            int first = text.IndexOf(' ');
+            return first < 0 ? text : text.Substring(0, first);
+        }
+
+        // ---- the stop, verified (#7965) ----------------------------------
+
+        const int StopWaitMilliseconds = 20000;
+        const uint ServiceStateStopped = 0x00000001;
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct ServiceStatus
+        {
+            public uint ServiceType;
+            public uint CurrentState;
+            public uint ControlsAccepted;
+            public uint Win32ExitCode;
+            public uint ServiceSpecificExitCode;
+            public uint CheckPoint;
+            public uint WaitHint;
+        }
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool QueryServiceStatus(IntPtr service, ref ServiceStatus status);
+
+        internal static bool ServiceIsRunning(string name)
+        {
+            // The service's own state, read through the same no-elevation query the
+            // existence check uses. A missing service is not running, and any state
+            // that is not STOPPED - including one still winding down - counts as
+            // running, because the file under it cannot be replaced yet.
+            IntPtr manager = OpenSCManager(null, null, ScManagerConnect);
+            if (manager == IntPtr.Zero)
+            {
+                return false;
+            }
+            try
+            {
+                IntPtr service = OpenService(manager, name, ServiceQueryStatus);
+                if (service == IntPtr.Zero)
+                {
+                    return false;
+                }
+                try
+                {
+                    ServiceStatus status = new ServiceStatus();
+                    if (!QueryServiceStatus(service, ref status))
+                    {
+                        return false;
+                    }
+                    return status.CurrentState != ServiceStateStopped;
+                }
+                finally
+                {
+                    CloseServiceHandle(service);
+                }
+            }
+            finally
+            {
+                CloseServiceHandle(manager);
+            }
+        }
+
+        internal static bool StopInstalledAgent()
+        {
+            // The agent is asked to stop through the binary it was registered with,
+            // wherever that is; the answer is then read back from the service's own
+            // state, because -stop is asynchronous and a hopeful send is what left
+            // the locked file in place. When the agent's -stop does not land, sc.exe
+            // - the OS's own control, the same fallback Uninstall uses - stops the
+            // service, and the wait is asked once more. True only when the service
+            // is really stopped, or was never there.
+            string registered = RegisteredAgentPath();
+            if (registered != null)
+            {
+                RunQuiet(registered, "-stop");
+            }
+            if (WaitServiceStopped(StopWaitMilliseconds))
+            {
+                return true;
+            }
+            string sc = Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.System), "sc.exe");
+            if (File.Exists(sc))
+            {
+                RunQuiet(sc, "stop \"" + AgentServiceName + "\"");
+                return WaitServiceStopped(StopWaitMilliseconds);
+            }
+            return !ServiceIsRunning(AgentServiceName);
+        }
+
+        static bool WaitServiceStopped(int milliseconds)
+        {
+            // Poll the service's own state until the deadline; what matters is not
+            // that a stop was sent but that the service says STOPPED.
+            DateTime deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
+            while (DateTime.UtcNow < deadline)
+            {
+                if (!ServiceIsRunning(AgentServiceName))
+                {
+                    return true;
+                }
+                Thread.Sleep(500);
+            }
+            return !ServiceIsRunning(AgentServiceName);
         }
 
         static bool Place(string source, string target)

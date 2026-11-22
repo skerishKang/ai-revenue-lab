@@ -1,3 +1,4 @@
+import locale_bundle
 """Exercise the shipped token/approval settings code without issuing real tokens."""
 from pathlib import Path
 import re
@@ -27,7 +28,7 @@ def test_mcp_settings_use_the_shared_dialog_and_accessible_controls():
 
 
 def test_all_mcp_settings_copy_and_exact_operation_labels_are_localized():
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     ko, en = locale.split('    en: {', 1)
     keys = set(re.findall(r'"(mcp-settings-[^"]+)":', ko))
     assert keys == set(re.findall(r'"(mcp-settings-[^"]+)":', en))

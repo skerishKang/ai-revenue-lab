@@ -71,7 +71,7 @@ async def test_auth_status_projects_guest_signed_in_and_expired_for_presentation
 
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, user_id),
+            create_session_token(settings, user_id, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -120,7 +120,7 @@ async def test_auth_status_storage_failure_never_self_asserts_identity() -> None
     ) as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings, user_id),
+            create_session_token(settings, user_id, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -158,6 +158,6 @@ def test_browser_projection_is_presentation_only_and_has_no_identity_authority()
 
     assert 'fetch("/api/auth/status"' not in js
     assert 'nativeFetch("/api/auth/status"' in js
-    assert 'window.location.assign("/auth/google/start");' in app_js
+    assert 'window.location.assign("/auth/google/start");' in (app_js + (root / "static/chat-login-dialog-module.js").read_text(encoding="utf-8"))
     assert "min-height: 44px" in css
     assert '.sidebar-account[data-account-state="expired"]' in css

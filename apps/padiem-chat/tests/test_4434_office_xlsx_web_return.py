@@ -138,7 +138,7 @@ def request(path, source, *, run=RUN, owner=OWNER, state_settings=None):
     headers = MutableHeaders()
     if owner is not None:
         headers["Cookie"] = SESSION_COOKIE + "=" + create_session_token(
-            state.settings, owner)
+            state.settings, owner, canonical_session_id="session_test_a")
     return Request({
         "type": "http", "http_version": "1.1", "scheme": "https",
         "method": "GET", "path": target, "raw_path": target.encode(),

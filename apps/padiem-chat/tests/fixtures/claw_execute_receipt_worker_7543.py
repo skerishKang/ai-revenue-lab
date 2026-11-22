@@ -94,7 +94,7 @@ async def worker(argv: list[str]) -> None:
         ) as client:
             client.cookies.set(
                 SESSION_COOKIE,
-                create_session_token(settings, OWNER),
+                create_session_token(settings, OWNER, canonical_session_id="session_test_a"),
                 domain="chat.example.test",
                 path="/",
             )

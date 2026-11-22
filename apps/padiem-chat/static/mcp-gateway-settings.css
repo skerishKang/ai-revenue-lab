@@ -41,12 +41,12 @@
   height: 7px;
   flex: 0 0 7px;
   border-radius: var(--radius-circle);
-  background: var(--muted, #53606c);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--muted, #53606c) 22%, transparent);
+  background: var(--muted);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--muted) 22%, transparent);
 }
 #mcpGatewayPcLinks .mcp-settings-status[data-state="online"]::before {
-  background: var(--success, #1a6b3a);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--success, #1a6b3a) 24%, transparent);
+  background: var(--success);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--success) 24%, transparent);
 }
 .mcp-settings-field { display: grid; gap: 3px; margin: 6px 0; min-width: 0; }
 .mcp-settings-field strong { color: var(--text-secondary, var(--text)); font-size: .85rem; }
@@ -94,13 +94,13 @@
  * own tinted surface to stay readable. */
 html[data-theme="dark"] .mcp-gateway-client-revoke,
 html[data-theme="cinematic"] .mcp-gateway-client-revoke {
-  background: color-mix(in srgb, var(--danger, #ff8a80) 16%, transparent);
-  border-color: color-mix(in srgb, var(--danger, #ff8a80) 45%, transparent);
-  color: var(--danger, #ff8a80);
+  background: color-mix(in srgb, var(--danger) 16%, transparent);
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  color: var(--danger);
 }
 html[data-theme="dark"] .mcp-gateway-client-revoke:not(:disabled):hover,
 html[data-theme="cinematic"] .mcp-gateway-client-revoke:not(:disabled):hover {
-  background: color-mix(in srgb, var(--danger, #ff8a80) 24%, transparent);
+  background: color-mix(in srgb, var(--danger) 24%, transparent);
 }
 .mcp-gateway-client-empty,
 .mcp-gateway-client-error,

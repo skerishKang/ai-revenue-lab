@@ -22,6 +22,18 @@
 
       const clawRunHistoryRefresh = document.getElementById("clawRunHistoryRefresh");
       const clawRunHistoryFilter = document.getElementById("clawRunHistoryFilter");
+      // #7812 R5 B3: the run-history panel's own nodes and visibility bookkeeping.
+      // They moved here with their six consumers, so the panel, its error/empty
+      // states and its read generation sit in one module (rule (a)).
+      const clawRunHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
+      const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");
+      const clawRunHistoryError = document.getElementById("clawRunHistoryError");
+      const clawRunHistoryList = document.getElementById("clawRunHistoryList");
+      const clawRunHistoryEmpty = document.getElementById("clawRunHistoryEmpty");
+      // Set when the workspace is left, so the next reveal reads again instead of
+      // reusing a list read before the person went elsewhere.
+      let clawRunHistoryLeftSurface = false;
+      let clawRunHistoryVisibilityEpoch = 0;
 
       // A write that changes a run's status makes every answer in the window
       // stale, so the next read asks the server again.
@@ -241,7 +253,7 @@
           if (previewable) {
             const viewer = window.PadiemClawPdfPreview.create({
               mount: artifactRow,
-              onError: (message) => deps.setClawRunHistoryStatus(message),
+              onError: (message) => setClawRunHistoryStatus(message),
             });
             if (viewer?.setHistorical?.(artifact)) deps.clawRunHistoryPdfControllers.add(viewer);
             else viewer?.destroy?.();
@@ -261,11 +273,131 @@
           approvalActions.setAttribute("role", "group");
           approvalActions.setAttribute("aria-label", deps.clawT("claw-approval-actions-aria"));
           deps.renderClawApprovalControls(approvalActions, run.run_id, async () => {
-            await deps.loadClawRunHistory();
+            await loadClawRunHistory();
           });
           card.appendChild(approvalActions);
         }
         return card;
+      }
+
+      function clearClawRunHistoryPdfPreviews() {
+        for (const controller of deps.clawRunHistoryPdfControllers) controller.destroy();
+        deps.clawRunHistoryPdfControllers.clear();
+      }
+      function setClawRunHistoryStatus(message, code = "") {
+        if (!clawRunHistoryError) return;
+        if (!message) {
+          clawRunHistoryError.hidden = true;
+          clawRunHistoryError.textContent = "";
+          clawRunHistoryError.removeAttribute("data-state");
+          return;
+        }
+        clawRunHistoryError.hidden = false;
+        clawRunHistoryError.textContent = message;
+        const reference = deps.failureCodeNote(code, "");
+        if (reference) clawRunHistoryError.appendChild(reference);
+        clawRunHistoryError.dataset.state = "error";
+      }
+      function clawRunHistoryErrorMessage(data, response) {
+        const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+        const status = response ? response.status : 0;
+        if (code === "unauthorized" || status === 401) return deps.clawT("claw-error-auth-needed");
+        return deps.clawT("claw-runs-error");
+      }
+      // Unguarded fetch: callers hold the single-flight flag while awaiting this.
+      async function fetchClawRunHistory(options) {
+        if (!deps.clawRunHistory) return;
+        const focusRunId = deps.pendingClawRunFocusId;
+        deps.pendingClawRunFocusId = "";
+        const visibilityEpoch = clawRunHistoryVisibilityEpoch;
+        setClawRunHistoryStatus("");
+        if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = false;
+        if (clawRunHistoryList) clawRunHistoryList.hidden = true;
+        if (clawRunHistoryEmpty) clawRunHistoryEmpty.hidden = true;
+        if (deps.clawRunHistoryExpand) deps.clawRunHistoryExpand.hidden = true;
+        // On refresh, retire the old cards before dropping their DOM and PDF Blob.
+        clearClawRunHistoryPdfPreviews();
+        if (clawRunHistoryList) clawRunHistoryList.replaceChildren();
+        try {
+          const { response, data } = await deps.readClawRuns(deps.clawRunHistoryLimit, deps.authViewEpoch, options);
+          // A response begun before logout/workspace departure is not a license
+          // to paint old owner file cards into a newer authenticated session.
+          if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||
+              deps.authState.authenticated !== true || deps.clawRunHistory.hidden) return;
+          if (!response.ok || !data || data.ok !== true || !Array.isArray(data.runs)) {
+            throw deps.mappedUiError(clawRunHistoryErrorMessage(data, response), data);
+          }
+          if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
+          const includeGeneral = typeof window !== "undefined"
+            && window.__padiemClawRunHistoryIncludeGeneral === true;
+          const visibleRuns = data.runs.filter((run) => {
+            if (!run || typeof run.run_id !== "string") return false;
+            if (includeGeneral || (focusRunId && run.run_id === focusRunId)) return true;
+            return !(run.action === "general" && !run.artifact && (run.status === "completed" || !run.status));
+          });
+          if (visibleRuns.length === 0) {
+            // Empty history must not leave an empty list container visible.
+            if (clawRunHistoryEmpty) clawRunHistoryEmpty.hidden = false;
+            return;
+          }
+          if (clawRunHistoryList) clawRunHistoryList.hidden = false;
+          // Equal to the requested limit suggests (but does not prove) older runs.
+          // Never invent a count or claim further runs exist until the next GET.
+          if (deps.clawRunHistoryExpand) deps.clawRunHistoryExpand.hidden =
+            deps.clawRunHistoryLimit !== 10 || data.runs.length < 10;
+          visibleRuns.forEach((run) => {
+            clawRunHistoryList?.appendChild(renderClawRunCard(run));
+          });
+          if (focusRunId && clawRunHistoryList) {
+            const target = Array.from(clawRunHistoryList.children).find((card) => card.dataset && card.dataset.runId === focusRunId);
+            if (target) {
+              // #4488 Phase A: open the disclosure before focusing a specific run.
+              if (clawRunHistoryDisclosure) clawRunHistoryDisclosure.open = true;
+              target.setAttribute("tabindex", "-1");
+              target.focus?.();
+              target.scrollIntoView?.();
+            }
+          }
+        } catch (error) {
+          if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||
+              deps.authState.authenticated !== true || deps.clawRunHistory.hidden) return;
+          if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
+          if (deps.clawRunHistoryExpand) deps.clawRunHistoryExpand.hidden = true;
+          setClawRunHistoryStatus(deps.safeLocalUiMessage(error, deps.clawT("claw-runs-error")), error?.code);
+        }
+      }
+      async function loadClawRunHistory(options) {
+        if (deps.clawRunHistoryInFlight) return;
+        deps.clawRunHistoryInFlight = true;
+        try {
+          await fetchClawRunHistory(options);
+        } finally {
+          deps.clawRunHistoryInFlight = false;
+        }
+      }
+      function syncClawRunHistoryVisibility() {
+        if (!deps.clawRunHistory) return;
+        // Owner-authenticated surface only.
+        const wasVisible = deps.clawRunHistory.hidden === false;
+        const show = deps.authState.authenticated === true
+          && (deps.shell.dataset.state === "claw" || deps.shell.dataset.state === "chat");
+        deps.clawRunHistory.hidden = !show;
+        if (clawRunHistoryDisclosure) clawRunHistoryDisclosure.hidden = !show;
+        if (show) {
+          // Coming back to the workspace is a request for the current list; the
+          // first reveal may share the read the sidebar already started.
+          const returning = clawRunHistoryLeftSurface;
+          clawRunHistoryLeftSurface = false;
+          loadClawRunHistory(returning ? { force: true } : undefined);
+        }
+        else {
+          if (wasVisible) clawRunHistoryLeftSurface = true;
+          clawRunHistoryVisibilityEpoch += 1;
+          deps.clawRunHistoryLimit = 10;
+          if (typeof window !== "undefined") window.__padiemClawRunHistoryIncludeGeneral = false;
+          if (deps.clawRunHistoryExpand) deps.clawRunHistoryExpand.hidden = true;
+          clearClawRunHistoryPdfPreviews();
+        }
       }
 
       // R5 A2 (rule (b)): registered from app.js at the original listener block.
@@ -302,6 +434,12 @@
         readClawRuns,
         clawRunStatusLabel,
         renderClawRunCard,
+        clearClawRunHistoryPdfPreviews,
+        setClawRunHistoryStatus,
+        clawRunHistoryErrorMessage,
+        fetchClawRunHistory,
+        loadClawRunHistory,
+        syncClawRunHistoryVisibility,
         wireRunHistoryListeners,
       };
     },

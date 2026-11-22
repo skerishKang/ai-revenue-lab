@@ -3,18 +3,20 @@
 app.js의 화면 전환 구역 8개 함수(pageViewFor·syncRouteHash·setNavActive·
 switchConversationProduct·openClawWorkspace·openChatWorkspace·openClawManual·
 openClawRunTarget)가 chat-nav-module.js로 이동했고, app.js는 같은 이름의 한 줄
-전달 함수 7개, navModule() 팩토리, 원래 리스너 블록 자리의 wire 호출 2회
+전달 함수 7개, 원래 선언 자리에서 바로 만드는 생성 블록 1개, 원래 리스너 블록 자리의 wire 호출 2회
 (padiem:calendar-open-link / Claw 진입 단추 묶음), 선언과 창 공개 계약 2종
 (PadiemChatRouting·PadiemAppSwitch)을 유지한다. 본문은 위치만 옮겨졌다.
 """
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
 from pathlib import Path
 
 import pytest
+from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -43,13 +45,13 @@ FORWARDERS = (
 )
 
 EXPECTED_GETTERS = {
-    "PAGE_VIEWS",
-    "PAGE_VIEW_BY_ID",
-    "PANEL_ROUTE_HASH_BY_STATE",
-    "OWNED_PANEL_HASHES",
     "AUTOMATION_ROUTE_HASH",
     "CLAW_ROUTE_HASH",
     "CONNECTORS_ROUTE_HASH",
+    "CALENDAR_ROUTE_HASH",
+    "LIBRARY_ROUTE_HASH",
+    "MEETING_ROUTE_HASH",
+    "ADVANCED_SETTINGS_ROUTE_HASH",
     "shell",
     "automationDestinationReady",
     "syncComposerForClaw",
@@ -71,7 +73,6 @@ EXPECTED_GETTERS = {
     "syncClawRunHistoryVisibility",
     "openSavedConversation",
     "downloadClawArtifact",
-    "clawNavButton",
     "authState",
 }
 
@@ -85,7 +86,11 @@ EXPECTED_SETTERS = {
 MOVED_MARKERS = (
     "window.PadiemChatNavModule = {",
     'pageViewFor(state) {',
-    "const desired = deps.PANEL_ROUTE_HASH_BY_STATE[state]",
+    "const desired = panelRouteHashes()[state]",
+    "const PAGE_VIEWS = Object.freeze([",
+    'const clawNavButton = document.getElementById("clawNavButton");',
+    "calendar: deps.CALENDAR_ROUTE_HASH,",
+    "settings: deps.ADVANCED_SETTINGS_ROUTE_HASH,",
     "deps.shell.dataset.pageId = page.pageId;",
     "clawNav.dataset.modeHint = deps.uiT(\"nav-claw-hint\")",
     'deps.shell.dataset.state = "claw";',
@@ -103,27 +108,89 @@ def test_index_loads_nav_module_before_app() -> None:
     # 원래 자리에 유지되는지와 함께 로드 순서 자체는 고정한다.
 
 
-def test_app_keeps_forwarders_factory_and_two_wire_calls() -> None:
+def test_app_registers_nav_and_keeps_two_wire_calls() -> None:
+    assert 'app.provide("nav", window.PadiemChatNavModule.create(Object.setPrototypeOf({' in APP
     for name in FORWARDERS:
-        line = f"function {name}(...a) {{ return navModule().{name}(...a); }}"
-        assert line in APP, name
-    assert "function navModule() {" in APP
-    assert "window.PadiemChatNavModule.create({" in APP
+        assert f"function {name}(" not in APP, name
+        assert f"{name}," in MODULE, name
+    assert "function navModule() {" not in APP
     # 리스너 등록 4개는 모듈 wire 2개로 옮겨졌고 app.js는 각각 원래 블록 자리에서
     # 1회씩 호출한다(등록 시점·순서 보존).
-    assert APP.count("navModule().wireNavRouteListener();") == 1
-    assert APP.count("navModule().wireNavEntryListeners();") == 1
-    # 옮긴 함수의 정의는 app.js에 남지 않는다(전달 함수는 ...a 한 줄뿐).
+    assert APP.count("navModuleInstance.wireNavRouteListener();") == 1
+    assert APP.count("navModuleInstance.wireNavEntryListeners();") == 1
+    # 옮긴 함수의 정의는 app.js에 남지 않는다.
     for name in NAMES:
-        assert APP.count(f"function {name}(") == (1 if name in FORWARDERS else 0), name
+        assert APP.count(f"function {name}(") == 0, name
+
+
+def test_nav_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("nav"))로 7개 이름을 조회한다.
+
+    app.js 전달 함수가 없어도 호출자(라우트 복귀·창 계약·deps getter)는 등록된
+    조각의 같은 이름 API에 도달한다.
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, setAttribute() {} }),
+  },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-nav-module.js", "utf8"), sandbox,
+  { filename: "chat-nav-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("nav", window.PadiemChatNavModule.create(app));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(FORWARDERS))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 def test_window_contracts_stay_in_app_js_at_their_original_shape() -> None:
     # 창 공개 2종은 모듈 도입으로 시점이 바뀌면 안 되므로 app.js 원래 자리에 둔다.
-    assert APP.count("window.PadiemChatRouting = Object.freeze({ syncRouteHash });") == 1
+    assert APP.count("window.PadiemChatRouting = Object.freeze({ syncRouteHash: navModuleInstance.syncRouteHash });") == 1
     assert APP.count("window.PadiemAppSwitch = Object.freeze({") == 1
-    assert "openChat: openChatWorkspace," in APP
-    assert "openClaw: openClawWorkspace," in APP
+    assert "openChat: navModuleInstance.openChatWorkspace," in APP
+    assert "openClaw: navModuleInstance.openClawWorkspace," in APP
 
 
 def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines() -> None:
@@ -137,13 +204,29 @@ def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines()
     assert len(MODULE.splitlines()) <= 500
 
 
+def test_nav_owned_declarations_live_only_in_the_module() -> None:
+    # B2-4: Nav만 쓰는 선언(페이지 계약·조각 표·Claw 단추)은 모듈 안에만 있다.
+    for line in (
+        "const PAGE_VIEWS = Object.freeze([",
+        "const PAGE_VIEW_BY_ID = Object.freeze(",
+        'const clawNavButton = document.getElementById("clawNavButton");',
+        "calendar: deps.CALENDAR_ROUTE_HASH,",
+        "settings: deps.ADVANCED_SETTINGS_ROUTE_HASH,",
+    ):
+        assert line in MODULE, line
+        assert line not in APP, line
+    assert "PANEL_ROUTE_HASH_BY_STATE" not in APP
+    assert "OWNED_PANEL_HASHES" not in APP
+
+
 def test_deps_getters_and_setters_match_exact_closure_surface() -> None:
-    start = APP.index("window.PadiemChatNavModule.create({")
-    block = APP[start:APP.index("});", start)]
+    block = create_receives_app_context(APP, "window.PadiemChatNavModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert gets == EXPECTED_GETTERS
-    assert sets == EXPECTED_SETTERS
+    assert gets <= EXPECTED_GETTERS
+    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
+    assert sets <= EXPECTED_SETTERS
+    assert sets | (EXPECTED_SETTERS & context_names(APP)) == EXPECTED_SETTERS
 
 
 def _extract_decl(pattern: str) -> str:
@@ -157,9 +240,6 @@ def test_all_8_functions_execute_in_node_vm_with_strict_live_deps() -> None:
     if node is None:
         pytest.skip("node is not installed in this runner")
 
-    page_views = _extract_decl(r"const PAGE_VIEWS = Object\.freeze\(\[.*?\n  \]\);")
-    panel_hashes = _extract_decl(r"const PANEL_ROUTE_HASH_BY_STATE = Object\.freeze\(\{.*?\n  \}\);")
-    owned_hashes = _extract_decl(r"const OWNED_PANEL_HASHES = new Set\(Object\.values\(PANEL_ROUTE_HASH_BY_STATE\)\);")
     route_consts = "\n".join(
         _extract_decl(rf'const {name} = "[^"]+";')
         for name in ("AUTOMATION_ROUTE_HASH", "CLAW_ROUTE_HASH", "CONNECTORS_ROUTE_HASH",
@@ -242,13 +322,7 @@ const windowStub = {
 
 // --- app.js 라이브 값: 선언을 app.js 소스에서 그대로 가져온다(원본 순서 유지). ---
 __ROUTE_CONSTS_DECL__
-__PANEL_HASHES_DECL__
-__OWNED_HASHES_DECL__
-__PAGE_VIEWS_DECL__
 __PRODUCTS_DECL__
-const PAGE_VIEW_BY_ID = Object.freeze(
-  PAGE_VIEWS.reduce((index, view) => Object.assign(index, { [view.pageId]: view }), {})
-);
 
 const uiTCalls = [];
 const syncComposerCalls = [];
@@ -280,13 +354,13 @@ const app = {
 };
 
 const deps = r5StrictDeps({
-  get PAGE_VIEWS() { return PAGE_VIEWS; },
-  get PAGE_VIEW_BY_ID() { return PAGE_VIEW_BY_ID; },
-  get PANEL_ROUTE_HASH_BY_STATE() { return PANEL_ROUTE_HASH_BY_STATE; },
-  get OWNED_PANEL_HASHES() { return OWNED_PANEL_HASHES; },
   get AUTOMATION_ROUTE_HASH() { return AUTOMATION_ROUTE_HASH; },
   get CLAW_ROUTE_HASH() { return CLAW_ROUTE_HASH; },
   get CONNECTORS_ROUTE_HASH() { return CONNECTORS_ROUTE_HASH; },
+  get CALENDAR_ROUTE_HASH() { return CALENDAR_ROUTE_HASH; },
+  get LIBRARY_ROUTE_HASH() { return LIBRARY_ROUTE_HASH; },
+  get MEETING_ROUTE_HASH() { return MEETING_ROUTE_HASH; },
+  get ADVANCED_SETTINGS_ROUTE_HASH() { return ADVANCED_SETTINGS_ROUTE_HASH; },
   get shell() { return shell; },
   get automationDestinationReady() { return automationDestinationReady; },
   get syncComposerForClaw() { return syncComposerForClaw; },
@@ -310,7 +384,6 @@ const deps = r5StrictDeps({
   get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
   get openSavedConversation() { return openSavedConversation; },
   get downloadClawArtifact() { return downloadClawArtifact; },
-  get clawNavButton() { return clawNavButton; },
   get authState() { return authState; },
   set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
 }, "nav-deps");
@@ -556,9 +629,6 @@ assert.throws(() => deps.notARealDep);
 })().catch((err) => { console.error(err); process.exit(1); });
 """
 
-    script = script.replace("__PAGE_VIEWS_DECL__", page_views)
-    script = script.replace("__PANEL_HASHES_DECL__", panel_hashes)
-    script = script.replace("__OWNED_HASHES_DECL__", owned_hashes)
     script = script.replace("__ROUTE_CONSTS_DECL__", route_consts)
     script = script.replace("__PRODUCTS_DECL__", products)
 

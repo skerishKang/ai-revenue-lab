@@ -5,6 +5,11 @@
   "use strict";
   window.PadiemChatCalendarModule = {
     create(deps) {
+      // #7812 R5 B5: calendar-only route constants; create() owns them without
+      // reading deps (rule (a)). The READ state stays app.js-owned via deps.
+      const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
+      const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
+      const GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read";
       const CALENDAR_READ_STATES = Object.freeze(["unknown", "activating", "active", "failed", "unavailable"]);
       const CALENDAR_READ_STATE_KEYS = Object.freeze({
         unknown: "connectors-calendar-read-pending",
@@ -56,7 +61,7 @@
         const scope = deps.connectorsScope();
         if (!scope) return null;
         try {
-          return scope.querySelector(`[data-google-connector-connect="${deps.GOOGLE_CALENDAR_CONNECTOR}"]`);
+          return scope.querySelector(`[data-google-connector-connect="${GOOGLE_CALENDAR_CONNECTOR}"]`);
         } catch (_) {
           return null;
         }
@@ -155,16 +160,16 @@
         if (deps.connectorsError) deps.connectorsError.hidden = true;
         let ticketErrorKey = "connectors-connect-error";
         try {
-          const startResponse = await deps.fetch(deps.GOOGLE_CALENDAR_TICKET_ENDPOINT, {
+          const startResponse = await deps.fetch(GOOGLE_CALENDAR_TICKET_ENDPOINT, {
             method: "POST",
             headers: { "Accept": "application/json", "Content-Type": "application/json" },
-            body: JSON.stringify({ connector_id: deps.GOOGLE_CALENDAR_CONNECTOR, begin_oauth: true }),
+            body: JSON.stringify({ connector_id: GOOGLE_CALENDAR_CONNECTOR, begin_oauth: true }),
             cache: "no-store",
           });
           const startDocument = await startResponse.json().catch(() => null);
           const authorization = startDocument && startDocument.authorization;
           const redirect = startResponse.ok && authorization &&
-            authorization.connector_id === deps.GOOGLE_CALENDAR_CONNECTOR
+            authorization.connector_id === GOOGLE_CALENDAR_CONNECTOR
             ? deps.reviewedGoogleAuthorizationUrl(authorization.authorization_url)
             : null;
           if (!redirect) ticketErrorKey = deps.connectorTicketErrorKey(startDocument, ticketErrorKey);
@@ -194,7 +199,7 @@
         renderCalendarReadState();
         if (deps.connectorsError) deps.connectorsError.hidden = true;
         try {
-          const response = await deps.fetch(deps.GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT, {
+          const response = await deps.fetch(GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT, {
             method: "POST",
             headers: { "Accept": "application/json", "Content-Type": "application/json" },
             body: JSON.stringify({}),

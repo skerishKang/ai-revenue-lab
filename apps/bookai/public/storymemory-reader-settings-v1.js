@@ -28,7 +28,18 @@
     catch(e){try{BookAIStorage.removeItem(KEY);}catch(e2){}return null;}
   }
   function save(){try{BookAIStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
-  var state=load()||JSON.parse(JSON.stringify(DEFAULTS));
+  // #7836: a Korean first visit starts with 한글만; English screens keep the
+  // previous compact default. A stored choice always wins over either default.
+  function uiLanguage(){
+    try{var q=new URLSearchParams(location.search).get('lang');if(q==='en'||q==='ko')return q;}catch(_){}
+    return String(document.documentElement.lang||'ko').slice(0,2).toLowerCase()==='en'?'en':'ko';
+  }
+  function defaultSettings(){
+    var d=JSON.parse(JSON.stringify(DEFAULTS));
+    if(uiLanguage()==='ko')d.englishMode='hide';
+    return d;
+  }
+  var state=load()||defaultSettings();
   function apply(){
     var root=document.documentElement,body=document.body;
     root.style.setProperty('--font-bible',FONTS[state.font]);
@@ -63,6 +74,17 @@
       seg.appendChild(b);
     });
     row.appendChild(seg);return row;
+  }
+  /* #7837: 이름만으로 뜻을 알기 어려운 항목에는 한 줄 설명을 붙인다. */
+  function noteRow(row,text){
+    var n=document.createElement('small');n.className='srsg-desc';n.textContent=text;
+    row.appendChild(n);return row;
+  }
+  function readingModeOption(opt){
+    var b=document.createElement('button');b.type='button';b.dataset.value=opt[0];
+    var lb=document.createElement('span');lb.className='srsg-opt-lb';lb.textContent=opt[1];
+    var nt=document.createElement('small');nt.className='srsg-opt-note';nt.textContent=opt[2];
+    b.append(lb,nt);return b;
   }
   function themeRow(){
     var row=document.createElement('div');row.className='srsg-row';
@@ -99,8 +121,9 @@
     var row=document.createElement('div');row.className='srsg-row';
     var lb=document.createElement('div');lb.className='srsg-label';lb.id='srsg-label-readingMode';lb.textContent='읽기 방식';row.appendChild(lb);
     var seg=document.createElement('div');seg.className='srsg-seg';seg.dataset.field='readingMode';seg.setAttribute('role','group');seg.setAttribute('aria-labelledby',lb.id);
-    [['browse','찾아보며 읽기'],['first_read','처음 읽어요']].forEach(function(opt){
-      var b=document.createElement('button');b.type='button';b.dataset.value=opt[0];b.textContent=opt[1];
+    [['browse','찾아보며 읽기','어느 장이든 먼저 펼쳐 볼 수 있고, AI도 전체 내용을 참고합니다.'],
+     ['first_read','처음 읽어요','읽은 곳까지만 넘기고, AI는 아직 안 읽은 내용을 접어 둡니다.']].forEach(function(opt){
+      var b=readingModeOption(opt);
       b.onclick=function(){
         if(window.storyMemorySetReadingModeV1)window.storyMemorySetReadingModeV1(currentReadingModeWorkKey(),opt[0]);
         syncReadingModeRow();
@@ -145,13 +168,13 @@
     head.appendChild(hb);head.appendChild(hx);panel.appendChild(head);
     panel.appendChild(segRow('글꼴','font'));
     panel.appendChild(segRow('글자 크기','fontSize'));
-    panel.appendChild(segRow('줄 간격','lineHeight'));
+    panel.appendChild(noteRow(segRow('줄 간격','lineHeight'),'본문 줄 사이를 넓게 또는 좁게 조절합니다.'));
     panel.appendChild(themeRow());
-    panel.appendChild(segRow('번역본 표시','englishMode'));
+    panel.appendChild(noteRow(segRow('영어 함께 보기','englishMode'),'본문 아래에 영어 원문을 함께 보여 줍니다. 기본은 한글만이라 영어를 숨깁니다.'));
     panel.appendChild(segRow('절 번호','verseNumbers'));
     panel.appendChild(readingModeRow());
     var reset=document.createElement('button');reset.type='button';reset.className='srsg-reset';reset.textContent='기본값으로 초기화';
-    reset.onclick=function(){state=JSON.parse(JSON.stringify(DEFAULTS));try{BookAIStorage.removeItem(KEY);}catch(e){}apply();};
+    reset.onclick=function(){state=defaultSettings();try{BookAIStorage.removeItem(KEY);}catch(e){}apply();};
     panel.appendChild(reset);
     gear.onclick=function(e){
       e.stopPropagation();
@@ -259,6 +282,6 @@
     stage.appendChild(ovBtn);stage.appendChild(ovMenu);stage.appendChild(panel);
     syncPanel();
   }
-  function init(){buildUI();apply();window.__smReaderSettingsV1={version:'1',key:KEY,defaults:DEFAULTS,get:function(){return JSON.parse(JSON.stringify(state));},apply:apply};}
+  function init(){buildUI();apply();window.__smReaderSettingsV1={version:'1',key:KEY,defaults:defaultSettings(),get:function(){return JSON.parse(JSON.stringify(state));},apply:apply};}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

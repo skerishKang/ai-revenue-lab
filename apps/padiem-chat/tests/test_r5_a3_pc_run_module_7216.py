@@ -8,12 +8,14 @@ pcRunModule() 팩토리 호출만 유지한다.
 """
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
 from pathlib import Path
 
 import pytest
+from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -70,14 +72,76 @@ def test_index_loads_pc_run_module_before_app() -> None:
     assert INDEX.index("./chat-pc-run-module.js") < INDEX.index("./app.js")
 
 
-def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
+def test_app_registers_pc_run_and_has_no_forwarders() -> None:
+    assert 'app.provide("pcRun", window.PadiemChatPcRunModule.create(Object.setPrototypeOf({' in APP
     for name in NAMES:
-        prefix = "async function" if name in ASYNC_NAMES else "function"
-        line = f"{prefix} {name}(...a) {{ return pcRunModule().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
+        assert f"function {name}(" not in APP, name
+        assert f"{name}," in MODULE, name
     assert "function pcRunModule() {" in APP
-    assert "window.PadiemChatPcRunModule.create({" in APP
+    assert "window.PadiemChatPcRunModule.create(Object.setPrototypeOf({" in APP
+
+
+def test_pc_run_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("pcRun"))로 7개 이름을 조회한다.
+
+    app.js 전달 함수가 없어도 호출자(복구 절편·deps getter)는 등록된 조각의
+    같은 이름 API에 도달한다.
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    documentElement: { lang: "ko" },
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, setAttribute() {} }),
+  },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-pc-run-module.js", "utf8"), sandbox,
+  { filename: "chat-pc-run-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("pcRun", window.PadiemChatPcRunModule.create(app));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines() -> None:
@@ -90,11 +154,11 @@ def test_moved_bodies_live_only_in_the_module_and_module_stays_under_500_lines()
 
 
 def test_deps_getters_and_setters_match_exact_closure_surface() -> None:
-    start = APP.index("window.PadiemChatPcRunModule.create({")
-    block = APP[start:APP.index("});", start)]
+    block = create_receives_app_context(APP, "window.PadiemChatPcRunModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert gets == EXPECTED_GETTERS
+    assert gets <= EXPECTED_GETTERS
+    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
     assert sets == set()
 
 

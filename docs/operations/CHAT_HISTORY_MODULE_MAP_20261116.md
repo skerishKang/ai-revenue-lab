@@ -113,3 +113,152 @@
 - A의 고정 열 판정 2개 이름(`_PINNED_COLUMN_MISSING`, `_pinned_column_missing`) → `history_pinned.py`(16줄). 외부 사용 0파일이며 내부 호출 3곳에만 쓴다.
 
 `history.py` 4,532줄 → 4,484줄, 상한 4,632 → 4,584줄. 두 새 모듈은 모두 500줄 목표를 만족한다. `is_multi_command_action`·`MULTI_COMMAND_RUN_ACTIONS`과 `_lane_*`는 이번에 남긴다.
+
+## 8. O 구역 재측정과 H6 분할 계획 (T3, #7813)
+
+기준: H4·H5-1·H5-2가 머지된 최신 main(`b421195a`). `history.py` **2,411줄**,
+`D1HistoryStore` 자체 메서드 **51개**, `D1HistoryStore` 본문 2,281줄.
+
+재측정한 O 구역(§1의 O와 같은 정의)은 `record_txt_pending_run`(226줄)부터
+`get_local_task_correlation`(1,507줄)까지 **1,282줄**이다. 바로 앞의
+`get_oracle_mesh_dispatch_pin`~`_run_is_owned`(134–224줄)는 예전 L 구역 잔여물로
+보고 이번 O 분할에서 제외했다. 900줄을 넘으므로 두 묶음으로 나눈다.
+
+| 단계 | 줄 범위(이동 전 기준) | 메서드 | 줄 수 | 대상 클래스·파일 |
+|---|---|---|---|---|
+| H6-1 | 226–1011 | `record_txt_pending_run`~`get_claw_run_result` 21개 | 786 | `RunStore(StoreCore)` / `history_store_runs.py` |
+| H6-2 | 1013–1507 | `append_command_result`~`get_local_task_correlation` 6개 | 495 | `RunStore` 연속(다음 PR) |
+
+두 묶음 모두 300~900줄 범위다. H6-1에서 옮긴 본문은 글자 그대로이고 바뀐 것은
+import와 클래스 머리뿐이다. 새 파일은 `history.py`를 모듈 수준에서 import 하지 않는다.
+
+### 실행 기록 메서드 호출처
+
+| 호출 경로 | 호출처 파일·함수 | 부르는 O 메서드 |
+|---|---|---|
+| `claw_general_execute` | `claw_general_routes.py::claw_general_execute` → `_confirmed_staged_pc_command`(1442줄), `_confirmed_staged_desktop_type`(1602줄) | `list_recent_claw_runs` |
+| PC 디스패치 | `chat_pc_drive.py::_append_lane_answer`(1643줄), `_append_lane_notice`(1687줄) | `get_claw_run` |
+| PC 디스패치 | `chat_pc_session.py`(309–332줄) | `begin_chat_stream_turn`, `record_claw_run`, `list_recent_claw_runs`, `get_claw_run` |
+| `oracle_mesh_read_result` | `oracle_mesh_read_return_routes.py::oracle_mesh_read_result`(3325줄) | `get_claw_run` |
+
+호출처는 모두 `app.history`의 `D1HistoryStore`를 쓰므로 경로·이름 변경이 없다.
+
+### O 구역 의존 표 (H6-1 기준)
+
+| 구분 | 이름 | 위치 |
+|---|---|---|
+| StoreCore 도우미 | `_first`, `_run`, `_all`, `_dispatch`, `_verified`, `_put_full_message`, `_delete_full_keys`, `_delete_orphan_full_keys`, `_read_full_message`, `_context_key` | `history_store_core.py::StoreCore` |
+| StoreCore 속성 | `db`, `run_ownership`, `full_context_bucket`, `mesh_command_output_max_bytes` | `StoreCore.__init__` |
+| 다른 영역 호출(나중에 풀 대상) | `get_conversation` | `history_store_conversations.py::ConversationStore`(N) |
+| 다른 영역 호출(나중에 풀 대상) | `get_local_task_correlation` | `history.py`의 O H6-2 묶음(다음 PR) |
+| 메서드 안쪽 지역 import | `_append_lane_answer`, `result_message_id` | `chat_pc_drive.py`, `claw_local_task_result_projection.py`(실행 시점, 모듈 수준 순환 없음) |
+
+### H6-1 이동 결과
+
+`history.py` 2,411줄 → **1,625줄**(상한 2,511 → 1,725), `D1HistoryStore` 본문 2,281줄 →
+**1,494줄**, 자체 메서드 51개 → **30개**. `history_store_runs.py`는 **841줄**로
+1,000줄 미만이다. `PUBLIC_NAMES`(H4 시험, 집합 수정 없음)와 전후 sqlite 흐름
+(생성·재기록·상태 변경·조회·만료, 같은 행·같은 순서)이 그대로 통과한다.
+`record_claw_run`의 기존 행 `updated_at` 갱신(#7885 TTL 의존)도 유지되며, 이 줄을
+빼면 시험이 실패한다.
+
+### H6-2 이동 결과와 클래스 선택 근거
+
+남은 O 구역 6개 메서드(495줄)는 `RunStore`에 이어 붙이지 않고 별도
+`RunEventStore(StoreCore)` / `history_store_run_events.py`(519줄)로 옮긴다.
+
+- **파일 상한**: `history_store_runs.py`가 이미 841줄이다. 495줄을 이어 붙이면
+  1,336줄이 되어 "새 파일 1,000줄 미만" 규칙을 어긴다. 별도 파일이면 두 파일 모두
+  1,000줄 미만이다.
+- **의존 방향이 한쪽이다**: H6-2의 6개 메서드는 `StoreCore` 도우미(`_first`, `_run`,
+  `_all`, `_dispatch`)와 `self.db`, 그리고 H6-2 내부 메서드만 쓴다. `RunStore`(H6-1)를
+  부르는 곳이 0곳이므로 `RunEventStore`는 `StoreCore`만 상속하는 독립 클래스로 둘 수
+  있다. 반대로 H6-1의 `get_claw_run_result`·`get_claw_run_result_message`는
+  `get_local_task_correlation`을 부른다. 이 역방향 호출은 `D1HistoryStore` 조합
+  (`RunStore, RunEventStore, …`)의 MRO로 해결하고, 영역 클래스끼리는 서로 상속하지
+  않는다.
+- **응집**: H6-1은 실행의 생성·조회·상태, H6-2는 명령/로컬 작업 결과 기록과
+  상관관계(append·seal·correlation)다. 합성 이름으로 경계를 분명히 한다.
+
+`D1HistoryStore(RunStore, RunEventStore, ConversationStore, AccountStore, ApprovalHandoffStore)`.
+`history.py` 1,625줄 → **1,130줄**(상한 1,725 → 1,230), `D1HistoryStore` 본문
+1,494줄 → **998줄**, 자체 메서드 30개 → **24개**. `PUBLIC_NAMES` 무수정 통과,
+전후 sqlite 비교(상관관계 생성·재기록·evidence 보완·충돌 거부, run 확정, 같은
+행·같은 순서) 통과, `seal_run_terminal`의 `updated_at` 갱신 제거 시 시험 실패·원복
+후 바이트 동일.
+
+## 9. 잔여 구역 분류와 H7 계획 (T3, #7813)
+
+기준: H6-2 머지 후 main(`be48cb24`). `history.py` **1,130줄**, `D1HistoryStore`
+자체 메서드 **24개**(본문 998줄). 남은 것은 아래 세 부류뿐이다.
+
+| 구분 | 줄(현재) | 내용 | 다음 처리 |
+|---|---|---|---|
+| 진입점·재수출 | 1–135 | import와 `D1HistoryStore` 클래스 머리 | H8에서 유지(재수출 경로 불변) |
+| P 보조(예전 L 잔여) | 136–226 | `get_oracle_mesh_dispatch_pin`, `get_oracle_mesh_run_correlation`, `get_oracle_mesh_run_command`, `get_oracle_mesh_run_open_state`, `_mesh_dispatch_pin`, `_run_is_owned` 6개(91줄) | P2 직후 또는 H8에서 검토 |
+| P. 메시 배포 원자 | 228–1129 | 디스패치 생성·청구·소비·원본 보관·열림 상태 18개(902줄) | **H7에서 2개 PR로 분리** |
+
+P 구역이 900줄을 조금 넘으므로 issue #7813 계획대로 둘로 나눈다(각 300~900줄).
+
+| 단계 | 줄 범위 | 메서드 | 줄 수 | 대상 클래스·파일 |
+|---|---|---|---|---|
+| H7-1 | 228–695 | `create_oracle_mesh_dispatch`~`oracle_mesh_node_live_claims` 8개 | 468 | `MeshDispatchStore(StoreCore)` / `history_store_mesh.py` |
+| H7-2 | 698–1129 | `oracle_mesh_lane_status`~`get_oracle_mesh_dispatch_for_owner` 10개 + `LANE_STATUS_NODE_LIMIT` | 432 | `MeshDispatchStore` 연속(다음 PR) |
+
+`LANE_STATUS_NODE_LIMIT`(698–701줄)은 `oracle_mesh_lane_status`가 기본값으로 쓰는
+공개 상수이므로 H7-1에서 옮기지 않고 `history.py`에 남긴다. H7-1의 8개 메서드는
+`StoreCore` 도우미(`_first`, `_run`)만 쓰고, `create_oracle_mesh_dispatch`만 예전 L
+잔여물인 `_run_is_owned`을 부른다(조합 MRO로 해결, 본문 수정 없음). H7-2 메서드를
+부르는 곳은 0곳이다. 두 PR이 끝나면 `history.py`는 약 230줄로 H8 목표(300줄 이하)를
+만족하므로 분리를 계속 진행한다.
+
+### H7-1 이동 결과
+
+8개 메서드를 본문 글자 그대로 `history_store_mesh.py::MeshDispatchStore(StoreCore)`로
+옮겼고(492줄), import와 클래스 머리만 바뀌었다. 새 파일은 `history.py`를 모듈 수준에서
+import 하지 않는다. `D1HistoryStore(RunStore, RunEventStore, MeshDispatchStore,
+ConversationStore, AccountStore, ApprovalHandoffStore)`.
+
+`history.py` 1,130줄 → **661줄**(상한 1,230 → 761), `D1HistoryStore` 본문 998줄 →
+**528줄**, 자체 메서드 24개 → **16개**. `PUBLIC_NAMES` 무수정 통과, MRO·중복·의존
+시험 통과. 실제 sqlite 전후 비교(디스패치 생성 → 최소 대기 조회 → 청구 → 갱신 →
+노드 생존 조회 → 취소 → 정리, 같은 행·같은 순서) 통과. 생성 시 초기 상태를
+`"pending"`이 아닌 값으로 바꾸면 시험이 실패하고, 원복 후 바이트 동일.
+
+H7-2(남은 10개 메서드 + `LANE_STATUS_NODE_LIMIT`, 432줄)와 H8 마무리가 남았다.
+H7-2까지 끝나면 `history.py`는 약 229줄이 되어 H8 목표(300줄 이하)에 도달한다.
+
+### H7-2 이동 결과와 합치기 선택
+
+`history_store_mesh.py`가 492줄이므로 432줄을 합쳐도 924줄로 1,000줄 미만이다.
+새 모듈을 만들지 않고 같은 `MeshDispatchStore(StoreCore)`에 이어 붙였다(최종 927줄).
+본문 글자 그대로이고 import와 클래스 머리만 바뀌었다. `LANE_STATUS_NODE_LIMIT`도
+함께 옮겨 기본값 참조가 그대로 동작한다.
+
+역시 재수출 경로를 유지하기 위해 `history.py`의 `__all__`에 옮겨진 이름들을 고정했다.
+pyflakes 결과는 main과 같은 254건이며, `undefined name 'verified'` 1건이 해당
+모듈 위치로 옮겨간 것만 다르다. 5895의 동결 시계는 이미 `history_store_mesh`를
+바꿔치기하므로 추가 수정이 없었다.
+
+`history.py` 661줄 → **237줄**(상한 761 → 337), `D1HistoryStore` 본문 528줄 →
+**96줄**, 자체 메서드 16개 → **6개**. `PUBLIC_NAMES` 무수정 통과, MRO·중복·의존
+시험 통과. 실제 sqlite+R2 전후 비교(디스패치 생성 → 노드 상태 → 청구 → 첫 결과
+고정 → 원본 저장/조회 → 소유자 조회 → 소비 → 확정, 같은 행·같은 순서) 통과.
+확정 상태를 `outcome`이 아닌 고정값으로 바꾸면 시험이 실패하고, 원복 후 바이트
+동일.
+
+## 10. H8 마무리 — 잔여 구역과 T3 마감 제안
+
+H7-2 후 `history.py`는 237줄(진입점·재수출 135줄 + L 잔여 6개 메서드)로 #7813의
+목표 **300줄 이하**를 이미 달성했다. `D1HistoryStore` 본문도 96줄·자체 메서드
+6개뿐이다.
+
+| 구분 | 내용 | 처리 |
+|---|---|---|
+| 진입점·재수출 | import, `__all__`, `D1HistoryStore` 조합, 공개 이름 재수출 | 유지(경로 불변) |
+| L 잔여 | `get_oracle_mesh_dispatch_pin`, `get_oracle_mesh_run_correlation`, `get_oracle_mesh_run_command`, `get_oracle_mesh_run_open_state`, `_mesh_dispatch_pin`, `_run_is_owned` 6개(약 90줄) | 더 나눌 이득이 없음 — P2·H7-1이 이미 이 조합을 경유하고, 300줄 이하 목표 달성 |
+
+따라서 **추가 분리 PR 없이 T3를 마감**할 것을 #7813에 제안한다. 남은 6개는
+메시 디스패치 읽기 보조로 `__all__` 재수출경로까지 이미 고정되어 있어, 옮기면
+시험·호출경로만 흔들리고 줄 수 목표에는 변화가 없다. 최종 가드
+(`history_py_lines` 237, 상한 337)와 `PUBLIC_NAMES`가 함께 유지된다.

@@ -34,6 +34,11 @@
   const INSTALL_EXE = "/api/pc/pairings/install-exe";
   const INSTALL_EXE_FILENAME = "padiem-pc-connect.exe";
   const LABEL_SUFFIX = "/label";
+  const CODE_ID_HEADER = "X-PC-Pairing-Code-Id";
+  const EXPIRY_HEADER = "X-PC-Pairing-Expires-At";
+  // #7962: the 10-minute clock and the code states that end a wait live in one
+  // shared module so this card and the 내 컴퓨터 guide cannot drift apart.
+  const deadlineApi = () => window.PadiemPcInstallDeadline;
   const MAX_RESPONSE_BYTES = 32768;
   // Twelve seconds is right for a server answer and wrong for a 20-kilobyte program
   // a person may be pulling over an office connection.
@@ -60,6 +65,10 @@
       step2: "Windows가 '알 수 없는 게시자' 창을 보여 주면 [추가 정보]를 누른 뒤 [실행]을 누르세요.",
       step3: "사용자 계정 컨트롤에서 [예]를 누르면 설치와 서버 연결이 한 번에 끝납니다.",
       wait: "연결을 확인하고 있습니다 — 몇 초마다 자동으로 확인합니다.",
+      deadline: "이 파일은 받은 뒤 10분 안에 실행하세요.",
+      remaining: "남은 시간 {time}",
+      expired: "설치 파일 시간이 지났어요 — 새 파일을 받아 10분 안에 다시 실행해 주세요",
+      redownload: "다시 받기",
       connectScript: "설치 파일로 받기 (.ps1)",
       connectingScript: "PowerShell 설치 파일을 준비하고 있습니다.",
       alternateSummary: "다른 설치 방법",
@@ -116,6 +125,10 @@
       step2: "If Windows warns about an unknown publisher, choose More info, then Run.",
       step3: "Choose Yes on the user-account prompt and the install and pairing finish together.",
       wait: "Checking the connection — re-checked automatically every few seconds.",
+      deadline: "Run this file within 10 minutes of downloading it.",
+      remaining: "Time left {time}",
+      expired: "The install file has expired — download a new file and run it within 10 minutes.",
+      redownload: "Download again",
       connectScript: "Download the PowerShell file (.ps1)",
       connectingScript: "Preparing the PowerShell install file.",
       alternateSummary: "Other install methods",
@@ -161,7 +174,6 @@
       installReprepared: "A new install file is ready. Please run the downloaded file.",
     },
   });
-
   // #6695 PR-4: the install-management strings are owned by locale.js, so the
   // page's language switch reaches them like every other shared string. The
   // local COPY stays the fallback for a page that loads this card alone.
@@ -203,7 +215,6 @@
     if (text !== undefined) node.textContent = String(text);
     return node;
   }
-
   async function request(url, options) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -244,7 +255,9 @@
         text: raw,
         // Which install this download minted, so the owner can cancel or
         // replace exactly this one. A code id is not a possession proof.
-        codeId: response.headers.get("X-PC-Pairing-Code-Id"),
+        codeId: response.headers.get(CODE_ID_HEADER),
+        // The server's own deadline, so the countdown is not a browser guess.
+        expiresAt: response.headers.get(EXPIRY_HEADER),
       };
     } catch (networkError) {
       return { ok: false, code: null, status: 0, body: null, text: "", codeId: null };
@@ -315,7 +328,9 @@
         code: null,
         // Which install this download minted, so the owner can cancel or
         // replace exactly this one. A code id is not a possession proof.
-        codeId: response.headers.get("X-PC-Pairing-Code-Id"),
+        codeId: response.headers.get(CODE_ID_HEADER),
+        // The server's own deadline, so the countdown is not a browser guess.
+        expiresAt: response.headers.get(EXPIRY_HEADER),
       };
     } catch (networkError) {
       return { ok: false, status: 0, code: null, codeId: null };
@@ -343,6 +358,17 @@
     stepsList.append(step1, step2, step3);
     const wait = element("p", "pc-pairing-wait", t.wait);
     wait.hidden = true;
+    // The countdown and the recovery sentence ride the classes the card already
+    // has, so the sheet gains no rule for them; the extra name is only a hook.
+    const deadline = element("p", "pc-pairing-wait pc-pairing-deadline");
+    deadline.hidden = true;
+    const expiredText = element("p", "pc-pairing-status pc-pairing-expired-copy", t.expired);
+    expiredText.dataset.state = "error";
+    expiredText.hidden = true;
+    const redownload = element(
+      "button", "pc-pairing-redownload connector-retry", t.redownload);
+    redownload.type = "button";
+    redownload.hidden = true;
     // #6695 PR-4: an install this account handed out can still be cancelled or
     // replaced. The two controls appear only after a download landed, and the
     // token they act on never appears here - it lives inside the file itself.
@@ -355,7 +381,8 @@
       "button", "pc-pairing-install-reprepare connector-retry", t.installReprepare);
     reprepareInstallButton.type = "button";
     installTools.append(cancelInstallButton, reprepareInstallButton);
-    steps.append(stepsTitle, stepsList, wait, installTools);
+    steps.append(stepsTitle, stepsList, wait, deadline, expiredText, redownload,
+      installTools);
     // The script lane is the same pairing for a PC where policy blocks the
     // program; it is one disclosure away instead of a second offer.
     const alternate = element("details", "pc-pairing-alternate");
@@ -376,7 +403,8 @@
     section.append(heading, help, connectButton, steps, alternate, status, list, issueButton);
     card.append(section);
     return {
-      section, heading, help, connectButton, steps, stepsTitle, wait, status, list,
+      section, heading, help, connectButton, steps, stepsTitle, deadline, wait,
+      expiredText, redownload, status, list,
       scriptButton, issueButton, alternate, installTools,
       cancelInstallButton, reprepareInstallButton,
     };
@@ -445,6 +473,7 @@
     nameCancel.type = "button";
     editor.append(nameField, nameSave, nameCancel);
     row.append(name, state, menu, editor);
+    window.PadiemPcShareApproval?.mount(row, link, actions.shareApproved);
 
     toggle.addEventListener("click", () => {
       const opening = panel.hidden;
@@ -486,21 +515,85 @@
     let t = locale();
     const view = install(card, t);
     let lastLinks = [];
+    let lastCodes = [];
     let poll = null;
-    // The install this card handed out most recently: a code id and the lane it
-    // was downloaded through (program or script). The token itself is inside
-    // the file and never held or rendered here.
+    let deadlineTimer = null;
+    // The install this card handed out most recently: a code id, the lane it
+    // was downloaded through (program or script), and the server's deadline.
+    // The token itself is inside the file and never held or rendered here.
     let activeInstall = null;
 
-    function rememberInstall(codeId, lane) {
+    function clearDeadline() {
+      if (deadlineTimer) clearInterval(deadlineTimer);
+      deadlineTimer = null;
+      view.deadline.hidden = true;
+    }
+
+    // The recovery sentence and its 다시 받기 button ride the card's own classes,
+    // so they are shown and hidden as a pair instead of through a new rule.
+    function setExpired(on) {
+      view.expiredText.hidden = !on;
+      view.redownload.hidden = !on;
+    }
+
+    function activeInstallIsDead() {
+      const api = deadlineApi();
+      return Boolean(api) && api.isDead(api.findCode(lastCodes, activeInstall?.codeId));
+    }
+
+    function paintDeadline() {
+      if (!activeInstall) return;
+      const api = deadlineApi();
+      const left = api ? api.secondsLeft(activeInstall.expiresAt) : null;
+      if (left === null) {
+        view.deadline.textContent = t.deadline; view.deadline.hidden = false; return;
+      }
+      if (left <= 0) { showExpired(); return; }
+      view.deadline.textContent = t.deadline + " "
+        + t.remaining.replace("{time}", api.formatRemaining(left));
+      view.deadline.hidden = false;
+    }
+
+    function showExpired() {
+      stopPoll();
+      clearDeadline();
+      view.steps.hidden = false;
+      view.wait.hidden = true;
+      setExpired(true);
+      // #7962: the green "downloaded" line and the cancel/re-prepare controls
+      // contradict a dead file; only 다시 받기 stays, as in the modal, until a
+      // fresh file in rememberInstall() brings them back.
+      view.status.hidden = true;
+      view.installTools.hidden = true;
+      view.expiredText.textContent = t.expired;
+      view.redownload.textContent = t.redownload;
+      view.redownload.disabled = false;
+    }
+
+    function rememberInstall(codeId, lane, expiresAt) {
       if (typeof codeId !== "string" || !codeId) return;
-      activeInstall = { codeId, lane };
+      activeInstall = {
+        codeId,
+        lane,
+        expiresAt: typeof expiresAt === "string" && expiresAt ? expiresAt : null,
+      };
       view.installTools.hidden = false;
+      view.status.hidden = false;
+      setExpired(false);
+      clearDeadline();
+      paintDeadline();
+      // Only a server deadline is worth ticking down; an unstamped install
+      // keeps the one static sentence and no timer.
+      if (view.expiredText.hidden && deadlineApi()?.isStamped(activeInstall.expiresAt)) {
+        deadlineTimer = setInterval(paintDeadline, 1000);
+      }
     }
 
     function forgetInstall() {
       activeInstall = null;
+      clearDeadline();
       view.installTools.hidden = true;
+      setExpired(false);
     }
 
     const say = (ok, text, code) => {
@@ -509,6 +602,7 @@
       if (code) view.status.dataset.code = code;
       else delete view.status.dataset.code;
     };
+    view.redownload.addEventListener("click", () => { void actions.reprepareInstall(); });
 
     function closeMenus() {
       for (const panel of view.section.querySelectorAll(".pc-pairing-menu-panel")) {
@@ -560,7 +654,14 @@
           say(true, label ? `${t.connectedDone} (${label})` : t.connectedDone);
           return;
         }
-        if (handle.rounds >= POLL_MAX_ROUNDS) stopPoll();
+        if (activeInstallIsDead()) {
+          showExpired();
+          return;
+        }
+        if (handle.rounds >= POLL_MAX_ROUNDS) {
+          stopPoll();
+          clearDeadline();
+        }
       };
       handle.id = setInterval(tick, Number(window.PADIEM_PC_PAIRING_POLL_MS) || POLL_INTERVAL_DEFAULT_MS);
       poll = handle;
@@ -569,7 +670,8 @@
 
     async function load(silent) {
       if (window.PadiemAuthGate?.authenticated() === false) {
-        lastLinks = []; view.list.replaceChildren(); say(false, t.login); return;
+        lastLinks = []; lastCodes = [];
+        view.list.replaceChildren(); say(false, t.login); return;
       }
       if (!silent) say(true, t.loading);
       const result = await request(PAIRINGS, { method: "GET" });
@@ -579,6 +681,7 @@
         return;
       }
       lastLinks = Array.isArray(result.body?.links) ? result.body.links : [];
+      lastCodes = Array.isArray(result.body?.codes) ? result.body.codes : [];
       draw();
       if (!silent) say(true, "");
     }
@@ -601,13 +704,14 @@
     }
 
     const actions = {
+      async shareApproved() { await load(true); say(true, t.approved); },
       async connect() {
         stopPoll();
         closeMenus();
         say(true, t.connecting);
         const program = await downloadProgram(INSTALL_EXE, INSTALL_EXE_FILENAME, {});
         if (program.ok) {
-          rememberInstall(program.codeId, "exe");
+          rememberInstall(program.codeId, "exe", program.expiresAt);
           view.steps.hidden = false;
           await load(true);
           say(true, t.connected);
@@ -638,7 +742,7 @@
           return false;
         }
         saveFile(INSTALL_FILENAME, result.text);
-        rememberInstall(result.codeId, "script");
+        rememberInstall(result.codeId, "script", result.expiresAt);
         view.steps.hidden = false;
         await load(true);
         say(true, t.connected);
@@ -671,6 +775,7 @@
       // owner once again holds a file that works.
       async reprepareInstall() {
         if (!activeInstall) return;
+        stopPoll();
         say(true, t.connecting);
         const reused = activeInstall.lane;
         const result = await request(
@@ -706,14 +811,14 @@
             return;
           }
           saveFile(INSTALL_FILENAME, file.text);
-          rememberInstall(file.codeId, "script");
+          rememberInstall(file.codeId, "script", file.expiresAt || pairing.expires_at);
         } else {
           const program = await downloadProgram(INSTALL_EXE, INSTALL_EXE_FILENAME, payload);
           if (!program.ok) {
             say(false, messageFor(program, t), program.code || undefined);
             return;
           }
-          rememberInstall(program.codeId, "exe");
+          rememberInstall(program.codeId, "exe", program.expiresAt || pairing.expires_at);
         }
         view.steps.hidden = false;
         await load(true);
@@ -865,6 +970,9 @@
       view.connectButton.textContent = t.connect;
       view.stepsTitle.textContent = t.stepsTitle;
       view.wait.textContent = t.wait;
+      view.expiredText.textContent = t.expired;
+      view.redownload.textContent = t.redownload;
+      if (activeInstall) paintDeadline();
       view.scriptButton.textContent = t.connectScript;
       view.issueButton.textContent = t.issue;
       view.cancelInstallButton.textContent = t.installCancel;
@@ -874,7 +982,7 @@
       attributes: true, attributeFilter: ["lang"],
     });
     if (surfaceOpen()) void load();
-    return actions;
+    return Object.assign(actions, { reload: () => { if (surfaceOpen()) void load(true); } });
   }
 
   if (typeof window === "undefined" || typeof document === "undefined") return;

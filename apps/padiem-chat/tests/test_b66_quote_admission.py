@@ -17,7 +17,7 @@ from app.b66_registered_model_boundary import (
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
 from app.usage_gate import UsageGate
 from test_b66_quote_execution_guards import Binding, MODEL
-from test_b66_quote_runtime import SAVED_ID, USER_A, _Store, _settings
+from _support.quote_runtime import SAVED_ID, USER_A, _Store, _settings
 from test_b66_registered_model_boundary import FakeTrustedResolver, approved_route
 from test_dispatch_quota_refund import RefundableMemoryStore
 
@@ -44,7 +44,7 @@ def client_for(*, binding=None, resolver=None, interpreter=None, **overrides):
     app.state.usage_gate = UsageGate(settings, DispatchAwareUsageCounterStore(store),
         clock=lambda: datetime(2026, 10, 8, tzinfo=timezone.utc))
     client = TestClient(app, base_url="https://chat.example.test")
-    client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER_A),
+    client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER_A, canonical_session_id="session_test_a"),
         domain="chat.example.test", path="/")
     return client, store, resolver, binding
 

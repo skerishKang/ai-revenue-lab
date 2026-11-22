@@ -836,7 +836,9 @@ def serve_pipe(*, device_id: str, secret: bytes, listener: Listener | None = Non
                runner: Runner = run_process, max_requests: int | None = None,
                should_stop: Callable[[], bool] | None = None,
                sessions: SessionManager | None = None,
-               peer_verifier: Callable[[Connection], str | None] | None = None) -> ServeStats:
+               peer_verifier: Callable[[Connection], str | None] | None = None,
+               update_requested: Callable[[], bool] | None = None,
+               announce_ready: Callable[[], None] | None = None) -> ServeStats:
     """Accept and serve requests until stopped.
 
     ``max_requests`` and ``should_stop`` exist so a test can run the real loop
@@ -886,9 +888,16 @@ def serve_pipe(*, device_id: str, secret: bytes, listener: Listener | None = Non
             if should_stop is not None and should_stop():
                 break
             with counter_lock:
+                # No accept after the idle decision; existing workers and live
+                # interactive sessions must be allowed to finish first.
+                if (update_requested is not None and update_requested()
+                        and in_flight[0] == 0 and not session_manager.has_live_sessions()):
+                    break
                 begun = stats.served + stats.refused + in_flight[0]
             if max_requests is not None and begun >= max_requests:
                 break
+            if announce_ready is not None:
+                announce_ready()
             try:
                 connection = active.accept(ACCEPT_POLL_SECONDS)
             except UserHelperError as refused:
@@ -951,8 +960,21 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         secret = load_secret(args.secret_file)
+        from .user_helper_update_signal import announce_ready, update_requested
+        from .user_helper_update_notice import windows_notice
+
+        notice = windows_notice() if sys.platform == "win32" else lambda: None
+
+        def ready_and_notice():
+            announce_ready()
+            try:
+                notice()
+            except Exception:
+                pass
+
         stats = serve_pipe(device_id=args.device_id, secret=secret,
-                           max_requests=args.max_requests)
+                           max_requests=args.max_requests, update_requested=update_requested,
+                           announce_ready=ready_and_notice)
     except UserHelperError as refused:
         detail = f" {refused.detail}" if refused.detail else ""
         print(f"refused:{refused.code}{detail}", file=sys.stderr)

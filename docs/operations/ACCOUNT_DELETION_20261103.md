@@ -97,6 +97,9 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | claw_github_connections | 046 | FK CASCADE 선언, 명시 삭제 |
 | platform_admin_roles | 052 | FK CASCADE 선언, 명시 삭제(관리자는 애초에 경로가 거부) |
 | chat_custom_provider_credentials | 053 | FK CASCADE 선언, 명시 삭제 — BYOK 키 행 |
+| byok_call_usage | 124 | BYOK 호출 사용 기록, 소유자 범위 명시 삭제 — 키 값·대화 내용 없음 |
+| byok_probe_windows | 125 | BYOK 키 확인 상한 창, 소유자 범위 명시 삭제 — 키 값·일부 없음 |
+| ai_tester_intro | 126 | AI 명예회원 소개(나이대·하는 일·기기), 소유자 범위 명시 삭제 — 사람 계정은 행 없음 |
 | claw_pc_device_selection | 054 | FK CASCADE 선언, 명시 삭제 |
 | claw_meetings | 055 | FK CASCADE 선언, 명시 삭제 |
 | claw_meeting_artifacts | 056 | FK CASCADE 선언, 명시 삭제 |
@@ -110,6 +113,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | pc_pairing_codes | 072 | FK 없음 → 명시 삭제 |
 | pc_install_tokens | 093 | 토큰 해시와 user_id만 저장 → 명시 삭제 |
 | pc_device_links | 072 | FK 없음 → 명시 삭제 |
+| pc_helper_registration | 136 | actor_user_id: explicit deletion on D1 or COM2 queue |
 | padiem_pc_delegations | 084 | FK CASCADE 선언, 명시 삭제 |
 | padiem_mcp_tokens | 085 | FK CASCADE 선언, 명시 삭제 |
 | padiem_mcp_approvals | 085 | FK CASCADE 선언, 명시 삭제 |
@@ -159,6 +163,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | central_model_policy_audit | — | 남김(예외). 위와 같음 |
 | central_model_route_audit | — | 남김(예외). 위와 같음 |
 | platform_admin_role_audit | — | 남김(예외). 관리자 권한 부여·회수 감사. 위와 같음 |
+| ops_audit_log | 128 | 남김(예외). 운영센터 관리자·시각·행동 감사 기록. 계정 탈퇴 후에도 추적용으로 보존 |
 
 외부 정리 작업 표 `account_deletion_cleanup_pending`(109)은 계정 키 열이 없다. 작업 대상(`target`)에 계정 경로가 들어가며, 작업이 끝나면 행이 지워진다.
 
@@ -188,6 +193,7 @@ nonce 검사로 정상 착지하게 한다(#5895 취소와 같은 규칙).
 | 대상 | 상태 | 다음 단계 제안 |
 |---|---|---|
 | mesh_device_drives | 사용자 키가 없는 PC 단위 드라이브 목록. PC를 공유할 수 있어 계정 탈퇴에서 특정 사용자 행만 안전하게 고를 수 없음 | 장치 제거 때 함께 정리할지 별도 결정 |
+| mesh_device_helper_ready (127) | 사용자 키가 없는 PC 단위 도우미 준비 상태(참/거짓 4개와 빌드 식별값 12자, 서버 수신 시각). 사용자 이름·경로·비밀값이 없고 PC를 공유할 수 있어 계정 탈퇴에서 특정 사용자 행을 고를 수 없음 | mesh_device_drives와 같이 장치 제거 때 함께 정리할지 별도 결정 |
 | 공통 로그인 계정(Control Plane identity, 타 앱 공유) | 구현됨: 서비스 연결을 개별 해제하고 마지막 연결이면 Auth 세션·CP subject·Google 계정 매핑을 파기한다. 전체 탈퇴는 러브트리 삭제 요청 후 Chat·북AI 데이터와 연결을 정리한다. | 배포 전 운영 반영 필요: CP DO schema v4, Auth/Chat Worker, LoveTree API·PostgreSQL schema 및 비밀 설정 |
 | B14 원장 | 미포함 | B14 원장의 사용자 식별자 조사 후 별도 단계 |
 | R2 파일 객체 | **구현됨 (#7557)** — 배치 전에 목록을 만들어 같은 배치에서 작업 행으로 남기고, 배치 뒤 지운다. 키 단위: `claw_document_metadata`·`b66_quote_asset`·`b66_template_source`의 `object_key`(한도 없음), MCP 브라우저 이어보기 객체(토큰×기기). 접두어 단위: 대화별 원문·PC 화면 캡처(`claw-model-context/v1/<대화>/`), 채팅 첨부(`chat-attachments/<사용자>/`), 프로젝트 원본(`projects/<사용자>/`), 문서 변환 결과(`documents/<사용자>/`), B66 인증 묶음(`b66/certified-quote-bundles/<저장 스킬>/`). 실패한 작업은 남아 다시 시도된다 | 남는 것: 080 이전 생성·080a 백필이 `user_id`를 못 채운 claw 문서 객체(행에 계정이 없음), COM2 호스트 로컬 tus 임시 업로드, Cloudflare Worker 경로의 R2 바인딩 목록 조회(접두어 작업은 실패로 남아 COM2 실행이 이어 받음) |

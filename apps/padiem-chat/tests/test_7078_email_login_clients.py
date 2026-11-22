@@ -4,6 +4,7 @@ The web/admin/native clients are source-checked here because only the web module
 has a browser-free unit harness. The React clone has its own vitest case.
 """
 from __future__ import annotations
+import locale_bundle
 
 import json
 import shutil
@@ -16,6 +17,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 AUTH_JS = STATIC / "chat-auth-module.js"
+DIALOG_JS = STATIC / "chat-login-dialog-module.js"
 INDEX = STATIC / "index.html"
 ADMIN_JS = STATIC / "admin-model-ext.js"
 NATIVE = ROOT.parent / "padiem-chat-claw-native" / "src" / "auth" / "AuthContext.tsx"
@@ -50,7 +52,7 @@ def test_web_server_gate_still_moves_old_screens_to_the_common_login():
         const location = { assigned: null, assign(url) { this.assigned = url; } };
         const ctx = {
           window: null,
-          document: { documentElement: { lang: "ko" } },
+          document: { documentElement: { lang: "ko" }, getElementById: () => null, createElement: () => ({ append() {}, setAttribute() {}, dataset: {}, hidden: true }) },
           fetch: async (path) => ({
             ok: false,
             status: 409,
@@ -66,13 +68,13 @@ def test_web_server_gate_still_moves_old_screens_to_the_common_login():
         ctx.location = location;
         vm.createContext(ctx);
         vm.runInContext(source, ctx);
+        vm.runInContext(fs.readFileSync(process.argv[process.argv.length - 2], "utf8"), ctx);
         const deps = {
           uiT: (key) => key,
           AUTH_UNREACHABLE_RETRY_DELAY_MS: 0,
         };
-        const api = ctx.window.PadiemChatAuthModule.create(deps);
-        deps.passwordAuthAnswer = api.passwordAuthAnswer;
-        deps.authServerUnreachableError = api.authServerUnreachableError;
+        const dialogDeps = { uiT: (key) => key, renderAndroidHandoff() {} };
+        const api = ctx.window.PadiemChatLoginDialogModule.create(dialogDeps);
         (async () => {
           // The reset paths still go through passwordAuthRequest, so a 409
           // there still carries the switch login url for an old screen.
@@ -90,7 +92,7 @@ def test_web_server_gate_still_moves_old_screens_to_the_common_login():
         """
     )
     completed = subprocess.run(
-        [node, "-e", harness, str(AUTH_JS)],
+        [node, "-e", harness, str(DIALOG_JS), str(AUTH_JS)],
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -116,5 +118,5 @@ def test_native_login_opens_the_common_login():
 
 
 def test_web_message_key_exists_in_both_languages():
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
     assert locale.count('"auth-email-login-moved"') == 2

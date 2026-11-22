@@ -143,20 +143,22 @@ def test_the_answer_meta_row_uses_the_same_gap_rule_as_the_user_row() -> None:
     glass = _glass()
     answer_css = _answer_css()
 
-    # The user row (the reference rule).
+    # The user row (the reference rule). #8008: the importance caps are gone
+    # from the user-turn rules; the values are unchanged.
     user_row = glass.split(".user-message .user-actions {", 1)[1].split("}", 1)[0]
-    assert "gap: 4px !important;" in user_row, user_row
+    assert "gap: 4px;" in user_row, user_row
     user_time = glass.split(".user-message .user-action-time {", 1)[1].split("}", 1)[0]
-    assert "margin-right: 2px !important;" in user_time, user_time
+    assert "margin-right: 2px;" in user_time, user_time
 
     # The answer row now uses the same row gap and no sibling margin. The last
     # Glass rule wins, so the assertion reads the last one.
     answer_row = glass.rsplit('html[data-theme="padiem-glass"] .answer-actions {', 1)[1].split("}", 1)[0]
-    assert "gap: 4px !important;" in answer_row, answer_row
-    assert "gap: 0 !important;" not in answer_row, answer_row
+    # #8008 4차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert "gap: 4px" in answer_row, answer_row
+    assert "gap: 0" not in answer_row, answer_row
     sibling = glass.rsplit('html[data-theme="padiem-glass"] .answer-action + .answer-action {', 1)[1].split("}", 1)[0]
-    assert "margin-left: 0 !important;" in sibling, sibling
-    assert "margin-left: 4px !important;" not in sibling, sibling
+    assert "margin-left: 0" in sibling, sibling
+    assert "margin-left: 4px" not in sibling, sibling
 
     # The time keeps the same 2px right margin in both rows.
     base_time = answer_css.split(".answer-action-time {", 1)[1].split("}", 1)[0]
@@ -166,7 +168,8 @@ def test_the_answer_meta_row_uses_the_same_gap_rule_as_the_user_row() -> None:
 def test_the_meta_row_alignment_stays_centred_in_both_rows() -> None:
     glass = _glass()
     user_row = glass.split(".user-message .user-actions {", 1)[1].split("}", 1)[0]
-    assert "align-items: center !important;" in user_row, user_row
+    # #8008: the user-row importance cap is gone; the value stays.
+    assert "align-items: center;" in user_row, user_row
     answer_row = glass.rsplit('html[data-theme="padiem-glass"] .answer-actions {', 1)[1].split("}", 1)[0]
     assert "align-items: center" not in answer_row or "align-items: center !important;" in answer_row
 
@@ -205,12 +208,12 @@ def test_every_completion_path_releases_the_preparing_chip() -> None:
     # A real status is never removed by the release.
     assert 'applyRuntimeLabel?.(article, label, "status");' in stream
     # A failure keeps its own status and stays visible.
-    assert 'return lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");' in app
+    assert 'return lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? coreModule().uiT("timeout") : coreModule().uiT("connection-error");' in app
     assert "const statusLabel = failureStatusLabel(lifecycle);" in app
     assert 'applyRuntimeLabel?.(article, statusLabel, "status");' in app
-    assert 'applyRuntimeLabel?.(article, uiT("generation-cancelled"), "status");' in app
+    assert 'applyRuntimeLabel?.(article, coreModule().uiT("generation-cancelled"), "status");' in app
     # A restored turn is a real status, not a preparing chip.
-    assert 'addAssistantShell(uiT("stored-conversation"), "status")' in app
+    assert 'addAssistantShell(coreModule().uiT("stored-conversation"), "status")' in app
 
 
 def test_the_orchestration_completion_path_releases_the_chip() -> None:

@@ -26,6 +26,7 @@ targets a state list carries that list inside ``:is(...)``/``:where(...)``, and
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 
 __all__ = (
     "Rule",
@@ -35,6 +36,7 @@ __all__ = (
     "find_rules_with_selector",
     "rule_selector_list_contains",
     "declaration",
+    "rules_for_sheet",
 )
 
 # At-rules whose block contains style rules rather than declarations.
@@ -147,6 +149,17 @@ def find_rules_with_selector(rules: list[Rule], selector: str) -> list[Rule]:
 def declaration(rule: Rule, prop: str) -> str | None:
     """Return the value of ``prop`` in ``rule``, or None when it is not set."""
     return rule.declarations.get(_property_key(prop))
+
+
+def rules_for_sheet(sheet_name: str) -> list[Rule]:
+    """Parse a shipped static sheet by name.
+
+    #8060: keep the raw ``read_text`` in this helper so a UI contract test can
+    assert on parsed rules instead of pinning source text. The sheet must be a
+    file name inside ``apps/padiem-chat/static``.
+    """
+    static = Path(__file__).resolve().parents[1] / "static"
+    return parse_rules((static / sheet_name).read_text(encoding="utf-8"))
 
 
 def _property_key(prop: str) -> str:

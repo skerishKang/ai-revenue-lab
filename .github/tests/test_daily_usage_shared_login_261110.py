@@ -145,5 +145,30 @@ class SharedEndpointVerdictTest(unittest.TestCase):
             self.assertNotIn(needle, head)
 
 
+class SharedLoginStep4CaptureTest(unittest.TestCase):
+    """#7943 후속: 로그인된 Chat 화면 캡처가 튜토리얼 4단계 소스와 연결된다.
+
+    흐름이 찍는 파일 이름(browser_shared_login_04_logged-in.png)이 일일 갱신
+    매핑(CAPTURE_STEP_TO_SCENE)이 기다느 이름과 정확히 같아야 한다. 촬영
+    실패는 새 FAIL 조건이 아니므로 흐름 판정에는 이 파일이 없어도 된다.
+    """
+
+    def test_step4_capture_file_name_matches_the_refresh_mapping(self):
+        self.assertEqual(
+            checks.artifact_filename("browser_shared_login", 4, "logged-in"),
+            "browser_shared_login_04_logged-in.png",
+        )
+
+    def test_the_capture_call_is_wrapped_so_it_never_fails_the_flow(self):
+        # 흐름 본문에서 4단계 촬영 호출은 자체 try/except 로 감싸져 있고,
+        # 함수 안의 흐름 객체 이름(flow)을 정확히 쓴다. run 44163131018 에서는
+        # 스코프 밖 이름(shared)을 써서 NameError 가 조용히 흡수됐었다.
+        source = Path(checks.__file__).read_text(encoding="utf-8")
+        call = '_capture(page, out_path, flow, 4, "logged-in", username)'
+        self.assertIn(call, source)
+        after = source[source.index(call):]
+        self.assertIn("except Exception", after[:400])
+
+
 if __name__ == "__main__":
     unittest.main()

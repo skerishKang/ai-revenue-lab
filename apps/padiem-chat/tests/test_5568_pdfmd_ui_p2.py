@@ -15,6 +15,7 @@ and drives the locale stub, the mode selector and the search input.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 from functools import lru_cache
 from pathlib import Path
@@ -27,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PDFMD_JS = ROOT / "static/util-pdfmd.js"
 PDFMD_PAGES_JS = ROOT / "static/util-pdfmd-pages.js"
 UTIL_MENU_CSS = ROOT / "static/util-menu.css"
-LOCALE_JS = ROOT / "static/locale.js"
+LOCALE_JS = locale_bundle.SOURCE
 
 LOCALE_KEYS = (
     "pdfmd-mode-help-fast",
@@ -48,17 +49,15 @@ LOCALE_KEYS = (
 # --------------------------------------------------------------------------
 
 
-def test_mode_help_uses_locale_keys_in_both_languages() -> None:
-    locale = LOCALE_JS.read_text(encoding="utf-8")
-    for key in LOCALE_KEYS:
-        assert locale.count(f'"{key}"') == 2, key
+# #7865: the 변환 방식 help paragraph contracts were removed together with
+# the always-visible field — the screen keeps one quiet select, and the
+# locale-key contracts that belonged to the removed paragraph went with it.
+def test_the_mode_select_names_itself_without_the_help_paragraph() -> None:
     js = PDFMD_JS.read_text(encoding="utf-8")
-    assert 'modeSel.setAttribute("aria-describedby", "pdfmdModeHelp")' in js
-    assert 'const modeHelp = el("p", "pdfmd-mode-help")' in js
-    assert 'MODE_HELP[modeSel.value]' in js
-    assert "modeHelp.dataset.localeKey = key" in js
-    assert 'updateModeHelp();' in js
-    assert 'MODE_HELP = {' in js
+    assert 'modeSel.setAttribute("aria-label", "변환 방식")' in js
+    assert 'const modeHelp = el("p", "pdfmd-mode-help")' not in js
+    assert 'MODE_HELP = {' not in js
+    assert 'pdfmd-mode-help' not in js
 
 
 def test_history_search_and_grouping_are_client_side() -> None:
@@ -80,7 +79,8 @@ def test_history_search_and_grouping_are_client_side() -> None:
 
 def test_history_search_and_mode_help_reuse_design_tokens() -> None:
     css = UTIL_MENU_CSS.read_text(encoding="utf-8")
-    assert ".pdfmd-mode-help" in css
+    # #7865: .pdfmd-mode-help 계약은 도움말 문단이 화면에서 사라진 시점에 함께
+    # 지운다(변환 방식 필드 제거 — 이슈의 없애거나 숨길 목록).
     assert ".pdfmd-history-search" in css
     assert ".pdfmd-history-group" in css
     assert "min-height: 44px" in css
@@ -297,19 +297,11 @@ async function search(value) {
   await flush();
   await flush();
 
-  // 1) Mode help is localized from the locale authority and follows the mode.
-  const help = panel.querySelector("#pdfmdModeHelp");
-  if (!help) fail("MODE_HELP_MISSING");
-  if (text(help) !== "EN fast help") fail("MODE_HELP_NOT_LOCALIZED", text(help));
-  if (help.dataset.localeKey !== "pdfmd-mode-help-fast") fail("MODE_HELP_KEY_WRONG", help.dataset.localeKey);
+  // 1) #7865: the 변환 방식 help paragraph is gone with the always-visible
+  //    field; the one quiet select still names itself for the owner.
   const mode = panel.querySelector("#pdfmdMode");
-  mode.value = "verify";
-  await mode.dispatch("change");
-  if (text(help) !== "EN verify help") fail("MODE_HELP_NOT_UPDATED", text(help));
-  if (help.dataset.localeKey !== "pdfmd-mode-help-verify") fail("MODE_HELP_KEY_NOT_UPDATED", help.dataset.localeKey);
-  const verifyHelp = text(help);
-  mode.value = "fast";
-  await mode.dispatch("change");
+  if (!mode) fail("MODE_SELECT_MISSING");
+  if (mode.getAttribute("aria-label") !== "변환 방식") fail("MODE_ARIA_MISSING", mode.getAttribute("aria-label"));
 
   // 2) Search input is localized and history is grouped by date.
   const input = panel.querySelector("#pdfmdHistorySearch");
@@ -357,7 +349,6 @@ async function search(value) {
 
   console.log(JSON.stringify({
     ok: true,
-    modeHelp: verifyHelp,
     groups: groups,
     matchedByFilename: matched.length,
     restored: rows().length,
@@ -392,11 +383,6 @@ def _run_harness() -> dict:
     payload = json.loads(stdout.splitlines()[-1])
     assert payload.get("ok"), f"harness failed: {payload!r}"
     return payload
-
-
-def test_mode_help_follows_selector_through_locale() -> None:
-    payload = _run_harness()
-    assert payload["modeHelp"] == "EN verify help"
 
 
 def test_history_groups_and_searches_without_api_change() -> None:

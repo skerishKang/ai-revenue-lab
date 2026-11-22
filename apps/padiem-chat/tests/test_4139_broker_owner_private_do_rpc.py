@@ -20,7 +20,7 @@ from app.connector_pending_pc_owner_rpc import (
 )
 from app.connector_one_click_approval import OneClickOwnerApproval, OneClickDenied
 from test_4139_broker_pending_socket_actor import actor, offer, stored, REF, DEVICE, CODE
-from test_4139_connector_one_click_approval import Fixture, session
+from _support.connector_one_click import Fixture, session
 
 
 class SameDo(CanonicalBrokerPendingPcLiveRPC):

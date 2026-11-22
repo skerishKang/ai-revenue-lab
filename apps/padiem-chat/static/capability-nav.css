@@ -27,7 +27,7 @@ html[data-theme="padiem-glass"] #clawNavButton {
 }
 html[data-theme="padiem-glass"] #clawNavButton::after {
   background: rgba(121, 188, 231, .24);
-  color: rgba(255, 255, 255, .92);
+  color: var(--text-veil-strong);
 }
 
 .capability-dialog {
@@ -343,7 +343,7 @@ html[data-theme="padiem-glass"] .capability-read {
    Connectors surface — Skills/Claw dialogs are intentionally untouched. */
 html[data-theme="padiem-glass"] #connectorsDialog {
   background: rgba(246, 249, 251, .97);
-  color: #17212a;
+  color: var(--text-panel-ink);
   box-shadow: 0 16px 56px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, .72);
 }
 
@@ -361,13 +361,20 @@ html[data-theme="padiem-glass"] #connectorsDialog {
   border-color: rgba(23, 33, 42, .14);
 }
 
+/* #8022: glass에서도 연결 카드 경계를 뚜렷하게 — standalone-views.css의
+   #connectorsViewBody 미러와 같은 잉크 헤어라인(기존 토큰 파생, 새 리터럴 없음). */
+#connectorsDialog .capability-card,
+#connectorsDialog .connector-retry {
+  border-color: var(--connector-card-hairline, rgba(23, 33, 42, .14));
+}
+
 /* Connector action buttons reuse .connector-retry, whose var(--panel)
    background is translucent on glass. Give the dialog's buttons a solid
    bright surface so the label stays readable over the card. */
 #connectorsDialog .connector-retry {
   background: rgba(255, 255, 255, .92);
   border-color: rgba(23, 33, 42, .16);
-  color: #17212a;
+  color: var(--text-panel-ink);
 }
 
 /* Small type on the bright panel: the shared rules mute these at opacity
@@ -382,7 +389,10 @@ html[data-theme="padiem-glass"] #connectorsDialog {
   color: #3d4c59;
 }
 
-#connectorsDialog .capability-workspace {
+#connectorsDialog .capability-workspace,
+/* The server-side check could not be trusted: a neutral fact, never a state
+   claim — it must not read as "needs activation" nor as "active". */
+#connectorsDialog .capability-read-state[data-read-state="unavailable"]{
   color: #3d4c59;
 }
 
@@ -409,10 +419,4 @@ html[data-theme="padiem-glass"] #connectorsDialog {
 
 #connectorsDialog .capability-read-state[data-read-state="failed"] {
   color: #b3261e;
-}
-
-/* The server-side check could not be trusted: a neutral fact, never a state
-   claim — it must not read as "needs activation" nor as "active". */
-#connectorsDialog .capability-read-state[data-read-state="unavailable"] {
-  color: #3d4c59;
 }

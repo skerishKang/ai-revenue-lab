@@ -9,6 +9,17 @@
       const CLAW_DISPATCH_KEY_WINDOW_MS = 10000;
       let clawPdfPreviewController = null;
 
+      // R5 part 2 B2: declarations only this module uses, moved here from
+      // app.js at the original declaration position (rule (a)).
+      const clawResultKind = document.getElementById("clawResultKind");
+      const clawApprovalActions = document.getElementById("clawApprovalActions");
+      const clawRequestEcho = document.getElementById("clawRequestEcho");
+      const clawRequestEchoText = document.getElementById("clawRequestEchoText");
+      const clawArtifactMeta = document.getElementById("clawArtifactMeta");
+      const clawArtifactName = document.getElementById("clawArtifactName");
+      const clawArtifactSize = document.getElementById("clawArtifactSize");
+      const clawResultSuccessNote = document.getElementById("clawResultSuccessNote");
+
         function setClawDocumentAction(enabled, documentId, filename) {
           const btn = deps.clawResultDocx;
           if (!btn) return;
@@ -28,10 +39,10 @@
 
         function clearClawArtifact() {
           clawPdfPreviewController?.clear();
-          if (deps.clawArtifactMeta) deps.clawArtifactMeta.hidden = true;
-          if (deps.clawArtifactName) deps.clawArtifactName.textContent = "";
-          if (deps.clawArtifactSize) deps.clawArtifactSize.textContent = "";
-          if (deps.clawResultSuccessNote) deps.clawResultSuccessNote.hidden = true;
+          if (clawArtifactMeta) clawArtifactMeta.hidden = true;
+          if (clawArtifactName) clawArtifactName.textContent = "";
+          if (clawArtifactSize) clawArtifactSize.textContent = "";
+          if (clawResultSuccessNote) clawResultSuccessNote.hidden = true;
           setClawDocumentAction(false);
           const downloadLabel = deps.clawResultDocx?.querySelector?.('[data-locale-key="claw-result-docx"]');
           if (downloadLabel) downloadLabel.textContent = deps.clawT("claw-result-docx");
@@ -51,18 +62,18 @@
           }
           const filename = typeof artifact.filename === "string" && artifact.filename ? artifact.filename : "document.docx";
           const byteLength = typeof artifact.byte_length === "number" ? artifact.byte_length : null;
-          if (deps.clawArtifactName) deps.clawArtifactName.textContent = filename;
-          if (deps.clawArtifactSize) deps.clawArtifactSize.textContent = byteLength != null ? formatClawBytes(byteLength) : "";
-          if (deps.clawArtifactMeta) deps.clawArtifactMeta.hidden = false;
-          if (deps.clawResultSuccessNote) deps.clawResultSuccessNote.hidden = false;
+          if (clawArtifactName) clawArtifactName.textContent = filename;
+          if (clawArtifactSize) clawArtifactSize.textContent = byteLength != null ? formatClawBytes(byteLength) : "";
+          if (clawArtifactMeta) clawArtifactMeta.hidden = false;
+          if (clawResultSuccessNote) clawResultSuccessNote.hidden = false;
           setClawDocumentAction(true, artifact.document_id, artifact.filename);
           const downloadLabel = deps.clawResultDocx?.querySelector?.('[data-locale-key="claw-result-docx"]');
           if (downloadLabel) downloadLabel.textContent = artifact.media_type === "application/pdf"
             ? deps.clawT("claw-result-pdf")
             : deps.clawT("claw-result-docx");
-          if (!clawPdfPreviewController && deps.clawArtifactMeta && window.PadiemClawPdfPreview?.create) {
+          if (!clawPdfPreviewController && clawArtifactMeta && window.PadiemClawPdfPreview?.create) {
             clawPdfPreviewController = window.PadiemClawPdfPreview.create({
-              mount: deps.clawArtifactMeta,
+              mount: clawArtifactMeta,
               onError: (message) => deps.setClawStatus(message, "error"),
             });
           }
@@ -122,7 +133,7 @@
           if (deps.clawResultEmpty) deps.clawResultEmpty.hidden = true;
           if (deps.clawResultHint) deps.clawResultHint.hidden = true;
           if (deps.clawResultCard) deps.clawResultCard.hidden = false;
-          if (deps.clawResultKind) deps.clawResultKind.textContent = kindText || "";
+          if (clawResultKind) clawResultKind.textContent = kindText || "";
           if (deps.clawResultBadge) {
             deps.clawResultBadge.dataset.localeKey = executed ? "claw-result-badge-run" : "claw-result-badge";
             deps.clawResultBadge.textContent = deps.clawT(executed ? "claw-result-badge-run" : "claw-result-badge");
@@ -217,9 +228,9 @@
         }
 
         function clearImmediateApprovalControls() {
-          if (!deps.clawApprovalActions) return;
-          deps.clawApprovalActions.replaceChildren();
-          deps.clawApprovalActions.hidden = true;
+          if (!clawApprovalActions) return;
+          clawApprovalActions.replaceChildren();
+          clawApprovalActions.hidden = true;
         }
 
         async function applyImmediateApprovalDecision(result) {
@@ -230,7 +241,7 @@
           const status = typeof result.status === "string" ? result.status : "";
           if (status === "waiting_approval" && result.approval_required === true) {
             if (deps.clawResultPreview) deps.clawResultPreview.textContent = deps.clawT("claw-approval-required");
-            renderClawApprovalControls(deps.clawApprovalActions, result.run_id, applyImmediateApprovalDecision);
+            renderClawApprovalControls(clawApprovalActions, result.run_id, applyImmediateApprovalDecision);
             deps.setClawStatus(deps.clawT("claw-approval-required"), "waiting_approval");
             deps.setClawAreaState("waiting_approval");
           } else {
@@ -249,9 +260,9 @@
         // conversation so manual Claw reads as one continuous Chat thread. This is
         // the user's own message, never presented as an AI result.
         function renderClawRequestEcho(text) {
-          if (!deps.clawRequestEcho || !deps.clawRequestEchoText) return;
-          deps.clawRequestEchoText.textContent = text;
-          deps.clawRequestEcho.hidden = false;
+          if (!clawRequestEcho || !clawRequestEchoText) return;
+          clawRequestEchoText.textContent = text;
+          clawRequestEcho.hidden = false;
         }
 
         // A duplicate listener or a retried click shares the key already claimed by
@@ -351,7 +362,7 @@
                 revealClawCard(result.title, true);
                 clearClawArtifact();
                 if (deps.clawResultPreview) deps.clawResultPreview.textContent = deps.clawT("claw-approval-required");
-                renderClawApprovalControls(deps.clawApprovalActions, result.request_id, applyImmediateApprovalDecision);
+                renderClawApprovalControls(clawApprovalActions, result.request_id, applyImmediateApprovalDecision);
                 deps.setClawStatus(deps.clawT("claw-approval-required"), "waiting_approval");
                 deps.setClawAreaState("waiting_approval");
                 if (deps.clawResultPreview) deps.clawResultPreview.focus?.();

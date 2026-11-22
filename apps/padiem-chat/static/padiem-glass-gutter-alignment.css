@@ -20,40 +20,40 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
 }
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
-  padding-inline: var(--padiem-chat-inner-gutter) !important;
+  padding-inline: var(--padiem-chat-inner-gutter);
 }
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
-  width: 100% !important;
-  margin-inline: 0 !important;
+  width: 100%;
+  margin-inline: 0;
 }
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-body,
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-content {
-  width: 100% !important;
-  max-width: none !important;
+  width: 100%;
+  max-width: none;
 }
 
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-message {
-  grid-template-columns: 32px minmax(0, 1fr) !important;
-  gap: var(--padiem-chat-meta-gap) !important;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: var(--padiem-chat-meta-gap);
 }
 
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-meta {
-  margin-bottom: 6px !important;
+  margin-bottom: 6px;
 }
 
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .error-box {
   box-sizing: border-box;
-  max-width: 100% !important;
+  max-width: 100%;
 }
 
 /* The assistant identity rail starts inside the bounded conversation padding.
  * Wide answer/error cards then recover that right-side padding so their outer
  * edge lands on the same boundary as the composer. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-content > .rich-response {
-  width: calc(100% + var(--padiem-chat-inner-gutter)) !important;
-  max-width: none !important;
+  width: calc(100% + var(--padiem-chat-inner-gutter));
+  max-width: none;
 }
 
 /* Failure cards start after avatar+gap. End an equal avatar+gap before
@@ -62,8 +62,8 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-co
   box-sizing: border-box;
   /* Left inset = conversation padding + avatar (32px) + meta gap.
    * Reserve exactly avatar+gap on the right for symmetric panel gutters. */
-  width: calc(100% - 32px - var(--padiem-chat-meta-gap)) !important;
-  max-width: 100% !important;
+  width: calc(100% - 32px - var(--padiem-chat-meta-gap));
+  max-width: 100%;
   min-width: 0;
 }
 
@@ -79,15 +79,17 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-co
 
 /* User turns keep the left-side breathing room and compact bubble max-width,
  * but recover exactly one inner gutter on the right so the bubble terminates
- * on the shared composer boundary. */
+ * on the shared composer boundary. #8008: the importance caps are gone — the
+ * portrait sheet's user-turn rules win on higher specificity, and these
+ * declarations matter only where the portrait sheet does not speak. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
-  width: calc(100% + var(--padiem-chat-inner-gutter)) !important;
-  padding-left: clamp(36px, 8vw, 96px) !important;
+  width: calc(100% + var(--padiem-chat-inner-gutter));
+  padding-left: clamp(36px, 8vw, 96px);
 }
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message .message-bubble {
-  margin-left: auto !important;
-  max-width: min(660px, 88%) !important;
+  margin-left: auto;
+  max-width: min(660px, 88%);
 }
 
 /* FIRST SCREEN = ACTIVE CHAT FRAME.
@@ -108,16 +110,16 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
   }
 
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
-    padding-left: 30px !important;
+    padding-left: 30px;
   }
 }
 
 @media (max-width: 620px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
-    padding-left: 24px !important;
+    padding-left: 24px;
   }
 
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message .message-bubble {
-    max-width: min(620px, 92%) !important;
+    max-width: min(620px, 92%);
   }
 }

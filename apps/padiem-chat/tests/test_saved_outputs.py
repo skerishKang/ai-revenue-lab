@@ -4,6 +4,13 @@ import json
 from dataclasses import replace
 from pathlib import Path
 
+from _support.saved_outputs import (
+    a11y_js,
+    index_html,
+    outputs_js,
+    saved_outputs_migration,
+    worker_py,
+)
 import httpx
 import pytest
 
@@ -169,7 +176,7 @@ async def test_outputs_fail_closed_without_auth_or_store():
     history = MemoryHistory()
     configured = create_app(google_settings(), history_store=history)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=configured), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(google_settings(), OWNER_ID), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(google_settings(), OWNER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         unavailable = await client.get("/api/outputs")
     assert unavailable.status_code == 503
 
@@ -190,7 +197,7 @@ async def test_saved_output_crud_is_owner_scoped_and_list_hides_content():
     app = create_app(settings, history_store=history, saved_output_store=store)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         created = await client.post(
             "/api/outputs",
             json={
@@ -217,12 +224,12 @@ async def test_saved_output_crud_is_owner_scoped_and_list_hides_content():
         assert renamed.status_code == 200
         assert renamed.json()["output"]["title"] == "제주 가족여행"
 
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OTHER_ID), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OTHER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         assert (await client.get(f"/api/outputs/{output_id}")).status_code == 404
         assert (await client.patch(f"/api/outputs/{output_id}", json={"title": "침범"})).status_code == 404
         assert (await client.delete(f"/api/outputs/{output_id}")).status_code == 404
 
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         deleted = await client.delete(f"/api/outputs/{output_id}")
         assert deleted.status_code == 200 and deleted.json()["deleted"] is True
         assert CONVERSATION_ID in history.conversations
@@ -245,7 +252,7 @@ async def test_provenance_ids_are_server_verified_before_save():
     settings = google_settings()
     app = create_app(settings, history_store=history, saved_output_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         mismatch = await client.post(
             "/api/outputs",
             json={
@@ -287,7 +294,7 @@ async def test_saved_output_body_boundary_is_the_route_limit_one_byte_over_is_re
     assert len(body) == MAX_OUTPUT_BODY_BYTES
     assert content_len <= MAX_OUTPUT_ROW_BYTES  # 행 한도도 통과해야 201이 나온다
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID), domain="chat.example.test", path="/")
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID, canonical_session_id="session_test_a"), domain="chat.example.test", path="/")
         ok = await client.post("/api/outputs", content=body, headers={"Content-Type": "application/json"})
         assert ok.status_code == 201, ok.text
         assert len(ok.json()["output"]["content"]) == content_len
@@ -403,10 +410,10 @@ async def test_d1_saved_output_content_is_bound_not_interpolated_into_sql():
 def test_saved_outputs_ui_is_additive_and_truthful():
     root = Path(__file__).resolve().parents[1]
     repo = root.parents[1]
-    html = (root / "static/index.html").read_text(encoding="utf-8")
-    js = (root / "static/outputs.js").read_text(encoding="utf-8")
-    a11y = (root / "static/a11y.js").read_text(encoding="utf-8")
-    worker = (root / "worker.py").read_text(encoding="utf-8")
+    html = index_html()
+    js = outputs_js()
+    a11y = a11y_js()
+    worker = worker_py()
 
     assert '<link rel="stylesheet" href="./outputs.css" />' in html
     assert '<script src="./outputs.js"></script>' in html
@@ -449,8 +456,7 @@ def test_saved_outputs_ui_is_additive_and_truthful():
 
 
 def test_migration_is_plain_text_owner_scoped_storage_only():
-    root = Path(__file__).resolve().parents[1]
-    migration = (root / "migrations/004_saved_outputs.sql").read_text(encoding="utf-8")
+    migration = saved_outputs_migration()
     assert "CREATE TABLE IF NOT EXISTS saved_outputs" in migration
     assert "content_text TEXT NOT NULL" in migration
     assert "REFERENCES users(id)" in migration

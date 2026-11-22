@@ -240,12 +240,12 @@ def build_app(runtime: IdentityRuntime | None):
     return app, history, shadow_store
 
 
-async def _login(client, profile_id: str) -> None:
+async def _login(client, profile_id: str, shadow_store) -> None:
     start = await client.get("/auth/google/start")
     state = httpx.URL(start.headers["location"]).params["state"]
     callback = await client.get(f"/auth/google/callback?state={state}&code=sample-code")
     assert callback.status_code == 302
-    client.cookies.set(SESSION_COOKIE, create_session_token(settings(), profile_id), domain="chat.example.test", path="/")
+    client.cookies.set(SESSION_COOKIE, create_session_token(settings(), profile_id, canonical_session_id=shadow_store.record.auth_session_id), domain="chat.example.test", path="/")
 
 
 async def _post_ticket(client, body=None, *, origin=_ORIGIN, raw=None):
@@ -272,7 +272,7 @@ async def test_runtime_e2e_login_then_authority_minted_ticket_verifies_with_shar
     app, history, shadow_store = build_app(runtime)
 
     async with _client(app) as client:
-        await _login(client, history.profile.id)
+        await _login(client, history.profile.id, shadow_store)
         assert re.fullmatch(r"sess_[0-9a-f]{32}", shadow_store.record.auth_session_id)
         assert re.fullmatch(r"sub_[0-9a-f]{32}", shadow_store.record.canonical_subject_id)
 
@@ -297,7 +297,9 @@ async def test_runtime_e2e_login_then_authority_minted_ticket_verifies_with_shar
         "resolve_or_create_product_link",   # B62 identity shadow
         "establish_auth_session",           # B62 session
         "resolve_or_create_product_link",   # #3240 B54 attempt
+        "resolve_auth_session",             # session guard on the first ticket
         "issue_google_connect_ticket",
+        "resolve_auth_session",             # session guard on the second ticket
         "issue_google_connect_ticket",
     ]
 
@@ -331,9 +333,9 @@ async def test_runtime_e2e_login_then_authority_minted_ticket_verifies_with_shar
 
 async def test_runtime_e2e_ticket_rejected_by_verifier_after_ttl():
     runtime = IdentityRuntime()
-    app, history, _ = build_app(runtime)
+    app, history, shadow_store = build_app(runtime)
     async with _client(app) as client:
-        await _login(client, history.profile.id)
+        await _login(client, history.profile.id, shadow_store)
         response = await _post_ticket(client, {"connector_id": "google-drive"})
     assert response.status_code == 200
     ticket = response.json()["ticket"]["connect_ticket"]
@@ -346,17 +348,12 @@ async def test_runtime_e2e_ticket_rejected_by_verifier_after_ttl():
 
 async def test_runtime_e2e_negative_matrix_rejects_before_reaching_authority():
     runtime = IdentityRuntime()
-    app, history, _ = build_app(runtime)
+    app, history, shadow_store = build_app(runtime)
     async with _client(app) as client:
         anonymous = await _post_ticket(client)
         assert anonymous.status_code == 401
 
-        client.cookies.set(
-            SESSION_COOKIE,
-            create_session_token(settings(), history.profile.id),
-            domain="chat.example.test",
-            path="/",
-        )
+        await _login(client, history.profile.id, shadow_store)
         cross_origin = await _post_ticket(client, origin="https://evil.example.test")
         assert cross_origin.status_code == 403
 
@@ -376,29 +373,25 @@ async def test_runtime_e2e_negative_matrix_rejects_before_reaching_authority():
 
         oversized = await _post_ticket(client, raw=b'{"connector_id": "gmail", "pad": "' + b"x" * 2048 + b'"}')
         assert oversized.status_code == 400
-    assert runtime.calls == []
+    assert "issue_google_connect_ticket" not in runtime.calls
 
 
 async def test_runtime_e2e_missing_shadow_and_missing_binding_fail_closed():
     runtime = IdentityRuntime()
-    app, history, _ = build_app(runtime)
+    app, history, shadow_store = build_app(runtime)
     async with _client(app) as client:
-        client.cookies.set(
-            SESSION_COOKIE,
-            create_session_token(settings(), history.profile.id),
-            domain="chat.example.test",
-            path="/",
-        )
+        await _login(client, history.profile.id, shadow_store)
+        shadow_store.record = None
         missing_link = await _post_ticket(client)
     assert missing_link.status_code == 503
     assert missing_link.json()["error"]["code"] == "control_plane_identity_not_linked"
-    assert runtime.calls == []
+    assert "issue_google_connect_ticket" not in runtime.calls
 
     unbound_app, unbound_history, _ = build_app(None)
     async with _client(unbound_app) as client:
         client.cookies.set(
             SESSION_COOKIE,
-            create_session_token(settings(), unbound_history.profile.id),
+            create_session_token(settings(), unbound_history.profile.id, canonical_session_id="session_test_a"),
             domain="chat.example.test",
             path="/",
         )
@@ -411,7 +404,7 @@ async def test_runtime_e2e_unknown_canonical_session_is_rejected_by_authority():
     runtime = IdentityRuntime()
     app, history, shadow_store = build_app(runtime)
     async with _client(app) as client:
-        await _login(client, history.profile.id)
+        await _login(client, history.profile.id, shadow_store)
         original = shadow_store.record
         shadow_store.record = IdentityShadowRecord(
             product_user_id=original.product_user_id,

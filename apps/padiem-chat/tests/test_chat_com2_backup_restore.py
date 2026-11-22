@@ -23,7 +23,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from test_6446_account_isolation_sweep import ThreadSafeSqliteD1, apply_all_migrations
+from _support.account_isolation_sweep import ThreadSafeSqliteD1, apply_all_migrations
 
 ROOT = Path(__file__).resolve().parents[3]
 BACKUP = ROOT / "deploy" / "host-com2" / "chat" / "backup.py"
@@ -32,8 +32,8 @@ COUNTED_TABLES = ("users", "conversations", "messages", "projects", "product_fee
 LEDGER = "padiem_local_migration_ledger"
 # Tripwire: adding a migration must update BOTH values, so a schema
 # change is never silently absorbed into the backup/restore fixture.
-EXPECTED_MIGRATION_COUNT = 121
-EXPECTED_LAST_MIGRATION = "122_live_usage_conversion_bucket.sql"
+EXPECTED_MIGRATION_COUNT = 135
+EXPECTED_LAST_MIGRATION = "136_pc_helper_registration.sql"
 
 
 class FileSqliteD1(ThreadSafeSqliteD1):

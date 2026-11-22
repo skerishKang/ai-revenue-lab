@@ -70,7 +70,7 @@ def _client(adapter):
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, "usr_" + "9" * 32),
+        create_session_token(settings, "usr_" + "9" * 32, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )

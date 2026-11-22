@@ -270,7 +270,7 @@ def test_one_existing_signed_B54_owner_proceeds_through_canonical_host_and_ack(d
     from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
     from app.connector_owner_identity_pc_completion import CanonicalOwnerPcIdentityPreflight
     from app.connector_owner_native_pc_completion import CanonicalOwnerNativePcCompletion
-    from test_4139_connector_one_click_approval import session
+    from _support.connector_one_click import session
 
     ident=SameOriginalOwnerIdentity()
     broker=OriginalBroker()

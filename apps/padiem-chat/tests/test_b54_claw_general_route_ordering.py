@@ -56,6 +56,10 @@ def _js_function(source: str, name: str) -> str:
             rest.find("\n      function "),
             rest.find("\n      return {"),
             rest.find("\n  window.PadiemChatTransport"),
+            # B7-3: the openSettings forwarder used to be submitPrompt's slice
+            # boundary; it moved onto the registry, so the next top-level
+            # statement after it takes over as the boundary.
+            rest.find("\n  const advancedSettingsView"),
             rest.find("\n})();"),
         )
         if i != -1
@@ -106,6 +110,12 @@ const shell = { dataset: {} };
 const emptyState = { hidden: false };
 const messageList = { hidden: true, childElementCount: 0, children: [], replaceChildren() {}, appendChild() {}, closest: () => null };
 const setNavActive = () => {};
+// B7: the session gate is on the registry; mirror the same stub in this slice.
+const authModule = () => ({ requireSessionForModelUse: () => true });
+// B7: the core helpers are on the registry; submitPrompt reaches them through
+// it, so the harness mirrors the same path (unconditional setNote/uiT use is
+// inert here, but the stub keeps the slice executable).
+const coreModule = () => ({ uiT: (key) => key, setNote: () => {}, idleNote: () => "", mappedUiError: (m) => new Error(m), clawT: (key) => key, localeOr: (key, fallback) => fallback || key });
 // #4833 made showConversation hide the Claw disclosures through the DOM when it
 // leaves for Chat, so this harness needs the same minimal document surface.
 const document = {
@@ -120,6 +130,14 @@ const document = {
 const authState = { authenticated: true, model_requires_session: false };
 const loginButton = { hidden: false, disabled: false, click() {} };
 const setNote = () => {};
+// B7: the settings API is reached through the registry (app.provide("settings"));
+// the sliced boot tail calls it, so the harness mirrors the same path with
+// no-op methods.
+const settings = new Proxy({}, { get: () => () => {} });
+// B7: the same for the streaming registry piece — submitPrompt reaches
+// requestAnswer through it, so delegate to the extracted real module
+// function (hoisted declaration below).
+const streaming = { requestAnswer: (...args) => requestAnswer(...args) };
 const clawManualForm = { hidden: false };
 const input = { value: "", focus() {} };
 let inFlight = false;
@@ -142,6 +160,12 @@ const conversationState = {
 const conversationArtifactContext = null;
 const uiT = (key) => key;
 const updateComposer = () => {};
+// B7 18차+19차: the conversation piece is reached through the registry; mirror
+// the same path with the stubs the sliced routing functions use.
+const conversationModule = () => ({
+  updateComposer, clearAttachment, showConversation,
+  addUserMessage: () => {},
+});
 const renderTyping = () => {};
 const selectedProductTier = () => "plus";
 const attachmentPayload = () => null;

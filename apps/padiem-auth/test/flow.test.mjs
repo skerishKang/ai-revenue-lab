@@ -5,6 +5,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject, identityFingerprint } from '../worker.mjs';
 import { NOT_AN_IDENTITY_PRODUCT, REGISTERED_CLIENTS, withProductBoundary } from './authority-products.mjs';
+import { passGoogleAgeGate } from './google-age-gate.mjs';
 
 const url = 'https://auth.padiem.net';
 const b64 = x => Buffer.from(x).toString('base64url');
@@ -67,7 +68,9 @@ async function setup({ advanceDuringExchange = false, clientId = 'lovetree-4-0',
     const start = new URL(`${url}/login`); for (const [k,v] of Object.entries({ client_id: clientId, redirect_uri: redirectUri, state, code_challenge: await sum(verifier), code_challenge_method: 'S256' })) start.searchParams.set(k,v);
     const begun = await app.fetch(new Request(start)); assert.equal(begun.status, 302); const googleURL = new URL(begun.headers.get('location')); nonce = googleURL.searchParams.get('nonce');
     const callback = new URL(`${url}/oauth/google/callback`); callback.searchParams.set('state', googleURL.searchParams.get('state')); callback.searchParams.set('code', 'synthetic-code');
-    const done = await app.fetch(new Request(callback, { headers: { cookie: begun.headers.get('set-cookie').split(';')[0] } }));
+    const cookie = begun.headers.get('set-cookie').split(';')[0];
+    const gated = await app.fetch(new Request(callback, { headers: { cookie } }));
+    const done = await passGoogleAgeGate((r) => app.fetch(r), gated, cookie);
     return { done, verifier, state, redirectUri }; }
   async function login() { const { done, verifier, state, redirectUri } = await callbackResponse(); assert.equal(done.status, 302);
     const target = new URL(done.headers.get('location')); assert.equal(target.searchParams.get('state'), state); assert.equal(linked.provider_subject, 'google-sub'); assert.equal(done.headers.get('location').includes('test@example.invalid'), false); assert.equal(done.headers.get('location').includes('google-sub'), false);

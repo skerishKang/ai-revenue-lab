@@ -6,9 +6,17 @@
 // features stay in the module.
 const fs = require("node:fs");
 const vm = require("node:vm");
+const path = require("node:path");
 
 const SOURCE = process.argv[2];
 const script = fs.readFileSync(SOURCE, "utf8");
+// #7962: the card reads its 10-minute clock from the shared module index.html
+// loads before it. The harness loads it too, and from the real static folder,
+// so a temporary copy of the card still has the same dependency behind it.
+const dependency = fs.readFileSync(
+  path.join(__dirname, "..", "static", "pc-install-deadline.js"), "utf8");
+const shareApproval = fs.readFileSync(
+  path.join(__dirname, "..", "static", "pc-pairing-share-approval.js"), "utf8");
 
 class El {
   constructor(tag) {
@@ -58,7 +66,7 @@ class El {
   ids() { return [this, ...this.children.flatMap((c) => c.ids())]; }
 }
 
-function makeDom(responses) {
+function makeDom(responses, options = {}) {
   const card = new El("div");
   card.attrs.id = "connectorComputerCard";
   const root = new El("html");
@@ -119,6 +127,7 @@ function makeDom(responses) {
   const window = {
     addEventListener: () => {},
     padiemPcPairing: undefined,
+    ...(options.window || {}),
     // The poll cadence is a test seam in the module; one millisecond makes the
     // wait run on node's own timers within a settle window.
     PADIEM_PC_PAIRING_POLL_MS: 1,
@@ -142,11 +151,24 @@ function makeDom(responses) {
   globalThis.blobs = {};
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
+  vm.runInContext(dependency, sandbox);
+  vm.runInContext(shareApproval, sandbox);
   vm.runInContext(script, sandbox);
   return { card, calls, downloads, blobs: globalThis.blobs, sandbox, document, confirmState };
 }
 
 const NODE_ID = "node/meshdomain/mesh-pc-09";
+// User-copy contract: the owner card uses the same consent sentence the server
+// validates and the admin screen shows. The check compares rendered copy, not
+// source text.
+const SHARE_CONSENT = "이 공유 폴더 안만 열린다";
+const SHARE_ROOT_REF = "pcroot_1111111111111111";
+const SHARE_LABEL = "공유 이름";
+const SHARE_PATH = "//fileserver/sharename";
+const SHARE_CANDIDATE = {
+  root_ref: SHARE_ROOT_REF, label: SHARE_LABEL, path: SHARE_PATH,
+  mapped_drive: "Z:",
+};
 const LINK = {
   link_id: "pclink_0123456789abcdef0123456789abcdef",
   mesh_node_id: NODE_ID,
@@ -155,7 +177,8 @@ const LINK = {
   online: true,
   last_seen_at: "2026-11-02T10:30:00Z",
   roots: [{ root_ref: "pcroot_0123456789abcdef", label: "견적", path: "C:/Users/me/견적",
-            state: "active", approved_at: "2026-10-27T01:00:00Z" }],
+             state: "active", approved_at: "2026-10-27T01:00:00Z" }],
+  share_candidates: [SHARE_CANDIDATE],
 };
 const PAUSED_LINK = {
   link_id: "pclink_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -202,6 +225,7 @@ function check(name, condition, detail) {
 
 async function main() {
   const scriptText = "# PADIEM PC 자동 연결\n$PairingTag = 'pd-1234abcd'\n";
+  const installExpiry = new Date(Date.now() + 10 * 60 * 1000).toISOString();
   // The shape the route really hands back: program bytes, then the account's tag
   // and the deployment's own installer link written behind them.
   const programBytes = "MZ\u0090\u0003!PE\u0000\u0000 PADIEM PC CONNECT\r\n"
@@ -215,9 +239,12 @@ async function main() {
     "POST /api/pc/pairings": { status: 201, body: { ok: true, pairing: {
       code_id: "pcpair_abc", code: "K7QM2XTR9F4B", install_tag: "pd-1234abcd",
       expires_at: "2026-10-27T01:10:00Z" } } },
-    "POST /api/pc/pairings/install-file": { status: 200, text: scriptText },
+    "POST /api/pc/pairings/install-file": { status: 200, text: scriptText,
+      headers: { "x-pc-pairing-code-id": "pcpair_file01",
+        "x-pc-pairing-expires-at": installExpiry } },
     "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
-      headers: { "x-pc-pairing-code-id": "pcpair_exe01" } },
+      headers: { "x-pc-pairing-code-id": "pcpair_exe01",
+        "x-pc-pairing-expires-at": installExpiry } },
   });
   await settle();
   const section = first.card.ids().find((n) => n.attrs.id === "pcPairingSection");
@@ -254,6 +281,12 @@ async function main() {
   check("the wait line says the card re-checks by itself",
     waitLine && waitLine.hidden === false && waitLine.allText().includes("자동으로"),
     waitLine ? waitLine.allText() : "no wait line");
+  const deadlineLine = section.ids().find((n) => n.matchesClass("pc-pairing-deadline"));
+  check("the downloaded file shows the server's 10-minute window and the remaining time",
+    deadlineLine && deadlineLine.hidden === false
+    && deadlineLine.allText().includes("10분 안에 실행")
+    && deadlineLine.allText().includes("남은 시간"),
+    deadlineLine ? deadlineLine.allText() : "no deadline");
   check("the download is said, not the code",
     section.ids().find((n) => (n.className || "") === "pc-pairing-status")
       .allText().includes("설치 파일을 내려받았습니다")
@@ -272,6 +305,88 @@ async function main() {
   check("the fresh PC is drawn into the list",
     section.allText().includes("집 PC") && section.allText().includes("연결됨"),
     section.allText());
+
+  // -- the install expired while the card was waiting -------------------------
+  let expiredInstallCalls = 0;
+  const RETRY_TOKEN = "pt_" + "b".repeat(32);
+  const expiredCard = makeDom({
+    "GET *": { status: 200, body: { ok: true, links: [], codes: [{
+      code_id: "pcpair_expired01", state: "expired", install_token_state: "expired",
+    }] } },
+    "POST /api/pc/pairings/install-exe": () => {
+      expiredInstallCalls += 1;
+      return { status: 200, bytes: programBytes, headers: {
+        "x-pc-pairing-code-id": expiredInstallCalls === 1
+          ? "pcpair_expired01" : "pcpair_fresh01",
+        "x-pc-pairing-expires-at": installExpiry,
+      } };
+    },
+    "POST /api/pc/pairings/pcpair_expired01/token/reissue": { status: 201,
+      body: { ok: true, pairing: { code_id: "pcpair_fresh01", code: "K7QM2XTR9F6D",
+        install_tag: "pd-1234abcd",
+        install_url: "https://mesh.example.net/meshagents?id=101"
+          + "&padiem_install_token=" + RETRY_TOKEN,
+        expires_at: installExpiry } } },
+  });
+  await settle();
+  const expiredSection = expiredCard.card.ids().find((n) => n.attrs.id === "pcPairingSection");
+  await expiredCard.sandbox.window.padiemPcPairing.connect();
+  await dwell(80);
+  const expiredBox = expiredSection.ids().find(
+    (n) => n.matchesClass("pc-pairing-expired-copy"));
+  const redownload = expiredSection.ids().find(
+    (n) => n.matchesClass("pc-pairing-redownload"));
+  check("an expired code stops the wait with the recovery sentence and 다시 받기",
+    expiredBox && expiredBox.hidden === false
+    && expiredBox.allText().includes("설치 파일 시간이 지났어요")
+    && expiredBox.allText().includes("10분 안에 다시 실행")
+    && redownload && redownload.hidden === false,
+    expiredSection.allText());
+  // CTO review: the expired card must not keep the green "downloaded" line beside
+  // the red refusal, and only 다시 받기 stays of the three install buttons - the
+  // same shape as the 내 컴퓨터 modal's expired screen.
+  const expiredStatus = expiredSection.ids().find(
+    (n) => (n.className || "") === "pc-pairing-status");
+  const installToolsOnExpired = expiredSection.ids().find(
+    (n) => (n.className || "") === "pc-pairing-install-tools");
+  const shownThroughParents = (node) => {
+    let at = node;
+    while (at) { if (at.hidden) return false; at = at.parent; }
+    return true;
+  };
+  const visibleText = (node) => node.hidden ? "" : [node.text,
+    ...node.children.map(visibleText)].join(" ");
+  const installButtons = ["pc-pairing-redownload", "pc-pairing-install-cancel",
+    "pc-pairing-install-reprepare"].map((cls) => expiredSection.ids()
+      .find((n) => n.matchesClass(cls)));
+  check("the expired card drops the green downloaded line",
+    expiredStatus && expiredStatus.hidden === true
+    && !visibleText(expiredSection).includes("설치 파일을 내려받았습니다"),
+    visibleText(expiredSection));
+  check("the expired card shows only 다시 받기 of the install buttons",
+    installButtons.every(Boolean) && installToolsOnExpired
+    && installToolsOnExpired.hidden === true
+    && installButtons.filter(shownThroughParents).length === 1
+    && installButtons.filter(shownThroughParents)[0] === redownload,
+    JSON.stringify(installButtons.map((n) => n && [n.allText(), shownThroughParents(n)])));
+  const expiredDownloads = expiredCard.downloads.length;
+  redownload.click();
+  await settle();
+  check("다시 받기 reissues the install and downloads a fresh file",
+    expiredCard.calls.some((call) => call.method === "POST"
+      && call.url === "/api/pc/pairings/pcpair_expired01/token/reissue")
+    && expiredCard.downloads.length === expiredDownloads + 1,
+    JSON.stringify(expiredCard.calls));
+  const freshDeadline = expiredSection.ids().find(
+    (n) => n.matchesClass("pc-pairing-deadline"));
+  check("다시 받기 brings back the received line and the remaining time",
+    expiredStatus.hidden === false
+    && expiredStatus.allText().includes("설치 파일")
+    && /준비했습니다|내려받았습니다/.test(expiredStatus.allText())
+    && installToolsOnExpired.hidden === false
+    && freshDeadline && freshDeadline.hidden === false
+    && freshDeadline.allText().includes("남은 시간"),
+    expiredSection.allText());
 
   // -- #6695 PR-4: cancel or replace exactly the install just handed out -----
   const TOKEN = "pt_" + "a".repeat(32);
@@ -355,11 +470,19 @@ async function main() {
     !shown.allText().includes("node/meshdomain")
     && !shown.ids().some((n) => String(n.className || "").includes("pc-pairing-node")),
     shown.allText());
-  check("drive lists and the folder approval UI stay off the screen",
+  check("drive lists stay off the screen while share candidates are allowed",
     !shown.ids().some((n) => String(n.className || "").split(/\s+/).some((cls) => [
       "pc-pairing-roots", "pc-pairing-root", "pc-pairing-path",
       "pc-pairing-root-add", "pc-pairing-root-revoke"].includes(cls))),
     JSON.stringify(shown.ids().map((n) => n.className)));
+  const ownerShareRows = shown.ids().filter((n) => (n.className || "") === "pc-pairing-share");
+  const ownerApproveButtons = shown.ids().filter(
+    (n) => (n.className || "") === "pc-pairing-share-approve");
+  check("the owner card shows a reported share and the consent action",
+    ownerShareRows.length === 1 && ownerApproveButtons.length === 1
+    && ownerShareRows[0].allText().includes(SHARE_LABEL)
+    && ownerApproveButtons[0].textContent === SHARE_CONSENT,
+    JSON.stringify(ownerShareRows.map((n) => n.allText())));
   check("the script lane stays one disclosure away",
     shown.ids().some((n) => (n.className || "") === "pc-pairing-alternate")
     && await listed.sandbox.window.padiemPcPairing.connectScript() === true
@@ -496,6 +619,55 @@ async function main() {
     && signedOut.card.ids().find((n) => (n.className || "") === "pc-pairing-status")
       .allText().includes("로그인"),
     JSON.stringify(signedOut.downloads));
+
+  // -- the owner approves one reported share through the existing endpoint ---
+  const approvedRoot = { ...SHARE_CANDIDATE, state: "active", approved_at: "2026-11-19T04:00:00Z" };
+  const shared = makeDom({
+    "GET *": (count) => ({
+      status: 200,
+      body: {
+        ok: true, codes: [],
+        links: [count <= 1 ? LINK : { ...LINK, share_candidates: [], roots: [approvedRoot] }],
+      },
+    }),
+    [`POST /api/pc/pairings/${LINK.link_id}/roots`]: {
+      status: 200, body: { ok: true, root: approvedRoot },
+    },
+  });
+  await settle();
+  const shareButton = shared.card.ids().find(
+    (n) => (n.className || "") === "pc-pairing-share-approve");
+  shareButton.listeners.click[0]({});
+  await settle();
+  const approved = await shared.sandbox.window.PadiemPcShareApproval.approve(
+    LINK, SHARE_CANDIDATE, () => {});
+  const approvalCall = shared.calls.find((call) => call.method === "POST"
+    && call.url.endsWith(`/${LINK.link_id}/roots`));
+  const approvalBody = approvalCall ? JSON.parse(approvalCall.body) : {};
+  check("approving a share posts only its reference and the consent sentence",
+    approvalBody.root_ref === SHARE_ROOT_REF && approvalBody.consent === SHARE_CONSENT
+    && Object.keys(approvalBody).length === 2,
+    JSON.stringify(approvalBody));
+  check("after approval the candidate action is gone from the owner card",
+    approved === true && shared.card.allText().includes("집 PC")
+    && !shared.card.ids().some((n) => (n.className || "") === "pc-pairing-share-approve"),
+    shared.card.allText());
+
+  // A guest page never asks the pairing API at all.
+  const guest = makeDom({
+    "GET *": { status: 401, body: { ok: false, error: { code: "unauthorized" } } },
+  }, { window: { PadiemAuthGate: { authenticated: () => false } } });
+  await settle();
+  check("a guest makes no pairing API calls", guest.calls.length === 0,
+    JSON.stringify(guest.calls));
+
+  const indexHtml = fs.readFileSync(
+    path.join(__dirname, "..", "static", "index.html"), "utf8");
+  check("the page loads the share module before the card",
+    indexHtml.indexOf("./pc-pairing-share-approval.js") >= 0
+    && indexHtml.indexOf("./pc-pairing-share-approval.js")
+       < indexHtml.indexOf("./pc-pairing-card.js"),
+    "script order");
 
   // -- the standing security contracts --------------------------------------
   check("the code never reaches a URL",

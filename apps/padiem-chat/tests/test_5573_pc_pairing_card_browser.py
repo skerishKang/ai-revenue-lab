@@ -79,14 +79,17 @@ def test_the_harness_flow_passes_every_check():
     output = result.stdout + result.stderr
     assert result.returncode == 0, output
     assert "PC_PAIRING_CARD=PASS" in output
-    # 35 checks: the 2026-10-29 redesign's contract — one offer (one big connect
+    # 38 checks: the 2026-10-29 redesign's contract — one offer (one big connect
     # button), one run guide naming the three presses, a self-updating wait that
-    # turns into 연결됨 ✓ by itself, a two-PC list whose row menu renames, pauses,
+    # turns into 연결됨 ✓ by itself, #7962's 10-minute countdown and expired-code
+    # recovery through 다시 받기, a two-PC list whose row menu renames, pauses,
     # resumes and disconnects, and the mesh identity and folder-approval UI that
     # stay off the screen while the server features stay in the module — plus
     # #6695 PR-4's install controls, which appear only after a download and can
-    # cancel the install or prepare a fresh file without ever holding the token.
-    assert output.count("PC_PAIRING_CARD_CHECK") == 35
+    # cancel the install or prepare a fresh file without ever holding the token,
+    # plus the CTO's expired-card shape: no green downloaded line, only 다시 받기
+    # of the install buttons, and both back after a fresh file is downloaded.
+    assert output.count("PC_PAIRING_CARD_CHECK") == 46
     assert "FAIL" not in output
 
 
@@ -107,3 +110,4 @@ def test_the_harness_itself_fails_when_the_card_lies():
     assert result.returncode != 0
     assert "PC_PAIRING_CARD=FAIL" in result.stdout + result.stderr
     assert "an unapplied migration reads as 준비 중 FAIL" in result.stdout
+

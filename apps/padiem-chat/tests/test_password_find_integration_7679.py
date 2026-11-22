@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import shutil
 import subprocess
 import threading
@@ -15,9 +16,10 @@ import pytest
 from app.auth_validation_cache import SqliteAuthValidationCache
 from app.history import D1HistoryStore
 from app.password_auth import hash_password, verify_password
-from test_email_recovery_7606 import BASE, EMAIL, PASSWORD, build
+from _support.email_recovery import BASE, EMAIL, PASSWORD, SECRET, build, fixture_password
 
-OLD_PASSWORD = "existing-password-7679"
+# 비밀번호는 실행 때 만든다 — 규칙을 지키는 생성 함수로 비밀값처럼 보이는 글자를 남기지 않는다.
+OLD_PASSWORD = fixture_password()
 
 
 @pytest.mark.parametrize("scenario", ["normal", "chat_sessions_stuck"])
@@ -79,6 +81,7 @@ def test_real_auth_and_migrated_chat_change_the_password_of_the_same_account(sce
         result = subprocess.run(
             [node, str(Path(__file__).parent / "fixtures/password_find_auth_bridge_7679.mjs"),
              str(server.server_port), scenario], capture_output=True, text=True, timeout=30,
+            env=dict(os.environ, PADIEM_TEST_RECOVERY_PASSWORD=PASSWORD, PADIEM_TEST_RECOVERY_SECRET=SECRET),
         )
         assert result.returncode == 0, result.stderr
         report = json.loads(result.stdout)

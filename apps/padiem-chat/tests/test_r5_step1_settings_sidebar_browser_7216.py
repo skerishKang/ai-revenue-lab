@@ -45,6 +45,7 @@ HARNESS = """<!doctype html>
   <button id="mobileClose" type="button">닫기</button>
   <div id="sidebarScrim" hidden></div>
 </div>
+<script src="/static/chat-app-context.js"></script>
 <script src="/static/chat-settings-module.js"></script>
 <script src="/static/chat-sidebar-module.js"></script>
 <script>
@@ -67,15 +68,18 @@ window.__deps = r5StrictDeps({
   sidebarScrim: document.getElementById("sidebarScrim"),
   closeProfilePanel: () => { window.__events.push("profile-close"); },
 }, "step1.browser.deps");
-let __settings = null, __sidebar = null;
+let __settings = null;
 function settingsModule() {
   if (!__settings) __settings = window.PadiemChatSettingsModule.create(window.__deps);
   return __settings;
 }
-function sidebarModule() {
-  if (!__sidebar) __sidebar = window.PadiemChatSidebarModule.create(window.__deps);
-  return __sidebar;
-}
+// B7: the settings·sidebar APIs are reached through the registry, like app.js.
+const app = window.PadiemChatAppContext.create({});
+const settings = app.provide("settings",
+  window.PadiemChatSettingsModule.create(window.__deps));
+const sidebar = app.provide("sidebar",
+  window.PadiemChatSidebarModule.create(window.__deps));
+function sidebarModule() { return sidebar; }
 __FORWARDERS__
 </script>
 </body></html>
@@ -83,8 +87,17 @@ __FORWARDERS__
 
 
 def _forwarder_lines() -> str:
+    registry = {"settings": ("selectedProductTier", "openSettings", "closeSettings",
+                             "openAdvancedSettingsView", "closeAdvancedSettingsView"),
+                "sidebar": ("sidebarActionIcon", "setSidebarCollapsed", "closeSidebar", "openSidebar")}
     lines = []
     for name in FORWARDER_NAMES:
+        if name in registry["settings"] or name in registry["sidebar"]:
+            # B7: the settings·sidebar forwarders are gone from app.js — the
+            # harness mirrors the registry path app.js now uses.
+            zone = "settings" if name in registry["settings"] else "sidebar"
+            lines.append(f"function {name}(...a) {{ return {zone}.{name}(...a); }}")
+            continue
         marker = f"function {name}(...a) {{"
         line = next(line.strip() for line in APP.splitlines() if marker in line)
         lines.append(line)

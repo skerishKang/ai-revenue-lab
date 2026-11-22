@@ -308,3 +308,25 @@ def test_the_managed_mark_round_trips_through_the_queue_path():
     assert left["state"]["managed"] is True
     assert left["gate"] is True
     assert left["gate_after_unmark"] is False
+
+def test_helper_update_preferences_have_queue_and_d1_parity():
+    def flow(pairing):
+        issued = _run(pairing.issue_code(user_id=USER, issued_at=NOW))
+        _run(pairing.complete_claim_from_observation(
+            agent_name="%s [C D] CGI-9" % issued["install_tag"],
+            mesh_node_id="node//NEWPC", now=NOW + timedelta(seconds=40)))
+        row = _run(pairing.list_helper_update_preferences(user_id=USER))[0]
+        key = row["link_id"]
+        assert row["auto_helper_update"] == 1
+        assert _run(pairing.set_helper_update_preference(user_id=USER, link_id=key, auto=False))
+        assert _run(pairing.set_helper_update_preference(
+            user_id=USER, link_id=key, dismissed_version="0.4.0"))
+        assert not _run(pairing.set_helper_update_preference(
+            user_id="usr_" + "b" * 32, link_id=key, auto=True))
+        result = _run(pairing.list_helper_update_preferences(user_id=USER))[0]
+        assert result["auto_helper_update"] == 0
+        assert result["helper_update_dismissed_version"] == "0.4.0"
+        return _mask(result)
+
+    assert flow(D1PcPairingStore(_db())) == flow(
+        QueueBackedPairingStore(_client(_queue_app(_db()))))

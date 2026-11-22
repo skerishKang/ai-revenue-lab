@@ -29,6 +29,20 @@ _DENIALS = frozenset({
     "canonical_tenant_membership_ambiguous", "canonical_membership_denied",
     "connector_enrollment_owner_required", "connector_enrollment_rpc_disabled",
     "enrollment_consent_required", "canonical_auth_session_not_found", "inactive_auth_session",
+    # New-path refusals that `judge_connector_account` and its authority-side
+    # scope/consent reads can emit for a stable per-account reason (#7542).
+    # Each is judged from the authority's own storage state for this account,
+    # so the read-side verdict (match / denial_match / mismatch) can be
+    # assigned instead of staying "unavailable". Codes that name a storage or
+    # server-clock environment problem stay unmapped on purpose: those are not
+    # stable per-account refusals, so the verdict honestly stays unavailable.
+    "invalid_identity_authority_rpc", "identity_authority_product_mismatch",
+    "invalid_identity_authority", "canonical_subject_not_found",
+    "canonical_tenant_not_found", "canonical_tenant_inactive",
+    "canonical_tenant_membership_inactive", "canonical_tenant_membership_role_missing",
+    "canonical_tenant_membership_role_invalid", "canonical_tenant_membership_not_yet_active",
+    "canonical_scope_not_established", "canonical_scope_invalid",
+    "canonical_scope_identity_required", "connector_enrollment_invalid_reference",
 })
 # Account-keyed write refusals are closed to the same vocabulary plus the
 # write-specific codes. Closed means only these literals may reach a caller.

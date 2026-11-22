@@ -12,8 +12,16 @@
   <link rel="stylesheet" href="./padiem-tokens.css">
   <link rel="stylesheet" href="./admin-models.css">
   <link rel="stylesheet" href="./admin.css">
+  <link rel="stylesheet" href="./admin-ops.css">
+  <link rel="stylesheet" href="./admin-ops-scores.css">
+  <link rel="stylesheet" href="./admin-ops-alerts.css">
+  <link rel="stylesheet" href="./admin-ops-news.css">
   <script src="./admin-config.js"></script>
   <script src="./admin.js" defer></script>
+  <script src="./admin-ops-scores.js" defer></script>
+  <script src="./admin-ops-alerts.js" defer></script>
+  <script src="./admin-ops-news.js" defer></script>
+  <script src="./admin-ops.js" defer></script>
 </head>
 <body>
   <div class="shell">
@@ -62,6 +70,157 @@
             <p class="caption-note">관리 PC에서는 관리자가 SYSTEM 권한으로 명령을 실행할 수 있습니다. 표시는 계약된 PC 연결에만 적용됩니다.</p>
             <ul class="mcp-settings-list" id="pcManagedList"></ul>
             <p class="caption-note" id="pcManagedError" hidden></p>
+          </section>
+          <section class="panel ops-panel" id="opsCenterPanel" aria-labelledby="opsCenterHeading">
+            <div class="section-head"><h2 id="opsCenterHeading">운영센터</h2><span class="tiny-status" id="opsCenterStatus"></span></div>
+            <div class="ops-tabs" role="tablist" aria-label="운영센터 탭">
+              <button class="ops-tab selected" id="opsTabInbox" role="tab" aria-selected="true" aria-controls="opsInboxPane" type="button">받은함</button>
+              <button class="ops-tab" id="opsTabMembers" role="tab" aria-selected="false" aria-controls="opsMembersPane" type="button">회원</button>
+              <button class="ops-tab" id="opsTabJournal" role="tab" aria-selected="false" aria-controls="opsJournalPane" type="button">사용 일지</button>
+              <button class="ops-tab" id="opsTabScores" role="tab" aria-selected="false" aria-controls="opsScoresPane" type="button">점수 입력</button>
+              <button class="ops-tab" id="opsTabNews" role="tab" aria-selected="false" aria-controls="opsNewsPane" type="button">새 소식 관리</button>
+            </div>
+            <div class="ops-pane" id="opsInboxPane" role="tabpanel" aria-labelledby="opsTabInbox">
+              <div class="ops-inbox-bar">
+                <div class="ops-filters" id="opsFilters" role="group" aria-label="상태 거르기"></div>
+                <button class="ops-reload" id="opsReload" type="button">새로고침</button>
+              </div>
+              <p class="ops-status" id="opsStatus" hidden></p>
+              <ul class="ops-inbox-list" id="opsInboxList"></ul>
+              <button class="ops-more" id="opsMore" type="button" hidden>더 보기</button>
+              <p class="caption-note">의견 창의 받은함과 같은 서버 함수를 씁니다(/api/admin/feedback). 상태 바꾸기·답글·AI 테스터 표시도 여기서 할 수 있어요.</p>
+            </div>
+            <div class="ops-pane" id="opsMembersPane" role="tabpanel" aria-labelledby="opsTabMembers" hidden>
+              <div class="ops-inbox-bar">
+                <input class="ops-search" id="opsMemberSearch" type="search"
+                  placeholder="이름·이메일·회원 번호로 찾기" aria-label="회원 검색">
+                <button class="ops-reload" id="opsMembersReload" type="button">새로고침</button>
+              </div>
+              <p class="ops-status" id="opsMembersStatus" hidden></p>
+              <div id="opsMemberDetail" hidden></div>
+              <ul class="ops-inbox-list" id="opsMembersList"></ul>
+              <button class="ops-more" id="opsMembersMore" type="button" hidden>더 보기</button>
+              <p class="caption-note">가입일·마지막 활동(대화 기준)·등급·AI 테스터 여부·의견 수·이메일을 보여 줍니다. 누르면 회원 상세(의견·대화·PC 연결 수)가 열립니다.</p>
+            </div>
+            <div class="ops-pane" id="opsScoresPane" role="tabpanel" aria-labelledby="opsTabScores" hidden>
+              <div class="ops-score-form">
+                <label class="ops-score-field"><span class="ops-score-label">고객 이름</span>
+                  <input class="ops-score-input" id="opsScoreName" type="text" maxlength="120" autocomplete="off"></label>
+                <label class="ops-score-field"><span class="ops-score-label">회차</span>
+                  <input class="ops-score-input" id="opsScoreRound" type="number" min="1" max="9999" step="1"></label>
+                <label class="ops-score-field"><span class="ops-score-label">날짜</span>
+                  <input class="ops-score-input" id="opsScoreDay" type="date"></label>
+                <label class="ops-score-field"><span class="ops-score-label">출처</span>
+                  <select class="ops-score-input" id="opsScoreSource"></select></label>
+                <label class="ops-score-field"><span class="ops-score-label">다시 올 점수(1~5)</span>
+                  <input class="ops-score-input" id="opsScoreReturn" type="number" min="1" max="5" step="1"></label>
+                <label class="ops-score-field"><span class="ops-score-label">예쁜가(1~5)</span>
+                  <input class="ops-score-input" id="opsScorePretty" type="number" min="1" max="5" step="1"></label>
+                <label class="ops-score-field ops-score-memo-field"><span class="ops-score-label">짧은 메모</span>
+                  <input class="ops-score-input" id="opsScoreMemo" type="text" maxlength="400" autocomplete="off"></label>
+                <div class="ops-score-actions">
+                  <button class="ops-reload" id="opsScoreSubmit" type="button">점수 저장</button>
+                  <button class="ops-reload" id="opsScoreCancel" type="button" hidden>고치기 취소</button>
+                  <button class="ops-reload" id="opsScoresReload" type="button">새로고침</button>
+                </div>
+              </div>
+              <p class="ops-status" id="opsScoreStatus" hidden></p>
+              <p class="ops-status" id="opsScoresStatus" hidden></p>
+              <ul class="ops-inbox-list" id="opsScoresList"></ul>
+              <p class="caption-note">회차마다 다시 올 점수·예쁜가를 1~5로 적습니다. 고치기는 같은 줄을 바꾸고, 지우기는 숨김으로 남깁니다. 입력·수정·숨김 모두 감사 기록에 남습니다.</p>
+            </div>
+            <div class="ops-pane" id="opsJournalPane" role="tabpanel" aria-labelledby="opsTabJournal" hidden>
+              <div class="ops-inbox-bar">
+                <label class="ops-score-field"><span class="ops-score-label">기간(일)</span>
+                  <input class="ops-score-input" id="opsJournalDays" type="number" min="1" max="365" step="1" value="30"></label>
+                <button class="ops-reload" id="opsJournalReload" type="button">새로고침</button>
+              </div>
+              <div class="ops-metrics" id="opsJournalMetrics"></div>
+              <table class="ops-journal-table" aria-labelledby="opsJournalHeading">
+                <thead><tr><th scope="col">고객</th><th scope="col">출처</th><th scope="col">회차 수</th><th scope="col">최근 점수</th><th scope="col">점수 흐름</th><th scope="col">마지막 회차</th></tr></thead>
+                <tbody id="opsJournalBody"></tbody>
+              </table>
+              <h3 id="opsJournalHeading" class="ops-score-label">고객별 회차 점수</h3>
+              <p class="caption-note">활동 고객·떠난 고객·새 의견·해결 수는 의견 저장소의 집계를 의견 창 사용 일지에서 그대로 봅니다. 여기서는 앱 안에서 입력한 회차 점수의 평균과 흐름을 봅니다.</p>
+            </div>
+            <div class="ops-pane" id="opsNewsPane" role="tabpanel" aria-labelledby="opsTabNews" hidden>
+              <form class="ops-news-form" id="opsNewsForm">
+                <label class="ops-news-field"><span>배포 버전 (YYYY.MM.DD)</span>
+                  <input id="opsNewsVersion" class="ops-news-input" type="text" placeholder="2026.11.20" pattern="[0-9]{4}[.][0-9]{2}[.][0-9]{2}" maxlength="10"></label>
+                <label class="ops-news-field"><span>종류</span>
+                  <select id="opsNewsKind" class="ops-news-input"><option value="improved">좋아진 점</option><option value="fixed">고친 점</option></select></label>
+                <label class="ops-news-field"><span>출처</span>
+                  <select id="opsNewsSource" class="ops-news-input"><option value="none">없음</option><option value="ai_tester">AI 테스터</option><option value="user">사용자 의견</option></select></label>
+                <label class="ops-news-field ops-news-wide"><span>제목</span>
+                  <input id="opsNewsTitle" class="ops-news-input" type="text" maxlength="120" required></label>
+                <label class="ops-news-field ops-news-wide"><span>설명</span>
+                  <textarea id="opsNewsDetail" class="ops-news-input" rows="4" maxlength="1000" required></textarea></label>
+                <label class="ops-news-field ops-news-wide"><span>추가 연결할 의견 번호 (쉼표 또는 줄바꿈으로 구분)</span>
+                  <textarea id="opsNewsFeedback" class="ops-news-input" rows="2" placeholder="fb_…"></textarea></label>
+                <p class="caption-note ops-news-wide" id="opsNewsLinked" hidden></p>
+                <div class="ops-news-actions ops-news-wide">
+                  <button class="ops-reload" id="opsNewsSubmit" type="submit">새 소식 작성</button>
+                  <button class="ops-reload" id="opsNewsCancel" type="button" hidden>고치기 취소</button>
+                  <button class="ops-reload" id="opsNewsReload" type="button">새로고침</button>
+                </div>
+              </form>
+              <p class="ops-status" id="opsNewsStatus" role="status" hidden></p>
+              <ul class="ops-inbox-list" id="opsNewsList"></ul>
+              <p class="caption-note">최근 새 소식입니다. 작성·고치기는 공개 목록에 바로 반영됩니다. 기존 의견 연결은 유지되며 추가할 수 있습니다.</p>
+            </div>
+            <div class="ops-alert-block">
+              <div class="section-head compact"><h3 id="opsAlertHeading">알림 상태</h3>
+                <button class="ops-reload" id="opsAlertReload" type="button">새로고침</button>
+                <button class="ops-reload" id="opsAlertDispatch" type="button">다시 보내기</button></div>
+              <p class="ops-alert-config" id="opsAlertConfig"></p>
+              <table class="ops-alert-table" aria-labelledby="opsAlertHeading">
+                <thead><tr><th scope="col">채널</th><th scope="col">마지막 성공</th><th scope="col">마지막 실패</th><th scope="col">시도</th><th scope="col">포기</th></tr></thead>
+                <tbody id="opsAlertBody"></tbody>
+              </table>
+              <p class="ops-status" id="opsAlertStatus" hidden></p>
+              <p class="caption-note">새 의견·회차 점수가 들어오면 설정된 채널로 짧게 알립니다. 알림에는 종류·분류·번호·운영센터 링크만 담기고, 의견 본문·이메일·회원 정보는 담기지 않습니다. 보내기 실패는 접수를 막지 않고 대기함에 남습니다.</p>
+            </div>
+            <div class="ops-alert-block">
+              <div class="section-head compact"><h3 id="opsPcVersionsHeading">PC 버전 현황</h3>
+                <button class="ops-reload" id="opsPcVersionsReload" type="button">새로 읽기</button></div>
+              <div id="opsPcRollout" hidden>
+                <h4>도우미 단계적 배포</h4>
+                <p id="opsPcRolloutSummary" class="caption-note"></p>
+                <p class="caption-note">내부 PC는 관리 PC 목록을 사용합니다. 새 버전을 올리기 전에 현재 안정 버전을 기준으로 등록하세요. 최소 지원 버전은 모든 PC에 적용됩니다.</p>
+                <label for="opsPcRolloutPercent">일부 배포 비율 (%)</label>
+                <input id="opsPcRolloutPercent" type="number" min="1" max="99" step="1" size="3">
+                <button class="ops-reload" id="opsPcRolloutInitialize" type="button">기준 버전 등록</button>
+                <button class="ops-reload" id="opsPcRolloutSave" type="button">비율 저장</button>
+                <button class="ops-reload" id="opsPcRolloutNext" type="button">다음 단계로</button>
+                <button class="ops-reload" id="opsPcRolloutPause" type="button">멈춤</button>
+                <table class="ops-alert-table" aria-label="배포 단계별 PC 상태">
+                  <thead><tr><th scope="col">묶음</th><th scope="col">PC</th><th scope="col">새 버전</th><th scope="col">실패</th><th scope="col">롤백</th></tr></thead>
+                  <tbody id="opsPcRolloutBody"></tbody>
+                </table>
+                <p class="ops-status" id="opsPcRolloutStatus" role="status" hidden></p>
+              </div>
+              <div>
+                <button class="ops-reload" id="opsPcRefreshPreview" type="button">업데이터 갱신 미리 보기</button>
+                <button class="ops-reload" id="opsPcRefreshApply" type="button" disabled>갱신 실행</button>
+                <p class="ops-status" id="opsPcRefreshStatus" role="status" hidden></p>
+              </div>
+              <table class="ops-alert-table" aria-labelledby="opsPcVersionsHeading">
+                <thead><tr><th scope="col">PC</th><th scope="col">도우미 버전 / 빌드</th><th scope="col">Mesh Agent 버전</th><th scope="col">최근 상태 확인 (UTC)</th><th scope="col">업데이터 갱신</th></tr></thead>
+                <tbody id="opsPcVersionsBody"></tbody>
+              </table>
+              <p class="ops-status" id="opsPcVersionsStatus" role="status" hidden></p>
+              <p class="caption-note">연결된 PC의 도우미 버전과 갱신 상태를 표시합니다. 값이 없으면 상태 보고가 아직 도착하지 않은 것입니다. 미리 보기는 읽기 전용이며 실제 PC를 변경하지 않습니다.</p>
+            </div>
+            <div class="ops-audit-block">
+              <div class="section-head compact"><h3 id="opsAuditHeading">최근 감사 기록</h3>
+                <button class="ops-reload" id="opsAuditReload" type="button">새로고침</button></div>
+              <table class="ops-audit-table" aria-labelledby="opsAuditHeading">
+                <thead><tr><th scope="col">시각</th><th scope="col">누가</th><th scope="col">무엇</th><th scope="col">대상</th></tr></thead>
+                <tbody id="opsAuditBody"></tbody>
+              </table>
+              <p class="ops-status" id="opsAuditStatus" hidden></p>
+              <p class="caption-note">운영센터와 의견 운영 도구의 변경·회원 상세 열람이 누가·언제·무엇을로 남습니다.</p>
+            </div>
           </section>
           <section class="panel note-panel" aria-labelledby="policyHeading">
             <div class="section-head"><h2 id="policyHeading">운영 원칙</h2></div>

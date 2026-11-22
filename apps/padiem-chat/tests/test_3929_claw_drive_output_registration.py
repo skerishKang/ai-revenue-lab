@@ -28,7 +28,7 @@ from kagent.google_drive_artifact_upload import (
     GoogleDriveArtifactUploadAdapter, DRIVE_UPLOAD_CAPABILITY,
     upload_payload_fingerprint,
 )
-from test_3929_claw_conversation_artifact_d1 import (
+from _support.conversation_artifact_d1 import (
     D1Sqlite, setup_database, OWNER, FOREIGN, CHAT, FOREIGN_CHAT,
     WORKSPACE, OTHER_WORKSPACE, RUN, RUN2,
 )
@@ -186,7 +186,7 @@ class ClawProviderToD1Tests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(app.state.claw_durable_drive_output_pipeline)
         with patch("app.claw_conversation_artifact_routes._resolve_canonical_tenant",cp):
             with TestClient(app,base_url="https://chat.example.test") as client:
-                client.cookies.set(SESSION_COOKIE,create_session_token(base._settings(),OWNER),
+                client.cookies.set(SESSION_COOKIE,create_session_token(base._settings(),OWNER, canonical_session_id="session_test_a"),
                                    domain="chat.example.test",path="/")
                 resp=client.get(f"/api/claw/conversations/{CHAT}/artifact-followup?kind=pdf")
                 self.assertEqual(resp.status_code,200,resp.text)

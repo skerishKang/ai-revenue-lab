@@ -1,9 +1,10 @@
 import { AuthState } from './state.mjs';
 import { verifyGoogleIdToken } from './google-id-token.mjs';
 import { issueAccessToken } from './access-token.mjs';
+import { emailAssertionField } from './email-assertion.mjs';
 import { verifyClientAssertion } from './client-assertion.mjs';
 import { profileClaimAllowlist, verifiedProfile, verifiedIssuedProfile } from './profile-claims.mjs';
-import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupCompletePage, brandSignupPage, brandUnderagePage, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
+import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupCompletePage, brandSignupPage, brandUnderagePage, brandAgeConfirmPage, brandAgeNoticePage, AGE_CONFIRM_TEXT, AGE_CONFIRM_PLAIN_CSS, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
 import { privacyPage, termsPage } from './shared-docs.mjs';
 import { PLAIN_SIGNUP_COMPLETE_CSS, signupCompleteBody, signupCompleteRefresh, signupCompleteText } from './signup-complete.mjs';
 import { addRecoveryLink, emailRecoveryEnabled as recoverySwitch, recoveryBody, recoveryPage, recoveryStrings, validRecoveryEmail, validRecoveryToken } from './email-recovery.mjs';
@@ -183,7 +184,7 @@ async function recoveryRpc({ secret, origin, fetcher = fetch, now = epoch() }, a
 }
 
 const esc = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
-const pageStyle = `*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:Pretendard,'Noto Sans KR',Inter,ui-sans-serif,system-ui,sans-serif;color:var(--text)}main{width:100%;max-width:400px;margin:24px;padding:32px 28px;background:var(--panel);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}h1{font-size:20px;margin:0 0 20px;text-align:center;letter-spacing:-.04em;font-weight:600}.btn{display:flex;align-items:center;justify-content:center;gap:9px;min-height:48px;width:100%;padding:0 16px;border-radius:8px;border:1px solid var(--line);background:var(--panel);font-size:15px;font-weight:600;text-align:center;text-decoration:none;color:var(--text);cursor:pointer}.btn .g-logo{flex:0 0 auto;width:18px;height:18px}.btn+.btn{margin-top:10px}.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover)}.divider{display:flex;align-items:center;gap:12px;margin:20px 0 4px;color:var(--muted);font-size:12px}.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}form{margin:0}button,input{font:inherit}form .btn-primary{margin-top:14px}label{display:block;font-size:12px;font-weight:600;letter-spacing:0;margin:12px 0 4px;color:var(--muted)}input{width:100%;padding:11px;border:1px solid var(--input-line);border-radius:8px;font-size:15px;color:var(--text);background:var(--panel)}.message{margin:0 0 12px;padding:10px;border-radius:8px;background:var(--error-bg);color:var(--error);font-size:14px}.link{display:block;margin-top:16px;text-align:center;font-size:13px;color:var(--primary);text-decoration:none}.padiem-account-line{margin:18px 0 0;text-align:center;font-size:11px;letter-spacing:.04em;line-height:1.6;color:var(--muted);word-break:keep-all}@media (max-width:680px){main{margin:0;min-height:100vh;max-width:none;border-radius:0;box-shadow:none}}:root{--bg:#f5f6f8;--panel:#fff;--text:#1c1e21;--muted:#5f6368;--primary:#1a73e8;--primary-hover:#1765cc;--line:#dadce0;--input-line:#747775;--error-bg:#fce8e6;--error:#c5221f}@media (prefers-color-scheme:dark){:root{--bg:#10151c;--panel:#1a232d;--text:#edf4fa;--muted:#9fb3c3;--primary:#1a73e8;--primary-hover:#1765cc;--line:#2d3a47;--input-line:#425263;--error-bg:#3a2323;--error:#f2b8b5}}.padiem-check{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;font-size:13px;line-height:1.5;cursor:pointer;color:var(--text)}.padiem-check input{flex:0 0 auto;width:18px;height:18px;margin:2px 0 0;padding:0}.padiem-under14{display:block;width:100%;border:0;background:none;padding:0;margin:12px 0 0;min-height:44px;font-size:13px;color:var(--primary);text-decoration:underline;text-underline-offset:4px;cursor:pointer}.btn-primary:disabled{opacity:.55;cursor:not-allowed}.padiem-doc-links{display:flex;justify-content:center;gap:10px;margin:16px 0 0;font-size:12px;color:var(--muted)}.padiem-notice{margin:0 0 8px;font-size:15px;line-height:1.7}`;
+const pageStyle = `*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:var(--ui);color:var(--text)}main{width:100%;max-width:400px;margin:24px;padding:32px 28px;background:var(--panel);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}h1{font-size:25px;margin:0 0 20px;text-align:center;letter-spacing:-.02em;font-weight:700;font-family:var(--ui)}.btn{display:flex;align-items:center;justify-content:center;gap:9px;min-height:44px;width:100%;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-family:var(--ui);font-size:15px;font-weight:600;text-align:center;text-decoration:none;color:var(--text);cursor:pointer}.btn .g-logo{flex:0 0 auto;width:18px;height:18px}.btn+.btn{margin-top:10px}.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover)}.divider{display:flex;align-items:center;gap:12px;margin:20px 0 4px;color:var(--muted);font-size:12px}.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}form{margin:0}button,input{font:inherit}form .btn-primary{margin-top:14px}label{display:block;font-size:12px;font-weight:600;letter-spacing:0;margin:12px 0 4px;color:var(--muted)}input{width:100%;padding:11px;border:1px solid var(--input-line);border-radius:8px;font-size:15px;color:var(--text);background:var(--panel)}.message{margin:0 0 12px;padding:10px;border-radius:8px;background:var(--error-bg);color:var(--error);font-size:14px}.link{display:block;margin-top:16px;text-align:center;font-size:13px;color:var(--primary);text-decoration:none}.padiem-account-line{margin:18px 0 0;text-align:center;font-size:11px;letter-spacing:.04em;line-height:1.6;color:var(--muted);word-break:keep-all}@media (max-width:680px){main{margin:0;min-height:100vh;max-width:none;border-radius:0;box-shadow:none}}:root{--ui:'Malgun Gothic','Apple SD Gothic Neo',Pretendard,'Noto Sans KR',Inter,ui-sans-serif,system-ui,sans-serif;--bg:#f5f6f8;--panel:#fff;--text:#1c1e21;--muted:#5f6368;--primary:#1a73e8;--primary-hover:#1765cc;--line:#dadce0;--input-line:#747775;--error-bg:#fce8e6;--error:#c5221f}@media (prefers-color-scheme:dark){:root{--bg:#10151c;--panel:#1a232d;--text:#edf4fa;--muted:#9fb3c3;--primary:#1a73e8;--primary-hover:#1765cc;--line:#2d3a47;--input-line:#425263;--error-bg:#3a2323;--error:#f2b8b5}}.padiem-check{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;font-size:13px;line-height:1.5;cursor:pointer;color:var(--text)}.padiem-check input{flex:0 0 auto;width:18px;height:18px;margin:2px 0 0;padding:0}.padiem-under14{display:block;width:100%;border:0;background:none;padding:0;margin:12px 0 0;min-height:44px;font-size:13px;color:var(--primary);text-decoration:underline;text-underline-offset:4px;cursor:pointer}.btn-primary:disabled{opacity:.55;cursor:not-allowed}.padiem-doc-links{display:flex;justify-content:center;gap:10px;margin:16px 0 0;font-size:12px;color:var(--muted)}.padiem-notice{margin:0 0 8px;font-size:15px;line-height:1.7}`;
 // #7818: brandless-screen strings for the age gate and the shared-doc links.
 const AGE_TEXT = {
   ko: { confirm: "만 14세 이상입니다", required: "(필수)", under14: "만 14세 미만이에요", needCheck: "만 14세 이상 확인에 체크해 주세요.", notice: "PADIEM은 만 14세 이상부터 가입할 수 있어요.", back: "가입 화면으로 돌아가기", privacy: "개인정보처리방침", terms: "이용약관" },
@@ -323,7 +324,7 @@ const deletedGoogleAccountResponse = (request) => htmlPage(403, messagePage('탈
 const DELETED_ACCOUNT = Object.freeze({ state: 'deleted' });
 
 // An adapter is injected in tests; the deployed entry point below only uses DO bindings.
-export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch, emailRecoveryEnabled = false, passwordFindEnabled = false, emailConfirmationEnabled = false, accountCreatedAtClaims = false, defer }) {
+export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch, emailRecoveryEnabled = false, passwordFindEnabled = false, emailConfirmationEnabled = false, accountCreatedAtClaims = false, emailAssertionKey = null, defer }) {
   const passwordRpcConfigured = typeof passwordRpcSecret === 'string' && passwordRpcSecret.length >= 32 &&
     typeof passwordRpcOrigin === 'string' && /^https:\/\/[^/]+\/?$/.test(passwordRpcOrigin);
   const passwordChoiceEnabled = (client) => client?.password_login === true && passwordRpcConfigured;
@@ -358,6 +359,207 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
     await verifyClientAssertion({ assertion, clientId: client.id, jwks: client.jwks, audience: `${ORIGIN}/token`, now: current,
       claim: (x) => stateFor('client-assertion-replay').claimAssertion(x) });
   }
+  // #7818 PR 2: external-login age gate. All new processing lives here so the
+  // large request router above it does not grow. The verified identity is kept
+  // in the server-side DO; the browser only carries the opaque handle.
+  const AGE_CONFIRM_TTL_SECONDS = 600;
+  const ageConfirmFormPage = (action, handle, lang = 'ko', message = '') => {
+    const a = AGE_CONFIRM_TEXT[lang] || AGE_CONFIRM_TEXT.ko;
+    const t = ageText(lang);
+    const script = '<scr' + 'ipt>(function(){var c=document.getElementById("ageConfirm"),b=document.getElementById("signupSubmit");if(!c||!b)return;var f=function(){b.disabled=!c.checked};c.addEventListener("change",f);f()})();</scr' + 'ipt>';
+    return page(a.title, `<h1 id="age-confirm-title">${esc(a.title)}</h1><p class="padiem-notice">${esc(a.lead)}</p><form method="post" action="${esc(action)}"><input type="hidden" name="handle" value="${esc(handle)}">${message ? `<p class="message">${esc(message)}</p>` : ''}<label class="padiem-check age-screen" for="ageConfirm"><input id="ageConfirm" name="age_confirm" value="yes" type="checkbox"><span>${esc(t.confirm)} <small>${esc(t.required)}</small></span></label><button id="signupSubmit" class="btn btn-primary" type="submit">${esc(a.submit)}</button><button class="padiem-under14" type="submit" name="under14" value="1">${esc(t.under14)}</button></form>${script}`, lang, `<style>${AGE_CONFIRM_PLAIN_CSS}</style>`);
+  };
+  const ageConfirmNoticePage = (lang) => {
+    const a = AGE_CONFIRM_TEXT[lang] || AGE_CONFIRM_TEXT.ko;
+    return page(a.notice, `<h1>${esc(a.notice)}</h1><p class="padiem-notice" role="alert">${esc(ageText(lang).notice)}</p>`, lang);
+  };
+  const ageConfirmRender = ({ brand, theme, lang, handle, message = '', action = '/age-confirm/google' }) => brand
+    ? brandAgeConfirmPage({ brand, theme, lang, formAction: action, handle, message })
+    : ageConfirmFormPage(action, handle, lang, message);
+  const ageConfirmAction = (data) => data.provider === 'password' ? '/age-confirm/password' : '/age-confirm/google';
+
+  // Shared tail of a Google login: resolve the account, record the confirmation
+  // when one was just given, issue the short code and return to the service.
+  async function finishGoogleLogin({ request, current, pending, subject, userId, fingerprint, profile, stateKey, confirm = false }) {
+    const registry = stateFor('google-account-registry');
+    const account = await diagnosed('identity_lookup_failed', async () => {
+      const result = await registry.resolveAccount({
+        fingerprint, productId: pending.client, userId, subject, now: current,
+        ...(confirm ? { ageConfirmedAt: current } : {}),
+      });
+      if (result?.state === 'deleted') return result;
+      if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
+      return result;
+    });
+    if (account.state === 'deleted') return deletedGoogleAccountResponse(request);
+    // An existing account returns from resolveAccount before the confirmation
+    // is written. putAccount is first-wins, so this never overwrites a record.
+    if (confirm) await registry.putAccount({ fingerprint, accountId: account.account_id, ageConfirmedAt: current, now: current });
+    const codeSecret = random(), codeDigest = await digest(codeSecret);
+    const fields = profileClaimAllowlist(clients[pending.client]);
+    let encryptedProfile;
+    if (fields.length) {
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const aad = encoder.encode(`profile:${pending.client}:${codeDigest}`);
+      const cipher = await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:aad}, refreshKey, encoder.encode(JSON.stringify(verifiedProfile(profile || {}, fields))));
+      encryptedProfile = `${b64(iv)}.${b64(new Uint8Array(cipher))}`;
+    }
+    await diagnosed('code_issue_failed', async () => stateFor(stateKey).createCode({ digest: codeDigest, client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60, encryptedProfile, amr: 'google' }));
+    const target = new URL(pending.redirect);
+    target.searchParams.set('code', `${stateKey}.${codeSecret}`);
+    target.searchParams.set('state', pending.service_state);
+    return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
+  }
+
+  // Shared first step: park the verified identity in the server-side store and
+  // show the PR 1 gate. The browser gets only an opaque, cookie-bound handle.
+  async function parkAndShowAgeGate({ request, current, pending, stateKey, browser, payload, action }) {
+    const lang = resolveLang(request.headers.get('accept-language'));
+    const brand = resolveBrand(pending.client);
+    const theme = resolveTheme(brand, pending.lt_theme || brand?.defaultTheme);
+    const handle = random();
+    const record = {
+      ...payload, stateKey,
+      client: pending.client, redirect: pending.redirect,
+      serviceState: pending.service_state, serviceChallenge: pending.service_challenge,
+      ltTheme: pending.lt_theme || null,
+    };
+    await stateFor('google-age-confirmation').createAgeConfirmation({
+      handleDigest: await digest(handle), browserDigest: await digest(browser),
+      payload: JSON.stringify(record), expires: current + AGE_CONFIRM_TTL_SECONDS, now: current,
+    });
+    return passwordPage(200, ageConfirmRender({ brand, theme, lang, handle, action }), lang,
+      { 'set-cookie': cookieHeader(browser, AGE_CONFIRM_TTL_SECONDS) });
+  }
+
+  async function googleAgeConfirmStart({ request, current, pending, stateKey, browser, subject, fingerprint, userId, profile }) {
+    const fields = profileClaimAllowlist(clients[pending.client]);
+    return parkAndShowAgeGate({
+      request, current, pending, stateKey, browser, action: '/age-confirm/google',
+      payload: {
+        provider: 'google', subject, fingerprint, userId,
+        profile: fields.length ? (profile || {}) : null,
+      },
+    });
+  }
+
+  // A legacy email account has no confirmation row. Gate it at login, before
+  // the code is issued, with the same screen and the same server-side store.
+  function passwordAgeConfirmStart({ request, current, pending, stateKey, browser, fingerprint, userId, subject, credentialEpoch }) {
+    return parkAndShowAgeGate({
+      request, current, pending, stateKey, browser, action: '/age-confirm/password',
+      payload: { provider: 'password', subject, fingerprint, userId, credentialEpoch },
+    });
+  }
+
+  // Shared second step: the form posts back with only the opaque handle.
+  async function ageConfirmSubmit(request, current, expectProvider, resume) {
+    const contentLength = Number(request.headers.get('content-length') || '0');
+    if (contentLength > 4096) return json(400, { error: 'invalid_request' });
+    const form = new URLSearchParams(await request.text());
+    const handle = one(form, 'handle'), browser = cookieValue(request);
+    if (!handle || !opaque.test(handle) || !opaque.test(browser)) return json(400, { error: 'invalid_request' });
+    const lang = resolveLang(request.headers.get('accept-language'));
+    const store = stateFor('google-age-confirmation');
+    const handleDigest = await digest(handle), browserDigest = await digest(browser);
+    const raw = await store.readAgeConfirmation({ handleDigest, browserDigest, now: current });
+    if (!raw) return json(400, { error: 'invalid_request' });
+    let data;
+    try { data = JSON.parse(raw); } catch { return json(400, { error: 'invalid_request' }); }
+    // Each endpoint only accepts the kind of record it was parked for. A
+    // mismatch is refused without consuming the handle, so the rightful
+    // endpoint can still answer it.
+    if (data.provider !== expectProvider) return json(400, { error: 'invalid_request' });
+    // The skin comes from the verified client stored with the pending login;
+    // the form's cosmetic fields are never trusted for the rendered notice.
+    const brand = resolveBrand(data.client);
+    const theme = resolveTheme(brand, data.ltTheme || one(form, 'lt_theme'));
+    const action = ageConfirmAction(data);
+    if (one(form, 'under14') === '1') {
+      await store.consumeAgeConfirmation({ handleDigest, browserDigest, now: current });
+      return passwordPage(200, brand
+        ? brandAgeNoticePage({ brand, theme, lang })
+        : ageConfirmNoticePage(lang), lang);
+    }
+    if (one(form, 'age_confirm') !== 'yes') {
+      const s = brand ? (brand.strings[lang] || brand.strings.ko) : ageText(lang);
+      return passwordPage(200, ageConfirmRender({ brand, theme, lang, handle, message: s.needCheck, action }), lang);
+    }
+    await store.consumeAgeConfirmation({ handleDigest, browserDigest, now: current });
+    return resume({ data, brand, theme, lang, handle });
+  }
+
+  async function googleAgeConfirmSubmit(request, current) {
+    return ageConfirmSubmit(request, current, 'google', ({ data, brand, theme, lang }) => {
+      const pending = {
+        client: data.client, redirect: data.redirect,
+        service_state: data.serviceState, service_challenge: data.serviceChallenge,
+      };
+      return finishGoogleLogin({
+        request, current, pending, subject: data.subject, userId: data.userId,
+        fingerprint: data.fingerprint, profile: data.profile, stateKey: data.stateKey, confirm: true,
+      });
+    });
+  }
+
+  async function passwordAgeConfirmSubmit(request, current) {
+    return ageConfirmSubmit(request, current, 'password', ({ data, brand, theme, lang }) => {
+      const pending = {
+        client: data.client, redirect: data.redirect,
+        service_state: data.serviceState, service_challenge: data.serviceChallenge,
+      };
+      return finishPasswordLogin({
+        request, current, pending, stateKey: data.stateKey,
+        fingerprint: data.fingerprint, userId: data.userId, subject: data.subject,
+        credentialEpoch: data.credentialEpoch, register: false, email: data.subject,
+        brand, theme, lang, confirm: true,
+      });
+    });
+  }
+
+  // Shared tail of an email login: resolve the account, record a confirmation
+  // given at the gate, issue the code and return to the service.
+  async function finishPasswordLogin({ request, current, pending, stateKey, fingerprint, userId, subject, credentialEpoch, register, email, brand, theme, lang, confirm = false }) {
+    const registry = stateFor('google-account-registry');
+    const account = await diagnosed('identity_lookup_failed', async () => {
+      const result = await registry.resolveAccount({
+        fingerprint, productId: pending.client, userId, subject, provider: 'password', now: current,
+        allowRecreate: register, credentialEpoch, register,
+        ...(register || confirm ? { ageConfirmedAt: current } : {}),
+      });
+      if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
+      return result;
+    });
+    // A pre-#7818 account returns from resolveAccount before the confirmation
+    // is written; putAccount is first-wins and never overwrites an older value.
+    if (confirm) await registry.putAccount({ fingerprint, accountId: account.account_id, ageConfirmedAt: current, now: current });
+    if (register && confirmEnabled) {
+      const mail = sendEmailConfirmation({ registry, fingerprint, epoch: credentialEpoch, email, lang, source: request.headers.get('cf-connecting-ip'), current })
+        .catch(() => { console.error(JSON.stringify({ auth_stage: 'email_confirmation_unavailable' })); });
+      if (typeof defer === 'function') defer(mail); else await mail;
+    }
+    const codeSecret = random(), codeDigest = await digest(codeSecret);
+    const fields = profileClaimAllowlist(clients[pending.client]);
+    let encryptedProfile;
+    if (fields.length) {
+      const emailConfirmed = confirmEnabled && !register && fields.includes('email_verified') &&
+        await registry.passwordEmailConfirmed({ fingerprint, epoch: credentialEpoch }) === true;
+      const claims = { email, email_verified: emailConfirmed, name: '', picture: '' };
+      const profile = Object.fromEntries(fields.map((field) => [field, claims[field]]));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const aad = encoder.encode(`profile:${pending.client}:${codeDigest}`);
+      const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: aad }, refreshKey, encoder.encode(JSON.stringify(profile)));
+      encryptedProfile = `${b64(iv)}.${b64(new Uint8Array(cipher))}`;
+    }
+    await diagnosed('code_issue_failed', async () => stateFor(stateKey).createCode({ digest: codeDigest, client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60, encryptedProfile, amr: 'pwd' }));
+    const target = new URL(pending.redirect);
+    target.searchParams.set('code', `${stateKey}.${codeSecret}`);
+    target.searchParams.set('state', pending.service_state);
+    const leave = { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' };
+    if (register) return htmlPage(200, signupCompletePage({ brand, theme, lang, email, continueHref: target.href }), leave);
+    return redirect(target.href, leave);
+  }
+
   async function app(request) {
     const url = new URL(request.url), current = now();
     // #7818: the shared PADIEM account documents. htmlPage on purpose:
@@ -592,7 +794,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const lang = resolveLang(request.headers.get('accept-language'));
       const fields = profileClaimAllowlist(client);
       const object = random(), stateSecret = random(), browser = random(), nonce = random(), verifier = random();
-      await stateFor(object).createLogin({ stateDigest: await digest(stateSecret), browserDigest: await digest(browser), client: id, redirect: returnTo, serviceState, serviceChallenge: challenge, googleNonce: nonce, googleVerifier: verifier, expires: current + 600 });
+      await stateFor(object).createLogin({ stateDigest: await digest(stateSecret), browserDigest: await digest(browser), client: id, redirect: returnTo, serviceState, serviceChallenge: challenge, googleNonce: nonce, googleVerifier: verifier, expires: current + 600, ltTheme: one(url.searchParams, 'lt_theme') });
       const cookieSet = cookieHeader(browser, 600);
       // The email choice/signup screens create exactly the same login state and
       // browser cookie as the Google redirect does; the email form POST later
@@ -622,6 +824,8 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       for (const [k, v] of Object.entries(values)) google.searchParams.set(k, v);
       return redirect(google.href, { 'set-cookie': cookieSet });
     }
+    if (url.pathname === '/age-confirm/google' && request.method === 'POST') return googleAgeConfirmSubmit(request, current);
+    if (url.pathname === '/age-confirm/password' && request.method === 'POST') return passwordAgeConfirmSubmit(request, current);
     if ((url.pathname === '/login/password' || url.pathname === '/signup/password') && request.method === 'POST') {
       if (!passwordRpcConfigured) return json(404, { error: 'not_found' });
       const register = url.pathname === '/signup/password';
@@ -738,50 +942,16 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         stateFor(state[0]).consumeLogin({ stateDigest: await digest(state[1]), browserDigest: await digest(browser), now: current }));
       if (!pending) return json(400, { error: 'invalid_callback' });
       if (!clients[pending.client]?.redirect_uris?.includes(pending.redirect)) return json(400, { error: 'invalid_callback' });
-      const account = await diagnosed('identity_lookup_failed', async () => {
-        const result = await registry.resolveAccount({ fingerprint: passwordFingerprint, productId: pending.client, userId: data.product_user_id, subject: email, provider: 'password', now: current, allowRecreate: register, credentialEpoch, register, ...(register ? { ageConfirmedAt: current } : {}) });
-        if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
-        return result;
+      // #7818 PR 2: an account created before PR 1 has no confirmation row.
+      // Ask once here, after the credential is proven and before the code.
+      if (!register && await registry.ageConfirmedAt({ fingerprint: passwordFingerprint }) === null) {
+        return passwordAgeConfirmStart({ request, current, pending, stateKey: state[0], browser, fingerprint: passwordFingerprint, userId: data.product_user_id, subject: email, credentialEpoch });
+      }
+      return finishPasswordLogin({
+        request, current, pending, stateKey: state[0], fingerprint: passwordFingerprint,
+        userId: data.product_user_id, subject: email, credentialEpoch, register,
+        email, brand, theme, lang,
       });
-      // #7679: the optional confirmation mail. It never delays or fails the
-      // signup; where the runtime allows it the work runs after the answer.
-      if (register && confirmEnabled) {
-        const mail = sendEmailConfirmation({ registry, fingerprint: passwordFingerprint, epoch: credentialEpoch, email, lang, source: request.headers.get('cf-connecting-ip'), current })
-          .catch(() => { console.error(JSON.stringify({ auth_stage: 'email_confirmation_unavailable' })); });
-        if (typeof defer === 'function') defer(mail); else await mail;
-      }
-      const codeSecret = random(), codeDigest = await digest(codeSecret);
-      const fields = profileClaimAllowlist(clients[pending.client]);
-      let encryptedProfile;
-      if (fields.length) {
-        // A password login proves the credential against Chat's internal
-        // /internal/password-verify, not the mailbox: by itself the profile
-        // never claims a verified email. Operator allowlists key on a verified
-        // email, so email_verified stays false. Chat's shared-profile provision
-        // accepts email_verified:false when the verified access token carries
-        // amr:['pwd'] (with the empty name/picture shape kept as transitional
-        // fallback).
-        // #7679: the one exception is an address its owner confirmed through
-        // the mailed link, for the credential the account was linked with, and
-        // only while that switch is on.
-        const emailConfirmed = confirmEnabled && !register && fields.includes('email_verified') &&
-          await registry.passwordEmailConfirmed({ fingerprint: passwordFingerprint, epoch: credentialEpoch }) === true;
-        const claims = { email, email_verified: emailConfirmed, name: '', picture: '' };
-        const profile = Object.fromEntries(fields.map(field => [field, claims[field]]));
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        const aad = encoder.encode(`profile:${pending.client}:${codeDigest}`);
-        const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: aad }, refreshKey, encoder.encode(JSON.stringify(profile)));
-        encryptedProfile = `${b64(iv)}.${b64(new Uint8Array(cipher))}`;
-      }
-      await diagnosed('code_issue_failed', async () => stateFor(state[0]).createCode({ digest: codeDigest, client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60, encryptedProfile, amr: 'pwd' }));
-      const target = new URL(pending.redirect);
-      target.searchParams.set('code', `${state[0]}.${codeSecret}`);
-      target.searchParams.set('state', pending.service_state);
-      const leave = { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' };
-      // #7679: a finished email signup shows one confirmation screen that
-      // carries the same return address; a login still returns at once.
-      if (register) return htmlPage(200, signupCompletePage({ brand, theme, lang, email, continueHref: target.href }), leave);
-      return redirect(target.href, leave);
     }
     if (url.pathname === '/oauth/google/callback' && request.method === 'GET') {
       const state = split(one(url.searchParams, 'state')), browser = cookieValue(request), code = one(url.searchParams, 'code');
@@ -805,28 +975,14 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (await stateFor('google-account-registry').identityIsDeleted({ fingerprint: await identityFingerprint(identityKey, identity.sub) })) {
         return deletedGoogleAccountResponse(request);
       }
-      const account = await diagnosed('identity_lookup_failed', async () => {
-        const userId = await googleProductUserId(identity.sub);
-        const fingerprint = await identityFingerprint(identityKey, identity.sub);
-        const result = await stateFor('google-account-registry').resolveAccount({ fingerprint, productId: pending.client, userId, subject: identity.sub, now: current });
-        if (result?.state === 'deleted') return result;
-        if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
-        return result;
-      });
-      if (account.state === 'deleted') return deletedGoogleAccountResponse(request);
-      const codeSecret = random(), codeDigest = await digest(codeSecret);
-      const fields = profileClaimAllowlist(clients[pending.client]);
-      let encryptedProfile;
-      if (fields.length) {
-        const profile = verifiedProfile(identity.profile, fields);
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        const aad = encoder.encode(`profile:${pending.client}:${codeDigest}`);
-        const cipher = await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:aad}, refreshKey, encoder.encode(JSON.stringify(profile)));
-        encryptedProfile = `${b64(iv)}.${b64(new Uint8Array(cipher))}`;
+      const fingerprint = await identityFingerprint(identityKey, identity.sub);
+      const userId = await googleProductUserId(identity.sub);
+      // #7818 PR 2: a first Google account, or an older account that never
+      // confirmed, answers the same gate before anything is created or resumed.
+      if (await stateFor('google-account-registry').ageConfirmedAt({ fingerprint }) === null) {
+        return googleAgeConfirmStart({ request, current, pending, stateKey: state[0], browser, subject: identity.sub, fingerprint, userId, profile: identity.profile });
       }
-      await diagnosed('code_issue_failed', async () => stateFor(state[0]).createCode({ digest: codeDigest, client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60, encryptedProfile, amr: 'google' }));
-      const target = new URL(pending.redirect); target.searchParams.set('code', `${state[0]}.${codeSecret}`); target.searchParams.set('state', pending.service_state);
-      return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
+      return finishGoogleLogin({ request, current, pending, subject: identity.sub, userId, fingerprint, profile: identity.profile, stateKey: state[0] });
     }
     if ((url.pathname === '/token' || url.pathname === '/logout') && request.method === 'POST') {
       const bodyStarted = performance.now();
@@ -901,6 +1057,9 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (tokenTiming) tokenTiming.tokenSignMs = performance.now() - tokenSignStarted;
       const response = { access_token: access, token_type: 'Bearer', expires_in: 900, refresh_token: `${object}.${sessionId}.${nextSecret}` };
       if (profile) { response.account_id = accountId; response.profile = profile; }
+      Object.assign(response, await emailAssertionField({
+        clientId: id, secret: emailAssertionKey, profile, sub: accountId, now: current,
+      }));
       return finishTokenTiming(json(200, response), tokenTiming, id);
     }
     return json(404, { error: 'not_found' });
@@ -908,7 +1067,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
+const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'ageConfirmedAt', 'putAccount', 'createAgeConfirmation', 'readAgeConfirmation', 'consumeAgeConfirmation', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
 export class AuthStateObject extends AuthState {
   constructor(state, env, { recoveryFetcher = fetch, recoveryStateFor = stateBindingFor(env) } = {}) {
     super(state); this.state = state; this.env = env;
@@ -1199,7 +1358,7 @@ export default {
       const refreshKey = await crypto.subtle.importKey('raw', refreshBytes, 'AES-GCM', false, ['encrypt', 'decrypt']);
       if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.PADIEM_AUTH_SIGNING_KID || !env.AUTH_STATE || !env.IDENTITY_AUTHORITY) throw new Error('missing binding');
       const stateFor = stateBindingFor(env);
-      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor, emailRecoveryEnabled: env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED, passwordFindEnabled: env.PADIEM_AUTH_PASSWORD_FIND_ENABLED, emailConfirmationEnabled: env.PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED, accountCreatedAtClaims: env.PADIEM_AUTH_ACCOUNT_CREATED_AT_CLAIM_ENABLED, defer: typeof ctx?.waitUntil === 'function' ? work => ctx.waitUntil(work) : undefined }).fetch(request);
+      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor, emailRecoveryEnabled: env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED, passwordFindEnabled: env.PADIEM_AUTH_PASSWORD_FIND_ENABLED, emailConfirmationEnabled: env.PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED, accountCreatedAtClaims: env.PADIEM_AUTH_ACCOUNT_CREATED_AT_CLAIM_ENABLED, emailAssertionKey: env.PADIEM_AUTH_EMAIL_ASSERTION_KEY_LOVETREE, defer: typeof ctx?.waitUntil === 'function' ? work => ctx.waitUntil(work) : undefined }).fetch(request);
     } catch { return json(503, { error: 'authentication_unavailable' }); }
   }
 };

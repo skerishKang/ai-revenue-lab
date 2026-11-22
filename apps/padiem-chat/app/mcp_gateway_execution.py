@@ -65,7 +65,12 @@ _PC_FILE_PATH_TOOLS = frozenset({
 #: Asking for the approved folders themselves, not for one folder's contents.
 _PC_ROOT_LIST_PATHS = frozenset({"", "/"})
 #: The read-only file tools whose running answer may be continued by job id.
-_PC_FILE_JOB_TOOLS = frozenset({"pc_list", "pc_read"})
+#: A search can also outlast one request, so it resumes the same way.
+_PC_FILE_JOB_TOOLS = frozenset({"pc_list", "pc_read", "pc_search"})
+#: Tools for which a registered root names the folder to work on, not the
+#: registered-folder list itself. A drive grant keeps its ``X:`` spelling so a
+#: signed context with several roots still knows which one was meant.
+_PC_ROOT_LIST_TOOLS = frozenset({"pc_list", "pc_search", "pc_search_contents", "pc_file_info"})
 #: #7065: pc_edit's only optional argument. Naming it alone is a complete call:
 #: replace_all absent means false, exactly as the Engine reads it.
 _PC_EDIT_OPTIONAL_KEYS = frozenset({"path", "old_text", "new_text", "replace_all"})
@@ -73,16 +78,42 @@ _PC_EDIT_OPTIONAL_KEYS = frozenset({"path", "old_text", "new_text", "replace_all
 _JOB_RECEIPT_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
 
+def _pc_normalize_path(value) -> str:
+    """One spelling for a PC path: forward slashes, no dot segments, no drive slash.
+
+    ``C:``, ``C:/`` and ``c:\\`` are one root and ``D:/.`` is ``D:``. A ``..``
+    segment is deliberately left in place: the scope checks below must keep
+    refusing an attempt to walk above a registered root. #7978: a network share
+    keeps its doubled leading slash — ``\\\\server\\share`` normalizes to
+    ``//server/share``, the same spelling a registered UNC root carries, so the
+    scope comparison below sees one shape.
+    """
+    text = str(value or "").strip()
+    unc = text.startswith("\\\\") or text.startswith("//")
+    text = text.replace("\\", "/")
+    if not text:
+        return ""
+    drive = ""
+    if len(text) >= 2 and text[0].isalpha() and text[1] == ":":
+        drive, text = text[:2], text[2:]
+    parts = [part for part in text.split("/") if part and part != "."]
+    if unc:
+        return "//" + "/".join(parts)
+    if not drive:
+        if text.startswith("/"):
+            return "/" + "/".join(parts)
+        return "/".join(parts)
+    return drive + ("/" + "/".join(parts) if parts else "")
+
+
 def _pc_absolute_path(value) -> str | None:
     """``value`` in ``X:/...`` spelling when it names an absolute PC path."""
     if not isinstance(value, str):
         return None
-    text = value.strip().replace("\\", "/")
+    text = _pc_normalize_path(value)
     if not text or any(ord(ch) < 32 for ch in text):
         return None
-    if text.startswith("/"):
-        return text
-    if len(text) >= 2 and text[0].isalpha() and text[1] == ":":
+    if text.startswith("/") or (len(text) >= 2 and text[0].isalpha() and text[1] == ":"):
         return text
     return None
 
@@ -95,7 +126,11 @@ def _registered_folder_rows(roots) -> list[dict]:
             continue
         label, path = root.get("label"), root.get("path")
         if isinstance(label, str) and label and isinstance(path, str) and path:
-            rows.append({"name": label, "path": path})
+            row = {"name": label, "path": path}
+            mapped = root.get("mapped_drive")
+            if isinstance(mapped, str) and mapped:
+                row["mapped_drive"] = mapped
+            rows.append(row)
     return rows
 
 
@@ -110,6 +145,24 @@ def _pc_relative_inside_roots(value, roots) -> tuple[str | None, str | None]:
     text = _pc_absolute_path(value)
     if text is None:
         return None, None
+    # #8036: a mapped drive letter is only an alias for the approved share
+    # address. Translate it before the scope check so authority stays with the
+    # share unit, never with the letter the PC happens to map it to.
+    for root in roots or ():
+        mapped = root.get("mapped_drive")
+        if not isinstance(mapped, str) or not mapped:
+            continue
+        letter = _pc_normalize_path(mapped).rstrip("/").casefold()
+        if text.casefold() == letter or text.casefold().startswith(letter + "/"):
+            share = _pc_normalize_path(root["path"]).rstrip("/")
+            rest = text[len(letter):].lstrip("/")
+            text = share + ("/" + rest if rest else "")
+            break
+    # A segment that walks above a grant is never an "inside" path, whatever
+    # prefix it was written behind. The scope check is not relaxed by the root
+    # normalizer.
+    if ".." in text.split("/"):
+        return None, "outside"
     folded = text.rstrip("/").casefold()
     best = None
     for root in roots or ():
@@ -125,6 +178,27 @@ def _pc_relative_inside_roots(value, roots) -> tuple[str | None, str | None]:
     if best is None:
         return None, "outside"
     return best[1] + "/" + best[2], "inside"
+
+
+def _matched_root_row(value, roots):
+    """The approved root an absolute path names exactly, if any."""
+    text = _pc_absolute_path(value)
+    if text is None:
+        return None
+    folded = text.rstrip("/").casefold()
+    for root in roots or ():
+        base = str(root["path"]).replace("\\", "/").rstrip("/")
+        if base and folded == base.casefold():
+            return root
+    return None
+
+
+def _root_path_argument(row: dict, folders: list[dict]) -> str:
+    """The path the Engine accepts for an approved root itself."""
+    base = str(row["path"]).replace("\\", "/").rstrip("/")
+    if re.fullmatch(r"[A-Za-z]:", base):
+        return base
+    return str(row["name"]) if len(folders) > 1 else "."
 
 
 def _registered_folders_answer(roots: list[dict]) -> dict:
@@ -171,10 +245,11 @@ async def _registered_pc_folders(request, *, session, user_id, device_id) -> lis
 _TOOLS = {
     # depth is a pc_list-only integer (1..3): a deeper walk is one bounded
     # answer, never a page, and no other tool accepts the key.
-    "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id", "depth"}),
+    "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id", "depth", "offset"}),
     # recursive is a pc_search-only boolean that switches the staged Engine
     # tool to the recursive name search; no other tool accepts the key.
-    "pc_search": ("files_list", "claw.pc.list_files", {"path", "query", "recursive"}),
+    "pc_search": ("files_list", "claw.pc.list_files",
+                  {"path", "query", "recursive", "job_id"}),
     "pc_read": ("files", "claw.pc.read_file", {"path", "job_id", "offset", "length"}),
     # Read-only additions. Each reuses the Engine tool that already does the
     # work; nothing here widens what those tools may touch.
@@ -235,32 +310,14 @@ async def _pc_system_mode_allowed(request, *, uid: str, device_id: str) -> bool:
         return False
 
 
-async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, approval=None):
-    """Called only after PAT verification; an approval is an atomic-store result.
+async def _mcp_pc_tool_intake(
+    request, principal, tool_name, arguments, approval,
+) -> tuple[object | None, dict[str, object]]:
+    """MCP 입력·도구 이름·인자·승인 검사 구간.
 
-    principal and approval are server facts, never copied from MCP tool args.
-    The external request deliberately carries an empty user-evidence list.
-    Delegation is loaded afresh for this owner on every call.
+    본문은 리팩터 전 `execute_mcp_pc_tool`의 연속 구간을 글자 그대로 옮긴다.
+    raise는 원래 자리·종류·메시지·순서 그대로 이 안에서 일어난다.
     """
-    # Resolve the interactive PC lane on first use. A name already patched on
-    # this module wins; otherwise it is loaded here, so the app factory import
-    # never pulls that lane into the Worker import graph.
-    _lane = globals()
-
-    def _pc(name):
-        value = _lane.get(name)
-        if value is None:
-            from . import chat_pc_drive
-            value = getattr(chat_pc_drive, name)
-        return value
-
-    ChatPCDriveError = _pc("ChatPCDriveError")
-    _resolve_chat_owner = _pc("_resolve_chat_owner")
-    _check_mesh_grant = _pc("_check_mesh_grant")
-    _tool_arguments_for_plan = _pc("_tool_arguments_for_plan")
-    _new_lane_run_id = _pc("_new_lane_run_id")
-    _append_lane_notice = _pc("_append_lane_notice")
-    chat_pc_plan_for_tool = _pc("chat_pc_plan_for_tool")
     if not isinstance(principal, Mapping):
         raise ValueError("A verified MCP principal is required")
     uid, device_id, token_id = (principal.get(key) for key in ("owner_id", "device_id", "token_id"))
@@ -276,7 +333,7 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         from .mcp_device_selection import list_owner_devices
         devices = await list_owner_devices(request, owner_id=uid, principal=principal)
         return {"status": "completed", "devices": devices,
-                "answer": "연결된 PC 목록입니다. 다른 pc_* 도구의 device 인자에 표시 이름이나 id6를 넣어 PC를 고를 수 있습니다."}
+                "answer": "연결된 PC 목록입니다. 다른 pc_* 도구의 device 인자에 표시 이름이나 id6를 넣어 PC를 고를 수 있습니다."}, {}
     shell = tool_name in PC_SHELL_TOOL_NAMES
     raw_arguments = dict(arguments) if shell else None
     original_arguments = dict(arguments)
@@ -304,9 +361,11 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         browser = scope == "browser"
         arguments = dict(arguments)
         arguments.pop("device", None)
-        if tool_name in ("pc_search", "pc_search_contents") and "path" not in arguments:
+        if (tool_name in ("pc_search", "pc_search_contents")
+                and "path" not in arguments and "job_id" not in arguments):
             # No folder named means every approved folder, which is what the
-            # existing name search already does with ".".
+            # existing name search already does with ".". A continuation
+            # names only the dispatch it left running, never a folder.
             arguments["path"] = "."
         if browser:
             from .claw_pc_browser_command import browser_arguments
@@ -320,10 +379,16 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                                      keys - {"offset"}, keys - {"length"},
                                      keys - {"offset", "length"},
                                      keys - {"offset", "length", "job_id"},
-                                     keys - {"recursive"},
-                                     keys - {"depth"},
-                                     keys - {"depth", "job_id"},
-                                     keys - {"recursive", "job_id"})
+                                      keys - {"recursive"},
+                                      keys - {"depth"},
+                                      keys - {"depth", "job_id"},
+                                      keys - {"recursive", "job_id"},
+                                      # pc_list's optional depth/offset may each
+                                      # be absent: {"path"}, {"path","depth"} and
+                                      # {"path","offset"} stay legal calls.
+                                      keys - {"job_id", "depth", "offset"},
+                                      keys - {"depth", "offset"},
+                                      keys - {"job_id", "offset"})
                 and not (tool_name == "pc_list" and not arguments)) or any(
                 not ((isinstance(value, str) or (
                         tool_name == "pc_edit" and key == "replace_all"
@@ -336,9 +401,12 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                          and 0 < value <= _PC_READ_CHUNK_MAX_BYTES)
                      or (tool_name == "pc_search" and key == "recursive"
                          and isinstance(value, bool))
-                     or (tool_name == "pc_list" and key == "depth"
-                         and type(value) is int and not isinstance(value, bool)
-                         and 1 <= value <= 3))
+                      or (tool_name == "pc_list" and key == "depth"
+                          and type(value) is int and not isinstance(value, bool)
+                          and 1 <= value <= 3)
+                      or (tool_name == "pc_list" and key == "offset"
+                          and type(value) is int and not isinstance(value, bool)
+                          and 0 <= value <= 10_000))
                 for key, value in arguments.items()):
             # The job id is an alternative to the target path, never an extra
             # field: a new call names the path and nothing else. pc_list alone
@@ -372,6 +440,14 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             type(arguments["depth"]) is not int or isinstance(arguments["depth"], bool)
             or not 1 <= arguments["depth"] <= 3):
         raise ValueError("Invalid MCP PC arguments")
+    if tool_name == "pc_list" and "offset" in arguments and (
+            type(arguments["offset"]) is not int or isinstance(arguments["offset"], bool)
+            or not 0 <= arguments["offset"] <= 10_000):
+        raise ValueError("Invalid MCP PC arguments")
+    if (tool_name == "pc_list" and arguments.get("depth", 1) > 1
+            and arguments.get("offset", 0) != 0):
+        # A deep walk is one bounded answer: it cannot also be a page.
+        raise ValueError("Invalid MCP PC arguments")
     # A recursive name search is a search: the Engine's tool needs the text to
     # match. An absent text is a listing request, which stays non-recursive.
     if (tool_name == "pc_search" and arguments.get("recursive") is True
@@ -380,7 +456,7 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         raise ValueError("Invalid MCP PC arguments")
     if tool_name == "pc_shell_start" and arguments.get("interactive") is True and arguments.get("mode") != "user":
         return {"status": "denied", "code": "pc_session_user_mode_only",
-                "answer": "대화형 세션은 사용자 모드에서만 실행합니다."}
+                "answer": "대화형 세션은 사용자 모드에서만 실행합니다."}, {}
     # #7565: the SYSTEM rule follows the mode the command will actually run in,
     # not the user-mode switch. With the switch off the normalizer's default is
     # SYSTEM, so an omitted mode is a SYSTEM run and gets the same check.
@@ -390,7 +466,7 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             and not await _pc_system_mode_allowed(request, uid=uid, device_id=device_id)):
         return {"status": "denied",
                 "answer": "SYSTEM 실행은 관리자와 관리(계약) PC에서만 허용됩니다.",
-                "deny_reason": "pc_shell_system_denied"}
+                "deny_reason": "pc_shell_system_denied"}, {}
     approval_id = None
     if approval is not None:
         if browser:
@@ -402,6 +478,114 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                 or not isinstance(approval["approval_id"], str)):
             raise ValueError("MCP approval does not match this request")
         approval_id = approval["approval_id"]
+    return None, {
+        "uid": uid,
+        "device_id": device_id,
+        "token_id": token_id,
+        "shell": shell,
+        "arguments": arguments,
+        "scope": scope,
+        "tool_id": tool_id,
+        "keys": keys,
+        "browser": browser,
+        "approval_id": approval_id,
+        "device_chosen": device_chosen,
+        "shell_enabled": shell_enabled,
+        "shell_user_enabled": shell_user_enabled,
+    }
+
+
+async def _mcp_pc_tool_response(
+    result, *, browser, conversation_id, tool_name, store, principal,
+    uid, device_id,
+) -> dict:
+    """MCP 응답 조립 구간.
+
+    본문은 리팩터 전 `execute_mcp_pc_tool`의 연속 구간을 글자 그대로 옮긴다.
+    내부 raise와 예외→응답 변환, await 순서를 그대로 지킨다.
+    """
+    receipt = result.get("job_id")
+    if (tool_name in _PC_FILE_JOB_TOOLS and result["status"] in {"running", "queued"}
+            and isinstance(receipt, str) and _JOB_RECEIPT_ID.fullmatch(receipt)):
+        result["_job_receipt"] = receipt
+    if browser:
+        result["conversation_id"] = conversation_id
+        if result["status"] == "confirmation_required":
+            result["confirmation_kind"] = "conversation"
+        verified_context = result.get("browser_context")
+        if result["status"] == "completed" and isinstance(verified_context, Mapping):
+            from .mcp_browser_context import save_browser_context
+            try:
+                result["browser_context_saved"] = await save_browser_context(
+                    store, principal, url=verified_context.get("url"), conversation_id=conversation_id)
+            except Exception:
+                result["browser_context_saved"] = False
+            if not result["browser_context_saved"]:
+                result["continuity_note"] = "페이지 작업은 확인했지만 다음 작업에 이어 쓸 주소를 저장하지 못했습니다. 다음에는 주소부터 다시 열어 주세요."
+        if tool_name == "pc_browser_screenshot" and result["status"] == "completed":
+            output = result.get("output")
+            capture = output.get("browser_capture") if isinstance(output, Mapping) else None
+            try:
+                from .claw_pc_browser_routes import read_browser_capture
+                image, digest = await read_browser_capture(store, user_id=uid,
+                    dispatch_id=capture["dispatch_id"], device_id=device_id)
+                if digest != capture.get("sha256") or len(image) != capture.get("bytes"):
+                    raise ValueError("Browser capture receipt differs from stored original")
+                # This private projection becomes one MCP image block, never
+                # text in the model context or a public local-PC file path.
+                result["_browser_image"] = {"type": "image", "mimeType": "image/png",
+                    "data": base64.b64encode(image).decode("ascii")}
+            except Exception:
+                result = {**result, "status": "unavailable",
+                          "code": "pc_browser_capture_unreadable",
+                          "answer": "브라우저 캡처의 실제 이미지를 확인하지 못했습니다."}
+    return result
+
+
+async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, approval=None):
+    """Called only after PAT verification; an approval is an atomic-store result.
+
+    principal and approval are server facts, never copied from MCP tool args.
+    The external request deliberately carries an empty user-evidence list.
+    Delegation is loaded afresh for this owner on every call.
+    """
+    # Resolve the interactive PC lane on first use. A name already patched on
+    # this module wins; otherwise it is loaded here, so the app factory import
+    # never pulls that lane into the Worker import graph.
+    _lane = globals()
+
+    def _pc(name):
+        value = _lane.get(name)
+        if value is None:
+            from . import chat_pc_drive
+            value = getattr(chat_pc_drive, name)
+        return value
+
+    ChatPCDriveError = _pc("ChatPCDriveError")
+    _resolve_chat_owner = _pc("_resolve_chat_owner")
+    _check_mesh_grant = _pc("_check_mesh_grant")
+    _tool_arguments_for_plan = _pc("_tool_arguments_for_plan")
+    _new_lane_run_id = _pc("_new_lane_run_id")
+    _append_lane_notice = _pc("_append_lane_notice")
+    chat_pc_plan_for_tool = _pc("chat_pc_plan_for_tool")
+    resp, bundle = await _mcp_pc_tool_intake(
+        request, principal, tool_name, arguments, approval,
+    )
+    if resp is not None:
+        return resp
+    uid = bundle["uid"]
+    device_id = bundle["device_id"]
+    token_id = bundle["token_id"]
+    shell = bundle["shell"]
+    arguments = bundle["arguments"]
+    scope = bundle["scope"]
+    tool_id = bundle["tool_id"]
+    keys = bundle["keys"]
+    browser = bundle["browser"]
+    approval_id = bundle["approval_id"]
+    device_chosen = bundle["device_chosen"]
+    shell_enabled = bundle["shell_enabled"]
+    shell_user_enabled = bundle["shell_user_enabled"]
 
     identity = {"user_id": uid, "device_id": device_id, "token_id": token_id}
     if shell and not shell_enabled:
@@ -525,8 +709,13 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             if where == "outside":
                 return _outside_registered_roots_answer(folders)
             if where == "root":
-                if tool_name == "pc_list" and key == "path":
-                    return _registered_folders_answer(folders)
+                if key == "path" and tool_name in _PC_ROOT_LIST_TOOLS:
+                    # The registered root is the folder to work on. "등록된 폴더
+                    # 목록" is the answer only when no folder was named at all.
+                    row = _matched_root_row(arguments[key], folders)
+                    if row is not None:
+                        arguments[key] = _root_path_argument(row, folders)
+                        continue
                 return _outside_registered_roots_answer(folders)
             if relative is not None:
                 arguments[key] = relative
@@ -580,6 +769,8 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                       if key != "query" and key != "recursive"}
     if tool_name == "pc_list" and "depth" in arguments:
         wire_arguments = {**wire_arguments, "depth": arguments["depth"]}
+    if tool_name == "pc_list" and "offset" in arguments:
+        wire_arguments = {**wire_arguments, "offset": arguments["offset"]}
     if tool_name == "pc_read" and tool_id == "claw.pc.read_file_chunk":
         chunk = {"path": arguments["path"], "offset": arguments.get("offset", 0)}
         if "length" in arguments:
@@ -627,41 +818,11 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     # authorized by the audit receipt, so the receipt is attached here and
     # nowhere else: a browser or write answer carrying one would have its audit
     # refused and the run cancelled (_record_outcome's guard).
-    receipt = result.get("job_id")
-    if (tool_name in _PC_FILE_JOB_TOOLS and result["status"] in {"running", "queued"}
-            and isinstance(receipt, str) and _JOB_RECEIPT_ID.fullmatch(receipt)):
-        result["_job_receipt"] = receipt
-    if browser:
-        result["conversation_id"] = conversation_id
-        if result["status"] == "confirmation_required":
-            result["confirmation_kind"] = "conversation"
-        verified_context = result.get("browser_context")
-        if result["status"] == "completed" and isinstance(verified_context, Mapping):
-            from .mcp_browser_context import save_browser_context
-            try:
-                result["browser_context_saved"] = await save_browser_context(
-                    store, principal, url=verified_context.get("url"), conversation_id=conversation_id)
-            except Exception:
-                result["browser_context_saved"] = False
-            if not result["browser_context_saved"]:
-                result["continuity_note"] = "페이지 작업은 확인했지만 다음 작업에 이어 쓸 주소를 저장하지 못했습니다. 다음에는 주소부터 다시 열어 주세요."
-        if tool_name == "pc_browser_screenshot" and result["status"] == "completed":
-            output = result.get("output")
-            capture = output.get("browser_capture") if isinstance(output, Mapping) else None
-            try:
-                from .claw_pc_browser_routes import read_browser_capture
-                image, digest = await read_browser_capture(store, user_id=uid,
-                    dispatch_id=capture["dispatch_id"], device_id=device_id)
-                if digest != capture.get("sha256") or len(image) != capture.get("bytes"):
-                    raise ValueError("Browser capture receipt differs from stored original")
-                # This private projection becomes one MCP image block, never
-                # text in the model context or a public local-PC file path.
-                result["_browser_image"] = {"type": "image", "mimeType": "image/png",
-                    "data": base64.b64encode(image).decode("ascii")}
-            except Exception:
-                result = {**result, "status": "unavailable",
-                          "code": "pc_browser_capture_unreadable",
-                          "answer": "브라우저 캡처의 실제 이미지를 확인하지 못했습니다."}
+    result = await _mcp_pc_tool_response(
+        result, browser=browser, conversation_id=conversation_id,
+        tool_name=tool_name, store=store, principal=principal,
+        uid=uid, device_id=device_id,
+    )
     # The normal PC run already stores signed observations. Add a normal
     # dialogue notice, preserving unsuccessful postcondition evidence.
     # A running answer is not a terminal notice: the run is still working on the
@@ -671,6 +832,31 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             content=str(result.get("answer", "")),
             status="completed" if result["status"] in {"completed", "confirmation_required"} else "failed")
     return {**result, "run_id": run_id}
+
+
+_RESUME_TOOL_IDENTITY = {
+    "search_files": ("files_search", "claw.pc.search_files"),
+    "search_contents": ("files_search_contents", "claw.pc.search_contents"),
+    "list_files": ("files_list", "claw.pc.list_files"),
+    "read_file": ("files", "claw.pc.read_file"),
+    "read_file_chunk": ("files_chunk", "claw.pc.read_file_chunk"),
+}
+
+
+def resume_tool_identity(tool_request_ref):
+    """The (scope, tool_id) a job continuation must use, from the dispatch's
+    own tool_request_ref (``run:tool_segment:digest``).
+
+    A continuation carries only a job id, so the caller-derived tool_id falls
+    back to the listing tool. The dispatch recorded the real one at staging
+    time; this reads it back instead of guessing from the continuation.
+    """
+    if not isinstance(tool_request_ref, str):
+        return None
+    parts = tool_request_ref.split(":")
+    if len(parts) < 2:
+        return None
+    return _RESUME_TOOL_IDENTITY.get(parts[1])
 
 
 async def _resume_pc_files(
@@ -719,6 +905,14 @@ async def _resume_pc_files(
         return {"status": "denied", "code": "pc_job_not_owned",
                 "answer": "이 작업을 확인할 수 없습니다."}
     run_id = row.get("run_id")
+    # #8048: the first call may have staged a recursive search
+    # (claw.pc.search_files) while this continuation only carries a job_id, so
+    # the caller-derived tool_id falls back to claw.pc.list_files. Route by the
+    # dispatch's own tool_request_ref (run:tool_segment:digest), never by the
+    # continuation's arguments — a job_id names no tool, path or query.
+    identity = resume_tool_identity(row.get("tool_request_ref"))
+    if identity is not None:
+        scope, tool_id = identity
     run_reader = getattr(store, "get_claw_run", None)
     try:
         run = await run_reader(uid, run_id) if callable(run_reader) else None
@@ -752,10 +946,10 @@ async def _resume_pc_files(
             )
         except B62OrchestrationError as exc:
             # The engine refused or could not be reached: no PC work was
-            # dispatched, so the branch is named, not answered as unknown.
-            raise ChatPCDriveError("chat_pc_engine_unavailable", exc.user_message,
-                                   exc.status_code, cause=exc.code) from exc
-    except Exception:
+            # dispatched. Name the branch; never report it as a PC file refusal.
+            return {"status": "unavailable", "code": "chat_pc_engine_unavailable",
+                    "answer": exc.user_message}
+    except Exception as exc:
         return unavailable
     try:
         result = json.loads(outcome.answer)

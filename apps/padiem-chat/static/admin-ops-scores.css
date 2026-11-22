@@ -1,0 +1,27 @@
+/* #8035 ③ — 점수 입력·사용 일지 탭 스타일: 새 시트에 둔다(#8058 래칫 규칙).
+   색은 운영센터 패널이 이미 물려받은 --ops-* 토큰만 쓴다(새 색 리터럴 0),
+   !important는 쓰지 않는다. */
+.ops-score-form{display:grid;gap:9px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));align-items:end}
+.ops-score-field{display:grid;gap:4px}
+.ops-score-label{font-size:10px;font-weight:750;color:var(--ops-muted)}
+.ops-score-input{appearance:none;border:1px solid var(--ops-line);background:var(--ops-field,var(--ops-panel-bg));color:var(--ops-text);border-radius:9px;padding:8px 10px;font:inherit;font-size:11px}
+.ops-score-memo-field{grid-column:1/-1}
+.ops-score-actions{grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap}
+.ops-score-row{display:grid;gap:6px}
+.ops-score-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.ops-score-name{font-size:12px;font-weight:750;color:var(--ops-text);overflow-wrap:anywhere}
+.ops-score-round,.ops-score-day,.ops-score-source{font-size:10px;color:var(--ops-muted)}
+.ops-score-source{font-weight:800;border-radius:100px;padding:3px 8px;box-shadow:inset 0 0 0 1px var(--ops-line)}
+.ops-score-values{display:flex;gap:14px;flex-wrap:wrap}
+.ops-score-value{font-size:11px;font-weight:750;color:var(--ops-text)}
+.ops-score-memo{margin:0;font-size:11px;color:var(--ops-muted);overflow-wrap:anywhere;white-space:pre-wrap}
+.ops-score-bar{display:flex;gap:9px;flex-wrap:wrap}
+.ops-score-empty{font-size:11px;color:var(--ops-muted);list-style:none}
+.ops-score-trend{white-space:nowrap;font-variant-numeric:tabular-nums}
+.ops-metrics{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:12px}
+.ops-metric{display:grid;gap:3px}
+.ops-metric-label{font-size:10px;color:var(--ops-muted)}
+.ops-metric-value{font-size:15px;font-weight:800;color:var(--ops-text)}
+.ops-journal-table{width:100%;border-collapse:collapse;font-size:11px;color:var(--ops-text)}
+.ops-journal-table th{text-align:left;font-size:10px;color:var(--ops-muted);border-bottom:1px solid var(--ops-line);padding:6px 8px;white-space:nowrap}
+.ops-journal-table td{border-bottom:1px solid var(--ops-line);padding:6px 8px;overflow-wrap:anywhere}

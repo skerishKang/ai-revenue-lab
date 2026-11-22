@@ -186,9 +186,14 @@ def _verse_ink(page):
 def test_7574_polish_at_width(browser, base_url, label, width, height):
     page = _open_reader_page(browser, base_url, width, height)
     try:
-        # ---- 5: 새 사용자 기본값 '영어 작게' --------------------------------
-        assert page.evaluate("window.__smReaderSettingsV1.get().englishMode") == "compact", label
-        assert page.evaluate("document.body.classList.contains('smr-en-compact')"), label
+        # ---- 5: 새 사용자 기본값 '한글만' (#7836), compact는 사용자가 선택 --
+        assert page.evaluate("window.__smReaderSettingsV1.get().englishMode") == "hide", label
+        assert page.evaluate("document.body.classList.contains('smr-en-hide')"), label
+        panel = _open_settings(page)
+        language = panel.get_by_role("group", name="번역본 표시")
+        assert language.get_by_role("button", name="한글만").get_attribute("aria-pressed") == "true", label
+        language.get_by_role("button", name="영어 작게").click()
+        panel.locator(".srsg-x").click()
         _inject_reader_fixture(page)
         sizes = page.evaluate(
             """() => ({

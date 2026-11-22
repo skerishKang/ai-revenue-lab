@@ -2,6 +2,12 @@
 
 This inventory is metadata, never a root approval or execution grant. Reads for
 the browser occur only after the existing device-directory owner check.
+
+#7987 keeps one more observation from the same executor round beside it: whether
+the PC's user-session helper can take a command. It is the same kind of row -
+latest value per device, stamped by the server - and it is display evidence
+only. It lives on this store so both deployment shapes (the queue and the local
+database) serve it through the object they already wire.
 """
 from __future__ import annotations
 
@@ -10,8 +16,10 @@ from datetime import datetime
 from typing import Any
 
 from padiem_ai_core.pc_drive_inventory import DriveInventoryError, validate_drive_inventory
+from padiem_ai_core.pc_helper_ready import HELPER_READY_FLAGS, HelperReadyError, validate_helper_ready
 
 from .history import _row_to_dict
+from .d1_rows import rows_from_result
 from .mesh_device_presence_store import _device, _stamp
 
 
@@ -56,6 +64,99 @@ class D1MeshDeviceDriveStore:
         except (KeyError, TypeError, ValueError, DriveInventoryError) as exc:
             raise MeshDeviceDriveStoreError("drive snapshot unavailable") from exc
         return {"device_id": device, "drives": drives, "received_at": row["received_at"]}
+
+    async def upsert_helper_ready(
+        self, *, device_id: str, state: dict[str, Any], received_at: datetime,
+    ) -> bool:
+        """#7987: replace this PC's readiness with what the executor just observed."""
+        device, stamp = _device(device_id), _stamp(received_at)
+        observed = validate_helper_ready(state)
+        sha = observed.get("helper_sha256")
+        release = observed.get("helper_version")
+        version = observed.get("mesh_agent_version")
+        healthy = stamp if (observed["helper_build"] is not None
+                            and all(observed[key] is True for key in HELPER_READY_FLAGS)) else None
+        await self.db.prepare(
+            "INSERT INTO mesh_device_helper_ready "
+            "(device_id, state_json, received_at, helper_sha256, helper_version, mesh_agent_version, last_healthy_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(device_id) DO UPDATE SET "
+            "state_json=excluded.state_json, received_at=excluded.received_at, "
+            "helper_sha256=excluded.helper_sha256, helper_version=excluded.helper_version, "
+            "mesh_agent_version=excluded.mesh_agent_version, "
+            "last_healthy_at=CASE WHEN mesh_device_helper_ready.last_healthy_at IS NULL "
+            "OR julianday(excluded.last_healthy_at) > julianday(mesh_device_helper_ready.last_healthy_at) "
+            "THEN excluded.last_healthy_at ELSE mesh_device_helper_ready.last_healthy_at END"
+        ).bind(device, json.dumps(observed, sort_keys=True, separators=(",", ":")),
+               stamp, sha, release, version, healthy).run()
+        target = observed.get("update_target_sha256")
+        result = observed.get("update_result")
+        outcome = ("rollback" if result == "rollback" else
+                   "failed" if result in ("hash_mismatch", "signature_mismatch", "download_failed") else
+                   "updated" if target == sha and result in ("success", "current") else None)
+        if target and outcome:
+            await self.db.prepare(
+                "INSERT INTO pc_helper_rollout_outcomes (device_id, release_sha256, outcome, received_at) "
+                "VALUES (?,?,?,?) ON CONFLICT(device_id, release_sha256) DO UPDATE SET "
+                "outcome=excluded.outcome, received_at=excluded.received_at "
+                "WHERE julianday(excluded.received_at)>=julianday(pc_helper_rollout_outcomes.received_at)"
+            ).bind(device, target, outcome, stamp).run()
+        stored = await self.load_helper_ready(device_id=device)
+        return stored == {"device_id": device, "state": observed, "received_at": stamp}
+
+    async def load_updater_registration(self, *, device_id: str, sha256: str) -> dict | None:
+        row = await self.db.prepare(
+            "SELECT actor_user_id, attempt_id, dispatch_id, reason, requested_at FROM pc_helper_registration "
+            "WHERE device_id=? AND source_sha256=?"
+        ).bind(_device(device_id), sha256).first()
+        return _row_to_dict(row)
+
+    async def reserve_updater_registration(self, *, device_id: str, sha256: str, actor: str,
+                                           attempt_id: str, now: datetime) -> bool:
+        await self.db.prepare(
+            "INSERT INTO pc_helper_registration(device_id,source_sha256,actor_user_id,attempt_id,requested_at) "
+            "VALUES(?,?,?,?,?) ON CONFLICT(device_id,source_sha256) DO NOTHING"
+        ).bind(_device(device_id), sha256, actor, attempt_id, _stamp(now)).run()
+        row = await self.load_updater_registration(device_id=device_id, sha256=sha256)
+        return bool(row and row["attempt_id"] == attempt_id)
+
+    async def record_updater_registration(self, *, device_id: str, sha256: str, attempt_id: str,
+                                          dispatch_id: str | None = None, reason: str | None = None) -> None:
+        await self.db.prepare(
+            "UPDATE pc_helper_registration SET dispatch_id=?, reason=? WHERE device_id=? "
+            "AND source_sha256=? AND attempt_id=? AND dispatch_id IS NULL AND reason IS NULL"
+        ).bind(dispatch_id, reason, _device(device_id), sha256, attempt_id).run()
+
+    async def load_rollout_outcomes(self, *, sha256: str) -> dict[str, str]:
+        result = await self.db.prepare(
+            "SELECT device_id, outcome FROM pc_helper_rollout_outcomes WHERE release_sha256=?"
+        ).bind(sha256).run()
+        return {row["device_id"]: row["outcome"] for item in rows_from_result(result)
+                if (row := _row_to_dict(item)) is not None}
+
+    async def load_helper_ready(self, *, device_id: str, include_versions: bool = False) -> dict[str, Any] | None:
+        """The last observation and when the server received it, or ``None``."""
+        device = _device(device_id)
+        row = _row_to_dict(await self.db.prepare(
+            "SELECT device_id, state_json, received_at, helper_sha256, helper_version, mesh_agent_version, "
+            "last_healthy_at FROM mesh_device_helper_ready "
+            "WHERE device_id=?"
+        ).bind(device).first())
+        if row is None:
+            return None
+        try:
+            state = validate_helper_ready(json.loads(row["state_json"]))
+            stamp = datetime.fromisoformat(row["received_at"].replace("Z", "+00:00"))
+            if row["device_id"] != device or _stamp(stamp) != row["received_at"]:
+                raise ValueError("invalid stored readiness")
+        except (KeyError, TypeError, ValueError, HelperReadyError) as exc:
+            raise MeshDeviceDriveStoreError("helper readiness unavailable") from exc
+        result = {"device_id": device, "state": state, "received_at": row["received_at"]}
+        if include_versions:
+            result["helper_sha256"] = row.get("helper_sha256")
+            result["helper_version"] = row.get("helper_version")
+            result["mesh_agent_version"] = row.get("mesh_agent_version")
+            result["last_healthy_at"] = row.get("last_healthy_at")
+        return result
 
 
 __all__ = ["D1MeshDeviceDriveStore", "MeshDeviceDriveStoreError"]

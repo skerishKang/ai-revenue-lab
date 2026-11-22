@@ -1,10 +1,14 @@
 (() => {
   "use strict";
 
+  /* #7865: the four badges the owner sees. reviewed is presented as 완료 (the
+     server keeps the reviewed state; the screen groups it — no server change).
+     queued is presented as 바꾸는 중 because an upload starts its conversion
+     right away, so a queued row is a conversion waiting to be claimed. */
   const STATUS_LABELS = {
-    queued: "준비중",
-    working: "변환중",
-    reviewed: "검토중",
+    queued: "바꾸는 중",
+    working: "바꾸는 중",
+    reviewed: "완료",
     done: "완료",
     failed: "실패",
   };
@@ -44,21 +48,44 @@
     return n;
   }
 
-  function statusChip(status) {
-    const known = Object.prototype.hasOwnProperty.call(STATUS_LABELS, status);
-    const chip = el("span", "pdfmd-status-chip", known ? STATUS_LABELS[status] : "확인 필요");
-    chip.dataset.status = known ? status : "unknown";
+  /* #7865: one badge per card. A timed-out row (the #7842 rule carries
+     error_code=convert_timed_out on the item and, since #7865, on the job
+     list) reads 시간 초과 instead of a plain 실패. */
+  function badgeText(entry) {
+    if (entry && entry.error_code === "convert_timed_out") return "시간 초과";
+    const known = Object.prototype.hasOwnProperty.call(STATUS_LABELS, entry && entry.status);
+    return known ? STATUS_LABELS[entry.status] : "확인 필요";
+  }
+
+  function badgeDataStatus(entry) {
+    if (entry && entry.error_code === "convert_timed_out") return "timed-out";
+    const status = entry && entry.status;
+    if (status === "queued" || status === "working") return "working";
+    if (status === "reviewed" || status === "done") return "done";
+    if (status === "failed") return "failed";
+    return "unknown";
+  }
+
+  /* #7955 ③: a batch with counts says "1개 완료 · 1개 실패" instead of the
+     rolled-up status alone. An entry without counts keeps its single badge. */
+  function batchLabel(entry) {
+    const outcomes = window.PadiemPdfMdBatchOutcome;
+    return outcomes && typeof outcomes.label === "function" ? outcomes.label(entry) : "";
+  }
+
+  function statusChip(entry) {
+    const counted = batchLabel(entry);
+    const chip = el("span", "pdfmd-status-chip", counted || badgeText(entry));
+    const outcomes = window.PadiemPdfMdBatchOutcome;
+    chip.dataset.status = counted && outcomes
+      ? outcomes.status(entry)
+      : badgeDataStatus(entry);
     return chip;
   }
 
   function modeLabel(mode) {
     return mode === "verify" ? "검증 변환" : "빠른 변환";
   }
-
-  const MODE_HELP = {
-    fast: ["pdfmd-mode-help-fast", "빠른 변환: PDF의 텍스트만 곧바로 Markdown으로 옮깁니다. 디지털 PDF를 빠르게 확인할 때 적합합니다."],
-    verify: ["pdfmd-mode-help-verify", "검증 변환: 같은 변환에 페이지별 문자 일치도·숫자 보존·읽기 순서 검토를 더합니다. 숫자·조항 대조가 중요할 때 적합합니다."],
-  };
 
   const HISTORY_GROUPS = [
     ["today", "pdfmd-history-today", "오늘"],
@@ -80,7 +107,6 @@
     return fallback;
   }
 
-  const STAGE_LINES = { queued: "대기 중 — '변환 실행'을 누르면 시작합니다.", working: "변환 중 — 원본 확인, 변환, 저장을 순서대로 진행합니다.", reviewed: "변환 완료 — 원본과 변환본을 비교해 보세요.", done: "변환 완료 — 원본과 변환본을 비교해 보세요." };
   function describeWarnings(report) {
     const list = report && Array.isArray(report.warnings) ? report.warnings : [];
     const out = [];
@@ -148,55 +174,27 @@
 
   async function api(path, opts) {
     const res = await fetch(path, Object.assign({ credentials: "include" }, opts || {}));
+    let data = null;
+    try { data = await res.json(); } catch (_) { data = null; }
     if (!res.ok) {
-      let code = "http_" + res.status;
-      try { const j = await res.json(); if (j && j.error && j.error.code) code = j.error.code; } catch (_) {}
-      const err = new Error(code);
+      const err = new Error("http_" + res.status);
       err.status = res.status;
-      err.code = code;
+      if (data && data.error && data.error.code) err.code = data.error.code;
       throw err;
     }
-    const ct = res.headers.get("content-type") || "";
-    if (ct.includes("application/json")) return res.json();
-    return res;
+    return data;
   }
 
   function downloadBlob(blob, filename) {
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
-
-  const PDFMD_NEW_WORK_DISABLED = true; // #5710 COM2 migration, existing downloads remain.
-
-  // #6012: the shared "내 PC에서 가져오기·저장하기" part. It is loaded the first
-  // time this menu uses it, so a page that never opens the menu touches no
-  // script and no PC endpoint (#6034).
-  // Same guidance the council app shows (#6591/#6607): one sentence naming the
-  // computer, one action that opens the existing Connectors computer card.
-  const PC_COPY = {
-    pick: "내 PC에서 가져오기",
-    ready: "준비 중",
-    checking: "확인 중",
-    noPc: "컴퓨터를 연결하면 내 PC의 PDF를 가져올 수 있습니다.",
-    saveNoPc: "컴퓨터를 연결하면 내 PC에 저장할 수 있습니다.",
-    connect: "컴퓨터 연결하기",
-    save: "내 PC에 저장",
-    saving: "내 PC에 저장하는 중...",
-    saved: "내 PC에 저장했습니다.",
-    noSave: "PC에 저장할 창을 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
-    saveFailed: "저장할 결과를 불러오지 못했습니다.",
-    noFile: "PC에서 가져온 파일을 읽지 못했습니다.",
-  };
-
-  // Where each original came from on the PC, so its result can be offered back
-  // into the same folder. A file uploaded from the browser has no PC folder.
-  const pcOrigin = new Map();
 
   let pcExchangeLoading = null;
 
@@ -251,6 +249,25 @@
     return (name.replace(/\.[^.]+$/, "") || "document") + ".md";
   }
 
+  const PC_COPY = {
+    pick: "내 PC에서 가져오기",
+    ready: "준비 중",
+    checking: "확인 중",
+    noPc: "컴퓨터를 연결하면 내 PC의 PDF를 가져올 수 있습니다.",
+    saveNoPc: "컴퓨터를 연결하면 내 PC에 저장할 수 있습니다.",
+    connect: "컴퓨터 연결하기",
+    save: "내 PC에 저장",
+    saving: "내 PC에 저장하는 중...",
+    saved: "내 PC에 저장했습니다.",
+    noSave: "PC에 저장할 창을 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    saveFailed: "저장할 결과를 불러오지 못했습니다.",
+    noFile: "PC에서 가져온 파일을 읽지 못했습니다.",
+  };
+
+  // #5710 COM2 migration kill switch, kept verbatim (#6012 contract): existing
+  // downloads remain available even while new work is hard-paused here.
+  const PDFMD_NEW_WORK_DISABLED = true; // #5710 COM2 migration, existing downloads remain.
+
   window.initPdfMdUtility = function (panel, workState = "checking") {
     // Four states, and only an answer may claim the last three: "checking" is
     // the first paint, "open" and "paused" come from the list route, and
@@ -269,118 +286,73 @@
     inputCol.setAttribute("data-util-pane", "input");
     const resultCol = el("div", "util-pane-result pdfmd-result-col");
     resultCol.setAttribute("data-util-pane", "result");
-    panel.appendChild(inputCol);
-    panel.appendChild(resultCol);
+    /* 머리(#7865 바꿀 모양 1): 도구 이름은 화면 머리(manifest 제목)가 이미
+       말하고, 판 머리 오른쪽에는 오늘 남은 건수와 작은 폼/대화 전환이 놓인다. */
+    const headRow = el("div", "pdfmd-head-row");
+    const quotaNote = el("span", "pdfmd-quota", "");
+    quotaNote.id = "pdfmdQuota";
+    quotaNote.setAttribute("role", "status");
+    quotaNote.setAttribute("aria-live", "polite");
+    headRow.appendChild(quotaNote);
 
-    const header = el("div", "pdfmd-header");
-    header.appendChild(el("h3", null, "PDF → Markdown 변환"));
-    header.appendChild(el("p", "pdfmd-desc", "PDF나 ZIP을 올려 변환하면 원본과 Markdown을 나란히 비교하고 내려받을 수 있습니다. OCR(정밀 변환)은 지원하지 않습니다."));
-    inputCol.appendChild(header);
+    const pauseNote = el("p", "pdfmd-status", "");
+    pauseNote.setAttribute("role", "status");
     if (PDFMD_NEW_WORK_DISABLED) {
-      header.querySelector(".pdfmd-desc").textContent = "지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
-      const notice = el("p", "pdfmd-status", "서비스 준비 중 · 신규 업로드 및 변환 일시 중단");
-      notice.setAttribute("role", "status");
-      inputCol.appendChild(notice);
+      pauseNote.textContent = "지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
     } else if (PDFMD_LOGIN_REQUIRED) {
-      header.querySelector(".pdfmd-desc").textContent = "로그인 후 PDF 변환을 이용할 수 있습니다.";
-      const notice = el("div", "pdfmd-status");
-      notice.setAttribute("role", "status");
-      notice.appendChild(el("span", null, "로그인 후 PDF 변환을 이용할 수 있습니다. "));
+      pauseNote.textContent = "";
+      pauseNote.appendChild(el("span", null, "로그인 후 PDF 변환을 이용할 수 있습니다. "));
       const loginEntry = el("button", "pdfmd-link", "로그인");
       loginEntry.type = "button";
       loginEntry.id = "pdfmdLoginEntry";
       loginEntry.addEventListener("click", openExistingLogin);
-      notice.appendChild(loginEntry);
-      inputCol.appendChild(notice);
+      pauseNote.appendChild(loginEntry);
     } else if (PDFMD_CHECKING) {
-      const notice = el("p", "pdfmd-status", "새 변환을 열 수 있는지 확인 중…");
-      notice.setAttribute("role", "status");
-      inputCol.appendChild(notice);
+      pauseNote.textContent = "새 변환을 열 수 있는지 확인 중…";
     }
+    if (!pauseNote.firstChild) pauseNote.hidden = true;
+    if (!pauseNote.firstChild) pauseNote.hidden = true;
+    headRow.appendChild(pauseNote);
+    const modeSwitchHost = el("div", "pdfmd-head-switch");
+    headRow.appendChild(modeSwitchHost);
+    /* 머리 행은 입력 칸 안이 아니라 판 맨 위 전체 폭 — 머리 오른쪽에 전환이 놓인다. */
+    panel.appendChild(headRow);
 
-    // Mode + job controls
+    panel.appendChild(inputCol);
+    panel.appendChild(resultCol);
+
+
+    /* 올리기 칸(#7865 바꿈 모양 2): 큰 끌어 놓기 칸 하나, 그 아래 글자 링크. */
     const formWrap = el("div", "util-form pdfmd-form-body");
     formWrap.id = "utilToolForm-pdfmd";
     const controls = el("div", "pdfmd-controls");
-    const modeField = el("label", null, "변환 방식 ");
     const modeSel = document.createElement("select");
     modeSel.id = "pdfmdMode";
+    /* #7865: the always-visible 변환 방식 field is gone and the choice is one
+       quiet line. 검증 변환 stays reachable — the server accepts both modes
+       and the per-page agreement report depends on it, so removing the select
+       entirely would lose a working feature (the issue's 하나뿐인 premise does
+       not hold). */
     [["fast", "빠른 변환"], ["verify", "검증 변환"]].forEach(([v, t]) => {
       const o = document.createElement("option");
       o.value = v; o.textContent = t;
       if (v === "fast") o.selected = true;
       modeSel.appendChild(o);
     });
-    modeField.appendChild(modeSel);
     modeSel.disabled = workBlocked;
-    modeSel.setAttribute("aria-describedby", "pdfmdModeHelp");
-    controls.appendChild(modeField);
-
-    const newJobBtn = el("button", "pdfmd-btn", "새 작업");
-    newJobBtn.type = "button";
-    newJobBtn.hidden = true;
-    controls.appendChild(newJobBtn);
-
-    // #5568 follow-up: one upload is one job, so deleting the job deletes the
-    // whole bundle. It is the same button for everyone: the server reads the
-    // owner from the session, never from the page.
-    const delJobBtn = el("button", "pdfmd-btn", copy("pdfmd-job-delete", "작업 삭제"));
-    delJobBtn.type = "button";
-    delJobBtn.hidden = true;
-    delJobBtn.dataset.localeKey = "pdfmd-job-delete";
-    delJobBtn.setAttribute(
-      "aria-label", copy("pdfmd-job-delete-aria", "현재 작업의 파일·원본·결과 모두 삭제")
-    );
-    delJobBtn.addEventListener("click", async () => {
-      if (!currentJobId || workBlocked) return;
-      const question = copy(
-        "pdfmd-job-delete-confirm",
-        "이 작업의 파일·원본·변환 결과를 모두 삭제할까요? 삭제한 내용은 되돌릴 수 없습니다."
-      );
-      if (typeof window.confirm !== "function" || !window.confirm(question)) return;
-      delJobBtn.disabled = true;
-      try {
-        const data = await api("/api/document-conversions/" + currentJobId, { method: "DELETE" });
-        const removed = data && Number.isFinite(Number(data.deleted_items)) ? Number(data.deleted_items) : 0;
-        currentItems = [];
-        setJobId(null);
-        uploadStatus.textContent = "작업과 저장된 원본·결과 " + removed + "건을 삭제했습니다.";
-        await loadJob();
-        await loadHistory();
-      } catch (e) {
-        uploadStatus.textContent =
-          copy("pdfmd-job-delete-failed", "작업을 삭제하지 못했습니다.") + " " + describeError(e);
-      } finally {
-        delJobBtn.disabled = false;
-      }
-    });
-    controls.appendChild(delJobBtn);
-
-    const jobIdSpan = el("span", "pdfmd-jobid", "");
-    jobIdSpan.hidden = true;
-    controls.appendChild(jobIdSpan);
+    modeSel.setAttribute("aria-label", "변환 방식");
+    controls.appendChild(modeSel);
     formWrap.appendChild(controls);
 
-    const modeHelp = el("p", "pdfmd-mode-help");
-    modeHelp.id = "pdfmdModeHelp";
-    formWrap.appendChild(modeHelp);
-    function updateModeHelp() {
-      const [key, fallback] = MODE_HELP[modeSel.value] || MODE_HELP.fast;
-      modeHelp.dataset.localeKey = key;
-      modeHelp.textContent = copy(key, fallback);
-    }
-    updateModeHelp();
-
-    // Upload area: one large, keyboard-operable target. The picker is the
-    // primary action on mobile, where drag-and-drop copy alone is no help.
     const drop = el("div", "pdfmd-drop");
     drop.setAttribute("role", "button");
     drop.tabIndex = 0;
     drop.setAttribute("aria-label", "PDF 또는 ZIP 파일 선택");
-    const dropTitle = el("span", "pdfmd-drop-title", "PDF 파일을 선택하세요");
-    const dropSub = el("span", "pdfmd-drop-sub", "끌어다 놓거나 눌러서 선택 · ZIP과 여러 파일도 가능");
+    const dropTitle = el("span", "pdfmd-drop-title", "PDF를 끌어다 놓거나 골라 주세요.");
+    const dropSub = el("span", "pdfmd-drop-sub", "여러 개나 ZIP도 됩니다.");
     dropSub.id = "pdfmdDropHint";
-    const dropCta = el("span", "pdfmd-drop-cta", "파일 선택");
+    const dropCta = el("button", "pdfmd-drop-cta", "파일 고르기");
+    dropCta.type = "button";
     drop.appendChild(dropTitle);
     drop.appendChild(dropSub);
     drop.appendChild(dropCta);
@@ -415,16 +387,50 @@
     fileInput.disabled = workBlocked;
     formWrap.appendChild(fileInput);
 
-    // #6012: the same documents, taken straight from the owner's own PC. The
-    // shared part (#6620 import, #6607 save) is the only dialog; the pick sits
-    // beside the upload field so the two ways in read as one choice.
-    const pcPick = el("button", "pdfmd-btn pdfmd-pc-pick", PC_COPY.pick);
+    formWrap.appendChild(drop);
+
+    // #6012: the same documents, taken straight from the owner's own PC — a
+    // text link under the upload box (#7865), not a second big button.
+    const pcPick = el("button", "pdfmd-link pdfmd-pc-pick", PC_COPY.pick);
     pcPick.type = "button";
     pcPick.id = "pdfmdPcPick";
-    const uploadRow = el("div", "pdfmd-upload-row");
-    uploadRow.appendChild(drop);
-    uploadRow.appendChild(pcPick);
-    formWrap.appendChild(uploadRow);
+    pcPick.addEventListener("click", async () => {
+      // An unlinked computer gets the same sentence the council app shows,
+      // never a dialog that can only fail inside.
+      if (await pcLinked() !== true) { showPcNote(); return; }
+      let component;
+      try {
+        component = await loadPcExchange();
+      } catch (_) {
+        component = null;
+      }
+      if (!component || typeof component.open !== "function") {
+        uploadStatus.textContent = PC_COPY.noSave;
+        return;
+      }
+      component.open({
+        mode: "import",
+        onSelect: (picked) => { void importFromPc(picked); },
+      });
+    });
+    if (workBlocked) {
+      pcPick.disabled = true;
+      pcPick.textContent = PC_COPY.pick + " · " + (PDFMD_NEW_WORK_DISABLED ? PC_COPY.ready : PDFMD_LOGIN_REQUIRED ? "로그인 필요" : PC_COPY.checking);
+    }
+    const pcLinkRow = el("div", "pdfmd-upload-foot");
+    pcLinkRow.appendChild(pcPick);
+    formWrap.appendChild(pcLinkRow);
+
+    const pcNote = el("p", "pdfmd-status pdfmd-pc-note", "");
+    pcNote.id = "pdfmdPcNote";
+    pcNote.hidden = true;
+    const pcNoteText = el("span", null, PC_COPY.noPc + " ");
+    const pcConnect = el("button", "pdfmd-link", PC_COPY.connect);
+    pcConnect.type = "button";
+    pcConnect.addEventListener("click", openPcConnect);
+    pcNote.appendChild(pcNoteText);
+    pcNote.appendChild(pcConnect);
+    formWrap.appendChild(pcNote);
 
     // What happens to the bytes, said once, where the files go in. There is no
     // automatic expiry, so the sentence promises none: the owner's delete is
@@ -440,19 +446,6 @@
     retentionNote.dataset.localeKey = "pdfmd-retention-note";
     formWrap.appendChild(retentionNote);
 
-    const pcNote = el("p", "pdfmd-status pdfmd-pc-note", "");
-    pcNote.id = "pdfmdPcNote";
-    pcNote.hidden = true;
-    const pcNoteText = el("span", null, PC_COPY.noPc + " ");
-    const pcConnect = el("button", "pdfmd-link", PC_COPY.connect);
-    pcConnect.type = "button";
-    pcConnect.addEventListener("click", openPcConnect);
-    pcNote.appendChild(pcNoteText);
-    pcNote.appendChild(pcConnect);
-    formWrap.appendChild(pcNote);
-
-    // One place shows the no-computer guidance, so an import attempt and a save
-    // attempt say the same thing the council app says.
     function showPcNote(message) {
       pcNoteText.textContent = (message || PC_COPY.noPc) + " ";
       pcNote.hidden = false;
@@ -464,6 +457,11 @@
       }
     }
 
+    // Only an answer that there is no PC shows the notice; a failed check stays quiet.
+    void pcLinked().then((linked) => {
+      if (linked === false) pcNote.hidden = false;
+    });
+
     const uploadStatus = el("div", "pdfmd-status", "");
     uploadStatus.id = "pdfmdStatus";
     uploadStatus.setAttribute("role", "status");
@@ -472,15 +470,18 @@
       inputCol.appendChild(formWrap);
     }
     inputCol.appendChild(uploadStatus);
-    const quotaNote = el("p", "pdfmd-quota");
-    quotaNote.id = "pdfmdQuota";
-    quotaNote.setAttribute("role", "status");
-    quotaNote.setAttribute("aria-live", "polite");
-    inputCol.appendChild(quotaNote);
     const uploadProgress = el("ol", "pdfmd-upload-progress");
     uploadProgress.hidden = true;
     uploadProgress.setAttribute("aria-label", "파일별 업로드 진행 상태");
     inputCol.appendChild(uploadProgress);
+
+    // 모두 ZIP (#7865 바꿀 모양 4): 결과 위에, 여러 파일일 때만 나온다.
+    const zipBar = el("div", "pdfmd-zipbar");
+    const allZipBtn = el("button", "pdfmd-btn", "모두 ZIP으로 받기");
+    allZipBtn.type = "button";
+    allZipBtn.hidden = true;
+    zipBar.appendChild(allZipBtn);
+    resultCol.appendChild(zipBar);
 
     // Items
     const itemsWrap = el("div", "pdfmd-items");
@@ -521,10 +522,6 @@
 
     const previewGrid = el("div", "pdfmd-preview-grid");
 
-    // #7834: the original pane shows one rendered page. A same-origin frame of
-    // the PDF depended on the page policy allowing that frame and on the
-    // browser carrying an inline PDF viewer; both could say no, and the pane
-    // then looked empty next to a converted page that was there.
     // #7834: one rendered image of the page being compared. The pane itself,
     // its fallback and its page URL live in util-pdfmd-pages.js.
     const original = window.PadiemPdfMdOriginalPane.create(el);
@@ -543,23 +540,12 @@
     previewWrap.appendChild(previewGrid);
     resultCol.appendChild(previewWrap);
 
-    // Archive
-    const archiveControls = el("div", "pdfmd-archive-controls");
-    const archiveBtn = el("button", "pdfmd-btn", "전체 ZIP 다운로드");
-    archiveBtn.type = "button";
-    archiveBtn.hidden = true;
-    const selectedArchiveBtn = el("button", "pdfmd-btn", "선택 항목 ZIP 다운로드");
-    selectedArchiveBtn.type = "button";
-    selectedArchiveBtn.hidden = true;
-    selectedArchiveBtn.disabled = true;
-    archiveControls.appendChild(archiveBtn);
-    archiveControls.appendChild(selectedArchiveBtn);
-    resultCol.appendChild(archiveControls);
-
-    // History: client-side date grouping and filtering. The list API carries
-    // no filenames, so names join the search index as jobs are opened.
-    const histHeader = el("h4", "pdfmd-history-head", "작업 이력");
-    resultCol.appendChild(histHeader);
+    /* 지난 변환(#7865 바꿀 모양 5): 접힌 한 줄, 펼치면 날짜·파일 이름·배지 목록. */
+    const histFold = el("details", "pdfmd-history-fold");
+    const histSummary = el("summary", "pdfmd-history-summary", "지난 변환");
+    histSummary.setAttribute("aria-label", "지난 변환 펼치기");
+    histFold.appendChild(histSummary);
+    const histBody = el("div", "pdfmd-history-body");
     const histTools = el("div", "pdfmd-history-tools");
     histTools.hidden = true;
     const histSearch = document.createElement("input");
@@ -572,9 +558,11 @@
     histSearch.placeholder = copy("pdfmd-history-search-placeholder", "날짜·파일명·상태로 검색");
     histSearch.setAttribute("aria-label", copy("pdfmd-history-search-label", "작업 이력 검색"));
     histTools.appendChild(histSearch);
-    resultCol.appendChild(histTools);
+    histBody.appendChild(histTools);
     const histList = el("div", "pdfmd-history");
-    resultCol.appendChild(histList);
+    histBody.appendChild(histList);
+    histFold.appendChild(histBody);
+    resultCol.appendChild(histFold);
 
     let currentJobId = null;
     let currentItems = [];
@@ -587,16 +575,19 @@
     const PREVIEW_PAGE_GUARD_MS = 900;
     let previewPageCount = 1;
     let previewReviewPages = new Set();
-    const selectedResultIds = new Set();
     let historyJobs = [];
     let historyQuery = "";
     const itemNames = new Map();
+    const pcOrigin = new Map();
 
     // The conversion runs server-side after a 202, so the panel follows the
     // item detail until the result is stored. A reopened panel rebuilds the
     // DOM; a poller whose itemsWrap left the document stops quietly.
     const POLL_INTERVAL_MS = 2000;
     const polledItems = new Set();
+    // #7865: uploads start their own conversion, so a queued row is claimed
+    // once — the same intent the old 변환 실행 button carried.
+    const autoRunItems = new Set();
 
     function reviewPagesFor(item) {
       return new Set(window.PadiemPdfMdPageMap.reviewPages(item && item.report));
@@ -634,9 +625,11 @@
         if (previewReviewPages.has(page.number)) {
           heading.appendChild(el("span", "pdfmd-page-review-badge", "확인 필요"));
         }
-        const text = el("pre", "pdfmd-page-text", page.text);
+        const blocks = window.PadiemPdfMdPageMap.pageBlocks
+          ? window.PadiemPdfMdPageMap.pageBlocks(page.text, el)
+          : [el("pre", "pdfmd-page-text", page.text)];
         block.appendChild(heading);
-        block.appendChild(text);
+        blocks.forEach((node) => block.appendChild(node));
         mdView.appendChild(block);
       });
 
@@ -701,7 +694,7 @@
           if (status === "failed") {
             uploadStatus.textContent = item.name + " 변환 실패. " + describeError({ code: (data.item && data.item.error_code) || "convert_failed" });
           } else if (status === "reviewed" || status === "done") {
-            uploadStatus.textContent = item.name + " 변환 완료. 원본과 결과를 비교해 보세요.";
+            uploadStatus.textContent = item.name + " 변환 완료. 결과 카드에서 받을 수 있습니다.";
           }
           return;
         }
@@ -736,29 +729,24 @@
       if (id !== currentJobId) {
         previewWrap.hidden = true;
         previewItem = null;
-        selectedResultIds.clear();
         mdView.replaceChildren();
         original.reset();
       }
       currentJobId = id;
-      jobIdSpan.textContent = id ? "작업 " + id.slice(-8) : "";
-      jobIdSpan.title = id || "";
-      jobIdSpan.hidden = !id;
-      newJobBtn.hidden = workBlocked || !id;
-      delJobBtn.hidden = workBlocked || !id;
-      archiveBtn.hidden = !id;
-      selectedArchiveBtn.hidden = !id;
-      selectedArchiveBtn.disabled = true;
+      allZipBtn.hidden = !id;
       markActiveHistory();
     }
 
+    /* #7865: [새 작업] 단추는 없어졌지만 대화 모드가 방식을 바꾸며 작업을
+       내려놓을 때 쓰는 경로는 남는다 — 파일을 올리면 새 작업이 자동으로
+       만들어지므로 화면에는 이 단추가 다시 나오지 않는다. */
     function startNewJob() {
       if (workBlocked) return;
       currentItems = [];
       setJobId(null);
-      uploadStatus.textContent = "새 작업을 시작합니다. 파일을 선택하세요.";
+      uploadStatus.textContent = "새 작업을 시작합니다. 파일을 고르세요.";
       renderItems();
-      drop.focus();
+      if (typeof drop.focus === "function") drop.focus();
     }
 
     async function createJob() {
@@ -772,19 +760,12 @@
           body: JSON.stringify({ mode: mode }),
         });
         setJobId(data.job.id);
-        uploadStatus.textContent = "작업이 준비되었습니다. 파일을 올려 주세요.";
         await loadJob();
         await loadHistory();
       } catch (e) {
         uploadStatus.textContent = "작업을 만들지 못했습니다. " + describeError(e);
       }
     }
-
-    newJobBtn.addEventListener("click", startNewJob);
-    modeSel.addEventListener("change", () => {
-      updateModeHelp();
-      if (currentJobId) uploadStatus.textContent = "변환 방식은 새 작업부터 적용됩니다.";
-    });
 
     // #6012: a file chosen in the shared dialog comes back as the file lane's
     // id; its bytes are read once and handed to the SAME upload the browser
@@ -809,35 +790,6 @@
       const file = new File([blob], name, { type: isZip ? "application/zip" : "application/pdf" });
       if (await uploadFile(file)) pcOrigin.set(name, picked.folder || ".");
     }
-
-    if (workBlocked) {
-      pcPick.disabled = true;
-      pcPick.textContent = PC_COPY.pick + " · " + (PDFMD_NEW_WORK_DISABLED ? PC_COPY.ready : PDFMD_LOGIN_REQUIRED ? "로그인 필요" : PC_COPY.checking);
-    } else {
-      pcPick.addEventListener("click", async () => {
-        // An unlinked computer gets the same sentence the council app shows,
-        // never a dialog that can only fail inside.
-        if (await pcLinked() !== true) { showPcNote(); return; }
-        let component;
-        try {
-          component = await loadPcExchange();
-        } catch (_) {
-          component = null;
-        }
-        if (!component || typeof component.open !== "function") {
-          uploadStatus.textContent = PC_COPY.noSave;
-          return;
-        }
-        component.open({
-          mode: "import",
-          onSelect: (picked) => { void importFromPc(picked); },
-        });
-      });
-    }
-    // Only an answer that there is no PC shows the notice; a failed check stays quiet.
-    void pcLinked().then((linked) => {
-      if (linked === false) pcNote.hidden = false;
-    });
 
     async function uploadFile(file, onProgress) {
       if (workBlocked) return false;
@@ -883,7 +835,7 @@
       }
     }
 
-    let chatBridge = { recordFiles() {}, sync() {} };
+    let chatBridge = { recordFiles() {}, sync() {}, enterChat() {} };
     async function uploadFiles(files) {
       if (workBlocked) return;
       if (!files.length) return;
@@ -911,7 +863,7 @@
         else failed += 1;
       }
       if (uploaded && !failed) {
-        uploadStatus.textContent = uploaded + "개 파일 처리 완료. 목록에서 '변환 실행'을 눌러 주세요.";
+        uploadStatus.textContent = uploaded + "개 파일을 올렸습니다. 변환이 곧 시작됩니다.";
       } else if (uploaded && failed) {
         uploadStatus.textContent = uploaded + "개 파일 처리 완료, " + failed + "개 실패. " + (lastUploadError || "파일 형식을 확인해 주세요.");
       } else if (failed) {
@@ -960,103 +912,217 @@
             void pollItemUntilTerminal(currentJobId, item);
           }
         });
+        void runQueuedItems();
       } catch (e) {
         uploadStatus.textContent = "작업을 불러오지 못했습니다. " + describeError(e);
       }
     }
 
-    function syncArchiveControls() {
+    /* #7865: an upload starts its own conversion. A queued row (fresh upload or
+       a reopened job the owner came back for) claims itself once; the poller
+       repaints when the row reaches a terminal state. */
+    async function runQueuedItems() {
+      if (workBlocked) return;
+      const queued = currentItems.filter((item) => item.status === "queued" && !item.has_markdown);
+      let started = 0;
+      for (const item of queued) {
+        if (autoRunItems.has(item.id)) continue;
+        autoRunItems.add(item.id);
+        try {
+          const data = await api("/api/document-conversions/items/" + item.id + "/run", { method: "POST" });
+          started += 1;
+          if (data && data.conversion && Number.isFinite(Number(data.conversion.remaining))) {
+            quotaNote.textContent = "오늘 " + Number(data.conversion.remaining) + "건 더 바꿀 수 있어요.";
+          }
+          if (data && data.item && data.item.status === "working") {
+            void pollItemUntilTerminal(currentJobId, data.item);
+          }
+        } catch (e) {
+          uploadStatus.textContent = item.name + " 변환 시작 실패. " + describeError(e);
+        }
+      }
+      /* 한 번 실제로 시작했을 때만 다시 읽는다 — 서버가 계속 queued를 돌려주는
+         경우(시험 대역·일시 오류)에 loadJob→runQueuedItems 재귀가 무한히
+         돌지 않도록 하는 유일한 안전장치다. */
+      if (started) await loadJob();
+    }
+
+    function syncZipBar() {
       const available = currentItems.filter((item) => item.has_markdown);
-      const availableIds = new Set(available.map((item) => item.id));
-      Array.from(selectedResultIds).forEach((id) => {
-        if (!availableIds.has(id)) selectedResultIds.delete(id);
-      });
-      selectedArchiveBtn.hidden = !currentJobId || available.length === 0;
-      selectedArchiveBtn.disabled = selectedResultIds.size === 0;
+      allZipBtn.hidden = !currentJobId || available.length < 2;
       chatBridge.sync();
+    }
+
+    async function deleteItem(item) {
+      try {
+        await api("/api/document-conversions/items/" + item.id, { method: "DELETE" });
+        await loadJob();
+        await loadHistory();
+      } catch (e) {
+        uploadStatus.textContent = "파일을 삭제하지 못했습니다. " + describeError(e);
+      }
+    }
+
+    function deleteButton(item) {
+      /* 실패 카드의 유일한 단추(#7865): 이유 한 줄 + 지우기. */
+      const delBtn = el("button", "pdfmd-btn", "지우기");
+      delBtn.type = "button";
+      delBtn.setAttribute("aria-label", item.name + " 삭제");
+      delBtn.addEventListener("click", () => { void deleteItem(item); });
+      return delBtn;
+    }
+
+    function moreMenu(item) {
+      /* ··· 메뉴(#7865 바꿀 모양 3): 대화로 다듬기 · 내 PC에 저장 · 원본 PDF · 지우기 */
+      /* 메뉴 카드는 .pdfmd-item 을 기준점으로 오른쪽 정렬해 열린다. */
+      const more = el("details", "pdfmd-more");
+      const summary = el("summary", "pdfmd-more-btn", "···");
+      summary.setAttribute("aria-label", item.name + " 더보기");
+      more.appendChild(summary);
+      const menu = el("div", "pdfmd-more-menu");
+      menu.setAttribute("role", "menu");
+
+      const refine = el("button", "pdfmd-btn pdfmd-menu-item", "대화로 다듬기");
+      refine.type = "button";
+      refine.setAttribute("role", "menuitem");
+      /* #7865: the old archive-row refine button moved here — the same marker
+         keeps the chat-mode contract findable at the new place. */
+      refine.setAttribute("data-util-refine-chat", "");
+      refine.disabled = workBlocked;
+      refine.addEventListener("click", () => {
+        more.removeAttribute("open");
+        chatBridge.enterChat();
+      });
+      menu.appendChild(refine);
+
+      const pcSaveBtn = el("button", "pdfmd-btn pdfmd-menu-item", PC_COPY.save);
+      pcSaveBtn.type = "button";
+      pcSaveBtn.setAttribute("role", "menuitem");
+      pcSaveBtn.setAttribute("aria-label", item.name + " " + PC_COPY.save);
+      pcSaveBtn.addEventListener("click", async () => {
+        more.removeAttribute("open");
+        if (await pcLinked() !== true) { showPcNote(PC_COPY.saveNoPc); return; }
+        let component;
+        try {
+          component = await loadPcExchange();
+        } catch (_) {
+          component = null;
+        }
+        if (!component || typeof component.open !== "function") {
+          uploadStatus.textContent = PC_COPY.noSave;
+          return;
+        }
+        uploadStatus.textContent = PC_COPY.saving;
+        let markdown;
+        try {
+          const res = await fetch(
+            "/api/document-conversions/items/" + item.id + "/markdown?display=inline",
+            { credentials: "include" },
+          );
+          if (!res.ok) throw new Error("http_" + res.status);
+          markdown = await res.text();
+        } catch (e) {
+          uploadStatus.textContent = PC_COPY.saveFailed + " " + describeError(e);
+          return;
+        }
+        component.open({
+          mode: "save",
+          content: markdown,
+          fileName: resultName(item.name),
+          startFolder: pcOrigin.get(item.name) || ".",
+          onSave: () => { uploadStatus.textContent = PC_COPY.saved; },
+        });
+      });
+      menu.appendChild(pcSaveBtn);
+
+      const origBtn = el("button", "pdfmd-btn pdfmd-menu-item", "원본 PDF");
+      origBtn.type = "button";
+      origBtn.setAttribute("role", "menuitem");
+      origBtn.setAttribute("aria-label", item.name + " 원본 PDF 다운로드");
+      origBtn.addEventListener("click", async () => {
+        more.removeAttribute("open");
+        const res = await fetch("/api/document-conversions/items/" + item.id + "/original", { credentials: "include" });
+        if (!res.ok) { uploadStatus.textContent = "원본 PDF 다운로드에 실패했습니다."; return; }
+        const blob = await res.blob();
+        downloadBlob(blob, (item.name.replace(/\.[^.]+$/, "") || "document") + ".pdf");
+      });
+      menu.appendChild(origBtn);
+
+      const delBtn = el("button", "pdfmd-btn pdfmd-menu-item pdfmd-menu-danger", "지우기");
+      delBtn.type = "button";
+      delBtn.setAttribute("role", "menuitem");
+      delBtn.setAttribute("aria-label", item.name + " 삭제");
+      delBtn.addEventListener("click", async () => {
+        more.removeAttribute("open");
+        await deleteItem(item);
+      });
+      menu.appendChild(delBtn);
+
+      more.appendChild(menu);
+      return more;
     }
 
     function renderItems() {
       itemsWrap.replaceChildren();
-      syncArchiveControls();
+      syncZipBar();
       if (!currentJobId) {
         itemsWrap.appendChild(emptyBlock("첫 PDF를 변환해 보세요.", null, [
-          "PDF 또는 ZIP 파일을 선택합니다.",
-          "목록에서 '변환 실행'을 누릅니다.",
+          "PDF 또는 ZIP 파일을 고릅니다.",
+          "올리면 바로 변환이 시작됩니다.",
           "원본과 Markdown을 비교하고 내려받습니다.",
         ]));
         return;
       }
       if (!currentItems.length) {
-        itemsWrap.appendChild(emptyBlock("이 작업에는 아직 파일이 없습니다.", "위에서 PDF 또는 ZIP 파일을 선택하세요.", null));
+        itemsWrap.appendChild(emptyBlock("이 작업에는 아직 파일이 없습니다.", "위에서 PDF 또는 ZIP 파일을 고르세요.", null));
         return;
       }
       const list = el("div", "pdfmd-itemlist");
       currentItems.forEach((item) => {
         const card = el("div", "pdfmd-item");
-        const title = el("div", "pdfmd-item-title", item.page_count ? item.name + " (" + item.page_count + "쪽)" : item.name);
-        card.appendChild(title);
+        const head = el("div", "pdfmd-item-head");
+        const title = el("span", "pdfmd-item-title", item.page_count ? item.name + " (" + item.page_count + "쪽)" : item.name);
+        head.appendChild(title);
+        head.appendChild(statusChip(item));
+        card.appendChild(head);
 
         const meta = el("div", "pdfmd-item-meta");
-        meta.appendChild(statusChip(item.status)); if (STAGE_LINES[item.status]) meta.appendChild(el("span", "pdfmd-stage", STAGE_LINES[item.status]));
         if (item.character_count) {
           meta.appendChild(el("span", "pdfmd-item-count", Number(item.character_count).toLocaleString("ko-KR") + "자"));
         }
         card.appendChild(meta);
 
-        if (item.error_code) card.appendChild(el("div", "pdfmd-warn", describeError({ code: item.error_code }, "변환에 실패했습니다.")));
+        if (item.status === "failed") {
+          /* 실패 카드(#7865): 이유 한 줄 + [지우기]만. 스캔본 같은 긴 안내도
+             이유 줄에서 한 번만 보인다. */
+          const reason = el("div", "pdfmd-warn", describeError({ code: item.error_code }, "변환에 실패했습니다."));
+          card.appendChild(reason);
+          const actions = el("div", "pdfmd-item-actions");
+          actions.appendChild(deleteButton(item));
+          card.appendChild(actions);
+          list.appendChild(card);
+          return;
+        }
 
         const actions = el("div", "pdfmd-item-actions");
         if (item.has_markdown) {
-          const selection = el("label", "pdfmd-select-result");
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.checked = selectedResultIds.has(item.id);
-          checkbox.setAttribute("aria-label", item.name + " ZIP에 포함");
-          checkbox.addEventListener("change", () => {
-            if (checkbox.checked) selectedResultIds.add(item.id);
-            else selectedResultIds.delete(item.id);
-            syncArchiveControls();
+          const mdBtn = el("button", "pdfmd-btn pdfmd-btn-primary", "Markdown 받기");
+          mdBtn.type = "button";
+          mdBtn.setAttribute("aria-label", item.name + " Markdown 받기");
+          mdBtn.addEventListener("click", async () => {
+            const res = await fetch("/api/document-conversions/items/" + item.id + "/markdown", { credentials: "include" });
+            if (!res.ok) { uploadStatus.textContent = "Markdown 다운로드에 실패했습니다."; return; }
+            const blob = await res.blob();
+            downloadBlob(blob, (item.name.replace(/\.[^.]+$/, "") || "document") + ".md");
           });
-          selection.appendChild(checkbox);
-          selection.appendChild(el("span", null, "ZIP에 포함"));
-          actions.appendChild(selection);
-        }
+          actions.appendChild(mdBtn);
 
-        if (!item.has_markdown && !workBlocked && item.status !== "working") {
-          const runBtn = el("button", "pdfmd-btn pdfmd-btn-primary", item.status === "failed" ? "다시 변환" : "변환 실행");
-          runBtn.type = "button";
-          runBtn.setAttribute("aria-label", item.name + " " + runBtn.textContent);
-          runBtn.addEventListener("click", async () => {
-            runBtn.disabled = true;
-            uploadStatus.textContent = item.name + " 변환 중 — 원본을 확인하고 있습니다.";
-            try {
-              const data = await api("/api/document-conversions/items/" + item.id + "/run", { method: "POST" });
-              if (data && data.item && data.item.status === "working") {
-                // 202: the conversion is running server-side; the item poller
-                // repaints the list when it reaches reviewed or failed.
-                uploadStatus.textContent = item.name + " 변환 중 — 변환본을 만들고 있습니다. 완료되면 목록이 갱신됩니다.";
-              } else {
-                uploadStatus.textContent = item.name + " 변환 완료. 원본과 결과를 비교해 보세요.";
-              }
-              if (data && data.conversion && Number.isFinite(Number(data.conversion.remaining))) {
-                quotaNote.textContent = "오늘 남은 변환 " + Number(data.conversion.remaining) + "건";
-              }
-              await loadJob();
-              await loadHistory();
-            } catch (e) {
-              uploadStatus.textContent = item.name + " 변환 실패. " + describeError(e);
-              await loadJob();
-              await loadHistory();
-            }
-          });
-          actions.appendChild(runBtn);
-        } else if (item.has_markdown) {
-          const previewBtn = el("button", "pdfmd-btn pdfmd-btn-primary", "비교 보기");
+          const previewBtn = el("button", "pdfmd-btn", "원본과 비교");
           previewBtn.type = "button";
           previewBtn.setAttribute("aria-label", item.name + " 원본과 변환본 비교");
           previewBtn.addEventListener("click", async () => {
             previewWrap.hidden = false;
+            previewWrap.scrollIntoView({ block: "nearest" });
             mdView.replaceChildren(el("p", "pdfmd-preview-loading", "Markdown을 불러오는 중..."));
             previewItem = item;
             original.show(previewItem, 1);
@@ -1070,98 +1136,11 @@
           });
           actions.appendChild(previewBtn);
 
-          const mdBtn = el("button", "pdfmd-btn", "MD 다운로드");
-          mdBtn.type = "button";
-          mdBtn.setAttribute("aria-label", item.name + " Markdown 다운로드");
-          mdBtn.addEventListener("click", async () => {
-            const res = await fetch("/api/document-conversions/items/" + item.id + "/markdown", { credentials: "include" });
-            if (!res.ok) { uploadStatus.textContent = "Markdown 다운로드에 실패했습니다."; return; }
-            const blob = await res.blob();
-            downloadBlob(blob, (item.name.replace(/\.[^.]+$/, "") || "document") + ".md");
-          });
-          actions.appendChild(mdBtn);
-
-          // #6012: the same result, put back on the owner's PC beside the file it
-          // came from. The shared part keeps the previous contents as a backup.
-          const pcSaveBtn = el("button", "pdfmd-btn", PC_COPY.save);
-          pcSaveBtn.type = "button";
-          pcSaveBtn.setAttribute("aria-label", item.name + " " + PC_COPY.save);
-          pcSaveBtn.addEventListener("click", async () => {
-            if (await pcLinked() !== true) { showPcNote(PC_COPY.saveNoPc); return; }
-            let component;
-            try {
-              component = await loadPcExchange();
-            } catch (_) {
-              component = null;
-            }
-            if (!component || typeof component.open !== "function") {
-              uploadStatus.textContent = PC_COPY.noSave;
-              return;
-            }
-            uploadStatus.textContent = PC_COPY.saving;
-            let markdown;
-            try {
-              const res = await fetch(
-                "/api/document-conversions/items/" + item.id + "/markdown?display=inline",
-                { credentials: "include" },
-              );
-              if (!res.ok) throw new Error("http_" + res.status);
-              markdown = await res.text();
-            } catch (e) {
-              uploadStatus.textContent = PC_COPY.saveFailed + " " + describeError(e);
-              return;
-            }
-            component.open({
-              mode: "save",
-              content: markdown,
-              fileName: resultName(item.name),
-              startFolder: pcOrigin.get(item.name) || ".",
-              onSave: () => { uploadStatus.textContent = PC_COPY.saved; },
-            });
-          });
-          actions.appendChild(pcSaveBtn);
-
-          const origBtn = el("button", "pdfmd-btn", "원본 PDF");
-          origBtn.type = "button";
-          origBtn.setAttribute("aria-label", item.name + " 원본 PDF 다운로드");
-          origBtn.addEventListener("click", async () => {
-            const res = await fetch("/api/document-conversions/items/" + item.id + "/original", { credentials: "include" });
-            if (!res.ok) { uploadStatus.textContent = "원본 PDF 다운로드에 실패했습니다."; return; }
-            const blob = await res.blob();
-            downloadBlob(blob, (item.name.replace(/\.[^.]+$/, "") || "document") + ".pdf");
-          });
-          actions.appendChild(origBtn);
-
-          if (item.status !== "done") {
-            const reviewBtn = el("button", "pdfmd-btn", "검토 완료");
-            reviewBtn.type = "button";
-            reviewBtn.setAttribute("aria-label", item.name + " 검토 완료");
-            reviewBtn.addEventListener("click", async () => {
-              try {
-                await api("/api/document-conversions/items/" + item.id + "/review", { method: "POST" });
-                await loadJob();
-                await loadHistory();
-              } catch (e) {
-                uploadStatus.textContent = "검토 상태를 저장하지 못했습니다. " + describeError(e);
-              }
-            });
-            actions.appendChild(reviewBtn);
-          }
+          actions.appendChild(moreMenu(item));
+        } else if (item.status === "working" || item.status === "queued") {
+          /* 바꾸는 중 카드: 단추 없음 — 업로드 때 변환이 시작되고 폴러가 갱신한다. */
+          card.appendChild(el("div", "pdfmd-stage", "바꾸는 중 — 잠시 후 결과가 이 자리에 생깁니다."));
         }
-
-        const delBtn = el("button", "pdfmd-btn", "삭제");
-        delBtn.type = "button";
-        delBtn.setAttribute("aria-label", item.name + " 삭제");
-        delBtn.addEventListener("click", async () => {
-          try {
-            await api("/api/document-conversions/items/" + item.id, { method: "DELETE" });
-            await loadJob();
-            await loadHistory();
-          } catch (e) {
-            uploadStatus.textContent = "파일을 삭제하지 못했습니다. " + describeError(e);
-          }
-        });
-        actions.appendChild(delBtn);
 
         card.appendChild(actions);
 
@@ -1182,36 +1161,31 @@
           const info = el("div", "pdfmd-agreement", "일치도(전체 최저): " + (s.min_character_coverage !== null && s.min_character_coverage !== undefined ? (s.min_character_coverage * 100).toFixed(1) + "%" : "—") + (s.min_digit_preservation !== null && s.min_digit_preservation !== undefined ? " / 숫자 보존(최저): " + (s.min_digit_preservation * 100).toFixed(1) + "%" : "") + " · 확인 필요 " + (s.review_page_count || 0) + "쪽");
           card.appendChild(info);
         }
-        if (describeWarnings(item.report)) card.appendChild(el("div", "pdfmd-warn", describeWarnings(item.report)));
+        if (item.status !== "failed" && describeWarnings(item.report)) card.appendChild(el("div", "pdfmd-warn", describeWarnings(item.report)));
         list.appendChild(card);
       });
       itemsWrap.appendChild(list);
     }
 
-    async function downloadArchive(button, selectedOnly) {
-      if (!currentJobId || (selectedOnly && !selectedResultIds.size)) return;
+    async function downloadAllZip(button) {
+      if (!currentJobId) return;
       button.disabled = true;
       try {
-        const params = new URLSearchParams();
-        if (selectedOnly) selectedResultIds.forEach((id) => params.append("item_id", id));
-        const query = params.toString();
-        const url = "/api/document-conversions/" + currentJobId + "/archive" + (query ? "?" + query : "");
-        const res = await fetch(url, { credentials: "include" });
+        const res = await fetch("/api/document-conversions/" + currentJobId + "/archive", { credentials: "include" });
         if (!res.ok) {
           uploadStatus.textContent = "ZIP 다운로드에 실패했습니다.";
           return;
         }
         const blob = await res.blob();
-        downloadBlob(blob, "pdf-to-markdown-" + currentJobId + (selectedOnly ? "-selected" : "") + ".zip");
+        downloadBlob(blob, "pdf-to-markdown-" + currentJobId + ".zip");
       } catch (e) {
         uploadStatus.textContent = "ZIP 다운로드에 실패했습니다. " + describeError(e);
       } finally {
-        button.disabled = selectedOnly ? selectedResultIds.size === 0 : false;
+        button.disabled = false;
       }
     }
 
-    archiveBtn.addEventListener("click", () => downloadArchive(archiveBtn, false));
-    selectedArchiveBtn.addEventListener("click", () => downloadArchive(selectedArchiveBtn, true));
+    allZipBtn.addEventListener("click", () => downloadAllZip(allZipBtn));
 
     function historyGroup(value) {
       const date = new Date(value);
@@ -1234,7 +1208,8 @@
         job.id || "",
         job.id ? job.id.slice(-8) : "",
         modeLabel(job.mode),
-        STATUS_LABELS[job.status] || "",
+        badgeText(job),
+        batchLabel(job),
         countLabel(job.item_count),
       ].concat(itemNames.get(job.id) || []).join(" ").toLowerCase();
     }
@@ -1253,14 +1228,20 @@
       const main = el("span", "pdfmd-history-main");
       const when = formatWhen(job.created_at);
       main.appendChild(el("span", "pdfmd-history-when", when));
+      const names = itemNames.get(job.id);
+      if (names && names.length) main.appendChild(el("span", "pdfmd-history-name", names.join(", ")));
       main.appendChild(el("span", "pdfmd-history-meta", countLabel(job.item_count) + " · " + modeLabel(job.mode)));
       btn.appendChild(main);
-      const chip = statusChip(job.status);
+      const chip = statusChip(job);
       btn.appendChild(chip);
       btn.setAttribute("aria-label", when + ", " + countLabel(job.item_count) + ", " + modeLabel(job.mode) + ", 상태 " + chip.textContent);
       btn.addEventListener("click", async () => {
         setJobId(job.id);
         await loadJob();
+        histFold.removeAttribute("open");
+        if (typeof histFold.scrollIntoView === "function") {
+          try { itemsWrap.scrollIntoView({ block: "nearest" }); } catch (_) {}
+        }
       });
       li.appendChild(btn);
       return li;
@@ -1303,13 +1284,20 @@
       markActiveHistory();
     }
 
+    function syncHistoryFold() {
+      histSummary.textContent = "지난 변환 " + historyJobs.length + "건";
+      histTools.hidden = !historyJobs.length;
+    }
+
     histSearch.addEventListener("input", () => {
       historyQuery = histSearch.value;
       renderHistory();
     });
+    histFold.addEventListener("toggle", () => {
+      if (histFold.open) markActiveHistory();
+    });
 
     async function loadHistory() {
-      histTools.hidden = true;
       histList.replaceChildren(el("p", "pdfmd-empty", "작업 이력을 불러오는 중..."));
       try {
         const data = await api("/api/document-conversions?limit=50");
@@ -1319,8 +1307,9 @@
           window.initPdfMdUtility(panel, answer);
           return;
         }
-        historyJobs = data.jobs || [];
-        histTools.hidden = !historyJobs.length;
+        historyJobs = (data.jobs || []).slice().sort(
+          (a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")));
+        syncHistoryFold();
         renderHistory();
         historyJobs.forEach((job) => {
           if (job.status === "working") pollWorkingItemsOfJob(job.id);
@@ -1335,7 +1324,7 @@
             return;
           }
           historyJobs = [];
-          histTools.hidden = true;
+          syncHistoryFold();
           histList.replaceChildren();
           histList.appendChild(emptyBlock("로그인하면 작업 이력을 볼 수 있습니다.", null, null));
           return;
@@ -1348,7 +1337,7 @@
           return;
         }
         historyJobs = [];
-        histTools.hidden = true;
+        syncHistoryFold();
         histList.replaceChildren();
         histList.appendChild(emptyBlock("작업 이력을 불러오지 못했습니다.", describeError(e), null));
       }
@@ -1356,8 +1345,9 @@
 
     if (window.PadiemUtilChatMode && typeof window.PadiemUtilChatMode.bindPdfmd === "function") {
       chatBridge = window.PadiemUtilChatMode.bindPdfmd({
-        panel, inputCol, formWrap, uploadStatus, archiveControls, modeSel, dropTitle,
-        workBlocked, loginRequired: PDFMD_LOGIN_REQUIRED, copy, updateModeHelp, startNewJob, uploadFiles,
+        panel, inputCol, formWrap, uploadStatus, modeSel, dropTitle,
+        workBlocked, loginRequired: PDFMD_LOGIN_REQUIRED, copy, startNewJob, uploadFiles,
+        modeSwitchHost,
         getState: () => ({ currentJobId, currentItems, lastUploadError }),
       });
     }

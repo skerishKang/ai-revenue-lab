@@ -9,6 +9,10 @@
     ownCursor: null, adminCursor: null, unread: 0, unreadReplies: 0, bodyLimit: 4000,
     replyLimit: 4000, dailyLimit: 10, busy: false, ownLoading: false, adminLoading: false,
     ownError: "", adminError: "", message: "", receipt: "" };
+  // #7835: a request that never settles used to leave the list "loading" forever, and
+  // every later load() returned early on that flag — the panel froze with its buttons
+  // disabled. One bounded wait turns a silent connection into an ordinary failure.
+  const REQUEST_TIMEOUT_MS = 15000;
   const requests = new Set();
   let nodes, returnFocus;
   const copy = (key, values) => window.__padiemLocale?.text("feedback-" + key, values) || "feedback-" + key;
@@ -58,6 +62,7 @@
     const init = { method, credentials: "same-origin", cache: "no-store", signal: controller.signal,
       headers: { Accept: "application/json" } };
     if (payload !== undefined) { init.headers["Content-Type"] = "application/json"; init.body = JSON.stringify(payload); }
+    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
       const pending = window.fetch(path, init);
       delete init.body;
@@ -69,7 +74,7 @@
       return { status: response.status, data };
     } catch (_) {
       return current(epoch) ? { status: 0, data: null } : null;
-    } finally { delete init.body; requests.delete(controller); }
+    } finally { clearTimeout(timer); delete init.body; requests.delete(controller); }
   }
   function failure(reply) {
     const code = reply?.data?.error?.code;
@@ -86,7 +91,14 @@
     return { id: value.id, body: value.body, status: value.status, created_at: value.created_at,
       updated_at: value.updated_at, screen: value.screen, sender_label: value.sender_label,
       sender_display: typeof value.sender_display === "string" ? value.sender_display : "",
-      is_ai_tester: value.is_ai_tester === true, replies,
+      is_ai_tester: value.is_ai_tester === true,
+      sender_intro: value.sender_intro && ["age_band", "job", "device"].some(
+        (key) => typeof value.sender_intro[key] === "string" && value.sender_intro[key]) ? {
+          age_band: typeof value.sender_intro.age_band === "string" ? value.sender_intro.age_band : "",
+          job: typeof value.sender_intro.job === "string" ? value.sender_intro.job : "",
+          device: typeof value.sender_intro.device === "string" ? value.sender_intro.device : "",
+        } : null,
+      replies,
       unread_ops_replies: Number.isInteger(value.unread_ops_replies) ? Math.max(0, value.unread_ops_replies) : 0,
       fixed_version: Number.isInteger(value.fixed_version) ? value.fixed_version : 0,
       unread_fixed: value.unread_fixed === true,
@@ -164,6 +176,13 @@
     if (admin) {
       if (item.is_ai_tester) row.append(element("p", "feedback-sender", copy("sender-ai", { account: item.sender_display || item.sender_label })));
       else if (typeof item.sender_label === "string") row.append(element("p", "feedback-sender", copy("sender", { account: item.sender_label })));
+      if (admin && item.is_ai_tester && item.sender_intro) {
+        const intro = element("p", "feedback-intro");
+        for (const [key, label] of [["age_band", "intro-age"], ["job", "intro-job"], ["device", "intro-device"]]) {
+          if (item.sender_intro[key]) intro.append(element("span", "feedback-intro-item", copy(label) + ": " + item.sender_intro[key]));
+        }
+        row.append(intro);
+      }
     }
     const rest = restLines(item.body);
     if (rest) row.append(element("p", "feedback-body", rest));
@@ -198,9 +217,12 @@
         news.disabled = state.busy || state.ownLoading;
         row.append(news);
       }
-      if (item.unread_fixed) {
-        const read = button("acknowledge", () => void acknowledge(item));
-        read.disabled = state.busy || state.ownLoading;
+      if (item.status === "fixed") {
+        // #7835: '고침' feedback keeps one button: live while the notice is unread,
+        // then '확인함' and inert — the record is on the server, so it survives a reload.
+        const read = button(item.unread_fixed ? "acknowledge" : "acknowledged", () => void acknowledge(item));
+        read.disabled = !item.unread_fixed || state.busy || state.ownLoading;
+        read.setAttribute("aria-disabled", String(read.disabled));
         row.append(read);
       }
     }
@@ -256,8 +278,8 @@
     state.busy = true; state.message = ""; state.receipt = ""; paint();
     const path = (admin ? ADMIN : API) + "/" + item.id + "/replies";
     const reply = await request(path, "POST", { body: text });
-    if (!reply) return;
     state.busy = false;
+    if (!reply) { paint(); return; }
     const next = entry(reply.data?.feedback);
     if (reply.status === 201 && reply.data?.ok === true && next) {
       const key = admin ? "inbox" : "own";
@@ -270,8 +292,8 @@
     if (state.busy || state.adminLoading || !state.admin) return;
     state.busy = true; state.message = ""; paint();
     const reply = await request(ADMIN + "/" + item.id + "/ai-tester", "PATCH", { ai_tester: enabled });
-    if (!reply) return;
     state.busy = false;
+    if (!reply) { paint(); return; }
     const next = entry(reply.data?.feedback);
     if (reply.status === 200 && reply.data?.ok === true && next) {
       state.inbox = state.inbox.map((old) => old.id === next.id ? next : old);
@@ -290,13 +312,14 @@
     nodes.submit.disabled = !signedIn || state.busy || state.ownLoading;
     nodes.body.disabled = nodes.consent.disabled = !signedIn || state.busy;
     nodes.adminTab.hidden = !adminView;
+    nodes.usageTab.hidden = !state.admin;
     nodes.count.textContent = copy("count", { count: Array.from(nodes.body.value).length, limit: state.bodyLimit });
     nodes.limit.textContent = copy("limit", { count: state.dailyLimit });
     const limit = state.message === "reply-too-long" ? state.replyLimit : state.bodyLimit;
     nodes.status.textContent = state.receipt ? copy("received", { id: state.receipt }) : state.message ? copy(state.message, { limit }) : "";
     nodes.notice.hidden = !signedIn || (state.unread < 1 && state.unreadReplies < 1);
     nodes.noticeText.textContent = copy(state.unreadReplies > 0 ? "reply-notice" : "fixed-notice");
-    for (const view of ["compose", "own", "admin"]) {
+    for (const view of ["compose", "own", "admin", "usage"]) {
       nodes[view + "Panel"].hidden = state.view !== view;
       nodes[view + "Tab"].setAttribute("aria-selected", String(state.view === view));
     }
@@ -340,8 +363,9 @@
     if (more && state[cursorKey]) params.set("cursor", state[cursorKey]);
     const query = params.toString();
     const reply = await request((admin ? (state.siteOnly ? ADMIN_SITE : ADMIN) : API) + (query ? "?" + query : ""));
-    if (!reply) return;
+    // #7835: clear the flag before any early return, so the panel can never stay disabled.
     state[loading] = false;
+    if (!reply) { paint(); return; }
     if (reply.status === 200 && reply.data?.ok === true && Array.isArray(reply.data.feedback)) {
       const key = admin ? "inbox" : "own", rows = reply.data.feedback.map(admin && state.siteOnly ? entrySite : entry).filter(Boolean);
       state[key] = more ? Array.from(new Map([...state[key], ...rows].map((item) => [item.id, item])).values()) : rows;
@@ -376,8 +400,8 @@
     if (nodes.consent.checked) payload.screen = screenInfo();
     state.busy = true; state.message = "sending"; paint();
     const reply = await request(API, "POST", payload);
-    if (!reply) return;
     state.busy = false;
+    if (!reply) { paint(); return; }
     const item = entry(reply.data?.feedback);
     if (reply.status === 201 && reply.data?.ok === true && item) {
       clearDraft(); state.own.unshift(item); state.receipt = item.id; state.message = "";
@@ -388,8 +412,8 @@
     if (state.busy || state.adminLoading || !state.admin || !ID.test(id) || !STATUSES.includes(status)) return;
     state.busy = true; state.receipt = ""; paint();
     const reply = await request(ADMIN + "/" + id, "PATCH", { status });
-    if (!reply) return;
     state.busy = false;
+    if (!reply) { paint(); return; }
     const item = entry(reply.data?.feedback);
     if (reply.status === 200 && reply.data?.ok === true && item) {
       state.inbox = state.inbox.map((old) => old.id === item.id ? item : old).filter((row) => nodes.filter.value === "all" || row.status === nodes.filter.value);
@@ -446,8 +470,11 @@
     if (state.busy || state.ownLoading) return;
     state.busy = true; state.message = ""; state.receipt = ""; paint();
     const reply = await request(API + "/" + item.id + "/read", "POST", { fixed_version: item.fixed_version });
-    if (!reply) return;
+    // #7835: same rule as load() — never leave busy behind on an early return.
     state.busy = false;
+    // #8316: a dropped read left the button looking dead — no state change and
+    // no message. Say the attempt failed instead of silently repainting.
+    if (!reply) { state.message = "failed"; paint(); return; }
     const next = entry(reply.data?.feedback);
     if (reply.status === 200 && reply.data?.ok === true && next) {
       state.own = state.own.map((old) => old.id === next.id ? next : old);
@@ -457,6 +484,7 @@
   }
   function show(view = "compose") {
     sync();
+    if (view === "usage" && !state.admin) view = "own";
     state.view = view === "admin" && !(state.admin || state.siteAdmin) ? "own" : view;
     if (state.view === "own") state.unreadReplies = 0;
     if (!nodes.dialog.open) {
@@ -470,7 +498,12 @@
     (state.view === "compose" && state.owner ? nodes.body : nodes[state.view + "Tab"]).focus();
   }
   async function checkAdmin() {
-    const reply = await request("/api/admin/session");
+    // #8090: the shared admin-session read — one /api/admin/session request
+    // per auth epoch joins admin-entry.js's probe. Same {status, data} shape
+    // the direct request returned; failure still lands signed=false below.
+    const reply = window.PadiemAdminSession
+      ? await window.PadiemAdminSession.read()
+      : await request("/api/admin/session");
     if (!reply) return;
     const caps = reply.data?.capabilities;
     const signed = reply.status === 200 && reply.data?.authenticated === true;
@@ -491,8 +524,8 @@
   function init() {
     const ids = { entry: "feedbackButton", dialog: "feedbackDialog", body: "feedbackBody", consent: "feedbackConsent", form: "feedbackForm",
       submit: "feedbackSubmit", status: "feedbackStatus", count: "feedbackCount", limit: "feedbackLimit", login: "feedbackLogin",
-      composeTab: "feedbackComposeTab", ownTab: "feedbackOwnTab", adminTab: "feedbackAdminTab",
-      composePanel: "feedbackComposePanel", ownPanel: "feedbackOwnPanel", adminPanel: "feedbackAdminPanel",
+      composeTab: "feedbackComposeTab", ownTab: "feedbackOwnTab", adminTab: "feedbackAdminTab", usageTab: "feedbackUsageTab",
+      composePanel: "feedbackComposePanel", ownPanel: "feedbackOwnPanel", adminPanel: "feedbackAdminPanel", usagePanel: "feedbackUsagePanel",
       ownList: "feedbackOwnList", adminList: "feedbackAdminList", ownMore: "feedbackOwnMore", adminMore: "feedbackAdminMore",
       ownRefresh: "feedbackOwnRefresh", adminRefresh: "feedbackAdminRefresh", filter: "feedbackFilter", notice: "feedbackNotice", noticeText: "feedbackNoticeText" };
     nodes = Object.fromEntries(Object.entries(ids).map(([key, id]) => [key, document.getElementById(id)]));
@@ -504,7 +537,7 @@
     document.getElementById("feedbackClose").addEventListener("click", close);
     nodes.login.addEventListener("click", () => { close(); document.getElementById("loginButton")?.click(); });
     document.getElementById("feedbackNoticeOpen").addEventListener("click", () => show("own"));
-    for (const view of ["compose", "own", "admin"]) nodes[view + "Tab"].addEventListener("click", () => show(view));
+    for (const view of ["compose", "own", "admin", "usage"]) nodes[view + "Tab"].addEventListener("click", () => show(view));
     nodes.ownRefresh.addEventListener("click", () => void load());
     nodes.adminRefresh.addEventListener("click", () => void load(true));
     nodes.ownMore.addEventListener("click", () => void load(false, true));

@@ -1,0 +1,202 @@
+{"phase": "scope", "changed_sheets": ["padiem-tokens.css", "padiem-cinematic-workspace.css", "padiem-surfaces.css"], "screens": ["home-logout", "home-login", "conversation", "claw", "util", "calendar", "automation", "library", "settings-dialog", "profile-menu", "feedback-dialog", "project-dialog", "auth-dialog"], "combos": 130}
+[before-after 1/130] light__1440x950__home-logout raw=94 noise=4 settles=4/4 attempts=1/1 pairs=[4]
+[before-after 2/130] light__1440x950__home-login raw=27 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 3/130] light__1440x950__conversation raw=94 noise=4 settles=4/4 attempts=1/1 pairs=[4]
+[before-after 4/130] light__1440x950__claw raw=81 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 5/130] light__1440x950__util raw=81 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 6/130] light__1440x950__calendar raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 7/130] light__1440x950__automation raw=27 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 8/130] light__1440x950__library raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 9/130] light__1440x950__settings-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 10/130] light__1440x950__profile-menu raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 11/130] light__1440x950__feedback-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 12/130] light__1440x950__project-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 13/130] light__1440x950__auth-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 14/130] light__390x844__home-logout raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 15/130] light__390x844__home-login raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 16/130] light__390x844__conversation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 17/130] light__390x844__claw raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 18/130] light__390x844__util raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 19/130] light__390x844__calendar raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 20/130] light__390x844__automation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 21/130] light__390x844__library raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 22/130] light__390x844__settings-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 23/130] light__390x844__profile-menu raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 24/130] light__390x844__feedback-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 25/130] light__390x844__project-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 26/130] light__390x844__auth-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 27/130] dark__1440x950__home-logout raw=28 noise=5 settles=4/4 attempts=1/1 pairs=[5]
+[before-after 28/130] dark__1440x950__home-login raw=41 noise=8 settles=4/7 attempts=1/1 pairs=[8]
+    re-pair dark__1440x950__conversation round=1 pixel=11
+    re-pair dark__1440x950__conversation round=2 pixel=16
+[before-after 29/130] dark__1440x950__conversation raw=152 noise=11 settles=4/4 attempts=1/1 pairs=[11, 16]
+    re-pair dark__1440x950__claw round=1 pixel=15
+[before-after 30/130] dark__1440x950__claw raw=110 noise=7 settles=4/4 attempts=1/1 pairs=[15, 7]
+[before-after 31/130] dark__1440x950__util raw=130 noise=8 settles=4/4 attempts=1/1 pairs=[8]
+[before-after 32/130] dark__1440x950__calendar raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 33/130] dark__1440x950__automation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 34/130] dark__1440x950__library raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 35/130] dark__1440x950__settings-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 36/130] dark__1440x950__profile-menu raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 37/130] dark__1440x950__feedback-dialog raw=68 noise=2 settles=4/4 attempts=1/1 pairs=[2]
+    re-pair dark__1440x950__project-dialog round=1 pixel=5241
+    re-pair dark__1440x950__project-dialog round=2 pixel=5241
+[before-after 38/130] dark__1440x950__project-dialog raw=5241 noise=5241 settles=4/4 attempts=1/1 pairs=[5241, 5241]
+[before-after 39/130] dark__1440x950__auth-dialog raw=75 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 40/130] dark__390x844__home-logout raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 41/130] dark__390x844__home-login raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 42/130] dark__390x844__conversation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 43/130] dark__390x844__claw raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 44/130] dark__390x844__util raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 45/130] dark__390x844__calendar raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 46/130] dark__390x844__automation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 47/130] dark__390x844__library raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 48/130] dark__390x844__settings-dialog raw=11 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 49/130] dark__390x844__profile-menu raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 50/130] dark__390x844__feedback-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+    re-pair dark__390x844__project-dialog round=1 pixel=5278
+    re-pair dark__390x844__project-dialog round=2 pixel=5278
+[before-after 51/130] dark__390x844__project-dialog raw=5298 noise=5278 settles=4/4 attempts=1/1 pairs=[5278, 5278]
+[before-after 52/130] dark__390x844__auth-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 53/130] padiem-glass__1440x950__home-logout raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 54/130] padiem-glass__1440x950__home-login raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 55/130] padiem-glass__1440x950__conversation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 56/130] padiem-glass__1440x950__claw raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 57/130] padiem-glass__1440x950__util raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 58/130] padiem-glass__1440x950__calendar raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 59/130] padiem-glass__1440x950__automation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 60/130] padiem-glass__1440x950__library raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 61/130] padiem-glass__1440x950__settings-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 62/130] padiem-glass__1440x950__profile-menu raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 63/130] padiem-glass__1440x950__feedback-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 64/130] padiem-glass__1440x950__project-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 65/130] padiem-glass__1440x950__auth-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 66/130] padiem-glass__390x844__home-logout raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 67/130] padiem-glass__390x844__home-login raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 68/130] padiem-glass__390x844__conversation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+    re-pair padiem-glass__390x844__claw round=1 pixel=34
+[before-after 69/130] padiem-glass__390x844__claw raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[34, 0]
+[before-after 70/130] padiem-glass__390x844__util raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 71/130] padiem-glass__390x844__calendar raw=7 noise=3 settles=4/4 attempts=1/1 pairs=[3]
+[before-after 72/130] padiem-glass__390x844__automation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 73/130] padiem-glass__390x844__library raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 74/130] padiem-glass__390x844__settings-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 75/130] padiem-glass__390x844__profile-menu raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 76/130] padiem-glass__390x844__feedback-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 77/130] padiem-glass__390x844__project-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 78/130] padiem-glass__390x844__auth-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+    re-pair cinematic__1440x950__home-logout round=1 pixel=1541
+    re-pair cinematic__1440x950__home-logout round=2 pixel=1541
+[before-after 79/130] cinematic__1440x950__home-logout raw=1581 noise=1541 settles=4/4 attempts=1/1 pairs=[1541, 1541]
+    re-pair cinematic__1440x950__home-login round=1 pixel=1541
+    re-pair cinematic__1440x950__home-login round=2 pixel=1541
+[before-after 80/130] cinematic__1440x950__home-login raw=1581 noise=1541 settles=4/4 attempts=1/1 pairs=[1541, 1541]
+    re-pair cinematic__1440x950__conversation round=1 pixel=960
+    re-pair cinematic__1440x950__conversation round=2 pixel=960
+[before-after 81/130] cinematic__1440x950__conversation raw=972 noise=960 settles=4/4 attempts=1/1 pairs=[960, 960]
+    re-pair cinematic__1440x950__claw round=1 pixel=818
+    re-pair cinematic__1440x950__claw round=2 pixel=818
+[before-after 82/130] cinematic__1440x950__claw raw=818 noise=818 settles=4/4 attempts=1/1 pairs=[818, 818]
+[before-after 83/130] cinematic__1440x950__util raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 84/130] cinematic__1440x950__calendar raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 85/130] cinematic__1440x950__automation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 86/130] cinematic__1440x950__library raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+    re-pair cinematic__1440x950__settings-dialog round=1 pixel=1102
+    re-pair cinematic__1440x950__settings-dialog round=2 pixel=1102
+[before-after 87/130] cinematic__1440x950__settings-dialog raw=1511 noise=1102 settles=4/4 attempts=1/1 pairs=[1102, 1102]
+    re-pair cinematic__1440x950__profile-menu round=1 pixel=1541
+    re-pair cinematic__1440x950__profile-menu round=2 pixel=1541
+[before-after 88/130] cinematic__1440x950__profile-menu raw=1581 noise=1541 settles=4/4 attempts=1/1 pairs=[1541, 1541]
+    re-pair cinematic__1440x950__feedback-dialog round=1 pixel=1031
+    re-pair cinematic__1440x950__feedback-dialog round=2 pixel=1031
+[before-after 89/130] cinematic__1440x950__feedback-dialog raw=1529 noise=1031 settles=4/4 attempts=1/1 pairs=[1031, 1031]
+    re-pair cinematic__1440x950__project-dialog round=1 pixel=6309
+    re-pair cinematic__1440x950__project-dialog round=2 pixel=6309
+[before-after 90/130] cinematic__1440x950__project-dialog raw=6466 noise=6309 settles=4/4 attempts=1/1 pairs=[6309, 6309]
+    re-pair cinematic__1440x950__auth-dialog round=1 pixel=1539
+    re-pair cinematic__1440x950__auth-dialog round=2 pixel=1539
+[before-after 91/130] cinematic__1440x950__auth-dialog raw=1578 noise=1539 settles=4/4 attempts=1/1 pairs=[1539, 1539]
+    re-pair cinematic__390x844__home-logout round=1 pixel=1542
+    re-pair cinematic__390x844__home-logout round=2 pixel=1542
+[before-after 92/130] cinematic__390x844__home-logout raw=1580 noise=1542 settles=4/4 attempts=1/1 pairs=[1542, 1542]
+    re-pair cinematic__390x844__home-login round=1 pixel=1542
+    re-pair cinematic__390x844__home-login round=2 pixel=1542
+[before-after 93/130] cinematic__390x844__home-login raw=1580 noise=1542 settles=4/4 attempts=1/1 pairs=[1542, 1542]
+    re-pair cinematic__390x844__conversation round=1 pixel=960
+    re-pair cinematic__390x844__conversation round=2 pixel=960
+[before-after 94/130] cinematic__390x844__conversation raw=972 noise=960 settles=4/4 attempts=1/1 pairs=[960, 960]
+    re-pair cinematic__390x844__claw round=1 pixel=818
+    re-pair cinematic__390x844__claw round=2 pixel=818
+[before-after 95/130] cinematic__390x844__claw raw=818 noise=818 settles=4/4 attempts=1/1 pairs=[818, 818]
+[before-after 96/130] cinematic__390x844__util raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 97/130] cinematic__390x844__calendar raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 98/130] cinematic__390x844__automation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 99/130] cinematic__390x844__library raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 100/130] cinematic__390x844__settings-dialog raw=1140 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+    re-pair cinematic__390x844__profile-menu round=1 pixel=1542
+    re-pair cinematic__390x844__profile-menu round=2 pixel=1542
+[before-after 101/130] cinematic__390x844__profile-menu raw=1580 noise=1542 settles=4/4 attempts=1/1 pairs=[1542, 1542]
+    re-pair cinematic__390x844__feedback-dialog round=1 pixel=712
+    re-pair cinematic__390x844__feedback-dialog round=2 pixel=712
+[before-after 102/130] cinematic__390x844__feedback-dialog raw=1396 noise=712 settles=4/4 attempts=1/1 pairs=[712, 712]
+    re-pair cinematic__390x844__project-dialog round=1 pixel=6170
+    re-pair cinematic__390x844__project-dialog round=2 pixel=6170
+[before-after 103/130] cinematic__390x844__project-dialog raw=6460 noise=6170 settles=4/4 attempts=1/1 pairs=[6170, 6170]
+    re-pair cinematic__390x844__auth-dialog round=1 pixel=1471
+    re-pair cinematic__390x844__auth-dialog round=2 pixel=1471
+[before-after 104/130] cinematic__390x844__auth-dialog raw=1569 noise=1471 settles=4/4 attempts=1/1 pairs=[1471, 1471]
+[before-after 105/130] padiem-home__1440x950__home-logout raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 106/130] padiem-home__1440x950__home-login raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 107/130] padiem-home__1440x950__conversation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 108/130] padiem-home__1440x950__claw raw=11 noise=3 settles=4/4 attempts=1/1 pairs=[3]
+[before-after 109/130] padiem-home__1440x950__util raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 110/130] padiem-home__1440x950__calendar raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 111/130] padiem-home__1440x950__automation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 112/130] padiem-home__1440x950__library raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 113/130] padiem-home__1440x950__settings-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 114/130] padiem-home__1440x950__profile-menu raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 115/130] padiem-home__1440x950__feedback-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 116/130] padiem-home__1440x950__project-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 117/130] padiem-home__1440x950__auth-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 118/130] padiem-home__390x844__home-logout raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 119/130] padiem-home__390x844__home-login raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 120/130] padiem-home__390x844__conversation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 121/130] padiem-home__390x844__claw raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 122/130] padiem-home__390x844__util raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 123/130] padiem-home__390x844__calendar raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 124/130] padiem-home__390x844__automation raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 125/130] padiem-home__390x844__library raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 126/130] padiem-home__390x844__settings-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 127/130] padiem-home__390x844__profile-menu raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 128/130] padiem-home__390x844__feedback-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 129/130] padiem-home__390x844__project-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+[before-after 130/130] padiem-home__390x844__auth-dialog raw=0 noise=0 settles=4/4 attempts=1/1 pairs=[0]
+{
+  "phase": "before-after",
+  "before": "origin/main",
+  "combos": 130,
+  "nonzero": [
+    "dark__1440x950__conversation",
+    "dark__1440x950__project-dialog",
+    "dark__390x844__project-dialog",
+    "cinematic__1440x950__home-logout",
+    "cinematic__1440x950__home-login",
+    "cinematic__1440x950__conversation",
+    "cinematic__1440x950__claw",
+    "cinematic__1440x950__settings-dialog",
+    "cinematic__1440x950__profile-menu",
+    "cinematic__1440x950__feedback-dialog",
+    "cinematic__1440x950__project-dialog",
+    "cinematic__1440x950__auth-dialog",
+    "cinematic__390x844__home-logout",
+    "cinematic__390x844__home-login",
+    "cinematic__390x844__conversation",
+    "cinematic__390x844__claw",
+    "cinematic__390x844__profile-menu",
+    "cinematic__390x844__feedback-dialog",
+    "cinematic__390x844__project-dialog",
+    "cinematic__390x844__auth-dialog"
+  ],
+  "noise_note": "채널별 ±1 색 반올림 제외 뒤 잔차 8픽셀 이하는 페인트 디더링으로 무차이(r41 noise_pixels)",
+  "seconds": 2347.7
+}

@@ -11,10 +11,11 @@ VISUAL_TAIL = (REPO_ROOT / ".github/scripts/b62_browser_qa_tail_parallel.py").re
 
 def test_1423_assistant_response_and_error_have_bounded_widths() -> None:
     assert "--padiem-chat-reading-measure: 76ch;" in ALIGNMENT_CSS
-    assert ".assistant-content {\n  width: 100% !important;\n  max-width: none !important;" in ALIGNMENT_CSS
+    # #8008 8차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert ".assistant-content {\n  width: 100%;\n  max-width: none;" in ALIGNMENT_CSS
     assert '.assistant-content > .rich-response {' in ALIGNMENT_CSS
     assert '.assistant-content > .error-box {' in ALIGNMENT_CSS
-    assert "width: calc(100% - 32px - var(--padiem-chat-meta-gap)) !important;" in ALIGNMENT_CSS
+    assert "width: calc(100% - 32px - var(--padiem-chat-meta-gap));" in ALIGNMENT_CSS
     assert ".rich-response-paragraph," in ALIGNMENT_CSS
     assert "max-inline-size: min(var(--padiem-chat-reading-measure), 100%);" in ALIGNMENT_CSS
     assert ".rich-code-block," not in ALIGNMENT_CSS
@@ -22,17 +23,19 @@ def test_1423_assistant_response_and_error_have_bounded_widths() -> None:
 
 
 def test_1424_user_bubble_anchors_to_shared_right_edge_without_full_width() -> None:
-    assert ".user-message {\n  width: calc(100% + var(--padiem-chat-inner-gutter)) !important;" in ALIGNMENT_CSS
-    assert "padding-left: clamp(36px, 8vw, 96px) !important;" in ALIGNMENT_CSS
-    assert ".user-message .message-bubble {\n  margin-left: auto !important;\n  max-width: min(660px, 88%) !important;" in ALIGNMENT_CSS
-    assert "max-width: min(620px, 92%) !important;" in ALIGNMENT_CSS
+    # #8008: the importance caps are gone from the user-turn rules; the values
+    # are unchanged and the winners are decided by specificity.
+    assert ".user-message {\n  width: calc(100% + var(--padiem-chat-inner-gutter));" in ALIGNMENT_CSS
+    assert "padding-left: clamp(36px, 8vw, 96px);" in ALIGNMENT_CSS
+    assert ".user-message .message-bubble {\n  margin-left: auto;\n  max-width: min(660px, 88%);" in ALIGNMENT_CSS
+    assert "max-width: min(620px, 92%);" in ALIGNMENT_CSS
 
 
 def test_1425_avatar_meta_remains_internal_and_gap_is_tighter() -> None:
     assert "--padiem-chat-meta-gap: 12px;" in ALIGNMENT_CSS
-    assert "grid-template-columns: 32px minmax(0, 1fr) !important;" in ALIGNMENT_CSS
-    assert "gap: var(--padiem-chat-meta-gap) !important;" in ALIGNMENT_CSS
-    assert ".assistant-meta {\n  margin-bottom: 6px !important;" in ALIGNMENT_CSS
+    assert "grid-template-columns: 32px minmax(0, 1fr);" in ALIGNMENT_CSS
+    assert "gap: var(--padiem-chat-meta-gap);" in ALIGNMENT_CSS
+    assert ".assistant-meta {\n  margin-bottom: 6px;" in ALIGNMENT_CSS
     assert "--padiem-chat-meta-gap: 10px;" in ALIGNMENT_CSS
     assert "display: none" not in ALIGNMENT_CSS
 

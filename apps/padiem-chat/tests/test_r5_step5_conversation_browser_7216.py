@@ -1,8 +1,9 @@
 """#7216 R5 step 5a — 실제 Chromium에서 app.js 대화 전달 함수 호출 계약.
 
-app.js에서 추출한 19개 한 줄 전달 함수를 실제 Chromium 페이지에 주입하고, 실제
-모듈 소스와 deps를 연결해 각 전달 함수를 직접 호출한다. 전달 함수마다 1개 이상의
-호출 검사와 라이브 deps getter 검사를 둔다. 문자열 검사가 아니라 실행 검사다.
+app.js의 전달 함수는 B7 18차+19차에 19개 전부 소멸했다. 실제 모듈 소스와 deps를
+연결하고, 등록부(app.provide("conversation")) 미러 경유로 19개 이름을 직접
+호출한다. 이름마다 1개 이상의 호출 검사와 라이브 deps getter 검사를 둔다.
+문자열 검사가 아니라 실행 검사다.
 """
 from __future__ import annotations
 
@@ -21,6 +22,16 @@ APP = (STATIC / "app.js").read_text(encoding="utf-8")
 STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
 # name -> (js args expression, expected argument count)
+# B7 18차+19차: all 19 names are on the registry (app.provide("conversation")).
+REGISTRY_NAMES = (
+    "attachmentCopy", "showComposerInlineHint", "updateComposer", "showConversation",
+    "addUserMessage", "renderAnswer", "renderStreamError", "clearAttachment",
+    "attachmentCountLimit", "attachmentTrayNote", "removeAttachmentItem",
+    "renderAttachmentChips", "addAttachmentFiles", "attachmentPayload",
+    "safeLocalUiMessage", "resetConversationView", "resetConversation",
+    "approvalDecisionErrorMessage", "approvedMemoryErrorMessage",
+)
+
 CALLS = {
     "attachmentCopy": ("[]", 0),
     "showComposerInlineHint": ('["some-key"]', 1),
@@ -48,7 +59,10 @@ HARNESS = """<!doctype html>
 <body>
 <div class="app-shell" id="shell"></div>
 <div class="conversation"><div id="messageList"></div></div>
+<div id="attachmentTray" hidden></div><ul id="attachmentChipList"></ul>
+<div id="composerInlineHint" hidden></div>
 <template id="userMessageTemplate"><div class="message-bubble"></div></template>
+<script src="/static/chat-app-context.js"></script>
 <script src="/static/chat-conversation-module.js"></script>
 <script>
 __STRICT__
@@ -118,11 +132,18 @@ for (const key of Object.keys(__real)) {
     return real(...args);
   };
 }
+// B7 18차+19차: all 19 names are on the registry — the harness mirrors
+// app.provide("conversation") so every name is reached through app[name].
+window.__app = window.PadiemChatAppContext.create({});
+window.__app.provide("conversation", window.__instance);
+const __registryNames = new Set(__REGISTRY_NAMES__);
 __FORWARDERS__
 window.__call = async (name, args) => {
   window.PadiemChatLifecycle = { set() {}, recordTaskEvent() {}, applyRuntimeLabel() {} };
 window.__calls = [];
-  const out = await globalThis[name](...args);
+  const out = await (__registryNames.has(name)
+    ? window.__app[name](...args)
+    : globalThis[name](...args));
   return { last: window.__calls[0] || null, out: String(out) };
 };
 </script>
@@ -133,6 +154,8 @@ window.__calls = [];
 def _forwarder_lines() -> str:
     lines = []
     for name in CALLS:
+        if name in REGISTRY_NAMES:
+            continue  # the module test owns the "no app.js definition" guard
         marker = f"function {name}(...a) {{"
         line = next(line.strip() for line in APP.splitlines() if marker in line)
         lines.append(line)
@@ -150,7 +173,9 @@ class _StaticHandler(SimpleHTTPRequestHandler):
 @pytest.fixture(scope="module")
 def page_url():
     harness = STATIC / "_r5_conversation_forwarder_harness.html"
-    harness.write_text(HARNESS.replace("__STRICT__", STRICT).replace("__FORWARDERS__", _forwarder_lines()),
+    harness.write_text(HARNESS.replace("__STRICT__", STRICT)
+                       .replace("__REGISTRY_NAMES__", json.dumps(list(REGISTRY_NAMES)))
+                       .replace("__FORWARDERS__", _forwarder_lines()),
                        encoding="utf-8", newline="\n")
     server = ThreadingHTTPServer(("127.0.0.1", 0), _StaticHandler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -203,11 +228,10 @@ def test_forwarder_reset_bumps_the_epoch_through_the_setter(browser_page) -> Non
 
 def test_deps_getter_reads_the_hint_changed_before_the_first_call(browser_page) -> None:
     out = browser_page.evaluate("""async () => {
-      const late = document.createElement("div");
-      late.id = "lateHint";
-      document.body.appendChild(late);
-      window.__state.composerInlineHint = late;
+      // R5 B5: the module owns the hint node, so the hint lands on the shipped
+      // element rather than on a late deps replacement.
+      const hint = document.getElementById("composerInlineHint");
       await window.__call("showComposerInlineHint", ["late-key"]);
-      return { text: late.textContent, hidden: late.hidden === false };
+      return { text: hint.textContent, hidden: hint.hidden === false };
     }""")
     assert out == {"text": "late-key", "hidden": True}

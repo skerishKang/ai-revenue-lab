@@ -10,8 +10,8 @@ import json
 import pytest
 
 from app.local_r2 import LocalDiskR2
-from test_5222_account_model_selection import BASE, client_for, session
-from test_mcp_gateway_execution import DEVICE
+from _support.account_selection import BASE, client_for, session
+from _support.mcp_gateway_execution import DEVICE
 import test_mcp_gateway_roundtrip as roundtrip
 
 

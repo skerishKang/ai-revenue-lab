@@ -68,10 +68,20 @@ from _r5_function_source import combined_source, definition_count, definition_so
 from _r5_attachment_module_harness import observations as attachment_module_observations
 
 ROOT = Path(__file__).resolve().parents[1]
+# #8060 39차: the static reads live in _support; the tests receive text and
+# parsed values. The app.js path stays because the Node harness reads the real
+# file itself.
 APP_JS = ROOT / "static/app.js"
-INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = ROOT / "static/locale.js"
-WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
+
+from _support.claw_execute_progress import (  # noqa: E402
+    app_js,
+    index_html,
+    locale_table,
+    run_history_module,
+    run_module,
+    wait_block,
+    workspace_css,
+)
 
 WAIT_KEYS = (
     "claw-wait-elapsed",
@@ -93,52 +103,11 @@ FORBIDDEN_PROGRESS_TOKENS = (
 )
 
 
-def _app_source() -> str:
-    return APP_JS.read_text(encoding="utf-8")
-
-
-def _locale_table() -> dict[str, dict[str, str]]:
-    """Parse the shipped KO/EN copy out of locale.js.
-
-    The behavioral harness renders against THESE strings rather than a local
-    duplicate, so shipped copy and asserted copy cannot drift apart. A drifted
-    harness is exactly how a literal `{seconds}` placeholder once reached the
-    live status region while every test counted green (#2766 review).
-    """
-    source = LOCALE_JS.read_text(encoding="utf-8")
-    pattern = re.compile(r'"([A-Za-z0-9_\-]+)":\s*"((?:[^"\\]|\\.)*)"')
-
-    def unescape(value: str) -> str:
-        out = value.replace('\\"', '"').replace("\\n", "\n").replace("\\t", "\t")
-        return out.replace("\\\\", "\\")
-
-    def pairs(block: str) -> dict[str, str]:
-        return {key: unescape(value) for key, value in pattern.findall(block)}
-
-    assert "en: {" in source
-    ko_part, en_part = source.split("en: {", 1)
-    table = {"ko": pairs(ko_part), "en": pairs(en_part)}
-    assert table["ko"] and table["en"]
-    return table
-
-
-def _wait_block() -> str:
-    module = (ROOT / "static/chat-claw-status-module.js").read_text(encoding="utf-8")
-    assert "── In-flight elapsed wait (#2763)" in module
-    constants = "\n".join(
-        line.strip()
-        for line in module.splitlines()
-        if line.strip().startswith("const CLAW_WAIT_")
-    )
-    wait = module.split("── In-flight elapsed wait (#2763)", 1)[1].split("\n      return {", 1)[0]
-    return constants + "\n" + wait
-
-
 # ── static structural contracts ────────────────────────────────────────────
 
 
 def test_wait_surface_is_declared_inside_the_claw_form() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
+    html = index_html()
     line = [ln for ln in html.splitlines() if 'id="clawWait"' in ln]
     assert len(line) == 1, "exactly one elapsed wait node"
     assert 'role="timer"' in line[0]
@@ -158,7 +127,7 @@ def test_wait_surface_is_declared_inside_the_claw_form() -> None:
 
 
 def test_wait_is_local_elapsed_state_only() -> None:
-    block = _wait_block()
+    block = wait_block()
     # One ticker, fixed thresholds, and a documented grace delay.
     assert block.count("setInterval(") == 1
     assert "const CLAW_WAIT_TICK_MS = 1000;" in block
@@ -180,9 +149,9 @@ def test_wait_is_local_elapsed_state_only() -> None:
 
 def test_exactly_one_explicit_dispatch_path_starts_the_wait() -> None:
     # #7216 R5 A5a: runClawExecution 본문은 chat-claw-run-module.js에 있다.
-    run_module = APP_JS.with_name("chat-claw-run-module.js").read_text(encoding="utf-8")
+    run_module_text = run_module()
     assert definition_count("runClawExecution") == 1
-    assert run_module.count("deps.beginClawWait();") == 1
+    assert run_module_text.count("deps.beginClawWait();") == 1
     assert definition_count("beginClawWait") == 1
     shipped = combined_source()
     execute_body = shipped[shipped.index("async function runClawExecution()"):]
@@ -241,8 +210,8 @@ def test_wait_timer_lifecycle_is_closed() -> None:
 
 
 def test_wait_copy_makes_no_progress_claim() -> None:
-    table = _locale_table()
-    app = _app_source()
+    table = locale_table()
+    app = app_js()
     for language, copy in table.items():
         for key in WAIT_KEYS:
             value = copy.get(key)
@@ -270,8 +239,8 @@ def test_only_the_clock_readout_carries_a_runtime_value() -> None:
     `{ seconds }`. Any `{...}` left in a threshold value would surface as literal
     text, so only `claw-wait-elapsed` may declare one — in both languages.
     """
-    table = _locale_table()
-    app = _app_source()
+    table = locale_table()
+    app = app_js()
     for language, copy in table.items():
         for key in WAIT_KEYS:
             has_placeholder = "{" in copy[key] or "}" in copy[key]
@@ -282,7 +251,7 @@ def test_only_the_clock_readout_carries_a_runtime_value() -> None:
                 assert not has_placeholder, f"{language}:{key} would render raw: {copy[key]}"
     # The threshold call site passes no variables, which is why the check above
     # is the load-bearing one.
-    stage_copy = _wait_block().split("function applyClawWaitStageCopy()", 1)[1]
+    stage_copy = wait_block().split("function applyClawWaitStageCopy()", 1)[1]
     stage_copy = stage_copy.split("// Presentation only.", 1)[0]
     assert "deps.clawT(key)" in stage_copy
     assert "seconds" not in stage_copy
@@ -290,8 +259,8 @@ def test_only_the_clock_readout_carries_a_runtime_value() -> None:
 
 def test_shipped_threshold_copy_matches_the_no_locale_fallback() -> None:
     """Both paths must read the same, so a locale failure cannot change meaning."""
-    table = _locale_table()
-    app = _app_source()
+    table = locale_table()
+    app = app_js()
     for key in WAIT_KEYS:
         fallback = [
             ln.strip()
@@ -303,7 +272,7 @@ def test_shipped_threshold_copy_matches_the_no_locale_fallback() -> None:
 
 
 def test_wait_announcements_are_bounded_to_two_thresholds() -> None:
-    block = _wait_block()
+    block = wait_block()
     # Stage copy is applied only when a threshold is newly crossed, and the copy
     # itself carries no elapsed value, so the polite region is never rewritten
     # once per tick.
@@ -320,24 +289,24 @@ def test_wait_announcements_are_bounded_to_two_thresholds() -> None:
 
 
 def test_wait_does_not_add_routes_or_touch_the_server() -> None:
-    app = _app_source()
+    app = app_js()
     # #7216 R5 A5a: execute 경로의 유일 소비자는 chat-claw-run-module.js다.
-    run_module = APP_JS.with_name("chat-claw-run-module.js").read_text(encoding="utf-8")
+    run_module_text = run_module()
     assert app.count('"/api/claw/manual-intake/execute"') == 0
-    assert run_module.count('"/api/claw/manual-intake/execute"') == 1
-    assert run_module.count('fetch("/api/claw/manual-intake/execute"') == 1
+    assert run_module_text.count('"/api/claw/manual-intake/execute"') == 1
+    assert run_module_text.count('fetch("/api/claw/manual-intake/execute"') == 1
     # The run-history route keeps exactly one consumer (the #2746 surface) and is
     # never used as a progress channel.
     # The single consumer moved into chat-history-module.js (#7216 R5 step 3).
-    module = APP_JS.with_name("chat-history-module.js").read_text(encoding="utf-8")
+    module = run_history_module()
     assert module.count('deps.readClawRuns(deps.clawRunHistoryLimit') == 1
     assert app.count('readClawRuns(clawRunHistoryLimit') == 0
-    block = _wait_block()
+    block = wait_block()
     assert "/api/" not in block
 
 
 def test_locale_keys_are_declared_for_both_languages() -> None:
-    table = _locale_table()
+    table = locale_table()
     for key in WAIT_KEYS:
         assert key in table["ko"], key
         assert key in table["en"], key
@@ -345,13 +314,13 @@ def test_locale_keys_are_declared_for_both_languages() -> None:
     # named variable rather than string concatenation.
     for language in ("ko", "en"):
         assert table[language]["claw-wait-elapsed"].count("{seconds}") == 1
-    app = _app_source()
+    app = app_js()
     for key in WAIT_KEYS:
         assert f'"{key}"' in app  # English fallback copy for the non-locale path
 
 
 def test_wait_roles_inherit_shared_tokens() -> None:
-    css = WORKSPACE_CSS.read_text(encoding="utf-8")
+    css = workspace_css()
     block = css.split("#2763 in-flight elapsed wait", 1)[-1].split("/* ── #2760 execute recovery", 1)[0]
     assert block
     assert "var(--text)" in block
@@ -364,7 +333,7 @@ def test_wait_roles_inherit_shared_tokens() -> None:
 
 
 def test_runtime_copy_stays_locale_driven() -> None:
-    app = _app_source()
+    app = app_js()
     for line_no, line in enumerate(app.splitlines(), start=1):
         assert not any("\uac00" <= ch <= "\ud7a3" for ch in line), f"hardcoded Korean in app.js:{line_no}: {line.strip()}"
 
@@ -938,7 +907,7 @@ def _run_harness() -> dict:
     copy_path = ROOT / "tests" / "_b54_claw_execute_progress_copy.json"
     harness_path.write_text(_HARNESS, encoding="utf-8")
     # The harness renders against the shipped locale strings, not a copy.
-    copy_path.write_text(json.dumps(_locale_table(), ensure_ascii=False), encoding="utf-8")
+    copy_path.write_text(json.dumps(locale_table(), ensure_ascii=False), encoding="utf-8")
     try:
         result = subprocess.run(
             [node, str(harness_path), str(APP_JS), str(copy_path)],
@@ -1006,7 +975,7 @@ def test_behavioral_elapsed_wait_journey() -> None:
     # The elapsed readout rendered real values from the shipped template.
     clock_writes = [w for w in payload["waitWrites"] if w]
     assert clock_writes, payload["waitWrites"]
-    table = _locale_table()
+    table = locale_table()
     templates = [table[language]["claw-wait-elapsed"] for language in ("ko", "en")]
     expected = re.compile(
         "^(?:"

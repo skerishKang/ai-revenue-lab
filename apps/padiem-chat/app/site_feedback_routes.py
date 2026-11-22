@@ -173,6 +173,10 @@ async def site_feedback(request):
             max_chars=BODY_CHARS, now=_now_iso())
         public = record.public()
         _journal_received(site, public['id'])
+        # #8105: 알림은 저장 성공 뒤. 실패해도 접수는 그대로 성공한다.
+        from .ops_alert_delivery import enqueue_and_deliver
+        await enqueue_and_deliver(request, kind='site_feedback',
+                                  target_id=public['id'], label=site)
         return _response({'ok': True, 'feedback': public}, 201, headers=headers)
     except FeedbackDailyLimit:
         _journal_rejected(site, 'feedback_daily_limit')

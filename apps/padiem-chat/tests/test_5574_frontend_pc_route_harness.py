@@ -39,6 +39,8 @@ from typing import Any
 import pytest
 import uvicorn
 
+from _support import claw_static
+
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.control_plane_identity import (
@@ -628,7 +630,6 @@ _MESH_ROW = {
     "file_path": "C:/Approved/notes.txt", "path_relative": "notes.txt", "root_ref": "approved",
 }
 
-
 class _PcHarness:
     """One harness instance per flow family; every seam is recorded."""
 
@@ -706,7 +707,6 @@ class _NoopAutoGrounding:
     async def prepare(self, messages, *, skill, additional_system_context,
                     explicit_search=False, util_scope=None):  # noqa: ANN201
         return None
-
 
 _NODE_DRIVER = r"""
 "use strict";
@@ -943,11 +943,17 @@ async def _stop(server_and_task) -> None:
         task.cancel()
 
 
+def _owner_sid(harness: _PcHarness) -> str:
+    return next(iter(harness.authority.sessions.values())).session_id
+
+
 async def _run_flow(harness: _PcHarness, steps: list[dict[str, Any]], *,
                     orchestration: bool) -> dict[str, Any]:
     await harness.seed_identity()
     app, config = harness.create_app(orchestration=orchestration)
-    cookie_token = create_session_token(config, OWNER)
+
+    cookie_token = create_session_token(config, OWNER, canonical_session_id=_owner_sid(harness))
+
 
     port, server_and_task = await _serve(app)
 
@@ -1018,15 +1024,19 @@ def _assert_b14_tool_calls(harness: _PcHarness, count: int = 1) -> dict[str, Any
 
 
 def test_create_chat_pc_run_id_contract_is_self_consistent() -> None:
-    """The transport handle prefix is the canonical ``chat_pcq_`` one."""
+    """The transport handle prefix is the canonical ``chat_pcq_`` one.
 
-    transport_code = (
-        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                     "static", "chat-transport.js")
+    #8060 28차: the sheet read lives in the _support helper; the contract
+    pins both mint paths (randomUUID and the byte fallback) to the canonical
+    prefix instead of "somewhere in the sheet".
+    """
+    source = claw_static.sheet("chat-transport.js")
+    assert source.count('"chat_pcq_"') == 2
+    assert '"chat_pcq_" + crypto.randomUUID().replace(/-/g, "")' in source
+    assert (
+        '"chat_pcq_" + Array.from(bytes, '
+        '(byte) => byte.toString(16).padStart(2, "0")).join("")' in source
     )
-    with open(transport_code, encoding="utf-8") as handle:
-        source = handle.read()
-    assert '"chat_pcq_"' in source
 
 
 def test_mesh_only_pc_turn_reaches_engine_without_broker_devices() -> None:
@@ -1312,10 +1322,13 @@ def test_bring_your_own_key_turn_never_reads_padiem_orchestration() -> None:
             return ("byok-5574-key", None)
 
     async def flow():
+        await harness.seed_identity()
         app, config = harness.create_app(orchestration=False)
         app.state.custom_credential_store = _CredentialStore()
         app.state.custom_provider_client = _ProviderClient()
-        cookie_token = create_session_token(config, OWNER)
+
+        cookie_token = create_session_token(config, OWNER, canonical_session_id=_owner_sid(harness))
+
         port, server_and_task = await _serve(app)
         env = {
             **os.environ,

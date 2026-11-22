@@ -4,6 +4,7 @@ Execute the shipped Claw run-card renderer (not a copy of its logic) using Node
 against minimal DOM fixtures. No provider, authority, storage, or network use.
 """
 from __future__ import annotations
+import locale_bundle
 
 import subprocess
 from pathlib import Path
@@ -14,7 +15,7 @@ from _r5_function_source import definition_source
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = STATIC / "app.js"
 RUN_HISTORY = STATIC / "chat-run-history-module.js"
-LOCALE = STATIC / "locale.js"
+LOCALE = locale_bundle.SOURCE
 CSS = STATIC / "claw-workspace.css"
 
 NODE = r"""

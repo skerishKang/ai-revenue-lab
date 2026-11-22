@@ -3,9 +3,9 @@
 
 The deploy gates prove a version is served. Nothing proved that a paired PC still
 answers, which is the thing an owner feels as "the connector broke". This canary
-signs in as the existing production QA identity, asks the PC that account has for a
-top-level listing of its C: drive, and waits until the result arrives. It reports one
-line: verdict, entry count, elapsed seconds, failure code.
+signs in as the existing production QA identity, asks the PC that account has for its
+drive list (inside the granted scope), and waits until the result arrives. It reports
+one line: verdict, entry count, elapsed seconds, failure code.
 
 Sign-in reuses the common login route the daily real-usage check already uses
 (#7078): ``shared_login_client.login_session_cookie`` tries the direct Chat
@@ -122,7 +122,7 @@ NO_USABLE_DEVICE = "no_usable_pc_device"
 DEVICE_SELECT_UNSAVED = "device_selection_not_saved"
 _SAFE_CODE = re.compile(r"\A[a-z][a-z0-9_]{0,40}\Z")
 PROMPT = (
-    "커넥터 점검입니다. 연결된 PC의 C:\\ 최상위 항목 목록만 나열해 주세요. "
+    "커넥터 점검입니다. 연결된 PC의 드라이브 목록만 알려 주세요. "
     "파일 내용은 읽지 않고, 어떤 파일도 변경하지 않습니다."
 )
 #: The link label is read to be *said*, never printed: naming the machine is how
@@ -192,7 +192,7 @@ def turn_prompt(label: Any) -> str:
     if isinstance(label, str):
         named = " ".join(label.split())[:LABEL_MAX_CHARS]
         if named:
-            return (f"커넥터 점검입니다. {named} PC의 C:\\ 최상위 항목 목록만 나열해 주세요. "
+            return (f"커넥터 점검입니다. {named} PC의 드라이브 목록만 알려 주세요. "
                     "파일 내용은 읽지 않고, 어떤 파일도 변경하지 않습니다.")
     return PROMPT
 
@@ -236,10 +236,12 @@ LINK_PAUSED = "paused"
 LINK_REPLACED = "replaced"
 LINK_REVOKED = "revoked"
 LINK_PENDING_VERIFICATION = "pending_verification"
+LINK_CANDIDATE = "candidate"
 ROOT_GRANTED = "active"
 ROOT_REVOKED = "revoked"
 KNOWN_LINK_STATES = frozenset({
     LINK_ACTIVE, LINK_PAUSED, LINK_REPLACED, LINK_REVOKED, LINK_PENDING_VERIFICATION,
+    LINK_CANDIDATE,
 })
 KNOWN_ROOT_STATES = frozenset({ROOT_GRANTED, ROOT_REVOKED})
 #: A pairing read this canary cannot interpret: reported, never skipped.
@@ -255,7 +257,9 @@ def active_pairing(body: Any) -> tuple[dict | None, str]:
     """``(link, code)``: the first live pairing with a granted root, or a reason.
 
     A paused or revoked link is not something to test: revoked links only appear as
-    superseded history, and a paused one is the owner's own "not right now".
+    superseded history, and a paused one is the owner's own "not right now". A
+    candidate link (#8036) carries only self-reported shares, so no read can use
+    it until an administrator approves one.
 
     The state words come from the server's own store, not from an older guess. A
     root is granted when its state is ``active`` (the store's only granted word);
@@ -435,6 +439,27 @@ def take_answer_fields(outcome: dict, body: Any) -> None:
         outcome["pc_lane_closed"] = closed
 
 
+def frame_error_code(body: Any) -> str:
+    """The code an error frame carries, whichever shape the server wrote.
+
+    #7841: the model-first stream puts its code at the top level of the frame
+    (``{"type": "error", "code": ...}``), while the older envelope nests it
+    under ``error``. Reading only the nested place recorded a real refusal as
+    ``no_safe_error_code``, which hid the reason from every reader. Both places
+    are read, and only a short lower-case token survives either way.
+    """
+
+    if not isinstance(body, dict):
+        return "no_safe_error_code"
+    error = body.get("error")
+    code = error.get("code") if isinstance(error, dict) else None
+    if not (isinstance(code, str) and _SAFE_CODE.fullmatch(code)):
+        code = body.get("code")
+    if isinstance(code, str) and _SAFE_CODE.fullmatch(code):
+        return code
+    return "no_safe_error_code"
+
+
 def apply_answer_line(outcome: dict, body: Any) -> bool:
     """Read one answer line into ``outcome``; ``True`` means nothing more arrives.
 
@@ -460,7 +485,7 @@ def apply_answer_line(outcome: dict, body: Any) -> bool:
         outcome["pc_pending"] = body.get("pc_pending") is True
         return True
     if frame_type == "error":
-        outcome["error_code"] = error_code(body)
+        outcome["error_code"] = frame_error_code(body)
         return True
     if frame_type == "orchestration_pause":
         outcome["error_code"] = "orchestration_pause"
@@ -556,8 +581,9 @@ def read_pc_turn_stream(opener, payload: dict) -> dict:
                 outcome["pc_pending"] = frame.get("pc_pending") is True
                 take(frame)
                 break
-            if event_name == "error" or isinstance(frame.get("error"), dict):
-                outcome["error_code"] = error_code(frame)
+            if (event_name == "error" or isinstance(frame.get("error"), dict)
+                    or frame.get("type") == "error"):
+                outcome["error_code"] = frame_error_code(frame)
                 take(frame)
                 break
     return outcome
@@ -605,6 +631,10 @@ def sign_in(opener, jar) -> None:
         session_cookie = login_session_cookie(ORIGIN, username, password)
     except SharedLoginError as exc:
         print(f"QA_LOGIN_DIAGNOSTIC login_mode=shared_login server_error_code={exc.public_code}")
+        # #7853 follow-up: the helper answers the one-time age screen once; a
+        # screen that returns after that keeps its own closed code.
+        if exc.public_code == "shared_login_age_confirm_loop":
+            raise CanaryError("qa_age_confirm_loop") from exc
         raise CanaryError("qa_login_refused") from exc
     _install_session_cookie(jar, ORIGIN, session_cookie)
     status, state = bounded_call(opener, STATUS)
@@ -912,6 +942,21 @@ def self_test() -> int:
             _stop_after([{"type": "error", "error": {"code": "engine_execution_failed"}}]),
             _outcome_after([{"type": "error", "error": {"code": "engine_execution_failed"}}])["error_code"],
         ) == (True, "engine_execution_failed"),
+        # #7841: the operating stream writes its code at the top level of the
+        # frame. Reading only the nested place turned a real refusal into
+        # no_safe_error_code on run 43853199977.
+        "a_top_level_error_code_is_read": (
+            _outcome_after([{"type": "error", "code": "oracle_mesh_file_path_invalid"}])["error_code"]
+        ) == "oracle_mesh_file_path_invalid",
+        "a_nested_error_code_still_wins": (
+            frame_error_code({"type": "error", "code": "top_level",
+                              "error": {"code": "nested_code"}})
+        ) == "nested_code",
+        "an_error_frame_without_a_code_stays_unnamed": (
+            frame_error_code({"type": "error"}) == "no_safe_error_code"
+            and frame_error_code({"type": "error", "code": "Not A Code"}) == "no_safe_error_code"
+            and frame_error_code(None) == "no_safe_error_code"
+        ),
         "a_whole_json_answer_ends_the_read": _stop_after([{"answer": "ok"}]) is True,
         # An id this canary minted that has no run behind it is the old lane name.
         "an_absent_run_is_the_lane_name": (

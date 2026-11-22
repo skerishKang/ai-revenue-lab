@@ -5,6 +5,7 @@ actual retry-box function. Nothing calls B14, Engine or a model. The separate
 B62 Chat retry behavior must remain unchanged.
 """
 from __future__ import annotations
+import locale_bundle
 
 import shutil
 import subprocess
@@ -15,7 +16,7 @@ import pytest
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 NODE = r"""
 const fs = require("fs");
@@ -47,11 +48,15 @@ const history = {hidden:false, scrollIntoView(){historyScrolls++},querySelector(
 const context = {
   document: {createElement: element, getElementById: (id)=>id==="clawRunHistory" ? history : null},
   authState: {authenticated:true},
-  openClawWorkspace(){historyOpens++},
+  navModuleInstance: { openClawWorkspace(){historyOpens++} },
   uiT: (key) => key,
+  // B7 (12차, core 등록부): sliced refusal copy reaches copy through it.
+  coreModule: () => ({ uiT: (key) => key }),
   conversationState: {setConversationId() {}},
   renderProjectState() {},
   requestAnswer: async () => {repeatCalls += 1; return false;},
+  // B7: app.js calls the registry piece; mirror the same counting stub.
+  streaming: { requestAnswer: async () => {repeatCalls += 1; return false;} },
   selectedAttachment: null,
   clearAttachment() {},
 };

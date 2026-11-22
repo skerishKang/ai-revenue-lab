@@ -28,6 +28,7 @@ from __future__ import annotations
 import asyncio
 import json
 import sqlite3
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -49,6 +50,8 @@ from .document_convert_store import (
     _job_from_row,
     _job_id,
     _now_iso,
+    _OutcomeRow,
+    job_outcome_counts,
     markdown_object_key,
     original_object_key,
 )
@@ -201,7 +204,35 @@ class Com2SqliteLedger:
             user_id,
             limit,
         )
-        return [_job_from_row(row) for row in rows]
+        return await self._with_outcomes(user_id, [_job_from_row(row) for row in rows])
+
+    async def _with_outcomes(
+        self, user_id: str, jobs: list[ConvertJobRecord]
+    ) -> list[ConvertJobRecord]:
+        """#7955: the same per-outcome counts the D1 ledger attaches, owner-scoped."""
+
+        if not jobs:
+            return jobs
+        wanted = {job.id for job in jobs}
+        marks = ", ".join("?" for _ in wanted)
+        rows = await self._all(
+            "SELECT job_id, status, updated_at FROM document_convert_items "
+            f"WHERE user_id = ? AND job_id IN ({marks})",
+            user_id,
+            *wanted,
+        )
+        grouped: dict[str, list[Any]] = {}
+        for row in rows:
+            job_id = str(row.get("job_id", ""))
+            grouped.setdefault(job_id, []).append(
+                _OutcomeRow(str(row.get("status", "")), row.get("updated_at"))
+            )
+        return [
+            replace(job, outcomes=job_outcome_counts(grouped[job.id]))
+            if job.id in grouped
+            else job
+            for job in jobs
+        ]
 
     async def get_item(self, user_id: str, item_id: str) -> ConvertItemRecord | None:
         row = await self._first(

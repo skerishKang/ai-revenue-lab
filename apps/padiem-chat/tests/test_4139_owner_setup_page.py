@@ -8,6 +8,14 @@ from types import SimpleNamespace
 
 import httpx
 
+from _support.owner_setup_page import (
+    claw_choices_source,
+    html_facts,
+    js_facts,
+    setup_html,
+    setup_script,
+)
+
 from app import connector_owner_setup_page as setup
 from app.app_factory import create_app
 from app.config import Settings
@@ -83,9 +91,10 @@ def test_browser_setup_requires_canonical_signed_owner(monkeypatch):
     monkeypatch.setattr(setup, "resolve_current_b54_canonical_session", verified)
     response = get(application, setup.SETUP_PATH)
     assert response.status_code == 200
-    assert "Padiem Connector" in response.text
-    assert "setup.js" in response.text
-    assert 'id="verify" disabled' in response.text
+    page = html_facts(response.text)
+    assert any("Padiem Connector" in text for text in page["texts"])
+    assert any("setup.js" in src for src in page["script_srcs"])
+    assert "disabled" in page["attrs_by_id"]["verify"]
     assert response.headers["cache-control"].startswith("no-store")
     assert response.headers["referrer-policy"] == "no-referrer"
     assert "frame-ancestors 'none'" in response.headers["content-security-policy"]
@@ -96,19 +105,21 @@ def test_script_does_not_persist_pairing_code_or_use_untrusted_owner_scope():
     script = get(application, setup.SCRIPT_PATH)
     assert script.status_code == 200
     assert script.headers["cache-control"].startswith("no-store")
-    assert "localStorage.setItem" not in script.text
-    assert "sessionStorage" not in script.text
-    assert "console.log" not in script.text
-    assert "navigator.clipboard" not in script.text
-    assert "credentials: \"same-origin\"" in script.text
-    assert "consent/grant" in script.text and "enrollments/issue" in script.text
-    assert "enrollments/redeem" not in script.text
-    assert "pagehide" in script.text
-    assert "/api/claw/local-access/devices" in script.text
-    assert "ownerScoped" in script.text
-    assert 'matched.state === "OFFLINE"' in script.text
-    assert 'matched.state === "CONNECTED"' in script.text
-    assert "verify.disabled" in script.text
+    js = js_facts(script.text)
+    assert "localStorage" not in js["identifiers"]
+    assert "sessionStorage" not in js["identifiers"]
+    assert ("console", "log") not in js["member_chains"]
+    assert ("navigator", "clipboard") not in js["member_chains"]
+    assert ("credentials", "same-origin") in js["property_pairs"]
+    assert any("consent/grant" in literal for literal in js["string_literals"])
+    assert any("enrollments/issue" in literal for literal in js["string_literals"])
+    assert not any("enrollments/redeem" in literal for literal in js["string_literals"])
+    assert "pagehide" in js["string_literals"]
+    assert "/api/claw/local-access/devices" in js["string_literals"]
+    assert "ownerScoped" in js["identifiers"]
+    assert ("matched.state", "OFFLINE") in js["state_comparisons"]
+    assert ("matched.state", "CONNECTED") in js["state_comparisons"]
+    assert "verify.disabled" in js["member_chains"]
 
 
 def test_default_product_app_has_no_setup_page_or_script():
@@ -118,18 +129,20 @@ def test_default_product_app_has_no_setup_page_or_script():
 
 def test_signed_owner_page_has_single_native_launch_not_an_account_login():
     # The page is still owner-session gated by the existing tests above.
-    assert 'id="native-launch"' in setup._HTML
-    assert 'id="operator-restore"' in setup._HTML
-    assert setup._HTML.index('id="native-launch"') < setup._HTML.index('id="operator-restore"')
-    assert 'padiem-connector://start' in setup._SCRIPT
-    assert '"padiem-connector://start"' in setup._SCRIPT
-    assert 'location.href' in setup._SCRIPT
-    assert 'padiem-connector://start?' not in setup._SCRIPT
-    assert 'padiem-connector://start#' not in setup._SCRIPT
-    assert 'id="secret" hidden' in setup._HTML
-    assert '"enrollments/redeem"' not in setup._SCRIPT
-    assert "navigator.clipboard" not in setup._SCRIPT
-    assert "localStorage.setItem" not in setup._SCRIPT
+    html, js = setup_html(), setup_script()
+    assert "native-launch" in html["ids"]
+    assert "operator-restore" in html["ids"]
+    assert html["ids"].index("native-launch") < html["ids"].index("operator-restore")
+    assert "padiem-connector://start" in js["string_literals"]
+    assert "window.location.href" in js["member_chains"]
+    assert not any(
+        "padiem-connector://start?" in literal or "padiem-connector://start#" in literal
+        for literal in js["string_literals"]
+    )
+    assert "hidden" in html["attrs_by_id"]["secret"]
+    assert not any("enrollments/redeem" in literal for literal in js["string_literals"])
+    assert ("navigator", "clipboard") not in js["member_chains"]
+    assert "localStorage" not in js["identifiers"]
 
 
 def test_native_browser_launch_script_has_real_javascript_syntax_if_node_available():
@@ -198,27 +211,38 @@ assert.equal(posts,0);
 
 
 def test_setup_page_has_no_extra_consent_or_approve_control():
-    assert 'id="pending-pc" hidden' in setup._HTML
+    html, js = setup_html(), setup_script()
+    assert "hidden" in html["attrs_by_id"]["pending-pc"]
     # The handoff page no longer carries a guidance-only block that only sends
     # the owner back to the Claw screen. The functional offer signal stays.
-    assert 'PC 연결 정보' not in setup._HTML
-    assert '<h2>' not in setup._HTML
-    assert '이 창은 닫아도 됩니다' not in setup._HTML
+    assert not any("PC 연결 정보" in text for text in html["texts"])
+    assert "h2" not in html["tags"]
+    assert not any("이 창은 닫아도 됩니다" in text for text in html["texts"])
     # The page closes itself only after the settlement arrives; the manual way
     # back is rendered but hidden until the browser refuses to close it.
-    assert 'pc_offer_approved' in setup._SCRIPT and 'pc_offer_failed' in setup._SCRIPT
-    assert 'window.close()' in setup._SCRIPT
-    assert 'id="pending-return" hidden' in setup._HTML
-    assert '<a href="/">Claw로 돌아가기</a>' in setup._HTML
-    assert 'id="pending-approve"' not in setup._HTML
-    assert 'id="pending-consent"' not in setup._HTML
-    assert 'query.size === 1' in setup._SCRIPT
-    assert 'new BroadcastChannel("padiem-claw-pc-connect-v1")' in setup._SCRIPT
-    assert 'channel.postMessage({ type: "pc_offer_ready", request_ref: linkRef })' in setup._SCRIPT
-    assert 'pendingApproval' not in setup._SCRIPT
-    assert '/api/claw/connector/enrollments/approve-link' not in setup._SCRIPT
-    assert 'padiem-connector://start?' not in setup._SCRIPT
-    assert 'localStorage.setItem' not in setup._SCRIPT
+    assert "pc_offer_approved" in js["string_literals"]
+    assert "pc_offer_failed" in js["string_literals"]
+    assert "window.close" in js["member_chains"]
+    assert "hidden" in html["attrs_by_id"]["pending-return"]
+    assert any(
+        tag == "a" and attrs.get("href") == "/" and "Claw로 돌아가기" in html["texts"]
+        for tag, attrs in html["links"]
+    )
+    assert "pending-approve" not in html["ids"]
+    assert "pending-consent" not in html["ids"]
+    assert ("query.size", "1") in js["number_comparisons"]
+    assert ("BroadcastChannel", '"padiem-claw-pc-connect-v1"') in js["call_args"]
+    assert (
+        "channel.postMessage",
+        '{ type: "pc_offer_ready", request_ref: linkRef }',
+    ) in js["call_args"]
+    assert "pendingApproval" not in js["identifiers"]
+    assert not any(
+        "/api/claw/connector/enrollments/approve-link" in literal
+        for literal in js["string_literals"]
+    )
+    assert not any("padiem-connector://start?" in literal for literal in js["string_literals"])
+    assert "localStorage" not in js["identifiers"]
 
 def test_claw_original_click_approves_exactly_once_with_real_login_dom():
     """The Claw CTA, not setup GET, owns the single authenticated owner POST."""
@@ -229,7 +253,7 @@ def test_claw_original_click_approves_exactly_once_with_real_login_dom():
 
     if shutil.which("node") is None:
         pytest.skip("Node unavailable")
-    source = (Path(__file__).parents[1] / "static" / "claw-home-choices.js").read_text(encoding="utf-8")
+    source = claw_choices_source()
     script = r"""
 const assert=require('node:assert/strict'),fs=require('node:fs');
 const source=fs.readFileSync(0,'utf8');
@@ -296,7 +320,7 @@ def test_claw_owner_approval_records_only_allowlisted_http_outcomes():
 
     if shutil.which("node") is None:
         pytest.skip("Node unavailable")
-    source = (Path(__file__).parents[1] / "static" / "claw-home-choices.js").read_text(encoding="utf-8")
+    source = claw_choices_source()
     script = r"""
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const source=fs.readFileSync(0,'utf8');

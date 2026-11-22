@@ -148,7 +148,7 @@ async def build_client(*, settings=None, signed_in=True, store=None, member_stor
     if signed_in:
         profile = SimpleNamespace(id=OWNER, email=f"{OWNER}@example.test")
         client.cookies.set(
-            SESSION_COOKIE, create_session_token(cfg, profile.id),
+            SESSION_COOKIE, create_session_token(cfg, profile.id, canonical_session_id="session_test_a"),
             domain="chat.example.test", path="/",
         )
     return client, app

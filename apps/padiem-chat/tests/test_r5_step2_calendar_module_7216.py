@@ -15,11 +15,13 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _r5_b6_wiring import create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 MODULE = (STATIC / "chat-calendar-module.js").read_text(encoding="utf-8")
+CONTEXT = (STATIC / "chat-app-context.js").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 
 NAMES = (
@@ -79,7 +81,7 @@ def _function_block(source: str, name: str) -> str:
 def _node_json(body: str) -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required"
-    script = "const window = {};\n" + MODULE + "\n" + STRICT + "\n" + body
+    script = "const window = {}; const app = {};\n" + MODULE + "\n" + STRICT + "\n" + body
     result = subprocess.run(
         [node, "-e", script], capture_output=True, text=True, encoding="utf-8", timeout=30
     )
@@ -95,81 +97,102 @@ def test_index_loads_the_calendar_module_before_app() -> None:
 
 
 def test_app_calendar_wiring_reads_live_closure_values() -> None:
-    factory = _function_block(APP, "calendarModule")
+    deps_block = create_receives_app_context(APP, "window.PadiemChatCalendarModule")
     payload = _node_json(
         f"""
-let calendarModuleInstance = null;
-{factory}
-let connectorsScope = {{ name: "scope-1" }};
-let authState = {{ authenticated: true }};
-let googleConnectorConnectInFlight = false;
+const connectors = {{
+  connectorsScope: {{ name: "scope-1" }},
+  connectorTicketErrorKey: () => "ticket-error",
+  setConnectorCopy: () => {{}},
+}};
 let googleCalendarReadState = "unknown";
-let GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
-let GOOGLE_CALENDAR_TICKET_ENDPOINT = "/ticket";
-let GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/activate";
 let setConnectorCopy = () => {{}};
-let connectorsError = null;
-let openAuthDialog = () => {{}};
 let fetch = async () => ({{}});
-let reviewedGoogleAuthorizationUrl = () => null;
-let captured = null;
-window.PadiemChatCalendarModule = {{ create(deps) {{ captured = deps; return {{}}; }} }};
-const created = calendarModule();
-const same = calendarModule() === created;
+const captured = {deps_block};
 const live = {{
   scope: captured.connectorsScope.name,
   readState: captured.googleCalendarReadState,
-  connector: captured.GOOGLE_CALENDAR_CONNECTOR,
+  // R5 B5: the connector id is module-owned now.
+  ownsConnector: !("GOOGLE_CALENDAR_CONNECTOR" in captured),
 }};
-connectorsScope = {{ name: "scope-2" }};
+connectors.connectorsScope = {{ name: "scope-2" }};
 googleCalendarReadState = "active";
 const after = {{
   scope: captured.connectorsScope.name,
   readState: captured.googleCalendarReadState,
 }};
 captured.googleCalendarReadState = "failed";
-console.log(JSON.stringify({{ same, live, after, written: googleCalendarReadState }}));
+console.log(JSON.stringify({{ live, after, written: googleCalendarReadState }}));
 """
     )
-    assert payload["same"] is True, "the module instance is created once"
     assert payload["live"] == {
         "scope": "scope-1",
         "readState": "unknown",
-        "connector": "google-calendar",
+        "ownsConnector": True,
     }
     assert payload["after"] == {"scope": "scope-2", "readState": "active"}
     assert payload["written"] == "failed", "the app deps setter writes the closure variable"
 
 
-def test_app_forwarders_delegate_every_moved_function() -> None:
-    blocks = "\n".join(_function_block(APP, name) for name in NAMES)
-    export = ", ".join(NAMES)
-    payload = _node_json(
-        f"""
-const blocks = {json.dumps(blocks)};
-const names = {json.dumps(list(NAMES))};
-const api = new Function("calendarModule", blocks + "\\nreturn {{{export}}};")(() => fake);
-const fake = {{}};
-for (const name of names) {{
-  fake[name] = (...args) => ({{ name, args }});
-}}
-const argsByName = {{
-  calendarReadStateKey: ["active"],
-  calendarReadActivationErrorKey: [{{ calendarReadErrorCode: "x" }}],
-  syncGoogleCalendarConnectButton: [{{ workspace_state: "connected" }}],
-}};
-const rows = names.map((name) => {{
-  const out = api[name](...(argsByName[name] || []));
-  return [name, out.name, out.args.length];
-}});
-console.log(JSON.stringify(rows));
+def test_app_registers_calendar_and_apis_are_reachable() -> None:
+    assert 'app.provide("calendar", window.PadiemChatCalendarModule.create(Object.setPrototypeOf({' in APP
+    for name in NAMES:
+        assert f"function {name}(" not in APP, name
+        assert f"{name}," in MODULE, name
+    assert "calendarModuleInstance = app.provide(\"calendar\", window.PadiemChatCalendarModule.create(" in APP
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, setAttribute() {} }),
+  },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-calendar-module.js", "utf8"), sandbox,
+  { filename: "chat-calendar-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("calendar", window.PadiemChatCalendarModule.create(app));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
 """
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
     )
-    expected = [
-        [name, name, 1 if name in {"calendarReadStateKey", "calendarReadActivationErrorKey", "syncGoogleCalendarConnectButton"} else 0]
-        for name in NAMES
-    ]
-    assert payload == expected
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 def test_module_reads_live_deps_getters_and_closed_vocabulary() -> None:
@@ -180,6 +203,7 @@ def test_module_reads_live_deps_getters_and_closed_vocabulary() -> None:
 const moduleSource = %s;
 const appModule = { exports: {} };
 const window = {};
+const app = {};
 new Function("window", moduleSource)(window);
 function el(attrs) {
   const node = {
@@ -236,12 +260,12 @@ console.log(JSON.stringify({ mapping, first, second, card: instance.googleCalend
     assert payload["second"] == "connectors-activate-calendar-read"
 
 
-def test_forwarder_runs_in_real_chromium() -> None:
+def test_registry_api_runs_in_real_chromium() -> None:
     playwright = pytest.importorskip("playwright.sync_api")
-    forwarder = _function_block(APP, "googleCalendarConnectButton")
     harness = """
 <!doctype html><html><body>
 <div id="scope"><button data-google-connector-connect="google-calendar">연결</button></div>
+<script>__CONTEXT__</script>
 <script>__MODULE__</script>
 <script>
 __STRICT__
@@ -260,16 +284,16 @@ window.__deps = r5StrictDeps({
   reviewedGoogleAuthorizationUrl: () => null,
 }, "step2.browser.deps");
 window.__instance = window.PadiemChatCalendarModule.create(window.__deps);
-function calendarModule() { return window.__instance; }
-__FORWARDER__
+window.__app = window.PadiemChatAppContext.create({});
+window.__app.provide("calendar", window.__instance);
 </script></body></html>
 """
     harness = (harness.replace("__STRICT__", STRICT).replace("__MODULE__", MODULE)
-               .replace("__FORWARDER__", forwarder))
+               .replace("__CONTEXT__", CONTEXT))
     with playwright.sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page()
         page.set_content(harness)
-        found = page.evaluate("googleCalendarConnectButton().dataset.googleConnectorConnect")
+        found = page.evaluate("window.__app.googleCalendarConnectButton().dataset.googleConnectorConnect")
         browser.close()
     assert found == "google-calendar"

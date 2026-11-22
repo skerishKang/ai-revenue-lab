@@ -20,8 +20,9 @@ never the document. Two file classes are never opened:
 
 from __future__ import annotations
 
+import unicodedata
 from typing import Any, Iterable, Mapping
-from padiem_ai_core.powershell_literal import ps_literal
+from padiem_ai_core.powershell_literal import ps_literal, ps_utf8_literal
 
 PC_SEARCH_MAX_LIMIT = 50
 PC_SEARCH_MAX_QUERY_CHARS = 200
@@ -50,6 +51,16 @@ PC_SEARCH_OFFICE_READERS = frozenset({"none", "parser", "unavailable"})
 PC_SEARCH_CONTENT_STATES = frozenset(
     {"matched", "name_only", "deferred", "not_downloaded", "partial"}
 )
+#: #8048: a recursive walk is bounded by wall-clock, not only by row count. A
+#: large folder that would run past this returns the rows found so far with
+#: ``truncated=$true`` instead of holding the executor's worker until the
+#: silence bound cuts it. The bound is a ceiling on one search, never a claim
+#: that the folder was fully walked.
+PC_SEARCH_TIME_LIMIT_SECONDS = 180
+#: #8048: how often the walk writes a progress line to its side file. The
+#: executor's silence clock reads this file's mtime; a live search keeps it
+#: fresh, so a talking search is never mistaken for a dead PC.
+PC_SEARCH_PROGRESS_INTERVAL_SECONDS = 15
 
 
 def pc_search_query(value: Any) -> str | None:
@@ -61,7 +72,13 @@ def pc_search_query(value: Any) -> str | None:
         return None
     if any(ord(ch) < 32 for ch in text):
         return None
-    return text
+    try:
+        # #7974: a decomposed (NFD) Korean query is the same search text as its
+        # precomposed (NFC) form. Normalize once here so both spellings match the
+        # names the PC answers with, and refuse text that cannot be encoded.
+        return unicodedata.normalize("NFC", text)
+    except (TypeError, ValueError):
+        return None
 
 
 def pc_search_mode(value: Any) -> str | None:
@@ -126,24 +143,43 @@ def _ps_array(values: Iterable[str]) -> str:
 def pc_search_command(
     *, roots: Iterable[Any], query: str, mode: str,
     limit: int = PC_SEARCH_MAX_LIMIT,
+    dispatch_id: str | None = None,
+    time_limit_seconds: int = PC_SEARCH_TIME_LIMIT_SECONDS,
 ) -> str:
     """Build the search script for the approved roots.
 
     Raises ``ValueError`` for anything the caller did not already validate; the
     route refuses the request instead of running a widened command.
+
+    #8048: ``dispatch_id`` names the side file the walk keeps fresh while it
+    runs (``$env:TEMP\\padiem_search_<id>.progress``). The executor's silence
+    clock reads that file's mtime, so a live recursive search is never cut off
+    at the silence bound. ``time_limit_seconds`` bounds one walk; on exceed the
+    rows found so far return with ``truncated=$true`` (a partial result, not a
+    failure).
     """
     if mode not in PC_SEARCH_MODES:
         raise ValueError("unsupported search mode")
     if type(limit) is not int or not 0 < limit <= PC_SEARCH_MAX_LIMIT:
         raise ValueError("search limit out of range")
+    if type(time_limit_seconds) is not int or time_limit_seconds < 1:
+        raise ValueError("search time limit out of range")
+    if dispatch_id is not None and (
+        not isinstance(dispatch_id, str) or not dispatch_id
+        or len(dispatch_id) > 128 or any(ord(ch) < 32 for ch in dispatch_id)
+    ):
+        raise ValueError("search dispatch id is not usable")
     text = pc_search_query(query)
     if text is None:
         raise ValueError("search query is not usable")
     parsed_roots = pc_search_roots(roots)
     if parsed_roots is None:
         raise ValueError("approved roots are not usable")
+    # #7973/#7974: labels, paths and the query are base64 of their UTF-8 bytes
+    # so the command text stays ASCII and a Korean console code page cannot
+    # change what the PC receives. The scope check above is unchanged.
     root_literals = ",".join(
-        "@{label=" + _ps_literal(label) + ";path=" + _ps_literal(path) + "}"
+        "@{label=(" + ps_utf8_literal(label) + ");path=(" + ps_utf8_literal(path) + ")}"
         for label, path in parsed_roots
     )
     media_literals = ";".join(
@@ -157,7 +193,7 @@ def pc_search_command(
         "$ErrorActionPreference='SilentlyContinue'",
         "[Console]::OutputEncoding=New-Object Text.UTF8Encoding $false",
         "$OutputEncoding=New-Object Text.UTF8Encoding $false",
-        "$query=" + _ps_literal(text),
+        "$query=" + ps_utf8_literal(text),
         "$mode=" + _ps_literal(mode),
         "$limit=" + str(limit),
         "$scan=" + str(PC_SEARCH_SCAN_MAX_FILES),
@@ -174,7 +210,28 @@ def pc_search_command(
         "$rows=New-Object System.Collections.ArrayList",
         # A hashtable, not a script-scope variable: the transport runs this as
         # a command, where `$script:` is not the scope these names live in.
-        "$flags=@{truncated=$false;scan=$false;engine='list';office='none'}",
+        "$flags=@{truncated=$false;scan=$false;engine='list';office='none';time=$false}",
+        # #8048: one walk is bounded by wall-clock. The stopwatch starts before
+        # the walk and every loop checks it; on exceed the rows found so far
+        # return with truncated=$true (a partial result, never a failure). The
+        # progress side file is what the executor's silence clock reads: a live
+        # walk keeps it fresh, so a talking search is not mistaken for a dead PC.
+        "$sw=[Diagnostics.Stopwatch]::StartNew()",
+        "$timeLimit=" + str(time_limit_seconds),
+        "$progressFile=" + (
+            "($env:TEMP + " + ps_literal("\\padiem_search_" + dispatch_id + ".progress") + ")"
+            if dispatch_id is not None else "$null"
+        ),
+        "$lastProgress=[datetime]::MinValue",
+        "function Test-Time {",
+        "  if($sw.Elapsed.TotalSeconds -ge $timeLimit){ $flags.time=$true; return $true }",
+        "  if($null -ne $progressFile -and $sw.Elapsed.TotalSeconds - $lastProgress.TotalSeconds -ge "
+        + str(PC_SEARCH_PROGRESS_INTERVAL_SECONDS) + "){",
+        "    try { Set-Content -LiteralPath $progressFile -Value ([datetime]::UtcNow.ToString('o')) -Encoding ascii } catch { }",
+        "    $lastProgress=[datetime]::UtcNow",
+        "  }",
+        "  return $false",
+        "}",
         "function Add-Row([object]$item,[string]$label,[string]$kind,[object]$line,"
         "[string]$text,[string]$reason,[string]$base,[object]$byteOffset){",
         "  if($rows.Count -ge $limit){ $flags.truncated=$true; return }",
@@ -196,7 +253,9 @@ def pc_search_command(
         "        if(-not $full){ continue }",
         "        if(-not $full.StartsWith($r.path.Replace('/','\\'),[StringComparison]::OrdinalIgnoreCase)){ continue }",
         "        $i=Get-Item -LiteralPath $full -Force -ErrorAction SilentlyContinue",
-        "        if($i -eq $null -or $i.PSIsContainer){ continue }",
+        # #7974: a folder whose name matches is a result too, not something to
+        # drop just because it cannot be opened as a text file.
+        "        if($i -eq $null){ continue }",
         "        $off=(($i.Attributes -band $offlineMask) -ne 0)",
         "        Add-Row $i $r.label $(if($off){'not_downloaded'}else{'name_only'}) $null '' '' $r.path $null",
         "      }",
@@ -204,11 +263,13 @@ def pc_search_command(
         "  } else {",
         "    foreach($r in $roots){",
         "      $seen=0",
-        "      foreach($i in (Get-ChildItem -LiteralPath $r.path -Recurse -File -Force -ErrorAction SilentlyContinue)){",
+        "      foreach($i in (Get-ChildItem -LiteralPath $r.path -Recurse -Force -ErrorAction SilentlyContinue)){",
         "        $seen++",
         "        if($seen -gt $scan){ $flags.scan=$true; break }",
         "        if($rows.Count -ge $limit){ $flags.truncated=$true; break }",
-        "        if($i.Name.IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -lt 0){ continue }",
+        "        if(Test-Time){ $flags.truncated=$true; break }",
+        "        $nameC=$i.Name.Normalize([Text.NormalizationForm]::FormC)",
+        "        if($nameC.IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -lt 0){ continue }",
         "        $off=(($i.Attributes -band $offlineMask) -ne 0)",
         "        Add-Row $i $r.label $(if($off){'not_downloaded'}else{'name_only'}) $null '' '' $r.path $null",
         "      }",
@@ -227,8 +288,9 @@ def pc_search_command(
         "      $seen++",
         "      if($seen -gt $scan){ $flags.scan=$true; break }",
         "      if($rows.Count -ge $limit){ $flags.truncated=$true; break }",
+        "      if(Test-Time){ $flags.truncated=$true; break }",
         "      $ext=$i.Extension.ToLowerInvariant()",
-        "      $nameHit=($i.Name.IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -ge 0)",
+        "      $nameHit=($i.Name.Normalize([Text.NormalizationForm]::FormC).IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -ge 0)",
         "      $off=(($i.Attributes -band $offlineMask) -ne 0)",
         "      if($off){",
         "        if($nameHit){ Add-Row $i $r.label 'not_downloaded' $null '' '' $r.path } $null",
@@ -294,7 +356,7 @@ def pc_search_command(
         "    $opened=0",
         "    foreach($o in $offices){",
         "      if($rows.Count -ge $limit){ $flags.truncated=$true; break }",
-        "      $nameHit=($o.item.Name.IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -ge 0)",
+        "      $nameHit=($o.item.Name.Normalize([Text.NormalizationForm]::FormC).IndexOf($query,[StringComparison]::OrdinalIgnoreCase) -ge 0)",
         "      if(-not $parser){",
         "        if($nameHit){ Add-Row $o.item $o.label 'deferred' $null '' 'extractor_unavailable' $o.root } $null",
         "        continue",
@@ -339,10 +401,15 @@ def pc_search_command(
         "}",
         "[ordered]@{ok=$true;mode=$mode;query=$query;engine=$($flags.engine);"
         "office=$($flags.office);count=$($rows.Count);truncated=$($flags.truncated);"
-        "scan_truncated=$($flags.scan);entries=$rows}"
+        "time_truncated=$($flags.time);scan_truncated=$($flags.scan);entries=$rows}"
         " | ConvertTo-Json -Compress -Depth 5",
     ]
-    return "\n".join(lines)
+    # The SYSTEM console lane streams this script to ``powershell -command -``
+    # over open stdin, line by line. A final statement with no trailing newline
+    # is never flushed by that console's line parser, so the JSON reply is never
+    # emitted and the command ends in silent_timeout (observed 2026-11-22 on a
+    # small folder: 210 s, 17 bytes). The trailing newline is load-bearing.
+    return "\n".join(lines) + "\n"
 
 
 __all__ = [
@@ -358,6 +425,8 @@ __all__ = [
     "PC_SEARCH_OFFICE_READERS",
     "PC_SEARCH_SCAN_MAX_FILES",
     "PC_SEARCH_TEXT_EXTENSIONS",
+    "PC_SEARCH_TIME_LIMIT_SECONDS",
+    "PC_SEARCH_PROGRESS_INTERVAL_SECONDS",
     "pc_search_command",
     "pc_search_mode",
     "pc_search_path",

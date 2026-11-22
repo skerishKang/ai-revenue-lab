@@ -85,9 +85,14 @@
     z-index:auto!important;box-shadow:none!important;
     transform:none!important;
   }
+  /* #7838: no !important here — this in-flow contract is authoritative only
+     where no sheet/glass contract claims the open panel (1025-1279). At
+     769-1024 the bookai-7573-layout sheet !important must win, and at >=1280
+     the floating-glass !important must win, so ranking this block below them
+     is what keeps all three widths honest. */
   body.ai-open .reader-layout>.ai-panel{
-    display:flex!important;position:relative!important;inset:auto!important;
-    width:auto!important;z-index:auto!important;box-shadow:none!important;
+    display:flex;position:relative;inset:auto;
+    width:auto;z-index:auto;box-shadow:none;
     border-left:1px solid var(--line);
   }
   .reader-layout>.memory-rail{border-right:1px solid var(--line);grid-column:1}
@@ -295,7 +300,7 @@
   .ai-panel .chat-thread>.ai-context-runtime .entity-context-sync{margin:0!important;padding:7px 0!important}
   .companion-empty-state{
     flex:0 0 auto;display:flex;flex-direction:column;justify-content:center;
-    min-height:min(330px,46vh);padding:18px 2px 20px;margin:auto 0;
+    min-height:min(330px,46vh);padding:18px 2px 20px;margin:0;
     border-top:1px solid rgba(91,76,62,.08);border-bottom:1px solid rgba(91,76,62,.08);
   }
   .companion-empty-state.is-hidden{display:none!important}

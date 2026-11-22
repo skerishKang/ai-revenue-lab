@@ -13,9 +13,9 @@ import sys
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
-from test_3580_web_xlsx_p01_owner_decision import ready, setup_pause, decide
+from _support.web_xlsx_p01_owner_decision import ready, setup_pause, decide
 from test_3580_web_xlsx_p01_owner_status import status
-from test_3580_web_xlsx_sources import OWNER, FOREIGN, request
+from _support.web_xlsx_sources import OWNER, FOREIGN, request
 
 
 def enable_real_copy(app, metadata):

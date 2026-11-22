@@ -1,15 +1,15 @@
 /* #4890 follow-up. Exactly one shared visual cell for each project/history
  * action pair; separate native controls retain keyboard, click and menu roles. */
-html body .app-shell .sidebar :is(.project-row, .history-row) {
+html:not([data-glass-mode]) body .app-shell .sidebar :is(.project-row, .history-row) {
   background: rgba(255, 255, 255, .10) !important;
   border: 1px solid var(--line) !important;
   border-radius: 11px;
   overflow: visible;
 }
-html body .app-shell .sidebar :is(.project-row, .history-row):is(:hover, :focus-within) {
+html:not([data-glass-mode]) body .app-shell .sidebar :is(.project-row, .history-row):is(:hover, :focus-within) {
   background: rgba(255, 255, 255, .16) !important;
 }
-html body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]) {
+html:not([data-glass-mode]) body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]) {
   background: rgba(255, 255, 255, .20) !important;
 }
 html body .app-shell .sidebar :is(.project-row, .history-row)
@@ -117,8 +117,8 @@ html body .app-shell .sidebar :is(.project-row, .history-row) {
   gap: 0 !important;
   min-height: 46px;
   padding: 0;
-  background: rgba(255,255,255,.10) !important;
-  border: 1px solid var(--line) !important;
+  background: rgba(255,255,255,.10);
+  border: 1px solid var(--line);
   border-radius: 11px;
 }
 html body .app-shell .sidebar :is(.project-row, .history-row)

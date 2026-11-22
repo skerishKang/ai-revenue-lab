@@ -44,6 +44,26 @@ def _limits(request):
             'daily_submissions': getattr(request.app.state.settings, 'feedback_daily_limit', 10),
             'reply_chars': BODY_CHARS}
 
+def _audit(request):
+    return getattr(request.app.state, 'ops_audit_store', None)
+
+
+async def _record_ops_action(request, *, action: str, target_id: str,
+                             detail: dict) -> None:
+    # #8035 ②: every administrator change (status·reply·AI-tester marking)
+    # leaves who·when·what in the shared operations audit trail. The write
+    # never breaks the caller's success path.
+    actor = current_user_id(request) if auth_ready(request) else None
+    audit = _audit(request)
+    if audit is None or not actor:
+        return
+    try:
+        await audit.append(actor_user_id=actor, action=action,
+                           target_type='feedback', target_id=target_id,
+                           detail=detail)
+    except Exception:
+        return
+
 
 def _valid_text(value, limit):
     return (isinstance(value, str) and bool(value.strip()) and len(value) <= limit
@@ -126,6 +146,10 @@ async def feedback(request):
     try:
         row = await store.submit(user_id, body, screen=screen, daily_limit=_limits(request)['daily_submissions'],
                                  max_chars=_limits(request)['body_chars'])
+        # #8105: 알림은 저장 성공 뒤에 부른다. 실패해도 접수는 그대로 성공한다.
+        from .ops_alert_delivery import enqueue_and_deliver
+        await enqueue_and_deliver(request, kind='product_feedback',
+                                  target_id=row.id, label='chat')
         return _response({'ok': True, 'feedback': row.public()}, 201)
     except FeedbackDailyLimit:
         return _error('feedback_daily_limit', 429, headers={'Retry-After': _retry_after()})
@@ -193,8 +217,28 @@ async def admin_feedback(request):
             or (cursor and not FEEDBACK_ID.fullmatch(cursor))):
         return _error('feedback_invalid_request', 400)
     try:
-        rows, next_cursor = await _store(request).list_entries(status=status, cursor=cursor)
-        return _response({'ok': True, 'feedback': [row.public(admin=True) for row in rows],
+        store = _store(request)
+        rows, next_cursor = await store.list_entries(status=status, cursor=cursor)
+        intros = {}
+        ai_rows = [row for row in rows if getattr(row, 'is_ai_tester', False)]
+        if ai_rows:
+            intros = await store.intro_store().get_many([row.user_id for row in ai_rows])
+        items = []
+        for row in rows:
+            item = row.public(admin=True)
+            if getattr(row, 'is_ai_tester', False) and row.user_id in intros:
+                item['sender_intro'] = intros[row.user_id]
+            items.append(item)
+        audit = getattr(request.app.state, 'ops_audit_store', None)
+        actor = current_user_id(request) if auth_ready(request) else None
+        if audit is not None and actor:
+            # #8035: opening the inbox is an admin read and leaves an audit row.
+            # Only the filter and the row count are recorded, never a body or
+            # an account value.
+            await audit.append(actor_user_id=actor, action='feedback_inbox_view',
+                               target_type='feedback', target_id='all',
+                               detail={'status': status, 'count': len(items)})
+        return _response({'ok': True, 'feedback': items,
                           'next_cursor': next_cursor, 'limits': _limits(request)})
     except Exception:
         return _error('feedback_unavailable', 503)
@@ -220,6 +264,9 @@ async def admin_feedback_reply(request):
         if reply is None:
             return _error('feedback_not_found', 404)
         record = await store.get_record(feedback_id)
+        await _record_ops_action(request, action='feedback_reply',
+                                 target_id=feedback_id,
+                                 detail={'reply_chars': len(body)})
         return _response({'ok': True, 'reply': reply.public(),
                           'feedback': record.public(admin=True) if record is not None else None}, 201)
     except Exception:
@@ -243,6 +290,8 @@ async def admin_feedback_ai_tester(request):
         return _error('feedback_invalid_request', 400)
     try:
         row = await store.set_ai_tester(feedback_id, enabled)
+        await _record_ops_action(request, action='feedback_ai_tester',
+                                 target_id=feedback_id, detail={'enabled': enabled})
         return (_response({'ok': True, 'feedback': row.public(admin=True)}) if row is not None
                 else _error('feedback_not_found', 404))
     except Exception:
@@ -268,6 +317,8 @@ async def admin_feedback_status(request):
         if row is None:
             return _error('feedback_not_found', 404)
         record = await store.get_record(feedback_id)
+        await _record_ops_action(request, action='feedback_status',
+                                 target_id=feedback_id, detail={'to': status})
         return (_response({'ok': True, 'feedback': record.public(admin=True)}) if record is not None
                 else _error('feedback_not_found', 404))
     except Exception:

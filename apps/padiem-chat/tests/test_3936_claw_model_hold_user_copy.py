@@ -12,6 +12,7 @@ repo already uses for these DOM paths. No B14, Engine or provider call happens,
 and no model/provider selection or routing is changed by this module.
 """
 from __future__ import annotations
+import locale_bundle
 
 import shutil
 import subprocess
@@ -28,7 +29,7 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 NODE = r"""
 const fs = require("fs");
@@ -64,11 +65,15 @@ const context = {
     getElementById: (id) => (id === "clawRunHistory" ? history : null),
   },
   uiT: (key) => key,
+  // B7 (12차, core 등록부): sliced failure helpers reach copy through it.
+  coreModule: () => ({ uiT: (key) => key }),
   authState: { authenticated: true },
-  openClawWorkspace() { historyOpens += 1; },
+  navModuleInstance: { openClawWorkspace() { historyOpens += 1; } },
   conversationState: { setConversationId() {} },
   renderProjectState() {},
   requestAnswer: async () => { replays += 1; return false; },
+  // B7: app.js calls the registry piece; mirror the same counting stub.
+  streaming: { requestAnswer: async () => { replays += 1; return false; } },
   selectedAttachment: null,
   clearAttachment() {},
 };
@@ -249,7 +254,10 @@ const mapEnd=app.indexOf("\n  function buildRetryBox(",mapStart);
 assert(mapStart>=0&&mapEnd>mapStart,"closed map located");
 vm.runInContext(app.slice(mapStart,mapEnd),ctx);
 const lifeStart=app.indexOf("  function lifecycleForError(");
-const lifeEnd=app.indexOf("\n  function setNavActive(",lifeStart);
+// R5 B2-4: `setNavActive` is now a one-line forwarder and the Nav creation block
+// (immediate create) sits before it; stop at that block so the slice is only the
+// lifecycle mapper this harness evaluates.
+const lifeEnd=app.indexOf("\n  const navModuleInstance = app.provide(\"nav\", window.PadiemChatNavModule.create(",lifeStart);
 assert(lifeStart>=0&&lifeEnd>lifeStart,"lifecycle mapper located");
 vm.runInContext(app.slice(lifeStart,lifeEnd),ctx);
 
@@ -266,6 +274,8 @@ ctx.chatTransport=Object.assign({},win.PadiemChatTransport,{
   readSseEvents:async(_r,fn)=>{for(const f of sent){if(await fn(f))break}},
 });
 ctx.uiT=k=>k;
+// B7 (12차, core 등록부): sliced failure helpers reach copy through it.
+ctx.coreModule=()=>({uiT:k=>k});
 ctx.MESSAGE_LIFECYCLE={FAILED:"failed",COMPLETED:"completed",TIMED_OUT:"timed_out",
   CANCELLED:"cancelled",WAITING_APPROVAL:"waiting_for_approval"};
 ctx.PadiemChatLifecycle={set:(a,s)=>{a.dataset.lifecycle=s}};

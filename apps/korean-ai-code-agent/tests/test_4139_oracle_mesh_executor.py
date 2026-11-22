@@ -963,3 +963,62 @@ class UserModeCancelProjectionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RecursiveSearchSilentCapDetectionTests(unittest.TestCase):
+    """#8048: the executor raises the silence cap only for the recursive search
+    command, and only when the command port accepts the keyword."""
+
+    def test_a_recursive_search_command_raises_the_cap(self):
+        from kagent.local_agent_search_silent_cap import (
+            RECURSIVE_SEARCH_SILENT_CAP_SECONDS,
+            recursive_search_silent_cap,
+        )
+        search = "$ErrorActionPreference='SilentlyContinue'\n$timeLimit=180\n"
+        self.assertEqual(
+            recursive_search_silent_cap(search),
+            RECURSIVE_SEARCH_SILENT_CAP_SECONDS)
+        self.assertGreater(RECURSIVE_SEARCH_SILENT_CAP_SECONDS, 60.0)
+
+    def test_a_non_search_command_keeps_the_default_cap(self):
+        from kagent.local_agent_search_silent_cap import recursive_search_silent_cap
+        self.assertIsNone(recursive_search_silent_cap("hostname.exe"))
+        self.assertIsNone(recursive_search_silent_cap(None))
+        self.assertIsNone(recursive_search_silent_cap(""))
+
+    def test_the_cap_is_only_handed_to_a_port_that_accepts_it(self):
+        from kagent.pc_share_deadline import _port_accepts_silent_cap
+
+        class _ModernPort:
+            def run_command(self, *, silent_cap_seconds=None, **kwargs):
+                return None
+
+        class _LegacyPort:
+            def run_command(self, *, node_ref, command):
+                return None
+
+        self.assertTrue(_port_accepts_silent_cap(_ModernPort()))
+        self.assertFalse(_port_accepts_silent_cap(_LegacyPort()))
+
+
+class RecursiveSearchOccupationBoundContract(unittest.TestCase):
+    """#8048/#8173 회귀: a recursive search is bounded by its own wall-clock, so
+    it can never hold the executor's serial worker past that bound. The #8173
+    regression was a 600 s TTL that let one search occupy the worker for ten
+    minutes; the 180 s search bound caps the serial occupation at 180 s."""
+
+    def test_the_search_time_limit_is_at_most_180_seconds(self):
+        from app.claw_pc_search_command import PC_SEARCH_TIME_LIMIT_SECONDS
+        self.assertLessEqual(PC_SEARCH_TIME_LIMIT_SECONDS, 180)
+        self.assertGreater(PC_SEARCH_TIME_LIMIT_SECONDS, 0)
+
+    def test_the_search_silence_cap_exceeds_the_search_time_limit(self):
+        # The silence bound must not cut the search before its own bound: the
+        # search returns a partial result at its time limit, and the silence
+        # cap only fires if the PC goes quiet for that long.
+        from app.claw_pc_search_command import PC_SEARCH_TIME_LIMIT_SECONDS
+        from kagent.local_agent_search_silent_cap import (
+            RECURSIVE_SEARCH_SILENT_CAP_SECONDS,
+        )
+        self.assertGreater(
+            RECURSIVE_SEARCH_SILENT_CAP_SECONDS, PC_SEARCH_TIME_LIMIT_SECONDS)

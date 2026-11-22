@@ -14,28 +14,65 @@ No live Engine/provider call is made: the adapter is injected as a stub.
 
 from __future__ import annotations
 
-from contextlib import contextmanager
+import re
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
-from starlette.testclient import TestClient
+from _support.claw_general_routing import (
+    GENERAL_ROUTE_PATH,
+    SIGNED_IN_USER_ID,
+    SESSION_COOKIE,
+    create_session_token,
+    _AuthStore,
+    _client,
+    _make_adapter,
+    _make_outcome,
+    _payload,
+    _settings,
+)
+from _support.claw_routing_sources import (
+    app_factory_source,
+    app_js_source,
+    claw_general_routes_source,
+    streaming_module_source,
+    transport_source,
+)
 
-from app.app_factory import create_app
-from app.auth import SESSION_COOKIE, create_session_token
-from app.config import Settings
+CLAW_GENERAL_SOURCE = claw_general_routes_source()
+APP_FACTORY_SOURCE = app_factory_source()
+APP_JS_SOURCE = app_js_source()
+TRANSPORT_SOURCE = transport_source()
 
-APP_DIR = Path(__file__).resolve().parents[1]
-CLAW_GENERAL_SOURCE = (APP_DIR / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
-APP_FACTORY_SOURCE = (APP_DIR / "app" / "app_factory.py").read_text(encoding="utf-8")
-APP_JS_SOURCE = (APP_DIR / "static" / "app.js").read_text(encoding="utf-8")
-TRANSPORT_SOURCE = (APP_DIR / "static" / "chat-transport.js").read_text(encoding="utf-8")
 
-GENERAL_ROUTE_PATH = "/api/claw/general"
-SIGNED_IN_USER_ID = "usr_" + "7" * 32
+
+CLAW_GENERAL_ROUTE_HELPERS = (
+    "_claw_general_user_text",
+    "_claw_general_intake",
+    "_claw_general_session_custom",
+    "_claw_general_route_preflight",
+    "_claw_general_pc_branch",
+    "_claw_general_pc_work_context",
+    "_claw_general_quota_gate",
+    "_claw_general_authority_context",
+    "_claw_general_catalog_gate",
+    "_claw_general_run_claim",
+    "_claw_general_grounding",
+    "_claw_general_staging",
+    "_claw_general_context_bundle",
+    "_claw_general_terminal",
+)
+
+
+def _claw_general_blocks(source: str) -> str:
+    names = ("claw_general_execute", *CLAW_GENERAL_ROUTE_HELPERS)
+    return "".join(_strip_docstring(_python_block(source, name)) for name in names)
 
 
 def _python_block(source: str, name: str) -> str:
-    marker = f"async def {name}("
+    marker = next(
+        candidate for candidate in (f"async def {name}(", f"def {name}(")
+        if candidate in source
+    )
     start = source.index(marker)
     rest = source[start + len(marker):]
     candidates = [i for i in (rest.find("\nasync def "), rest.find("\ndef ")) if i != -1]
@@ -72,70 +109,6 @@ def _strip_docstring(block: str) -> str:
     return block[:first] + block[second + 3:]
 
 
-def _settings(**overrides) -> Settings:
-    values = {
-        "runtime_mode": "mock",
-        "auth_mode": "google",
-        "public_base_url": "https://chat.example.test",
-        "google_client_id": "claw-general-client.apps.googleusercontent.com",
-        "google_client_secret": "claw-general-google-secret",
-        "session_secret": "claw-general-session-secret-not-a-real-credential",
-        "session_max_age_seconds": 3600,
-        "byok_via_b14": False,
-    }
-    values.update(overrides)
-    return Settings.from_values(**values)
-
-
-class _AuthStore:
-    """Presence-only auth stub: no history/conversation authority is exercised."""
-
-    async def get_user(self, user_id: str):
-        return None
-
-    async def get_conversation(self, user_id: str, conversation_id: str, product_scope: str):
-        return {"id": conversation_id} if conversation_id else None
-
-
-def _make_outcome(*, status: str = "completed", answer: str | None = "P01 결과"):
-    status_mock = MagicMock()
-    status_mock.value = status
-    projection = MagicMock()
-    projection.status = status_mock
-    projection.run_id = "run_general"
-    outcome = MagicMock()
-    outcome.projection = projection
-    outcome.answer = answer
-    outcome.p01_run_id = "p01_general"
-    outcome.p01_event_count = 1
-    return outcome
-
-
-def _make_adapter(*, outcome=None, subject_lane: bool = False) -> MagicMock:
-    adapter = MagicMock()
-    adapter.subject_identity_lane = subject_lane
-    adapter.execute = AsyncMock(return_value=outcome or _make_outcome())
-    return adapter
-
-
-@contextmanager
-def _client(adapter=None):
-    app = create_app(settings=_settings(), history_store=_AuthStore(), claw_p01_adapter=adapter)
-    client = TestClient(app, base_url="https://chat.example.test")
-    client.cookies.set(
-        SESSION_COOKIE,
-        create_session_token(_settings(), SIGNED_IN_USER_ID),
-        domain="chat.example.test",
-        path="/",
-    )
-    with client:
-        yield client
-
-
-def _payload(**extra) -> dict:
-    payload = {"messages": [{"role": "user", "content": "일반 요청입니다."}], "tier": "plus"}
-    payload.update(extra)
-    return payload
 
 
 # ── routing: generic Claw submit uses the P01 adapter ────────────────────────
@@ -227,7 +200,7 @@ def test_claw_general_incomplete_result_fails_closed() -> None:
 
 
 def test_claw_general_source_has_no_chat_stream_or_b14_or_b66() -> None:
-    block = _python_block(CLAW_GENERAL_SOURCE, "claw_general_execute")
+    block = _claw_general_blocks(CLAW_GENERAL_SOURCE)
     assert "claw_p01_adapter" in block
     assert "adapter.execute" in block
     assert "resolve_current_b54_canonical_session" in block
@@ -248,6 +221,23 @@ def test_claw_general_source_has_no_chat_stream_or_b14_or_b66() -> None:
     assert "_ACTION_MAP" not in code
 
 
+def test_every_claw_general_helper_is_scanned() -> None:
+    discovered = set(re.findall(
+        r"^(?:async )?def (_claw_general_[a-z0-9_]+)\(",
+        CLAW_GENERAL_SOURCE, re.M,
+    ))
+    # The synchronous SSE projection is not a request-path helper. Any other
+    # new helper must be added explicitly to the forbidden-path scan above.
+    assert discovered - {"_claw_general_sse"} == set(CLAW_GENERAL_ROUTE_HELPERS)
+    for name in CLAW_GENERAL_ROUTE_HELPERS:
+        block = _strip_docstring(_python_block(CLAW_GENERAL_SOURCE, name)).lower()
+        assert "api_chat_stream" not in block, name
+        assert "b14_client" not in block, name
+        assert "/api/chat/stream" not in block, name
+        assert "b66" not in block, name
+        assert "manual-intake" not in block, name
+
+
 def test_claw_general_route_is_registered() -> None:
     assert "claw_general_execute" in APP_FACTORY_SOURCE
     assert '"/api/claw/general"' in APP_FACTORY_SOURCE
@@ -260,7 +250,7 @@ def test_frontend_claw_branch_uses_claw_route_without_chat_stream_fallback() -> 
     assert 'fetch("/api/chat/stream"' not in claw_fn
     # #7297: chat-streaming-module.js sends Claw general turns through the shared
     # Chat direct streaming path with payload.product = "claw".
-    stream_source = (APP_DIR / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
+    stream_source = streaming_module_source()
     assert "deps.chatTransport.requestStreaming(payload, signal)" in stream_source
     assert 'payload.product = "claw"' in stream_source
     assert "route && route.clawGeneral" in stream_source
@@ -271,7 +261,7 @@ def test_b62_chat_general_path_unchanged() -> None:
     streaming_fn = _js_function(TRANSPORT_SOURCE, "requestStreaming")
     assert '"/api/chat/stream"' in streaming_fn
     assert '"/api/orchestration"' in TRANSPORT_SOURCE
-    stream_source = (APP_DIR / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
+    stream_source = streaming_module_source()
     # The Claw decision is state-scoped in app.js and only annotates the route.
     assert "clawGeneralRequest" in APP_JS_SOURCE
     assert "clawGeneral: true" in stream_source
@@ -285,7 +275,7 @@ def test_b62_chat_general_path_unchanged() -> None:
 
 
 def test_b66_product_boundary_unchanged() -> None:
-    block = _strip_docstring(_python_block(CLAW_GENERAL_SOURCE, "claw_general_execute")).lower()
+    block = _strip_docstring(_claw_general_blocks(CLAW_GENERAL_SOURCE)).lower()
     assert "b66" not in block
     assert "quote" not in block
 

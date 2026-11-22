@@ -8,19 +8,26 @@ app.js의 로그인 세션 41개 함수가 chat-auth-module.js로 이동했고, 
 재시도 정책, 세션 발행.
 
 문자열로 남기는 것은 구조·경계 계약뿐이다(이유를 각 시험에 적는다): app.js의
-한 줄 전달 함수, 이동 본문의 이중 소유 금지, 팩토리 하나, index 로드 순서는
-HTMLParser로 판정.
+한 줄 전달 함수(B7 16차+17차부터 account 19개 전체는 등록부 경유),
+이동 본문의 이중 소유 금지, 팩토리 하나, index 로드 순서는 HTMLParser로 판정.
 """
 from __future__ import annotations
 
+import json
+import shutil
+import subprocess
 from html.parser import HTMLParser
 
 import pytest
 
+from _r5_b4_account_golden import EXPECTED as ACCOUNT_GOLDEN_EXPECTED, account_golden
 from _r5_auth_module_harness import (
+    ACCOUNT,
     APP,
+    DIALOG,
     INDEX,
     MODULE,
+    STATIC,
     observations,
     presentation_table,
 )
@@ -42,9 +49,45 @@ NAMES = (
     "noteClawApprovalSession", "reviewedGoogleAuthorizationUrl",
 )
 
+ACCOUNT_NAMES = (
+    "passwordResetTokenFromLocation", "clearPasswordResetFragment",
+    "showPasswordResetView", "hidePasswordResetViews", "openPasswordResetRequest",
+    "openPasswordResetConfirm", "closePasswordResetViews", "submitPasswordResetRequest",
+    "submitPasswordResetConfirm", "openPasswordChangeDialog", "closePasswordChangeDialog",
+    "submitPasswordChange", "resetAccountDeleteConfirm", "resetAccountSharedDeleteConfirm",
+    "openAccountDeleteConfirm", "openAccountSharedDeleteConfirm", "syncAccountDeleteButton",
+    "syncAccountSharedDeleteButton", "submitAccountDelete",
+)
+
+# B7 16차+17차: all 19 account names are on the registry
+# (app.provide("account")) — password reset/change 12 + account-deletion 7.
+ACCOUNT_REGISTRY_NAMES = (
+    "passwordResetTokenFromLocation", "clearPasswordResetFragment",
+    "showPasswordResetView", "hidePasswordResetViews", "openPasswordResetRequest",
+    "openPasswordResetConfirm", "closePasswordResetViews", "submitPasswordResetRequest",
+    "submitPasswordResetConfirm", "openPasswordChangeDialog", "closePasswordChangeDialog",
+    "submitPasswordChange", "resetAccountDeleteConfirm", "resetAccountSharedDeleteConfirm",
+    "openAccountDeleteConfirm", "openAccountSharedDeleteConfirm", "syncAccountDeleteButton",
+    "syncAccountSharedDeleteButton", "submitAccountDelete",
+)
+
+DIALOG_NAMES = (
+    "setAuthFormError", "emailContinueElement", "syncAuthDialogMethods",
+    "openAuthDialog", "closeAuthDialog", "authServerUnreachableError",
+    "passwordAuthAnswer", "passwordAuthRequest", "setAuthStatusMessage",
+)
+
+AUTH_NAMES = (
+    "closeProfilePanel", "accountInitial", "resolveSessionPresentation",
+    "setLoginButtonCopy", "applyAuthState", "authMethodEnabled", "loadAuthStatus",
+    "requireSessionForModelUse", "signOutCurrentAccount",
+    "invalidateClawApprovalSession", "noteClawApprovalSession",
+    "reviewedGoogleAuthorizationUrl",
+)
+
 MOVED_MARKERS = (
     "deps.authViewEpoch += 1;",
-    'error.code = deps.AUTH_SERVER_UNREACHABLE;',
+    'error.code = AUTH_SERVER_UNREACHABLE;',
     "deps.loginButton.hidden = presentation.loginHidden;",
     "deps.clawApprovalEpoch += 1;",
     'url.hostname !== "accounts.google.com"',
@@ -73,22 +116,223 @@ def test_index_loads_the_auth_module_before_app() -> None:
     parser = _ScriptSrcParser()
     parser.feed(INDEX)
     order = parser.srcs
+    assert order.count("./chat-account-module.js") == 1
     assert order.count("./chat-auth-module.js") == 1
-    assert order.index("./chat-auth-module.js") < order.index("./app.js")
+    assert order.count("./chat-login-dialog-module.js") == 1
+    assert (order.index("./chat-account-module.js") < order.index("./chat-auth-module.js")
+            < order.index("./chat-login-dialog-module.js") < order.index("./app.js"))
 
 
 def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
-    """구조 계약: app.js는 같은 이름의 전달 함수만 남긴다(R5).
+    """구조 계약: 이동한 39개 이름은 app.js에 정의가 없고 각 모듈 조각에 있다(R5).
 
     모듈 함수의 동작은 하네스가 직접 호출해 증명한다. 이 시험은 app.js 호출부
     호환(이름·인자 전달)이라는 구조 계약이라 문자열로 유지한다.
+    B7 16차+17차: account 19개 전체(비밀번호 재설정+변경 12·계정 삭제 7)가
+    등록부(app.provide("account")) 경유로 대체됐다 — app.js에 같은 이름 정의가
+    없고 등록된 조각에 이름이 있다.
     """
+    assert 'app.provide("loginDialog", window.PadiemChatLoginDialogModule.create(' in APP
+    assert 'app.provide("auth", window.PadiemChatAuthModule.create(' in APP
+    assert 'app.provide("account", window.PadiemChatAccountModule.create(' in APP
     for name in NAMES:
-        line = f"function {name}(...a) {{ return authModule().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
+        if name in DIALOG_NAMES:
+            assert f"function {name}(" not in APP, name
+            assert f"{name}," in DIALOG, name
+            continue
+        if name in AUTH_NAMES:
+            assert f"function {name}(" not in APP, name
+            assert f"{name}," in MODULE, name
+            continue
+        if name in ACCOUNT_REGISTRY_NAMES:
+            assert f"function {name}(" not in APP, name
+            assert f"{name}," in ACCOUNT, name
+            continue
+        raise AssertionError(f"unclassified moved name: {name}")
     assert "function authModule() {" in APP
-    assert "window.PadiemChatAuthModule.create({" in APP
+    assert "const accountModule = () => {" in APP
+    assert "const loginDialogModule = () => {" in APP
+    assert "window.PadiemChatAuthModule.create(Object.setPrototypeOf({" in APP
+    assert "window.PadiemChatAccountModule.create(Object.setPrototypeOf({" in APP
+    assert "window.PadiemChatLoginDialogModule.create(Object.setPrototypeOf({" in APP
+
+
+def test_auth_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("auth"))로 12개 이름을 조회한다."""
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, append() {}, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, append() {}, setAttribute() {} }),
+  },
+  location: { search: "", hash: "", pathname: "/", href: "https://example.test/" },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-auth-module.js", "utf8"), sandbox,
+  { filename: "chat-auth-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("auth", window.PadiemChatAuthModule.create(app));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(AUTH_NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
+
+
+def test_login_dialog_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide("loginDialog"))로 8개 이름을 조회한다."""
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, append() {}, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, append() {}, setAttribute() {} }),
+  },
+  location: { search: "", hash: "", pathname: "/", href: "https://example.test/" },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-login-dialog-module.js", "utf8"), sandbox,
+  { filename: "chat-login-dialog-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  const deps = Object.assign(Object.create(app), { uiT: (key) => key });
+  app.provide("loginDialog", window.PadiemChatLoginDialogModule.create(deps));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(DIALOG_NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
+
+
+def test_account_password_apis_are_reachable_through_the_registry() -> None:
+    """B7 16차+17차 보강: 등록부(app.provide("account"))로 account 19개 이름을 조회한다.
+
+    app.js 전달 함수가 없어도 소비자(loginDialog deps getter·auth deps getter·
+    부팅 직접 호출)는 등록된 조각의 같은 이름 API에 도달한다. 실제 모듈 본문을
+    node vm에서 문맥에 등록해 19개 이름이 전부 함수로 조회되는지 본다(동작
+    단언은 골든 하네스와 브라우저 하네스가 직접 호출로 증명한다).
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const staticDir = process.argv[1];
+const fakeEl = () => ({
+  hidden: true, textContent: "", dataset: {}, children: [],
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, append() {}, removeChild() {},
+});
+const byId = new Map();
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [], querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+    createElement: (tag) => ({ tag, textContent: "", className: "", dataset: {}, appendChild() {}, append() {}, setAttribute() {} }),
+  },
+  location: { search: "", hash: "", pathname: "/", href: "https://example.test/" },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-account-module.js", "utf8"), sandbox,
+  { filename: "chat-account-module.js" });
+const names = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  app.provide("account", window.PadiemChatAccountModule.create(Object.setPrototypeOf({}, app)));
+  const out = {};
+  for (const n of ${JSON.stringify(names)}) out[n] = typeof app[n];
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const n of names) {
+  assert.equal(result[n], "function", n + " must be reachable through the registry");
+}
+console.log("REGISTRY_OK");
+"""
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(list(ACCOUNT_REGISTRY_NAMES))), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:
@@ -97,7 +341,10 @@ def test_moved_bodies_live_only_in_the_module() -> None:
     긍정 동작은 하네스가 실제 실행으로 증명한다. 여기서는 부정 계약만 남긴다.
     """
     for marker in MOVED_MARKERS:
-        assert marker in MODULE, marker
+        source = DIALOG if marker in (
+            'error.code = AUTH_SERVER_UNREACHABLE;', "deps.passwordResetToken = token;",
+        ) else MODULE
+        assert marker in source, marker
         assert marker not in APP, marker
 
 
@@ -109,10 +356,16 @@ def test_module_exposes_one_factory_and_touches_no_dom_at_load() -> None:
     구조 계약이라 문자열로 유지한다.
     """
     assert "window.PadiemChatAuthModule = {" in MODULE
+    assert "window.PadiemChatAccountModule = {" in ACCOUNT
+    assert "window.PadiemChatLoginDialogModule = {" in DIALOG
     assert "create(deps) {" in MODULE
+    assert "create(deps) {" in ACCOUNT
     assert "document.getElementById" in MODULE
+    assert "document.getElementById" in ACCOUNT
+    assert "document.getElementById" in DIALOG
     for name in NAMES:
-        assert f"function {name}(" in MODULE, name
+        module = ACCOUNT if name in ACCOUNT_NAMES else (DIALOG if name in DIALOG_NAMES else MODULE)
+        assert f"function {name}(" in module, name
 
 
 def test_session_state_values_project_the_shipped_presentation_table(observed: dict) -> None:
@@ -286,6 +539,10 @@ def test_setters_write_the_bookkeeping_back_into_the_closure(observed: dict) -> 
 
 def test_the_approval_session_token_changes_only_with_the_session(observed: dict) -> None:
     assert observed["noteToken"] == {"first": True, "stable": True}
+
+
+def test_b4_account_golden_paths_preserve_requests_and_screen_copy() -> None:
+    assert account_golden() == ACCOUNT_GOLDEN_EXPECTED
 
 
 @pytest.fixture(scope="module")

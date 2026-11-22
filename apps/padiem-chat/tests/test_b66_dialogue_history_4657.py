@@ -24,7 +24,7 @@ from app.history import (
     HISTORY_PREVIEW_SUFFIX,
     PRODUCT_SCOPE_CHAT,
 )
-from test_b66_quote_runtime import USER_A, USER_B, _settings
+from _support.quote_runtime import USER_A, USER_B, _settings
 
 MODEL = "google/gemini-3.5-flash-lite"
 MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
@@ -156,7 +156,7 @@ def _app(history_store):
 
 def _sign_in(settings, client, owner):
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, owner),
+        SESSION_COOKIE, create_session_token(settings, owner, canonical_session_id="session_test_a"),
         domain="chat.example.test", path="/",
     )
 

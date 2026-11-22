@@ -10,20 +10,28 @@ R5 #7345 5b가 app.js의 스트리밍 5함수를 `chat-streaming-module.js`로 �
   locale 키 변화
 - #7482(PC 턴 시간 상한·확인 카드)와 #7484(생각 뒤 실패 시 1회 폴백) 계약
 
-금지·경계 계약은 문자열로 유지하고 이유를 적는다(README §3).
+금지·경계 계약은 문자열로 유지하고 이유를 적는다(README §3). 시트 원문 읽기는
+_support/streaming_module_source.py 가 담당하고 시험은 파싱 값(스크립트 순서·
+정의 수·노출 이름 집합·deps 표면)을 단언한다(#8060 23차).
 """
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
 import pytest
 
 from _r5_streaming_harness import run_streaming_scenario
+from _r5_b6_wiring import context_names, create_receives_app_context
+from _support import streaming_module_source as streaming_source
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
+NAMES = (
+    "requestCompletedAnswer",
+    "applyStreamDone",
+    "requestStreamingAnswer",
+    "cancelActiveStream",
+    "requestAnswer",
+)
+ASYNC_NAMES = {"requestCompletedAnswer", "requestStreamingAnswer", "requestAnswer"}
 
 NAMES = (
     "requestCompletedAnswer",
@@ -234,71 +242,107 @@ def test_request_answer_clears_its_closure_state_and_refocuses_the_input() -> No
 
 
 # ---------------------------------------------------------------------------
-# 구조·경계 계약 (문자열 유지, 이유 기록)
+# 구조·경계 계약 (파싱 값, 이유 기록)
 # ---------------------------------------------------------------------------
 def test_index_loads_the_streaming_module_before_app() -> None:
     """모듈이 app.js보다 먼저 로드되어야 전달 함수가 정의된다(로드 순서 계약)."""
-    index = (STATIC / "index.html").read_text(encoding="utf-8")
-    assert index.index("./chat-streaming-module.js") < index.index("./app.js")
-    assert index.count("./chat-streaming-module.js") == 1
+    srcs = streaming_source.index_script_srcs()
+    assert srcs.count("./chat-streaming-module.js") == 1
+    assert srcs.index("./chat-streaming-module.js") < srcs.index("./app.js")
 
 
 def test_app_keeps_one_line_forwarders_for_every_moved_function() -> None:
-    """이동 본문은 모듈에만 살고 app.js는 전달 함수만 둔다(이중 소유 금지).
+    """이동 본문은 모듈에만 살고 app.js는 등록부 경유로 연결한다(이중 소유 금지).
 
     실행 검사는 "어디에 살아 있는지"를 대신하지 못한다. 같은 본문이 양쪽에
     생기면 어느 쪽이 실제로 도는지 알 수 없으므로 구조 계약으로 유지한다.
+    B7: 전달 함수는 등록부(app.provide("streaming")) 경유로 대체됐다 —
+    app.js에 같은 이름 정의가 없고 등록된 조각에 이름이 있다.
     """
+    app = streaming_source.app_source()
+    module = streaming_source.module_source()
+    assert 'app.provide("streaming",' in app
     for name in NAMES:
-        prefix = "async function" if name in ASYNC_NAMES else "function"
-        line = f"{prefix} {name}(...a) {{ return streamingModule().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
-    assert "function streamingModule() {" in APP
-    assert "window.PadiemChatStreamingModule.create({" in APP
+        # 단어 경계로 정의를 세므로 주석·문자열 속 부분 일치는 잡지 않는다.
+        assert streaming_source.function_definitions(app, name) == 0, name
+    assert streaming_source.exposed_names(module) == set(NAMES)
+    assert "function streamingModule() { return streaming; }" in app
+    # create()가 공유 문맥을 deps prototype 으로 마운트하는 모양까지 확인한다.
+    create_receives_app_context(app, "window.PadiemChatStreamingModule")
 
 
 def test_moved_bodies_live_only_in_the_module() -> None:
-    """이동한 본문의 소유는 모듈 하나다(구조 계약)."""
-    markers = (
-        'deps.activeRequestCancelReason = "user_cancel";',
-        "deps.activeRequestController = controller;",
-        "deps.activeRequestArticle = article;",
-        "deps.inFlight = true;",
-        "deps.lastCompletedAnswerRequest = {",
-        "window.PadiemChatStreamingModule = {",
-    )
-    for marker in markers:
-        assert marker in MODULE, marker
-        assert marker not in APP, marker
+    """이동한 본문의 소유는 모듈 하나다(구조 계약).
+
+    deps 상태 쓰기는 모듈만 한다: 모듈이 이동된 상태 다섯(activeRequestCancelReason
+    ·activeRequestController·activeRequestArticle·inFlight·lastCompletedAnswerRequest)을
+    쓰고, app.js는 deps 쓰기가 하나도 없다 — 다섯 표본이 아니라 전체 쓰기 소유를
+    검사한다. 값("user_cancel" 등)은 위의 실행 시험이 잡는다.
+    """
+    app = streaming_source.app_source()
+    module = streaming_source.module_source()
+    moved_states = {
+        "activeRequestCancelReason", "activeRequestController",
+        "activeRequestArticle", "inFlight", "lastCompletedAnswerRequest",
+    }
+    assert moved_states <= streaming_source.deps_assignment_targets(module)
+    assert streaming_source.deps_assignment_targets(app) == set()
+    assert streaming_source.factory_globals(module) == 1
+    assert streaming_source.factory_globals(app) == 0
 
 
 def test_the_module_exposes_one_factory() -> None:
     """팩토리는 하나이고 5개 함수를 노출한다(공개 표면 계약)."""
-    assert "window.PadiemChatStreamingModule = {" in MODULE
-    assert "create(deps) {" in MODULE
+    module = streaming_source.module_source()
+    assert streaming_source.factory_globals(module) == 1
+    assert len(re.findall(r"create\(deps\)\s*\{", module)) == 1
     for name in NAMES:
-        assert MODULE.count(f"function {name}(") == 1, name
+        assert streaming_source.function_definitions(module, name) == 1, name
 
 
 def test_deps_surface_matches_the_mover_analysis() -> None:
-    """deps getter 43개·setter 7개가 이동 분석과 정확히 같다(모듈이 만질 수 있는 표면)."""
-    start = APP.index("window.PadiemChatStreamingModule.create({")
-    block = APP[start:APP.index("});", start)]
+    """deps getter 43개·setter 8개가 이동 분석과 정확히 같다(모듈이 만질 수 있는 표면).
+
+    B6: 리터럴에 남은 함수 의존 getter와 문맥 접근자로 옮겨진 상태 getter를
+    합쳐 정확히 이 표면이 된다. 문맥 어딘가에 이름이 있는 것만으로는 부족하고
+    create()가 실제 공유 문맥을 deps prototype 으로 받는지도 단언한다.
+    """
+    EXPECTED_GETTERS = {
+        "MESSAGE_LIFECYCLE", "activeClawRunId", "activeProject",
+        "activeRequestArticle", "activeRequestCancelReason",
+        "activeRequestController", "addAssistantShell", "applyStreamDone",
+        "attachmentPayload", "authState", "chatTransport", "clawGeneralFailure",
+        "conversationEpoch", "conversationProduct", "conversationState",
+        "handleCustomRequestFailure", "inFlight", "input",
+        "invalidateClawRunsRead", "lastCompletedAnswerRequest",
+        "lifecycleForError", "loadProjects", "loadRecentConversations",
+        "openAuthDialog", "projectById", "projectFileStatus", "projectsReady",
+        "recoverStoredPcResult", "renderAnswer", "renderCancelled", "renderError",
+        "renderProjectState", "renderStreamError", "renderTyping",
+        "renderWebGroundingNotice", "requestCompletedAnswer",
+        "requestStreamingAnswer", "revealErrorState", "selectedProductTier",
+        "setNote", "uiT", "updateComposer", "waitForAcceptedPcRun",
+    }
+    EXPECTED_SETTERS = {
+        "activeClawRunId", "activeProject", "activeRequestArticle",
+        "activeRequestCancelReason", "activeRequestController", "inFlight",
+        "lastCompletedAnswerRequest", "projectsReady",
+    }
+    assert len(EXPECTED_GETTERS) == 43
+    app = streaming_source.app_source()
+    block = create_receives_app_context(app, "window.PadiemChatStreamingModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
-    assert len(gets) == 43
-    assert sets == {
-        "activeClawRunId",
-        "activeProject",
-        "activeRequestArticle",
-        "activeRequestCancelReason",
-        "activeRequestController",
-        "inFlight",
-        "lastCompletedAnswerRequest",
-    }
+    assert gets <= EXPECTED_GETTERS
+    assert gets | (EXPECTED_GETTERS & context_names(app)) == EXPECTED_GETTERS
+    assert sets <= EXPECTED_SETTERS
+    assert sets | (EXPECTED_SETTERS & context_names(app)) == EXPECTED_SETTERS
 
 
 def test_the_streaming_module_does_not_observe_dom_mutations() -> None:
-    """MutationObserver 금지: 재렌더 루프가 입력 커서를 되돌리던 원인이었다."""
-    assert "MutationObserver" not in MODULE
+    """MutationObserver 금지: 재렌더 루프가 입력 커서를 되돌리던 원인이었다.
+
+    금지 경계 계약이라 시트 수준 검사를 유지한다(README §3) — 읽기는 헬퍼가
+    담당한다.
+    """
+    assert "MutationObserver" not in streaming_source.module_source()

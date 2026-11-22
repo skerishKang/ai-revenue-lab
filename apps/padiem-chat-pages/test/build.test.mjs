@@ -116,8 +116,8 @@ test("dist/index.html stamps every local asset reference with ?v=<version>", asy
   // files stay byte-identical to the repository source.
   const a11y = await readFile(path.join(out, "a11y.js"), "utf8");
   assert.ok(a11y.includes(`"./interaction-polish.js?v=ab12cd34"`), a11y.slice(180, 220));
-  const cinematic = await readFile(path.join(out, "padiem-cinematic-chat.css"), "utf8");
-  assert.match(cinematic, /@import url\('\.\/padiem-foundation\.css\?v=ab12cd34'\)/);
+  // #7874 moved the local imports to explicit index.html stylesheet links.
+  assert.ok(local.includes("./padiem-foundation.css?v=ab12cd34"));
   const transport = await readFile(path.join(out, "chat-transport.js"), "utf8");
   const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
   const repoTransport = await readFile(

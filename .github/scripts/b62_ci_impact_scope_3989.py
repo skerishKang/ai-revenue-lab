@@ -39,18 +39,26 @@ B14_ATTEMPT_ONLY = "b14_attempt_only"
 # #4459: source-invariant static UI and changed pytest modules. Run every
 # changed test in the UI-mixed job; no deploy/auth/Worker/CI script ever qualifies.
 UI_MIXED_MAX_FILES = 25
-UI_CONTRACT_MAX_MODULES = 400
+# #7865: runtime/safety bound only, not a per-module test-count rule. The job
+# runs the discovered modules with a 20-minute timeout; over the cap the
+# discovery fails closed to the full Chat suite. Raised 400 -> 450 because the
+# real UI-contract scanner reached 401 valid modules with #7865's new test.
+UI_CONTRACT_MAX_MODULES = 520
 _UI_MIXED_STATIC = re.compile(
     r"apps/padiem-chat/static/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.(?:css|html|js)"
 )
 _UI_MIXED_TEST = re.compile(r"apps/padiem-chat/tests/test_[A-Za-z0-9_]+\.py")
-# #7186: a flat member of Chat's tests tree: a test module, an imported helper
+# #7186: a flat member of Chat's tests tree or the _support package: a test module, an imported helper
 # or plain documentation. A helper is not runnable on its own, so the changed
 # set is covered by the flat tests that import it. A doc's filename carries no
 # import contract, so it does not have to be an ASCII identifier.
-_TESTS_TREE_PY = re.compile(r"apps/padiem-chat/tests/[A-Za-z0-9_]+\.py")
+_TESTS_TREE_PY = re.compile(r"apps/padiem-chat/tests/(?:_support/(?:[A-Za-z0-9_]+/)*)?[A-Za-z0-9_]+\.py")
 _TESTS_TREE_DOC = re.compile(r"apps/padiem-chat/tests/[^/\\]+\.md")
 _TESTS_TREE_CONFTEST = "apps/padiem-chat/tests/conftest.py"
+# Indirect staging/E2E consumers belong to the existing nightly/manual full
+# regression. Match filename tokens, not substrings (e.g. "test_restaging").
+_DEFERRED_CONSUMER = re.compile(r"_(?:staging|e2e)(?:_|\.py$)")
+_TESTS_ONLY_MANIFEST_GUARD = "tests/test_5002_model_path_classification.py"
 
 
 def _is_static_segment(node: ast.AST) -> bool:
@@ -116,10 +124,12 @@ def _static_reading_helpers(tests_dir: Path) -> tuple[str, ...]:
     return tuple(helpers)
 
 
-def _mentions_static_reading_helper(source: str, helpers: tuple[str, ...]) -> bool:
+def _mentions_static_reading_helper(tree: ast.AST, helpers: tuple[str, ...]) -> bool:
+    names = set(helpers)
     return any(
-        helper in source or helper.rsplit(".", 1)[0] in source
-        for helper in helpers
+        isinstance(node, ast.Constant) and isinstance(node.value, str)
+        and node.value.replace("\\", "/").rsplit("/", 1)[-1] in names
+        for node in ast.walk(tree)
     )
 
 
@@ -128,28 +138,25 @@ def ui_contract_tests(repo_root: Path | None = None) -> tuple[str, ...]:
     directly or through a static-reading helper under tests/.
 
     The list is derived from the sources, so a new UI-contract module is
-    covered without editing this classifier. A module that cannot be parsed is
-    left out; an empty result for a static change fails closed in main().
+    covered without editing this classifier. An unreadable module invalidates discovery; an empty result for a static change fails closed in main().
     """
     root = Path(repo_root) if repo_root is not None else REPO_ROOT
     tests_dir = root / "apps/padiem-chat/tests"
-    try:
-        candidates = sorted(tests_dir.glob("test_*.py"))
-    except OSError:
+    graph = _test_import_graph(tests_dir)
+    if graph is None:
         return ()
-    helpers = _static_reading_helpers(tests_dir)
-    modules: list[str] = []
-    for path in candidates:
-        try:
-            source = path.read_text(encoding="utf-8")
-        except OSError:
-            continue
-        try:
-            tree = ast.parse(source)
-        except SyntaxError:
-            continue
-        if _references_static_source(tree) or _mentions_static_reading_helper(source, helpers):
-            modules.append(f"tests/{path.name}")
+    paths, seeds, harnesses, edges = graph
+    # A same-stem Python/CJS pair is an existing conservative contract
+    # association, not an import. Keep that pair covered and follow the
+    # Python hub's shared support providers to their other consumers.
+    paired = {harness.rsplit(".", 1)[0] for harness in harnesses} & paths.keys()
+    seeds.update(paired)
+    for name in paired:
+        seeds.update(dep for dep in edges[name] if dep.startswith("_support."))
+    helpers = {name for name in paths if not paths[name].startswith("test_")}
+    helper_edges = {name: imports & helpers for name, imports in edges.items()}
+    affected = seeds | _reverse_closure(helper_edges, seeds & helpers)
+    modules = list(_runnable_modules(paths, affected))
     # #7599: deployed parity audit is a load-bearing UI contract that verifies
     # deployed assets against static sources; ensure it is always in the UI contract list.
     parity_test = "tests/test_deployed_parity_audit.py"
@@ -227,21 +234,21 @@ def ui_mixed_test_modules(files: object) -> tuple[str, ...]:
 
 
 def _is_tests_tree_file(path: str) -> bool:
-    """A flat file directly under Chat's tests tree (helpers and docs included)."""
+    """A flat tests-tree file or a Python module under _support."""
     return bool(_TESTS_TREE_PY.fullmatch(path) or _TESTS_TREE_DOC.fullmatch(path))
 
 
 def _is_tests_tree_path(path: str) -> bool:
-    """A flat file directly under Chat's tests tree that a narrow lane can cover.
+    """A supported tests-tree file that a narrow selection can cover.
 
     ``conftest.py`` is loaded by pytest around every module in the directory, so
     no reduced module list covers its effect; it stays on the full path.
     """
-    return _is_tests_tree_file(path) and path != _TESTS_TREE_CONFTEST
+    return _is_tests_tree_file(path) and not path.endswith("/conftest.py")
 
 
 def _is_tests_tree_change(files: object) -> bool:
-    """True when every changed path is a flat Chat tests-tree file.
+    """True when every changed path is a supported Chat tests-tree file.
 
     Shape only, mirroring the ``impact_scope`` tests-tree branch, so main() can
     settle the lane and the runner together. Whether a runnable module set
@@ -262,19 +269,24 @@ def _is_tests_tree_change(files: object) -> bool:
     return any(path.endswith(".py") for path in paths)
 
 
-def _imported_module_names(tree: ast.AST) -> frozenset[str]:
-    """Module names a test reads: static imports plus literal dynamic imports.
-
-    The dynamic forms are the ones the repository uses; a caller built from a
-    computed string cannot be proven and is not claimed here.
-    """
+def _imported_module_names(tree: ast.AST, module_name: str) -> set[str]:
+    """Resolve static and literal dynamic Python imports to dotted names."""
     names: set[str] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
-            for alias in node.names:
-                names.add(alias.name.split(".")[0])
-        elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
-            names.add(node.module.split(".")[0])
+            names.update(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom):
+            package = module_name.split(".")[:-1]
+            if node.level:
+                if node.level > len(package):
+                    continue
+                package = package[:len(package) - node.level + 1]
+                base = ".".join([*package, *([node.module] if node.module else [])])
+            else:
+                base = node.module or ""
+            if base:
+                names.add(base)
+                names.update(f"{base}.{alias.name}" for alias in node.names if alias.name != "*")
         elif isinstance(node, ast.Call):
             func = node.func
             target = func.attr if isinstance(func, ast.Attribute) else (
@@ -282,43 +294,263 @@ def _imported_module_names(tree: ast.AST) -> frozenset[str]:
             if target in {"import_module", "__import__"} and node.args:
                 argument = node.args[0]
                 if isinstance(argument, ast.Constant) and isinstance(argument.value, str):
-                    names.add(argument.value.split(".")[0])
-    return frozenset(names)
+                    names.add(argument.value)
+    # Some consumers use tests._support while others put tests/ on sys.path.
+    return {name.removeprefix("tests.") for name in names}
 
 
-def test_module_importers(module_name: str, repo_root: Path | None = None) -> tuple[str, ...]:
-    """Flat ``tests/test_*.py`` modules that import ``module_name`` directly.
+def _test_import_graph(tests_dir: Path):
+    """Return module paths, static readers, harnesses and resolved import edges.
 
-    Transitive importers are deliberately not followed: an unchanged helper
-    between the change and the tests means the module list is not proven, and
-    the caller keeps the full Chat suite instead of guessing.
+    Refuse an unreadable/invalid candidate: an incomplete graph is not proof.
+    The supported scope is flat tests/ Python files and the _support package.
     """
+    paths = {}
+    static_readers = set()
+    imported = {}
+    harnesses = tuple(name for name in _static_reading_helpers(tests_dir)
+                      if not name.endswith(".py"))
+    try:
+        candidates = sorted(tests_dir.glob("*.py")) + sorted(
+            (tests_dir / "_support").rglob("*.py"))
+        for path in candidates:
+            relative = path.relative_to(tests_dir)
+            name = ".".join(relative.with_suffix("").parts)
+            if name.endswith(".__init__"):
+                name = name.removesuffix(".__init__")
+            if name in paths:
+                return None
+            source = path.read_text(encoding="utf-8-sig")
+            paths[name] = relative.as_posix()
+            tree = ast.parse(source)
+            context = name + ".__init__" if relative.name == "__init__.py" else name
+            imported[name] = _imported_module_names(tree, context)
+            if (_references_static_source(tree)
+                    or (not relative.as_posix().startswith("test_") and
+                        ("static/" in source or "static\\" in source
+                         or '"static"' in source or "'static'" in source))
+                    or _mentions_static_reading_helper(tree, harnesses)):
+                static_readers.add(name)
+    except (OSError, UnicodeError, SyntaxError, ValueError):
+        return None
+    edges = {}
+    for name, imports in imported.items():
+        # Importing a submodule executes its package initializers too.
+        parents = {part for item in imports for part in (
+            ".".join(item.split(".")[:i]) for i in range(1, len(item.split("."))))}
+        edges[name] = (imports | parents) & paths.keys() - {name}
+    return paths, static_readers, harnesses, edges
+
+
+def _reverse_closure(edges, seeds: set[str]) -> set[str]:
+    affected = set(seeds)
+    while True:
+        added = {name for name, imports in edges.items() if imports & affected}
+        if added <= affected:
+            return affected
+        affected.update(added)
+
+
+# A changed source file can be read as TEXT by a test that never imports it
+# (e.g. a structure/ratchet assertion). Import graphs cannot see that edge, and
+# #8212 moved a service loop out of the executor while a pytest module read the
+# executor source verbatim: CI selected no test, main went red. Cap the focused
+# list and fail closed to the full suite above it, as with the UI contract cap.
+SOURCE_READ_MAX_MODULES = 120
+_SOURCE_READ_MARKERS = (".read_text", ".read_bytes", "open(", ".open(")
+
+
+def _normalize_path(value: str) -> str:
+    return value.replace("\\", "/").lstrip("/").removeprefix("./")
+
+
+def _path_parent(value: str) -> str:
+    parts = _normalize_path(value).split("/")
+    return "/".join(parts[:-1])
+
+
+def _resolve_path_expr(node: ast.AST, env: dict[str, set[str]], file_rel: str) -> set[str]:
+    """Repo-relative paths a Path-like expression can name, by static proof.
+
+    Handles the shapes the tests tree actually uses: module-level path
+    variables, ``Path(__file__).resolve().parents[N]`` / ``.parent``, ``/`` path
+    joins, ``Path(...)`` / ``PurePath(...)`` and ``os.path.join``. Anything it
+    cannot prove resolves to nothing, which makes the selection conservative.
+    """
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return {_normalize_path(node.value)} if node.value else set()
+    if isinstance(node, ast.Name):
+        if node.id == "__file__":
+            return {_normalize_path(file_rel)}
+        return set(env.get(node.id, ()))
+    if isinstance(node, ast.Attribute):
+        if node.attr == "parent":
+            return {_path_parent(value) for value in _resolve_path_expr(node.value, env, file_rel)}
+        if node.attr in {"resolve", "absolute"}:
+            return _resolve_path_expr(node.value, env, file_rel)
+        return set()
+    if isinstance(node, ast.Subscript):
+        base_node = node.value
+        if isinstance(base_node, ast.Attribute) and base_node.attr == "parents":
+            try:
+                level = ast.literal_eval(node.slice)
+            except (ValueError, TypeError, SyntaxError):
+                return set()
+            if not isinstance(level, int) or isinstance(level, bool) or level < 0:
+                return set()
+            resolved = set()
+            for value in _resolve_path_expr(base_node.value, env, file_rel):
+                parts = _normalize_path(value).split("/")[:-1]
+                for _ in range(level):
+                    if parts:
+                        parts = parts[:-1]
+                resolved.add("/".join(parts))
+            return resolved
+        return set()
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+        left = _resolve_path_expr(node.left, env, file_rel)
+        right = _resolve_path_expr(node.right, env, file_rel)
+        return {
+            (l.rstrip("/") + "/" + r.lstrip("/")).lstrip("/")
+            for l in left for r in right if r
+        }
+    if isinstance(node, ast.Call):
+        func = node.func
+        name = func.attr if isinstance(func, ast.Attribute) else (
+            func.id if isinstance(func, ast.Name) else "")
+        if name in {"Path", "PurePath", "PurePosixPath", "join"} and node.args:
+            parts = [_resolve_path_expr(arg, env, file_rel) for arg in node.args]
+            resolved = parts[0]
+            for more in parts[1:]:
+                resolved = {
+                    (l.rstrip("/") + "/" + r.lstrip("/")).lstrip("/")
+                    for l in resolved for r in more if r
+                }
+            return resolved
+        if name in {"resolve", "absolute"} and isinstance(func, ast.Attribute):
+            return _resolve_path_expr(func.value, env, file_rel)
+    return set()
+
+
+def _source_read_paths(tree: ast.AST, file_rel: str) -> set[str]:
+    """Source paths this test module opens as text; module path vars resolved."""
+    env: dict[str, set[str]] = {}
+    # A few passes cover path variables defined in terms of earlier ones.
+    for _ in range(3):
+        for node in tree.body:
+            if isinstance(node, ast.Assign) and isinstance(node.value, ast.AST):
+                value = _resolve_path_expr(node.value, env, file_rel)
+                if not value:
+                    continue
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        env[target.id] = value
+    reads: set[str] = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
+            continue
+        if node.func.attr in {"read_text", "read_bytes"}:
+            reads |= _resolve_path_expr(node.func.value, env, file_rel)
+        elif node.func.attr == "open":
+            reads |= _resolve_path_expr(node.func.value, env, file_rel)
+    return reads
+
+
+def source_read_tests(files: object, repo_root: Path | None = None) -> tuple[str, ...] | None:
+    """Flat pytest modules that read any changed file verbatim.
+
+    ``None`` means discovery was incomplete (unreadable/unparseable candidate or
+    cap overflow) and the caller must fail closed to the full suite. An empty
+    tuple is a proven "no test reads this change". Only test sources carrying a
+    read marker are parsed, so this scan stays cheap on ordinary PRs.
+    """
+    if not isinstance(files, list) or not 0 < len(files) <= MAX_FILES:
+        return ()
+    changed = set()
+    for row in files:
+        if not isinstance(row, dict) or row.get("status") not in {"added", "modified"}:
+            return None
+        path = row.get("filename")
+        if not isinstance(path, str) or "\\" in path or ".." in Path(path).parts:
+            return None
+        normalized = _normalize_path(path)
+        # Static assets already have their own UI-contract lane; do not let a
+        # high reader count there overflow this cap and change that lane's
+        # documented signal.
+        if normalized.startswith("apps/padiem-chat/static/"):
+            continue
+        changed.add(normalized)
+    if not changed:
+        return ()
     root = Path(repo_root) if repo_root is not None else REPO_ROOT
     tests_dir = root / "apps/padiem-chat/tests"
     try:
         candidates = sorted(tests_dir.glob("test_*.py"))
     except OSError:
-        return ()
-    importers: list[str] = []
+        return None
+    # Cheap pre-filter: a test that reads a source names that source somewhere
+    # (a literal path or a path variable built from one). Only those few modules
+    # get an AST parse, so an ordinary PR stays near the old classifier cost.
+    needles: set[str] = set()
+    for path in changed:
+        needles.add(path)
+        base = path.rsplit("/", 1)[-1]
+        needles.add(base)
+        needles.add(base.rsplit(".", 1)[0])
+        parts = path.split("/")
+        if len(parts) >= 2:
+            needles.add("/".join(parts[-2:]))
+    selected: set[str] = set()
     for path in candidates:
         try:
-            tree = ast.parse(path.read_text(encoding="utf-8"))
-        except (OSError, SyntaxError, ValueError):
+            text = path.read_text(encoding="utf-8-sig")
+        except (OSError, UnicodeError):
+            return None
+        if not any(needle in text for needle in needles):
             continue
-        if module_name in _imported_module_names(tree):
-            if not re.fullmatch(r"test_[A-Za-z0-9_]+\.py", path.name):
-                # The reduced lane only accepts this exact module shape; never
-                # silently drop a consumer it cannot name.
+        if not any(marker in text for marker in _SOURCE_READ_MARKERS):
+            continue
+        try:
+            tree = ast.parse(text)
+        except (SyntaxError, ValueError):
+            return None
+        if _source_read_paths(tree, path.relative_to(root).as_posix()) & changed:
+            selected.add(f"tests/{path.name}")
+    if len(selected) > SOURCE_READ_MAX_MODULES:
+        return None
+    return tuple(sorted(selected))
+
+
+def _runnable_modules(paths, affected: set[str]) -> tuple[str, ...]:
+    modules = []
+    for name in affected:
+        relative = paths[name]
+        if "/" not in relative and relative.startswith("test_"):
+            if not re.fullmatch(r"test_[A-Za-z0-9_]+\.py", relative):
                 return ()
-            importers.append(f"tests/{path.name}")
-    return tuple(importers)
+            modules.append(f"tests/{relative}")
+    return tuple(sorted(modules))
+
+
+def test_module_importers(module_name: str, repo_root: Path | None = None) -> tuple[str, ...]:
+    """All flat pytest modules that transitively import a local module."""
+    root = Path(repo_root) if repo_root is not None else REPO_ROOT
+    graph = _test_import_graph(root / "apps/padiem-chat/tests")
+    if graph is None:
+        return ()
+    paths, _, _, edges = graph
+    if module_name not in paths:
+        return ()
+    return _runnable_modules(paths, _reverse_closure(edges, {module_name}))
 
 
 def tests_only_modules(files: object, repo_root: Path | None = None) -> tuple[str, ...]:
     """Safe relative pytest arguments for a Chat tests-tree-only change.
 
-    A changed ``test_*.py`` runs itself. A changed helper runs every flat test
-    module that imports it. A helper no test imports (or conftest.py) cannot be
+    A changed ``test_*.py`` runs itself, including staging/E2E. A changed
+    helper runs its transitive flat test consumers except indirect staging/E2E
+    consumers, which run in the nightly/manual full regression. A helper no
+    test imports (or conftest.py) cannot be
     covered by a reduced lane, so the result is empty and the caller fails
     closed to the full Chat suite. ``.md`` files carry no executable contract
     and are ignored. The shape is re-proven here so a malformed API listing can
@@ -340,19 +572,32 @@ def tests_only_modules(files: object, repo_root: Path | None = None) -> tuple[st
         seen.add(path)
         if path.endswith(".md"):
             continue
-        name = path.rsplit("/", 1)[-1]
-        if name.startswith("test_"):
-            modules.add(f"tests/{name}")
+        relative = path.removeprefix("apps/padiem-chat/tests/")
+        if "/" not in relative and relative.startswith("test_"):
+            modules.add(f"tests/{relative}")
         else:
-            helpers.add(name[: -len(".py")])
-    for helper in sorted(helpers):
-        importers = test_module_importers(helper, repo_root)
+            name = relative.removesuffix(".py").replace("/", ".")
+            helpers.add(name.removesuffix(".__init__"))
+    if not helpers:
+        return tuple(sorted(modules))
+    root = Path(repo_root) if repo_root is not None else REPO_ROOT
+    graph = _test_import_graph(root / "apps/padiem-chat/tests")
+    if graph is None:
+        return ()
+    paths, _, _, edges = graph
+    for helper in helpers:
+        if helper not in paths:
+            return ()
+        importers = _runnable_modules(paths, _reverse_closure(edges, {helper}))
         if not importers:
             return ()
-        modules.update(importers)
-        if len(modules) > MAX_FILES:
-            return ()
-    return tuple(sorted(modules))
+        modules.update(path for path in importers if not _DEFERRED_CONSUMER.search(path))
+    # A proven set containing only deferred consumers is not an unknown graph.
+    # Keep the mandatory cheap guard on the PR; nightly/manual still collects
+    # all of those consumers. Unknown/unparseable graphs return above.
+    if not modules:
+        modules.add(_TESTS_ONLY_MANIFEST_GUARD)
+    return tuple(sorted(modules)) if len(modules) <= MAX_FILES else ()
 
 
 def impact_scope(files: object, repo_root: Path | None = None) -> str:
@@ -430,6 +675,11 @@ def impact_scope(files: object, repo_root: Path | None = None) -> str:
         return TESTS_ONLY if tests_only_modules(files, repo_root) else FULL
     # A B62-only dependency/Worker configuration change can alter the Core
     # execution environment without editing Core sources. Never fast-route it.
+    if any(p.startswith("apps/padiem-chat/tests/") and (
+        p.startswith("apps/padiem-chat/tests/_support/") or not _is_tests_tree_file(p)
+    ) for p in paths):
+        # A mixed/unsupported helper change must not bypass its consumers.
+        return FULL
     source_roots = ("apps/padiem-chat/app/", "apps/padiem-chat/tests/")
     if all(
         p.startswith("apps/padiem-chat/static/")
@@ -536,6 +786,19 @@ def _core_product_argument() -> str | None:
     return product if product in ("b62", "engine") else None
 
 
+def tests_only_runner(event, event_name, repository, scope, chat_source, attempt):
+    """Only a proven same-repository PR may select the private runner label."""
+    if event_name != "pull_request" or scope != TESTS_ONLY or chat_source is not False:
+        return "hosted"
+    if not repository or attempt != "1":
+        return "hosted"
+    try:
+        head_repo = event["pull_request"]["head"]["repo"]["full_name"]
+    except (KeyError, TypeError):
+        return "hosted"
+    return "self-hosted" if head_repo == repository else "hosted"
+
+
 def main() -> None:
     if "--print-ui-contract" in sys.argv[1:]:
         print(" ".join(ui_contract_tests(REPO_ROOT)))
@@ -557,12 +820,14 @@ def main() -> None:
         )
         return
 
+    event, event_name = {}, ""
     scope = FULL
     static_changed = False
     chat_source = False
     ui_contract: tuple[str, ...] = ()
     ui_tests: tuple[str, ...] = ()
     tests_only_tests: tuple[str, ...] = ()
+    source_read_tests_value: tuple[str, ...] = ()
     core_tests: tuple[str, ...] = ()
     core_modules: tuple[str, ...] = ()
     try:
@@ -606,6 +871,20 @@ def main() -> None:
             else:
                 scope = FULL
                 chat_source = True
+        if scope == FULL and isinstance(files, list) and any(
+            isinstance(row, dict) and isinstance(row.get("filename"), str)
+            and row["filename"].startswith("apps/padiem-chat/tests/")
+            and not row["filename"].endswith(".md") for row in files
+        ):
+            chat_source = True
+        # #8212: a test can read a changed source as text without importing it.
+        # Select those modules in their own lane; an incomplete discovery runs
+        # the full Chat suite so an unchanged test can never merge green.
+        discovered = source_read_tests(files, REPO_ROOT)
+        if discovered is None:
+            chat_source = True
+        else:
+            source_read_tests_value = discovered
         if scope == CORE_FOCUSED_ONLY:
             plan = core_focused_plan(REPO_ROOT, files, "b62")
             if plan is None:
@@ -622,11 +901,14 @@ def main() -> None:
         chat_source = True
     with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as out:
         out.write(f"scope={scope}\n")
+        runner = tests_only_runner(event, event_name, os.environ.get("GITHUB_REPOSITORY"), scope, chat_source, os.environ.get("GITHUB_RUN_ATTEMPT"))
+        out.write(f"tests_only_runner={runner}\n")
         out.write(f"static_changed={'true' if static_changed else 'false'}\n")
         out.write(f"chat_source_changed={'true' if chat_source else 'false'}\n")
         out.write(f"ui_contract={' '.join(ui_contract)}\n")
         out.write(f"ui_tests={' '.join(ui_tests)}\n")
         out.write(f"tests_only_tests={' '.join(tests_only_tests if scope == TESTS_ONLY else ())}\n")
+        out.write(f"source_read_tests={' '.join(source_read_tests_value)}\n")
         out.write(f"core_tests={' '.join(core_tests)}\n")
         out.write(f"core_modules={' '.join(core_modules)}\n")
     print(f"B62_CI_IMPACT_SCOPE={scope}")

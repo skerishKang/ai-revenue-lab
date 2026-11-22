@@ -7,18 +7,20 @@ No deployment or live PC/GitHub write access asserted.
 from __future__ import annotations
 
 from html.parser import HTMLParser
-from pathlib import Path
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-CSS = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
-STYLES = (STATIC / "padiem-shared-ui.css").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
-ACTIONS = (STATIC / "claw-home-choices.js").read_text(encoding="utf-8")
-CONNECTION_CHIPS = (STATIC / "claw-connection-chips.js").read_text(encoding="utf-8")
-LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+from _support.claw_static import locale_source, sheet
+
+# #8060: sheet reads live in the helper; this module only asserts on the
+# parsed structure and on values, never on where the sheet came from.
+HTML = sheet("index.html")
+CSS = sheet("claw-focus-layout.css")
+STYLES = sheet("padiem-shared-ui.css")
+APP = sheet("app.js")
+CLAW_STATUS = sheet("chat-claw-status-module.js")
+MODULE = sheet("chat-history-module.js")
+ACTIONS = sheet("claw-home-choices.js")
+CONNECTION_CHIPS = sheet("claw-connection-chips.js")
+LOCALE = locale_source()
 
 
 class Tags(HTMLParser):
@@ -160,7 +162,7 @@ def test_claw_previous_conversations_reuses_owner_scoped_history():
 
 
 def test_claw_connection_chips_keep_canonical_authority_and_do_not_forge_disconnect():
-    script = (STATIC / "claw-connection-chips.js").read_text(encoding="utf-8")
+    script = CONNECTION_CHIPS
     for k in ("pc", "drive", "github"):
         assert f'data-claw-connection="{k}"' in HTML
     assert 'data-claw-connection="web"' not in HTML
@@ -210,6 +212,6 @@ def test_first_use_claw_retains_chat_alignment_and_input_tools():
     assert HTML.count('class="claw-connection-track"') == 3
     assert HTML.count('class="claw-state-on">ON') == 3
     assert HTML.count('class="claw-state-off">OFF') == 3
-    script = (STATIC / "claw-connection-chips.js").read_text(encoding="utf-8")
+    script = CONNECTION_CHIPS
     assert 'label.textContent=display' in script
     assert 'element.dataset.connectionState=value' in script

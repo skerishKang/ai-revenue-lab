@@ -10,10 +10,19 @@ UTILITY = (STATIC / "sidebar-utility.css").read_text(encoding="utf-8")
 # #7476-14: settings-surface members of the shared groups moved into the
 # consolidated settings sheet; the shared groups keep the app-surface members.
 SETTINGS = (STATIC / "padiem-settings.css").read_text(encoding="utf-8")
+INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 
 
 def test_accessibility_polish_is_loaded_after_base_theme_stack() -> None:
-    assert UTILITY.startswith('@import url("./accessibility-polish.css");')
+    # #7811 C1: sidebar-utility.css의 @import가 index.html <link>로 펼쳐졌다.
+    # (@import는 부르는 시트보다 앞에 온다.) 기본 테마 스택 뒤에 로드되고
+    # 부르는 시트 바로 앞에 오는 위치를 그대로 확인한다.
+    polish = 'href="./accessibility-polish.css"'
+    utility = 'href="./sidebar-utility.css"'
+    themes = 'href="./padiem-themes.css"'
+    assert polish in INDEX
+    assert INDEX.index(themes) < INDEX.index(polish)
+    assert INDEX.index(polish) < INDEX.index(utility)
     assert "styles.css" not in POLISH
     assert "@font-face" not in POLISH
 

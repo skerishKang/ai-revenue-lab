@@ -21,7 +21,7 @@ const STATIC = join(fileURLToPath(new URL(".", import.meta.url)), "..", "static"
 const PC_RUN_MODULE = readFileSync(join(STATIC, "chat-pc-run-module.js"), "utf8");
 const STRICT_DEPS = readFileSync(fileURLToPath(new URL("./_r5_strict_deps.js", import.meta.url)), "utf8");
 const LIFECYCLE = readFileSync(join(STATIC, "message-lifecycle.js"), "utf8");
-const LOCALE = readFileSync(join(STATIC, "locale.js"), "utf8");
+const LOCALE = readFileSync(fileURLToPath(new URL("./fixtures/locale_merged.js", import.meta.url)), "utf8");
 
 const RUN_ID = "chat_pcq_" + "a".repeat(32);
 const CONVERSATION_ID = "chat_" + "c".repeat(32);

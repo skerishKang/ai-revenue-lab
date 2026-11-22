@@ -25,7 +25,10 @@
 
 * padiem-foundation.css :root — 채팅 5테마 체계 밖의 별개 화면(프로젝트
   커서 페이지)이 자체로 다크 기본값을 갖는 구성 요소 지역 결정. 채팅
-  페이지 어디에도 로드되지 않는다(아래 시험이 확인).
+  페이지(index.html)에는 로드되지만(#7811 C1 전에는 padiem-cinematic-
+  chat.css의 @import로, 뒤에는 index.html 직접 link로 — 아래 시험이
+  위치를 확인) 단독 페이지(privacy·terms·help·install)에는 로드되지
+  않는다. 토큰 파일이 이 시트를 건드리지 않았으므로 그 화면은 변화가 없다.
 * voice·admin 계열 시트 — 조사 결과 --accent*/--card-border 정의가 없다.
   지역 팔레트가 다른 이름의 변수를 쓰는 것이므로 이번 패밀리와 무관하다.
 * --accent-contrast의 어두운 숫자(#131417·#04070d·#0b0f14·#17202a)는
@@ -232,7 +235,9 @@ class TestCardAccentTokens(unittest.TestCase):
         self.assertIn("color: var(--accent);", answer)
         self.assertNotIn("#6557e8", answer)
         portrait = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
-        self.assertIn("outline: 2px solid var(--accent) !important;", portrait)
+        # #8008 2차: 유리 세로화면 포커스선의 !important를 뺐다 — 토큰 참조는
+        # 그대로고(id 체인 특이성으로 계속 이긴다), 문자 고정도 토큰 형태를 따른다.
+        self.assertIn("outline: 2px solid var(--accent);", portrait)
         capability = (STATIC / "capability-nav.css").read_text(encoding="utf-8")
         self.assertIn("background: var(--accent-soft);", capability)
         themes = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
@@ -243,17 +248,28 @@ class TestCardAccentTokens(unittest.TestCase):
         """제외 근거: padiem-foundation.css는 채팅 5테마 체계 밖의 별개 화면.
 
         프로젝트 커서 페이지가 자체로 다크 기본값을 갖는 구성 요소 지역
-        결정이고, 채팅 페이지 어디에도 로드되지 않는다(아래에서 확인).
-        토큰 파일이 이 시트를 건드리지 않았으므로 그 화면은 변화가 없다.
+        결정이고, 채팅 페이지(index.html)에는 로드되지만 단독 페이지
+        (privacy·terms·help·install)에는 로드되지 않는다(아래에서 확인).
+        #7811 C1 전에는 padiem-cinematic-chat.css의 @import로 들어왔고,
+        뒤에는 index.html의 직접 link로 들어온다. 토큰 파일이 이 시트를
+        건드리지 않았으므로 그 화면은 변화가 없다.
         """
         foundation = (STATIC / "padiem-foundation.css").read_text(encoding="utf-8")
         self.assertIn("--accent: #88c9ff;", foundation)
         self.assertIn("--accent-soft: rgba(136, 201, 255, .055);", foundation)
         self.assertIn("--accent-strong: #d7ebfa;", foundation)
-        for page in ("index.html", "privacy.html", "terms.html",
-                     "help.html", "install.html"):
+        for page in ("privacy.html", "terms.html", "help.html", "install.html"):
             html = (STATIC / page).read_text(encoding="utf-8")
             self.assertNotIn("padiem-foundation.css", html, page)
+        # #7811 C1: index.html에는 직접 link로 들어온다(이전에는
+        # padiem-cinematic-chat.css의 @import로 들어왔다). 로드 위치는
+        # 부르는 시트 앞 그대로다.
+        index = (STATIC / "index.html").read_text(encoding="utf-8")
+        self.assertIn('href="./padiem-foundation.css"', index)
+        self.assertLess(
+            index.index('href="./padiem-foundation.css"'),
+            index.index('href="./padiem-cinematic-chat.css"'),
+        )
 
     def test_the_local_palette_sheets_define_no_accent_family(self) -> None:
         """제외 근거: voice·admin 계열 지역 팔레트는 이번 패밀리와 무관하다.

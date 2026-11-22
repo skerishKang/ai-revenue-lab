@@ -20,4 +20,4 @@ def test_manual_navigation_still_reuses_one_existing_route_and_form():
     # app.js keeps the wire call at the original listener position.
     assert 'clawManualEntryButton.addEventListener("click", openClawManual)' in NAV
     assert 'clawWorkspace.dataset.view = "manual"' in NAV
-    assert 'navModule().wireNavEntryListeners();' in JS
+    assert 'navModuleInstance.wireNavEntryListeners();' in JS

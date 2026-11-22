@@ -13,7 +13,7 @@ from .web_runtime import normalize_public_url
 PC_GATEWAY_TOOLS = {
     # depth (1..3) widens one listing into one bounded deep walk; the value is
     # re-validated at every layer, so only a real integer in range crosses.
-    "claw.pc.list_files": {"path", "depth"},
+    "claw.pc.list_files": {"path", "depth", "offset"},
     "claw.pc.read_file": {"path"},
     # The optional mode names overwrite (the only behavior before it existed)
     # or append. Absent mode is the old whole-file write, byte for byte.
@@ -38,8 +38,12 @@ PC_GATEWAY_TOOLS = {
 }
 #: 2026-11-04: a read-only file tool may answer later than one MCP request
 #: waits. The same tool then continues the dispatch it started, and this is the
-#: only other argument shape those two tools accept: a job id and nothing else.
-PC_GATEWAY_RESUME_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.read_file"})
+#: only other argument shape those tools accept: a job id and nothing else.
+#: A name/content search can outlast one request too, so it resumes the same way.
+PC_GATEWAY_RESUME_TOOLS = frozenset({
+    "claw.pc.list_files", "claw.pc.read_file", "claw.pc.search_files",
+    "claw.pc.search_contents",
+})
 #: The tools whose search text travels beside the tool id, never as an argument.
 PC_GATEWAY_SEARCH_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.search_contents",
                                      "claw.pc.search_files"})
@@ -69,7 +73,7 @@ def parse_pc_gateway(value):
                             and isinstance(item, bool))
                    and not (tool == "claw.pc.read_file_chunk" and key in {"offset", "length"}
                             and type(item) is int)
-                   and not (tool == "claw.pc.list_files" and key == "depth"
+                   and not (tool == "claw.pc.list_files" and key in {"depth", "offset"}
                             and type(item) is int)
                    for key, item in args.items())):
         raise ValueError("Invalid PC gateway tool arguments")
@@ -105,6 +109,11 @@ def parse_pc_gateway(value):
             "depth" in args and (type(args["depth"]) is not int
                                  or isinstance(args["depth"], bool)
                                  or not 1 <= args["depth"] <= 3)):
+        raise ValueError("Invalid PC gateway tool arguments")
+    if tool == "claw.pc.list_files" and (
+            "offset" in args and (type(args["offset"]) is not int
+                                  or isinstance(args["offset"], bool)
+                                  or not 0 <= args["offset"] <= 10_000)):
         raise ValueError("Invalid PC gateway tool arguments")
     # The optional write mode is one of two spellings; anything else is a
     # caller mistake, not a mode to guess.

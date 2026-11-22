@@ -828,6 +828,22 @@ class BrowserFlowResult:
         }
 
 
+def stamp_flow_record(stamp: BrowserFlowResult, verdict: str, code: str,
+                      blame: str = "", observed: str = "") -> None:
+    """stamp_verdict 결과를 스탬프 흐름 기록에 옮긴다(#7935 후속).
+
+    FAIL 이어도 지목 커밋(어느 커밋 화면이 배포에서 빠졌는지)을 기록에 남긴다.
+    fail() 이 head 를 빈 값으로 채우므로 head 를 나중에 적는 순서가 결과를
+    바꾼다 — 실행 44105411024 에서는 이 순서 때문에 USAGE_FLOW 줄의 head= 가
+    비어 지목 커밋이 사라졌다.
+    """
+    if verdict == "PASS":
+        stamp.pass_(blame or observed, code)
+        return
+    stamp.fail(code)
+    stamp.head = blame or observed
+
+
 def _capture(page, out_dir: Path, flow: BrowserFlowResult, step: int, name: str,
              username: str) -> None:
     """계정 표시를 흐리게 만든 뒤 1440 폭 한 화면을 남긴다."""
@@ -1166,6 +1182,15 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
         if verdict != "PASS":
             flow.fail(code)
             return
+        stage = "logged-in"
+        # #7943 후속: 로그인된 Chat 화면 한 장을 01-first-visit 4단계 소스로
+        # 남긴다(일일 캡처 세트, 시나리오 "촬영한 단계: 4"). 촬영 실패는 새
+        # FAIL 조건이 아니다 — 캡처 부재로만 남고, 부분 모드 갱신이 그 단계를
+        # kept 로 기록한다.
+        try:
+            _capture(page, out_path, flow, 4, "logged-in", username)
+        except Exception:
+            pass
         # #7364: the same shared-login session must resolve the PC device
         # directory and the three workspace-backed connector rows. Recorded
         # before the logout (the session is gone afterwards) and judged at the
@@ -1356,13 +1381,10 @@ def run_browser_flows(
                 _capture(page, out_path, stamp, 1, "app-version", username)
                 evidence = stamp_evidence(observed)
                 verdict, code, blame = stamp_verdict(observed, head_version, **evidence)
-                if verdict == "PASS":
-                    stamp.pass_(blame or observed, code)
-                else:
-                    # 스탬프는 배포 SHA 앞 8자리 조각이다. 쿠키·토큰이 아니므로
-                    # 어느 커밋 화면인지(지목된 커밋) 진단에 남긴다.
-                    stamp.head = blame or observed
-                    stamp.fail(code)
+                # 스탬프는 배포 SHA 앞 8자리 조각이다. 쿠키·토큰이 아니므로
+                # 어느 커밋 화면인지(지목된 커밋) 진단에 남긴다. FAIL 에도
+                # 남는다(#7935 후속).
+                stamp_flow_record(stamp, verdict, code, blame, observed)
             except Exception as exc:
                 stamp.fail(f"browser_stamp_{type(exc).__name__}")
             stamp.elapsed_ms = int((time.monotonic() - started) * 1000)

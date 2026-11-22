@@ -19,9 +19,9 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.history import D1HistoryStore, HistoryError, PRODUCT_SCOPE_CHAT, is_multi_command_action
 from test_4139_claw_general_desktop_staging import _LazyHistory
 from test_5015_pc_work_context import Directory, Identity, Mesh, device, mesh_row, BASE, WORKSPACE
-from test_3930_b54_live_sse_relay import _event
-from test_b54_claw_general_p01_routing import _make_outcome, _settings
-from test_claw_local_task_result_projection import _open_database
+from _support.live_sse_relay import _event
+from _support.claw_general_routing import _make_outcome, _settings
+from _support.claw_local_task_result import _open_database
 
 TEXT = "example.com 열어서 제목 알려 줘"
 ANSWER = "페이지 제목은 Example Domain입니다."
@@ -99,7 +99,7 @@ def browser_entry(tmp_path, monkeypatch):
     app.state.oracle_mesh_return_source = mesh
     app.state.claw_live_sse_enabled = True
     with TestClient(app, base_url=BASE) as client:
-        client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner),
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner, canonical_session_id="session_test_a"),
                            domain="chat.example.test", path="/")
         yield SimpleNamespace(client=client, path=path, owner=owner, seen=seen,
                               directory=directory, identity=identity, mesh=mesh)

@@ -20,6 +20,7 @@ Network-free: the adapter is a fake and no model/provider is called.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import json
 from contextlib import contextmanager
@@ -48,7 +49,7 @@ from app.attachments import AttachmentValidationError, parse_attachments
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
 STREAM_JS = (ROOT / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
-LOCALE_JS = (ROOT / "static" / "locale.js").read_text(encoding="utf-8")
+LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
 TRANSPORT_JS = (ROOT / "static" / "chat-transport.js").read_text(encoding="utf-8")
 CHAT_ROUTES = (ROOT / "app" / "chat_routes.py").read_text(encoding="utf-8")
 GENERAL = (ROOT / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
@@ -107,7 +108,7 @@ def _client(adapter):
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, "usr_" + "9" * 32),
+        create_session_token(settings, "usr_" + "9" * 32, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )

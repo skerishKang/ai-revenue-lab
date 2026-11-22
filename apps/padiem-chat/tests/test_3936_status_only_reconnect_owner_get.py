@@ -61,7 +61,7 @@ def _setup():
 def _login(client, settings, user_id):
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(settings, user_id),
+        create_session_token(settings, user_id, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )

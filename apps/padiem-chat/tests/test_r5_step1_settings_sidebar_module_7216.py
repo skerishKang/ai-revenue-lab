@@ -18,6 +18,9 @@ index.html의 script 로드 순서는 소스 위치 비교 대신 HTMLParser로 
 """
 from __future__ import annotations
 
+import json
+import shutil
+import subprocess
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -35,9 +38,10 @@ MODULES = {
     "settings": ("PadiemChatSettingsModule", "chat-settings-module.js",
                  ["selectedProductTier", "openSettings", "closeSettings",
                   "openAdvancedSettingsView", "closeAdvancedSettingsView", "selectAdvancedMenu",
+                  "wireTierChange", "wireAdvancedSettings", "wireSettingsDialog",
                   "wireAdvancedMenuListeners"]),
     "sidebar": ("PadiemChatSidebarModule", "chat-sidebar-module.js",
-                ["sidebarActionIcon", "setSidebarCollapsed", "closeSidebar", "openSidebar"]),
+                ["sidebarActionIcon", "setSidebarCollapsed", "closeSidebar", "openSidebar", "wireSidebarListeners"]),
 }
 FORWARDERS = {
     "selectedProductTier": "settingsModule",
@@ -73,9 +77,11 @@ def test_module_files_expose_one_factory_and_keep_the_original_names() -> None:
         assert "create(deps) {" in source
         for name in names:
             assert f"function {name}(" in source, (filename, name)
-        # One global factory only; no second authority and no DOM lookup at load.
+        # One global factory only; DOM lookups start inside create(), never at load.
         assert source.count("window.") >= 1
-        assert "document.getElementById" not in source
+        create_at = source.index("create(deps) {")
+        lookup_at = source.find("document.getElementById")
+        assert lookup_at == -1 or lookup_at > create_at, filename
 
 
 def test_settings_and_sidebar_bodies_live_only_in_their_modules() -> None:
@@ -92,17 +98,98 @@ def test_settings_and_sidebar_bodies_live_only_in_their_modules() -> None:
 
 
 def test_app_js_keeps_one_line_forwarders_for_all_nine_functions() -> None:
-    """호출부 호환(R5 B1): app.js의 한 줄 전달 함수 형태는 구조 결정이다.
+    """호출부 호환(R5 B1+B7): 9개 API 전부 등록부(app.provide) 경유로 전환됐다.
 
-    모듈 함수 동작은 harness가 직접 호출해 증명하므로, 여기서는 전달 함수의
-    모양과 유일성만 고정한다.
+    settings 5개·sidebar 4개 모두 app.js에 같은 이름 정의가 없고, 등록된 조각에
+    이름이 있다 — 도달 가능 여부는 아래 등록부 행위 시험이 증명한다.
+    selectedProductTier·closeSettings는 B6 allowlist(소유자 = settings 모듈)로
+    공유 접근자를 덮는다.
     """
     for name, factory in FORWARDERS.items():
-        line = f"function {name}(...a) {{ return {factory}().{name}(...a); }}"
-        assert line in APP, name
-        assert APP.count(f"function {name}(") == 1, name
-    assert "function settingsModule() {" in APP
-    assert "function sidebarModule() {" in APP
+        assert f"function {name}(" not in APP, name
+        assert f'app.provide("{factory.removesuffix("Module").lower()}",' in APP, name
+        piece = SETTINGS if factory == "settingsModule" else SIDEBAR
+        assert f"{name}," in piece, name
+    assert "function settingsModule() { return settings; }" in APP
+    assert "function sidebarModule() { return sidebar; }" in APP
+
+
+def test_settings_and_sidebar_apis_are_reachable_through_the_registry() -> None:
+    """B7 보강: 등록부(app.provide)로 같은 이름을 찾을 수 있다.
+
+    app.js 전달 함수가 없어도 소비자(app.js 호출자·deps getter)는 등록된 조각의
+    같은 이름 API에 도달한다. 실제 모듈 본문을 node vm에서 문맥에 등록해
+    settings·sidebar 조각의 API가 전부 함수로 조회되는지 본다(동작 단언은
+    harness가 직접 호출로 증명한다). selectedProductTier·closeSettings·
+    closeSidebar는 B6 allowlist(소유자 = 각 모듈)로 공유 접근자를 덮는다.
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed in this runner")
+
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+
+const staticDir = process.argv[1];
+const byId = new Map();
+const fakeEl = () => ({
+  hidden: true, textContent: "", children: [], dataset: {},
+  classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+  addEventListener() {}, removeEventListener() {},
+  setAttribute() {}, getAttribute() { return null; },
+  appendChild(c) { this.children.push(c); return c; }, removeChild() {},
+});
+const sandbox = {
+  document: {
+    getElementById: (id) => { if (!byId.has(id)) byId.set(id, fakeEl()); return byId.get(id); },
+    querySelectorAll: () => [],
+    querySelector: () => null,
+    addEventListener() {}, removeEventListener() {},
+  },
+  fetch: () => new Promise(() => {}),
+  console: { error() {} },
+  setTimeout,
+};
+sandbox.window = { ...sandbox };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(staticDir + "/chat-app-context.js", "utf8"), sandbox,
+  { filename: "chat-app-context.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-settings-module.js", "utf8"), sandbox,
+  { filename: "chat-settings-module.js" });
+vm.runInContext(fs.readFileSync(staticDir + "/chat-sidebar-module.js", "utf8"), sandbox,
+  { filename: "chat-sidebar-module.js" });
+const plan = %s;
+const result = vm.runInContext(`
+  const app = window.PadiemChatAppContext.create({});
+  const out = {};
+  const plan = ${JSON.stringify(plan)};
+  for (const [zone, factory] of Object.entries(plan.factories)) {
+    app.provide(zone, window[factory].create(app));
+  }
+  for (const [zone, names] of Object.entries(plan.names)) {
+    for (const n of names) out[n] = typeof app[n];
+  }
+  out;
+`, sandbox, { filename: "registry-lookup" });
+for (const [zone, names] of Object.entries(plan.names)) {
+  for (const n of names) {
+    assert.equal(result[n], "function", n + " must be reachable through the registry");
+  }
+}
+console.log("REGISTRY_OK");
+"""
+    zone_plan = {
+        "factories": {zone: spec[0] for zone, spec in MODULES.items()},
+        "names": {zone: list(spec[2]) for zone, spec in MODULES.items()},
+    }
+    completed = subprocess.run(
+        [node, "-e", script.replace("%s", json.dumps(zone_plan), 1), str(STATIC)],
+        capture_output=True, text=True, encoding="utf-8", timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "REGISTRY_OK" in completed.stdout
 
 
 class _ScriptOrder(HTMLParser):
@@ -166,13 +253,13 @@ def test_the_advanced_settings_page_shows_restores_and_selects_the_pc_block(obse
     # 블록을 고르고, 이전 셸 상태를 기억하고, 열림 이벤트를 낸다. 메뉴 선택은
     # deps 스파이가 아니라 실제 버튼 클래스와 블록 hidden으로 관찰한다.
     assert observed["advancedOpen"] == {
-        "hidden": False, "state": "settings", "returnState": "claw",
+        "hidden": False, "state": "settings",
         "nav": 1, "selected": [True, False], "blocks": [True, False],
         "events": ["padiem:advanced-settings-open"],
     }
     # 닫으면 hidden=true, 기억한 상태로 복귀, 닫힘 이벤트.
     assert observed["advancedClose"] == {
-        "hidden": True, "state": "claw", "returnState": None,
+        "hidden": True, "state": "claw",
         "nav": 2, "events": ["padiem:advanced-settings-close"],
     }
     # 고급 화면이 없는 구성에서는 같은 진입이 설정 대화상자를 연다.

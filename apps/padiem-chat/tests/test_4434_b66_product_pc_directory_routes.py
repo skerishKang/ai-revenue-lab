@@ -104,7 +104,7 @@ def req(app, settings, path=B66_PC_DIRECTORY_PATH, *, owner=OWNER, query=None):
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
             if owner is not None:
-                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner))
+                client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner, canonical_session_id="session_test_a"))
             return await client.get(path, params=query)
     return asyncio.run(run())
 

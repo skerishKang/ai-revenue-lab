@@ -122,6 +122,9 @@ class PcConnectorCanaryVerdictTests(unittest.TestCase):
             constants.get("_STATE_REPLACED"), canary.LINK_REPLACED)
         self.assertEqual(
             constants.get("_STATE_PENDING_VERIFICATION"), canary.LINK_PENDING_VERIFICATION)
+        # #8036: the self-reported share state is part of the server's vocabulary.
+        self.assertEqual(
+            constants.get("_STATE_CANDIDATE"), canary.LINK_CANDIDATE)
         # A granted root and an active link share the server's one granted word; the
         # browser projection also names a paused link, which the canary must know.
         self.assertEqual(canary.ROOT_GRANTED, canary.LINK_ACTIVE)
@@ -775,6 +778,10 @@ class PcConnectorCanaryWorkflowTests(unittest.TestCase):
                       self.workflow)
         # #82 standard 4: the verdict has to reach a person, not only a log file.
         self.assertIn('context="padiem/pc-connector-canary"', self.workflow)
+        # 2026-11-16: publishing that status needs the scope on the live job. Run
+        # 43862546352 lost its verdict to "Resource not accessible by
+        # integration" because the job token held `contents: read` only.
+        self.assertIn("statuses: write", self.workflow)
         # Event data reaches the shell as a quoted variable, never inline.
         self.assertIn("GITHUB_REPOSITORY: ${{ github.repository }}", self.workflow)
         self.assertNotIn("repos/${{ github.repository }}", self.workflow)

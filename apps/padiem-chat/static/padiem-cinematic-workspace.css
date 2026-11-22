@@ -1,7 +1,7 @@
 /* PADIEM cinematic workspace — history / projects / outputs / documents ---- */
 
 .account-name {
-  color: rgba(255, 255, 255, .48);
+  color: var(--panel-text-faint);
   font-family: var(--font-label);
   font-size: 11px;
   letter-spacing: .025em;
@@ -9,7 +9,7 @@
 
 .history-empty,
 .project-files-empty {
-  color: rgba(255, 255, 255, .31);
+  color: var(--panel-text-faint);
 }
 
 .history-item,
@@ -21,7 +21,7 @@
 .project-item[aria-current="true"],
 .output-item[aria-current="true"] {
   position: relative;
-  color: #fff;
+  color: var(--panel-text-max);
   font-weight: 560;
   background: linear-gradient(90deg, rgba(255, 255, 255, .075), rgba(255, 255, 255, .025));
 }
@@ -41,15 +41,15 @@
 
 .section-add-button {
   border: 1px solid transparent;
-  color: rgba(255, 255, 255, .48);
+  color: var(--panel-text-faint);
   transition: border-color .2s ease, background .2s ease, color .2s ease;
 }
 
 .section-add-button:hover,
 .section-add-button:focus-visible {
   border-color: rgba(255, 255, 255, .16);
-  background: rgba(255, 255, 255, .06);
-  color: #fff;
+  background: var(--surface-veil-soft);
+  color: var(--panel-text-max);
 }
 
 /* Project context banner -------------------------------------------------- */
@@ -62,15 +62,15 @@
   border-radius: var(--radius-sm);
   background:
     linear-gradient(90deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .02)),
-    rgba(8, 9, 11, .82) !important;
+    var(--surface-panel-deep) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .04) !important,
+    inset 0 1px 0 var(--inset-veil-panel) !important,
     0 14px 38px rgba(0, 0, 0, .12);
   backdrop-filter: blur(20px);
 }
 
 .project-banner-copy span {
-  color: rgba(255, 255, 255, .62);
+  color: var(--panel-text-soft);
   font-family: var(--font-label);
   font-size: 9px;
   font-weight: 600;
@@ -79,21 +79,21 @@
 }
 
 .project-banner-copy strong {
-  color: rgba(255, 255, 255, .86);
+  color: var(--panel-text-strong);
   font-size: 12px;
   font-weight: 580;
 }
 
 .project-banner-copy small {
-  color: rgba(255, 255, 255, .35);
+  color: var(--panel-text-faint);
   font-size: 10px;
 }
 
 .project-banner-actions button {
   min-height: 30px;
-  border-color: rgba(255, 255, 255, .09) !important;
+  border-color: var(--line-veil-dim) !important;
   border-radius: 6px;
-  background: rgba(255, 255, 255, .035) !important;
+  background: var(--surface-veil-ghost) !important;
   color: rgba(255, 255, 255, .52) !important;
   font-family: var(--font-label);
   font-size: 9px;
@@ -117,8 +117,8 @@
 .saved-output-view {
   padding: 24px;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .018)),
-    rgba(8, 9, 11, .97) !important;
+    linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)),
+    var(--surface-panel-solid) !important;
 }
 
 .project-dialog-header,
@@ -140,7 +140,7 @@
 
 .project-dialog-header h2,
 .saved-output-header h2 {
-  color: #fff;
+  color: var(--panel-text-max);
   font-family: var(--font-display);
   font-size: 27px;
   font-weight: 540;
@@ -152,7 +152,7 @@
 .saved-output-close {
   border: 1px solid rgba(255, 255, 255, .08) !important;
   border-radius: var(--radius-xs);
-  background: rgba(255, 255, 255, .035) !important;
+  background: var(--surface-veil-ghost) !important;
   color: rgba(255, 255, 255, .52) !important;
 }
 
@@ -164,7 +164,7 @@
 
 .project-form label,
 .saved-output-view label {
-  color: rgba(255, 255, 255, .67);
+  color: var(--panel-text-soft);
   font-family: var(--font-label);
   font-size: 10px;
   font-weight: 600;
@@ -172,7 +172,7 @@
 }
 
 .project-form label span {
-  color: rgba(255, 255, 255, .32);
+  color: var(--panel-text-faint);
   font-size: 9px;
 }
 
@@ -197,7 +197,7 @@
 .project-form-note,
 .project-files-note,
 .saved-output-status {
-  color: rgba(255, 255, 255, .34) !important;
+  color: var(--text-veil-mist) !important;
 }
 
 .project-form-error,
@@ -224,13 +224,13 @@
 .project-primary,
 .saved-output-actions .saved-output-primary {
   border-color: rgba(255, 255, 255, .20) !important;
-  background: rgba(255, 255, 255, .09) !important;
+  background: var(--surface-veil-dim) !important;
   color: rgba(255, 255, 255, .92) !important;
 }
 
 .project-primary:hover,
 .saved-output-actions .saved-output-primary:hover {
-  border-color: rgba(255, 255, 255, .34) !important;
+  border-color: var(--line-veil-mist) !important;
   background: rgba(255, 255, 255, .14) !important;
 }
 
@@ -241,13 +241,13 @@
 /* Project documents ------------------------------------------------------- */
 .project-files-panel {
   padding: 14px;
-  border-color: rgba(255, 255, 255, .09);
+  border-color: var(--line-veil-dim);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, .025);
 }
 
 .project-files-heading strong {
-  color: rgba(255, 255, 255, .74);
+  color: var(--panel-text-soft);
   font-size: 12px;
   font-weight: 580;
 }
@@ -256,13 +256,13 @@
 .project-files-note,
 .project-files-empty,
 .project-file-row small {
-  color: rgba(255, 255, 255, .32);
+  color: var(--panel-text-faint);
 }
 
 .project-file-add {
-  border-color: rgba(255, 255, 255, .09) !important;
+  border-color: var(--line-veil-dim) !important;
   border-radius: 7px;
-  background: rgba(255, 255, 255, .035) !important;
+  background: var(--surface-veil-ghost) !important;
   color: rgba(255, 255, 255, .58) !important;
   font-size: 10px;
   font-weight: 560;
@@ -281,12 +281,12 @@
 }
 
 .project-file-row strong {
-  color: rgba(255, 255, 255, .72);
+  color: var(--panel-text-soft);
   font-weight: 540;
 }
 
 .project-file-row button {
-  color: rgba(255, 255, 255, .4);
+  color: var(--panel-text-faint);
 }
 
 .project-file-row button:hover {
@@ -307,37 +307,37 @@
 .attachment-preview {
   border-color: rgba(255, 255, 255, .10) !important;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, .035) !important;
+  background: var(--surface-veil-ghost) !important;
 }
 
 .attachment-preview img {
   border: 1px solid rgba(255, 255, 255, .08);
   border-radius: var(--radius-xs);
-  background: rgba(255, 255, 255, .04);
+  background: var(--surface-veil-panel);
 }
 
 .attachment-copy strong {
-  color: rgba(255, 255, 255, .76);
+  color: var(--panel-text-soft);
   font-weight: 560;
 }
 
 .attachment-copy small {
-  color: rgba(255, 255, 255, .34);
+  color: var(--text-veil-mist);
 }
 
 .attachment-remove {
-  color: rgba(255, 255, 255, .42);
+  color: var(--text-veil-faint);
 }
 
 .attachment-remove:hover,
 .attachment-remove:focus-visible {
   background: rgba(255, 255, 255, .07);
-  color: #fff;
+  color: var(--panel-text-max);
 }
 
 /* Keep long AI answers as an editorial reading surface, not one giant card. */
 .assistant-content .rich-response {
-  border-color: transparent !important;
+  border-color: transparent;
   background: transparent !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
@@ -353,10 +353,10 @@
 .answer-action {
   min-height: 30px;
   padding-inline: 9px;
-  border-color: rgba(255, 255, 255, .09);
+  border-color: var(--line-veil-dim);
   border-radius: 6px;
   background: rgba(255, 255, 255, .03);
-  color: rgba(255, 255, 255, .42);
+  color: var(--text-veil-faint);
   font-family: var(--font-label);
   font-size: 9px;
   font-weight: 550;
@@ -366,13 +366,13 @@
 .answer-action:hover,
 .answer-action:focus-visible {
   border-color: rgba(255, 255, 255, .18);
-  background: rgba(255, 255, 255, .06);
-  color: #fff;
+  background: var(--surface-veil-soft);
+  color: var(--panel-text-max);
 }
 
 /* Saved output ------------------------------------------------------------ */
 .saved-output-content {
-  border-color: rgba(255, 255, 255, .09);
+  border-color: var(--line-veil-dim);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, .025);
   color: rgba(247, 249, 252, .84);
@@ -391,7 +391,7 @@
 .project-files-heading small,
 .project-file-row small,
 .attachment-copy small,
-.answer-action,
+html:not([data-glass-mode]) .answer-action,
 .reference-note,
 .route-details p,
 .answer-source-copy small,
@@ -403,7 +403,7 @@
 .demo-label,
 .attachment-remove,
 .project-file-row button {
-  color: rgba(255, 255, 255, .50) !important;
+  color: rgba(255, 255, 255, .50);
 }
 
 @media (max-width: 640px) {

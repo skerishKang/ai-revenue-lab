@@ -528,7 +528,8 @@ vm.createContext(ctx);
     formVisible: find(pdfPanel, "#utilToolForm-pdfmd").hidden === false,
     modeValue: find(pdfPanel, "#pdfmdMode").value,
     dropTitle: fullText(find(pdfPanel, ".pdfmd-drop-title")),
-    refineEnabled: find(pdfPanel, "[data-util-refine-chat]").disabled === false,
+    // #7865: the pdfmd chat entrance is the head switch now.
+    refineEnabled: Boolean(find(pdfPanel, '[data-util-mode="chat"]')),
   };
 
   // Deep links ?mode=chat for all 4 tools
@@ -692,9 +693,12 @@ def test_stage2_all_four_tools_question_order_gate_sync_and_library_save() -> No
     assert "검증 변환" in pdfmd["summaryBefore"]
     assert pdfmd["postsBefore"] == 0
     assert pdfmd["postsAfterNoFile"] == 0
+    # #7865: the upload starts its own conversion — the run POST follows the
+    # job and file posts, no 변환 실행 button needed.
     assert pdfmd["postUrls"] == [
         "/api/document-conversions",
         "/api/document-conversions/job_7461_1/files",
+        "/api/document-conversions/items/item_1/run",
     ]
     assert pdfmd["jobMode"] == "verify"
     assert pdfmd["backToForm"] == {

@@ -23,7 +23,7 @@ from test_b54_claw_general_p01_routing import (
     _make_outcome,
     _settings,
 )
-from test_claw_local_task_result_projection import _open_database
+from _support.claw_local_task_result import _open_database
 
 WORKSPACE = "tenant.6460.loop"
 OWNER_SUBJECT = "owner-6460-loop"
@@ -95,7 +95,7 @@ def _app(tmp_path, monkeypatch):
     )
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
-        SESSION_COOKIE, create_session_token(settings, owner),
+        SESSION_COOKIE, create_session_token(settings, owner, canonical_session_id="session_test_a"),
         domain="chat.example.test", path="/",
     )
     return path, owner, adapter, client

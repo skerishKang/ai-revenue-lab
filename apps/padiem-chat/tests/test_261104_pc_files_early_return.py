@@ -60,7 +60,9 @@ def test_job_id_is_a_closed_argument_of_the_read_only_file_tools():
     assert not transport.validate_tool_arguments("pc_read", {})
     # A mutation must report its own verification, so it never continues by id.
     assert not transport.validate_tool_arguments("pc_write", {"job_id": JOB})
-    assert not transport.validate_tool_arguments("pc_search", {"job_id": JOB})
+    # A search can outlast one request too; the same tool reads its own job.
+    assert transport.validate_tool_arguments("pc_search", {"job_id": JOB})
+    assert not transport.validate_tool_arguments("pc_search", {"path": ".", "job_id": JOB})
     # The existing path call is unchanged.
     assert transport.validate_tool_arguments("pc_list", {"path": "."})
 
@@ -263,3 +265,35 @@ def test_the_dispatch_records_the_receipt_without_returning_it():
     assert store.calls[0]["job_receipt_id"] == JOB
     assert "_job_receipt" not in outcome
     assert outcome["status"] == "running" and outcome["job_id"] == JOB
+
+
+def test_resume_routes_by_the_dispatch_tool_not_the_job_id_arguments():
+    """#8048: a recursive search first call hands back a job_id. The
+    continuation carries no query/recursive, so the caller-derived tool_id
+    would be the listing tool and the search result is projected by the wrong
+    handler (pc_files_denied). The dispatch's own tool_request_ref restores it.
+    """
+    assert execution.resume_tool_identity("run_1:search_files:" + "a" * 24) == (
+        "files_search", "claw.pc.search_files")
+    assert execution.resume_tool_identity("run_1:list_files:" + "a" * 24) == (
+        "files_list", "claw.pc.list_files")
+    assert execution.resume_tool_identity("run_1:search_contents:" + "a" * 24) == (
+        "files_search_contents", "claw.pc.search_contents")
+    assert execution.resume_tool_identity("run_1:read_file:" + "a" * 24) == (
+        "files", "claw.pc.read_file")
+    # Unknown / malformed refs keep the caller's tool, fail closed.
+    assert execution.resume_tool_identity("run_1:unknown:" + "a" * 24) is None
+    assert execution.resume_tool_identity(None) is None
+    assert execution.resume_tool_identity("garbage") is None
+
+
+def test_resumed_search_reaches_the_engine_with_search_tool(monkeypatch):
+    request, engine, history, principal = _harness(
+        monkeypatch, row=_owned_row(tool_request_ref="run_1:search_files:" + "a" * 24),
+        run={"run_id": RUN, "conversation_id": "conv_fixture"})
+    result = asyncio.run(execution.execute_mcp_pc_tool(
+        request, principal, "pc_search", {"job_id": JOB}))
+    assert len(engine.calls) == 1, "result=" + repr(result)
+    sent = json.loads(engine.calls[0]["body"])
+    assert sent["pc_gateway"]["arguments"] == {"job_id": JOB}
+    assert sent["pc_gateway"]["tool_id"] == "claw.pc.search_files"

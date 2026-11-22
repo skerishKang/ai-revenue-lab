@@ -23,6 +23,8 @@ import re
 from collections.abc import Mapping
 from typing import Any
 
+from .pc_dispatch_ttl import chat_pc_dispatch_ttl
+
 PENDING_ANSWER = (
     "연결된 PC에서 명령을 실행하는 중입니다. 실제 출력은 작업이 끝난 뒤 이 대화에 "
     "표시됩니다."
@@ -232,6 +234,7 @@ def _pending_response(*, run_id: str, conversation_id: str | None) -> Any:
     return JSONResponse(payload)
 
 
+@chat_pc_dispatch_ttl
 async def dispatch_chat_pc_command(
     request: Any,
     *,
@@ -311,6 +314,8 @@ async def dispatch_chat_pc_command(
                 await settle(uid, run_id, "failed")
             except Exception:
                 pass
+        if getattr(dispatched, "status_code", None) == 409 and b'"pc_helper_update_required"' in dispatched.body:
+            return _error("pc_helper_update_required", "업데이트 후 사용할 수 있어요", 409)
         return _error(
             "chat_pc_command_dispatch_failed",
             "PC 명령을 실행하지 못했습니다. PC 연결 상태를 확인한 뒤 다시 요청해 주세요.",

@@ -5,9 +5,11 @@ route builds it, and the claim is verified with the real route helper.
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import hmac
 import json
+import re
 from types import SimpleNamespace
 
 import pytest
@@ -18,7 +20,9 @@ from app.claw_pc_search_command import (
     PC_SEARCH_MAX_OFFICE_FILES,
     PC_SEARCH_MAX_QUERY_CHARS,
     PC_SEARCH_OFFICE_PREFIX_BYTES,
+    PC_SEARCH_PROGRESS_INTERVAL_SECONDS,
     PC_SEARCH_SCAN_MAX_FILES,
+    PC_SEARCH_TIME_LIMIT_SECONDS,
     pc_search_command,
     pc_search_mode,
     pc_search_path,
@@ -27,6 +31,14 @@ from app.claw_pc_search_command import (
 
 ROOT = "C:/Users/limone/Documents/견적"
 SECRET = "s" * 48
+
+
+def _carried_values(script: str) -> list[str]:
+    """Every server value the script rebuilds from ASCII base64 (#7973/#7974)."""
+    return [
+        base64.b64decode(blob, validate=True).decode("utf-8")
+        for blob in re.findall(r"FromBase64String\('([A-Za-z0-9+/=]+)'\)", script)
+    ]
 
 
 def test_query_and_mode_are_bounded():
@@ -53,8 +65,9 @@ def test_name_search_prefers_everything_and_never_opens_a_cloud_file():
     # Everything first, with each approved root as the only path filter.
     assert "Get-Command es.exe" in script
     assert "-path $r.path -n ($limit+1) $query" in script
-    # Fallback stays inside a root and matches the name as a substring.
-    assert "Get-ChildItem -LiteralPath $r.path -Recurse -File" in script
+    # Fallback stays inside a root and matches the name as a substring. #7974:
+    # folders are results too, so the walk no longer narrows to -File.
+    assert "Get-ChildItem -LiteralPath $r.path -Recurse -Force" in script
     assert "IndexOf($query,[StringComparison]::OrdinalIgnoreCase)" in script
     # Offline (0x1000) and RecallOnDataAccess (0x400000) are reported, not read.
     assert "$offlineMask=4096 -bor 4194304" in script
@@ -66,8 +79,10 @@ def test_name_search_prefers_everything_and_never_opens_a_cloud_file():
 
 def test_two_approved_roots_are_searched_one_after_the_other():
     script = pc_search_command(roots=TWO_ROOTS, query="견적", mode="name")
-    assert "@{label='검토';path='C:/Users/limone/Documents/PADIEM-REVIEW'}" in script
-    assert "@{label='문서';path='" + ROOT + "'}" in script
+    carried = _carried_values(script)
+    assert "검토" in carried and "C:/Users/limone/Documents/PADIEM-REVIEW" in carried
+    assert "문서" in carried and ROOT in carried and "견적" in carried
+    assert script.isascii(), "a Korean console code page must not be able to change the command"
     assert "foreach($r in $roots)" in script
     assert "$multi=($roots.Count -gt 1)" in script
     # Every root gets its own scan budget: a big first folder can never hide
@@ -115,16 +130,18 @@ def test_office_documents_are_read_by_the_reviewed_parser_child():
     assert "$maxOffice=" + str(PC_SEARCH_MAX_OFFICE_FILES) in script
 
 
-def test_owner_root_and_query_are_single_quoted_literals():
+def test_owner_root_and_query_reach_the_pc_as_exact_base64_values():
     script = pc_search_command(
         roots=[{"label": "O'Brien", "path": "C:/Users/O'Brien/Documents"}],
         query="it's", mode="name",
     )
-    assert "label='O''Brien'" in script
-    assert "path='C:/Users/O''Brien/Documents'" in script
-    assert "$query='it''s'" in script
-    # The model text can never add a statement: a quote is doubled, not closed.
-    assert "$query='it's'" not in script
+    carried = _carried_values(script)
+    assert "O'Brien" in carried
+    assert "C:/Users/O'Brien/Documents" in carried
+    assert "it's" in carried
+    assert script.isascii()
+    # The model text can never add a statement: no raw value is in the command.
+    assert "O'Brien" not in script and "it's" not in script
 
 
 def test_bad_shapes_are_refused_before_a_command_exists():
@@ -244,3 +261,68 @@ def test_owner_search_sentences_reach_the_pc_file_tools():
     assert not _requested_natural_pc_files("내 PC에 어떤 드라이브가 있어?")
     assert not _requested_natural_pc_files("내 PC에서 `hostname` 실행해줘")
     assert not _requested_natural_pc_files("본문에 '장성군' 있는 문서 찾아줘")
+
+
+def test_recursive_search_absolute_inside_a_registered_drive_resolves_to_a_root():
+    """#8048: the search route must accept the absolute folder Engine folds
+    for a recursive search, and still refuse unregistered drives."""
+    roots = [{"label": "C:", "path": "C:"}, {"label": "D:", "path": "D:"},
+             {"label": "E:", "path": "E:"}, {"label": "G:", "path": "G:"}]
+    resolved = routes._pc_files_search_roots(
+        roots, "G:/Ddrive/BatangD/task/workdiary/worktrees")
+    assert resolved == [{"label": "G:", "path": "G:/Ddrive/BatangD/task/workdiary/worktrees"}]
+    assert routes._pc_files_search_roots(roots, "G:") == [{"label": "G:", "path": "G:"}]
+    # A label/relative folder keeps the old behavior.
+    assert routes._pc_files_search_roots(roots, "G:/Ddrive") == [
+        {"label": "G:", "path": "G:/Ddrive"}]
+    assert routes._pc_files_search_roots(roots, None) == roots
+    # Unregistered drives stay refused.
+    for outside in ("H:/outside", "Z:/secret"):
+        assert routes._pc_files_search_roots(roots, outside) is None
+
+
+def test_recursive_search_carries_a_wall_clock_bound_and_time_truncated_flag():
+    """#8048: a recursive walk ends at its own 180 s bound with a partial
+    result, never holding the executor until the silence bound cuts it."""
+    script = pc_search_command(roots=ROOTS, query="견적", mode="name")
+    # The stopwatch and the time check are in the walk loops.
+    assert "$sw=[Diagnostics.Stopwatch]::StartNew()" in script
+    assert "$timeLimit=" + str(PC_SEARCH_TIME_LIMIT_SECONDS) in script
+    assert "if(Test-Time){ $flags.truncated=$true; break }" in script
+    # The result carries the time flag so the caller can tell a partial walk
+    # from a complete one.
+    assert "time_truncated=$($flags.time)" in script
+    assert "\r" not in script
+
+
+def test_recursive_search_writes_a_progress_side_file_when_a_dispatch_id_is_named():
+    """#8048: the walk keeps a side file fresh so the executor's silence clock
+    reads a live search as activity, not as a dead PC."""
+    dispatch_id = "dsp_" + "a" * 32
+    script = pc_search_command(
+        roots=ROOTS, query="견적", mode="name", dispatch_id=dispatch_id)
+    assert "padiem_search_" + dispatch_id + ".progress" in script
+    assert "Set-Content -LiteralPath $progressFile" in script
+    # Without a dispatch id there is no side file — the walk is unchanged.
+    bare = pc_search_command(roots=ROOTS, query="견적", mode="name")
+    assert "$progressFile=$null" in bare
+    assert "padiem_search_" not in bare
+
+
+def test_recursive_search_progress_interval_is_bounded_and_positive():
+    """#8048: the progress interval is a small positive number of seconds, so
+    the side file is refreshed well inside the 60 s default silence bound."""
+    assert 0 < PC_SEARCH_PROGRESS_INTERVAL_SECONDS <= 30
+
+
+def test_search_script_ends_with_a_newline_for_the_console_lane():
+    """#8048: the SYSTEM lane streams this script to ``powershell -command -``
+    over stdin. Without a final newline the console never flushes the last
+    statement (the JSON reply), so a small folder ended in a 210 s
+    silent_timeout with a 17-byte result. The newline is load-bearing.
+    """
+    script = pc_search_command(roots=ROOTS, query="release", mode="name")
+    assert script.endswith("\n")
+    assert not script.endswith("\n\n")
+    # The final statement is the JSON projection the parser needs.
+    assert script.splitlines()[-1].strip().endswith("| ConvertTo-Json -Compress -Depth 5")

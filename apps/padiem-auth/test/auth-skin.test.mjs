@@ -10,6 +10,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject } from '../worker.mjs';
 import { withProductBoundary } from './authority-products.mjs';
+import { passPasswordAgeGate } from './google-age-gate.mjs';
 import { AUTH_BRANDS, resolveBrand, resolveLang, resolveTheme } from '../skin.mjs';
 import { AUTH_SKIN_ASSETS } from '../skin-assets.mjs';
 
@@ -89,10 +90,13 @@ async function setup() {
     const match = html.match(new RegExp(actionPath.replace('/', '\\/') + '\\?state=([A-Za-z0-9._%-]+)'));
     return { response, html, cookie: response.headers.get('set-cookie')?.split(';')[0] || '', formState: match ? decodeURIComponent(match[1]) : '' };
   }
-  const postForm = (actionPath, formState, cookie, fields, headers = {}) => app.fetch(new Request(
-    `${url}${actionPath}?state=${encodeURIComponent(formState)}`,
-    { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie, ...headers }, body: new URLSearchParams(fields) },
-  ));
+  const postForm = async (actionPath, formState, cookie, fields, headers = {}) => {
+    const raw = await app.fetch(new Request(
+      `${url}${actionPath}?state=${encodeURIComponent(formState)}`,
+      { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie, ...headers }, body: new URLSearchParams(fields) },
+    ));
+    return passPasswordAgeGate((r) => app.fetch(r), raw, cookie, url);
+  };
   return { app, begin, postForm, stateObjects: objects };
 }
 

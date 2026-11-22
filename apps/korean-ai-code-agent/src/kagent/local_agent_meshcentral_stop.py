@@ -133,3 +133,17 @@ def _end_dispatch_job(
         return False
     phase(phases.CANCEL_KILL)
     return True
+
+
+def console_script_terminator(script: str) -> str:
+    """Ensure every multiline console script ends with exactly two newlines.
+
+    The agent feeds ``--run`` scripts to ``powershell -noprofile -command -``
+    over stdin and closes at EOF. Measured on COM1 (2026-11-22, SYSTEM task,
+    exact bytes): a script with multi-line blocks emits ZERO bytes with 0 or 1
+    trailing newlines and the full envelope with 2. A single-line script needs
+    none. Idempotent, so every entry point can apply it centrally.
+    """
+    if "\n" not in script:
+        return script
+    return script.rstrip("\n") + "\n\n"

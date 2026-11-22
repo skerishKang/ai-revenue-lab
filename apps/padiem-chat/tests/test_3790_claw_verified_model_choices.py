@@ -1,8 +1,15 @@
 """#3790: dynamic Claw model selection uses B14's already registered/ready authority."""
-from pathlib import Path
 from starlette.applications import Starlette
 from starlette.routing import Route
 from starlette.testclient import TestClient
+
+from _support.verified_model_choices import (
+    choice_guard_facts,
+    index_ids_and_scripts,
+    js_view,
+    server_facts,
+)
+
 from app import auth_routes
 from app.owner_model_preview_routes import claw_verified_model_choices
 
@@ -111,32 +118,44 @@ def test_missing_or_invalid_catalog_fails_closed(monkeypatch):
 
 
 def test_grade_only_choice_replaces_claw_model_selector():
-    root = Path(__file__).resolve().parents[1] / "static"
-    html = (root / "index.html").read_text(encoding="utf-8")
-    app = (root / "app.js").read_text(encoding="utf-8")
-    chooser = (root / "claw-verified-model-choice.js").read_text(encoding="utf-8")
-    assert 'id="clawVerifiedModelSelect"' not in html
-    assert 'id="clawModelIdInput"' not in html
-    assert 'id="clawVerifiedModelHint"' in html
-    assert 'claw-verified-model-choice.js' in html
-    assert 'payload.model_id = contextSnapshot.selectedModelId' not in app
-    assert 'scope==="b14_tier_ready"' in chooser
-    assert 'data.tier===tier&&typeof data.available==="boolean"' in chooser
-    assert '!Object.prototype.hasOwnProperty.call(data,"model_choices")' in chooser
-    assert 'model_id' not in chooser
+    page = index_ids_and_scripts()
+    assert "clawVerifiedModelSelect" not in page["ids"]
+    assert "clawModelIdInput" not in page["ids"]
+    assert "clawVerifiedModelHint" in page["ids"]
+    assert "./claw-verified-model-choice.js" in page["scripts"]
+    app = js_view("app.js")
+    assert not any(
+        target == "payload.model_id" and "contextSnapshot.selectedModelId" in value
+        for target, value in app["assignments_full"].items()
+    )
+    chooser = js_view("claw-verified-model-choice.js")
+    assert ("data.scope", "b14_tier_ready") in chooser["state_comparisons"]
+    guard = choice_guard_facts("claw-verified-model-choice.js")
+    assert guard["tier_matches_query"] is True
+    assert guard["available_is_boolean"] is True
+    assert any(
+        "hasOwnProperty" in callee and '"model_choices"' in args
+        for callee, args in chooser["call_args"]
+    )
+    assert "model_id" not in chooser["identifiers"] | chooser["string_literals"]
 
 
 def test_login_refresh_and_logout_keep_status_without_stale_model_choice():
-    base = Path(__file__).resolve().parents[1] / "static"
-    app = (base / "app.js").read_text(encoding="utf-8")
-    js = (base / "claw-verified-model-choice.js").read_text(encoding="utf-8")
-    session = (base / "auth-session.js").read_text(encoding="utf-8")
+    js = js_view("claw-verified-model-choice.js")
+    session = js_view("auth-session.js")
     #7216 R5 step 4: this contract moved into chat-auth-module.js.
-    module = (base / "chat-auth-module.js").read_text(encoding="utf-8")
-    assert "window.PadiemAuthSession.update(deps.authState, deps.authViewEpoch)" in module
-    assert 'new CustomEvent("padiem:auth-state"' in session
-    assert 'window.addEventListener("padiem:auth-state"' in js
-    assert 'manual.value=""' not in js
+    module = js_view("chat-auth-module.js")
+    assert any(
+        "PadiemAuthSession.update" in callee
+        and args == "deps.authState, deps.authViewEpoch"
+        for callee, args in module["call_args"]
+    )
+    assert any(
+        callee == "CustomEvent" and args.startswith('"padiem:auth-state"')
+        for callee, args in session["call_args"]
+    )
+    assert ("window", "padiem:auth-state") in js["event_listeners"]
+    assert "manual.value" not in js["assignments_full"]
 
 
 def test_admin_model_choices_require_server_verified_admin(monkeypatch):
@@ -176,23 +195,22 @@ def test_admin_model_choices_require_server_verified_admin(monkeypatch):
 
 
 def test_claw_admin_exact_model_is_server_owned():
-    root = Path(__file__).resolve().parents[1] / "app"
-    source = (root / "claw_general_routes.py").read_text(encoding="utf-8")
+    routes = server_facts("claw_general_routes")
     # #5223: the administrator lane and its denial are resolved by the ONE
     # shared grade authority, so the lane's own copy of the admin comparison
     # and the admin denial moved to that authority.  The ownership properties
     # are unchanged: the lane is still selected on the server, the admin
     # denial is still the operator admin authority, and the browser still
     # cannot pick the administrator model.
-    assert 'admin_lane = grade.admin_lane' in source
-    assert 'await claw_execution_tier_denial(request, user_id, grade)' in source
-    assert 'declared_model_id != claw_route.model_id' in source
-    assert 'claw_route = SimpleNamespace(' in source
-    assert 'claw_route = await resolve_claw_tier_model(request, requested_tier)' in source
-    assert 'if admin_lane:' in source
-    assert 'if not claw_route.ok or not claw_route.model_id:' in source
+    assert ("admin_lane", "grade.admin_lane") in routes["assignments"]
+    assert ("claw_execution_tier_denial", "request, user_id, grade") in routes["calls"]
+    assert "declared_model_id != claw_route.model_id" in routes["comparisons"]
+    assert ("claw_route", "SimpleNamespace(...)") in routes["assignments"]
+    assert ("claw_route", "resolve_claw_tier_model(...)") in routes["assignments"]
+    assert "admin_lane" in routes["if_conditions"]
+    assert "not claw_route.ok or not claw_route.model_id" in routes["if_conditions"]
 
     # The shared authority is the one that still refuses a forged admin.
-    shared = (root / "member_grade_access.py").read_text(encoding="utf-8")
-    assert 'if grade.admin_lane' in shared
-    assert 'await selected_admin_denial(request, user_id)' in shared
+    shared = server_facts("member_grade_access")
+    assert "grade.admin_lane" in shared["if_conditions"]
+    assert ("selected_admin_denial", "request, user_id") in shared["calls"]

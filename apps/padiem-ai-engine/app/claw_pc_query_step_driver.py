@@ -473,6 +473,15 @@ _PC_REFUSAL_HINTS = {
         "이미지가 아닌 이진 파일은 pc_read로 읽지 않습니다. "
         "텍스트 파일이나 이미지 파일로 다시 시도하세요."
     ),
+    # #8037: the share command's own 20 s bound closed it. The network share
+    # could not be reached; this is not a path-rule violation.
+    "pc_share_unavailable": (
+        "네트워크 공유 폴더에 연결할 수 없어요. "
+        "회사 네트워크에 연결돼 있는지 확인해 주세요. "
+        "(Can't reach the network share folder. "
+        "Please check that you're connected to your company network.) "
+        "실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."
+    ),
 }
 #: The PC ran, but the answer never came back to this lane.
 _PC_REFUSAL_RESULT_HINT = (
@@ -498,6 +507,7 @@ _PC_RESULT_LOOKUP_STAGES = frozenset({
 _PC_PATH_RULE_STAGES = frozenset({
     "pc_file_arguments_invalid",
     "pc_files_path_invalid",
+    "pc_path_not_found",
     "pc_files_root_unavailable",
     "pc_files_search_invalid",
     "pc_chunk_arguments_invalid",
@@ -624,7 +634,7 @@ def _validate_pc_file_arguments(arguments):
 _PC_STEP_ARGUMENT_KEYS: dict[str, set[str]] = {
     # A listing may name an optional depth (1..3): its absence is the same
     # depth-1 page it always was, and the value is re-validated by the route.
-    "list": {"path", "depth"},
+    "list": {"path", "depth", "offset"},
     "read": {"path"},
     "delete": {"path"},
     # mode is optional: absent mode is the whole-file write this lane always
@@ -654,9 +664,14 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
         if set(arguments) == allowed - {"replace_all"}:
             arguments = {**arguments, "replace_all": False}
     if (op == "list" and isinstance(arguments, Mapping) and allowed is not None
-            and "depth" not in arguments):
-        # A listing without a depth is the depth-1 page it always was.
-        arguments = {**arguments, "depth": 1}
+            and ("depth" not in arguments or "offset" not in arguments)):
+        # A listing without a depth or offset is the depth-1 first page it
+        # always was; absent keys stay off the signed wire. A caller-named
+        # depth is kept, never overwritten by the default.
+        if "depth" not in arguments:
+            arguments = {**arguments, "depth": 1}
+        if "offset" not in arguments:
+            arguments = {**arguments, "offset": 0}
     if op == "write" and isinstance(arguments, Mapping) and allowed is not None:
         # The write mode is optional; its absence is the whole-file write this
         # lane always had, so the wire for that call stays byte for byte what
@@ -671,6 +686,15 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
             or isinstance(arguments.get("depth"), bool) or not 1 <= arguments["depth"] <= 3):
         raise ToolHandlerError(
             "pc_list_depth_invalid", "A listing depth is an integer from 1 to 3",
+        )
+    if op == "list" and (type(arguments.get("offset")) is not int
+            or isinstance(arguments.get("offset"), bool) or not 0 <= arguments["offset"] <= 10_000):
+        raise ToolHandlerError(
+            "pc_list_offset_invalid", "A listing offset is an integer from 0 to 10000",
+        )
+    if op == "list" and arguments["depth"] > 1 and arguments["offset"] != 0:
+        raise ToolHandlerError(
+            "pc_list_offset_invalid", "A deep walk is one bounded answer, not a page",
         )
     path = _validate_pc_file_arguments({"path": arguments.get("path")})
     extra: dict[str, object] = {}
@@ -717,6 +741,8 @@ def _validate_pc_step_arguments(op: str, arguments) -> tuple[str, dict[str, str]
         # Only a caller-named depth crosses: the default 1 stays out of the
         # dispatch payload so an undepth dispatch is byte-identical to before.
         extra["depth"] = arguments["depth"]
+    if op == "list" and arguments.get("offset", 0) != 0:
+        extra["offset"] = arguments["offset"]
     return path, extra
 
 
@@ -855,6 +881,19 @@ async def _pc_full_output(*, final, service, request_factory, secret, owner, cod
     return "".join(chunks)
 
 
+def _pc_share_unavailable_output(output: str) -> bool:
+    """#8037: the closed share-unavailable verdict, exactly the reviewed shape."""
+    try:
+        parsed = json.loads(output)
+    except (TypeError, ValueError):
+        return False
+    return (
+        isinstance(parsed, dict)
+        and parsed.get("ok") is False
+        and parsed.get("error") == "pc_share_unavailable"
+    )
+
+
 def _pc_list_folder_prefix(
     list_path: str, granted_drives: tuple[str, ...] = (),
 ) -> str | None:
@@ -879,10 +918,8 @@ def _pc_list_folder_prefix(
     drive = _DRIVE_ROOT_SHAPE.fullmatch(text.rstrip("/"))
     if drive is not None and drive.group(1).upper() in granted_drives:
         rest = drive.group("rest") or ""
-        parts = [part for part in rest.split("/") if part]
-        if any(part in {".", ".."} or ":" in part for part in parts):
-            return None
-        if rest and (rest.startswith("/") or rest.endswith("/")):
+        parts = [part for part in rest.split("/") if part and part != "."]
+        if any(part == ".." or ":" in part for part in parts):
             return None
         return drive.group(1).upper() + ("/" + "/".join(parts) + "/" if parts else "/")
     if text.startswith("/") or (len(text) >= 2 and text[1] == ":"):
@@ -925,8 +962,38 @@ def _pc_path_against_granted_drive(path: str, context: Any) -> str | None:
     drive = match.group(1).upper()
     if drive not in _pc_granted_drives(context):
         return None
-    rest = (match.group("rest") or "").strip("/")
-    return drive + ("/" + rest if rest else "")
+    # `D:/.` and `D:/./CGI` are the drive root and a path below it. Drop the
+    # harmless dot segments; leave `..` in place so the projection below still
+    # refuses an attempt to walk above the grant.
+    parts = [part for part in (match.group("rest") or "").split("/")
+             if part and part != "."]
+    return drive + ("/" + "/".join(parts) if parts else "")
+
+
+async def _pc_normalize_path(
+    value: str, *, owner, service, request_factory, secret, context_box, granted,
+):
+    """Fold a signed absolute folder path to the registered-relative spelling.
+
+    Shared by the list and search handlers so both accept the same external
+    connector paths. A relative path is unchanged; an absolute one is folded
+    against the owner's granted drives/roots from one signed context read. A
+    path outside those roots is returned unchanged and the caller's folder
+    prefix check refuses it — no OS guessing, no widening.
+    """
+    text = value.strip().replace("\\", "/")
+    if not (text.startswith("/") or (len(text) >= 2 and text[1] == ":")):
+        return value, granted
+    if "context" not in context_box:
+        context_box["context"] = await _signed_files_call(
+            service=service, request_factory=request_factory, secret=secret,
+            owner=owner, mode="context", payload={},
+        )
+    ctx = context_box["context"]
+    current = _pc_granted_drives(ctx)
+    drive = _pc_path_against_granted_drive(value, ctx)
+    return (drive if drive is not None else
+            _pc_path_against_verified_roots(value, ctx)), current
 
 
 def _pc_list_entries_with_paths(list_path: str, entries, granted_drives: tuple[str, ...] = ()):
@@ -1021,24 +1088,14 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
         context_box: dict[str, dict] = {}
 
         async def _resolve(value: str) -> tuple[str, tuple[str, ...]]:
-            text = value.strip().replace("\\", "/")
-            if not (text.startswith("/") or (len(text) >= 2 and text[1] == ":")):
-                return value, granted
             # One context read per step, shared by the path and the destination:
             # two granted-drive lookups would let a move address a drive the
-            # first lookup never saw.
-            if "context" not in context_box:
-                context_box["context"] = await _signed_files_call(
-                    service=service, request_factory=request_factory, secret=secret,
-                    owner=owner, mode="context", payload={},
-                )
-            ctx = context_box["context"]
-            current = _pc_granted_drives(ctx)
-            drive = _pc_path_against_granted_drive(value, ctx)
-            # A granted drive is the root itself, in whatever spelling the model
-            # repeated; a granted folder keeps the existing absolute-prefix strip.
-            return (drive if drive is not None else
-                    _pc_path_against_verified_roots(value, ctx)), current
+            # first lookup never saw. The folder prefix check below still
+            # refuses anything outside the owner's registered roots.
+            return await _pc_normalize_path(
+                value, owner=owner, service=service, request_factory=request_factory,
+                secret=secret, context_box=context_box, granted=granted,
+            )
 
         if resume_dispatch is None:
             path, granted = await _resolve(path)
@@ -1340,6 +1397,13 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                         secret=secret, owner=owner, code="pc_list",
                         limit=PC_PAGE_OUTPUT_MAX_BYTES,
                     )
+                    if _pc_share_unavailable_output(full):
+                        # #8037: the share bound closed the listing. A named
+                        # closed code, never a generic execution failure.
+                        raise ToolHandlerError(
+                            "pc_share_unavailable",
+                            "The network share could not be reached",
+                        )
                     try:
                         parsed = json.loads(full)
                     except (TypeError, ValueError) as exc:
@@ -1347,6 +1411,13 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                             "pc_list_output_invalid",
                             "PC folder listing is not valid JSON",
                         ) from exc
+                    # A missing folder is reported by the PC as a closed verdict,
+                    # not as a broken JSON page: keep "없음" distinct from an
+                    # output the engine could not parse at all.
+                    if isinstance(parsed, dict) and parsed.get("error") == "path_not_found":
+                        raise ToolHandlerError(
+                            "pc_path_not_found", "The PC folder does not exist",
+                        )
                     # The wire command answers one page: {offset, total,
                     # has_more, items}. An array, a bare row, null and the older
                     # wrapped {ok,entries} shape are still accepted so an older
@@ -1477,6 +1548,11 @@ def _pc_search_projection(output: str, *, query: str, mode: str) -> dict[str, An
         raise ToolHandlerError(
             "pc_search_output_invalid", "PC search result is not valid JSON",
         ) from exc
+    if _pc_share_unavailable_output(output):
+        # #8037: the share bound closed the search before any row was produced.
+        raise ToolHandlerError(
+            "pc_share_unavailable", "The network share could not be reached",
+        )
     entries = parsed.get("entries") if isinstance(parsed, dict) else None
     engine = parsed.get("engine") if isinstance(parsed, dict) else None
     office = parsed.get("office") if isinstance(parsed, dict) else None
@@ -1537,6 +1613,13 @@ def _pc_search_projection(output: str, *, query: str, mode: str) -> dict[str, An
             # A text-file match start: the model can read that part directly.
             row["byte_offset"] = byte_offset
         rows.append(row)
+    if not query:
+        # A job-id continuation carries no query. The PC's own bounded result
+        # echoes the original search text; use that echo instead of asking
+        # the caller to repeat an argument the closed resume shape forbids.
+        echoed = parsed.get("query")
+        query = (echoed if isinstance(echoed, str) and 0 < len(echoed) <= 512
+                 and not any(ord(ch) < 32 for ch in echoed) else "")
     result = {
         "ok": True, "query": query, "mode": mode, "engine": engine,
         "office": office,
@@ -1567,6 +1650,7 @@ def _make_pc_search_handler(
     """
 
     async def handler(arguments):
+        handler_started = time.monotonic()
         owner = _PC_QUERY_OWNER.get()
         if (
             not isinstance(owner, tuple) or len(owner) != 4
@@ -1576,47 +1660,76 @@ def _make_pc_search_handler(
             raise ToolHandlerError(
                 "pc_files_admission_required", "Verified owner run is required",
             )
-        try:
-            query, search_path = _pc_search_query(arguments)
-        except ToolHandlerError:
-            print("pc_files_chat_call mode=arguments stage=pc_search_arguments_invalid",
-                  flush=True)
-            raise
-        tool_call_ref = _pc_file_call_ref(
-            owner[1], tool_id, search_mode + "\n" + query,
-        )
-        dispatched = await _signed_files_call(
-            service=service, request_factory=request_factory, secret=secret,
-            owner=owner, mode="dispatch",
-            payload={
-                "op": "search", "path": search_path or ".", "query": query,
-                "search_mode": search_mode, "tool_call_ref": tool_call_ref,
-            },
-        )
-        dispatch = dispatched.get("dispatch")
-        if (
-            not isinstance(dispatch, dict)
-            or dispatch.get("run_id") != owner[1]
-            or dispatch.get("kind") != "command"
-        ):
-            raise ToolHandlerError(
-                "pc_files_dispatch_mismatch",
-                "PC search dispatch correlation failed",
+        resume_dispatch = _pc_files_resume_dispatch(arguments)
+        if resume_dispatch is None:
+            try:
+                query, search_path = _pc_search_query(arguments)
+            except ToolHandlerError:
+                print("pc_files_chat_call mode=arguments stage=pc_search_arguments_invalid",
+                      flush=True)
+                raise
+            # #8048: the external connector may name the search folder as an
+            # absolute path inside an owner's registered drive. Fold it to the
+            # same registered-relative spelling the list handler dispatches, so
+            # both routes accept the same folder shapes. A path outside the
+            # registered roots stays absolute and is refused by the prefix
+            # check below — no widening of the owner's grant.
+            search_path, search_granted = await _pc_normalize_path(
+                search_path, owner=owner, service=service,
+                request_factory=request_factory, secret=secret,
+                context_box={}, granted=(),
             )
-        dispatch_id = dispatch.get("dispatch_id")
-        if not isinstance(dispatch_id, str) or not dispatch_id:
-            raise ToolHandlerError(
-                "pc_files_dispatch_missing",
-                "PC search dispatch identifier unavailable",
+            if _pc_list_folder_prefix(search_path, search_granted) is None:
+                print("pc_files_chat_call mode=arguments stage=pc_search_path_invalid",
+                      flush=True)
+                raise ToolHandlerError(
+                    "pc_files_path_invalid", "A registered relative path is required",
+                )
+            tool_call_ref = _pc_file_call_ref(
+                owner[1], tool_id, search_mode + "\n" + query,
             )
+            dispatched = await _signed_files_call(
+                service=service, request_factory=request_factory, secret=secret,
+                owner=owner, mode="dispatch",
+                payload={
+                    "op": "search", "path": search_path or ".", "query": query,
+                    "search_mode": search_mode, "tool_call_ref": tool_call_ref,
+                },
+            )
+            dispatch = dispatched.get("dispatch")
+            if (
+                not isinstance(dispatch, dict)
+                or dispatch.get("run_id") != owner[1]
+                or dispatch.get("kind") != "command"
+            ):
+                raise ToolHandlerError(
+                    "pc_files_dispatch_mismatch",
+                    "PC search dispatch correlation failed",
+                )
+            dispatch_id = dispatch.get("dispatch_id")
+            if not isinstance(dispatch_id, str) or not dispatch_id:
+                raise ToolHandlerError(
+                    "pc_files_dispatch_missing",
+                    "PC search dispatch identifier unavailable",
+                )
+        else:
+            # A continuation stages nothing. The dispatch id is the one the
+            # first call handed back, and every ownership/result check below
+            # still runs on it. The query is echoed by the PC result itself.
+            dispatch_id, query, search_path = resume_dispatch, "", ""
         emit_progress = _pc_progress_emitter(owner, dispatch_id, "command")
         _PC_CALL_PROGRESS.set(emit_progress)
         emit_progress("accepted")
+        # #8048: bound the first wait like every other read-only pc_* tool. The
+        # search used to poll forever, holding one /api/mcp request for the whole
+        # PC command (230 s → connector 502). After the budget, hand the dispatch
+        # back as running with a job_id; the same tool resumes with that id.
+        wait_deadline = handler_started + _pc_files_wait_seconds()
         import asyncio
 
         poll_seconds = 0.5
         while True:
-            await asyncio.sleep(poll_seconds)
+            await asyncio.sleep(max(0.0, min(poll_seconds, wait_deadline - time.monotonic())))
             poll_seconds = min(poll_seconds * 2, _PC_FILES_POLL_SECONDS_CAP)
             observed = await _signed_files_call(
                 service=service, request_factory=request_factory,
@@ -1709,6 +1822,13 @@ def _make_pc_search_handler(
                     "pc_files_result_unknown",
                     "PC file result state unknown; do not replay",
                 )
+            if time.monotonic() >= wait_deadline:
+                # First call hands back a resumable job_id; a resumed call keeps
+                # waiting with a fresh budget so a polling client still gets its
+                # terminal result instead of an endless job_id loop.
+                if resume_dispatch is None:
+                    return _pc_files_running(dispatch_id, search_path, tool_id)
+                wait_deadline = time.monotonic() + _pc_files_wait_seconds()
 
     return handler
 
@@ -1758,6 +1878,12 @@ def _pc_chunk_projection(
             "pc_chunk_output_invalid", "PC range answer is not valid JSON",
         ) from exc
     if not isinstance(parsed, dict) or parsed.get("ok") is not True:
+        if _pc_share_unavailable_output(output):
+            # #8037: the share bound closed the range read — the one closed
+            # code, never the pc_chunk_<error> spelling of an ordinary refusal.
+            raise ToolHandlerError(
+                "pc_share_unavailable", "The network share could not be reached",
+            )
         code = parsed.get("error") if isinstance(parsed, dict) else None
         bounded = code if isinstance(code, str) and re.fullmatch(
             r"[a-z0-9_]{1,40}", code,

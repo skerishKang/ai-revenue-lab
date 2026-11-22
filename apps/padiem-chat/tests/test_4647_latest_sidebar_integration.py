@@ -1,14 +1,31 @@
 """#4647: merge existing meeting workbench into current B62 sidebar without regressions."""
-from pathlib import Path
+from __future__ import annotations
+
 import re
 
-STATIC=Path(__file__).resolve().parents[1]/"static"
-INDEX=(STATIC/"index.html").read_text(encoding="utf-8")
-APP=(STATIC/"app.js").read_text(encoding="utf-8")
-NAV=(STATIC/"chat-nav-module.js").read_text(encoding="utf-8")
-SCROLL=(STATIC/"sidebar-history-scroll.css").read_text(encoding="utf-8")
-CSS=(STATIC/"meeting-capture.css").read_text(encoding="utf-8")
-CAPTURE=(STATIC/"meeting-capture.js").read_text(encoding="utf-8")
+from _support.latest_sidebar import (
+    css_facts,
+    css_media_view,
+    function_param_defaults,
+    handler_view,
+    index_view,
+    js_view,
+)
+
+from app import worker_config
+
+
+def _desktop_rules():
+    return css_media_view("sidebar-history-scroll.css")["(min-width: 921px)"]
+
+
+def _declarations_for(fragment: str) -> dict[str, str]:
+    rules = [
+        rule for rule in _desktop_rules()
+        if any(fragment in selector for selector in rule.selectors)
+    ]
+    assert rules, fragment
+    return dict(rules[0].declarations)
 
 
 def test_owner_exact_menu_order_reuses_existing_chat_claw_search_buttons():
@@ -17,111 +34,121 @@ def test_owner_exact_menu_order_reuses_existing_chat_claw_search_buttons():
     #7780: 아래 계정은 바깥 새 소식·의견 보내기·사용 안내 뒤에 프로필 메뉴
     (설정·앱 연결·Padiem Home)가 계정 안에 있다. The meeting row left the
     sidebar: its trigger lives in the Util tab's meeting tool screen now."""
-    ids=("newChatButton", "sidebarSearchButton", "clawNavButton", "utilNavButton",
-         "calendarNavButton", "automationNavButton", "filesNavButton",
-         "newsButton", "feedbackButton", "helpNavLink", "settingsButton", "connectorsNavButton")
-    positions=[INDEX.index(f'id="{key}"') for key in ids]
-    assert positions==sorted(positions)
-    assert INDEX.index('class="home-link"') > INDEX.index('id="connectorsNavButton"')
+    page = index_view()
+    ids = ("newChatButton", "sidebarSearchButton", "clawNavButton", "utilNavButton",
+           "calendarNavButton", "automationNavButton", "filesNavButton",
+           "newsButton", "feedbackButton", "helpNavLink", "settingsButton", "connectorsNavButton")
+    positions = [page["position"][key] for key in ids]
+    assert positions == sorted(positions)
+    assert page["position"]["home-link"] > page["position"]["connectorsNavButton"]
     for id_ in ids:
-        assert INDEX.count(f'id="{id_}"')==1
+        assert page["id_counts"][id_] == 1
     # The meeting row left the sidebar; its trigger is parked once in the Util
     # view's capture host (same element, same behavior).
-    assert INDEX.count('id="meetingNavButton"')==1
-    assert INDEX.index('id="meetingNavButton"') > INDEX.index('id="utilAppRoot"')
-    assert INDEX.count('class="sidebar-chat-claw-group"') == 1
-    assert 'id="sidebarCollapseButton"' in INDEX
-    assert 'id="historyToggleButton"' in INDEX
+    assert page["id_counts"]["meetingNavButton"] == 1
+    assert page["position"]["meetingNavButton"] > page["position"]["utilAppRoot"]
+    assert page["class_counts"]["sidebar-chat-claw-group"] == 1
+    assert page["id_counts"]["sidebarCollapseButton"] == 1
+    assert page["id_counts"]["historyToggleButton"] == 1
 
 
 def test_meeting_workspace_is_inside_shared_main_not_outside_app_shell():
     # #4813 draft misplaced section AFTER </main> / </div> and would not
     # match .app-shell[data-state=meeting] selectors. Prevent reintroduction.
-    view=INDEX.index('id="meetingView"')
-    main_open=INDEX.index('<main class="main-panel">')
-    main_close=INDEX.index('    </main>')
-    assert main_open < view < main_close
-    assert 'id="meetingNavButton"' in INDEX
-    for target in ("meetingTranscript","meetingStart","meetingStop",
-                   "meetingDownloadAudio","meetingDownloadText",
-                   "meetingSaveAudioDrive","meetingSaveTextDrive","meetingDraftInClaw"):
-        assert INDEX.count(f'id="{target}"')==1
+    page = index_view()
+    assert page["in_main_panel"]["meetingView"] is True
+    assert page["id_counts"]["meetingNavButton"] == 1
+    for target in ("meetingTranscript", "meetingStart", "meetingStop",
+                   "meetingDownloadAudio", "meetingDownloadText",
+                   "meetingSaveAudioDrive", "meetingSaveTextDrive", "meetingDraftInClaw"):
+        assert page["id_counts"][target] == 1
     # The view must show only on its own page. That condition moved into the
     # page contract table (the meeting entry names its panel) and one shared
-    # loop hides every panel the current page does not own, which keeps the
-    # guarantee without a per-product if/else.
-    assert 'panelId: "meetingView"' in APP
+    # loop hides every panel the current page does not own.
+    nav = js_view("chat-nav-module.js")
+    assert ("panelId", "meetingView") in nav["property_pairs"]
     # R5 A10: the shared panel-hide loop and the meeting-open listener moved to
     # chat-nav-module.js; app.js keeps the wire calls.
-    assert "panel.hidden = entry.panelId !== page.panelId" in NAV
-    assert 'padiem:meeting-open' in NAV
-    assert 'navModule().wireNavEntryListeners();' in APP
-    assert 'data-state="meeting"' in CSS
-    assert 'overflow-y: auto;' in CSS
+    assert nav["assignments_full"].get("panel.hidden") == "entry.panelId !== page.panelId"
+    assert "padiem:meeting-open" in nav["string_literals"]
+    app = js_view("app.js")
+    assert any("wireNavEntryListeners" in callee for callee, _args in app["call_args"])
+    sheet_css = css_facts("meeting-capture.css")
+    assert any('data-state="meeting"' in selector for selector in sheet_css["selectors"])
+    assert ("overflow-y", "auto") in sheet_css["declarations"]
 
 
 def test_meeting_interception_does_not_fork_the_shared_composer_submit():
     # #3531: the shared composer handler must stay a plain general-chat submit
-    # with no shell-state branch. #4905 originally inserted
-    # `shell.dataset.state === "claw" && ...tryOpenFromClaw(...)` straight into
-    # that handler, which broke test_3531_claw_general_routing. The meeting
-    # module now owns the interception with its own capture-phase listener.
-    handler = APP[APP.index('form.addEventListener("submit"'):]
-    handler = handler[:handler.index("\n  });")]
-    assert "submitPrompt(input.value)" in handler
-    assert "dataset.state" not in handler
-    assert "PadiemMeetingCapture" not in handler
-    assert "interceptComposerSubmit();" in CAPTURE
-    assert 'doc.getElementById("composerForm")' in CAPTURE
-    assert "stopImmediatePropagation()" in CAPTURE
+    # with no shell-state branch. The meeting module owns the interception with
+    # its own capture-phase listener.
+    handler = handler_view("app.js", 'form.addEventListener("submit"')
+    assert ("submitPrompt", "input.value") in handler["call_args"]
+    assert "dataset.state" not in handler["member_chains"]
+    assert "PadiemMeetingCapture" not in handler["identifiers"]
+    capture = js_view("meeting-capture.js")
+    assert "interceptComposerSubmit" in capture["calls"]
+    assert any(
+        callee.endswith("getElementById") and '"composerForm"' in args
+        for callee, args in capture["call_args"]
+    )
+    assert any(callee.endswith("stopImmediatePropagation") for callee in capture["calls"])
     # The shell-state and intent gates still exist, just inside the meeting module.
-    assert 'shell?.dataset.state !== "claw"' in CAPTURE
-    assert "isMeetingIntent(value)" in CAPTURE
+    assert capture["optional_state_gate"] is True
+    assert any(
+        "isMeetingIntent" in callee and args == "value"
+        for callee, args in capture["call_args"]
+    )
 
 
 def test_single_divider_only_between_project_and_history_preserves_scroll():
-    assert '#historySection:not([hidden])' in SCROLL
-    assert "border-top: 1px solid rgba(230, 240, 250, .20)" in SCROLL
-    assert '#historyList' in SCROLL
-    assert 'overflow-y: auto;' in SCROLL
-    assert '.sidebar-bottom' in SCROLL
-    assert 'margin-top: auto;' in SCROLL
-    assert 'max-height: min(44dvh, 360px);' in SCROLL
+    sheet_css = css_facts("sidebar-history-scroll.css")
+    assert any("#historySection:not([hidden])" in s for s in sheet_css["selectors"])
+    assert ("border-top", "1px solid rgba(230, 240, 250, .20)") in sheet_css["declarations"]
+    assert any("#historyList" in s for s in sheet_css["selectors"])
+    assert ("overflow-y", "auto") in sheet_css["declarations"]
+    assert any(".sidebar-bottom" in s for s in sheet_css["selectors"])
+    assert ("margin-top", "auto") in sheet_css["declarations"]
+    assert ("max-height", "min(44dvh, 360px)") in sheet_css["declarations"]
 
 
 def test_desktop_history_section_can_never_spill_under_the_pinned_account_stack():
-    # #4905 regression, reproduced on real Chromium at 1280x800: the owner-ordered
-    # menus plus the pinned account/home stack exceeded the viewport, so
-    # #historySection (flex: 1 1 0; min-height: 0; overflow: visible) collapsed to
-    # ~34px. Its rows were laid out past the section and painted *underneath*
-    # .sidebar-bottom, which then intercepted every click aimed at a conversation
-    # or project row (conversation-delete and project-delete browser QA timed out).
-    desktop = SCROLL[SCROLL.index("@media (min-width: 921px)"):SCROLL.index("@media (max-width: 920px)")]
-    history_block = re.search(r"#historySection:not\(\[hidden\]\)\s*\{([^}]*)\}", desktop).group(1)
-    assert "overflow: hidden;" in history_block
-    assert "overflow: visible;" not in history_block
-    floor = re.search(r"min-height:\s*(\d+)px;", history_block)
-    assert floor and int(floor.group(1)) >= 120, history_block
-    # The pinned layout is kept while it fits; when it cannot fit, the sidebar
-    # itself scrolls instead of leaving rows under the pinned stack.
-    sidebar_block = re.search(r"\.sidebar\s*\{([^}]*)\}", desktop).group(1)
-    assert "overflow-y: auto !important;" in sidebar_block
-    assert ".sidebar-bottom" in desktop and "margin-top: auto;" in desktop
+    # #4905 regression: the owner-ordered menus plus the pinned account/home
+    # stack exceeded the viewport, so #historySection collapsed and its rows
+    # were painted underneath .sidebar-bottom. The desktop parsed block proves
+    # the section hides overflow, keeps a real height floor, and the sidebar
+    # itself scrolls when the pinned layout cannot fit.
+    history = _declarations_for("#historySection:not([hidden])")
+    assert history.get("overflow") == "hidden"
+    assert history.get("overflow") != "visible"
+    floor = re.search(r"min-height:\s*(\d+)px;", "; ".join(
+        f"{prop}: {value};" for prop, value in history.items()
+    ))
+    assert floor and int(floor.group(1)) >= 120, history
+    sidebar_rules = [
+        rule for rule in _desktop_rules()
+        if "html body .app-shell .sidebar" in rule.selectors
+    ]
+    assert sidebar_rules
+    assert dict(sidebar_rules[0].declarations).get("overflow-y") == "auto !important"
+    assert any(".sidebar-bottom" in s for r in _desktop_rules() for s in r.selectors)
+    assert ("margin-top", "auto") in {
+        prop_value for rule in _desktop_rules() for prop_value in rule.declarations.items()
+    }
 
 
 def test_history_list_remains_the_single_desktop_conversation_scrollport():
-    desktop = SCROLL[SCROLL.index("@media (min-width: 921px)"):SCROLL.index("@media (max-width: 920px)")]
-    list_block = re.search(r"#historyList\s*\{([^}]*)\}", desktop).group(1)
-    assert "overflow-y: auto;" in list_block
-    assert "min-height: 0;" in list_block
+    declarations = _declarations_for("#historyList")
+    assert declarations.get("overflow-y") == "auto"
+    assert declarations.get("min-height") == "0"
 
 
 def test_drive_is_fail_closed_without_registered_host_port():
     from app import meeting_drive_upload_routes as routes
-    from app import app_factory
-    from app import worker_config
+
     assert routes.MEETING_DRIVE_SESSION_PATH == "/api/claw/meeting/drive-upload-session"
-    assert "meeting_drive_upload_session_port=None" in Path(app_factory.__file__).read_text(encoding="utf-8")
+    assert function_param_defaults("app_factory")[("create_app", "meeting_drive_upload_session_port")] == "None"
     assert "https://www.googleapis.com" in worker_config.CONTENT_SECURITY_POLICY
-    assert INDEX.count('src="./meeting-drive-upload.js"')==1
-    assert INDEX.count('src="./meeting-capture.js"')==1
+    page = index_view()
+    assert page["script_srcs"].count("./meeting-drive-upload.js") == 1
+    assert page["script_srcs"].count("./meeting-capture.js") == 1

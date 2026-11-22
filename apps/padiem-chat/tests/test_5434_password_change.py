@@ -7,6 +7,7 @@ that one credential row moves: the account id, the #5118 role rows and every
 other account-owned record stay exactly as they were.
 """
 from __future__ import annotations
+import locale_bundle
 
 import asyncio
 import re
@@ -23,6 +24,7 @@ from app.history import D1HistoryStore, _password_user_id, _user_id
 from app.main import create_app
 from app.password_auth import hash_password, verify_password
 from app.platform_admin_roles import D1PlatformAdminRoleStore
+from _support import password_change_static as change_assets
 
 BASE = "https://chat.example.test"
 ROOT = Path(__file__).resolve().parents[1]
@@ -133,7 +135,7 @@ def seed_db():
         "failed_attempts, locked_until, created_at, updated_at) VALUES (?,?,?,?,?,?,?)",
         (other_uid, "other@example.test", hash_password("other account secret"), 0, None, now, now),
     )
-    db.conn.executescript(ROLE_MIGRATION.read_text(encoding="utf-8"))
+    db.conn.executescript(change_assets.role_migration_source())
     db.conn.execute(
         "INSERT INTO platform_admin_roles(user_id, role, granted_by, created_at, updated_at) "
         "VALUES (?,?,?,?,?)",
@@ -446,8 +448,8 @@ def test_a_google_only_account_has_no_password_to_change():
 def test_the_auth_status_reports_the_account_method():
     db, ids = seed_db()
     app, settings, _ = build_app(db)
-    member_token = create_session_token(settings, ids["member"])
-    google_token = create_session_token(settings, ids["google"])
+    member_token = create_session_token(settings, ids["member"], canonical_session_id="session_test_a")
+    google_token = create_session_token(settings, ids["google"], canonical_session_id="session_test_a")
 
     member = call(app, settings, "GET", "/api/auth/status", token=member_token)
     assert member.status_code == 200
@@ -463,24 +465,26 @@ def test_the_auth_status_reports_the_account_method():
 
 
 def test_the_account_settings_offer_the_change_in_the_served_markup():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
-    assert 'id="passwordChangeOpen"' in html
-    assert 'id="passwordChangeDialog"' in html
-    assert 'id="passwordChangeForm"' in html
-    assert 'name="current_password"' in html
-    assert 'name="new_password"' in html
-    assert re.search(r'id="passwordChangeNew"[^>]*minlength="8"', html)
-    assert re.search(r'id="passwordChangeNew"[^>]*maxlength="128"', html)
+    for element_id in ("passwordChangeOpen", "passwordChangeDialog",
+                       "passwordChangeForm", "passwordChangeCurrent", "passwordChangeNew"):
+        assert change_assets.element(element_id) is not None, element_id
+    current_field = change_assets.element("passwordChangeCurrent")[1]
+    assert current_field["name"] == "current_password"
+    new_field = change_assets.element("passwordChangeNew")[1]
+    assert new_field["name"] == "new_password"
+    assert new_field["minlength"] == "8"
+    assert new_field["maxlength"] == "128"
     # The advanced settings page carries the password block; it stays hidden
     # until the server reports a password account.
-    assert 'id="advancedAccountSection" hidden' in html
-    assert 'id="accountPasswordActions" hidden' in html
-    assert html.index('id="advancedAccountSection"') < html.index('id="passwordChangeOpen"')
+    assert "hidden" in change_assets.element("advancedAccountSection")[1]
+    assert "hidden" in change_assets.element("accountPasswordActions")[1]
+    assert (change_assets.element_index("advancedAccountSection")
+            < change_assets.element_index("passwordChangeOpen"))
 
 
 def test_the_browser_posts_only_the_two_password_fields():
     #7216 R5 step 4: this contract moved into chat-auth-module.js.
-    app_js = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
+    app_js = change_assets.account_module_source()
     payload = re.search(
         r'passwordAuthRequest\("/api/auth/password/change",\s*\{(?P<body>.*?)\}\)',
         app_js,
@@ -497,13 +501,13 @@ def test_the_browser_posts_only_the_two_password_fields():
 def test_the_browser_refuses_a_new_password_equal_to_the_current_one():
     """The same-password guard lives in the browser, so the server stays cheap."""
     #7216 R5 step 4: this contract moved into chat-auth-module.js.
-    app_js = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
+    app_js = change_assets.account_module_source()
     assert "password-change-unchanged" in app_js
     assert "newPassword === currentPassword" in app_js
 
 
 def test_both_locales_define_the_same_password_change_copy():
-    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    counts = change_assets.locale_key_counts()
     for key in (
         "account-title",
         "password-change-open",
@@ -517,4 +521,4 @@ def test_both_locales_define_the_same_password_change_copy():
         "password-change-incomplete",
         "password-change-done",
     ):
-        assert locale.count(f'"{key}"') == 2, key
+        assert counts.get(key) == 2, key

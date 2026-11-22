@@ -16,7 +16,9 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
+import re
 
 import pytest
 
@@ -34,26 +36,38 @@ from test_7601_mcp_read_tools import (
 )
 
 
+def _carried(command: str) -> list[str]:
+    return [
+        base64.b64decode(blob, validate=True).decode("utf-8")
+        for blob in re.findall(r"FromBase64String\('([A-Za-z0-9+/=]+)'\)", command)
+    ]
+
+
 # ── 1. 선언: 선택 인자, 기본값, 상한 ──────────────────────────────────────
 
 
 def test_pc_search_gained_one_optional_boolean():
     schema = MCP_TOOLS["pc_search"]["inputSchema"]["properties"]
-    assert {"path", "query", "recursive", "device"} == set(schema)
+    assert {"path", "query", "recursive", "job_id", "device"} == set(schema)
     recursive = schema["recursive"]
     assert recursive["type"] == "boolean"
     assert recursive["default"] is False
-    # 필수 인자는 늘지 않았다.
-    assert MCP_TOOLS["pc_search"]["inputSchema"]["required"] == ["path", "query"]
+    # A search may also continue by job id; the validator, not the schema,
+    # decides whether the job id or a path+query pair was supplied.
+    assert schema["job_id"]["type"] == "string"
+    assert MCP_TOOLS["pc_search"]["inputSchema"]["required"] == []
 
 
 def test_pc_list_gained_one_optional_depth_integer():
     schema = MCP_TOOLS["pc_list"]["inputSchema"]["properties"]
-    assert {"path", "depth", "job_id", "device"} == set(schema)
+    assert {"path", "depth", "offset", "job_id", "device"} == set(schema)
     depth = schema["depth"]
     assert depth["type"] == "integer"
     assert depth["minimum"] == 1 and depth["maximum"] == 3
     assert depth["default"] == 1
+    offset = schema["offset"]
+    assert offset["type"] == "integer" and offset["minimum"] == 0
+    assert offset["maximum"] == 10_000
     assert MCP_TOOLS["pc_list"]["inputSchema"]["required"] == []
 
 
@@ -264,7 +278,7 @@ def test_the_depth_two_command_walks_two_levels_with_one_bounded_answer():
     # 깊이 걷기는 한 번의 응답이므로 offset 페이지가 없다.
     assert "-Skip" not in script
     # 요청 경로의 바로가기 검사는 depth 걷기에서도 맨 앞에 유지된다.
-    assert script.startswith("$guardRoot = ")
+    assert script.startswith("$folder = ")
 
 
 def test_the_recursive_command_uses_the_existing_search_constants():
@@ -308,9 +322,11 @@ def test_a_hostile_search_term_stays_a_quoted_literal(monkeypatch, query):
     assert gateway["tool_id"] == "claw.pc.search_files"
     script = pc_search_command(
         roots=[{"label": "work", "path": r"E:\work"}], query=query, mode="name")
-    # 공통 따옴표 함수가 모든 작은따옴표를 두 배로 만든다: 검색어는 글자로만 매칭된다.
-    assert "'" + query.replace("'", "''") in script
-    assert "Remove-Item -Recurse -Force E:\\work; " + "'" not in script.replace("'" + query.replace("'", "''"), "")
+    # #7973/#7974: the query is carried as base64 of its UTF-8 bytes, never as
+    # command text, so no quote or subexpression can become a statement.
+    assert query in _carried(script)
+    assert script.isascii()
+    assert "Remove-Item -Recurse -Force E:\\work; " not in script
 
 
 # ── 8. 선택 인자는 그 도구·그 키에만 열려 있다 ───────────────────────────────

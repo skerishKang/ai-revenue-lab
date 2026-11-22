@@ -28,8 +28,8 @@ from app.history import D1HistoryStore
 from app.claw_general_routes import _requested_natural_pc_query
 from kagent.p01_adapter import P01AdapterError, P01DispatchClass
 from padiem_ai_core.orchestration_events import OrchestrationEventKind
-from test_3930_b54_live_sse_relay import _event, _streaming_adapter
-from test_b54_claw_general_p01_routing import _client, _make_outcome, _payload
+from _support.live_sse_relay import _event, _streaming_adapter
+from _support.claw_general_routing import _client, _make_outcome, _payload
 
 PC_DRIVE_TEXT = "내 PC 드라이브 목록 알려줘"
 RUN_ID = "run_b0e1833620f7430d98c525d1"

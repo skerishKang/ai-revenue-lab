@@ -32,7 +32,7 @@ def test_first_turn_does_not_shift_composer_or_conversation():
 def test_error_box_mirrors_avatar_and_gap_on_right():
     assert '--padiem-chat-meta-gap: 12px' in GUTTER
     assert 'grid-template-columns: 32px minmax(0, 1fr)' in GUTTER
-    assert 'width: calc(100% - 32px - var(--padiem-chat-meta-gap)) !important;' in GUTTER
+    assert 'width: calc(100% - 32px - var(--padiem-chat-meta-gap));' in GUTTER
 
 
 def test_user_turn_has_no_bubble_surface_in_either_state():
@@ -46,9 +46,10 @@ def test_user_turn_has_no_bubble_surface_in_either_state():
                 )
     # The removal has to stay stated explicitly, so re-introducing a surface means
     # editing a pinned line instead of slipping a new declaration in silently.
+    # #8008: the importance cap is gone; the removal stays stated explicitly.
     pinned = [body for body in surfaces if "background: none" in body]
     assert pinned, "no Glass user-bubble rule declares the surface removal"
-    assert any("box-shadow: none !important" in body for body in pinned)
+    assert any("box-shadow: none" in body for body in pinned)
 
 
 def test_user_turn_mirrors_the_answer_typography_in_both_states():
@@ -70,14 +71,16 @@ def test_user_turn_mirrors_the_answer_typography_in_both_states():
 
 
 def test_plan4_three_column_grid_and_chip_geometry_stay_pinned():
+    # #8008 2묶음: the Plan 4 importance caps are gone; the values stay and the
+    # #messageList id chain keeps winning on specificity.
     turn = " ".join(blocks_with("#messageList .user-message.user-message"))
-    assert "grid-template-columns: minmax(0, 1fr) auto 32px !important" in turn
+    assert "grid-template-columns: minmax(0, 1fr) auto 32px" in turn
     avatar = " ".join(blocks_with("#messageList .user-message .user-avatar"))
-    assert "width: 32px !important" in avatar
-    assert "height: 32px !important" in avatar
+    assert "width: 32px" in avatar
+    assert "height: 32px" in avatar
     chip = " ".join(blocks_with("#messageList .user-message .user-profile-chip"))
-    assert "font-weight: 700 !important" in chip
-    assert "color: #53606c !important" in chip
+    assert "font-weight: 700" in chip
+    assert "color: #53606c" in chip
 
 
 def test_superseded_dark_bubble_literals_stay_removed():

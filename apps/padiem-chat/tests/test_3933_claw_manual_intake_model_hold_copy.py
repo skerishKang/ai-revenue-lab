@@ -24,6 +24,7 @@ or provider endpoint is contacted.
 """
 
 from __future__ import annotations
+import locale_bundle
 
 import shutil
 import subprocess
@@ -43,7 +44,7 @@ from _r5_function_source import combined_source
 APP_DIR = Path(__file__).resolve().parents[1]
 STATIC = APP_DIR / "static"
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-LOCALE_JS = (STATIC / "locale.js").read_text(encoding="utf-8")
+LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 EXECUTE_PATH = "/api/claw/manual-intake/execute"
 SIGNED_IN_USER_ID = "usr_" + "9" * 32
@@ -79,7 +80,7 @@ def _client():
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
-        create_session_token(_settings(), SIGNED_IN_USER_ID),
+        create_session_token(_settings(), SIGNED_IN_USER_ID, canonical_session_id="session_test_a"),
         domain="chat.example.test",
         path="/",
     )
@@ -198,6 +199,8 @@ const context = {
   document: { documentElement: { lang: "ko" } },
   uiT: (key) => lang + ":" + key,
   clawT: (key) => lang + ":" + key,
+  // B7 (12차, core 등록부): sliced refusal copy reaches locale through it.
+  coreModule: () => ({ uiT: (key) => lang + ":" + key, clawT: (key) => lang + ":" + key }),
 };
 
 // The REAL map + helper + selector, and the REAL safeClawErrorMessage.

@@ -3,12 +3,14 @@
 Two things changed on the first screen, and both of them are presentation:
 
   1. the first starter card is the computer connection entry, not the
-     "easy explanation" prompt. Clicking it must open the SAME panel the
-     composer PC status control opens, because there is one device directory
-     reader and one device authority in the page,
+     "easy explanation" prompt. #8211: clicking it now opens the connectors
+     screen's PC card detail (#padiem-connectors, address
+     #connectors/computer) — the install modal that used to overlap this
+     spot is gone, and the device directory panel keeps its own toggle
+     path,
   2. the greeting plus the four cards used to float in the middle of the
-     first screen. They now sit in the top third of the space between the top
-     of the content column and the fixed composer, so the top : bottom split
+     first screen. They now sit in the top third of the space between the
+     top of the content column and the fixed composer, so the top : bottom split
      of the first screen is about 1 : 2,
 
 and the panel itself got smaller:
@@ -23,19 +25,32 @@ The #5325 / #5617 panel contract is what keeps the panel usable: it stays
 above the composer, it never covers the message input, it closes with its own
 button and with Escape, the underlying composer controls stay clickable while
 it is open, and the 44px / .8rem touch floor of its actions is untouched. The
-static tests below pin the shape of that contract; the browser tests measure
-it.
+static tests below pin the shape of that contract through parsed attribute
+maps, CSS rules and locale values (#8060 21차: no raw sheet text in this
+module); the browser tests measure it.
 
 No connector code, endpoint, migration, worker or production deploy is touched.
 """
 from __future__ import annotations
+import locale_bundle
 
-import http.server
-import json
-import threading
-from pathlib import Path
+import re
 
 import pytest
+from _support import claw_static
+from _support.home_pc_card_panel_harness import (
+    DIRECTORY,
+    ConnectorHandler,
+    index_button_subtree,
+    static_url_fixture,
+)
+from _support.html_tags import tags_for_page
+from css_rules import (
+    declaration,
+    find_rules_with_selector,
+    rule_selector_list_contains,
+    rules_for_sheet,
+)
 
 # The static contract tests below must run everywhere (the required CI lane
 # installs no browser), so Playwright is optional here and only the real
@@ -49,112 +64,29 @@ requires_browser = pytest.mark.skipif(
     sync_playwright is None, reason="playwright is not installed in this environment"
 )
 
-APP_ROOT = Path(__file__).resolve().parents[1]
-STATIC = APP_ROOT / "static"
-
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE_JS = (STATIC / "locale.js").read_text(encoding="utf-8")
-CLAW_JS = (STATIC / "claw-device-manager.js").read_text(encoding="utf-8")
-CLAW_STATUS_JS = (STATIC / "claw-composer-connection-status.js").read_text(encoding="utf-8")
-CLAW_CSS = (STATIC / "claw-device-manager.css").read_text(encoding="utf-8")
-FIRST_USE_CSS = (STATIC / "padiem-first-use.css").read_text(encoding="utf-8")
-
 # The three windows of the verification list.
 WINDOWS = ((1440, 900), (820, 1180), (390, 844))
 # Only the windows wide enough for the 1 : 2 rule to apply (the phone keeps its
 # own 16px start, because its block is taller than the screen).
 RATIO_WINDOWS = ((1440, 900), (820, 1180))
 
-# The deployment capability of the running service, so the web-search control
-# really arrives and can be clicked while the panel is open.
-HEALTH = {
-    "web_tools_ready": True,
-    "deep_research_ready": False,
-    "auth_configured": True,
-    "history_store_bound": True,
-    "projects_code_ready": True,
-    "projects_code_store_bound": True,
-    "saved_outputs_code_ready": True,
-    "saved_output_store_bound": True,
-}
-
-# Twelve confirmed devices: enough that the panel's own scroll has to work, and
-# a mix of online / offline rows so both state chips render.
-DIRECTORY = {
-    "ok": True,
-    "available": True,
-    "ownerScoped": True,
-    "selectedDeviceId": None,
-    "devices": [
-        {
-            "deviceId": "owner-node-%02d-%s" % (index, "b" * 40),
-            "deviceName": "내 데스크톱" if index == 0 else "외부 노드 %02d" % index,
-            "platform": "Windows 11",
-            "state": "CONNECTED" if index % 4 in (0, 3) else "OFFLINE",
-            "usable": index % 4 in (0, 3),
-            "executable": index % 4 in (0, 3),
-            "selectable": index % 4 in (0, 3),
-        }
-        for index in range(12)
-    ],
-}
-
-CONNECT_ENDPOINT = "/api/claw/local-access/devices"
-SELECT_ENDPOINT = "/api/claw/local-access/devices/select"
+# The locale sheet binds keys to selectors with inline pairs
+# ["#selector", "key"]; the parsed set is what the binding checks assert on.
+BINDING = re.compile(r'\["([^"]+)",\s*"([^"]+)"\]')
 
 
-class ConnectorHandler(http.server.SimpleHTTPRequestHandler):
-    """The static app plus the two endpoints the panel really calls."""
+def _locale_bindings():
+    return set(BINDING.findall(claw_static.locale_source()))
 
-    directory_reads = 0
-    selection_posts = []
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(STATIC), **kwargs)
-
-    def log_message(self, *args):
-        pass
-
-    def _json(self, payload, code=200):
-        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-        self.send_response(code)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
-
-    def do_GET(self):
-        if self.path.startswith("/health"):
-            return self._json(HEALTH)
-        if self.path.startswith("/api/auth/status"):
-            return self._json({"ready": True, "authenticated": True, "session_state": "signed_in",
-                               "user": {"id": "usr_" + "a" * 32, "name": "Test User"}})
-        if self.path.startswith(CONNECT_ENDPOINT):
-            ConnectorHandler.directory_reads += 1
-            return self._json(DIRECTORY)
-        return super().do_GET()
-
-    def do_POST(self):
-        if self.path.startswith(SELECT_ENDPOINT):
-            length = int(self.headers.get("Content-Length") or 0)
-            raw = self.rfile.read(length).decode("utf-8") if length else ""
-            body = json.loads(raw or "{}")
-            ConnectorHandler.selection_posts.append(body)
-            return self._json(
-                {"ok": True, "selectedDeviceId": body.get("device_id")}
-            )
-        self.send_response(404)
-        self.end_headers()
+def _index_ids():
+    return {attrs["id"] for _tag, attrs in tags_for_page("index.html")
+            if attrs.get("id")}
 
 
 @pytest.fixture(scope="session")
 def static_url():
-    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), ConnectorHandler)
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
-    thread.start()
-    yield "http://127.0.0.1:%d/index.html?theme=padiem-glass" % server.server_port
-    server.shutdown()
-    thread.join(timeout=5)
+    yield from static_url_fixture()
 
 
 def _intersects(first, second):
@@ -166,141 +98,178 @@ def _intersects(first, second):
     )
 
 
-def _button_with_id(html, element_id):
-    marker = 'id="%s"' % element_id
-    start = html.index(marker)
-    return html[html.rindex("<button", 0, start): html.index("</button>", start)]
-
-
 # ---------------------------------------------------------------------------
 # Static contracts: the shape of the change and the shape of the contract that
-# must not move.
+# must not move. Every sheet read lives in _support; the tests assert on
+# parsed attribute maps, CSS declarations and locale values.
 # ---------------------------------------------------------------------------
 
 
 def test_the_first_card_is_the_computer_connection_entry():
-    card = _button_with_id(INDEX, "pcConnectStarter")
-    assert 'class="starter"' in card
-    assert 'data-pc-connect-starter="true"' in card
-    assert 'data-locale-key="pc-connect-title"' in card
+    subtree = index_button_subtree("pcConnectStarter")
+    button_attrs = subtree[0][1]
+    assert button_attrs.get("class") == "starter"
+    assert button_attrs.get("data-pc-connect-starter") == "true"
+    # The card's headline carries the bound locale key, not inline copy.
+    assert [attrs for _tag, attrs in subtree
+            if attrs.get("data-locale-key") == "pc-connect-title"]
     # #5573 step 1: the status line on the card belongs to the connect flow's
     # own PC-list state, so the locale key for the old static copy is gone.
-    assert 'data-locale-key="pc-connect-copy"' not in card
-    assert "내 컴퓨터" in card
+    assert not [attrs for _tag, attrs in subtree
+                if attrs.get("data-locale-key") == "pc-connect-copy"]
+    assert claw_static.locale_value("pc-connect-title", "ko") == "내 컴퓨터"
     # The card the first screen used to open with is gone for good.
-    assert 'data-skill="explain"' not in INDEX
-    assert "AI를 처음 쓰는 사람에게" not in INDEX
-    assert "쉽게 설명해줘" not in INDEX
+    assert all(attrs.get("data-skill") != "explain"
+               for _tag, attrs in tags_for_page("index.html"))
+    assert "AI를 처음 쓰는 사람에게" not in claw_static.sheet("index.html")
+    assert "쉽게 설명해줘" not in claw_static.sheet("index.html")
 
 
 def test_the_card_opens_the_one_connect_flow():
     """#5573 step 1 (2026-10-29): the card no longer walks the owner into the
     device directory panel; it opens the ONE connect flow (modal, download,
     self-closing wait), like every other entry."""
-    card = _button_with_id(INDEX, "pcConnectStarter")
-    assert 'type="button"' in card
-    assert 'aria-haspopup="dialog"' in card
-    assert 'aria-expanded="false"' in card
-    assert 'aria-controls="clawDeviceManagerPanel"' not in card
+    subtree = index_button_subtree("pcConnectStarter")
+    button_attrs = subtree[0][1]
+    assert button_attrs.get("type") == "button"
+    assert button_attrs.get("aria-haspopup") == "dialog"
+    assert button_attrs.get("aria-expanded") == "false"
+    assert "aria-controls" not in button_attrs
     # The PC-list status line the connect flow paints lives on the card.
-    assert "data-pc-connect-state" in card
+    assert any("data-pc-connect-state" in attrs for _tag, attrs in subtree)
     # The card is the first entry card, so it must come before the others.
-    assert INDEX.index('id="pcConnectStarter"') < INDEX.index('id="documentStarterButton"')
+    order = {attrs["id"]: position for position, (_tag, attrs)
+             in enumerate(tags_for_page("index.html")) if attrs.get("id")}
+    assert order["pcConnectStarter"] < order["documentStarterButton"]
 
 
 def test_the_starter_grid_keeps_four_cards_without_a_duplicate_prompt():
-    assert 'id="documentStarterButton"' in INDEX
-    assert 'id="writingStarterButton"' in INDEX
-    assert 'id="webSearchStarterButton"' not in INDEX
-    assert 'data-skill="explain"' not in INDEX
+    ids = _index_ids()
+    assert "documentStarterButton" in ids
+    assert "writingStarterButton" in ids
+    assert "webSearchStarterButton" not in ids
+    assert all(attrs.get("data-skill") != "explain"
+               for _tag, attrs in tags_for_page("index.html"))
 
 def test_the_locale_covers_the_new_card_in_both_languages():
-    assert '"pc-connect-title": "내 컴퓨터"' in LOCALE_JS
-    assert '"pc-connect-title": "My computer"' in LOCALE_JS
-    assert '["#pcConnectStarter strong", "pc-connect-title"]' in LOCALE_JS
+    assert claw_static.locale_value("pc-connect-title", "ko") == "내 컴퓨터"
+    assert claw_static.locale_value("pc-connect-title", "en") == "My computer"
+    bindings = _locale_bindings()
+    assert ("#pcConnectStarter strong", "pc-connect-title") in bindings
     # #5573 step 1: the card's status line is the connect flow's own PC-list
     # state, so the locale sheet no longer owns (or clobbers) it.
-    assert "pc-connect-copy" not in LOCALE_JS
-    assert '["#pcConnectStarter small"' not in LOCALE_JS
+    known = set(locale_bundle.keys("ko")) | set(locale_bundle.keys("en")) | {
+        key for _selector, key in bindings}
+    assert "pc-connect-copy" not in known
+    assert not [selector for selector, _key in bindings
+                if selector.startswith("#pcConnectStarter small")]
     # The card is a real control now: nothing may bind the first starter slot
     # as a prompt again.
-    assert ".starter:nth-child(1)" not in LOCALE_JS
+    assert not [selector for selector, _key in bindings
+                if selector.startswith(".starter:nth-child(1)")]
 
 
 def test_the_entries_route_through_the_one_connect_flow():
     """#5573 step 1: the composer control and the first-screen card both go
     through the one connect flow; the directory panel keeps its own path."""
-    flow_js = (STATIC / "pc-connect-flow.js").read_text(encoding="utf-8")
-    assert 'STARTER_ID = "pcConnectStarter"' in flow_js
-    assert "function wireStarter" in flow_js
-    assert 'getElementById("pcConnectStarter")' not in CLAW_STATUS_JS
+    assert claw_static.js_statement(
+        "pc-connect-flow.js", 'STARTER_ID = "pcConnectStarter"')
+    assert claw_static.js_statement("pc-connect-flow.js", "function wireStarter")
+    assert 'getElementById("pcConnectStarter")' not in claw_static.sheet(
+        "claw-composer-connection-status.js")
     # The composer control connects through the flow: popover when a PC is
     # connected, the modal otherwise; the panel path is only the fallback.
-    assert "PadiemPcConnectFlow" in CLAW_STATUS_JS
-    assert "flow.togglePopover(button)" in CLAW_STATUS_JS
+    assert "PadiemPcConnectFlow" in claw_static.sheet("claw-composer-connection-status.js")
+    assert claw_static.js_statement(
+        "claw-composer-connection-status.js", "flow.togglePopover(button)")
     # An opening click on the card must not immediately close the panel it
     # opened, so the card is excluded from the outside-click guard. The
     # guidance surface joins the exclusion: it reads the panel's own rendered
     # states, so its clicks keep the directory open (#4139 summary contract).
-    assert 'target.closest("#composerPcStatus, #pcConnectStarter, #clawDeviceGuidance")' in CLAW_JS
-    assert "root.append(toggle, panel)" in CLAW_JS
+    guards = re.findall(r'target\.closest\("([^"]*)"\)',
+                        claw_static.sheet("claw-device-manager.js"))
+    assert len(guards) == 1
+    assert {part.strip() for part in guards[0].split(",")} == {
+        "#composerPcStatus", "#pcConnectStarter", "#clawDeviceGuidance"}
+    assert claw_static.js_statement("claw-device-manager.js", "root.append(toggle, panel)")
 
 
 def test_the_panel_head_is_one_line_with_its_touch_floor_intact():
-    assert ".claw-device-manager-head {" in CLAW_CSS
+    rules = rules_for_sheet("claw-device-manager.css")
+    assert find_rules_with_selector(rules, ".claw-device-manager-head")
     # Refresh sits next to the title, close keeps the right edge of the row.
-    assert ".claw-device-manager-head .claw-device-manager-refresh { order: 1; }" in CLAW_CSS
-    assert (
-        ".claw-device-manager-head .claw-device-manager-close { order: 3; margin-left: auto; }"
-        in CLAW_CSS
-    )
-    assert ".claw-device-manager-refresh { flex: 0 0 auto;" in CLAW_CSS
+    assert claw_static.css_declaration(
+        "claw-device-manager.css",
+        ".claw-device-manager-head .claw-device-manager-refresh", "order") == ["1"]
+    assert claw_static.css_declaration(
+        "claw-device-manager.css",
+        ".claw-device-manager-head .claw-device-manager-close", "order") == ["3"]
+    assert claw_static.css_declaration(
+        "claw-device-manager.css",
+        ".claw-device-manager-head .claw-device-manager-close", "margin-left") == ["auto"]
+    flex = [value for value in claw_static.css_declaration(
+        "claw-device-manager.css", ".claw-device-manager-refresh", "flex")
+        if value is not None]
+    assert flex == ["0 0 auto"]
     # The old stacked head and its separate action row are gone.
-    assert "flex-direction: row-reverse;" not in CLAW_CSS
-    assert ".claw-device-manager-actions" not in CLAW_CSS
+    assert all((declaration(rule, "flex-direction") or "") != "row-reverse"
+               for rule in rules)
+    assert not [rule for rule in rules
+                if any("claw-device-manager-actions" in selector
+                       for selector in rule.selectors)]
     # The shared action floor that #4139 pinned must not move.
-    assert (
-        ".claw-device-manager-close,\n"
-        ".claw-device-manager-refresh,\n"
-        ".claw-device-manager-select {" in CLAW_CSS
-    )
-    assert "font-size: .8rem;" in CLAW_CSS
-    assert "min-height: 44px;" in CLAW_CSS
+    floor = [rule for rule in rules if rule_selector_list_contains(
+        rule, ".claw-device-manager-close",
+        ".claw-device-manager-refresh", ".claw-device-manager-select")]
+    assert len(floor) == 1
+    assert declaration(floor[0], "font-size") == ".8rem"
+    assert declaration(floor[0], "min-height") == "44px"
 
 
 def test_the_panel_stays_above_the_composer_and_scrolls_its_own_content():
-    assert "bottom: 22px;" in CLAW_CSS
-    assert "max-height: min(330px, 46vh);" in CLAW_CSS
-    assert "overflow-y: auto;" in CLAW_CSS
+    rules = rules_for_sheet("claw-device-manager.css")
+    # The base composition, outside the phone media overrides that only rescale
+    # the same panel. The layout rule and the anchored rule share the selector;
+    # exactly one of them carries the composer anchor and its bounds.
+    anchored = [rule for rule in find_rules_with_selector(rules, ".claw-device-manager-panel")
+                if rule.media is None and declaration(rule, "bottom") is not None]
+    assert len(anchored) == 1
+    assert declaration(anchored[0], "bottom") == "22px"
+    assert declaration(anchored[0], "max-height") == "min(330px, 46vh)"
+    assert declaration(anchored[0], "overflow-y") == "auto"
     # The frame stays click-through and only its form controls take the
     # pointer, so the content behind the panel keeps working. That is the
     # #5014 contract: granting the pointer to the panel's own head covers the
     # cards that sit under it.
-    assert "pointer-events: none;" in CLAW_CSS
-    assert (
-        ".claw-device-manager-panel button,\n"
-        ".claw-device-manager-panel a,\n"
-        ".claw-device-manager-panel input,\n"
-        ".claw-device-manager-panel select,\n"
-        ".claw-device-manager-panel textarea,\n"
-        ".claw-device-manager-panel label {\n"
-        "  pointer-events: auto;\n"
-        "}\n"
-        ".claw-device-manager-head {" in CLAW_CSS
-    )
+    assert declaration(anchored[0], "pointer-events") == "none"
+    controls = [rule for rule in rules if rule_selector_list_contains(
+        rule,
+        ".claw-device-manager-panel button",
+        ".claw-device-manager-panel a",
+        ".claw-device-manager-panel input",
+        ".claw-device-manager-panel select",
+        ".claw-device-manager-panel textarea",
+        ".claw-device-manager-panel label",
+    )]
+    assert len(controls) == 1
+    assert declaration(controls[0], "pointer-events") == "auto"
 
 
 def test_the_device_id_is_a_detail_value_not_a_row_header():
-    assert 'element("small", "claw-device-manager-id", device.deviceId)' in CLAW_JS
-    assert "id.title = device.deviceId;" in CLAW_JS
-    assert "name.title = device.deviceName || device.deviceId;" in CLAW_JS
-    assert (
-        'if (device.deviceId && device.deviceId !== (device.deviceName || "")) {' in CLAW_JS
-    )
-    assert ".claw-device-manager-id {" in CLAW_CSS
-    assert "max-width: 112px;" in CLAW_CSS
-    assert "text-overflow: ellipsis;" in CLAW_CSS
-    assert "white-space: nowrap;" in CLAW_CSS
+    assert claw_static.js_statement(
+        "claw-device-manager.js", 'element("small", "claw-device-manager-id", device.deviceId)')
+    assert claw_static.js_statement("claw-device-manager.js", "id.title = device.deviceId;")
+    assert claw_static.js_statement(
+        "claw-device-manager.js", "name.title = device.deviceName || device.deviceId;")
+    assert claw_static.js_statement(
+        "claw-device-manager.js",
+        'if (device.deviceId && device.deviceId !== (device.deviceName || "")) {')
+    rules = rules_for_sheet("claw-device-manager.css")
+    id_rule = find_rules_with_selector(rules, ".claw-device-manager-id")
+    assert len(id_rule) == 1
+    assert declaration(id_rule[0], "max-width") == "112px"
+    assert declaration(id_rule[0], "text-overflow") == "ellipsis"
+    assert declaration(id_rule[0], "white-space") == "nowrap"
 
 
 def test_the_first_screen_split_is_one_to_two():
@@ -315,19 +284,30 @@ def test_the_first_screen_split_is_one_to_two():
     # Phase 2 moved the consumer rule itself to the shared frame and keyed it on
     # the layout variant, so a new page inherits the composition by declaring the
     # variant instead of adding a sheet. This file now documents the decision.
-    frame = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
+    frame_rules = rules_for_sheet("shared-six-panel-frame.css")
+    assert [rule for rule in frame_rules
+            if declaration(rule, "--padiem-first-screen-inset")
+            == "max(12px, calc((100dvh - 620px) / 3))"]
     # 11-03 audit: the greeting stopped breaking into three lines, so the Chat
     # block this origin was composed around measured 330px instead of 476px at
     # 1440x900. The constant moved with the measured block; the expression and
     # the single-token rule are unchanged.
-    assert "max(12px, calc((100dvh - 620px) / 3))" in frame
-    assert "@media (min-width: 641px)" in frame
-    assert 'var(--padiem-first-screen-inset)' in frame
-    assert '.app-shell[data-layout-variant="conversation"]' in frame
-    assert "padding-top: var(--padiem-first-screen-inset" not in FIRST_USE_CSS
-    assert "calc((100dvh - 836px) / 3)" not in FIRST_USE_CSS
+    assert any(rule.media == "(min-width: 641px)"
+               and declaration(rule, "padding-top")
+               == "var(--padiem-first-screen-inset)"
+               for rule in frame_rules)
+    assert any("var(--padiem-first-screen-inset)" in value
+               for rule in frame_rules for value in rule.declarations.values())
+    assert any(selector.startswith('.app-shell[data-layout-variant="conversation"]')
+               for rule in frame_rules for selector in rule.selectors)
+    first_use = rules_for_sheet("padiem-first-use.css")
+    assert all("var(--padiem-first-screen-inset"
+               not in (declaration(rule, "padding-top") or "")
+               for rule in first_use)
+    assert all("calc((100dvh - 836px) / 3)" not in value
+               for rule in first_use for value in rule.declarations.values())
     # The composer keeps its own first-use treatment.
-    assert '.app-shell[data-state="home"] .composer' in FIRST_USE_CSS
+    assert find_rules_with_selector(first_use, '.app-shell[data-state="home"] .composer')
 
 
 # ---------------------------------------------------------------------------
@@ -421,7 +401,7 @@ def _ready(page):
 
 @pytest.mark.parametrize("window", WINDOWS)
 @requires_browser
-def test_the_first_card_opens_the_modal_and_the_panel_keeps_its_shape(static_url, window):
+def test_the_first_card_opens_the_connect_screen_and_the_panel_keeps_its_shape(static_url, window):
     width, height = window
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -440,16 +420,22 @@ def test_the_first_card_opens_the_modal_and_the_panel_keeps_its_shape(static_url
             assert before["cardExpanded"] == "false"
             assert before["scrollWidth"] == before["clientWidth"]
 
-            # #5573 step 1: the first card opens the ONE connect flow — the
-            # modal — and Escape closes it; the panel keeps its own toggle path.
+            # #8211: the first card opens the connectors screen's PC card
+            # detail and the address follows to #connectors/computer — the
+            # install modal that used to overlap this spot is gone. The panel
+            # keeps its own toggle path, so the shape contract below is
+            # measured after returning to the first screen.
             page.click("#pcConnectStarter")
             page.wait_for_function(
-                "() => !!document.querySelector('.pc-connect-backdrop') && "
-                "!document.querySelector('.pc-connect-backdrop').hidden"
+                "() => document.getElementById('connectorsView')?.hidden === false && "
+                "document.querySelector('.app-shell').dataset.state === 'connectors'",
+                timeout=30000,
             )
-            page.keyboard.press("Escape")
-            page.wait_for_function("() => document.querySelector('.pc-connect-backdrop').hidden")
+            assert page.evaluate("window.PadiemConnectorPages.current()") == "computer"
+            assert page.evaluate("window.location.hash") == "#connectors/computer"
 
+            page.goto(static_url)
+            _ready(page)
             _open_panel(page)
             after = _measure(page)
             panel, head = after["panel"], after["head"]
@@ -644,7 +630,8 @@ def test_the_device_rows_lead_with_the_name_and_the_id_stays_readable(static_url
             page.wait_for_function(
                 "() => document.querySelector('#clawDeviceManagerStatus').textContent.includes('선택됨')"
             )
-            assert ConnectorHandler.selection_posts == [{"device_id": "owner-node-00-%s" % ("b" * 40)}]
+            assert ConnectorHandler.selection_posts == [
+                {"device_id": DIRECTORY["devices"][0]["deviceId"]}]
             pressed = page.eval_on_selector(
                 "#clawDeviceManagerList .claw-device-manager-select",
                 "el => el.getAttribute('aria-pressed')",

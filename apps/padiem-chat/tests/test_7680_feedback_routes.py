@@ -1,6 +1,7 @@
 """In-process route/guard units only; synthetic sessions and local SQLite."""
 import asyncio
 import json
+import secrets
 from dataclasses import replace
 from types import SimpleNamespace
 
@@ -13,11 +14,12 @@ from app.feedback_routes import (admin_feedback, admin_feedback_ai_tester, admin
                                   admin_feedback_status, feedback, feedback_read, feedback_reply)
 from app.same_origin_guard import SameOriginGuardMiddleware
 from app.worker_config import settings_from_worker_bindings
-from test_7680_feedback_store import OWNER, OTHER, BODY, database
+from _support.feedback_store import OWNER, OTHER, BODY, database
 
 BASE = 'https://chat.example.test'
+# 서명 키는 실행 때 만든다 — 시험 파일에 비밀값처럼 보이는 글자를 두지 않는다.
 SETTINGS = Settings(auth_mode='password', public_base_url=BASE,
-                    session_secret='fixture-feedback-session-signing-only', feedback_daily_limit=2)
+                    session_secret=secrets.token_urlsafe(32), feedback_daily_limit=2)
 
 
 class AdminAuthority:
@@ -31,7 +33,9 @@ def request(store, *, method='GET', user=OWNER, body=None, path='/api/chat/feedb
                             central_model_admin_authorizer=AdminAuthority())
     headers = [(b'content-type', b'application/json')]
     if user:
-        token = create_session_token(SETTINGS, user)
+
+        token = create_session_token(SETTINGS, user, canonical_session_id="session_test_a")
+
         headers.append((b'cookie', (SESSION_COOKIE + '=' + token).encode()))
     if origin is not None:
         headers.append((b'origin', origin.encode()))
@@ -63,7 +67,8 @@ def test_user_admin_flow_and_same_owner_read():
             assert (await admin_feedback(request(store, user=None))).status_code == 401
             inbox = payload(await admin_feedback(request(store, user=OTHER)))
             assert inbox['feedback'][0]['sender_label'].startswith('••••')
-            assert OWNER not in json.dumps(inbox) and '@' not in json.dumps(inbox)
+            # #8035 ②: the admin inbox shows the real sender now.
+            assert inbox['feedback'][0]['sender_user_id'] == OWNER
             changed = await admin_feedback_status(request(store, method='PATCH', user=OTHER,
                                                           feedback_id=item['id'], body={'status': 'fixed'}))
             version = payload(changed)['feedback']['fixed_version']
@@ -213,8 +218,17 @@ def test_real_app_auth_admin_roles_csrf_and_deleted_session_in_process():
             for name, role in [('admin', 'ADMIN'), ('super', 'SUPER_ADMIN')]:
                 await roles.assign(actor_user_id=ids['super'], target_user_id=ids[name], role=role)
             settings = replace(SETTINGS, session_user_row_check=True)
+            sid_to_user = {f'session_test_{name}': uid for name, uid in ids.items()}
             async def resolve_session(*args, **kwargs):
-                raise AssertionError('Sidless fixture uses the real user-row guard')
+                uid = sid_to_user.get(kwargs.get('session_id'))
+                if uid is None or conn.execute(
+                        'SELECT 1 FROM users WHERE id=?', (uid,)).fetchone() is None:
+                    return None
+                return SimpleNamespace(
+                    product_id='b62',
+                    subject=SimpleNamespace(subject_type='user'),
+                    effective_state=lambda *, now: 'active',
+                )
             app = create_app(settings=settings, d1_binding=db, history_store=D1HistoryStore(db),
                              platform_admin_role_store=roles,
                              control_plane_identity_authority=SimpleNamespace(resolve_auth_session=resolve_session))
@@ -224,7 +238,9 @@ def test_real_app_auth_admin_roles_csrf_and_deleted_session_in_process():
                     if shared:
                         headers['Cookie'] = ACCESS_COOKIE + '=invalid-fixture'
                     elif name:
-                        headers['Cookie'] = SESSION_COOKIE + '=' + create_session_token(settings, ids[name])
+
+                        headers['Cookie'] = SESSION_COOKIE + '=' + create_session_token(settings, ids[name], canonical_session_id='session_test_' + name)
+
                     return await client.request(method, path, json=body, headers=headers)
                 assert (await call('GET', '/api/admin/feedback')).status_code == 401
                 assert (await call('GET', '/api/admin/feedback', name='member')).status_code == 403
@@ -301,7 +317,8 @@ def test_user_and_admin_reply_thread_unread_marker_and_ai_flag():
             inbox = payload(await admin_feedback(request(store, user=OTHER)))
             assert inbox['feedback'][0]['is_ai_tester'] is True
             assert inbox['feedback'][0]['sender_display'] == '정호'
-            assert OWNER not in json.dumps(inbox) and '@' not in json.dumps(inbox)
+            # #8035 ②: the admin inbox shows the real sender now.
+            assert inbox['feedback'][0]['sender_user_id'] == OWNER
         finally:
             db.close()
     asyncio.run(scenario())
@@ -321,6 +338,77 @@ def test_admin_reply_rejects_invalid_body_and_user_cannot_reply_to_foreign_feedb
                                                         body={'body': 'x' * 4001}))
             assert result.status_code == 400
             assert (await store.get_record(mine)).replies == ()
+        finally:
+            db.close()
+    asyncio.run(scenario())
+
+
+def test_7835_only_the_owner_records_the_confirmation_and_it_survives_a_reload():
+    async def scenario():
+        db, store = database()
+        try:
+            created = payload(await feedback(request(store, method='POST', body={'body': BODY})))['feedback']
+            feedback_id = created['id']
+            await store.set_status(feedback_id, 'fixed')
+            first = payload(await feedback(request(store)))
+            assert first['unread_fixed_count'] == 1
+            item = first['feedback'][0]
+            assert item['status'] == 'fixed' and item['unread_fixed'] is True and item['fixed_version'] == 1
+
+            # Someone else's id is not a record key: 404, and the owner stays unread.
+            foreign = await feedback_read(request(store, method='POST', user=OTHER, feedback_id=feedback_id,
+                                                  body={'fixed_version': item['fixed_version']}))
+            assert foreign.status_code == 404
+            assert payload(await feedback(request(store)))['unread_fixed_count'] == 1
+
+            # A version out of the accepted range writes nothing.
+            stale = await feedback_read(request(store, method='POST', feedback_id=feedback_id,
+                                               body={'fixed_version': 0}))
+            assert stale.status_code == 400
+
+            read = await feedback_read(request(store, method='POST', feedback_id=feedback_id,
+                                              body={'fixed_version': item['fixed_version']}))
+            assert read.status_code == 200
+            assert payload(read)['feedback']['unread_fixed'] is False
+
+            # A fresh list is what a reload sees: still confirmed.
+            reloaded = payload(await feedback(request(store)))
+            assert reloaded['unread_fixed_count'] == 0
+            assert reloaded['feedback'][0]['unread_fixed'] is False
+
+            # A second fix is a new notice, and it can be confirmed once more.
+            await store.set_status(feedback_id, 'reviewing')
+            await store.set_status(feedback_id, 'fixed')
+            second = payload(await feedback(request(store)))
+            assert second['unread_fixed_count'] == 1
+            version = second['feedback'][0]['fixed_version']
+            assert version == 2
+            again = await feedback_read(request(store, method='POST', feedback_id=feedback_id,
+                                               body={'fixed_version': version}))
+            assert again.status_code == 200
+            assert payload(await feedback(request(store)))['unread_fixed_count'] == 0
+        finally:
+            db.close()
+    asyncio.run(scenario())
+
+
+def test_7835_an_unfixed_item_has_nothing_to_confirm():
+    async def scenario():
+        db, store = database()
+        try:
+            created = payload(await feedback(request(store, method='POST', body={'body': BODY})))['feedback']
+            for status in ('new', 'reviewing', 'deferred'):
+                await store.set_status(created['id'], status)
+                reply = await feedback_read(request(store, method='POST', feedback_id=created['id'],
+                                                   body={'fixed_version': 1}))
+                # The owner check passes, nothing is written, and the row keeps its state:
+                # only a 'fixed' row can be confirmed.
+                assert reply.status_code == 200
+                assert payload(reply)['feedback']['status'] == status
+                assert payload(reply)['feedback']['unread_fixed'] is False
+                listed = payload(await feedback(request(store)))
+                assert listed['unread_fixed_count'] == 0
+                assert listed['feedback'][0]['unread_fixed'] is False
         finally:
             db.close()
     asyncio.run(scenario())
