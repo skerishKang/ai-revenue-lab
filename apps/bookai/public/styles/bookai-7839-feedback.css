@@ -1,0 +1,58 @@
+/* #7839 — 북AI 사이트 의견 창구. 색 리터럴·중요도 추가 없음. */
+.bookai-feedback-open {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 60;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid currentColor;
+  border-radius: 10px;
+  background: Canvas;
+  color: CanvasText;
+  font: 600 12px/1.4 var(--sans, Arial, sans-serif);
+  cursor: pointer;
+}
+.bookai-feedback-dialog {
+  width: min(100% - 24px, 420px);
+  max-height: min(80vh, 600px);
+  padding: 14px;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: Canvas;
+  color: CanvasText;
+  font: 400 13px/1.5 var(--sans, Arial, sans-serif);
+}
+.bookai-feedback-dialog[hidden],
+.bookai-feedback-done[hidden] { display: none; }
+.bookai-feedback-dialog form { display: grid; gap: 10px; }
+.bookai-feedback-dialog textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 110px;
+  padding: 8px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  background: Canvas;
+  color: CanvasText;
+  font: inherit;
+  resize: vertical;
+}
+.bookai-feedback-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.bookai-feedback-actions button {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  background: Canvas;
+  color: CanvasText;
+  font: inherit;
+  cursor: pointer;
+}
+.bookai-feedback-status { min-height: 1.5em; margin: 0; }
+.bookai-feedback-dialog label { display: block; }
+.bookai-feedback-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+@media (max-width: 768px) {
+  .bookai-feedback-open { right: 8px; bottom: 8px; max-width: calc(100% - 16px); }
+  .bookai-feedback-dialog { width: calc(100% - 16px); padding: 10px; }
+}

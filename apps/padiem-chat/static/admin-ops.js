@@ -27,11 +27,11 @@
   // 발신 쪽 칸에 쓰고, 식별자(계정 원문)는 화면에 넣지 않는다.
   const SITE_ENDPOINT = "/api/admin/site-feedback";
   const SITE_LABELS = Object.freeze({
-    lovetree: "러브트리", "miraen-home": "임미란 홈페이지",
+    lovetree: "러브트리", "miraen-home": "임미란 홈페이지", bookai: "북AI",
   });
   const SOURCES = Object.freeze([
     ["all", "전체"], ["chat", "Chat"],
-    ["lovetree", "러브트리"], ["miraen-home", "임미란 홈페이지"],
+    ["lovetree", "러브트리"], ["miraen-home", "임미란 홈페이지"], ["bookai", "북AI"],
   ]);
   const INBOX_HASH = "#ops-inbox";
   const MEMBERS_HASH = "#ops-members";
