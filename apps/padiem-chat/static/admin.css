@@ -79,8 +79,8 @@
   .ops-reply-send,.ops-ai-toggle{width:100%}
 }
 
-/* Scoped per-theme tokens for the ops panel only (#4428 keeps the rest of
-   the dashboard pinned; values mirror padiem-tokens.css). */
+/* Scoped per-theme tokens for the ops panel (#4428; values mirror
+   padiem-tokens.css). admin-theme.css themes the admin shell the same way. */
 .ops-panel{--ops-panel-bg:#ffffff;--ops-text:#19191d;--ops-muted:#6f7079;--ops-line:#e3e3e9;--ops-field:#ffffff}
 html[data-theme="dark"] .ops-panel{--ops-panel-bg:#1a232d;--ops-text:#edf4fa;--ops-muted:#b4c2d0;--ops-line:#405365;--ops-field:#222d38}
 html[data-theme="cinematic"] .ops-panel{--ops-panel-bg:rgba(10,14,22,.72);--ops-text:#f7f8fa;--ops-muted:rgba(255,255,255,.68);--ops-line:rgba(255,255,255,.14);--ops-field:rgba(22,30,40,.6)}

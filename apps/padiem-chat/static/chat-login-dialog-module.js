@@ -71,7 +71,7 @@
         if (!deps.authDialog) {
           if (deps.authMethodEnabled("google")) {
             if (deps.isAndroidWebView()) deps.startAndroidHandoff();
-            else window.location.assign("/auth/google/start");
+            else window.location.assign(googleStartHref());
           }
           return;
         }
@@ -172,6 +172,16 @@
         }
       }
 
+      // #8312: the /admin gate's return asks for /admin as the OAuth
+      // continuation. The server keeps the exact allowlist (app/auth.py); a
+      // login without the ask — everyone else — never carries one.
+      function googleStartHref() {
+        const pending = window.PadiemAdminSession
+          && typeof window.PadiemAdminSession.pendingAdminReturn === "function"
+          && window.PadiemAdminSession.pendingAdminReturn() === true;
+        return pending ? "/auth/google/start?return_to=%2Fadmin" : "/auth/google/start";
+      }
+
       function wireGoogleLogin() {
         if (deps.googleLoginButton) {
           deps.googleLoginButton.addEventListener("click", () => {
@@ -180,7 +190,7 @@
               deps.startAndroidHandoff();
               return;
             }
-            window.location.assign("/auth/google/start");
+            window.location.assign(googleStartHref());
           });
         }
       }

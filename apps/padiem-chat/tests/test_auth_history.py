@@ -471,7 +471,9 @@ def test_auth_history_frontend_contract_and_phase1_css_unchanged():
     assert 'dialog.id = "confirmDialog"' in a11y
     assert "history-delete" in js
     assert "conversationId" in js and "payload.conversation_id" in js
-    assert 'window.location.assign("/auth/google/start")' in (
+    # #8312: the Google ask is built by googleStartHref() — the bare start URL
+    # stays the no-ask default; the admin return rides return_to only when asked.
+    assert 'window.location.assign(googleStartHref())' in (
         js + claw_static.sheet("chat-login-dialog-module.js"))
     assert "access_token" not in js
     assert "GOOGLE_CLIENT" not in html and "GOOGLE_CLIENT" not in js

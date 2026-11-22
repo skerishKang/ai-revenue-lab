@@ -27,7 +27,9 @@ OAUTH_STATE_MAX_AGE_SECONDS = 600
 #: there, so the continuation is one of these exact values and never a
 #: caller-supplied URL: an origin, a scheme, a host, a prefix or a path under another
 #: product is refused. Anything else (including absent) keeps the Chat root.
-OAUTH_RETURN_TARGETS = frozenset({"/apps/council/"})
+# #8312: "/admin" — the admin hub gate asks for its own screen as the
+# continuation, through the same signed-state channel as the council entry.
+OAUTH_RETURN_TARGETS = frozenset({"/apps/council/", "/admin"})
 MAX_AUTH_RESPONSE_BYTES = 1024 * 1024
 # Android handoff states are signed with a distinct purpose so a normal
 # cookie-bound OAuth state can never be replayed as a handoff state or back.

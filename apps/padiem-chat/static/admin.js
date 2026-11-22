@@ -105,9 +105,19 @@
     }
   }
 
-  function showGate(capabilities) {
+  function showGate(capabilities, authenticated) {
     $("adminContent").hidden = true;
     $("gatePanel").hidden = false;
+    // #8312: 두 상태를 한 장의 카드에서 갈린다. 비로그인은 Chat 로그인 흐름으로
+    // 곧장 들어가고(?admin_return=1 → 로그인 후 이 화면 복귀), 로그인했지만
+    // 관리자가 아닌 계정은 권한 없음 안내와 다른 계정 로그인을 제공한다.
+    const signedIn = authenticated === true;
+    $("gateTitle").textContent = signedIn ? "관리자 권한이 없습니다" : "로그인이 필요합니다";
+    $("gateCopy").textContent = signedIn
+      ? "이 계정에는 관리자 권한이 없습니다. 관리자 권한이 있는 계정으로 다시 로그인하면 이 화면이 열립니다."
+      : "관리자 화면은 Chat 로그인으로 열립니다. 로그인하면 이 화면으로 돌아옵니다.";
+    $("gateLoginLink").hidden = signedIn;
+    $("gateSwitchButton").hidden = !signedIn;
     const legacyB66 = (capabilities.b66_platform_admin === true || capabilities.b66_customer_admin === true)
       && B66_ADMIN_ORIGIN !== "";
     $("legacyB66Link").hidden = !legacyB66;
@@ -131,8 +141,7 @@
         setNotice("관리자 권한을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.", "error");
         $("roleBadge").textContent = "확인 실패";
         $("roleCaption").textContent = "권한 확인 실패";
-        $("gatePanel").hidden = false;
-        $("adminContent").hidden = true;
+        showGate({}, false);
         return;
       }
       const data = await response.json();
@@ -142,7 +151,7 @@
       const role = typeof data.role === "string" ? data.role : null;
       setRole(role);
       if (data.authenticated !== true || !role) {
-        showGate(capabilities);
+        showGate(capabilities, data.authenticated === true);
         return;
       }
       $("gatePanel").hidden = true;
@@ -151,14 +160,31 @@
       $("adminContent").hidden = false;
     } catch (_) {
       setNotice("관리자 권한을 확인하는 중 연결이 끊겼습니다. 새로고침해 주세요.", "error");
-      $("gatePanel").hidden = false;
-      $("adminContent").hidden = true;
+      showGate({}, false);
     } finally {
       $("refreshBtn").disabled = false;
     }
   }
 
   $("refreshBtn").addEventListener("click", () => void load());
+
+  // #8312: "다른 계정으로 로그인" — Chat 자체 로그아웃이 쓰는 같은 종료 경로를
+  // 그대로 걷고(공유 세션이 있으면 먼저 끊는다), Chat 로그인 흐름으로 넘긴다.
+  // 로그인이 끝나면 admin-session-shared.js가 /admin으로 되돌린다. 별도 로그인
+  // 화면은 만들지 않는다.
+  $("gateSwitchButton").addEventListener("click", async () => {
+    const button = $("gateSwitchButton");
+    button.disabled = true;
+    try {
+      await fetch("/auth/shared/logout", {
+        method: "POST", headers: { Accept: "application/json" }, cache: "no-store",
+      });
+    } catch (_) {}
+    try {
+      await fetch("/api/auth/logout", { method: "POST", headers: { Accept: "application/json" } });
+    } catch (_) {}
+    window.location.assign("./index.html?admin_return=1");
+  });
 
   const managedState = new Map();
   const selfHealState = new Map();

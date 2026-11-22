@@ -80,7 +80,12 @@ def test_app_keeps_forwarders_factory_and_one_wire_call() -> None:
     # the registry name "wire").
     wire_at = APP.index("androidHandoffModule().wireAndroidHandoffListeners();")
     dialog = (STATIC / "chat-login-dialog-module.js").read_text(encoding="utf-8")
-    assert 'window.location.assign("/auth/google/start");' in (APP + dialog)
+    # #8312: the Google ask is built by googleStartHref() so the admin gate's
+    # return can carry return_to=/admin; a login without the ask keeps the
+    # same bare start URL as before.
+    assert ('window.location.assign(googleStartHref());' in dialog
+            and '"/auth/google/start?return_to=%2Fadmin"' in dialog
+            and ': "/auth/google/start";' in dialog)
     assert 'loginDialogModule().wireGoogleLogin();' in APP
     assert wire_at < APP.index("accountModule().wireAccountControls();")
 
