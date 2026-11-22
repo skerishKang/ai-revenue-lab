@@ -164,8 +164,8 @@ def test_history_splits_connector_tool_requests_into_a_collapsed_group() -> None
     assert facts["details_created"] >= 1
     assert facts["has_summary"] is True
     assert "history-tool-request-group" in facts["ui_t_keys"]
-    # The person's list emptiness no longer counts the tool-request rows.
-    assert facts["history_empty_condition"] == "normalConversationCount !== 0"
+    # A visible tool-request group is a non-empty history list as well.
+    assert facts["history_empty_condition"] == "normalConversationCount + toolRequestRows.length !== 0"
     assert facts["copy_ko"] == "외부 AI 도구 요청"
     assert facts["copy_en"] == "External tool requests"
 
