@@ -74,12 +74,19 @@ def needs_update(observation: Any, *, source_sha256: str, min_version: str) -> b
     return minimum is not None and current < minimum
 
 
-def stage_allows(rollout: Any, *, device_id: str, source_sha256: str) -> bool:
-    """The staged rollout decides which managed PC may be offered this source."""
-    if not isinstance(rollout, dict):
+def stage_allows(rollout: Any, *, device_id: str, helper_sha256: str) -> bool:
+    """The staged rollout decides whether this managed PC may take the helper release.
+
+    Two different artifacts carry a digest here. The rollout plan stages the
+    helper EXE release (the manifest ``sha256`` the updater downloads), while
+    ``needs_update`` compares the fixed updater *script* source. A plan can
+    never offer the script digest, so comparing it here selected nothing in
+    production; the release digest is the one the stage actually decides.
+    """
+    if not isinstance(rollout, dict) or not isinstance(helper_sha256, str) or not helper_sha256:
         return False
     offered = offer(rollout, device_id=device_id, managed=True)
-    return isinstance(offered, dict) and offered.get("sha256") == source_sha256
+    return isinstance(offered, dict) and offered.get("sha256") == helper_sha256
 
 
 @dataclass(frozen=True)
@@ -91,9 +98,15 @@ class Attempt:
 
 def select(
     *, devices: Any, managed: Any, observations: Mapping[str, Any], rollout: Any,
-    source_sha256: str, min_version: str, attempts: Mapping[tuple[str, str], Attempt],
+    source_sha256: str, helper_sha256: str, min_version: str,
+    attempts: Mapping[tuple[str, str], Attempt],
 ) -> list[str]:
-    """Managed PCs that still need one first selection for this source."""
+    """Managed PCs that still need one first selection for this source.
+
+    ``source_sha256`` is the fixed updater script digest (the attempt key and
+    the installed-source comparison); ``helper_sha256`` is the helper release
+    digest the deployment manifest publishes, which the staged rollout gates.
+    """
     managed_ids = {item for item in managed if isinstance(item, str) and item} if managed else set()
     out: list[str] = []
     for device in devices if isinstance(devices, (list, tuple, set)) else ():
@@ -103,7 +116,7 @@ def select(
         previous = attempts.get(key)
         if previous is not None:
             continue
-        if not stage_allows(rollout, device_id=device, source_sha256=source_sha256):
+        if not stage_allows(rollout, device_id=device, helper_sha256=helper_sha256):
             continue
         if needs_update(observations.get(device), source_sha256=source_sha256,
                         min_version=min_version):
