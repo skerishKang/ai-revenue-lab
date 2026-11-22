@@ -12,21 +12,15 @@ from __future__ import annotations
 
 import json
 import subprocess
-from pathlib import Path
 
+# #8060: 원문 read는 _support(connector_status_retry_source)가 담당하고,
+# 호출부 계약은 이름붙인 팩트로 단언한다(동작 하네스는 그대로 유지).
 from _r2_chat_transport_harness import observe
-
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-TRANSPORT_PATH = STATIC / "chat-transport.js"
-APP_PATH = STATIC / "app.js"
-MANAGER_PATH = STATIC / "claw-connector-management.js"
-DEVICE_PATH = STATIC / "claw-device-manager.js"
-INDEX_PATH = STATIC / "index.html"
-
-
-def _transport_source() -> str:
-    return TRANSPORT_PATH.read_text(encoding="utf-8")
+from _support.connector_status_retry_source import (  # noqa: E402
+    call_site_facts,
+    script_order_facts,
+    transport_source,
+)
 
 
 def _run_node_script(script: str) -> str:
@@ -123,7 +117,7 @@ async function run(name, scenario) {
   });
   console.log(JSON.stringify(results));
 })().catch((error) => { console.error(error); process.exit(1); });
-""" % _transport_source()
+""" % transport_source()
 
 
 def _outcome(name: str) -> dict:
@@ -201,20 +195,16 @@ def test_a_caller_abort_is_never_retried() -> None:
 
 
 def test_the_three_status_read_calls_route_through_the_helper() -> None:
-    app = APP_PATH.read_text(encoding="utf-8")
-    connectors = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8")
-    manager = MANAGER_PATH.read_text(encoding="utf-8")
-    device = DEVICE_PATH.read_text(encoding="utf-8")
-
+    facts = call_site_facts()
     # chat-connectors-module.js loadConnectorStatus (#7216 A9): the status read
     # goes through the helper, and app.js keeps no direct status fetch either.
-    assert "PadiemChatTransport.fetchStatusWithRetry(\"/api/connectors/status\"" in connectors
-    assert 'fetch("/api/connectors/status"' not in connectors
-    assert 'fetch("/api/connectors/status"' not in app
-    # claw-device-manager.js runLoad: the directory read goes through the helper.
-    assert "PadiemChatTransport.fetchStatusWithRetry(ENDPOINT" in device
-    # claw-connector-management.js json(): GET status reads retry, writes do not.
-    assert "PadiemChatTransport.fetchStatusWithRetry(url" in manager
+    assert facts["connectors_routes_through_helper"] is True
+    assert facts["connectors_has_direct_fetch"] is False
+    assert facts["app_has_direct_fetch"] is False
+    # claw-device-manager.js runLoad and claw-connector-management.js json()
+    # both route their reads through the helper.
+    assert facts["device_routes_through_helper"] is True
+    assert facts["manager_routes_through_helper"] is True
 
     # The helper's own retry policy is observed by running it: only reads
     # retry, the front-loss marker is what makes a 502/503 retryable, the
@@ -237,14 +227,11 @@ def test_the_three_status_read_calls_route_through_the_helper() -> None:
     }
     # 부재 계약: 앞단 손실 표시는 전송 모듈만 해석한다. 호출부 소스에 그
     # 문자열이 생기면 재시도 정책이 두 곳으로 갈라지므로 소스 부재로 남긴다.
-    assert 'x-padiem-front' not in app
-    assert 'x-padiem-front' not in manager
-    assert 'x-padiem-front' not in device
+    assert facts["front_marker_sources"] == []
 
 
 def test_the_transport_module_loads_before_every_retry_caller() -> None:
-    html = INDEX_PATH.read_text(encoding="utf-8")
-    transport_at = html.index('<script src="./chat-transport.js"></script>')
-    assert transport_at < html.index('<script src="./app.js"></script>')
-    assert transport_at < html.index('<script src="./claw-connector-management.js"></script>')
-    assert transport_at < html.index('<script src="./claw-device-manager.js"></script>')
+    order = script_order_facts()
+    assert order["transport_at"] < order["app_at"]
+    assert order["transport_at"] < order["management_at"]
+    assert order["transport_at"] < order["device_at"]
