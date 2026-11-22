@@ -71,3 +71,10 @@ def server_function_body(module_name, start_marker, end_marker):
 def migration_source(name):
     migrations = Path(__file__).resolve().parents[4] / "apps/padiem-chat/migrations"
     return (migrations / name).read_text(encoding="utf-8")
+
+
+def repo_source(relative: str) -> str:
+    """A shipped source outside this app, from the repository root
+    (e.g. another product's module under apps/)."""
+    root = Path(__file__).resolve().parents[4]
+    return (root / relative).read_text(encoding="utf-8")
