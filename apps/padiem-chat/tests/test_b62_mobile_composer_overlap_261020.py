@@ -17,6 +17,14 @@ from pathlib import Path
 
 import pytest
 
+from _support.mobile_composer_overlap import (
+    const_expression,
+    css_facts,
+    css_media_declarations,
+    index_assets,
+    js_view,
+)
+
 # The static contract tests below must run everywhere (the required CI lane
 # installs no browser), so Playwright is optional here and only the real
 # browser checks are skipped when it is absent.
@@ -32,12 +40,6 @@ requires_browser = pytest.mark.skipif(
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
 ENDPOINT = "/api/claw/local-access/devices"
-POLISH_CSS = STATIC / "interaction-polish.css"
-UI_POLISH_CSS = STATIC / "padiem-chat-ui-polish.css"
-STYLES_CSS = STATIC / "styles.css"
-MANAGER_JS = STATIC / "claw-device-manager.js"
-MANAGER_CSS = STATIC / "claw-device-manager.css"
-FOCUS_CSS = STATIC / "claw-focus-layout.css"
 
 WIDTHS = (360, 390, 430)
 
@@ -75,68 +77,86 @@ def browser():
 
 def test_conversation_clearance_follows_the_measured_composer_in_every_state():
     """The home state used a fixed inset that was smaller than the composer."""
-    polish = POLISH_CSS.read_text(encoding="utf-8")
-    assert '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation' in polish
-    assert "var(--padiem-composer-clearance, 230px)" in polish
+    polish = css_facts("interaction-polish.css")
+    selector = (
+        '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation'
+    )
+    assert selector in polish["selectors"]
+    assert any("var(--padiem-composer-clearance, 230px)" in value
+               for _prop, value in polish["declarations"])
     # The software keyboard raises the fixed composer by its own inset, so the
     # reserved body space has to grow by the same amount.
-    assert "var(--padiem-visual-keyboard-inset, 0px)" in polish
-    assert "scroll-padding-bottom" in polish
+    assert any("var(--padiem-visual-keyboard-inset, 0px)" in value
+               for _prop, value in polish["declarations"])
+    assert any(prop == "scroll-padding-bottom" for prop, _value in polish["declarations"])
     # The Claw workbench canvas and the Claw workspace strip use the same
     # measured clearance instead of an arbitrary pixel inset.
-    focus = FOCUS_CSS.read_text(encoding="utf-8")
-    assert "var(--padiem-composer-clearance" in focus
-    assert "max-height: calc(100dvh - 92px)" not in focus
-    workspace = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
-    assert "var(--padiem-composer-clearance" in workspace
-    assert "0 280px" not in workspace
+    focus = css_facts("claw-focus-layout.css")
+    assert any("var(--padiem-composer-clearance" in value
+               for _prop, value in focus["declarations"])
+    assert ("max-height", "calc(100dvh - 92px)") not in focus["declarations"]
+    workspace = css_facts("claw-workspace.css")
+    assert any("var(--padiem-composer-clearance" in value
+               for _prop, value in workspace["declarations"])
+    assert not any("0 280px" in value for _prop, value in workspace["declarations"])
 
 
 def test_mobile_shell_uses_the_dynamic_viewport_height():
     """100vh is the largest viewport height; a phone address bar needs dvh."""
-    polish = UI_POLISH_CSS.read_text(encoding="utf-8")
-    assert "min-height: 100dvh;" in polish
-    assert re.search(
-        r"@media \(max-width: 920px\) \{.*?min-height: 100dvh;", polish, re.S
+    polish = css_facts("padiem-chat-ui-polish.css")
+    assert ("min-height", "100dvh") in polish["declarations"]
+    assert ("min-height", "100dvh") in css_media_declarations(
+        "padiem-chat-ui-polish.css", "(max-width: 920px)"
     )
     # static/styles.css is byte-pinned to the product reference mirror, so the
     # mobile shell height belongs to a sheet that is not mirrored.
-    styles = STYLES_CSS.read_text(encoding="utf-8")
-    assert "min-height: 100dvh;" not in styles
+    assert ("min-height", "100dvh") not in css_facts("styles.css")["declarations"]
 
 
 def test_computer_entry_reuses_the_existing_directory_endpoint_and_copy():
-    source = MANAGER_JS.read_text(encoding="utf-8")
-    assert 'const ENDPOINT = "/api/claw/local-access/devices";' in source
-    assert "컴퓨터와 연결해 보세요" in source
-    assert "내 컴퓨터의 파일과 프로그램을 Padiem에서 사용할 수 있어요." in source
+    manager = js_view("claw-device-manager.js")
+    assert const_expression("claw-device-manager.js", "ENDPOINT") == (
+        '"/api/claw/local-access/devices"'
+    )
+    literals = manager["string_literals"]
+    assert any("컴퓨터와 연결해 보세요" in literal for literal in literals)
+    assert any("내 컴퓨터의 파일과 프로그램을 Padiem에서 사용할 수 있어요." in literal
+               for literal in literals)
     # The connected state names the real PC and reuses the existing state copy.
-    assert "toggleTitle.textContent = device.deviceName || device.deviceId;" in source
-    assert "toggleState.textContent = deviceLabel(device);" in source
+    assert ("toggleTitle.textContent", "device.deviceName || device.deviceId") in manager["assignments_all"]
+    assert ("toggleState.textContent", "deviceLabel(device)") in manager["assignments_all"]
     # The action opens the EXISTING Claw computer connect screen.
-    assert 'document.getElementById("connectorsNavButton")' in source
-    assert 'document.getElementById("connectorComputerCard")' in source
+    lookups = {
+        args for callee, args in manager["call_args"]
+        if callee == "document.getElementById"
+    }
+    assert '"connectorsNavButton"' in lookups
+    assert '"connectorComputerCard"' in lookups
     # No new pairing, registration or connection authority.
+    vocabulary = manager["identifiers"] | literals | manager["member_chains"]
     for forbidden in ("padiem-connector://", "BroadcastChannel", "localStorage"):
-        assert forbidden not in source
-    css = MANAGER_CSS.read_text(encoding="utf-8")
-    assert ".claw-device-manager-toggle-title" in css
-    assert ".claw-device-manager-connect-action" in css
+        assert not any(forbidden in token for token in vocabulary)
+    css = css_facts("claw-device-manager.css")
+    assert ".claw-device-manager-toggle-title" in css["selectors"]
+    assert ".claw-device-manager-connect-action" in css["selectors"]
     # A long server-owned device name must not grow the fixed composer area.
-    assert "text-overflow: ellipsis;" in css
-    assert "white-space: nowrap;" in css
+    assert ("text-overflow", "ellipsis") in css["declarations"]
+    assert ("white-space", "nowrap") in css["declarations"]
 
 
 def test_composer_clearance_sheet_is_linked_statically():
     """A runtime-injected sheet applies too late: the last card would still
     sit under the fixed input until its loader chain resolved."""
-    index = (STATIC / "index.html").read_text(encoding="utf-8")
-    assert 'href="./interaction-polish.css"' in index
-    assert "data-interaction-polish-styles" in index
+    assets = index_assets()
+    assert "./interaction-polish.css" in assets["stylesheets"]
+    assert "data-interaction-polish-styles" in assets["has_attr"]
     # The loader must not add a second copy of the same sheet.
-    assert 'document.querySelector("link[data-interaction-polish-styles]")' in (
-        STATIC / "interaction-polish.js"
-    ).read_text(encoding="utf-8")
+    loader = js_view("interaction-polish.js")
+    assert any(
+        callee == "document.querySelector"
+        and '"link[data-interaction-polish-styles]"' in args
+        for callee, args in loader["call_args"]
+    )
 
 
 MEASURE = """() => {
