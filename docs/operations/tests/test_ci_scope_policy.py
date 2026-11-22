@@ -510,3 +510,5 @@ def test_sparse_pr_report_checkout_does_not_replace_the_full_runner_worktree():
     expected = "${{ runner.environment == 'self-hosted' && 'ci-pr-contract-checkout' || '.' }}"
     assert checkout["with"]["path"] == expected
     assert report["working-directory"] == expected
+
+# Validation-only PR: measure post-merge runner assignment for #8374.
