@@ -23,6 +23,8 @@ from app.b14_slot_status_source import (
 from app.config import Settings
 from app.main import create_app
 
+from _support.credential_slots import static_asset
+
 BASE = "https://chat.test"
 AGNES_KEY = "sk-synthetic-agnes-0123456789-wxyz"
 GOOGLE_KEY = "AIza-synthetic-google-abcdefghij-zsug"
@@ -273,11 +275,8 @@ def test_invalid_state_row_rejects_the_whole_board():
 
 
 def test_static_screen_is_a_separate_asset():
-    from pathlib import Path
-
-    static = Path(__file__).parents[1] / "static"
-    page = (static / "credential-slots.html").read_text(encoding="utf8")
-    script = (static / "credential-slots.js").read_text(encoding="utf8")
+    page = static_asset("credential-slots.html")
+    script = static_asset("credential-slots.js")
     assert "./credential-slots.js" in page
     assert "./credential-slots.css" in page
     assert '"/api/admin/credential-slots"' in script
@@ -293,9 +292,6 @@ def test_screen_is_served_at_the_static_path():
 
 
 def test_existing_admin_pages_link_to_the_screen():
-    from pathlib import Path
-
-    static = Path(__file__).parents[1] / "static"
     for name in ("admin.html", "admin-models.html"):
-        page = (static / name).read_text(encoding="utf8")
+        page = static_asset(name)
         assert 'href="./credential-slots.html"' in page
