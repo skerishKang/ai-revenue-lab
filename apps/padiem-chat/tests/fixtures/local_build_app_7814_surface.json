@@ -221,6 +221,12 @@
    ]
   ],
   [
+   "/api/site-feedback/ingest",
+   [
+    "POST"
+   ]
+  ],
+  [
    "/api/admin/site-feedback",
    [
     "GET",

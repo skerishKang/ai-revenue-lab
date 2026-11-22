@@ -283,6 +283,14 @@
  },
  {
   "type": "Route",
+  "path": "/api/site-feedback/ingest",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "site_feedback_ingest"
+ },
+ {
+  "type": "Route",
   "path": "/api/admin/site-feedback",
   "methods": [
    "GET",
