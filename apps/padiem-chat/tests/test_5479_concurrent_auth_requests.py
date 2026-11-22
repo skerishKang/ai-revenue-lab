@@ -33,7 +33,7 @@ from app.history import D1HistoryStore
 from app.main import create_app
 from app.password_auth import verify_password
 from app.platform_admin_roles import D1PlatformAdminRoleStore
-from test_5434_password_change import (
+from _support.password_change import (
     CURRENT_PASSWORD,
     NEW_PASSWORD,
     CanonicalAuthority,
