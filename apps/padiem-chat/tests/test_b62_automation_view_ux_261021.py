@@ -18,7 +18,6 @@ no browser), so Playwright is optional here and only the real browser checks
 are skipped when it is absent.
 """
 from __future__ import annotations
-import locale_bundle
 
 import http.server
 import json
@@ -31,6 +30,20 @@ import pytest
 # R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import definition_source
 
+# #8060: 원문 읽기는 _support(automation_view_source)가 담당하고 시험은 파싱된
+# HTML id·로케일 맵·JS 토큰·CSS 선언으로 단언한다.
+from _support.automation_view_source import (  # noqa: E402
+    combined_module_text,
+    css_has_selector,
+    css_has_value,
+    css_value,
+    index_attrs,
+    index_ids,
+    locale_key_count,
+    module_tokens,
+    section_ids,
+)
+
 try:  # pragma: no cover - environment dependent
     from playwright.sync_api import sync_playwright
 except ImportError:  # pragma: no cover - environment dependent
@@ -42,10 +55,6 @@ requires_browser = pytest.mark.skipif(
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
-INDEX = STATIC / "index.html"
-APP_JS = STATIC / "app.js"
-VIEWS_CSS = STATIC / "standalone-views.css"
-LOCALE_JS = locale_bundle.SOURCE
 
 AUTH_ENDPOINT = "/api/auth/status"
 RULES_ENDPOINT = "/api/claw/automation/rules"
@@ -149,58 +158,46 @@ def _open_automation(page, server, *, rules_status: int = 200, rules_body=None) 
 
 
 def test_the_header_carries_the_one_primary_action() -> None:
-    index = INDEX.read_text(encoding="utf-8")
     # The primary action opens the existing create disclosure.
-    assert 'id="clawAutomationCreateOpen"' in index
-    assert 'aria-controls="clawAutomationCreate"' in index
-    assert 'aria-expanded="false"' in index
+    assert "clawAutomationCreateOpen" in index_ids()
+    attrs = index_attrs("clawAutomationCreateOpen")
+    assert attrs.get("aria-controls") == "clawAutomationCreate"
+    assert attrs.get("aria-expanded") == "false"
 
 
 def test_a_retry_is_not_part_of_the_permanent_header() -> None:
-    index = INDEX.read_text(encoding="utf-8")
-    retry = re.search(r'<button[^>]*id="clawAutomationRetry"[^>]*>', index)
-    assert retry is not None, "the retry control is missing"
-    assert "hidden" in retry.group(0), "the retry control is visible by default"
+    retry = index_attrs("clawAutomationRetry")
+    assert retry, "the retry control is missing"
+    assert "hidden" in retry, "the retry control is visible by default"
 
 
 def test_the_always_on_technical_prose_left_the_top_of_the_page() -> None:
-    index = INDEX.read_text(encoding="utf-8")
-    section = re.search(
-        r'<section class="claw-inbox" id="clawAutomation".*?</section>', index, re.S
-    )
-    assert section is not None, "the automation section is missing"
-    body = section.group(0)
+    ids = section_ids("clawAutomation")
     # The scope note now sits inside the create form, where the create action
     # is, instead of above the rule list.
-    help_at = body.find('id="clawAutomationHelp"')
-    create_at = body.find('id="clawAutomationCreate"')
-    assert help_at > create_at, "the scope note is not inside the create form"
+    assert ids.index("clawAutomationHelp") > ids.index("clawAutomationCreate")
     # The stored-setting legend sits with the rule rows it explains.
-    note_at = body.find('id="clawAutomationSchedulerNote"')
-    list_at = body.find('id="clawAutomationList"')
-    assert note_at > list_at, "the rule legend is not next to the rule list"
+    assert ids.index("clawAutomationSchedulerNote") > ids.index("clawAutomationList")
 
 
 def test_the_states_are_separate_elements() -> None:
-    index = INDEX.read_text(encoding="utf-8")
+    ids = index_ids()
     for node_id in (
         "clawAutomationLoading",
         "clawAutomationError",
         "clawAutomationForbidden",
         "clawAutomationEmpty",
     ):
-        assert f'id="{node_id}"' in index, node_id
-    locale = LOCALE_JS.read_text(encoding="utf-8")
-    assert '"claw-automation-forbidden"' in locale
+        assert node_id in ids, node_id
     # Both languages carry it, so the state is never shown in one language only.
-    assert locale.count('"claw-automation-forbidden"') == 2
+    assert locale_key_count("claw-automation-forbidden") == 2
 
 
 def test_the_list_load_tells_a_permission_refusal_from_a_failed_load() -> None:
     # R5 A1: 목록 적재 본문은 chat-automation-module.js로 이동했다.
-    source = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
-    assert "setClawAutomationForbidden" in source
-    assert "owner_role_required" in source
+    tokens = module_tokens("chat-automation-module.js")
+    assert "setClawAutomationForbidden" in tokens
+    assert "owner_role_required" in tokens
     # The retry belongs to the failure state and is hidden by the reset.
     reset = re.search(
         r"function resetClawAutomationState\(\) \{(?P<body>.*?)\n  \}",
@@ -224,7 +221,6 @@ def test_the_list_load_tells_a_permission_refusal_from_a_failed_load() -> None:
 
 
 def test_the_page_header_owns_the_title_of_the_moved_section() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
     mount = re.search(
         r"function mountAutomationView\(\) \{(?P<body>.*?)\n  \}",
         definition_source("mountAutomationView"), re.S
@@ -236,9 +232,9 @@ def test_the_page_header_owns_the_title_of_the_moved_section() -> None:
 def test_no_execution_surface_changed() -> None:
     """The rules endpoint, the store and the scheduler are untouched."""
     # R5 A1: 엔드포인트 사용처가 두 자동화 모듈로 이동했다 — app.js에 합쳐 본다.
-    source = (APP_JS.read_text(encoding="utf-8")
-              + (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
-              + (APP_JS.parent / "chat-automation-form-module.js").read_text(encoding="utf-8"))
+    source = combined_module_text([
+        "app.js", "chat-automation-module.js", "chat-automation-form-module.js",
+    ])
     # The page talks to exactly the endpoints it talked to before: the
     # catalogue read, the per-rule edit and the per-rule enable toggle.
     endpoints = set(
@@ -258,18 +254,18 @@ def test_no_execution_surface_changed() -> None:
 
 
 def test_the_page_adds_no_new_visual_language() -> None:
-    css = VIEWS_CSS.read_text(encoding="utf-8")
+    primary = '.app-shell[data-state="automation"] #clawAutomation .claw-inbox-primary'
     # The new controls use the tokens the other destinations already use.
     # #5505: the primary action now uses the shared primary treatment (the
     # Calendar and Meeting actions), because the translucent accent fill it
     # had before left the label at 3.31:1 on the Glass card.
-    assert "background: var(--accent);" in css
-    assert "color: var(--accent-contrast);" in css
+    assert css_value(primary, "background") == "var(--accent)"
+    assert css_value(primary, "color") == "var(--accent-contrast)"
     # #7187 R3 2차: fallback-less token references (the token sheet defines both).
-    assert "var(--line)" in css
-    assert "var(--focus-ring)" in css
+    assert css_has_value("var(--line)")
+    assert css_has_value("var(--focus-ring)")
     # The page stays inside the existing standalone-view frame.
-    assert '.app-shell[data-state="automation"] #clawAutomation' in css
+    assert css_has_selector('.app-shell[data-state="automation"] #clawAutomation')
 
 
 # ---------------------------------------------------------------------------
