@@ -15,18 +15,21 @@ contracts are pinned here:
 """
 from __future__ import annotations
 
+from _support import connection_state_static as state_assets
+
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 
-STATE_JS = (STATIC / "claw-connection-state.js").read_text(encoding="utf-8")
-COMPOSER_JS = (STATIC / "claw-composer-connection-status.js").read_text(encoding="utf-8")
-HOME_JS = (STATIC / "claw-home-choices.js").read_text(encoding="utf-8")
-COMPOSER_CSS = (STATIC / "claw-composer-connection-status.css").read_text(encoding="utf-8")
-NAV_CSS = (STATIC / "capability-nav.css").read_text(encoding="utf-8")
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
+STATE_JS = state_assets.state_js()
+COMPOSER_JS = state_assets.composer_js()
+HOME_JS = state_assets.home_js()
+COMPOSER_CSS_SELECTORS = state_assets.selectors("claw-composer-connection-status.css")
+NAV_CSS_SELECTORS = state_assets.selectors("capability-nav.css")
+COMPOSER_CSS_VALUES = state_assets.declaration_values("claw-composer-connection-status.css")
+NAV_CSS_VALUES = state_assets.declaration_values("capability-nav.css")
 
 STATES = ("connected", "connecting", "disconnected", "unavailable", "preparing")
 
@@ -80,23 +83,23 @@ def test_the_card_copy_covers_every_state():
 
 def test_both_surfaces_use_the_same_state_names():
     for state in STATES:
-        assert f'data-state="{state}"' in COMPOSER_CSS or state in ("disconnected", "preparing"), state
-        assert f'data-connector-status="{state}"' in NAV_CSS or state in ("disconnected", "preparing"), state
+        assert (any(f'data-state="{state}"' in selector for selector in COMPOSER_CSS_SELECTORS)
+                or state in ("disconnected", "preparing")), state
+        assert (any(f'data-connector-status="{state}"' in selector for selector in NAV_CSS_SELECTORS)
+                or state in ("disconnected", "preparing")), state
 
 
 def test_each_state_has_one_colour_on_both_surfaces():
     # The composer chip: connected, connecting and unreadable have their own.
-    assert '[data-state="connected"]' in COMPOSER_CSS
-    assert '[data-state="connecting"]' in COMPOSER_CSS
-    assert '[data-state="unavailable"]' in COMPOSER_CSS
-    # The Connectors card: the same three states carry the same tokens.
-    assert '[data-connector-status="connected"]' in NAV_CSS
-    assert '[data-connector-status="connecting"]' in NAV_CSS
-    assert '[data-connector-status="unavailable"]' in NAV_CSS
-    # The connected tone is the same success token on both surfaces.
-    assert "--success" in COMPOSER_CSS and "--success" in NAV_CSS
-    # The unreadable tone is the same danger token on both surfaces.
-    assert "--danger" in COMPOSER_CSS and "--danger" in NAV_CSS
+    for state in ("connected", "connecting", "unavailable"):
+        assert any(f'[data-state="{state}"]' in selector
+                   for selector in COMPOSER_CSS_SELECTORS), state
+        assert any(f'[data-connector-status="{state}"]' in selector
+                   for selector in NAV_CSS_SELECTORS), state
+    # The connected/unreadable tones use the same tokens on both surfaces.
+    for token in ("--success", "--danger"):
+        assert any(token in value for value in COMPOSER_CSS_VALUES), token
+        assert any(token in value for value in NAV_CSS_VALUES), token
 
 
 # ── never fake a connection ────────────────────────────────────────────────
@@ -122,11 +125,11 @@ def test_a_failed_read_is_not_shown_as_not_connected():
 
 
 def test_the_shared_module_is_loaded_before_the_composer_control():
-    scripts = re.findall(r'src="\./([a-z0-9-]+\.js)"', HTML)
-    assert "claw-connection-state.js" in scripts
-    assert "claw-composer-connection-status.js" in scripts
-    assert scripts.index("claw-connection-state.js") < scripts.index(
-        "claw-composer-connection-status.js"
+    scripts = state_assets.script_sources()
+    assert "./claw-connection-state.js" in scripts
+    assert "./claw-composer-connection-status.js" in scripts
+    assert scripts.index("./claw-connection-state.js") < scripts.index(
+        "./claw-composer-connection-status.js"
     )
 
 
@@ -135,9 +138,5 @@ def test_the_shared_module_is_loaded_before_the_composer_control():
 
 def test_no_connector_backend_or_endpoint_changed():
     # The existing endpoints and the existing device directory reader stay.
-    assert '"/api/claw/local-access/devices"' in (
-        STATIC / "claw-device-manager.js"
-    ).read_text(encoding="utf-8")
-    assert '"/api/connectors/github/status"' in (
-        STATIC / "claw-connector-management.js"
-    ).read_text(encoding="utf-8")
+    assert '"/api/claw/local-access/devices"' in state_assets.device_manager_js()
+    assert '"/api/connectors/github/status"' in state_assets.connector_management_js()
