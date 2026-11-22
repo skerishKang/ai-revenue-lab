@@ -14,7 +14,7 @@ from app.d1_sqlite import SqliteD1, connect
 from app.history import PRODUCT_SCOPE_CHAT
 from app.queue_store_proxy import QueueForwardingHistoryStore
 from test_7065_chat_pc_session_integration import _queue_module
-from test_7603_confirmation_card_expiry import _fixture, UID, WORKSPACE
+from _support.confirmation_card import _fixture, UID, WORKSPACE
 from test_4139_mesh_command import _state, Request, SECRET, NODE, ACCOUNT, DEVICE
 
 SESSION = "a" * 32

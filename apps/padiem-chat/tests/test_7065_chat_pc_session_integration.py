@@ -19,7 +19,7 @@ from app.config import ConfigError, Settings
 from test_7065_chat_pc_session import app_rig, opened, UID, DEVICE, CID
 from test_7065_pc_session_tools import rig
 from _support.connector_one_click import session as canonical_session
-from test_7603_confirmation_card_expiry import _fixture, UID as SQL_UID, WORKSPACE
+from _support.confirmation_card import _fixture, UID as SQL_UID, WORKSPACE
 
 REAL_OWNER_REQUEST = owner_routes._verified_owner_request
 
