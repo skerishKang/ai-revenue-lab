@@ -18,11 +18,19 @@ from pathlib import Path
 
 import pytest
 
+from _support.r5_step3_history import (
+    history_module_source,
+    index_html,
+    run_history_source,
+    app_source,
+    strict_deps_text,
+)
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
-RUN_HISTORY = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+APP = app_source()
+MODULE = history_module_source()
+RUN_HISTORY = run_history_source()
+INDEX = index_html()
 
 NAMES = (
     "renderTyping", "clearHistoryUI", "renderHistorySkeleton",
@@ -187,7 +195,7 @@ def test_module_exposes_one_factory_and_touches_no_dom_at_load() -> None:
         assert f"function {name}(" in MODULE, name
 
 
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+STRICT = strict_deps_text()
 
 _HARNESS = r"""
 const fs = require("fs");
