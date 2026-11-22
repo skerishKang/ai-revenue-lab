@@ -25,8 +25,8 @@ from kagent.local_agent_mesh_drive_reporter import (
     DRIVES_PATH, DRIVE_TARGETS_PATH, MeshDriveReporter,
 )
 from kagent.local_agent_mesh_helper_ready import (
-    AGENT_HELPER_READY_JS, HELPER_READY_HEARTBEAT_SECONDS, HELPER_READY_PATH,
-    HELPER_READY_PROTOCOL, HELPER_READY_SWITCH, HELPER_READY_UNSUPPORTED_PAUSE_SECONDS,
+    AGENT_HELPER_READY_JS, HELPER_READY_PATH,
+    HELPER_READY_PROTOCOL, HELPER_READY_SWITCH, HelperStatusReadFallback,
     MeshHelperReadyReporter, attach_helper_ready, helper_ready_enabled,
 )
 from kagent.local_agent_oracle_mesh_executor import OracleMeshExecutor, POLL_PATH
@@ -528,7 +528,8 @@ def test_attached_source_refuses_an_old_shaped_answer_rather_than_guessing():
     observer = Mock()
     source.observe_helper_ready(observer, source="x", protocol="p", keys=["pipe_open"])
     assert source(["pc-1"]) == []
-    observer.assert_not_called()
+    # No invented console evidence, but the independent fixed-path read can run.
+    observer.assert_called_once_with([], ["pc-1"])
 
 
 @pytest.mark.parametrize("arguments", [
@@ -562,25 +563,18 @@ def relay(status=200, ack=None):
         sent.append(copy.deepcopy(payload))
         return answer["status"], answer["ack"]
 
-    return MeshHelperReadyReporter(post=post, clock=clock), sent, clock, answer
+    return MeshHelperReadyReporter(post=post), sent, clock, answer
 
 
-def test_relay_sends_changes_at_once_and_an_unchanged_state_once_a_minute():
+def test_relay_reports_unchanged_and_changed_observations_every_round():
     reporter, sent, clock, _ = relay()
     rows = [{"device_id": NODE, "helper": dict(MISSING)}]
     assert reporter.observe(rows, [NODE]) == 1
-    assert sent == [{"device_id": NODE, "helper": MISSING}]
     clock.now += 30
-    assert reporter.observe(rows, [NODE]) == 0  # Unchanged inside the minute.
-    # The helper was installed: the next round says so without waiting.
+    assert reporter.observe(rows, [NODE]) == 1
     rows[0]["helper"] = dict(READY)
     assert reporter.observe(rows, [NODE]) == 1
-    assert sent[-1]["helper"] == READY
-    clock.now += HELPER_READY_HEARTBEAT_SECONDS - 1
-    assert reporter.observe(rows, [NODE]) == 0
-    clock.now += 1
-    assert reporter.observe(rows, [NODE]) == 1  # Keeps the receipt younger than 180s.
-    assert len(sent) == 3
+    assert [row["helper"] for row in sent] == [MISSING, MISSING, READY]
 
 
 def test_relay_retries_a_refused_report_and_never_acknowledges_it():
@@ -621,16 +615,13 @@ def test_relay_forgets_an_unlinked_pc_and_reports_it_again_when_relinked():
     assert len(sent) == 2
 
 
-def test_relay_pauses_on_a_queue_that_does_not_serve_the_route_yet():
-    reporter, sent, clock, answer = relay(status=404, ack={})
+def test_relay_logs_404_per_pc_without_suppressing_the_next_report(capsys):
+    reporter, sent, _, answer = relay(status=404, ack={})
     rows = [{"device_id": NODE, "helper": dict(READY)},
             {"device_id": OTHER, "helper": dict(READY)}]
     assert reporter.observe(rows, [NODE, OTHER]) == 0
-    assert len(sent) == 1  # The second PC was not even offered.
-    clock.now += HELPER_READY_UNSUPPORTED_PAUSE_SECONDS - 1
-    assert reporter.observe(rows, [NODE, OTHER]) == 0
-    assert len(sent) == 1
-    clock.now += 1
+    assert len(sent) == 2
+    assert capsys.readouterr().out.count("report=rejected status=404") == 2
     answer.update(status=200, ack={"ok": True})
     assert reporter.observe(rows, [NODE, OTHER]) == 2
 
@@ -638,8 +629,7 @@ def test_relay_pauses_on_a_queue_that_does_not_serve_the_route_yet():
 def test_relay_never_raises_into_the_drive_round():
     reporter = MeshHelperReadyReporter(post=Mock(side_effect=OSError("queue down")))
     assert reporter.observe([{"device_id": NODE, "helper": dict(READY)}], [NODE]) == 0
-    broken_clock = MeshHelperReadyReporter(post=Mock(), clock=Mock(side_effect=OSError("clock")))
-    assert broken_clock.observe([{"device_id": NODE, "helper": dict(READY)}], [NODE]) == 0
+    assert reporter.observe([], None) == 0
     with pytest.raises(ValueError):
         MeshHelperReadyReporter(post=None)
 
@@ -811,17 +801,17 @@ def test_private_file_read_fallback_posts_when_the_console_round_is_silent():
         return 200, {"ok": True}
 
     fallback = HelperStatusReadFallback(post=post, read_port=Port())
-    assert fallback.observe([{"device_id": NODE, "helper": READY}], [NODE]) == 0
     assert fallback.observe([], [NODE]) == 1
     assert sent[0][0] == HELPER_READY_PATH
     state = sent[0][1]["helper"]
     assert state["helper_version"] == "0.3.0-rc2"
     assert state["helper_build"] == digest[:12]
     assert "user" not in state and "private-account" not in repr(state)
-    assert fallback.observe([], [NODE]) == 0
+    assert fallback.observe([], [NODE]) == 1
+    assert len(sent) == 2
 
 
-def test_file_fallback_retries_the_bare_node_reference():
+def test_file_fallback_uses_the_bare_node_reference_without_truncating_at_sign():
     from kagent.local_agent_mesh_helper_ready import HelperStatusReadFallback
 
     digest = "9f2acb5916c0" + "a" * 52
@@ -830,8 +820,7 @@ def test_file_fallback_retries_the_bare_node_reference():
 
     class Port:
         def read_bytes(self, *, node_ref, file_path, timeout_seconds, max_bytes=None):
-            if node_ref.startswith("node/"):
-                raise RuntimeError("canonical reference not accepted by the read lane")
+            assert node_ref == "synthetic@opaque"
             return raw
 
     sent = []
@@ -841,5 +830,143 @@ def test_file_fallback_retries_the_bare_node_reference():
         return 200, {"ok": True}
 
     fallback = HelperStatusReadFallback(post=post, read_port=Port())
-    assert fallback.observe([], [NODE]) == 1
+    target = "node//synthetic@opaque"
+    assert fallback.observe([], [target]) == 1
+    assert sent[0][1]["device_id"] == target
     assert sent[0][1]["helper"]["helper_build"] == digest[:12]
+
+
+@needs_node
+def test_bridge_production_key_set_preserves_absence_of_optional_fields():
+    completed = run_bridge({
+        "device_ids": ["pc-1"], "helper_source": AGENT_HELPER_READY_JS,
+        "helper_protocol": HELPER_READY_PROTOCOL,
+        "helper_keys": sorted(HELPER_READY_KEYS | HELPER_READY_OPTIONAL_KEYS)})
+    assert completed.returncode == 0, completed.stderr
+    state = json.loads(completed.stdout)["helper"][0]["helper"]
+    assert validate_helper_ready(state) == state
+    assert state["helper_status_present"] is False
+    assert "auto_update" not in state and "update_result" not in state
+
+
+def test_three_pcs_missing_file_legacy_record_and_current_record_each_report(capsys):
+    from kagent.local_agent_meshcentral_private_reader import MeshCentralReadRefused
+
+    missing, legacy, current = ("node//private-missing", "node//private-legacy",
+                                "node//private-current")
+    digest = "a" * 64
+    def read_bytes(*, node_ref, **kwargs):
+        if node_ref.endswith("missing"):
+            raise MeshCentralReadRefused("the official meshcentral client wrote no staged read")
+        record = {"status": "installed", "sha256": digest, "user": "PRIVATE-USER"}
+        if node_ref.endswith("current"):
+            record.update(version="1.2.3", auto_update=True, update_result="current")
+        return json.dumps(record).encode()
+
+    port = Mock(read_bytes=Mock(side_effect=read_bytes))
+    sent = []
+    def post(path, payload):
+        assert path == HELPER_READY_PATH
+        sent.append(payload)
+        return 200, {"ok": True}
+
+    fallback = HelperStatusReadFallback(post=post, read_port=port)
+    # Formerly an invalid console observation suppressed the file fallback.
+    invalid = [{"device_id": legacy, "helper": {**READY, "update_result": None}}]
+    for _ in range(2):
+        assert fallback.observe(invalid, [missing, legacy, current]) == 3
+    assert len(sent) == 6
+    records = {row["device_id"]: row["helper"] for row in sent}
+    assert records[missing] == dict.fromkeys(HELPER_READY_KEYS)
+    assert records[legacy]["helper_sha256"] == digest
+    assert records[legacy]["helper_status_present"] is True
+    assert "helper_version" not in records[legacy]
+    assert records[current]["helper_version"] == "1.2.3"
+    assert records[current]["update_result"] == "current"
+    assert records[current]["auto_update"] is True
+    assert "PRIVATE-USER" not in repr(sent)
+    logs = capsys.readouterr().out
+    assert "reason=no_staged_read" in logs
+    assert "reason=version_unknown report=accepted status=200" in logs
+    assert logs.count("reports=3 report_failed=0") == 2
+    for value in (missing, legacy, current, digest, "PRIVATE-USER"):
+        assert value not in logs
+
+
+@pytest.mark.parametrize("raw,reason", [
+    (b"broken", "invalid_json"),
+    (b'{"status":"not_installed"}', "not_installed_record"),
+    (b'{"status":"installed","sha256":"secret"}', "invalid_digest"),
+])
+def test_read_success_with_incomplete_file_reports_only_proven_facts(raw, reason, capsys):
+    port = Mock(read_bytes=Mock(return_value=raw))
+    post = Mock(return_value=(200, {"ok": True}))
+    fallback = HelperStatusReadFallback(post=post, read_port=port)
+    assert fallback.observe([], [NODE]) == 1
+    state = post.call_args.args[1]["helper"]
+    assert state["helper_status_present"] is True
+    assert state["helper_build"] is None
+    assert reason in capsys.readouterr().out
+
+
+def test_console_missing_file_is_a_report_not_an_installation_request(capsys):
+    port = Mock()
+    post = Mock(return_value=(200, {"ok": True}))
+    fallback = HelperStatusReadFallback(post=post, read_port=port)
+    state = {**MISSING, "helper_status_present": False}
+    assert fallback.observe([{"device_id": NODE, "helper": state}], [NODE]) == 1
+    port.read_bytes.assert_not_called()
+    assert post.call_args.args[1]["helper"] == state
+    assert "reason=file_missing report=accepted status=200" in capsys.readouterr().out
+
+
+def test_server_refusal_is_logged_and_retried_without_echoing_response(capsys):
+    port = Mock(read_bytes=Mock(return_value=b"broken"))
+    post = Mock(side_effect=[(403, {"error": "PRIVATE-SECRET"}), (200, {"ok": True})])
+    fallback = HelperStatusReadFallback(post=post, read_port=port)
+    assert fallback.observe([], [NODE]) == 0
+    assert fallback.observe([], [NODE]) == 1
+    logs = capsys.readouterr().out
+    assert "report=rejected status=403" in logs
+    assert "report=accepted status=200" in logs
+    assert NODE not in logs and "PRIVATE-SECRET" not in logs
+
+
+def test_bridge_failure_still_offers_targets_for_independent_read():
+    source = make_source(lambda argv, **kw: SimpleNamespace(returncode=1, stdout=""))
+    observer = Mock()
+    source.observe_helper_ready(observer, source="x", protocol="p", keys=["pipe_open"])
+    assert source(["pc-1"]) == []
+    observer.assert_called_once_with([], ["pc-1"])
+
+
+@pytest.mark.parametrize("failure,reason", [
+    (PermissionError("PRIVATE-PATH"), "permission_denied"),
+    (TimeoutError("PRIVATE-PATH"), "timeout"),
+])
+def test_read_failure_reports_unknown_and_logs_only_bounded_reason(failure, reason, capsys):
+    port = Mock(read_bytes=Mock(side_effect=failure))
+    post = Mock(return_value=(200, {"ok": True}))
+    fallback = HelperStatusReadFallback(post=post, read_port=port)
+    assert fallback.observe([], [NODE]) == 1
+    assert post.call_args.args[1]["helper"] == dict.fromkeys(HELPER_READY_KEYS)
+    log = capsys.readouterr().out
+    assert f"read=unavailable reason={reason} report=accepted status=200" in log
+    assert "PRIVATE-PATH" not in log and NODE not in log
+
+
+def test_new_file_release_never_inherits_incompatible_console_release_fields():
+    state = {**READY, "helper_status_present": True,
+             "update_result": "registration_failed",
+             "update_registration_error": "updater_running"}
+    raw = json.dumps({"status": "installed", "sha256": "a" * 64,
+                      "version": "1.2.3", "update_result": "current"}).encode()
+    post = Mock(return_value=(200, {"ok": True}))
+    fallback = HelperStatusReadFallback(post=post, read_port=Mock(
+        read_bytes=Mock(return_value=raw)))
+    assert fallback.observe([{"device_id": NODE, "helper": state}], [NODE]) == 1
+    seen = post.call_args.args[1]["helper"]
+    assert seen["update_result"] == "current"
+    assert "update_registration_error" not in seen
+    assert seen["pipe_open"] is True
+    assert seen["helper_sha256"] == "a" * 64

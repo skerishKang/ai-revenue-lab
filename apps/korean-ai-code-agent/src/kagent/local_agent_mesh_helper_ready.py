@@ -28,22 +28,15 @@ from __future__ import annotations
 
 import json
 import re
-import time
 from typing import Any, Callable, Iterable
 
 from padiem_ai_core.pc_helper_ready import (
-    HELPER_READY_KEYS, HELPER_READY_OPTIONAL_KEYS, HelperReadyError, validate_helper_ready,
+    HELPER_READY_KEYS, HELPER_READY_OPTIONAL_KEYS, HELPER_UPDATE_RESULTS,
+    REGISTRATION_ERRORS, HelperReadyError, validate_helper_ready,
 )
 
 HELPER_READY_PATH = "/api/claw/connector/mesh-reads/helper-ready"
 HELPER_READY_PROTOCOL = "padiem-helper-ready-v1"
-#: The server reads a receipt older than 180 seconds as "not known", so an
-#: unchanged observation is sent again on the first round a minute after the
-#: last one the queue accepted.
-HELPER_READY_HEARTBEAT_SECONDS = 60
-#: A queue that predates this route answers 404. It is asked again after this
-#: long instead of on every round.
-HELPER_READY_UNSUPPORTED_PAUSE_SECONDS = 600
 #: Off unless the deployment sets this to 1/true/on. Unset keeps the drive
 #: round byte-for-byte what it was.
 HELPER_READY_SWITCH = "ORACLE_MESH_HELPER_READY_REPORT"
@@ -155,74 +148,79 @@ def helper_ready_enabled(env: Any) -> bool:
     return isinstance(value, str) and value.strip().lower() in {"1", "true", "on"}
 
 
+def _pc_suffix(node: str) -> str:
+    # The full routing reference is used only on the authenticated wire.
+    return re.sub(r"[^A-Za-z0-9_$@+.-]", "_", node.rsplit("/", 1)[-1][-6:])
+
+
+def _targets(targets: Iterable[str]) -> list[str]:
+    return list(dict.fromkeys(node for node in targets
+                              if isinstance(node, str) and node))
+
+
+def _console_states(rows: Any, targets: list[str]) -> dict[str, dict[str, Any]]:
+    states = {}
+    for row in rows if isinstance(rows, list) else ():
+        if not isinstance(row, dict) or set(row) != {"device_id", "helper"}:
+            continue
+        node = row["device_id"]
+        if not isinstance(node, str) or node not in targets or node in states:
+            continue
+        try:
+            states[node] = validate_helper_ready(row["helper"])
+        except HelperReadyError:
+            print(f"oracle-mesh-executor helper_ready_console pc={_pc_suffix(node)} "
+                  "read=failed reason=invalid_observation", flush=True)
+    return states
+
+
 class MeshHelperReadyReporter:
-    """Forward changed observations, and an unchanged one once a minute.
+    """Submit one closed observation per PC per round, including repeats."""
 
-    It is handed the rows the drive round already fetched; it never asks a PC
-    for anything itself. A failed delivery stays unacknowledged and is offered
-    again on the next round, and nothing here can raise into the drive round.
-    """
-
-    def __init__(self, *, post: Callable[[str, dict[str, Any]], tuple[int, Any]],
-                 clock: Callable[[], float] = time.monotonic) -> None:
-        if not callable(post) or not callable(clock):
-            raise ValueError("a channel post and a clock are required")
+    def __init__(self, *, post: Callable[[str, dict[str, Any]], tuple[int, Any]]) -> None:
+        if not callable(post):
+            raise ValueError("a channel post is required")
         self._post = post
-        self._clock = clock
-        self._accepted: dict[str, tuple[str, float]] = {}
-        self._paused_until: float | None = None
+
+    def report(self, node: str, state: dict[str, Any], *, source: str,
+               read: str, reason: str, attempts: int = 0) -> bool:
+        status = "-"
+        result = "rejected"
+        try:
+            state = validate_helper_ready(state)
+            code, ack = self._post(HELPER_READY_PATH, {"device_id": node, "helper": state})
+            if type(code) is int and 100 <= code <= 599:
+                status = str(code)
+            if code == 200 and isinstance(ack, dict) and ack.get("ok") is True:
+                result = "accepted"
+            elif code == 200:
+                result = "invalid_ack"
+        except HelperReadyError:
+            result = "invalid_observation"
+        except Exception:
+            result = "post_error"
+        print(f"oracle-mesh-executor helper_ready_node pc={_pc_suffix(node)} "
+              f"source={source} attempts={attempts} read={read} reason={reason} "
+              f"report={result} status={status}", flush=True)
+        return result == "accepted"
 
     def observe(self, rows: Any, targets: Iterable[str]) -> int:
-        """One round's rows for the PCs the queue named. Returns the reports accepted."""
-        reported = 0
         try:
-            allowed = {value for value in targets if isinstance(value, str) and value}
-            self._accepted = {key: value for key, value in self._accepted.items()
-                              if key in allowed}
-            now = self._clock()
-            if self._paused_until is not None:
-                if now < self._paused_until:
-                    return reported
-                self._paused_until = None
-            seen: set[str] = set()
-            for row in rows if isinstance(rows, list) else ():
-                if not isinstance(row, dict) or set(row) != {"device_id", "helper"}:
+            nodes = _targets(targets)
+            states = _console_states(rows, nodes)
+            reported = 0
+            for node in nodes:
+                state = states.get(node)
+                if state is None:
+                    print(f"oracle-mesh-executor helper_ready_node pc={_pc_suffix(node)} "
+                          "source=console attempts=0 read=unavailable reason=no_valid_reply "
+                          "report=not_attempted status=-", flush=True)
                     continue
-                node = row["device_id"]
-                if not isinstance(node, str) or node not in allowed or node in seen:
-                    continue
-                seen.add(node)
-                try:
-                    state = validate_helper_ready(row["helper"])
-                except HelperReadyError:
-                    continue
-                fingerprint = json.dumps(state, sort_keys=True, separators=(",", ":"))
-                previous = self._accepted.get(node)
-                if (previous is not None and previous[0] == fingerprint
-                        and now - previous[1] < HELPER_READY_HEARTBEAT_SECONDS):
-                    continue
-                try:
-                    status, ack = self._post(HELPER_READY_PATH,
-                                             {"device_id": node, "helper": state})
-                except Exception:
-                    continue
-                if status == 404:
-                    # The queue does not serve this route yet. Asking it again
-                    # for every PC on every round would only make noise.
-                    self._paused_until = now + HELPER_READY_UNSUPPORTED_PAUSE_SECONDS
-                    print("oracle-mesh-executor helper_ready route_unsupported pause=%d"
-                          % HELPER_READY_UNSUPPORTED_PAUSE_SECONDS, flush=True)
-                    return reported
-                if status == 200 and isinstance(ack, dict) and ack.get("ok") is True:
-                    self._accepted[node] = (fingerprint, now)
-                    reported += 1
-                print("oracle-mesh-executor helper_ready reports=%d status=%d"
-                      % (reported, status), flush=True)
+                reported += self.report(node, state, source="console", read="ok",
+                                        reason=_state_reason(state))
+            return reported
         except Exception:
-            # Readiness is evidence for a screen. It must never stop the drive
-            # round it rides on, and a failed read is not "not ready".
-            pass
-        return reported
+            return 0
 
 
 HELPER_STATUS_READ_PATH = "C:\\ProgramData\\Padiem\\helper-status.json"
@@ -230,93 +228,152 @@ _STATUS_SHA = re.compile(r"[0-9a-fA-F]{64}\Z")
 _STATUS_VERSION = re.compile(r"[0-9][0-9A-Za-z._-]{0,63}\Z")
 
 
-class HelperStatusReadFallback:
-    """Read the PC's status file through the existing private Mesh file port.
+def _state_reason(state: dict[str, Any]) -> str:
+    if state.get("helper_status_present") is False:
+        return "file_missing"
+    if state.get("helper_sha256") and not state.get("helper_version"):
+        return "version_unknown"
+    if state.get("helper_status_present") is True and not state.get("helper_sha256"):
+        return "release_unknown"
+    return "observed"
 
-    The console observation is one round among many and can be silent on a PC
-    that answers the drive probe. The file read is a second, independent way
-    to learn the same release; it never opens a new channel and never changes
-    a PC. Only the closed release fields are copied; the user id and the full
-    digest in the file are not sent or logged.
+
+def _file_state(raw: Any) -> tuple[dict[str, Any], str]:
+    # Reading a file proves its presence, not installation or readiness.
+    state = dict.fromkeys(HELPER_READY_KEYS)
+    state.update(install_dir_present=True, helper_status_present=True)
+    try:
+        text = json.loads(raw.decode("utf-8-sig"))
+    except (UnicodeError, ValueError, RecursionError):
+        return state, "invalid_json"
+    if not isinstance(text, dict) or text.get("status") != "installed":
+        return state, "not_installed_record"
+    sha, version = text.get("sha256"), text.get("version")
+    if not isinstance(sha, str) or _STATUS_SHA.fullmatch(sha) is None:
+        return state, "invalid_digest"
+    state.update(helper_build=sha[:12].lower(), helper_sha256=sha.lower())
+    # Older installed records have a digest but no version. The wire explicitly
+    # permits this; retain the observed digest instead of discarding the PC.
+    if isinstance(version, str) and _STATUS_VERSION.fullmatch(version):
+        state["helper_version"] = version
+    reason = "observed" if "helper_version" in state else "version_unknown"
+    result = text.get("update_result")
+    if isinstance(result, str) and result in HELPER_UPDATE_RESULTS:
+        state["update_result"] = result
+        error = text.get("update_registration_error")
+        if result == "registration_failed" and isinstance(error, str) and error in REGISTRATION_ERRORS:
+            state["update_registration_error"] = error
+    target = text.get("update_target_sha256")
+    if isinstance(target, str) and re.fullmatch(r"[0-9a-f]{64}", target):
+        state["update_target_sha256"] = target
+    if type(text.get("auto_update")) is bool:
+        state["auto_update"] = text["auto_update"]
+    return state, reason
+
+
+def _read_failure(exc: Exception) -> str:
+    # Never print exception text: the CLI may include paths, credentials or IDs.
+    from .local_agent_meshcentral_private_reader import (
+        MeshCentralReadRequestRefused, MeshCentralReadTooLarge, MeshCentralReadRefused,
+    )
+    if isinstance(exc, MeshCentralReadRequestRefused):
+        return "request_refused"
+    if isinstance(exc, MeshCentralReadTooLarge):
+        return "too_large"
+    if isinstance(exc, FileNotFoundError):
+        return "local_file_not_found"
+    if isinstance(exc, PermissionError):
+        return "permission_denied"
+    if isinstance(exc, TimeoutError):
+        return "timeout"
+    if isinstance(exc, MeshCentralReadRefused):
+        message = str(exc).lower()
+        if "exceeded the read timeout" in message:
+            return "timeout"
+        if "wrote no staged read" in message:
+            return "no_staged_read"
+        if "access denied" in message or "permission denied" in message:
+            return "permission_denied"
+        return "port_refused"
+    return "read_error"
+
+
+class HelperStatusReadFallback:
+    """Use console evidence first, then the existing fixed-path private read.
+
+    Every target gets one report attempt, even if both sources fail: in that
+    case all facts are unknown. A missing or inaccessible file is not a claim
+    that the PC is uninstalled. Never invent a version or forward file content.
     """
 
-    def __init__(self, *, post: Any, read_port: Any, accepted: dict | None = None,
-                 clock: Callable[[], float] = time.monotonic) -> None:
+    def __init__(self, *, post: Any, read_port: Any,
+                 reporter: MeshHelperReadyReporter | None = None) -> None:
         if not callable(post) or read_port is None:
             raise ValueError("a channel post and a private read port are required")
-        self._post = post
+        self._reporter = reporter if reporter is not None else MeshHelperReadyReporter(post=post)
         self._read_port = read_port
-        self._accepted = accepted if accepted is not None else {}
-        self._clock = clock
 
     def observe(self, rows: Any, targets: Any) -> int:
-        reported = 0
-        try:
-            answered = {row["device_id"] for row in rows if isinstance(row, dict)
-                        and set(row) == {"device_id", "helper"}
-                        and isinstance(row.get("device_id"), str)}
-            now = self._clock()
-            attempted = read_ok = 0
-            for node in targets if isinstance(targets, (list, tuple, set)) else ():
-                if not isinstance(node, str) or not node or node in answered:
+        reported = file_attempts = read_ok = console_ok = 0
+        nodes = _targets(targets) if isinstance(targets, (list, tuple, set)) else []
+        states = _console_states(rows, nodes)
+        for node in nodes:
+            state = states.get(node)
+            if state is not None and (state.get("helper_status_present") is False
+                                      or state.get("helper_sha256")):
+                console_ok += 1
+                reported += self._reporter.report(
+                    node, state, source="console", read="ok", reason=_state_reason(state))
+                continue
+            file_attempts += 1
+            # The private read port's canonical validator accepts bare IDs,
+            # not node/domain/id. Strip only the known envelope, never a
+            # character (such as @) within the opaque node identifier.
+            refs = [node.rsplit("/", 1)[-1] if node.startswith("node/") else node]
+            attempts = 0
+            reason = "read_error"
+            for ref in dict.fromkeys(refs):
+                attempts += 1
+                try:
+                    raw = self._read_port.read_bytes(
+                        node_ref=ref, file_path=HELPER_STATUS_READ_PATH,
+                        timeout_seconds=15, max_bytes=8192,
+                    )
+                except Exception as exc:
+                    reason = _read_failure(exc)
+                    print(f"oracle-mesh-executor helper_ready_read pc={_pc_suffix(node)} "
+                          f"attempt={attempts} read=failed reason={reason}", flush=True)
                     continue
-                attempted += 1
-                candidates = [node]
-                if node.startswith("node/"):
-                    candidates.append(node.rsplit("/", 1)[-1])
-                if "@" in node:
-                    candidates.append(node.split("@", 1)[0])
-                raw = None
-                for ref in dict.fromkeys(candidates):
-                    try:
-                        raw = self._read_port.read_bytes(
-                            node_ref=ref, file_path=HELPER_STATUS_READ_PATH,
-                            timeout_seconds=15, max_bytes=8192,
-                        )
-                        break
-                    except Exception:
-                        continue
-                if raw is None:
+                if not isinstance(raw, (bytes, bytearray)):
+                    reason = "invalid_read_body"
+                    print(f"oracle-mesh-executor helper_ready_read pc={_pc_suffix(node)} "
+                          f"attempt={attempts} read=failed reason={reason}", flush=True)
                     continue
                 read_ok += 1
-                try:
-                    text = json.loads(raw.decode("utf-8-sig"))
-                except Exception:
-                    continue
-                if not isinstance(text, dict) or text.get("status") != "installed":
-                    continue
-                sha, version = text.get("sha256"), text.get("version")
-                if (not isinstance(sha, str) or _STATUS_SHA.fullmatch(sha) is None
-                        or not isinstance(version, str) or _STATUS_VERSION.fullmatch(version) is None):
-                    continue
-                state = {
-                    "task_present": None, "install_dir_present": True,
-                    "pipe_open": None, "interactive_session": None,
-                    "helper_build": sha[:12].lower(), "helper_sha256": sha.lower(),
-                    "helper_version": version, "helper_status_present": True,
-                }
-                try:
-                    validate_helper_ready(state)
-                except HelperReadyError:
-                    continue
-                fingerprint = json.dumps(state, sort_keys=True, separators=(",", ":"))
-                previous = self._accepted.get(node)
-                if (previous is not None and previous[0] == fingerprint
-                        and now - previous[1] < HELPER_READY_HEARTBEAT_SECONDS):
-                    continue
-                try:
-                    status, ack = self._post(HELPER_READY_PATH, {"device_id": node, "helper": state})
-                except Exception:
-                    continue
-                if status == 200 and isinstance(ack, dict) and ack.get("ok") is True:
-                    self._accepted[node] = (fingerprint, now)
-                    reported += 1
-                print("oracle-mesh-executor helper_ready_file reports=%d status=%d" % (reported, status),
-                      flush=True)
-            print("oracle-mesh-executor helper_ready_file_round targets=%d read_ok=%d reports=%d"
-                  % (attempted, read_ok, reported), flush=True)
-        except Exception:
-            pass
+                file_state, reason = _file_state(raw)
+                if state is not None:
+                    # Preserve independent console facts, not older release
+                    # fields whose dependencies (digest, update result) may
+                    # disagree with the freshly read file.
+                    for key in ("task_present", "pipe_open", "interactive_session",
+                                "mesh_agent_version", "updater_task_present",
+                                "updater_source_present", "updater_source_sha256"):
+                        if key in state:
+                            file_state[key] = state[key]
+                reported += self._reporter.report(
+                    node, file_state, source="file", read="ok", reason=reason, attempts=attempts)
+                break
+            else:
+                # A transport refusal/no staged file is ambiguous. Do not
+                # mislabel it as absence or reuse stale success as fresh data.
+                unknown = state if state is not None else dict.fromkeys(HELPER_READY_KEYS)
+                reported += self._reporter.report(
+                    node, unknown, source="console" if state is not None else "file",
+                    read="partial" if state is not None else "unavailable",
+                    reason=reason, attempts=attempts)
+        print(f"oracle-mesh-executor helper_ready_round targets={len(nodes)} "
+              f"file_attempts={file_attempts} read_ok={read_ok} console_ok={console_ok} "
+              f"reports={reported} report_failed={len(nodes) - reported}", flush=True)
         return reported
 
 
@@ -331,14 +388,9 @@ def attach_helper_ready(source: Any, env: Any, *, post: Any,
     reporter = MeshHelperReadyReporter(post=post)
     if read_port is not None:
         fallback = HelperStatusReadFallback(
-            post=post, read_port=read_port, accepted=reporter._accepted,
+            post=post, read_port=read_port, reporter=reporter,
         )
-
-        def combined(rows, targets):
-            reporter.observe(rows, targets)
-            fallback.observe(rows, targets)
-
-        observer = combined
+        observer = fallback.observe
     else:
         observer = reporter.observe
     observe(observer, source=AGENT_HELPER_READY_JS,
@@ -347,7 +399,7 @@ def attach_helper_ready(source: Any, env: Any, *, post: Any,
 
 
 __all__ = [
-    "AGENT_HELPER_READY_JS", "HELPER_READY_HEARTBEAT_SECONDS", "HELPER_READY_PATH",
-    "HELPER_READY_PROTOCOL", "HELPER_READY_SWITCH", "HELPER_READY_UNSUPPORTED_PAUSE_SECONDS",
+    "AGENT_HELPER_READY_JS", "HELPER_READY_PATH",
+    "HELPER_READY_PROTOCOL", "HELPER_READY_SWITCH",
     "MeshHelperReadyReporter", "attach_helper_ready", "helper_ready_enabled",
 ]
