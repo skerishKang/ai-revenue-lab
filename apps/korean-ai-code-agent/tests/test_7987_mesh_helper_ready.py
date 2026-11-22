@@ -799,8 +799,9 @@ def test_private_file_read_fallback_posts_when_the_console_round_is_silent():
                       "version": "0.3.0-rc2", "user": "private-account"}).encode("utf-8")
 
     class Port:
-        def read_bytes(self, **kwargs):
-            assert kwargs["file_path"].endswith("helper-status.json")
+        def read_bytes(self, *, node_ref, file_path, timeout_seconds, max_bytes=None):
+            assert file_path.endswith("helper-status.json")
+            assert timeout_seconds > 0
             return raw
 
     sent = []
