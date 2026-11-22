@@ -45,29 +45,35 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.history import PRODUCT_SCOPE_CHAT
 
-# R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
-from _r5_function_source import function_body, from_definition
-
-ROOT = Path(__file__).resolve().parents[1]
-APP_JS = ROOT / "static/app.js"
-STATE_JS = ROOT / "static/conversation-state.js"
-HISTORY_PY = ROOT / "app/history_constants.py"
-
-
-def _app_source() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+# #8060: 원문 read는 파일 전용 _support가 담당하고 시험은 파싱 값·정규화된
+# 함수 문장으로 단언한다. 공용 claw_static은 건드리지 않는다.
+from _support.chat_claw_continuity_source import (
+    app_identifiers,
+    app_js_path,
+    function_statements,
+    history_constants,
+    state_call_chains,
+    state_call_names,
+    state_chain_objects,
+    state_conversation_initializer,
+    state_function_signatures,
+    state_identifiers,
+    state_js_path,
+    transport_js_path,
+)
 
 
 # ── static contracts ─────────────────────────────────────────────────────────
 
 
 def test_the_browser_keeps_one_conversation_for_both_screens() -> None:
-    state = STATE_JS.read_text(encoding="utf-8")
     # One store, not one per product.
-    assert "const conversation = { messages: [], conversationId: null, skill: \"auto\" };" in state
-    assert "PRODUCT_IDS.forEach((id) => resetProduct(id));" not in state
-    assert "if (!slots.has(id)) slots.set(id" not in state
+    assert state_conversation_initializer() == '{ messages: [], conversationId: null, skill: "auto" }'
+    chains = state_call_chains()
+    assert "PRODUCT_IDS.forEach" not in chains
+    assert "slots.set" not in chains
     # The plain API every existing call site uses still exists.
+    signatures = state_function_signatures()
     for name in (
         "function reset()",
         "function resetProduct()",
@@ -79,45 +85,44 @@ def test_the_browser_keeps_one_conversation_for_both_screens() -> None:
         "function getConversationId()",
         "function setConversationId(value)",
     ):
-        assert name in state, name
+        assert name in signatures, name
     # No DOM, no network, no model in the turn store.
-    for forbidden in ("document.", "fetch(", "AbortController"):
-        assert forbidden not in state, forbidden
+    assert "document" not in state_chain_objects()
+    assert "fetch" not in state_call_names()
+    assert "AbortController" not in state_identifiers()
 
 
 def test_the_panel_no_longer_parks_one_screen_to_show_the_other() -> None:
-    app = _app_source()
-    assert "parkProductTurns" not in app
-    assert "restoreProductTurns" not in app
-    assert "productViews" not in app
-    switch = function_body("switchConversationProduct")
+    identifiers = app_identifiers()
+    assert "parkProductTurns" not in identifiers
+    assert "restoreProductTurns" not in identifiers
+    assert "productViews" not in identifiers
+    switch = function_statements("switchConversationProduct")
     # The lane changes; the transcript does not.
-    assert "conversationState.setProduct?.(target);" in switch
-    assert "messageList.replaceChildren()" not in switch
+    assert "deps.conversationState.setProduct?.(target);" in switch
+    assert not any("messageList.replaceChildren()" in statement for statement in switch)
     # The Claw artifact index still follows the Claw screen.
-    assert "conversationArtifactContext?.clear?.();" in switch
+    assert "deps.conversationArtifactContext?.clear?.();" in switch
 
 
 def test_a_claw_submit_carries_the_chat_conversation_id() -> None:
-    app = _app_source()
-    submit = from_definition("submitPrompt", prefix="async function ")
-    submit = submit[: submit.index("\n  }")]
+    submit = function_statements("submitPrompt", prefix="async function ")
     # The lane is still decided per submit…
     assert "const product = clawGeneralRequest ? PRODUCT_CLAW : PRODUCT_CHAT;" in submit
     # …and the conversation comes from the one shared store.
-    assert "conversationState.getConversationId(product)" in submit
+    assert any("conversationState.getConversationId(product)" in statement for statement in submit)
     # A saved thread is loaded into that same store, whichever lane owns it.
-    open_saved = function_body("openSavedConversation")
+    open_saved = function_statements("openSavedConversation")
     assert "conversationState.resetProduct?.(targetProduct);" in open_saved
     assert "conversationState.setConversationId(data.conversation.id, targetProduct);" in open_saved
 
 
 def test_the_server_still_keeps_one_scoped_record_for_both_lanes() -> None:
     """No schema change: the continuity is one id in one existing scope."""
-    history = HISTORY_PY.read_text(encoding="utf-8")
-    assert 'PRODUCT_SCOPE_CHAT = "b62-chat"' in history
-    assert 'KNOWN_PRODUCT_SCOPES = frozenset({PRODUCT_SCOPE_CHAT, PRODUCT_SCOPE_B66})' in history
-    assert "PRODUCT_SCOPE_CLAW" not in history
+    scopes = history_constants()
+    assert scopes["PRODUCT_SCOPE_CHAT"] == "b62-chat"
+    assert scopes["KNOWN_PRODUCT_SCOPES"] == "frozenset({PRODUCT_SCOPE_CHAT, PRODUCT_SCOPE_B66})"
+    assert "PRODUCT_SCOPE_CLAW" not in scopes
 
 
 # ── behavioural proof: the real conversation-state.js ────────────────────────
@@ -126,7 +131,7 @@ def test_the_server_still_keeps_one_scoped_record_for_both_lanes() -> None:
 def test_one_conversation_survives_every_screen_switch() -> None:
     script = f"""
     global.window = {{}};
-    require({json.dumps(str(STATE_JS))});
+    require({json.dumps(str(state_js_path()))});
     const state = window.PadiemChatConversationState;
     state.setProduct("chat");
     state.setConversationId("conv_shared");
@@ -494,9 +499,8 @@ def _run_harness() -> dict:
     with tempfile.TemporaryDirectory() as tmp:
         harness = Path(tmp) / "harness.js"
         harness.write_text(_HARNESS, encoding="utf-8")
-        transport = ROOT / "static/chat-transport.js"
         completed = subprocess.run(
-            ["node", str(harness), str(APP_JS), str(STATE_JS), str(transport)],
+            ["node", str(harness), str(app_js_path()), str(state_js_path()), str(transport_js_path())],
             capture_output=True,
             text=True, encoding="utf-8",
         )
