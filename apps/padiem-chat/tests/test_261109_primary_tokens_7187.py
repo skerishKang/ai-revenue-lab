@@ -56,6 +56,8 @@ class TestPrimaryTokens(unittest.TestCase):
         self.assertEqual(
             set(props),
             set(PRIMARY_NUMBERS)
+            | {"--sidebar-control-inset", "--sidebar-control-radius",
+               "--sidebar-control-height"}
             | {"--line", "--input-border-strong", "--focus-ring", "--surface-border"}
             | {"--accent", "--accent-contrast", "--accent-soft", "--accent-strong",
                "--card-border"}

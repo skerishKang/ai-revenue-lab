@@ -55,6 +55,11 @@
  * 정의하지 않았다.
  */
 :root {
+  /* #8210: 왼쪽 메뉴의 칸 규격 — 여백·모서리·높이를 한 곳에서 정한다. */
+  --sidebar-control-inset: 12px;
+  --sidebar-control-radius: 12px;
+  --sidebar-control-height: 44px;
+
   /* #8024: theme-agnostic panel skins. Bright themes override with existing tokens. */
   --surface-panel-deep: rgba(8, 9, 11, .82);
   --surface-panel-solid: rgba(8, 9, 11, .97);
