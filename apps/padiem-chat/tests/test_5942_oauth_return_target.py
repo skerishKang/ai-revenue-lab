@@ -4,6 +4,9 @@ The council app signs users in inside its own page, and the provider round trip 
 one step that leaves it. The continuation is therefore decided by the signed state this
 Worker issued, against one exact allowlist — never by a caller-supplied URL — and a
 Chat login that does not ask keeps landing on the Chat root.
+
+#8312: the /admin gate asks for "/admin" through the same signed-state channel;
+the allowlist stays exact-match and never caller-derived.
 """
 
 from __future__ import annotations
@@ -34,8 +37,10 @@ class _Settings:
         self.live_enabled = "false"
 
 
-def test_the_allowlist_is_the_council_entry_and_nothing_else() -> None:
-    assert OAUTH_RETURN_TARGETS == frozenset({"/apps/council/"})
+def test_the_allowlist_is_the_council_and_admin_entries_and_nothing_else() -> None:
+    # #8312: "/admin" joins the council entry — the admin hub gate asks for its
+    # own screen as the signed-state continuation, same exact-match rule.
+    assert OAUTH_RETURN_TARGETS == frozenset({"/apps/council/", "/admin"})
 
 
 @pytest.mark.parametrize(
@@ -52,6 +57,11 @@ def test_the_allowlist_is_the_council_entry_and_nothing_else() -> None:
         "/apps/council/../admin",
         "/apps/council",
         "/apps/council/#sns",
+        "/admin.evil/",
+        "/adminx",
+        "/admin/",
+        "/admin/../apps/council/",
+        "/admin#ops",
         "/api/chat",
         " /apps/council/",
     ],
@@ -65,6 +75,11 @@ def test_the_council_entry_survives_the_signature_and_a_foreign_ask_does_not() -
     state, signed = create_oauth_state(settings, return_to="/apps/council/")
     assert isinstance(state, str) and state
     assert verified_oauth_return_target(settings, signed) == "/apps/council/"
+
+    # #8312: the admin entry behaves the same way — signed, exact, no default.
+    admin_state, admin_signed = create_oauth_state(settings, return_to="/admin")
+    assert isinstance(admin_state, str) and admin_state
+    assert verified_oauth_return_target(settings, admin_signed) == "/admin"
 
     _, refused = create_oauth_state(settings, return_to="https://evil.example/")
     assert verified_oauth_return_target(settings, refused) == "/"

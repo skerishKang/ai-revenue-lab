@@ -67,13 +67,19 @@
 
   // #8312: the /admin gate sends the member here with ?admin_return=1 so the
   // first screen opens its own login flow, and a completed sign-in returns to
-  // /admin. The flag lives in sessionStorage so it survives the Google
-  // redirect; the URL parameter is stripped right away so a reload or a
-  // shared link cannot loop back into the gate. A guest gets the same login
-  // button the app itself clicks programmatically (chat-auth-module.js); a
-  // member who is already signed in is left alone — the return happens on a
-  // real sign-in answer only.
-  const RETURN_FLAG = "padiem_admin_return";
+  // /admin. The ask lives in one module variable for this page only — the
+  // URL parameter is stripped right away so a reload or a shared link cannot
+  // loop back into the gate, and the Google round trip carries the ask in
+  // its signed state instead (googleStartHref's return_to). A guest gets the
+  // same login button the app itself clicks programmatically
+  // (chat-auth-module.js); a member who is already signed in is left alone —
+  // the return happens on a real sign-in answer only.
+  // The ask lives in one module variable, not in browser storage: the B62
+  // persistence gate keeps browser persistence primitives out of this file,
+  // and the ask only needs to live as long as the tab's own login flow —
+  // password sign-in answers in place, and the Google ask travels in the
+  // signed OAuth state instead (chat-login-dialog-module's googleStartHref).
+  let adminReturnPending = false;
   try {
     const params = new URLSearchParams(window.location.search);
     if (params.get("admin_return") === "1") {
@@ -81,13 +87,13 @@
       const rest = params.toString();
       window.history.replaceState(null, "",
         window.location.pathname + (rest ? "?" + rest : "") + window.location.hash);
-      window.sessionStorage.setItem(RETURN_FLAG, "1");
+      adminReturnPending = true;
     }
   } catch (_) {}
   window.addEventListener("padiem:auth-state", (event) => {
     if (event?.detail?.authenticated === true) {
-      if (pendingReturn()) {
-        clearReturn();
+      if (adminReturnPending) {
+        adminReturnPending = false;
         window.location.replace("./admin");
       }
       return;
@@ -104,12 +110,6 @@
   let openAttempts = 0;
   let openTimer = 0;
   let opened = false;
-  function pendingReturn() {
-    try { return window.sessionStorage.getItem(RETURN_FLAG) === "1"; } catch (_) { return false; }
-  }
-  function clearReturn() {
-    try { window.sessionStorage.removeItem(RETURN_FLAG); } catch (_) {}
-  }
   function tryOpen() {
     const dialog = document.getElementById("authDialog");
     if (dialog && dialog.open) return true;
@@ -122,7 +122,7 @@
   }
   function pollOpen() {
     openTimer = 0;
-    if (opened || !pendingReturn()) return;
+    if (opened || !adminReturnPending) return;
     if (tryOpen()) {
       opened = true;
       return;
@@ -141,5 +141,8 @@
     refresh: () => { invalidate(); return read(); },
     invalidate,
     current: () => cache,
+    // #8312: the login dialog reads this to decide whether its Google ask
+    // carries return_to=/admin (the server's exact allowlist decides).
+    pendingAdminReturn: () => adminReturnPending,
   });
 })();

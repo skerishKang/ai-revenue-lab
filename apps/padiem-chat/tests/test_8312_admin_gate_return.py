@@ -27,7 +27,6 @@ const source = fs.readFileSync(process.argv[2], "utf8");
 function boot(search) {
   const winListeners = {};
   const timers = [];
-  const storage = new Map();
   const calls = { replaceState: [], replace: [], clicks: 0 };
   const loginButton = {
     hidden: false, disabled: false,
@@ -40,11 +39,6 @@ function boot(search) {
       replace(url) { calls.replace.push(url); },
     },
     history: { replaceState(...args) { calls.replaceState.push(args); } },
-    sessionStorage: {
-      getItem(k) { return storage.has(k) ? storage.get(k) : null; },
-      setItem(k, v) { storage.set(k, String(v)); },
-      removeItem(k) { storage.delete(k); },
-    },
     addEventListener(t, fn) { (winListeners[t] = winListeners[t] || []).push(fn); },
     setTimeout(fn) { timers.push(fn); return timers.length; },
   };
@@ -65,7 +59,8 @@ function boot(search) {
     for (let guard = 0; timers.length && guard < 500; guard += 1) timers.shift()();
   };
   return {
-    calls, storage, drain,
+    calls, drain,
+    session: () => sandbox.window.PadiemAdminSession.pendingAdminReturn(),
     fire(detail) { (winListeners["padiem:auth-state"] || []).forEach((fn) => fn({ detail })); },
     authDialog, loginButton,
   };
@@ -73,11 +68,12 @@ function boot(search) {
 const result = { ok: true, checks: {} };
 function check(name, cond) { result.checks[name] = Boolean(cond); if (!cond) result.ok = false; }
 
-// 도착: 파라미터는 즉시 지워지고 플래그는 sessionStorage에 남는다(구글 리다이렉트 생존).
+// 도착: 파라미터는 즉시 지워지고 요청은 모듈 변수로 남는다(구글은 서명된
+// state의 return_to로, 비밀번호는 같은 페이지 응답으로 이어진다).
 const returning = boot("?admin_return=1&keep=2");
 check("param_stripped_keeps_rest", returning.calls.replaceState.length === 1
   && returning.calls.replaceState[0][2] === "/index.html?keep=2#ops");
-check("flag_set", returning.storage.get("padiem_admin_return") === "1");
+check("flag_set", returning.session() === true);
 
 // 게스트: Chat 자신이 쓰는 로그인 버튼 경로로 로그인 흐름을 연다.
 returning.fire({ authenticated: false, generation: 1 });
@@ -87,7 +83,7 @@ check("guest_opens_login_flow", returning.calls.clicks === 1 && returning.authDi
 // 로그인 완료: 플래그를 지우고 /admin으로 돌아온다.
 returning.fire({ authenticated: true, generation: 2 });
 check("returns_to_admin", returning.calls.replace.join(",") === "./admin");
-check("flag_cleared_on_return", !returning.storage.has("padiem_admin_return"));
+check("flag_cleared_on_return", returning.session() === false);
 returning.fire({ authenticated: true, generation: 3 });
 check("no_second_return", returning.calls.replace.length === 1);
 
@@ -97,7 +93,7 @@ plain.fire({ authenticated: false, generation: 1 });
 plain.drain();
 plain.fire({ authenticated: true, generation: 2 });
 check("plain_boot_untouched", plain.calls.clicks === 0 && plain.calls.replace.length === 0
-  && plain.calls.replaceState.length === 0);
+  && plain.calls.replaceState.length === 0 && plain.session() === false);
 
 // 이미 열린 로그인 창: 다시 클릭하지 않는다.
 const dialogOpen = boot("?admin_return=1");
@@ -219,6 +215,74 @@ def _run_harness(harness: str, module: Path, *args: str) -> dict:
     result = json.loads(completed.stdout.strip())
     assert result["ok"] is True, result["checks"]
     return result
+
+
+DIALOG_HARNESS = r"""
+const fs = require("fs"), vm = require("vm");
+const source = fs.readFileSync(process.argv[2], "utf8");
+function bootDialog({ pending, hasSession, android }) {
+  const timers = [];
+  const assigns = [];
+  const state = { androidStarted: false };
+  const listeners = {};
+  const googleButton = {
+    addEventListener(t, fn) { (listeners[t] = listeners[t] || []).push(fn); },
+  };
+  const sandbox = {
+    console, URLSearchParams,
+    setTimeout(fn) { timers.push(fn); return timers.length; },
+    document: {
+      getElementById() { return null; },
+      createElement() {
+        return { type: "", className: "", textContent: "", hidden: false,
+          dataset: {}, append() {}, addEventListener() {} };
+      },
+    },
+  };
+  sandbox.window = {
+    location: { assign(url) { assigns.push(url); } },
+    PadiemAdminSession: hasSession ? { pendingAdminReturn: () => pending } : undefined,
+  };
+  vm.createContext(sandbox);
+  vm.runInContext(source, sandbox, { filename: "chat-login-dialog-module.js" });
+  const deps = {
+    uiT: (key) => key,
+    accountContainer: null,
+    googleLoginButton: googleButton,
+    authMethodEnabled: (method) => method === "google",
+    isAndroidWebView: () => android,
+    startAndroidHandoff() { state.androidStarted = true; },
+    authDialog: null,
+  };
+  sandbox.window.PadiemChatLoginDialogModule.create(deps).wireGoogleLogin();
+  const click = () => (listeners["click"] || []).forEach((fn) => fn({}));
+  return { click, assigns, state };
+}
+const result = { ok: true, checks: {} };
+function check(name, cond) { result.checks[name] = Boolean(cond); if (!cond) result.ok = false; }
+
+const plain = bootDialog({ pending: false, hasSession: true, android: false });
+plain.click();
+check("plain_ask_keeps_the_bare_start", plain.assigns.join(",") === "/auth/google/start");
+
+const returning = bootDialog({ pending: true, hasSession: true, android: false });
+returning.click();
+check("admin_ask_carries_return_to", returning.assigns.join(",") === "/auth/google/start?return_to=%2Fadmin");
+
+const noShared = bootDialog({ pending: true, hasSession: false, android: false });
+noShared.click();
+check("missing_session_helper_stays_bare", noShared.assigns.join(",") === "/auth/google/start");
+
+const android = bootDialog({ pending: true, hasSession: true, android: true });
+android.click();
+check("android_ask_stays_a_handoff", android.assigns.length === 0 && android.state.androidStarted === true);
+
+console.log(JSON.stringify(result));
+"""
+
+
+def test_google_ask_carries_the_admin_return_only_when_asked() -> None:
+    _run_harness(DIALOG_HARNESS, BASE / "chat-login-dialog-module.js")
 
 
 def test_admin_return_reuses_chat_login_and_returns() -> None:
