@@ -1,24 +1,32 @@
 from __future__ import annotations
-import locale_bundle
-
-from pathlib import Path
 
 from _r5_product_capabilities_harness import run_capabilities_scenario
+from _support.mode_presentation import (
+    cert_qa_dict_pairs,
+    cert_qa_string_constants,
+    create_mode_option_string_args,
+    css_all_declaration_pairs,
+    css_custom_property,
+    css_declarations,
+    css_media_conditions,
+    css_rule_selector_lists,
+    css_selectors,
+    index_facts,
+    js_identifiers,
+    js_property_string_pairs,
+    js_string_literals,
+    locale_array_bindings,
+    locale_keys,
+    streaming_payload_entries,
+    tier_copy_facts,
+)
 
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-CAPABILITIES = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-CSS = (STATIC / "mode-presentation.css").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
-THEMES = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
-TOKENS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
-PANEL_INK_DECL = "--text-panel-ink: #17212a;"
-GLASS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
-GLASS_READING = (STATIC / "padiem-glass-reading.css").read_text(encoding="utf-8")
-CERT_QA = (ROOT.parent.parent / ".github" / "scripts" / "b62_product_surface_certification_browser_qa.py").read_text(encoding="utf-8")
+GLASS_TRIGGER = (
+    'html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]'
+)
+GLASS_PANEL = 'html[data-theme="padiem-glass"] .mode-presentation-panel'
+DARK_PANEL = 'html[data-theme="dark"] .mode-presentation-panel'
 
 
 def test_browser_lists_all_four_tiers_but_only_plus_is_selectable() -> None:
@@ -37,9 +45,10 @@ def test_browser_lists_all_four_tiers_but_only_plus_is_selectable() -> None:
     assert member["upgradeTruthText"] == "더 높은 등급의 모델을 사용하려면 업그레이드가 필요합니다."
     assert member["upgradeTruthHighlighted"] is True
     # 구조 계약(부재 금지): 레거시 auto·fast·balanced·deep 칸은 소스에 다시
-    # 생겨서는 안 된다. 실행 관찰로는 "없어야 할 것"을 증명할 수 없어 문자열로 남긴다.
+    # 생겨서는 안 된다. createModeOption의 문자열 인자(파싱 값)로 확인한다.
+    literal_args = create_mode_option_string_args()
     for legacy in ("auto", "fast", "balanced", "deep"):
-        assert f'createModeOption("{legacy}"' not in CAPABILITIES
+        assert legacy not in literal_args
 
 
 def test_guest_sees_only_free_as_usable_and_custom_lane_is_locked() -> None:
@@ -52,25 +61,29 @@ def test_guest_sees_only_free_as_usable_and_custom_lane_is_locked() -> None:
 
 
 def test_plus_is_default_and_selection_is_shared_by_chat_and_claw() -> None:
-    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
     # 기본 등급과 공유 API는 실행으로 관찰한다: 게스트는 free에서 시작하고,
     # PadiemTierSelection은 Chat/Claw가 같은 조작으로 쓰는 조작 세트를 노출한다.
     guest = run_capabilities_scenario("mode_tiers_guest")
     assert guest["tierGet"] == "free"
     member = run_capabilities_scenario("mode_tiers")
     assert member["tierSelectionKeys"] == ["get", "set", "available", "open", "close", "ready"]
-    assert "tier: deps.selectedProductTier()" in stream
-    assert 'const payload = { messages: outboundMessages, tier: deps.selectedProductTier(), skill };' in stream
+    # 요청 payload 객체의 선언 순서와 항목을 파싱 값으로 확인한다.
+    assert list(streaming_payload_entries().items()) == [
+        ("messages", "outboundMessages"),
+        ("tier", "deps.selectedProductTier()"),
+        ("skill", "skill"),
+    ]
     # The chat `mode` request key is gone with the remnant it came from: no client
     # sends it, and the contract refuses it as an unknown item.
-    assert 'mode: "auto"' not in APP
-    assert 'mode: "auto"' not in stream
+    assert ("mode", "auto") not in js_property_string_pairs("app.js")
+    assert ("mode", "auto") not in js_property_string_pairs("chat-streaming-module.js")
 
 
 def test_tier_copy_contains_no_provider_or_model_authority() -> None:
     """구조 계약(부재 금지): 등급 문구 표에 공급사·모델 권위가 없어야 한다.
-    문구 표 자체는 데이터 계약이라 문자열로 남긴다."""
-    tier_block = CAPABILITIES.split("const TIER_COPY", 1)[1].split("let selectedTier", 1)[0].lower()
+    문구 표의 어휘(문자열 리터럴·식별자)를 파싱해 확인한다."""
+    facts = tier_copy_facts()
+    vocabulary = {token.lower() for token in facts["literals"] | facts["identifiers"]}
     for forbidden in (
         "openai",
         "anthropic",
@@ -83,17 +96,18 @@ def test_tier_copy_contains_no_provider_or_model_authority() -> None:
         "provider_id",
         "model_id",
     ):
-        assert forbidden not in tier_block
+        assert not any(forbidden in token for token in vocabulary), forbidden
 
 
 def test_old_user_visible_auto_fast_balanced_deep_copy_is_removed() -> None:
     """구조 계약(부재 금지): 레거시 문구는 소스에 다시 생기면 안 된다."""
+    literals = js_string_literals("product-capabilities.js")
     for old_copy in (
         "Only Auto is connected to live execution right now.",
         "현재 실제 실행은 Auto만 연결되어 있습니다.",
         "Fast · Balanced · Deep",
     ):
-        assert old_copy not in CAPABILITIES
+        assert not any(old_copy in literal for literal in literals), old_copy
 
 
 def test_tier_controls_are_keyboard_and_touch_ready() -> None:
@@ -105,26 +119,35 @@ def test_tier_controls_are_keyboard_and_touch_ready() -> None:
     assert member["pillAttrs"]["expanded"] == "true"  # 패널을 연 뒤
     assert member["panelHiddenAfterEscape"] is True
     assert member["panelHiddenAfterEnter"] is False
-    assert "min-height: 48px" in CSS
-    assert "@media (max-width: 720px)" in CSS
+    declarations = css_all_declaration_pairs("mode-presentation.css")
+    assert ("min-height", "48px") in declarations
+    assert "(max-width: 720px)" in css_media_conditions("mode-presentation.css")
 
 
 def test_browser_never_renders_internal_provider_or_model_route_metadata() -> None:
-    assert "route-details" not in APP
-    assert '"route-question"' not in LOCALE
-    assert '"provider-route"' not in LOCALE
-    assert '"model-label"' not in LOCALE
-    for stylesheet in (THEMES, GLASS, GLASS_READING):
-        assert ".route-details" not in stylesheet
+    app_vocabulary = js_identifiers("app.js") | js_string_literals("app.js")
+    assert not any("route-details" in token for token in app_vocabulary)
+    locale_vocabulary = set(locale_keys("ko")) | set(locale_keys("en"))
+    for key in ("route-question", "provider-route", "model-label"):
+        assert key not in locale_vocabulary
+    for sheet in ("padiem-themes.css", "padiem-glass.css", "padiem-glass-reading.css"):
+        assert all("route-details" not in selector for selector in css_selectors(sheet))
+        assert all(
+            "route-details" not in value
+            for _prop, value in css_all_declaration_pairs(sheet)
+        )
 
 
 def test_legacy_mode_qa_and_html_markers_are_removed() -> None:
-    assert "Legacy regression marker only" not in INDEX
-    assert "mode_fast_balanced_deep" not in CERT_QA
-    assert "Fast / Balanced / Deep trusted execution mapping" not in CERT_QA
-    assert '"surface": "tier_free_baseline"' in CERT_QA
-    assert '"surface": "tier_max"' in CERT_QA
-    assert '"presentation": "BROWSER_HIDDEN"' in CERT_QA
+    facts = index_facts()
+    assert not any("Legacy regression marker only" in text for text in facts["text_nodes"])
+    constants = cert_qa_string_constants()
+    assert "mode_fast_balanced_deep" not in constants
+    assert not any("Fast / Balanced / Deep trusted execution mapping" in c for c in constants)
+    pairs = cert_qa_dict_pairs()
+    assert ("surface", "tier_free_baseline") in pairs
+    assert ("surface", "tier_max") in pairs
+    assert ("presentation", "BROWSER_HIDDEN") in pairs
 
 
 def test_tier_trigger_and_popover_are_composer_anchored() -> None:
@@ -134,49 +157,64 @@ def test_tier_trigger_and_popover_are_composer_anchored() -> None:
     assert member["panelParentIsModeHost"] is True
     assert member["panelInDocumentBody"] is False
     assert member["styleLinkInHead"] is True
-    topbar = INDEX.split('<header class="topbar"', 1)[1].split("</header>", 1)[0]
-    composer_tools = INDEX.split('<div class="composer-tools">', 1)[1].split("</div>", 1)[0]
-    assert 'model-pill' not in topbar
-    assert 'model-pill composer-tier-trigger' in composer_tools
-    assert 'type="button"' in composer_tools
-    assert ".tier-control-host" in CSS
-    assert "position: absolute" in CSS
-    assert "bottom: calc(100% + 12px)" in CSS
-    assert "position: fixed" not in CSS
-    assert "top: 68px" not in CSS
+    facts = index_facts()
+    assert all(
+        "model-pill" not in value
+        for _tag, attrs in facts["topbar_elements"]
+        for value in attrs.values()
+        if value is not None
+    )
+    composer_tokens = [
+        set(attrs.get("class", "").split())
+        for _tag, attrs in facts["composer_tools_elements"]
+    ]
+    assert any({"model-pill", "composer-tier-trigger"} <= tokens for tokens in composer_tokens)
+    assert any(
+        attrs.get("type") == "button" for _tag, attrs in facts["composer_tools_elements"]
+    )
+    declarations = css_all_declaration_pairs("mode-presentation.css")
+    assert ".tier-control-host" in css_selectors("mode-presentation.css")
+    assert ("position", "absolute") in declarations
+    assert ("bottom", "calc(100% + 12px)") in declarations
+    assert ("position", "fixed") not in declarations
+    assert ("top", "68px") not in declarations
 
 
 def test_glass_tier_trigger_stays_visible_on_bright_composer() -> None:
-    selector = 'html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"] {'
-    assert selector in CSS
-    block = CSS.split(selector, 1)[1].split("}", 1)[0]
-    assert "background: rgba(255, 255, 255, .62)" in block
-    assert "color: #25333e" in block
-    assert 'html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:hover {' in CSS
-    assert 'class="status-spark"' not in INDEX
+    trigger = css_declarations("mode-presentation.css", GLASS_TRIGGER)
+    assert trigger["background"] == "rgba(255, 255, 255, .62)"
+    assert trigger["color"] == "#25333e"
+    assert css_declarations("mode-presentation.css", GLASS_TRIGGER + ":hover")
+    assert "status-spark" not in index_facts()["all_class_tokens"]
 
 
 def test_glass_tier_popover_uses_bright_frosted_surface_not_dark_group() -> None:
-    assert 'html[data-theme="padiem-glass"] .mode-presentation-panel {' in CSS
-    glass_block = CSS.split('html[data-theme="padiem-glass"] .mode-presentation-panel {', 1)[1].split("}", 1)[0]
-    assert "rgba(252, 253, 254, .96)" in glass_block
+    panel = css_declarations("mode-presentation.css", GLASS_PANEL)
+    assert "rgba(252, 253, 254, .96)" in panel["background"]
     # #7187 9차: 패널 글자는 쓰임새 토큰이 소유한다(토큰 값은 토큰 파일에서 확인).
-    assert "color: var(--text-panel-ink)" in glass_block
-    assert PANEL_INK_DECL in TOKENS
-    assert "blur(28px)" in glass_block
-    dark_group = CSS.split('html[data-theme="dark"] .mode-presentation-panel,', 1)[1].split("{", 1)[0]
-    assert 'padiem-glass' not in dark_group
+    assert panel["color"] == "var(--text-panel-ink)"
+    assert css_custom_property("padiem-tokens.css", "--text-panel-ink") == "#17212a"
+    assert "blur(28px)" in panel["backdrop-filter"]
+    dark_lists = css_rule_selector_lists("mode-presentation.css", DARK_PANEL)
+    assert dark_lists
+    assert all(
+        "padiem-glass" not in selector
+        for selectors in dark_lists
+        for selector in selectors
+    )
 
 
 def test_tier_pill_copy_owns_the_tier_key_instead_of_the_legacy_mode_label() -> None:
-    ko, en = LOCALE.split("en: {", 1)
+    ko, en = locale_keys("ko"), locale_keys("en")
     for table in (ko, en):
-        assert '"mode"' not in table
-        assert '"tier"' in table
-    assert '"tier": "AI 등급"' in ko
-    assert '"tier": "AI tier"' in en
-    assert '[".model-pill span:last-child", "mode"]' not in LOCALE
-    assert '[".model-pill", "aria-label", "mode"]' not in LOCALE
-    assert '[".model-pill", "aria-label", "tier"]' in LOCALE
-    assert 'data-locale-aria-label="mode"' not in INDEX
-    assert 'data-locale-aria-label="tier"' in INDEX
+        assert "mode" not in table
+        assert "tier" in table
+    assert ko["tier"] == "AI 등급"
+    assert en["tier"] == "AI tier"
+    arrays = locale_array_bindings()
+    assert (".model-pill span:last-child", "mode") not in arrays
+    assert (".model-pill", "aria-label", "mode") not in arrays
+    assert (".model-pill", "aria-label", "tier") in arrays
+    aria_labels = index_facts()["data_locale_aria_label_values"]
+    assert "mode" not in aria_labels
+    assert "tier" in aria_labels
