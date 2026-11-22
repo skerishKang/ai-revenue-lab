@@ -8,102 +8,105 @@ These guard the design decisions accepted in the ACT-0 review:
 - results render as a compact card, never a raw inline document;
 - document/DOCX affordances stay honestly disabled (no fake success);
 - Chat vs Claw navigation exposes aria-current active state.
+
+#8060: 원문 read는 _support(claw_workspace_ui_source)가 담당하고, 계약은
+이름붙인 팩트·개수·부재 목록으로 단언한다.
 """
 
 from __future__ import annotations
 
-from pathlib import Path
-
-from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
-
-STATIC = Path(__file__).resolve().parents[1] / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-# R5 A5b: the preview handler and its DOM writes live in the form module.
-CLAW_FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
-WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
-INTAKE_CSS = (STATIC / "claw-manual-intake.css").read_text(encoding="utf-8")
+from _support.claw_workspace_ui_source import (  # noqa: E402
+    action_facts,
+    affordance_facts,
+    composer_facts,
+    modal_facts,
+    nav_facts,
+    preview_facts,
+    result_facts,
+    shell_state_facts,
+    single_h1_facts,
+    touch_facts,
+)
 
 
 def test_modal_is_no_longer_the_primary_claw_surface() -> None:
-    assert 'id="clawDialog"' not in INDEX
-    assert "clawDialog" not in APP
-    assert 'id="clawWorkspace"' in INDEX
+    facts = modal_facts()
+    assert facts["unexpected"] == []
+    assert facts["missing"] == []
     # The sidebar button is now a workspace destination, not a dialog trigger.
-    claw_button = next(line for line in INDEX.splitlines() if 'id="clawNavButton"' in line)
-    assert "aria-controls=\"clawDialog\"" not in claw_button
-    assert "aria-haspopup=\"dialog\"" not in claw_button
+    assert facts["dialog_attrs"] == []
 
 
 def test_workspace_is_a_first_class_shell_state() -> None:
-    # R5 A10: the Claw entry state write moved to chat-nav-module.js (deps-prefixed).
-    assert 'deps.shell.dataset.state = "claw"' in (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
-    assert ".app-shell[data-state=\"claw\"] .claw-workspace" in WORKSPACE_CSS
+    facts = shell_state_facts()
+    # R5 A10: the Claw entry state write lives in chat-nav-module.js.
+    assert facts["nav_state_write"] is True
+    assert facts["missing_css"] == []
     # Chat/home canvas is hidden while the Claw workspace owns the panel,
     # but the shared bottom composer stays visible (#2532 continuity).
-    assert ".app-shell[data-state=\"claw\"] .conversation" in WORKSPACE_CSS
-    assert ".app-shell[data-state=\"claw\"] .composer-wrap" not in WORKSPACE_CSS
+    assert facts["unexpected_css"] == []
 
 
 def test_natural_language_input_is_the_composer_and_zoom_safe() -> None:
+    facts = composer_facts()
     # #2532: the hero textarea is gone; #messageInput is the Claw request input
     # and the intake form is a compact mode bar inside the composer wrap.
-    assert 'class="claw-intake-hero"' not in INDEX
-    assert 'id="clawRequestText"' not in INDEX
-    assert 'class="claw-mode-bar" id="clawManualForm"' in INDEX
-    assert ".app-shell[data-state=\"claw\"] .composer textarea" in WORKSPACE_CSS
-    assert "font-size: 16px" in WORKSPACE_CSS
+    assert facts["unexpected_markup"] == []
+    assert facts["missing_markup"] == []
+    assert facts["missing_css"] == []
+    assert facts["workspace_font_16"] is True
+    assert facts["intake_font_16"] is True
     # The disclosure fields must not regress to the old 13.6px form controls.
-    assert "font-size: 16px" in INTAKE_CSS
-    assert "0.85rem" not in INTAKE_CSS
+    assert facts["old_small_control"] is False
 
 
 def test_actions_are_optional_overrides_not_mandatory_cards() -> None:
-    assert 'class="claw-chips"' in INDEX
-    assert INDEX.count('data-claw-action=') >= 4
-    assert 'aria-pressed="false"' in INDEX
+    facts = action_facts()
+    assert facts["chips_present"] is True
+    assert facts["action_count"] >= 4
+    assert facts["aria_pressed"] is True
     # The old mandatory action-card grid is gone.
-    assert 'claw-actions-grid' not in INDEX
+    assert facts["old_grid"] is False
 
 
 def test_result_is_a_compact_card_not_raw_inline_document() -> None:
-    assert 'id="clawResultCard"' in INDEX
-    assert 'id="clawResultKind"' in INDEX
-    assert 'class="claw-result-body"' in INDEX
+    facts = result_facts()
+    assert facts["missing_markup"] == []
     # The result body is capped and scrollable rather than expanding a full doc.
-    assert "max-height: 320px" in WORKSPACE_CSS
+    assert facts["max_height"] is True
 
 
 def test_document_affordances_stay_honestly_disabled() -> None:
+    facts = affordance_facts()
     # No fabricated download/open success: the result actions render disabled.
-    assert 'class="claw-result-action" disabled aria-disabled="true"' in INDEX
+    assert facts["disabled_action_present"] is True
     # The five never-wired coming-soon controls are gone, not merely disabled.
-    assert 'claw-disabled-control' not in INDEX
+    assert facts["old_control_present"] is False
 
 
 def test_chat_claw_active_navigation_state() -> None:
-    assert 'setAttribute("aria-current"' in APP
-    assert '#clawNavButton[aria-current="page"]' in WORKSPACE_CSS
-    assert '#newChatButton[aria-current="page"]' in WORKSPACE_CSS
+    facts = nav_facts()
+    assert facts["aria_current_set"] is True
+    assert facts["missing_css"] == []
 
 
 def test_primary_touch_targets_are_at_least_44px() -> None:
-    assert "min-height: 44px" in WORKSPACE_CSS
-    assert "min-height: 48px" in WORKSPACE_CSS  # generate button
+    facts = touch_facts()
+    assert facts["min_44"] is True
+    assert facts["min_48"] is True  # generate button
 
 
 def test_workspace_preserves_single_h1_contract() -> None:
     # The canonical accessibility QA uses a strict locator("h1"); the Claw
     # workspace title must not introduce a second h1 alongside the home h1.
-    assert INDEX.count("<h1") == 1
-    assert 'class="claw-workspace-title" id="clawWorkspaceTitle"' in INDEX
-    assert 'aria-labelledby="clawWorkspaceTitle"' in INDEX
+    facts = single_h1_facts()
+    assert facts["h1_count"] == 1
+    assert facts["missing_markup"] == []
 
 
 def test_preview_endpoint_and_safe_dom_sinks_preserved() -> None:
-    assert "/api/claw/manual-intake/preview" in CLAW_FORM
-    assert "clawResultPreview.textContent =" in CLAW_FORM
-    assert "clawResultPreview.innerHTML" not in APP + CLAW_FORM
-    for token in ("localStorage", "indexedDB", "cookieStore", "caches.open"):
-        assert token not in APP
-    assert_session_storage_is_handoff_only(APP)
+    facts = preview_facts()
+    assert facts["preview_endpoint"] is True
+    assert facts["text_content_sink"] is True
+    assert facts["inner_html_present"] is False
+    assert facts["forbidden_tokens"] == []
