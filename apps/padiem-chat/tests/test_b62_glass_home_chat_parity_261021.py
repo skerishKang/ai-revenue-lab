@@ -108,7 +108,8 @@ def test_the_chat_composer_carries_the_first_screen_surface() -> None:
         css, 'html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer {'
     )
     # #7187 1차: border .22는 토큰으로 — 토큰 값이 치환 전 리터럴과 같다.
-    assert "border-color: var(--line-veil-faint) !important;" in block
+    # #8008 15차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert "border-color: var(--line-veil-faint);" in block
     tokens = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
     assert f"--line-veil-faint: {FIRST_SCREEN_BORDER};" in tokens
     assert "0 22px 64px rgba(0, 0, 0, .22)" in block
