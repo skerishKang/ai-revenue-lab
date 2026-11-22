@@ -1,63 +1,98 @@
-from pathlib import Path
+"""Glass theme contracts against parsed shipped sheets (no raw source reads here).
 
-ROOT = Path(__file__).resolve().parents[1]
-THEME_JS = (ROOT / "static/theme.js").read_text(encoding="utf-8")
-THEME_INIT = (ROOT / "static/theme-init.js").read_text(encoding="utf-8")
-GLASS_CSS = (ROOT / "static/padiem-glass.css").read_text(encoding="utf-8")
-TOKENS_CSS = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
-HTML = (ROOT / "static/index.html").read_text(encoding="utf-8")
+Raw CSS/JS/HTML reads live in tests/_support; the assertions below bind the
+same selectors, token values, literals and DOM boundaries through parsers.
+"""
+from __future__ import annotations
+
+from _support import glass_theme_source as source
+from _support import theme_sheets
+
+
+def _glass_rules():
+    return [rule for rule in theme_sheets.rules("padiem-glass.css")]
+
+
+def _parts(rule) -> set[str]:
+    """Selectors in one parsed (possibly comma-grouped) rule."""
+    return {part.strip() for part in rule.selector.split(",")}
+
+
+def _rule(selector: str):
+    return [rule for rule in _glass_rules() if selector in _parts(rule)]
+
+
+def _decls(selector: str) -> dict[str, str]:
+    return {decl.prop: decl.value for rule in _rule(selector) for decl in rule.decls}
+
+
+def _any_value(prop: str, wanted: str, *, contains: bool = False) -> bool:
+    for rule in _glass_rules():
+        for decl in rule.decls:
+            if decl.prop != prop:
+                continue
+            if contains and wanted in decl.value:
+                return True
+            if not contains and decl.value == wanted:
+                return True
+    return False
+
+
+def _js_text(name: str) -> str:
+    return " ".join(sorted(source.js_strings(name) | source.js_identifiers(name) | source.js_members(name)))
 
 
 def test_padiem_glass_is_additive_fifth_theme() -> None:
-    assert '"padiem-glass"' in THEME_JS
-    assert '"padiem-glass"' in THEME_INIT
-    assert 'data-theme-value="padiem-glass"' in THEME_JS
-    assert 'Padiem Glass' in THEME_JS
-    assert 'html[data-theme="padiem-glass"]' in GLASS_CSS
+    for name in ("theme.js", "theme-init.js"):
+        literals = source.js_strings(name)
+        assert "padiem-glass" in literals
+    assert any('data-theme-value="padiem-glass"' in value for value in source.js_strings("theme.js"))
+    assert "Padiem Glass" in source.js_strings("theme.js")
+    assert _rule('html[data-theme="padiem-glass"]')
     # Existing static picker remains untouched; fifth option is appended at runtime.
     for existing in ["light", "dark", "cinematic", "padiem-home"]:
-        assert f'data-theme-value="{existing}"' in HTML
+        assert existing in source.theme_picker_values()
 
 
 def test_glass_theme_has_image_ready_background_slot_and_fallback() -> None:
-    assert "--padiem-glass-background-image: none" in GLASS_CSS
-    assert "var(--padiem-glass-background-image)" in GLASS_CSS
-    assert "background-size: cover" in GLASS_CSS
-    assert "background-position: center" in GLASS_CSS
-    assert "linear-gradient" in GLASS_CSS
+    assert _any_value("--padiem-glass-background-image", "none")
+    assert _any_value("background-image", "var(--padiem-glass-background-image)", contains=True)
+    assert _any_value("background-size", "cover", contains=True)
+    assert _any_value("background-position", "center")
+    assert _any_value("background-image", "linear-gradient", contains=True)
 
 
 def test_glass_surfaces_are_frosted_not_opaque_redesign() -> None:
     for selector in [
-        '.sidebar',
-        '.topbar',
-        '.starter',
-        '.composer',
-        '.settings-panel',
-        '.source-card',
-        '.rich-response',
+        "sidebar",
+        "topbar",
+        "starter",
+        "composer",
+        "settings-panel",
+        "source-card",
+        "rich-response",
     ]:
-        assert f'html[data-theme="padiem-glass"] {selector}' in GLASS_CSS
-    assert "backdrop-filter: blur(" in GLASS_CSS
-    assert "rgba(" in GLASS_CSS
+        assert _rule(f'html[data-theme="padiem-glass"] .{selector}')
+    assert _any_value("backdrop-filter", "blur(", contains=True)
+    assert _any_value("background", "rgba(", contains=True) or _any_value("background-color", "rgba(", contains=True)
     # #7187 R3 5차: the Glass palette lives in padiem-tokens.css.
-    assert "--glass:" in TOKENS_CSS
+    assert theme_sheets.token_value("padiem-glass", "--glass") is not None
 
 
 def test_glass_theme_keeps_readability_and_reduced_transparency_fallback() -> None:
-    assert "--text: #17202a" in TOKENS_CSS
-    assert "--user-bubble-text: #ffffff" in TOKENS_CSS
+    assert theme_sheets.token_value("padiem-glass", "--text") == "#17202a"
+    assert theme_sheets.token_value("padiem-glass", "--user-bubble-text") == "#ffffff"
     # #8008 9차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
-    assert '.assistant-content { color: #17212a; }' in GLASS_CSS
-    assert "@media (prefers-reduced-transparency: reduce)" in GLASS_CSS
-    assert "backdrop-filter: none" in GLASS_CSS
+    assert _decls('html[data-theme="padiem-glass"] .assistant-content').get("color") == "#17212a"
+    assert "(prefers-reduced-transparency: reduce)" in source.css_at_rules()
+    assert _any_value("backdrop-filter", "none")
 
 
 def test_glass_theme_preserves_url_authority_and_no_forbidden_storage() -> None:
-    assert "URLSearchParams" in THEME_JS
-    assert "history.replaceState" in THEME_JS
-    assert "URLSearchParams" in THEME_INIT
-    for forbidden in [
+    assert "URLSearchParams" in source.js_identifiers("theme.js")
+    assert "history.replaceState" in source.js_members("theme.js")
+    assert "URLSearchParams" in source.js_identifiers("theme-init.js")
+    forbidden = [
         "localStorage",
         "sessionStorage",
         "indexedDB",
@@ -65,27 +100,32 @@ def test_glass_theme_preserves_url_authority_and_no_forbidden_storage() -> None:
         "cookieStore",
         "serviceWorker",
         "CacheStorage",
-    ]:
-        assert forbidden not in THEME_JS
-        assert forbidden not in THEME_INIT
-    assert "location.reload" not in THEME_JS
+    ]
+    for name in ("theme.js", "theme-init.js"):
+        text = _js_text(name)
+        for token in forbidden:
+            assert token not in text
+    assert "location.reload" not in source.js_members("theme.js")
 
 
 def test_glass_theme_does_not_touch_prior_visual_contracts() -> None:
-    assert 'href="https://padiem.net/"' in HTML
-    assert "Padiem Chat" in HTML
-    assert "Padiem Chat</span>" in HTML
-    assert "text-transform: none" in GLASS_CSS
-    assert 'class="sidebar-bottom"' in HTML
-    topbar_start = HTML.index('<header class="topbar"')
-    topbar_end = HTML.index('</header>', topbar_start)
-    topbar_html = HTML[topbar_start:topbar_end]
-    assert 'id="settingsButton"' not in topbar_html
-    assert 'id="loginButton"' not in topbar_html
+    assert "https://padiem.net/" in source.index_hrefs()
+    assert "Padiem Chat" in source.html_text()
+    assert "Padiem Chat</span>" in source.dom_markers()
+    assert _any_value("text-transform", "none")
+    assert any(attrs.get("class") == "sidebar-bottom" for _tag, attrs in source.index_attrs())
+    markers = source.dom_markers()
+    assert "topbar:settingsButton" not in markers
+    assert "topbar:loginButton" not in markers
 
 
 def test_glass_theme_has_no_provider_or_core_behavior() -> None:
-    combined = THEME_JS + THEME_INIT + GLASS_CSS
+    combined = " ".join([
+        _js_text("theme.js"),
+        _js_text("theme-init.js"),
+        " ".join(rule.selector for rule in _glass_rules()),
+        " ".join(decl.prop + " " + decl.value for rule in _glass_rules() for decl in rule.decls),
+    ])
     for forbidden in ["provider_id", "selected_provider", "selected_model", "B14", "padiem-ai-core", "control-plane"]:
         assert forbidden not in combined
 
@@ -94,31 +134,24 @@ def test_glass_file_button_keeps_dark_foreground_on_interaction() -> None:
     hover = 'html[data-theme="padiem-glass"] .composer .tool-button:hover:not(:disabled)'
     focus = 'html[data-theme="padiem-glass"] .composer .tool-button:focus-visible:not(:disabled)'
     active = 'html[data-theme="padiem-glass"] .composer .tool-button:active:not(:disabled)'
-    assert hover in GLASS_CSS
-    assert focus in GLASS_CSS
-    assert active in GLASS_CSS
-    interaction_block = GLASS_CSS.split(hover, 1)[1].split("}", 1)[0]
-    assert "color: #17212a" in interaction_block
+    assert _rule(hover)
+    assert _rule(focus)
+    assert _rule(active)
+    assert _decls(hover).get("color") == "#17212a"
 
 
 def test_glass_second_home_headline_line_stays_readable_on_bright_surface() -> None:
     # #7817: the line's colour is a theme token now, not a rule in this sheet.
-    # Same target (it has to stay readable on the bright Glass surface), read
-    # where the value lives.
-    assert 'html[data-theme="padiem-glass"] .empty-state h1 br + span' not in GLASS_CSS
-    block = TOKENS_CSS.split('html[data-theme="padiem-glass"] {', 1)[1].split("}", 1)[0]
-    assert "--hero-sub-color: #56616b;" in block
-    assert _contrast(_hex(block, "--hero-sub-color"), (227, 231, 233)) >= 4.5
-    assert _contrast(_hex(block, "--hero-sub-color"), (225, 229, 231)) >= 4.5
+    assert not _rule('html[data-theme="padiem-glass"] .empty-state h1 br + span')
+    value = theme_sheets.token_value("padiem-glass", "--hero-sub-color")
+    assert value == "#56616b"
+    assert _contrast(_hex(value), (227, 231, 233)) >= 4.5
+    assert _contrast(_hex(value), (225, 229, 231)) >= 4.5
 
 
-def _hex(sheet: str, name: str) -> tuple[int, int, int]:
-    import re
-
-    match = re.search(rf"{re.escape(name)}:\s*#([0-9a-fA-F]{{6}})", sheet)
-    assert match, name
-    value = match.group(1)
-    return tuple(int(value[i:i + 2], 16) for i in (0, 2, 4))
+def _hex(value: str) -> tuple[int, int, int]:
+    digits = value.lstrip("#")
+    return tuple(int(digits[i:i + 2], 16) for i in (0, 2, 4))
 
 
 def _contrast(fg: tuple[int, int, int], bg: tuple[int, int, int]) -> float:
