@@ -480,6 +480,12 @@
     ]
    ],
    [
+    "/api/admin/ops-pc-versions/refresh-updaters",
+    [
+     "POST"
+    ]
+   ],
+   [
     "/api/admin/feedback",
     [
      "GET",
@@ -3043,6 +3049,12 @@
    ],
    [
     "/api/admin/ops-pc-versions/rollout",
+    [
+     "POST"
+    ]
+   ],
+   [
+    "/api/admin/ops-pc-versions/refresh-updaters",
     [
      "POST"
     ]

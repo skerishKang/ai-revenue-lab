@@ -122,6 +122,7 @@ DRIVE_METHODS = frozenset({
     "upsert_drives", "load_drives",
     # #7987: the helper readiness kept beside the drive snapshot.
     "upsert_helper_ready", "load_helper_ready", "load_rollout_outcomes",
+    "load_updater_registration", "reserve_updater_registration", "record_updater_registration",
 })
 
 _NO_STORE = {"Cache-Control": "no-store"}

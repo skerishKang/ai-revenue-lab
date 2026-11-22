@@ -224,6 +224,14 @@
  },
  {
   "type": "Route",
+  "path": "/api/admin/ops-pc-versions/refresh-updaters",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "admin_refresh_updaters"
+ },
+ {
+  "type": "Route",
   "path": "/api/admin/feedback",
   "methods": [
    "GET",
