@@ -1,11 +1,11 @@
-"""#8056 — 모바일(≤600px)에서 고침 알림이 흐름 안에서 자리를 차지한다.
+"""#8056 / #8316 — 모바일 셸(≤920px)에서 고침 알림이 흐름 안에서 자리를 차지한다.
 
 390 폭 홈에서 .feedback-notice 의 고정 배치 규칙이 '안녕하세요. 무엇을
 도와드릴까요?' 인사말 제목을 덧대는 결함(#8056)을 잡는다. 계약 3가지:
 
 1. 데스크톱 규칙은 그대로다 — base .feedback-notice 는 position:fixed 유지
    (1440 우측 위 띄움은 바뀌지 않는다).
-2. (max-width: 600px) 범위에서는 position:static 으로 흐름에 들어와 자리를
+2. (max-width: 920px) 범위에서는 position:static 으로 흐름에 들어와 자리를
    차지하고, 고정 배치의 덮기 좌표(top·right)를 다시 선언하지 않는다.
 3. aside#feedbackNotice 는 상단 topbar 다음, 화면 섹션들 앞에 놓여 흐름
    배치가 인사말 위에서 시작되도록 한다. hidden 일 때는 자리를 차지하지 않는다.
@@ -20,7 +20,7 @@ from pathlib import Path
 
 from _support.mobile_notice_expectations import (
     ARIA_LIVE, FIXED, HIDDEN, HIDDEN_RULE, MARGIN, MAX_WIDTH, NONE,
-    POSITION, RIGHT, ROLE_STATUS, STATIC, TOP, TWELVE_PX, TWENTY_PX,
+    POSITION, RIGHT, ROLE_STATUS, STATIC, TOP, MOBILE_MARGIN, TWENTY_PX,
 )
 from css_rules import declaration, find_rules_with_selector, parse_rules
 
@@ -41,10 +41,10 @@ def test_desktop_fixed_rule_unchanged():
 def test_mobile_rule_takes_flow_space():
     css = (STATIC_DIR / "chat-feedback.css").read_text(encoding="utf-8")
     mobile = [rule for rule in find_rules_with_selector(parse_rules(css), ".feedback-notice")
-              if rule.media == "(max-width: 600px)"]
+              if rule.media == "(max-width: 920px)"]
     assert len(mobile) == 1
     assert declaration(mobile[0], POSITION) == STATIC
-    assert declaration(mobile[0], MARGIN) == TWELVE_PX
+    assert declaration(mobile[0], MARGIN) == MOBILE_MARGIN
     assert declaration(mobile[0], MAX_WIDTH) == NONE
     # 고정 배치의 덮기 좌표를 다시 선언하지 않는다.
     assert declaration(mobile[0], TOP) is None

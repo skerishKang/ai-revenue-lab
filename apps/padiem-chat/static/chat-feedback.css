@@ -64,10 +64,12 @@ html[data-theme="padiem-glass"] .feedback-dialog::after { background: linear-gra
   .feedback-dialog { width: calc(100vw - 20px); max-height: calc(100dvh - 20px); border-radius: var(--radius-md); }
   .feedback-panel { padding: 18px; }
   .feedback-tabs { gap: 8px; }
-  /* #8056: 모바일 폭에서는 고정 배치 대신 흐름 안에 들어와 자리를 차지한다 —
-     인사말 제목을 덮는 일이 없고, 상단 고정 배치는 데스크톱 규칙(:54) 그대로다. */
-  .feedback-notice { position: static; margin: 12px; max-width: none; }
   .feedback-dialog::after { left: 18px; right: 18px; }
+}
+/* Match the mobile shell breakpoint: reserve a non-shrinking notice row
+   above the scrollable greeting on phones and tablets (#8316). */
+@media (max-width: 920px) {
+  .feedback-notice { position: static; flex: none; margin: 8px 12px; max-width: none; padding: 12px; }
 }
 
 /* #7718 3단계 — 운영센터 사용 일지 탭 (관리자 전용) */
