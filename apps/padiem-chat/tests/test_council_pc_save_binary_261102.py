@@ -37,7 +37,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import app.pc_file_exchange_routes as exchange                      # noqa: E402
 import _support.pc_device_pairing as pairing                       # noqa: E402
-import test_5895_pc_file_exchange as base                           # noqa: E402
+import _support.pc_file_exchange as base                           # noqa: E402
 import test_project_file_binary_upload as binary_base               # noqa: E402
 from app.main import create_app                                     # noqa: E402
 from app.project_file_routes import _project_original_object_key    # noqa: E402
