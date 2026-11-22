@@ -14,21 +14,21 @@ No provider, B14 or Engine call happens here.
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = Path(__file__).resolve().parents[1] / "app"
-APPS = Path(__file__).resolve().parents[2]
+# #8060: 시트·서버 소스 원문 읽기는 _support/claw_static이 담당하고 시험은
+# 함수 범위 소스·순서·부재 금지 경계를 단언한다. 이 모듈은 원문 read를 갖지
+# 않는다.
+from _support import claw_static
 
-LIFECYCLE = (STATIC / "message-lifecycle.js").read_text(encoding="utf-8")
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-STREAM_JS = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-STYLES = (STATIC / "capability-presentation.css").read_text(encoding="utf-8")
-CHAT_ROUTES = (APP / "chat_routes.py").read_text(encoding="utf-8")
-LIVE_EVENTS = (APP / "claw_live_events.py").read_text(encoding="utf-8")
-ENGINE_SERVICE = (APPS / "padiem-ai-engine" / "app" / "orchestration_service.py").read_text(
-    encoding="utf-8"
+LIFECYCLE = claw_static.sheet("message-lifecycle.js")
+APP_JS = claw_static.sheet("app.js")
+STREAM_JS = claw_static.sheet("chat-streaming-module.js")
+TRANSPORT = claw_static.sheet("chat-transport.js")
+STYLES = claw_static.sheet("capability-presentation.css")
+CHAT_ROUTES = claw_static.server_source("chat_routes")
+LIVE_EVENTS = claw_static.server_source("claw_live_events")
+ENGINE_SERVICE = claw_static.repo_source(
+    "apps/padiem-ai-engine/app/orchestration_service.py"
 )
 
 LONG_WAIT_COPY = "오래 걸리고 있어요 — 계속 진행 중입니다"
@@ -160,7 +160,7 @@ def test_the_roster_read_started_early_dies_with_the_turn_that_left_it():
     for nobody; a task the evaluation awaited is done, where the guard is a
     no-op.
     """
-    claw_general = (APP / "claw_general_routes.py").read_text(encoding="utf-8")
+    claw_general = claw_static.server_source("claw_general_routes")
     start = claw_general.index(
         "catalog_task, catalog_unavailable = _start_selectable_model_read("
     )
