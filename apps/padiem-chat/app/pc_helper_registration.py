@@ -66,6 +66,22 @@ def registration_command():
     )
 
 
+def is_fixed_system_refresh_command(command, *, user_mode):
+    """Exactly the repository's own SYSTEM refresh bytes, and nothing else.
+
+    The minimum-version block exists so an old helper cannot run arbitrary
+    commands; the one command that *repairs* an old helper is this fixed,
+    release-pinned refresh. It is admitted by byte identity only, in SYSTEM
+    mode only: a prefix, a suffix, an edited digest or the same text sent
+    through the user lane is not the fixed command.
+    """
+    return user_mode is False and isinstance(command, str) and command == _FIXED_REFRESH_COMMAND
+
+
+# Rendered once: the bytes are a pure function of the repository source.
+_FIXED_REFRESH_COMMAND = registration_command()
+
+
 def parse_receipt(text):
     matches = [m.groups() for line in (text or "").splitlines() if (m := _MARKER.fullmatch(line.strip()))]
     if len(matches) != 1 or matches[0][1] not in _REASONS[matches[0][0]]:
