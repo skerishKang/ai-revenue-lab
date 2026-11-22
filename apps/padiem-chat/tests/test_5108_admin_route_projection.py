@@ -20,6 +20,7 @@ from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.owner_model_preview_routes import claw_verified_model_choices
+from _support.admin_models_browser import static_asset
 from padiem_control_plane.model_tier_routes import TierRoute, TierRouteSnapshot
 from padiem_control_plane.product_tier_routes_private import free_fallback_model_id, free_primary_model_id
 
@@ -421,11 +422,7 @@ def test_b66_administrator_lane_keeps_its_own_grant_restriction():
 
 def test_admin_console_projects_the_route_ledger_into_the_placement_panel():
     """The console must not keep a fixed "not wired" label for a connected route."""
-    from pathlib import Path
-
-    source = (
-        Path(__file__).resolve().parents[1] / "static" / "admin-models.js"
-    ).read_text(encoding="utf-8")
+    source = static_asset("admin-models.js")
     assert 'state.routeConnected' in source
     assert 'routeTile("chat"' in source
     assert 'routeTile("claw"' in source
