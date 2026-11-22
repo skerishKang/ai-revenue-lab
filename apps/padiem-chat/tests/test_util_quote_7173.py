@@ -26,12 +26,21 @@ from css_rules import declaration, find_rules_with_selector, parse_rules
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-QUOTE_JS = (STATIC / "util-quote.js").read_text(encoding="utf-8")
-QUOTE_CSS = (STATIC / "util-quote.css").read_text(encoding="utf-8")
-UTIL_JS = (STATIC / "util-app.js").read_text(encoding="utf-8")
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-MARKDOWN_JS = (STATIC / "util-tools-markdown.js").read_text(encoding="utf-8")
+from _support.util_quote_source import (
+    app_source,
+    index_source,
+    markdown_source,
+    quote_css_source,
+    quote_js_source,
+    util_app_source,
+)
+
+INDEX = index_source()
+QUOTE_JS = quote_js_source()
+QUOTE_CSS = quote_css_source()
+UTIL_JS = util_app_source()
+APP_JS = app_source()
+MARKDOWN_JS = markdown_source()
 
 
 # ── static boundary ────────────────────────────────────────────────────────
