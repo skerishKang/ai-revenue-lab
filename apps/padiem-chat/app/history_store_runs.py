@@ -268,7 +268,7 @@ class RunStore(StoreCore):
         title so a Chat turn never reads as a Claw turn. The verified Mesh
         result alone is allowed to insert the assistant message later.
         """
-        if action not in ("pc_drive_query", "pc_files_query", "pc_browser_query", "pc_session"):
+        if action not in ("pc_drive_query", "pc_files_query", "pc_browser_query", "pc_session", "pc_maintenance"):
             raise HistoryError("unsupported Chat PC action")
         if not isinstance(title_prefix, str) or not title_prefix:
             raise HistoryError("Chat PC title prefix is required")

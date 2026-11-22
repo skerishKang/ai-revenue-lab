@@ -919,9 +919,15 @@ def _row(name, folder=False):
             "LastWriteTimeUtc": "2026-10-01T00:00:00Z", "PSIsContainer": folder}
 
 
-def _listing_body(monkeypatch, text, command=None):
-    dispatch = "dsp_" + "a" * 32
-    state, _captured, _link, _ = _state(monkeypatch)
+def _listing_body(monkeypatch, text, command=None, *, state=None, dispatch=None):
+    # `state` may be shared across pages by a pagination loop: the pairing
+    # store and the session identity do not change between pages, only the
+    # finished dispatch row does. Rebuilding them per page re-ran the whole
+    # migration set hundreds of times for one test.
+    if dispatch is None:
+        dispatch = "dsp_" + "a" * 32
+    if state is None:
+        state, _captured, _link, _ = _state(monkeypatch)
     _finished(state, dispatch_id=dispatch, kind="command", text=text, command=command)
     return _answer(pairing.run(exchange.pc_file_exchange_result(
         _Request(state, query={"dispatch_id": dispatch}, method="GET")
@@ -959,12 +965,17 @@ def test_a_listing_stored_before_paging_is_one_final_page_without_a_total(monkey
 def test_every_page_sums_to_the_total_without_gaps_or_repeats(monkeypatch, count):
     every = [_row("item%05d" % n) for n in range(count)]
     names = [row["Name"] for row in every]
+    # One pairing store and session for every page: only the dispatch row
+    # changes per page. (Previously each page rebuilt the full migration
+    # set, which cost ~17 s in CI for the 5000-row case.)
+    state, _captured, _link, _ = _state(monkeypatch)
     seen, offset, pages = [], 0, 0
     while True:
         window = every[offset:offset + PC_FILES_LIST_PAGE_SIZE]
         has_more = offset + len(window) < count
         _status, body = _listing_body(monkeypatch, _page_envelope(
-            window, offset=offset, total=count, has_more=has_more))
+            window, offset=offset, total=count, has_more=has_more),
+            state=state, dispatch="dsp_" + "%032d" % offset)
         assert body["total"] == count
         seen.extend(item["name"] for item in body["items"])
         pages += 1
@@ -1025,12 +1036,14 @@ def test_a_browse_filter_is_refused_when_it_carries_control_characters(monkeypat
 
 def test_a_filtered_page_reports_the_number_of_matches_and_pages_them(monkeypatch):
     matches = [_row("match%03d" % n) for n in range(204)]
+    state, _captured, _link, _ = _state(monkeypatch)
     seen, offset = [], 0
     while True:
         window = matches[offset:offset + PC_FILES_LIST_PAGE_SIZE]
         has_more = offset + len(window) < 204
         _status, body = _listing_body(monkeypatch, _page_envelope(
-            window, offset=offset, total=204, has_more=has_more))
+            window, offset=offset, total=204, has_more=has_more),
+            state=state, dispatch="dsp_" + "%032d" % offset)
         assert body["total"] == 204
         seen.extend(item["name"] for item in body["items"])
         if not body["has_more"]:

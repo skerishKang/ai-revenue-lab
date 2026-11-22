@@ -13,6 +13,7 @@ Unknown event/API/changes => full.
 from __future__ import annotations
 
 import ast
+import functools
 import json
 import os
 from pathlib import Path
@@ -304,7 +305,22 @@ def _test_import_graph(tests_dir: Path):
 
     Refuse an unreadable/invalid candidate: an incomplete graph is not proof.
     The supported scope is flat tests/ Python files and the _support package.
+
+    Callers mutate the returned containers (e.g. seed sets), so the cached
+    parse is handed out as fresh copies; the parse itself happens once per
+    tests directory in a process. Repeated classification in one process
+    (e.g. the contract tests) used to re-parse every test module per call.
     """
+    graph = _test_import_graph_parsed(tests_dir)
+    if graph is None:
+        return None
+    paths, static_readers, harnesses, edges = graph
+    return dict(paths), set(static_readers), harnesses, {
+        name: set(imports) for name, imports in edges.items()}
+
+
+@functools.lru_cache(maxsize=4)
+def _test_import_graph_parsed(tests_dir: Path):
     paths = {}
     static_readers = set()
     imported = {}

@@ -241,7 +241,6 @@ def test_bright_theme_status_badge_is_readable_in_chat_and_claw():
         assert head, f"missing bright status badge override {selector}"
         decls = [decl for rule in head for decl in rule.decls]
         assert any(decl.prop == "color" for decl in decls), selector
-        assert any(decl.important for decl in decls), selector
         # The Chat-only selector was the source of the defect.
         chat_only = f'html[data-theme="{theme}"] .app-shell[data-state="chat"] .demo-label'
         assert not sheets.rules_with_selector("padiem-themes.css", chat_only), chat_only

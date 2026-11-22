@@ -19,7 +19,6 @@ from __future__ import annotations
 import importlib.util
 import sys
 import types
-import tomllib
 from datetime import timedelta
 from pathlib import Path
 from types import SimpleNamespace
@@ -38,6 +37,15 @@ _KAGENT_SRC = _REPO / "apps" / "korean-ai-code-agent" / "src"
 # kagent from an installed distribution still collects.
 if (_KAGENT_SRC / "kagent" / "__init__.py").exists():
     sys.path.insert(0, str(_KAGENT_SRC))
+
+# #8060: 원문 read는 파일 전용 _support가 담당한다.
+from _support.automation_seam_source import (  # noqa: E402
+    discovery_source,
+    read_text,
+    worker_source,
+    wrangler_source,
+    wrangler_triggers,
+)
 
 from kagent.claw_automation import (  # noqa: E402
     ClawAutomationTickRuntime,
@@ -99,7 +107,7 @@ WS_FOUR = "ws_four"
 def d1_db() -> SqliteD1Binding:
     binding = SqliteD1Binding()
     for path in (MIGRATION_PATH, MIGRATION_019_PATH):
-        binding.conn.executescript(path.read_text(encoding="utf-8"))
+        binding.conn.executescript(read_text(path))
     return binding
 
 
@@ -545,7 +553,7 @@ def _route_db():
 
     db = FakeD1()
     for path in (MIGRATION_PATH, MIGRATION_019_PATH):
-        db.conn.executescript(path.read_text(encoding="utf-8"))
+        db.conn.executescript(read_text(path))
     return db
 
 
@@ -919,26 +927,24 @@ async def test_receipts_pin_no_external_side_effect(d1_store):
 
 
 def test_worker_handler_and_cron_source_are_present_but_not_activated():
-    worker_source = (_CHAT / "worker.py").read_text(encoding="utf-8")
-    assert "async def scheduled" in worker_source
-    assert "PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED" in worker_source
-    assert "PRODUCTION_CRON_ACTIVATION = False" in worker_source
-    assert "PRODUCTION_MUTATION = False" in worker_source
+    worker = worker_source()
+    assert "async def scheduled" in worker
+    assert "PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED" in worker
+    assert "PRODUCTION_CRON_ACTIVATION = False" in worker
+    assert "PRODUCTION_MUTATION = False" in worker
 
-    wrangler_source = (_CHAT / "wrangler.toml").read_text(encoding="utf-8")
-    assert tomllib.loads(wrangler_source).get("triggers") == {
+    wrangler = wrangler_source()
+    assert wrangler_triggers() == {
         "crons": ["17 3 * * *"]
     }
-    assert 'PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"' in wrangler_source
+    assert 'PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"' in wrangler
 
-    discovery_source = (
-        _CHAT / "app" / "claw_automation_due_workspace_discovery.py"
-    ).read_text(encoding="utf-8")
-    assert "WORKER_SCHEDULED_HANDLER = True" in discovery_source
-    assert "CRON_SOURCE_DECLARATION = False" in discovery_source
-    assert "BACKGROUND_SCHEDULER_SOURCE_READY = True" in discovery_source
-    assert "REAL_CLOUD_CRON_REGISTRATION = False" in discovery_source
-    assert "PRODUCTION_SCHEDULER_ACTIVATION = False" in discovery_source
+    discovery = discovery_source()
+    assert "WORKER_SCHEDULED_HANDLER = True" in discovery
+    assert "CRON_SOURCE_DECLARATION = False" in discovery
+    assert "BACKGROUND_SCHEDULER_SOURCE_READY = True" in discovery
+    assert "REAL_CLOUD_CRON_REGISTRATION = False" in discovery
+    assert "PRODUCTION_SCHEDULER_ACTIVATION = False" in discovery
 
 # ---------------------------------------------------------------------------
 # #5034 — the scheduled lane must reach the existing Web Push delivery seam

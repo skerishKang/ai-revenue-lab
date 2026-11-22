@@ -1419,6 +1419,7 @@ async def dispatch_oracle_mesh_command_intent(
     read_only: bool = False,
     share_roots: list[str] | None = None,
     helper_update_control: bool = False,
+    maintenance_before_write=None,
 ) -> JSONResponse:
     """Owner intent for ONE terminal command on the pinned management PC.
 
@@ -1523,7 +1524,19 @@ async def dispatch_oracle_mesh_command_intent(
         return _error(403, "oracle_mesh_command_unverified")
 
     from .pc_helper_update_routes import command_update_denial
-    update_denial = await command_update_denial(
+    fixed_install = False
+    if maintenance_before_write is not None:
+        from .pc_helper_registration import is_fixed_system_refresh_command
+        from .pc_helper_install import is_fixed_system_install_command
+        from .pc_helper_version_routes import helper_manifest
+        fixed_install = is_fixed_system_install_command(
+            command, manifest=helper_manifest(request.app.state), user_mode=user_mode)
+        if (not callable(maintenance_before_write) or trusted_owner is None
+                or user_mode is not False or background or read_only or helper_update_control
+                or ttl_seconds != 300 or wire.get("confirmed") is not True
+                or not (fixed_install or is_fixed_system_refresh_command(command, user_mode=user_mode))):
+            return _error(403, "oracle_mesh_command_unverified")
+    update_denial = None if fixed_install else await command_update_denial(
         request.app.state, device_id=target.get("device_id") or target["node_ref"],
         command=command, user_mode=user_mode, helper_update_control=helper_update_control,
         now=datetime.now(timezone.utc),
@@ -1570,6 +1583,10 @@ async def dispatch_oracle_mesh_command_intent(
         ttl_seconds = dispatch_ttl_seconds(run_row)
     now = datetime.now(timezone.utc)
     try:
+        # A maintenance row is the execution authority. Re-read all host-side
+        # authority facts here, after all awaits used to prepare the row.
+        if maintenance_before_write is not None and await maintenance_before_write() is not True:
+            return _error(403, "oracle_mesh_command_unverified")
         dispatch = await history_store.create_oracle_mesh_dispatch(
             user_id=uid,
             run_id=wire["run_id"],

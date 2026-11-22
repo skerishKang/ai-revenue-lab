@@ -598,9 +598,17 @@ def test_the_read_only_surface_selects_metadata_and_counts_only(tmp_path, capsys
     up_to = max(item["number"] for item in inventory)
     tables = gate.detail_tables(inventory, up_to, schema["tables"])
     # only column representatives need PRAGMA, so the statement count stays small
-    # (#7690 migration 138 adds the first column representative on site_feedback,
-    # bringing the bounded set to 20 — still one detail statement.)
+    # Migration 138 adds a column representative; 139 is a new table, so
+    # sqlite_master proves it without increasing the PRAGMA-only bound of 20.
     assert tables and len(tables) <= 20
+    # When migration 139 is explicitly included for its row-count evidence,
+    # the detail scope gains exactly one table and remains bounded at 21.
+    maintenance_tables = gate.detail_tables(
+        inventory, up_to, schema["tables"],
+        extra_names=("139_pc_helper_maintenance_jobs.sql",),
+    )
+    assert set(maintenance_tables) == set(tables) | {"pc_helper_maintenance_jobs"}
+    assert len(maintenance_tables) <= 21
     columns, counts = gate.detail_rows(detail_payload(schema, tables), tables)
     assert set(counts) == set(tables)
     assert all(value == 7 for value in counts.values())

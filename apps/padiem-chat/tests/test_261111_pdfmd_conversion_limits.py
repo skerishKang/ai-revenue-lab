@@ -22,6 +22,9 @@ from app.config import Settings
 from app.main import create_app
 from app.usage_gate import InMemoryUsageCounterStore
 
+# #8060: 원문 read는 파일 전용 _support가 담당한다.
+from _support.pdfmd_conversion_source import migration_text, sheet_has
+
 MIGRATION = Path(__file__).parents[1] / "migrations" / "066_document_convert_jobs.sql"
 # 116 adds the scan page rows the item delete now clears in the same call.
 SCAN_PAGES_MIGRATION = (
@@ -91,8 +94,8 @@ class SqliteD1:
             "INSERT INTO users (id, email) VALUES (?, ?)",
             [(OWNER, f"{OWNER}@example.test")],
         )
-        self.conn.executescript(MIGRATION.read_text(encoding="utf8"))
-        self.conn.executescript(SCAN_PAGES_MIGRATION.read_text(encoding="utf8"))
+        self.conn.executescript(migration_text(MIGRATION))
+        self.conn.executescript(migration_text(SCAN_PAGES_MIGRATION))
 
     def prepare(self, sql):
         return _Statement(self, sql)
@@ -452,10 +455,7 @@ async def test_rerun_of_finished_item_does_not_take_again():
 
 
 def test_static_shell_announces_quota_and_remaining():
-    static = Path(__file__).parents[1] / "static"
-    js = (static / "util-pdfmd.js").read_text(encoding="utf-8")
-    css = (static / "util-menu.css").read_text(encoding="utf-8")
-    assert "conversion_quota_exhausted" in js
-    assert "오늘 변환 한도를 다 썼어요" in js
-    assert "conversion.remaining" in js
-    assert "pdfmd-quota" in js and "pdfmd-quota" in css
+    assert sheet_has("util-pdfmd.js", "conversion_quota_exhausted")
+    assert sheet_has("util-pdfmd.js", "오늘 변환 한도를 다 썼어요")
+    assert sheet_has("util-pdfmd.js", "conversion.remaining")
+    assert sheet_has("util-pdfmd.js", "pdfmd-quota") and sheet_has("util-menu.css", "pdfmd-quota")

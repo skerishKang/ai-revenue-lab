@@ -45,7 +45,12 @@ def _stream_request_defs() -> list[tuple[str, int, ast.AsyncFunctionDef]]:
     found: list[tuple[str, int, ast.AsyncFunctionDef]] = []
     for source_file in sorted(TESTS_ROOT.rglob("*.py")):
         # utf-8-sig: some shipped test files carry a BOM that ast.parse refuses.
-        tree = ast.parse(source_file.read_text(encoding="utf-8-sig", errors="replace"))
+        text = source_file.read_text(encoding="utf-8-sig", errors="replace")
+        # Only files naming stream_request can define it: skip the AST parse
+        # for the other ~1400 test files (the substring check is exact).
+        if "stream_request" not in text:
+            continue
+        tree = ast.parse(text)
         for node in ast.walk(tree):
             if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
                 for child in node.body:

@@ -33,7 +33,7 @@ HELPER_READY_OPTIONAL_KEYS = frozenset({"helper_sha256", "helper_version", "mesh
                                       "update_result", "update_registration_error", "auto_update", "update_target_sha256",
                                       "helper_status_present", "updater_source_present", "updater_source_sha256", "updater_task_present",
                                       # #8359 F7: the SYSTEM self-heal watcher task (#8193) is observed like the updater task.
-                                      "self_heal_task_present"})
+                                      "self_heal_task_present", "helper_install_ref_sha256"})
 
 
 class HelperReadyError(ValueError):
@@ -95,6 +95,12 @@ def validate_helper_ready(value: Any) -> dict[str, Any]:
                 or result.get("updater_source_present") is not True):
             raise HelperReadyError("invalid updater source digest")
         result["updater_source_sha256"] = digest
+    if "helper_install_ref_sha256" in value:
+        ref = value["helper_install_ref_sha256"]
+        if (not isinstance(ref, str) or _SHA256.fullmatch(ref) is None
+                or not result.get("helper_sha256") or result.get("helper_status_present") is not True):
+            raise HelperReadyError("invalid helper install reference")
+        result["helper_install_ref_sha256"] = ref
     if "auto_update" in value:
         if type(value["auto_update"]) is not bool:
             raise HelperReadyError("invalid helper update preference")

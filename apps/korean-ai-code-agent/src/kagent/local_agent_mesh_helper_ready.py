@@ -26,6 +26,7 @@ server treats that as "not known", never as "not ready".
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from typing import Any, Callable, Iterable
@@ -45,101 +46,107 @@ HELPER_READY_SWITCH = "ORACLE_MESH_HELPER_READY_REPORT"
 # the agent console's own ``eval`` and returns one object. It keeps no state:
 # every evaluation reads the PC again and leaves nothing behind.
 AGENT_HELPER_READY_JS = r"""
-(function(rid) {
-var out = {protocol: 'padiem-helper-ready-v1', request_id: rid, ok: false,
-task_present: null, install_dir_present: null, pipe_open: null,
-interactive_session: null, helper_build: null};
-if (process.platform !== 'win32') return out;
-try {
-var versions = process.versions || {};
-var date = new Date(versions.commitDate || versions.meshAgent);
-if (!isNaN(date.getTime())) out.mesh_agent_version = date.toISOString();
-} catch (e) {}
+(function(rid){
+var out={protocol: 'padiem-helper-ready-v1',request_id: rid,ok: false,
+task_present: null,install_dir_present: null,pipe_open: null,
+interactive_session: null,helper_build: null};
+if(process.platform!=='win32') return out;
+try{
+var versions=process.versions||{};
+var date=new Date(versions.commitDate||versions.meshAgent);
+if(!isNaN(date.getTime())) out.mesh_agent_version=date.toISOString();
+}catch(e){}
 var fs;
-try { fs = require('fs'); } catch (e) { return out; }
-function env(ns, fallback) {
-try {
-for (var i = 0; i < ns.length; i++) {
-var v = process.env[ns[i]];
-if (typeof v === 'string' && v) return v;
+function sha256(data){ return require('SHA256Stream').create().syncHash(data).toString('hex'); }
+try{ fs=require('fs'); }catch(e){ return out; }
+function env(ns,fallback){
+try{
+for(var i=0; i<ns.length; i++){
+var v=process.env[ns[i]];
+if(typeof v==='string'&&v) return v;
 }
-} catch (e) {}
+}catch(e){}
 return fallback;
 }
-function exists(path) {
-var v = fs.existsSync(path);
-if (v === true || v === false) return v;
-if (typeof v === 'number') return v !== 0;
+function exists(path){
+var v=fs.existsSync(path);
+if(v===true||v===false) return v;
+if(typeof v==='number') return v!==0;
 throw new Error('existence unavailable');
 }
-var windows = env(['windir', 'SystemRoot', 'WINDIR', 'SYSTEMROOT'], 'C:\\Windows');
-var folder = env(['ProgramData', 'PROGRAMDATA', 'ALLUSERSPROFILE'], 'C:\\ProgramData') + '\\Padiem';
-var task = '\\Tasks\\Padiem\\PadiemUserSessionHelper';
-try {
-out.task_present = exists(windows + '\\System32' + task) ||
-exists(windows + '\\Sysnative' + task);
-} catch (e) { out.task_present = null; }
-try { out.install_dir_present = exists(folder); }
-catch (e) { out.install_dir_present = null; }
-try {
-var ns = fs.readdirSync('\\\\.\\pipe\\*');
-if (Array.isArray(ns) && ns.length > 0) {
-var open = false;
-for (var n = 0; n < ns.length; n++) {
-if (typeof ns[n] === 'string' &&
-ns[n].toLowerCase().indexOf('padiem-user-helper-dev_') === 0) {
-open = true;
+var windows=env(['windir','SystemRoot','WINDIR','SYSTEMROOT'],'C:\\Windows');
+var folder=env(['ProgramData','PROGRAMDATA','ALLUSERSPROFILE'],'C:\\ProgramData') + '\\Padiem';
+var task='\\Tasks\\Padiem\\PadiemUserSessionHelper';
+try{
+out.task_present=exists(windows+'\\System32'+task) ||
+exists(windows+'\\Sysnative'+task);
+}catch(e){ out.task_present=null; }
+try{ out.install_dir_present=exists(folder); }
+catch(e){ out.install_dir_present=null; }
+try{
+var ns=fs.readdirSync('\\\\.\\pipe\\*');
+if(Array.isArray(ns)&&ns.length>0){
+var open=false;
+for(var n=0; n<ns.length; n++){
+if(typeof ns[n]==='string' &&
+ns[n].toLowerCase().indexOf('padiem-user-helper-dev_') === 0){
+open=true;
 break;
 }
 }
-out.pipe_open = open;
+out.pipe_open=open;
 }
-} catch (e) { out.pipe_open = null; }
-try {
-var sessions = require('user-sessions').Current();
-var counted = 0, active = false;
-for (var id in sessions) {
-var session = sessions[id];
-if (!session || typeof session.State !== 'string') continue;
+}catch(e){ out.pipe_open=null; }
+try{
+var sessions=require('user-sessions').Current();
+var counted=0,active=false;
+for(var id in sessions){
+var session=sessions[id];
+if(!session||typeof session.State!=='string') continue;
 counted++;
-if (session.State === 'Active' && Number(session.SessionId) !== 0) active = true;
+if(session.State==='Active'&&Number(session.SessionId)!==0) active=true;
 }
-if (counted > 0) out.interactive_session = active;
-} catch (e) { out.interactive_session = null; }
-try {
-var record = folder + '\\helper-status.json';
-out.helper_status_present = exists(record);
-if (out.helper_status_present && fs.statSync(record).size <= 4096) {
-var text = fs.readFileSync(record).toString();
-if (text.charCodeAt(0) === 0xFEFF) text = text.substring(1);
-var status = JSON.parse(text), sha = status && status.sha256;
-if (status && status.status === 'installed' && typeof sha === 'string' &&
-/^[0-9a-fA-F]{64}$/.test(sha)) {
-out.helper_sha256 = sha.toLowerCase();
-out.helper_build = out.helper_sha256.substring(0, 12);
-var ver = status.version, r = status.update_result, err = status.update_registration_error, target = status.update_target_sha256;
-if (typeof ver === 'string' && /^[0-9][0-9A-Za-z._-]{0,63}$/.test(ver)) out.helper_version = ver;
-if (typeof r === 'string' &&
-/^(current|pending|success|hash_mismatch|signature_mismatch|manifest_rejected|download_failed|deferred|rollback|registration_failed|available)$/.test(r)) out.update_result = r;
-if (typeof target === 'string' && /^[0-9a-f]{64}$/.test(target)) out.update_target_sha256 = target;
-if (typeof status.auto_update === 'boolean') out.auto_update = status.auto_update;
-if (r === 'registration_failed' && typeof err === 'string' &&
-/^(updater_running|excluded_computer|missing_fixed_source|invalid_install_record|installed_digest_mismatch|task_registration_failed|task_registration_timeout|task_process_start_failed|version_unavailable)$/.test(err)) out.update_registration_error = err;
+if(counted>0) out.interactive_session=active;
+}catch(e){ out.interactive_session=null; }
+try{
+var record=folder+'\\helper-status.json';
+out.helper_status_present=exists(record);
+if(out.helper_status_present&&fs.statSync(record).size<=4096){
+var text=fs.readFileSync(record).toString();
+if(text.charCodeAt(0)===0xFEFF) text=text.substring(1);
+var status=JSON.parse(text),sha=status&&status.sha256;
+if(status&&status.status==='installed'&&typeof sha==='string' &&
+/^[0-9a-fA-F]{64}$/.test(sha)){
+out.helper_sha256=sha.toLowerCase();
+out.helper_build=out.helper_sha256.substring(0,12);
+try{
+var installId=status.device_id;
+if(typeof installId==='string'&&/^[0-9a-fA-F]{32}$|^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$/.test(installId))
+out.helper_install_ref_sha256=sha256(Buffer.from(installId.toLowerCase()));
+}catch(e){}
+var ver=status.version,r=status.update_result,err=status.update_registration_error,target=status.update_target_sha256;
+if(typeof ver==='string'&&/^[0-9][0-9A-Za-z._-]{0,63}$/.test(ver)) out.helper_version=ver;
+if(typeof r==='string' &&
+/^(current|pending|success|hash_mismatch|signature_mismatch|manifest_rejected|download_failed|deferred|rollback|registration_failed|available)$/.test(r)) out.update_result=r;
+if(typeof target==='string'&&/^[0-9a-f]{64}$/.test(target)) out.update_target_sha256=target;
+if(typeof status.auto_update==='boolean') out.auto_update=status.auto_update;
+if(r==='registration_failed'&&typeof err==='string' &&
+/^(updater_running|excluded_computer|missing_fixed_source|invalid_install_record|installed_digest_mismatch|task_registration_failed|task_registration_timeout|task_process_start_failed|version_unavailable)$/.test(err)) out.update_registration_error=err;
 }
 }
-} catch(e){out.helper_build=null;}
-try {
-var up = folder + 'HelperUpdater\\update.ps1', ut = '\\Tasks\\Padiem\\PadiemUserHelperUpdater';
-out.updater_task_present = exists(windows+'\\System32'+ut)||exists(windows+'\\Sysnative'+ut);
-out.updater_source_present = exists(up);
-if (out.updater_source_present && fs.statSync(up).size <= 131072)
-out.updater_source_sha256 = require('SHA256Stream').create().syncHash(fs.readFileSync(up)).toString('hex');
-} catch(e){}
-try {
-var st = '\\Tasks\\Padiem\\PadiemPcSelfHeal';
-out.self_heal_task_present = exists(windows+'\\System32'+st)||exists(windows+'\\Sysnative'+st);
-} catch(e){}
-out.ok = true;
+}catch(e){out.helper_build=null;}
+try{
+var up=folder+'HelperUpdater\\update.ps1',ut='\\Tasks\\Padiem\\PadiemUserHelperUpdater';
+out.updater_task_present=exists(windows+'\\System32'+ut)||exists(windows+'\\Sysnative'+ut);
+out.updater_source_present=exists(up);
+if(out.updater_source_present&&fs.statSync(up).size<=131072)
+out.updater_source_sha256=sha256(fs.readFileSync(up));
+}catch(e){}
+try{
+var st='\\Tasks\\Padiem\\PadiemPcSelfHeal';
+out.self_heal_task_present=exists(windows+'\\System32'+st)||exists(windows+'\\Sysnative'+st);
+}catch(e){}
+out.ok=true;
 return out;
 })(__PADIEM_REQUEST_ID__)
 """
@@ -256,6 +263,10 @@ def _file_state(raw: Any) -> tuple[dict[str, Any], str]:
     if not isinstance(sha, str) or _STATUS_SHA.fullmatch(sha) is None:
         return state, "invalid_digest"
     state.update(helper_build=sha[:12].lower(), helper_sha256=sha.lower())
+    install_id = text.get("device_id")
+    if isinstance(install_id, str) and re.fullmatch(
+            r"[0-9a-fA-F]{32}|[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}", install_id):
+        state["helper_install_ref_sha256"] = hashlib.sha256(install_id.lower().encode("ascii")).hexdigest()
     # Older installed records have a digest but no version. The wire explicitly
     # permits this; retain the observed digest instead of discarding the PC.
     if isinstance(version, str) and _STATUS_VERSION.fullmatch(version):
