@@ -397,6 +397,99 @@ const txtFile = { name: "note.txt", type: "text/plain", size: 456 };
   results.teardown.resetViewProjectDropped = convLive.activeProject === null;
 }
 
+// 8. #8442: file-lane items upload per file and are outside the raw-single
+//    limit; the per-message count cap still bounds them. Photos and
+//    browser-read documents keep the old rule in both orders.
+{
+  const ext = (f) => { const i = String(f.name).lastIndexOf("."); return i < 0 ? "" : String(f.name).slice(i); };
+  const lanePending = (f) => ({ type: "document", name: f.name, mediaType: "application/octet-stream", byteSize: f.size, file: f, fileLane: true });
+  const laneOn = {
+    shouldUse: (f) => [".txt", ".pdf", ".docx"].includes(ext(f)),
+    isBinary: (f) => [".pdf", ".docx"].includes(ext(f)),
+    available: async () => true,
+    pending: lanePending,
+  };
+  const laneOff = {
+    shouldUse: (f) => [".pdf", ".docx"].includes(ext(f)),
+    isBinary: (f) => [".pdf", ".docx"].includes(ext(f)),
+    available: async () => false,
+    pending: lanePending,
+  };
+  const names = (items) => items.filter((i) => !i.invalid).map((i) => i.name);
+  const invalid = (items) => items.filter((i) => i.invalid).map((i) => i.error);
+  const txtLane = { name: "note.txt", type: "text/plain", size: 100 };
+  const pdfLane = { name: "report.pdf", type: "application/pdf", size: 200 };
+  const docxLane = { name: "letter.docx", type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", size: 300 };
+  const extra = (n) => ({ name: `extra${n}.txt`, type: "text/plain", size: 10 + n });
+
+  convCtx.window.PadiemAttachmentCapabilities = { maxPerMessage: 5 };
+  convCtx.window.PadiemFileLane = laneOn;
+  {
+    const api = freshConv();
+    await api.addAttachmentFiles([txtLane, pdfLane, docxLane]);
+    const afterThree = {
+      names: names(convLive.selectedAttachments),
+      invalid: invalid(convLive.selectedAttachments),
+    };
+    await api.addAttachmentFiles([extra(4)]);
+    await api.addAttachmentFiles([extra(5)]);
+    const afterFive = {
+      valid: convLive.selectedAttachments.filter((i) => !i.invalid).length,
+      invalid: invalid(convLive.selectedAttachments),
+    };
+    await api.addAttachmentFiles([extra(6)]);
+    results.fileLane = {
+      on: {
+        afterThree,
+        afterFive,
+        sixthInvalid: invalid(convLive.selectedAttachments),
+        validAfterSixth: convLive.selectedAttachments.filter((i) => !i.invalid).length,
+      },
+    };
+  }
+  {
+    const api = freshConv();
+    await api.addAttachmentFiles([pngFile, txtLane]);
+    const ordered = {
+      valid: names(convLive.selectedAttachments),
+      invalid: invalid(convLive.selectedAttachments),
+    };
+    const api2 = freshConv();
+    await api2.addAttachmentFiles([txtLane, pngFile]);
+    results.fileLane.off = {
+      photoThenDoc: ordered,
+      docThenPhoto: {
+        valid: names(convLive.selectedAttachments),
+        invalid: invalid(convLive.selectedAttachments),
+      },
+    };
+    convCtx.window.PadiemFileLane = laneOff;
+    const api3 = freshConv();
+    await api3.addAttachmentFiles([pdfLane]);
+    results.fileLane.off.unavailable = {
+      invalid: invalid(convLive.selectedAttachments),
+    };
+    // A lane attachment cannot smuggle in next to a photo either way.
+    convCtx.window.PadiemFileLane = laneOn;
+    const api4 = freshConv();
+    await api4.addAttachmentFiles([pngFile]);
+    await api4.addAttachmentFiles([pdfLane]);
+    results.fileLane.photoThenLane = {
+      valid: names(convLive.selectedAttachments),
+      invalid: invalid(convLive.selectedAttachments),
+    };
+    const api5 = freshConv();
+    await api5.addAttachmentFiles([pdfLane]);
+    await api5.addAttachmentFiles([pngFile]);
+    results.fileLane.laneThenPhoto = {
+      valid: names(convLive.selectedAttachments),
+      invalid: invalid(convLive.selectedAttachments),
+    };
+  }
+  convCtx.window.PadiemFileLane = undefined;
+  convCtx.window.PadiemAttachmentCapabilities = undefined;
+}
+
 // ── claw-session.js context (separate vm context: its own window/document) ──
 const sessionResults = {};
 {
