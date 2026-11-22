@@ -76,7 +76,7 @@ html[data-theme="dark"] .sidebar .recent-section h2,
 html[data-theme="dark"] .sidebar .section-heading-row h2,
 html[data-theme="cinematic"] .sidebar .recent-section h2,
 html[data-theme="cinematic"] .sidebar .section-heading-row h2 {
-  font-size: 12px !important;
+  font-size: 12px;
   letter-spacing: .10em;
 }
 
