@@ -23,6 +23,12 @@ from app.history import (
     UserProfile,
     validate_project_fields,
 )
+# #8060: 시트·마이그레이션·배포 설정 원문 읽기는 _support(claw_static·
+# projects_contract_source)가 담당하고 시험은 구조·부재 경계를 단언한다.
+# 이 모듈은 원문 read를 갖지 않는다.
+from _support import claw_static
+from _support import projects_contract_source
+
 from app.main import create_app
 from app.task_modes import get_task_mode
 
@@ -467,11 +473,10 @@ async def test_d1_project_values_are_bound_not_interpolated():
 
 
 def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
-    root = Path(__file__).resolve().parents[1]
-    html = (root / "static/index.html").read_text(encoding="utf-8")
-    js = (root / "static/app.js").read_text(encoding="utf-8")
-    stream_js = (root / "static/chat-streaming-module.js").read_text(encoding="utf-8")
-    migration = (root / "migrations/002_projects.sql").read_text(encoding="utf-8")
+    html = claw_static.sheet("index.html")
+    js = claw_static.sheet("app.js")
+    stream_js = claw_static.sheet("chat-streaming-module.js")
+    migration = claw_static.migration_source("002_projects.sql")
     # #4462: the duplicate sidebar Projects button is removed; the lower
     # projects section + create button remain the single project surface.
     assert 'id="projectsNavButton"' not in html
@@ -492,9 +497,10 @@ def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     assert "ADD COLUMN project_id" in migration
     import tomllib
     from uuid import UUID
-    declared = tomllib.loads((root / "wrangler.toml").read_text())["d1_databases"]
+    declared = tomllib.loads(projects_contract_source.wrangler_config())["d1_databases"]
     assert len(declared) == 1 and declared[0]["binding"] == "PADIEM_CHAT_DB"
     assert str(UUID(declared[0]["database_id"])) == declared[0]["database_id"]
-    repo = root.parents[1]
     from style_contract import assert_phase1_styles_match
-    assert_phase1_styles_match(root / "static/styles.css", repo / "reference/business-62-padiem-chat-v1/styles.css")
+    assert_phase1_styles_match(
+        Path(__file__).resolve().parents[1] / "static/styles.css",
+        Path(__file__).resolve().parents[3] / "reference/business-62-padiem-chat-v1/styles.css")
