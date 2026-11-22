@@ -834,6 +834,31 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     return {**result, "run_id": run_id}
 
 
+_RESUME_TOOL_IDENTITY = {
+    "search_files": ("files_search", "claw.pc.search_files"),
+    "search_contents": ("files_search_contents", "claw.pc.search_contents"),
+    "list_files": ("files_list", "claw.pc.list_files"),
+    "read_file": ("files", "claw.pc.read_file"),
+    "read_file_chunk": ("files_chunk", "claw.pc.read_file_chunk"),
+}
+
+
+def resume_tool_identity(tool_request_ref):
+    """The (scope, tool_id) a job continuation must use, from the dispatch's
+    own tool_request_ref (``run:tool_segment:digest``).
+
+    A continuation carries only a job id, so the caller-derived tool_id falls
+    back to the listing tool. The dispatch recorded the real one at staging
+    time; this reads it back instead of guessing from the continuation.
+    """
+    if not isinstance(tool_request_ref, str):
+        return None
+    parts = tool_request_ref.split(":")
+    if len(parts) < 2:
+        return None
+    return _RESUME_TOOL_IDENTITY.get(parts[1])
+
+
 async def _resume_pc_files(
     request, *, uid, subject_id, device_id, token_id, tool_name, scope, tool_id,
     job_id, plan_builder, plan_arguments,
@@ -880,6 +905,14 @@ async def _resume_pc_files(
         return {"status": "denied", "code": "pc_job_not_owned",
                 "answer": "이 작업을 확인할 수 없습니다."}
     run_id = row.get("run_id")
+    # #8048: the first call may have staged a recursive search
+    # (claw.pc.search_files) while this continuation only carries a job_id, so
+    # the caller-derived tool_id falls back to claw.pc.list_files. Route by the
+    # dispatch's own tool_request_ref (run:tool_segment:digest), never by the
+    # continuation's arguments — a job_id names no tool, path or query.
+    identity = resume_tool_identity(row.get("tool_request_ref"))
+    if identity is not None:
+        scope, tool_id = identity
     run_reader = getattr(store, "get_claw_run", None)
     try:
         run = await run_reader(uid, run_id) if callable(run_reader) else None
@@ -913,10 +946,10 @@ async def _resume_pc_files(
             )
         except B62OrchestrationError as exc:
             # The engine refused or could not be reached: no PC work was
-            # dispatched, so the branch is named, not answered as unknown.
-            raise ChatPCDriveError("chat_pc_engine_unavailable", exc.user_message,
-                                   exc.status_code, cause=exc.code) from exc
-    except Exception:
+            # dispatched. Name the branch; never report it as a PC file refusal.
+            return {"status": "unavailable", "code": "chat_pc_engine_unavailable",
+                    "answer": exc.user_message}
+    except Exception as exc:
         return unavailable
     try:
         result = json.loads(outcome.answer)

@@ -38,6 +38,25 @@ def fake_event(event_type="pull_request"):
 
 
 class B62ScopeTests(unittest.TestCase):
+    def test_tests_only_runner_requires_first_attempt_same_repo_and_proven_scope(self):
+        event = fake_event()
+        event["pull_request"]["head"]["repo"] = {"full_name": REPO}
+        cases = [
+            ("pull_request", module.TESTS_ONLY, False, "1", "self-hosted"),
+            ("pull_request", module.TESTS_ONLY, False, "2", "hosted"),
+            ("pull_request", module.TESTS_ONLY, True, "1", "hosted"),
+            ("pull_request", module.FULL, False, "1", "hosted"),
+            ("push", module.TESTS_ONLY, False, "1", "hosted"),
+            ("schedule", module.TESTS_ONLY, False, "1", "hosted"),
+            ("workflow_dispatch", module.TESTS_ONLY, False, "1", "hosted"),
+        ]
+        for kind, scope, source, attempt, expected in cases:
+            with self.subTest(kind=kind, scope=scope, source=source, attempt=attempt):
+                self.assertEqual(module.tests_only_runner(event, kind, REPO, scope, source, attempt), expected)
+        event["pull_request"]["head"]["repo"]["full_name"] = "fork/repo"
+        self.assertEqual(module.tests_only_runner(event, "pull_request", REPO, module.TESTS_ONLY, False, "1"), "hosted")
+        self.assertEqual(module.tests_only_runner({}, "pull_request", REPO, module.TESTS_ONLY, False, "1"), "hosted")
+
     def test_b14_attempt_policy_uses_focused_lane(self):
         paths = [file("apps/padiem-chat/app/b14_client.py"), file("apps/padiem-chat/tests/test_owner_tier_fallback_dispatch_261015.py")]
         self.assertEqual(module.impact_scope(paths), module.B14_ATTEMPT_ONLY)

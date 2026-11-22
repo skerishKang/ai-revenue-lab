@@ -30,7 +30,8 @@ REGISTRATION_ERRORS = frozenset({"updater_running", "excluded_computer", "missin
                                  "invalid_install_record", "installed_digest_mismatch", "task_registration_failed",
                                  "task_registration_timeout", "task_process_start_failed", "version_unavailable"})
 HELPER_READY_OPTIONAL_KEYS = frozenset({"helper_sha256", "helper_version", "mesh_agent_version",
-                                      "update_result", "update_registration_error", "auto_update", "update_target_sha256"})
+                                      "update_result", "update_registration_error", "auto_update", "update_target_sha256",
+                                      "helper_status_present", "updater_source_present", "updater_source_sha256", "updater_task_present"})
 
 
 class HelperReadyError(ValueError):
@@ -80,6 +81,17 @@ def validate_helper_ready(value: Any) -> dict[str, Any]:
         if not isinstance(target, str) or _SHA256.fullmatch(target) is None:
             raise HelperReadyError("invalid target release digest")
         result["update_target_sha256"] = target
+    for key in ("helper_status_present", "updater_source_present", "updater_task_present"):
+        if key in value:
+            if type(value[key]) is not bool:
+                raise HelperReadyError("invalid updater observation")
+            result[key] = value[key]
+    if "updater_source_sha256" in value:
+        digest = value["updater_source_sha256"]
+        if (not isinstance(digest, str) or _SHA256.fullmatch(digest) is None
+                or result.get("updater_source_present") is not True):
+            raise HelperReadyError("invalid updater source digest")
+        result["updater_source_sha256"] = digest
     if "auto_update" in value:
         if type(value["auto_update"]) is not bool:
             raise HelperReadyError("invalid helper update preference")
