@@ -7,7 +7,7 @@ import pytest
 from app import chat_pc_drive as lane
 from app.orchestration_bridge import B62EngineOrchestrationBridge
 import test_5573_pc_context_entry as entry
-import test_5573_pc_http_boundary as boundary
+from _support import pc_http_boundary as boundary
 
 
 def test_browser_plan_is_closed_and_model_cannot_widen_it():
