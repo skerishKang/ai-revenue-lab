@@ -101,6 +101,13 @@ async def admin_ops_pc_versions(request):
     manifest = helper_manifest(state)
     try:
         devices = await pairing.list_active_device_ids()
+        labels = {}
+        try:
+            prefs = await pairing.list_helper_update_preferences(user_id=current_user_id(request))
+            labels = {item["mesh_node_id"]: item.get("label") for item in prefs
+                      if isinstance(item, dict) and item.get("mesh_node_id")}
+        except Exception:
+            labels = {}
         rows, observations = [], {}
         for device in devices:
             row = await store.load_helper_ready(device_id=device, include_versions=True)
@@ -112,7 +119,8 @@ async def admin_ops_pc_versions(request):
             # Old reports have only the short build fingerprint. Never infer
             # a release version from an unmatched or truncated digest.
             version = manifest["version"] if manifest and sha == manifest["sha256"] else row.get("helper_version")
-            rows.append({"device_id": device, "helper_version": version,
+            rows.append({"device_id": device, "display_name": labels.get(device),
+                         "helper_version": version,
                          "helper_build": build, "mesh_agent_version": row.get("mesh_agent_version"),
                          "update_result": observation.get("update_result"),
                          "last_healthy_at": row.get("last_healthy_at"),
