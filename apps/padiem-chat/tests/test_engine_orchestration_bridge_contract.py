@@ -775,7 +775,7 @@ async def test_iterator_failure_does_not_blame_previous_valid_record():
 @pytest.mark.parametrize("typed_error", [True, False])
 async def test_terminal_stream_error_settles_only_the_existing_owner_pc_run(status, typed_error):
     """Real D1 SQL: errors settle pending/running, never completed or text-only turns."""
-    import test_5015_multi_tool_result_storage as db
+    from _support import multi_tool_result_storage as db
     from app.claw_live_events import chat_pc_orchestration_sse
     connection = db._database()
     try:
