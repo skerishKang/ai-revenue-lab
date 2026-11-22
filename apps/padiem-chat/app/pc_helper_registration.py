@@ -15,6 +15,15 @@ _REASONS = {"updated": {"registered"}, "skipped": {"already_current"},
 
 
 def plan_registration(row, *, system_allowed, now):
+    """One bounded verdict per fresh observation.
+
+    ``refresh`` is the #8240 updater refresh of an installed helper. ``install``
+    (#8359 F6) is a helper that is not there to refresh: the status file is
+    missing, or it is present but records no installed release (the executor
+    reports both since #8385, as ``file_missing`` and ``release_unknown``).
+    The install itself is the separate fixed command in ``pc_helper_install``;
+    this plan never runs it, and the operator button never executes it.
+    """
     if system_allowed is not True:
         return {"action": "reinstall_required", "reason": "system_denied"}
     state = (row or {}).get("state") or {}
@@ -25,9 +34,11 @@ def plan_registration(row, *, system_allowed, now):
     except (KeyError, TypeError, AttributeError, ValueError):
         return {"action": "failed", "reason": "observation_stale"}
     if state.get("helper_status_present") is False:
-        return {"action": "reinstall_required", "reason": "status_missing"}
-    if state.get("helper_status_present") is not True or not state.get("helper_sha256"):
+        return {"action": "install", "reason": "status_missing"}
+    if state.get("helper_status_present") is not True:
         return {"action": "failed", "reason": "status_unknown"}
+    if not state.get("helper_sha256"):
+        return {"action": "install", "reason": "release_unknown"}
     if (state.get("updater_source_present") is not False
             and not state.get("updater_source_sha256")) or state.get("updater_task_present") is None:
         return {"action": "failed", "reason": "digest_unverified"}
