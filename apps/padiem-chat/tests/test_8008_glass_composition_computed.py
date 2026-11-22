@@ -1123,3 +1123,57 @@ def test_r13_answer_icon_keeps_its_computed_values_without_importance(site, widt
     for prop, want in EXPECTED_R13[(width, height)].items():
         got = observed[prop]
         assert got == want, (width, height, prop, want, got)
+
+
+# #8008 14차 — 유리 아바타 캡 11개를 걷어 낸 뒤의 계산 값.
+READ_R14A_JS = """() => {
+  const el = document.querySelector('.assistant-avatar');
+  if (!el) return null;
+  const cs = getComputedStyle(el);
+  const row = {};
+  for (const p of ['width', 'height', 'border', 'border-radius', 'background-color',
+                   'color', 'box-shadow', 'backdrop-filter', 'font-size', 'font-weight']) {
+    row[p] = cs.getPropertyValue(p);
+  }
+  return row;
+}"""
+
+EXPECTED_R14A = {
+    'width': '32px',
+    'height': '32px',
+    'border': '1px solid rgba(255, 255, 255, 0.48)',
+    'border-radius': '10px',
+    'background-color': 'rgba(73, 84, 94, 0.52)',
+    'color': 'rgb(255, 255, 255)',
+    'box-shadow': 'rgba(17, 25, 33, 0.12) 0px 10px 26px 0px, rgba(255, 255, 255, 0.16) 0px 1px 0px 0px inset',
+    'backdrop-filter': 'blur(16px)',
+    'font-size': '15px',
+    'font-weight': '800',
+}
+
+
+def _read_r14a(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_CHAT_JS)
+            assert marker.get("ready") is True, marker
+            page.wait_for_timeout(1200)
+            return page.evaluate(READ_R14A_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", [(1440, 950), (1100, 900), (390, 844)])
+def test_r14a_avatar_keeps_its_computed_values_without_importance(site, width, height):
+    observed = _read_r14a(site, width, height)
+    for prop, want in EXPECTED_R14A.items():
+        got = observed[prop]
+        assert got == want, (width, height, prop, want, got)

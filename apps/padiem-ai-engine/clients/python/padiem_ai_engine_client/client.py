@@ -649,7 +649,10 @@ _PC_GATEWAY_BROWSER_TOOLS = frozenset(name for name in _PC_GATEWAY_TOOLS if name
 #: the same tool continues that dispatch by job id. This is the only other
 #: argument shape those two tools accept, and the client keeps its own closed
 #: check so a widened shape has to be named here too.
-_PC_GATEWAY_RESUME_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.read_file"})
+_PC_GATEWAY_RESUME_TOOLS = frozenset({
+    "claw.pc.list_files", "claw.pc.read_file", "claw.pc.search_files",
+    "claw.pc.search_contents",
+})
 #: The tools whose search text travels beside the tool id, never as an argument.
 _PC_GATEWAY_SEARCH_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.search_contents",
                                      "claw.pc.search_files"})
