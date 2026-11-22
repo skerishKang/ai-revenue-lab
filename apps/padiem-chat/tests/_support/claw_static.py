@@ -5,6 +5,7 @@ text and assert on parsed rule/attribute values. The sheet paths stay here.
 """
 from __future__ import annotations
 
+import functools
 from pathlib import Path
 
 import locale_bundle
@@ -12,6 +13,10 @@ import locale_bundle
 _STATIC = Path(__file__).resolve().parents[2] / "static"
 
 
+# #7801: shipped sheets do not change during a test run, but dozens of
+# contract modules read the same sheets repeatedly. Read each sheet once
+# per process; the cached text is the shipped file's exact content.
+@functools.lru_cache(maxsize=None)
 def sheet(name: str) -> str:
     """One shipped static sheet as text (paths are fixed here, not in tests)."""
     return (_STATIC / name).read_text(encoding="utf-8")

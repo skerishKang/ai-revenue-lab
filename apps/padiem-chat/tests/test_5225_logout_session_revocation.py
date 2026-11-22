@@ -596,7 +596,12 @@ def test_no_sidless_session_cookie_outside_the_transition_contracts() -> None:
         if path.name in allowed:
             continue
         try:
-            tree = ast.parse(path.read_bytes().decode("utf-8", errors="replace"))
+            text = path.read_bytes().decode("utf-8", errors="replace")
+            # Only files naming create_session_token can call it: skip the
+            # AST parse for the other ~1400 test files (exact pre-filter).
+            if "create_session_token" not in text:
+                continue
+            tree = ast.parse(text)
         except SyntaxError:
             continue
         for node in ast.walk(tree):

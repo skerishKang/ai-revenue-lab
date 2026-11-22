@@ -79,14 +79,28 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+# #7801: the full migration set is applied once per process and cloned.
+# Every call used to re-read and re-execute 130+ migration files
+# (~0.14 s each); tests build these stores hundreds of times per run.
+# A backup clone has identical schema and data, and writes to a clone
+# never touch the template, so per-test isolation is unchanged.
+_TEMPLATES: dict[bool, sqlite3.Connection] = {}
+
+
 def database(*, with_072: bool = True) -> sqlite3.Connection:
-    conn = sqlite3.connect(":memory:", isolation_level=None)
-    conn.row_factory = sqlite3.Row
-    for path in sorted(MIGRATIONS.glob("*.sql")):
-        if not with_072 and path.name[:3] in PAIRING_MIGRATION_NUMBERS:
-            continue
-        conn.executescript(path.read_text(encoding="utf-8"))
-    return conn
+    template = _TEMPLATES.get(with_072)
+    if template is None:
+        template = sqlite3.connect(":memory:", isolation_level=None)
+        template.row_factory = sqlite3.Row
+        for path in sorted(MIGRATIONS.glob("*.sql")):
+            if not with_072 and path.name[:3] in PAIRING_MIGRATION_NUMBERS:
+                continue
+            template.executescript(path.read_text(encoding="utf-8"))
+        _TEMPLATES[with_072] = template
+    clone = sqlite3.connect(":memory:", isolation_level=None)
+    template.backup(clone)
+    clone.row_factory = sqlite3.Row
+    return clone
 
 
 def store(*, with_072: bool = True) -> D1PcPairingStore:
