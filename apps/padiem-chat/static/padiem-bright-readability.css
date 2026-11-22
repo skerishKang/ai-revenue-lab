@@ -104,12 +104,12 @@ html[data-theme="cinematic"] body::before {
 html[data-theme="cinematic"] .sidebar {
   background:
     linear-gradient(180deg, rgba(7,11,19,.93), rgba(5,8,14,.86)),
-    rgba(4,7,12,.9) !important;
+    rgba(4,7,12,.9);
   border-right-color: rgba(136,201,255,.20) !important;
   box-shadow:
     22px 0 70px rgba(0,0,0,.28),
     inset -1px 0 0 rgba(136,201,255,.14),
-    10px 0 48px rgba(91,166,230,.08) !important;
+    10px 0 48px rgba(91,166,230,.08);
 }
 
 html[data-theme="cinematic"] .topbar {
@@ -132,7 +132,7 @@ html[data-theme="cinematic"] .starter {
 
 html[data-theme="cinematic"] .composer {
   background:
-    linear-gradient(145deg, rgba(18,30,46,.8), rgba(8,11,17,.76)) !important;
+    linear-gradient(145deg, rgba(18,30,46,.8), rgba(8,11,17,.76));
   border-color: rgba(136,201,255,.26) !important;
   box-shadow:
     0 0 40px rgba(93,178,246,.14),
