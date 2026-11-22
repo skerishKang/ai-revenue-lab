@@ -23,13 +23,24 @@
     ["all", "전체"], ["new", "새"], ["reviewing", "고치는 중"],
     ["fixed", "고침"], ["deferred", "나중에"],
   ]);
+  // #7690 후속: 받은함은 Chat 의견과 사이트 의견을 함께 본다. 사이트 이름은
+  // 발신 쪽 칸에 쓰고, 식별자(계정 원문)는 화면에 넣지 않는다.
+  const SITE_ENDPOINT = "/api/admin/site-feedback";
+  const SITE_LABELS = Object.freeze({
+    lovetree: "러브트리", "miraen-home": "임미란 홈페이지",
+  });
+  const SOURCES = Object.freeze([
+    ["all", "전체"], ["chat", "Chat"],
+    ["lovetree", "러브트리"], ["miraen-home", "임미란 홈페이지"],
+  ]);
   const INBOX_HASH = "#ops-inbox";
   const MEMBERS_HASH = "#ops-members";
   const JOURNAL_HASH = "#ops-journal";
   const SCORES_HASH = "#ops-scores";
   const NEWS_HASH = "#ops-news";
   const state = {
-    filter: "all", cursor: null, busy: false,
+    filter: "all", source: "all", cursors: { chat: null, site: null },
+    inboxItems: [], busy: false,
     membersQuery: "", membersCursor: null, membersBusy: false,
     memberDetailId: "", auditLoaded: false,
   };
@@ -121,6 +132,74 @@
     return item.sender_email || item.sender_user_id || item.sender_label || "";
   }
 
+  function isSiteItem(item) {
+    return !!(item && typeof item.site === "string" && item.site);
+  }
+
+  function siteName(site) {
+    return SITE_LABELS[site] || site;
+  }
+
+  function statusSelect(item, onChange) {
+    const select = document.createElement("select");
+    select.className = "ops-status-select";
+    select.setAttribute("aria-label", "상태 바꾸기");
+    for (const [value, label] of Object.entries(STATUS_LABELS)) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      if (value === item.status) option.selected = true;
+      select.append(option);
+    }
+    select.dataset.previous = item.status;
+    select.addEventListener("change", () => { void onChange(item.id, select); });
+    return select;
+  }
+
+  function paintSiteRow(item) {
+    const li = node("li", null, "ops-row");
+    li.dataset.feedbackId = item.id;
+    li.dataset.status = item.status;
+
+    const head = node("div", null, "ops-row-head");
+    head.append(node("span", fmtDate(item.created_at), "ops-row-date"));
+    head.append(node("span", "사이트 · " + siteName(item.site), "ops-chip"));
+    head.append(statusSelect(item, changeSiteStatus));
+    li.append(head);
+
+    li.append(node("p", item.body, "ops-row-body"));
+    const bits = [];
+    if (item.external_feedback_id != null) bits.push("외부 의견 번호: " + item.external_feedback_id);
+    if (item.external_status) bits.push("외부 상태: " + item.external_status);
+    bits.push(item.external_is_ai_customer ? "AI 고객" : "사람 고객");
+    if (item.external_title) bits.push("제목: " + item.external_title);
+    if (item.external_category) bits.push("분류: " + item.external_category);
+    li.append(node("p", bits.join(" · "), "ops-row-news"));
+    if (item.external_append) {
+      li.append(node("p", "덧붙임: " + item.external_append, "ops-row-body"));
+    }
+    if (item.ops_memo) {
+      li.append(node("p", "운영 메모: " + item.ops_memo, "ops-reply"));
+    }
+    // 사이트 의견은 고객에게 돌려보내는 길이 없다 — 메모만 가능.
+    li.append(node("p", "운영 메모만 가능합니다. 고객에게 답글을 보낼 수 없습니다.", "ops-row-news"));
+
+    const form = document.createElement("div");
+    form.className = "ops-reply-form";
+    const input = document.createElement("textarea");
+    input.className = "ops-reply-input";
+    input.rows = 2;
+    input.value = item.ops_memo || "";
+    input.placeholder = "운영 메모(고객에게 보이지 않습니다)";
+    input.setAttribute("aria-label", "운영 메모 입력");
+    const save = node("button", "메모 저장", "ops-reply-send");
+    save.type = "button";
+    save.addEventListener("click", () => { void saveSiteMemo(item.id, input, li); });
+    form.append(input, save);
+    li.append(form);
+    return li;
+  }
+
   function paintRow(item) {
     const li = node("li", null, "ops-row");
     li.dataset.feedbackId = item.id;
@@ -187,11 +266,17 @@
     return li;
   }
 
+  function paintAny(item) {
+    return isSiteItem(item) ? paintSiteRow(item) : paintRow(item);
+  }
+
   function replaceRow(item) {
-    const fresh = paintRow(item);
+    const fresh = paintAny(item);
     const old = document.querySelector(
       `#opsInboxList .ops-row[data-feedback-id="${CSS.escape(item.id)}"]`);
     if (old) old.replaceWith(fresh);
+    const index = state.inboxItems.findIndex((entry) => entry.id === item.id);
+    if (index >= 0) state.inboxItems[index] = item;
   }
 
   async function changeStatus(id, select) {
@@ -221,6 +306,60 @@
         fresh.dataset.previous = fresh.value;
         fresh.disabled = false;
       }
+    }
+  }
+
+  async function changeSiteStatus(id, select) {
+    const status = select.value;
+    select.disabled = true;
+    try {
+      const { status: code, body } = await call(
+        SITE_ENDPOINT + "/" + encodeURIComponent(id), {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status }),
+        });
+      if (code === 200 && body?.ok === true && body.feedback) {
+        replaceRow(body.feedback);
+        setStatus("opsStatus", "");
+      } else {
+        setStatus("opsStatus", "상태를 바꾸지 못했습니다(" +
+          (body?.error?.code || code) + ").");
+        select.value = select.dataset.previous || status;
+      }
+    } catch (_) {
+      setStatus("opsStatus", "상태를 바꾸는 중 연결이 끊겼습니다.");
+    } finally {
+      const fresh = document.querySelector(
+        `#opsInboxList .ops-row[data-feedback-id="${CSS.escape(id)}"] select`);
+      if (fresh) {
+        fresh.dataset.previous = fresh.value;
+        fresh.disabled = false;
+      }
+    }
+  }
+
+  async function saveSiteMemo(id, input, li) {
+    const save = li.querySelector(".ops-reply-send");
+    save.disabled = true;
+    try {
+      const { status: code, body } = await call(
+        SITE_ENDPOINT + "/" + encodeURIComponent(id), {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ops_memo: input.value }),
+        });
+      if (code === 200 && body?.ok === true && body.feedback) {
+        replaceRow(body.feedback);
+        setStatus("opsStatus", "");
+      } else {
+        setStatus("opsStatus", "운영 메모를 저장하지 못했습니다(" +
+          (body?.error?.code || code) + ").");
+        save.disabled = false;
+      }
+    } catch (_) {
+      setStatus("opsStatus", "운영 메모를 저장하는 중 연결이 끊겼습니다.");
+      save.disabled = false;
     }
   }
 
@@ -273,28 +412,63 @@
     }
   }
 
+  function inboxSources() {
+    if (state.source === "chat") return ["chat"];
+    if (state.source === "all") return ["chat", "site"];
+    return ["site"];
+  }
+
+  function paintInboxList() {
+    const list = $("opsInboxList");
+    list.replaceChildren();
+    for (const item of state.inboxItems) list.append(paintAny(item));
+  }
+
   async function loadInbox(reset) {
     if (state.busy) return;
     state.busy = true;
     setStatus("opsStatus", "불러오는 중…");
     try {
-      const params = new URLSearchParams({ status: state.filter });
-      if (!reset && state.cursor) params.set("cursor", state.cursor);
-      const { status: code, body } = await call(
-        "/api/admin/feedback?" + params.toString());
+      const kinds = inboxSources();
+      const results = [];
+      for (const kind of kinds) {
+        const params = new URLSearchParams({ status: state.filter });
+        if (kind === "site" && state.source !== "all") params.set("site", state.source);
+        if (!reset && state.cursors[kind]) params.set("cursor", state.cursors[kind]);
+        const url = (kind === "site" ? SITE_ENDPOINT : "/api/admin/feedback")
+          + "?" + params.toString();
+        const fetched = await call(url);
+        results.push({ kind, ...fetched });
+      }
+      const failed = results.find((entry) => entry.status !== 200 || entry.body?.ok !== true);
       const list = $("opsInboxList");
-      if (code !== 200 || body?.ok !== true) {
+      if (failed) {
         // Fail closed: the guard codes pass through, no data is rendered.
         list.replaceChildren();
+        state.inboxItems = [];
+        state.cursors = { chat: null, site: null };
         $("opsMore").hidden = true;
         setStatus("opsStatus", "받은함을 열 수 없습니다(" +
-          (body?.error?.code || code) + ").");
+          (failed.body?.error?.code || failed.status) + ").");
         return;
       }
-      if (reset) list.replaceChildren();
-      for (const item of body.feedback || []) list.append(paintRow(item));
-      state.cursor = body.next_cursor || null;
-      $("opsMore").hidden = !state.cursor;
+      if (reset) state.inboxItems = [];
+      for (const entry of results) {
+        for (const item of entry.body.feedback || []) {
+          if (!state.inboxItems.some((old) => old.id === item.id)) {
+            state.inboxItems.push(item);
+          }
+        }
+        state.cursors[entry.kind] = entry.body.next_cursor || null;
+        if (entry.kind === "site" && Array.isArray(entry.body.sites)) {
+          syncSourceFilters(entry.body.sites);
+        }
+      }
+      state.inboxItems.sort((a, b) =>
+        String(b.created_at || "").localeCompare(String(a.created_at || ""))
+        || String(b.id || "").localeCompare(String(a.id || "")));
+      paintInboxList();
+      $("opsMore").hidden = !state.cursors.chat && !state.cursors.site;
       setStatus("opsStatus", "");
     } catch (_) {
       setStatus("opsStatus", "받은함을 불러오는 중 연결이 끊겼습니다.");
@@ -303,9 +477,50 @@
     }
   }
 
+  function syncSourceFilters(sites) {
+    const host = $("opsSourceFilters");
+    if (!host) return;
+    for (const site of sites) {
+      if (host.querySelector(`[data-source="${CSS.escape(site)}"]`)) continue;
+      const button = sourceButton(site, siteName(site));
+      button.dataset.source = site;
+      host.append(button);
+    }
+  }
+
+  function sourceButton(value, label) {
+    const button = node("button", label, "ops-filter" +
+      (value === state.source ? " selected" : ""));
+    button.type = "button";
+    button.dataset.source = value;
+    button.setAttribute("aria-pressed", value === state.source ? "true" : "false");
+    button.addEventListener("click", () => {
+      if (state.source === value) return;
+      state.source = value;
+      state.cursors = { chat: null, site: null };
+      const host = $("opsSourceFilters");
+      for (const other of host.querySelectorAll(".ops-filter")) {
+        const on = other.dataset.source === value;
+        other.classList.toggle("selected", on);
+        other.setAttribute("aria-pressed", on ? "true" : "false");
+      }
+      void loadInbox(true);
+    });
+    return button;
+  }
+
+  function resetInboxCursors() {
+    state.cursors = { chat: null, site: null };
+  }
+
   function wireInbox() {
     const filters = $("opsFilters");
     filters.replaceChildren();
+    const sources = $("opsSourceFilters");
+    if (sources) {
+      sources.replaceChildren();
+      for (const [value, label] of SOURCES) sources.append(sourceButton(value, label));
+    }
     for (const [value, label] of FILTERS) {
       const button = node("button", label, "ops-filter" +
         (value === state.filter ? " selected" : ""));
@@ -315,7 +530,7 @@
       button.addEventListener("click", () => {
         if (state.filter === value) return;
         state.filter = value;
-        state.cursor = null;
+        resetInboxCursors();
         for (const other of filters.querySelectorAll(".ops-filter")) {
           const on = other.dataset.filter === value;
           other.classList.toggle("selected", on);
@@ -326,7 +541,7 @@
       filters.append(button);
     }
     $("opsReload").addEventListener("click", () => {
-      state.cursor = null;
+      resetInboxCursors();
       void loadInbox(true);
     });
     $("opsMore").addEventListener("click", () => { void loadInbox(false); });
