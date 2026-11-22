@@ -5,13 +5,12 @@ import re
 import os
 import subprocess
 import tempfile
-from pathlib import Path
 
-
-APP_ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = Path(__file__).resolve().parents[3]
-LIFECYCLE_PATH = APP_ROOT / "static" / "message-lifecycle.js"
-CORE_EVENTS_PATH = REPO_ROOT / "packages" / "padiem-ai-core" / "padiem_ai_core" / "orchestration_events.py"
+from _support.orchestration_lifecycle import (
+    core_events_source,
+    message_lifecycle_source,
+    transport_source,
+)
 
 
 def _run_node(script: str) -> dict:
@@ -33,8 +32,8 @@ def _run_node(script: str) -> dict:
 
 
 def test_b62_orchestration_kinds_match_shared_p01_contract() -> None:
-    core = CORE_EVENTS_PATH.read_text(encoding="utf-8")
-    source = LIFECYCLE_PATH.read_text(encoding="utf-8")
+    core = core_events_source()
+    source = message_lifecycle_source()
 
     core_values = set(re.findall(r'^\s+[A-Z_]+ = "([a-z_]+)"$', core, flags=re.MULTILINE))
     expected = {
@@ -65,7 +64,7 @@ def test_b62_orchestration_kinds_match_shared_p01_contract() -> None:
 
 
 def test_orchestration_view_model_is_product_safe_and_continuation_exact() -> None:
-    source = LIFECYCLE_PATH.read_text(encoding="utf-8")
+    source = message_lifecycle_source()
     script = r'''
 global.window = globalThis;
 global.CustomEvent = class CustomEvent {
@@ -139,7 +138,7 @@ console.log(JSON.stringify({model, approve, deny, cancel}));
 
 
 def test_orchestration_consumer_fails_closed_on_malformed_unknown_or_reordered_events() -> None:
-    source = LIFECYCLE_PATH.read_text(encoding="utf-8")
+    source = message_lifecycle_source()
     script = r'''
 global.window = globalThis;
 global.CustomEvent = class CustomEvent {};
@@ -165,7 +164,7 @@ console.log(JSON.stringify({unknown, duplicate, reordered, malformedApproval}));
 
 
 def test_orchestration_presenter_does_not_claim_engine_authority_or_failure_state() -> None:
-    source = LIFECYCLE_PATH.read_text(encoding="utf-8")
+    source = message_lifecycle_source()
 
     assert "PadiemChatOrchestrationUI" in source
     assert "requiresTrustedDecision: true" in source
@@ -180,7 +179,7 @@ def test_orchestration_presenter_does_not_claim_engine_authority_or_failure_stat
 
 
 def test_transport_relays_the_same_engine_stream_without_a_second_request():
-    source = (APP_ROOT / "static" / "chat-transport.js").read_text(encoding="utf-8")
+    source = transport_source()
     out = _run_node("global.window=globalThis;\n" + source + r'''
 (async () => {
   const calls = [], frames = [];
@@ -205,7 +204,7 @@ def test_transport_relays_the_same_engine_stream_without_a_second_request():
 
 
 def test_streamed_approval_keeps_the_existing_pause_handler_and_never_finishes():
-    source = (APP_ROOT / "static" / "chat-transport.js").read_text(encoding="utf-8")
+    source = transport_source()
     out = _run_node("global.window=globalThis;\n" + source + r'''
 (async () => {
   const payload={messages:[{role:'user',content:'hello'}]}, frames=[];
