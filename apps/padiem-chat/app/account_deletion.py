@@ -549,6 +549,10 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("pc_install_tokens", "user_id = ?"),
     ("pc_device_links", "user_id = ?"),
     ("pc_helper_registration", "actor_user_id = ?"),
+    # #8359: the receipt journal identifies the owner and is Chat-local even
+    # with an external PC queue. The separate audit and device/source attempt
+    # guard retain no owner_id, so removing jobs cannot permit a retry.
+    ("pc_helper_maintenance_jobs", "owner_id = ?"),
     ("padiem_pc_delegations", "user_id = ?"),
     ("padiem_mcp_tokens", "user_id = ?"),
     ("padiem_mcp_approvals", "user_id = ?"),

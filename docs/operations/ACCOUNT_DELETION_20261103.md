@@ -132,6 +132,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | claw_push_subscription | `member_id = ?` | 065 | FK 없음 → 명시 삭제 |
 | padiem_calendar_work_log | `owner_id = ?` | 013 | FK 없음(owner_id="owner user id" 주석) → 명시 삭제 |
 | padiem_calendar_appointment | `owner_id = ?` | 013 | 같음 |
+| pc_helper_maintenance_jobs | `owner_id = ?` | 139 | Chat DB에서 명시 삭제(큐 분리 배포도 동일). 작업·실행 식별자를 보존하지 않는다. 별도 운영 감사와 사용자 키 없는 PC/원본 해시 시도표(137)는 유지해 재실행을 막는다. |
 | lovetree_login_handoffs | `pending_user_id = ?` | 076 | FK 선언(CASCADE 미강제) → 명시 삭제(일회용 로그인 근거가 계정보다 오래 남지 않는다) |
 | auth_validation_cache | `product_user_id = ?` | 087 | FK 없음 → 명시 삭제 + 런타무 무효화 헬퍼 |
 | auth_account_link_cache | `product_user_id = ?` | 088 | FK 없음 → 명시 삭제 |
