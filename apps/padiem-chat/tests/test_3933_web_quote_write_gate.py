@@ -16,7 +16,7 @@ from test_3580_web_xlsx_approved_copy_wire import enable_real_copy
 from _support.web_xlsx_p01_owner_decision import ready, setup_pause, decide
 from _support.web_xlsx_sources import request, OWNER, FOREIGN
 from _support.web_xlsx_selection_routes import RealSQLiteD1
-from test_3933_web_quote_xlsx_editor import quote_fixture
+from _support.web_quote_xlsx_editor import quote_fixture
 from app.claw_web_xlsx_quote_write_store import D1WebQuoteWriteReceiptStore
 
 PREFIX = "/api/claw/office/web-selections/{}/quote-edit/"

@@ -16,7 +16,7 @@ from app.claw_web_xlsx_quote_pdf import (
     PDF_MAX,
 )
 from app.claw_web_xlsx_quote_editor import revise_single_sheet_quote
-from test_3933_web_quote_xlsx_editor import quote_fixture
+from _support.web_quote_xlsx_editor import quote_fixture
 
 
 class MemoryStream:
