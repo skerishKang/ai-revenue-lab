@@ -199,32 +199,61 @@ def test_real_calendar_module_drives_range_navigation_states_and_bounded_month_g
     sandbox.__padiemLocale = {{ text: (key) => key }};
     vm.createContext(sandbox);
     vm.runInContext(source, sandbox);
-    const wait = () => new Promise((resolve) => setTimeout(resolve, 1600));
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    // Poll until the request stream stays quiet (200 ms with no new request)
+    // instead of sleeping a fixed wall-clock span per step: the fetch stub
+    // resolves in a microtask and the render follows immediately, so this
+    // settles in ~200 ms and cannot trip over a slow host the way a fixed
+    // delay can. The production retry backoff (one 1500 ms wait before the
+    // error state) is awaited explicitly with the `until` polls below.
+    async function settled() {{
+      let last = -1, stable = 0;
+      for (let i = 0; i < 500; i++) {{
+        await sleep(10);
+        if (requests.length === last) {{
+          stable += 1;
+          if (stable >= 20) return;
+        }} else {{
+          stable = 0;
+          last = requests.length;
+        }}
+      }}
+      throw new Error("calendar requests never settled");
+    }}
+    async function until(predicate) {{
+      const deadline = Date.now() + 5000;
+      while (!predicate()) {{
+        if (Date.now() > deadline) throw new Error("calendar state never arrived");
+        await sleep(20);
+      }}
+    }}
     const textOf = (node) => (node.textContent || "") + (node.children || []).map(textOf).join("");
     (async () => {{
       byId.calendarNavButton.click();
-      await wait();
+      await settled();
       const monthLoads = requests.length === 1 && requests[0].method === "GET" && requests[0].url.includes("/api/calendar/items?timezone=") && requests[0].url.includes("start_date=2026-09-01");
       const tabs = byId.calendarTabs;
       tabs.listeners.click[0]({{ target: byId.calendarDayTab }});
       const loadingVisible = byId.calendarLoading.hidden === false;
-      await wait();
+      await settled();
       const dayLoad = requests[1];
       const dayReady = dayLoad && dayLoad.method === "GET" && dayLoad.url.includes("/api/calendar/items") && dayLoad.url.includes("start_date=") && dayLoad.url.includes("end_date=") && dayLoad.credentials === "same-origin" && dayLoad.cache === "no-store";
       byId.calendarPreviousRange.click();
-      await wait();
+      await settled();
       const previousLoad = requests[2] && requests[2].url;
       rangeMode = "unauthorized";
       tabs.listeners.click[0]({{ target: byId.calendarWeekTab }});
-      await wait();
+      await settled();
+      await until(() => byId.calendarErrorBox.hidden === false);
       const unauthorized = byId.calendarErrorBox.hidden === false && byId.calendarList.hidden === true;
       rangeMode = "unavailable";
       tabs.listeners.click[0]({{ target: byId.calendarDayTab }});
-      await wait();
+      await settled();
+      await until(() => byId.calendarErrorBox.hidden === false);
       const unavailable = byId.calendarErrorBox.hidden === false;
       rangeMode = "items";
       tabs.listeners.click[0]({{ target: byId.calendarMonthTab }});
-      await wait();
+      await settled();
       const groups = byId.calendarList.children;
       const monthGrouped = groups.length === 2 && textOf(groups[0]).includes("First day") && textOf(groups[1]).includes("<safe text>") && !textOf(byId.calendarList).includes("must be ignored");
       process.stdout.write(JSON.stringify({{ monthLoads, loadingVisible, dayReady, previousLoad, unauthorized, unavailable, monthGrouped }}));

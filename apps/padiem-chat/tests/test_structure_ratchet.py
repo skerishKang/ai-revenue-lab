@@ -114,6 +114,16 @@ def _remote_branch_for(ref: str) -> str:
     return ref.split("/", 1)[1] if ref.startswith("origin/") else ref
 
 
+def _same_commit(first: str, second: str) -> bool:
+    """두 리비전이 같은 커밋인지. 못 읽으면 False(원래 경로로 잰다)."""
+    try:
+        a = _git("rev-parse", first).stdout.strip()
+        b = _git("rev-parse", second).stdout.strip()
+    except subprocess.CalledProcessError:
+        return False
+    return bool(a) and a == b
+
+
 def _base_revision() -> str:
     sha = os.environ.get("PADIEM_STRUCTURE_BASE_SHA", "").strip()
     if sha:
@@ -148,6 +158,12 @@ def _base_metrics() -> dict[str, int]:
         return _flat_metrics(Path(provided))
 
     revision = _base_revision()
+    # #7801: 야간 회귀(main 자체 실행)에서는 base가 HEAD 자체라 같은 트리다.
+    # worktree 복제(트리의 전량 체크아웃)와 두 번째 전체 스캔까지 하면
+    # 한 시험에 ~수십 초가 들었다. 같은 커밋이면 실측이 동일하므로 head를
+    # 재사용한다. 비교 대상이 다를 때는 아래 원래 경로 그대로 잰다.
+    if _same_commit(revision, "HEAD"):
+        return _head_metrics()
     worktree = Path(tempfile.mkdtemp(prefix="padiem-structure-base-")) / "tree"
     _git("worktree", "add", "--detach", str(worktree), revision)
     try:
