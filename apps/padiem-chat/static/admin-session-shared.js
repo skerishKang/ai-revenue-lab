@@ -65,6 +65,77 @@
     }
   });
 
+  // #8312: the /admin gate sends the member here with ?admin_return=1 so the
+  // first screen opens its own login flow, and a completed sign-in returns to
+  // /admin. The flag lives in sessionStorage so it survives the Google
+  // redirect; the URL parameter is stripped right away so a reload or a
+  // shared link cannot loop back into the gate. A guest gets the same login
+  // button the app itself clicks programmatically (chat-auth-module.js); a
+  // member who is already signed in is left alone — the return happens on a
+  // real sign-in answer only.
+  const RETURN_FLAG = "padiem_admin_return";
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("admin_return") === "1") {
+      params.delete("admin_return");
+      const rest = params.toString();
+      window.history.replaceState(null, "",
+        window.location.pathname + (rest ? "?" + rest : "") + window.location.hash);
+      window.sessionStorage.setItem(RETURN_FLAG, "1");
+    }
+  } catch (_) {}
+  window.addEventListener("padiem:auth-state", (event) => {
+    if (event?.detail?.authenticated === true) {
+      if (pendingReturn()) {
+        clearReturn();
+        window.location.replace("./admin");
+      }
+      return;
+    }
+    scheduleOpen();
+  });
+
+  /* The login button becomes clickable a beat after the first auth-state
+   * event (the session read and the button visibility sync land in the same
+   * status answer, and an unchanged session fires no second event), so the
+   * open attempt polls briefly instead of trusting one event. Once the
+   * dialog is open — or the short window passes — the guest clicks 로그인
+   * exactly as they would have. */
+  let openAttempts = 0;
+  let openTimer = 0;
+  let opened = false;
+  function pendingReturn() {
+    try { return window.sessionStorage.getItem(RETURN_FLAG) === "1"; } catch (_) { return false; }
+  }
+  function clearReturn() {
+    try { window.sessionStorage.removeItem(RETURN_FLAG); } catch (_) {}
+  }
+  function tryOpen() {
+    const dialog = document.getElementById("authDialog");
+    if (dialog && dialog.open) return true;
+    const loginButton = document.getElementById("loginButton");
+    if (loginButton && !loginButton.hidden && !loginButton.disabled) {
+      loginButton.click();
+      return true;
+    }
+    return false;
+  }
+  function pollOpen() {
+    openTimer = 0;
+    if (opened || !pendingReturn()) return;
+    if (tryOpen()) {
+      opened = true;
+      return;
+    }
+    if (openAttempts >= 40) return; // ~2s, then the guest opens it themselves
+    openAttempts += 1;
+    openTimer = window.setTimeout(pollOpen, 50);
+  }
+  function scheduleOpen() {
+    if (opened || openTimer) return;
+    openTimer = window.setTimeout(pollOpen, 0);
+  }
+
   window.PadiemAdminSession = Object.freeze({
     read,
     refresh: () => { invalidate(); return read(); },
