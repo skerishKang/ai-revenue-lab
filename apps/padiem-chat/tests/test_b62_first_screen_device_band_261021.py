@@ -47,6 +47,9 @@ requires_browser = pytest.mark.skipif(
     sync_playwright is None, reason="playwright is not installed in this environment"
 )
 
+# #8060: 원문 read는 파일 전용 _support가 담당한다.
+from _support.device_band_source import all_css_texts, status_css, status_js
+
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
 STATUS_CSS = STATIC / "claw-composer-connection-status.css"
@@ -100,11 +103,10 @@ def test_no_stylesheet_reserves_a_composer_band_any_more():
     empty gap above the input, so the only writer of such a reservation is
     removed and the contract is that there is none.
     """
-    sheets = sorted(STATIC.glob("*.css"))
     writers = [
-        sheet.name
-        for sheet in sheets
-        if re.search(r"\.composer-wrap\b[^{]*::?before", sheet.read_text(encoding="utf-8"))
+        name
+        for name, text in all_css_texts()
+        if re.search(r"\.composer-wrap\b[^{]*::?before", text)
     ]
     assert writers == [], writers
 
@@ -116,7 +118,7 @@ def test_the_duplicate_entry_line_is_not_shown():
     rule only hides the duplicate entry line. Nothing is removed from the
     document, so the panel's existing entry control keeps working.
     """
-    status = STATUS_CSS.read_text(encoding="utf-8")
+    status = status_css()
     assert "#clawDeviceManager > .claw-device-manager-toggle" in status
     rule = re.search(
         r"#clawDeviceManager > \.claw-device-manager-toggle \{(?P<body>[^}]*)\}", status
@@ -127,7 +129,7 @@ def test_the_duplicate_entry_line_is_not_shown():
 
 def test_the_empty_block_keeps_no_margin_above_the_composer():
     """The block above the composer holds nothing, so it reserves nothing."""
-    status = STATUS_CSS.read_text(encoding="utf-8")
+    status = status_css()
     assert "#clawDeviceManager:not(:has(> .claw-device-manager-panel:not([hidden])))" in status
     rule = re.search(
         r"#clawDeviceManager:not\(:has\(> \.claw-device-manager-panel:not\(\[hidden\]\)\)\)"
@@ -142,7 +144,7 @@ def test_the_empty_block_keeps_no_margin_above_the_composer():
 
 def test_the_status_control_opens_the_existing_panel():
     """The visible entry drives the existing management panel."""
-    source = STATUS_JS.read_text(encoding="utf-8")
+    source = status_js()
     # The existing entry control of the existing panel is reused.
     assert 'document.getElementById("clawDeviceManagerToggle")' in source
     # The visible control carries the expanded state of the panel it opens.
