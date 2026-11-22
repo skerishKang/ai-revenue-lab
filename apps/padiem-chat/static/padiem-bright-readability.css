@@ -11,27 +11,27 @@ html[data-theme="light"] .sidebar .side-item,
 html[data-theme="light"] .sidebar .recent-item,
 html[data-theme="padiem-home"] .sidebar .side-item,
 html[data-theme="padiem-home"] .sidebar .recent-item {
-  color: var(--text) !important;
+  color: var(--text);
 }
 
 html[data-theme="light"] .sidebar .side-icon,
 html[data-theme="padiem-home"] .sidebar .side-icon {
-  color: var(--muted) !important;
+  color: var(--muted);
 }
 
 html[data-theme="light"] .sidebar .mini-badge,
 html[data-theme="padiem-home"] .sidebar .mini-badge {
-  border-color: var(--line) !important;
-  background: var(--panel) !important;
-  color: var(--muted) !important;
+  border-color: var(--line);
+  background: var(--panel);
+  color: var(--muted);
 }
 
 html[data-theme="light"] .sidebar .recent-section h2,
 html[data-theme="light"] .sidebar .section-heading-row h2,
 html[data-theme="padiem-home"] .sidebar .recent-section h2,
 html[data-theme="padiem-home"] .sidebar .section-heading-row h2 {
-  color: var(--muted) !important;
-  font-size: 12px !important;
+  color: var(--muted);
+  font-size: 12px;
   letter-spacing: .10em;
 }
 
@@ -39,27 +39,27 @@ html[data-theme="light"] .sidebar .side-item:not(:disabled):hover,
 html[data-theme="light"] .sidebar .recent-item:hover,
 html[data-theme="padiem-home"] .sidebar .side-item:not(:disabled):hover,
 html[data-theme="padiem-home"] .sidebar .recent-item:hover {
-  background: var(--panel) !important;
-  color: var(--text) !important;
+  background: var(--panel);
+  color: var(--text);
 }
 
 /* Bright composer controls ------------------------------------------------- */
 html[data-theme="light"] .composer .tool-button:not(:disabled),
 html[data-theme="padiem-home"] .composer .tool-button:not(:disabled) {
-  color: var(--muted) !important;
+  color: var(--muted);
 }
 
 html[data-theme="light"] .composer .tool-button:hover:not(:disabled),
 html[data-theme="padiem-home"] .composer .tool-button:hover:not(:disabled) {
-  background: var(--accent-soft) !important;
-  color: var(--text) !important;
+  background: var(--accent-soft);
+  color: var(--text);
 }
 
 html[data-theme="light"] .composer .tool-button[aria-pressed="true"]:not(:disabled),
 html[data-theme="padiem-home"] .composer .tool-button[aria-pressed="true"]:not(:disabled) {
-  border-color: var(--line) !important;
-  background: var(--accent-soft) !important;
-  color: var(--text) !important;
+  border-color: var(--line);
+  background: var(--accent-soft);
+  color: var(--text);
 }
 
 /* Helpful microcopy is not decorative. Keep the usability floor consistent
@@ -68,7 +68,7 @@ html[data-theme="light"] .composer-note,
 html[data-theme="dark"] .composer-note,
 html[data-theme="cinematic"] .composer-note,
 html[data-theme="padiem-home"] .composer-note {
-  font-size: 12px !important;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -198,7 +198,7 @@ html[data-theme="cinematic"] .app-shell::before {
    * 390px. Keep the intentional greeting break, but hold the question itself
    * on one line to match the other themes' visual rhythm. */
   html[data-theme="light"] .app-shell[data-state="home"] .empty-state h1 {
-    font-size: 32px !important;
+    font-size: 32px;
     line-height: 1.18;
     letter-spacing: -.05em;
   }
