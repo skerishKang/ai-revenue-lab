@@ -267,9 +267,9 @@ html[data-theme="padiem-glass"] .language-option[aria-pressed="true"] {
 
 /* from accessibility-polish.css */
   html[data-theme="light"] .theme-picker-label,
-html[data-theme="light"] .theme-option:not([aria-pressed="true"]),
-html[data-theme="light"] .language-option:not([aria-pressed="true"]) {
-    color: #565e69 !important;
+html[data-theme="light"] #settingsDialog .theme-option:not([aria-pressed="true"]),
+html[data-theme="light"] #settingsDialog .language-option:not([aria-pressed="true"]) {
+    color: #565e69;
   }
 
 /* from accessibility-polish.css */

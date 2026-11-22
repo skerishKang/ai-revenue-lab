@@ -32,8 +32,8 @@ def test_bright_sidebar_foregrounds_override_dark_foundation_contract():
         for selector in selectors:
             assert f"{prefix} {selector}" in POLISH_CSS
 
-    assert "color: var(--text) !important;" in POLISH_CSS
-    assert "color: var(--muted) !important;" in POLISH_CSS
+    assert "color: var(--text);" in POLISH_CSS
+    assert "color: var(--muted);" in POLISH_CSS
 
 
 def test_bright_composer_active_tools_override_dark_foreground_contract():
@@ -43,8 +43,8 @@ def test_bright_composer_active_tools_override_dark_foreground_contract():
         assert f"{prefix} .composer .tool-button:hover:not(:disabled)" in POLISH_CSS
         assert f'{prefix} .composer .tool-button[aria-pressed="true"]:not(:disabled)' in POLISH_CSS
 
-    assert "background: var(--accent-soft) !important;" in POLISH_CSS
-    assert "border-color: var(--line) !important;" in POLISH_CSS
+    assert "background: var(--accent-soft);" in POLISH_CSS
+    assert "border-color: var(--line);" in POLISH_CSS
 
 
 def test_all_themes_keep_useful_microcopy_at_twelve_pixel_floor():
@@ -56,7 +56,7 @@ def test_all_themes_keep_useful_microcopy_at_twelve_pixel_floor():
         assert f"{prefix} .sidebar .recent-section h2" in POLISH_CSS
         assert f"{prefix} .sidebar .section-heading-row h2" in POLISH_CSS
 
-    assert "font-size: 12px !important;" in POLISH_CSS
+    assert "font-size: 12px;" in POLISH_CSS
     assert "line-height: 1.5;" in POLISH_CSS
 
 
@@ -88,5 +88,5 @@ def test_light_mobile_home_question_keeps_single_question_line_contract():
     selector = 'html[data-theme="light"] .app-shell[data-state="home"] .empty-state h1'
     assert '@media (max-width: 420px)' in POLISH_CSS
     assert selector in POLISH_CSS
-    assert "font-size: 32px !important;" in POLISH_CSS
+    assert "font-size: 32px;" in POLISH_CSS
     assert "letter-spacing: -.05em;" in POLISH_CSS
