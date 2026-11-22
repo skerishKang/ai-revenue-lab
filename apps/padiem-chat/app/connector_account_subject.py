@@ -1,6 +1,7 @@
 """Request-local proof from existing authentication, never request identity fields."""
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -173,3 +174,48 @@ async def subject_from_authenticated_owner_record(request, session: AuthSessionS
     return VerifiedConnectorSubject(_seal=_SEAL, product_id=session.product_id,
         subject_id=session.subject.subject_id, expires_at=session.expires_at.timestamp(),
         session_id=session.session_id, tenant_id=session.tenant_id)
+
+
+@asynccontextmanager
+async def maintenance_owner_context(app, user_id):
+    """Only the Chat host's server-known paired owner; no browser proof minted.
+
+    Resolve current B54 authority, reverse B62 link and active membership
+    without the request cache. Bind a short-lived subject to this task only.
+    """
+    from padiem_control_plane.b54_identity_bridge import resolve_current_b54_canonical_session
+    from padiem_control_plane.tenants import TenantMembership, TenantMembershipState
+    from .history import _row_to_dict
+    try:
+        authority = app.state.control_plane_identity_authority
+        uncached = getattr(authority, "maintenance_uncached_authority", None)
+        if callable(uncached):
+            authority = uncached()
+        now = datetime.now(timezone.utc)
+        session = (await resolve_current_b54_canonical_session(authority, user_id, now=now)).auth_session
+        subject = session.subject.subject_id
+        linked = await authority.resolve_product_user_for_subject(
+            product_id="b62", canonical_subject_id=subject)
+        membership = await authority.resolve_active_tenant_membership(
+            tenant_id=session.tenant_id, canonical_subject_id=subject, now=now)
+        row = _row_to_dict(await app.state.account_data_db.prepare(
+            "SELECT provider_subject FROM users WHERE id=?").bind(user_id).first())
+        if (linked != user_id or not isinstance(membership, TenantMembership)
+                or membership.tenant_id != session.tenant_id
+                or membership.canonical_subject_id != subject
+                or membership.state is not TenantMembershipState.ACTIVE or membership.role is None
+                or not row or row.get("provider_subject") != "shared:" + subject
+                or not session.is_active(now=datetime.now(timezone.utc))):
+            raise ValueError("maintenance_owner_unresolved")
+        proof = _RequestProof(
+            subject=VerifiedConnectorSubject(_seal=_SEAL, product_id=session.product_id,
+                subject_id=subject, expires_at=session.expires_at.timestamp(),
+                session_id=session.session_id, tenant_id=session.tenant_id),
+            sessions={session.session_id: session}, key_mode=True)
+    except Exception:
+        raise ValueError("maintenance_owner_unresolved") from None
+    token = _current.set(proof)
+    try:
+        yield session
+    finally:
+        _current.reset(token)

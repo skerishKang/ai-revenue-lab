@@ -134,6 +134,10 @@ class CachedIdentityAuthority:
         # store its answer after the invalidation.
         self._epoch = 0
 
+    def maintenance_uncached_authority(self):
+        """SYSTEM maintenance rechecks live authority, not cached request reads."""
+        return self._inner
+
     def invalidate_user(self, user_id: str, *, share: bool = True) -> None:
         """Drop every entry that belongs to one product user.
 

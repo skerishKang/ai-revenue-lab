@@ -49,7 +49,7 @@ class OpsAuditStore:
                 for row in rows_from_result(result)]
 
     async def append(self, *, actor_user_id: str, action: str, target_type: str,
-                     target_id: str, detail: dict | None = None) -> bool:
+                     target_id: str, detail: dict | None = None, dedupe_key: str | None = None) -> bool:
         if not isinstance(actor_user_id, str) or not ACTOR.fullmatch(actor_user_id):
             return False
         if not isinstance(action, str) or ACTION.fullmatch(action) is None:
@@ -65,11 +65,15 @@ class OpsAuditStore:
             detail_json = "{}"
         if len(detail_json) > 4096:
             detail_json = "{}"
-        audit_id = "opsaud_" + secrets.token_hex(16)
+        if dedupe_key is not None and (not isinstance(dedupe_key, str)
+                                       or re.fullmatch(r"[0-9a-f]{64}", dedupe_key) is None):
+            return False
+        audit_id = "opsaud_" + (dedupe_key[:32] if dedupe_key else secrets.token_hex(16))
         try:
             await self._db.prepare(
                 "INSERT INTO ops_audit_log (id, actor_user_id, action, target_type,"
-                " target_id, detail_json, created_at) VALUES (?,?,?,?,?,?,?)"
+                " target_id, detail_json, created_at) VALUES (?,?,?,?,?,?,?) "
+                "ON CONFLICT(id) DO NOTHING"
             ).bind(audit_id, actor_user_id, action, target_type, target_id,
                    detail_json, _now()).run()
             return True

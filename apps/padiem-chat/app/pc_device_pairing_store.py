@@ -1850,6 +1850,15 @@ class D1PcPairingStore:
         row = await self.load_helper_rollout()
         return row == {"revision": revision + 1, "plan": plan, "updated_at": stamp}
 
+    async def managed_owner_for_device(self, *, device_id: str) -> list[dict[str, Any]]:
+        """Read-only: at most two current managed links; ambiguity refuses."""
+        if not is_pc_device_id(device_id):
+            return []
+        return await self._all(
+            "SELECT link_id,user_id,mesh_node_id,state,paused_at,managed_at,managed_by "
+            "FROM pc_device_links WHERE mesh_node_id=? AND state='active' "
+            "AND paused_at IS NULL AND managed_at IS NOT NULL LIMIT 2", device_id)
+
     async def list_managed_device_ids(self) -> list[str]:
         rows = await self._all(
             "SELECT DISTINCT mesh_node_id FROM pc_device_links WHERE state='active' "
@@ -1860,6 +1869,22 @@ class D1PcPairingStore:
     async def resolve_helper_rollout_device(self, *, device_id: str, install_id: bool = False) -> dict | None:
         if not is_pc_device_id(device_id):
             return None
+        # The standalone installer uses a fresh 32-hex GUID (not a node).
+        # Only a recent authenticated observation can resolve it. An ambiguous
+        # or unknown installation id is never used as a cohort slot.
+        if install_id and re.fullmatch(r"[0-9a-fA-F]{32}|[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}", device_id):
+            rows = await self._all(
+                "SELECT DISTINCT r.device_id FROM mesh_device_helper_ready r "
+                "JOIN pc_device_links l ON l.mesh_node_id=r.device_id "
+                "WHERE l.state='active' AND l.paused_at IS NULL "
+                "AND json_extract(r.state_json,'$.helper_install_ref_sha256')=? "
+                "AND julianday(r.received_at) BETWEEN julianday(?) AND julianday(?) LIMIT 2",
+                _hash(device_id.lower()), _stamp(datetime.now(timezone.utc)-timedelta(seconds=180)),
+                _stamp(datetime.now(timezone.utc)))
+            if (len(rows) != 1 or not is_pc_device_id(rows[0].get("device_id"))
+                    or re.fullmatch(r"[0-9a-fA-F]{32}|[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}|pd-[0-9a-f]{8}", rows[0]["device_id"])):
+                return None
+            device_id = rows[0]["device_id"]
         # Installed helpers carry the pairing tag, not the Mesh node id.
         # Resolve it using the consumed code and the active link; never hash a
         # transient reinstall tag into a cohort. No account data leaves here.

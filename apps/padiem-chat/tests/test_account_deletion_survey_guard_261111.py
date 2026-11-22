@@ -406,3 +406,51 @@ def test_subject_keyed_statements_clear_the_claw_automation_chain():
         "SELECT COUNT(*) FROM claw_proposals WHERE proposal_id LIKE 'prop_b%'", ()
     ).fetchone()[0] == 2
     assert conn.execute("SELECT COUNT(*) FROM bookai_records").fetchone()[0] == 0
+
+
+@pytest.mark.parametrize("include_pc_queue_data", [True, False])
+def test_account_deletion_removes_only_the_owners_maintenance_jobs(include_pc_queue_data):
+    import asyncio
+    import sqlite3
+    from types import SimpleNamespace
+
+    from _support.account_isolation_sweep import apply_all_migrations
+
+    with sqlite3.connect(":memory:", isolation_level=None) as conn:
+        conn.row_factory = sqlite3.Row
+        apply_all_migrations(SimpleNamespace(conn=conn))
+        conn.execute("PRAGMA foreign_keys=OFF")
+        now = "2026-11-23T00:00:00Z"
+        owner, other = "usr_a0000000000000000000000000000", "usr_b0000000000000000000000000000"
+        for user, tag in ((owner, "a"), (other, "b")):
+            conn.execute(
+                "INSERT INTO users (id, auth_provider, provider_subject, email, display_name,"
+                " picture_url, created_at, updated_at)"
+                " VALUES (?, 'google', ?, ?, '', '', ?, ?)",
+                (user, "shared:sub_" + tag, tag + "@example.test", now, now),
+            )
+        for user, tag, state in ((owner, "a", "queued"), (owner, "c", "terminal"),
+                                 (other, "b", "queued")):
+            conn.execute(
+                "INSERT INTO pc_helper_auto_attempts "
+                "(device_id,source_sha256,attempts,stopped,last_reason,updated_at) "
+                "VALUES (?,?,1,1,'stopped_contact_or_unknown',?)",
+                ("node-" + tag, tag * 64, now),
+            )
+            conn.execute(
+                "INSERT INTO pc_helper_maintenance_jobs "
+                "(claim_token,device_id,source_sha256,registration_sha256,release_sha256,"
+                "owner_id,action,created_at,deadline,status,run_id,dispatch_id) "
+                "VALUES (?,?,?,?,?,?,'refresh',?,?,?,?,?)",
+                ("claim-" + tag, "node-" + tag, tag * 64, "d" * 64, "e" * 64,
+                 user, now, now, state, "run-" + tag, "dispatch-" + tag),
+            )
+        db = _MiniD1(conn)
+        asyncio.run(db.batch(_delete_batch(db, owner, include_pc_queue_data=include_pc_queue_data)))
+
+        assert [tuple(row) for row in conn.execute(
+            "SELECT owner_id,claim_token,run_id,dispatch_id FROM pc_helper_maintenance_jobs"
+        )] == [(other, "claim-b", "run-b", "dispatch-b")]
+        # Account deletion must not reset the per-PC/source attempt guard.
+        assert conn.execute("SELECT count(*) FROM pc_helper_auto_attempts WHERE stopped=1").fetchone()[0] == 3
+        assert conn.execute("SELECT count(*) FROM users WHERE id=?", (owner,)).fetchone()[0] == 0

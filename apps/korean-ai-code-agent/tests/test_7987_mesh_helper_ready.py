@@ -208,6 +208,18 @@ assert.equal(seen.text.includes('private-version'), false);
 
 
 @needs_node
+def test_install_guid_is_reported_only_as_a_verified_digest():
+    run_js(r"""
+const guid = '0123456789ABCDEF0123456789ABCDEF';
+const seen = run({files: installed({[RECORD]: record({device_id: guid})})});
+assert.equal(seen.result.helper_install_ref_sha256,
+    require('node:crypto').createHash('sha256').update(guid.toLowerCase()).digest('hex'));
+assert.equal(seen.text.includes(guid), false);
+assert.equal(seen.text.includes(guid.toLowerCase()), false);
+""")
+
+
+@needs_node
 def test_ready_pc_reports_every_fact_and_no_name_path_or_identity():
     run_js(r"""
 const seen = run({files: installed(), pipes: SYSTEM_PIPES.concat([HELPER_PIPE]),

@@ -726,6 +726,14 @@ def _install_local_host_state(
         app.state.history_store = QueueForwardingHistoryStore(
             app.state.history_store, queue_client
         )
+    # #8359: only the Chat CPython host with its authenticated queue proxy
+    # may run automatic maintenance. No Worker fallback or queue scheduler.
+    from .pc_helper_auto_update import auto_update_enabled
+    if host_flag and queue_client is not None and auto_update_enabled(os.environ):
+        from .pc_helper_maintenance_host import install_maintenance_timer
+        from .local_bootstrap import pc_maintenance_lock
+        install_maintenance_timer(app, env=os.environ, db=db,
+                                  process_lock=pc_maintenance_lock(connection))
     # The same server-owned v2 loopback authority as the connector gateway.
     # Missing configuration leaves the existing unconfigured source in place.
     broker_secret_file = os.getenv("PADIEM_COM2_BROKER_RPC_SECRET_FILE", "").strip()

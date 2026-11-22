@@ -66,6 +66,8 @@ def install_script(manifest) -> str:
     """
     if not release_pinned(manifest):
         raise ValueError("helper release is not pinned")
+    from .pc_helper_registration import registration_command
+
     sha = manifest["sha256"]
     return (
         "$ErrorActionPreference='Stop'\n"
@@ -91,6 +93,9 @@ def install_script(manifest) -> str:
         "-DeviceId (Get-PadiemHelperDeviceId -Tag '')\n"
         "  if(-not $padiemOk){Write-Output 'PADIEM_HELPER_INSTALL:failed:provision_failed';return}\n"
         "  if(-not (Test-PadiemInstalledRelease)){Write-Output 'PADIEM_HELPER_INSTALL:failed:digest_unverified';return}\n"
+        "  $maint=@(" + registration_command() + ")\n"
+        "  if(-not($maint -contains 'PADIEM_HELPER_REFRESH:updated:registered' -or "
+        "$maint -contains 'PADIEM_HELPER_REFRESH:skipped:already_current')){throw 'maintenance registration failed'}\n"
         "  Write-Output 'PADIEM_HELPER_INSTALL:installed:provisioned'\n"
         "}catch{Write-Output 'PADIEM_HELPER_INSTALL:failed:install_failed'}\n"
     )

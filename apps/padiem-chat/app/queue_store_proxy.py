@@ -120,6 +120,7 @@ QUEUE_PAIRING_METHODS = frozenset({
     "load_helper_rollout",
     "save_helper_rollout",
     "list_managed_device_ids",
+    "managed_owner_for_device",
     "resolve_helper_rollout_device",
     "managed_state",
     "set_managed",

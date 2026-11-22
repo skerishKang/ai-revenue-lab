@@ -129,3 +129,8 @@ def checkpoint_owner_lock(connection) -> ProcessFileLock:
 def ops_alert_delivery_lock(connection) -> ProcessFileLock:
     """Serialize receipt checks and sends across workers sharing the outbox."""
     return _lock_beside_database(connection, ".ops-alert.lock")
+
+
+def pc_maintenance_lock(connection) -> ProcessFileLock:
+    """One host maintenance round at a time across CPython workers."""
+    return _lock_beside_database(connection, ".pc-maintenance.lock")

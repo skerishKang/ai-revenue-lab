@@ -38,6 +38,7 @@ KIND_LABELS = {
     "feedback_append": "의견 덧붙임",
     "ai_round_score": "AI 회차 점수",
     "agent_stall": "PC 에이전트 응답 없음",
+    "pc_maintenance": "PC 자동 유지보수",
     "product_feedback": "새 의견",
     "site_feedback": "사이트 의견",
     "round_score": "회차 점수",
