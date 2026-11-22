@@ -26,6 +26,7 @@ server treats that as "not known", never as "not ready".
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from typing import Any, Callable, Iterable
@@ -56,6 +57,7 @@ var date = new Date(versions.commitDate || versions.meshAgent);
 if (!isNaN(date.getTime())) out.mesh_agent_version = date.toISOString();
 } catch (e) {}
 var fs;
+function sha256(data) { return require('SHA256Stream').create().syncHash(data).toString('hex'); }
 try { fs = require('fs'); } catch (e) { return out; }
 function env(ns, fallback) {
 try {
@@ -117,6 +119,11 @@ if (status && status.status === 'installed' && typeof sha === 'string' &&
 /^[0-9a-fA-F]{64}$/.test(sha)) {
 out.helper_sha256 = sha.toLowerCase();
 out.helper_build = out.helper_sha256.substring(0, 12);
+try {
+var installId = status.device_id;
+if (typeof installId === 'string' && /^[0-9a-fA-F]{32}$|^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$/.test(installId))
+out.helper_install_ref_sha256 = sha256(Buffer.from(installId.toLowerCase()));
+} catch (e) {}
 var ver = status.version, r = status.update_result, err = status.update_registration_error, target = status.update_target_sha256;
 if (typeof ver === 'string' && /^[0-9][0-9A-Za-z._-]{0,63}$/.test(ver)) out.helper_version = ver;
 if (typeof r === 'string' &&
@@ -133,7 +140,7 @@ var up = folder + 'HelperUpdater\\update.ps1', ut = '\\Tasks\\Padiem\\PadiemUser
 out.updater_task_present = exists(windows+'\\System32'+ut)||exists(windows+'\\Sysnative'+ut);
 out.updater_source_present = exists(up);
 if (out.updater_source_present && fs.statSync(up).size <= 131072)
-out.updater_source_sha256 = require('SHA256Stream').create().syncHash(fs.readFileSync(up)).toString('hex');
+out.updater_source_sha256 = sha256(fs.readFileSync(up));
 } catch(e){}
 try {
 var st = '\\Tasks\\Padiem\\PadiemPcSelfHeal';
@@ -256,6 +263,10 @@ def _file_state(raw: Any) -> tuple[dict[str, Any], str]:
     if not isinstance(sha, str) or _STATUS_SHA.fullmatch(sha) is None:
         return state, "invalid_digest"
     state.update(helper_build=sha[:12].lower(), helper_sha256=sha.lower())
+    install_id = text.get("device_id")
+    if isinstance(install_id, str) and re.fullmatch(
+            r"[0-9a-fA-F]{32}|[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}", install_id):
+        state["helper_install_ref_sha256"] = hashlib.sha256(install_id.lower().encode("ascii")).hexdigest()
     # Older installed records have a digest but no version. The wire explicitly
     # permits this; retain the observed digest instead of discarding the PC.
     if isinstance(version, str) and _STATUS_VERSION.fullmatch(version):

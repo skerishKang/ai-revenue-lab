@@ -15,7 +15,7 @@ SITE_LINKS = {
     # is server-owned, never taken from the request.
     "pc": "https://lovetree-4-0.pages.dev/admin.html#ops-inbox",
 }
-EVENT_KINDS = ("feedback_new", "feedback_append", "ai_round_score", "agent_stall")
+EVENT_KINDS = ("feedback_new", "feedback_append", "ai_round_score", "agent_stall", "pc_maintenance")
 KEY_HEADER = "X-Padiem-Ops-Notify-Key"
 FIELDS = {"site", "kind", "audience", "title", "source_id"}
 SOURCE_ID = re.compile(r"[A-Za-z0-9_-]{1,128}\Z")
@@ -59,6 +59,7 @@ def valid_event(data):
     return (
         data["site"] in SITE_LINKS
         and data["kind"] in EVENT_KINDS
+        and (data["kind"] != "pc_maintenance" or data["site"] == "pc")
         and data["audience"] in ("real", "ai")
         and 0 < len(title) <= 80
         and bool(title.strip())

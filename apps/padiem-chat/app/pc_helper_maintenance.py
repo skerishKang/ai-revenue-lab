@@ -15,7 +15,7 @@ import re
 import secrets
 from typing import Any
 
-from padiem_ai_core.pc_device_identity import is_pc_mesh_node_id
+from padiem_ai_core.pc_device_identity import is_pc_device_id
 
 from .d1_rows import rows_from_result
 from .pc_helper_auto_update import auto_update_enabled, command_for_plan, stage_allows
@@ -27,6 +27,11 @@ MAX_ACTIVE = 3
 MAX_PRECONTACT_RETRIES = 2
 _DIGEST = re.compile(r"[0-9a-f]{64}")
 _CLAIM = re.compile(r"reserved:[0-9a-f]{32}")
+
+def verified_mesh_slot(value):
+    """Both Mesh node spellings, never an unverified installer GUID or tag."""
+    return (is_pc_device_id(value) and not re.fullmatch(
+        r"[0-9a-fA-F]{32}|[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}|pd-[0-9a-f]{8}", value))
 
 
 @dataclass(frozen=True)
@@ -53,7 +58,7 @@ def admit_maintenance(*, env, device_id, managed_links, admin_now, online,
     """
     if not auto_update_enabled(env):
         return None, "switch_off"
-    if not is_pc_mesh_node_id(device_id):
+    if not verified_mesh_slot(device_id):
         return None, "device_unverified"
     if not isinstance(managed_links, (tuple, list)) or len(managed_links) != 1:
         return None, "not_managed" if not managed_links else "owner_ambiguous"
@@ -74,6 +79,31 @@ def admit_maintenance(*, env, device_id, managed_links, admin_now, online,
         return None, "owner_consent_missing"
     if target_device_id != device_id or target_link_id != link["link_id"]:
         return None, "target_mismatch"
+    fixed, reason = maintenance_candidate(env=env, device_id=device_id, observation=observation,
+                                          manifest=manifest, rollout=rollout, now=now)
+    if fixed is None:
+        return None, reason
+    action, expected = fixed
+    digest = hashlib.sha256(expected.encode("utf-8")).hexdigest()
+    if command is not None and (not isinstance(command, str)
+                               or not hmac.compare_digest(command.encode(), expected.encode())):
+        return None, "command_mismatch"
+    if source_sha256 is not None and (not isinstance(source_sha256, str)
+                                     or not hmac.compare_digest(source_sha256.encode(), digest.encode())):
+        return None, "source_mismatch"
+    # Refresh shares the existing #8240 reservation key with the human
+    # operator. Attempts also pin ALL command bytes, including the watcher.
+    registration = SOURCE_SHA256 if action == "refresh" else digest
+    return MaintenanceIntent(device_id, link["user_id"], link["link_id"], action,
+                             digest, registration, manifest["sha256"], expected), None
+
+
+def maintenance_candidate(*, env, device_id, observation, manifest, rollout, now):
+    """Pure plan/digest for deferred notices; it grants no execution."""
+    if not auto_update_enabled(env):
+        return None, "switch_off"
+    if not verified_mesh_slot(device_id):
+        return None, "device_unverified"
     if not release_pinned(manifest):
         return None, "release_unpinned"
     if (not isinstance(rollout, dict) or rollout.get("initialized") is not True
@@ -106,19 +136,7 @@ def admit_maintenance(*, env, device_id, managed_links, admin_now, online,
     fixed = command_for_plan(plan, manifest=manifest, env=env)
     if fixed is None:
         return None, "install_switch_off" if plan["action"] == "install" else plan["reason"]
-    action, expected = fixed
-    digest = hashlib.sha256(expected.encode("utf-8")).hexdigest()
-    if command is not None and (not isinstance(command, str)
-                               or not hmac.compare_digest(command.encode(), expected.encode())):
-        return None, "command_mismatch"
-    if source_sha256 is not None and (not isinstance(source_sha256, str)
-                                     or not hmac.compare_digest(source_sha256.encode(), digest.encode())):
-        return None, "source_mismatch"
-    # Refresh shares the existing #8240 reservation key with the human
-    # operator. Attempts also pin ALL command bytes, including the watcher.
-    registration = SOURCE_SHA256 if action == "refresh" else digest
-    return MaintenanceIntent(device_id, link["user_id"], link["link_id"], action,
-                             digest, registration, manifest["sha256"], expected), None
+    return fixed, None
 
 
 class PrecontactProof(Enum):
@@ -150,7 +168,7 @@ class MaintenanceAttemptStore:
 
     @staticmethod
     def _valid(device_id, source_sha256):
-        return (is_pc_mesh_node_id(device_id) and isinstance(source_sha256, str)
+        return (verified_mesh_slot(device_id) and isinstance(source_sha256, str)
                 and _DIGEST.fullmatch(source_sha256) is not None)
 
     async def defer_no_owner(self, *, device_id, source_sha256, now):
@@ -176,12 +194,14 @@ class MaintenanceAttemptStore:
             "(device_id,source_sha256,attempts,stopped,last_reason,updated_at) "
             "SELECT ?,?,0,0,?,? WHERE (SELECT count(*) FROM pc_helper_auto_attempts "
             "WHERE stopped=0 AND last_reason LIKE 'reserved:%') < ? "
+            "AND NOT EXISTS (SELECT 1 FROM pc_helper_auto_attempts WHERE device_id=? "
+            "AND stopped=0 AND last_reason LIKE 'reserved:%') "
             "ON CONFLICT(device_id,source_sha256) DO UPDATE SET "
             "last_reason=excluded.last_reason,updated_at=excluded.updated_at "
             "WHERE pc_helper_auto_attempts.stopped=0 "
             "AND pc_helper_auto_attempts.last_reason IN ('owner_unresolved','retryable_precontact') "
             "AND pc_helper_auto_attempts.attempts<=? RETURNING device_id",
-            device_id, source_sha256, token, now, MAX_ACTIVE, MAX_PRECONTACT_RETRIES)
+            device_id, source_sha256, token, now, MAX_ACTIVE, device_id, MAX_PRECONTACT_RETRIES)
         return AttemptClaim(device_id, source_sha256, token) if rows else None
 
     async def settle(self, claim, *, now, verified=False, proof=None):
