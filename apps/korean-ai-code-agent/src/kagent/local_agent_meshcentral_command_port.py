@@ -834,6 +834,16 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
             + "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
             ' Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
         ) + "; [Console]::Out.Flush()"
+        + ("\n\n" if "\n" in command else "")
+        # #8048: TWO trailing newlines are load-bearing on the SYSTEM console
+        # lane when the script contains multi-line blocks. The agent feeds it
+        # to ``powershell -noprofile -command -`` over stdin and closes at EOF.
+        # Measured on COM1 (2026-11-22, SYSTEM scheduled task, exact bytes +
+        # EOF): a multi-line script emits ZERO bytes with 0 or 1 trailing
+        # newlines, and the full envelope with 2. PowerShell's stdin line
+        # parser needs the blank line to flush the accumulated block. No
+        # handshake also meant the stop had no pid to kill. Single-line scripts
+        # work without it, so their byte-for-byte wrapper is unchanged.
     )
 
 

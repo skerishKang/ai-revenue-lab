@@ -252,3 +252,21 @@ class TheMeasuredWedgesEndOnTheirOwn(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ConsoleScriptEndsWithTwoNewlines(unittest.TestCase):
+    """#8048: SYSTEM console stdin needs TWO trailing newlines for a script
+    with multi-line blocks. Measured on COM1 via SYSTEM scheduled task with
+    exact bytes + EOF: 0/1 newline -> 0 bytes and no pid handshake; 2 newlines
+    -> full envelope. The missing handshake also left the stop with no target.
+    """
+
+    def test_a_multiline_command_is_flushed_by_the_wrapper(self):
+        inner = "function F {\n Write-Output 'x'\n}\nF"
+        wrapped = _wrap(inner, None, None)
+        self.assertTrue(wrapped.endswith("\n\n"))
+        self.assertFalse(wrapped.endswith("\n\n\n"))
+
+    def test_a_single_line_wrapper_is_unchanged(self):
+        wrapped = _wrap("Write-Output 1", None, None)
+        self.assertNotIn("\n", wrapped)
