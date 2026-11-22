@@ -24,6 +24,9 @@ DEVICES = ["node//current", "node//old", "node//missing", "node//denied", "node/
 
 @pytest.mark.parametrize("change,allowed,elapsed,expected", [
     ({"updater_source_sha256": SOURCE_SHA256}, True, 0, ("skipped", "already_current")),
+    ({"updater_source_sha256": SOURCE_SHA256, "self_heal_task_present": True}, True, 0, ("skipped", "already_current")),
+    ({"updater_source_sha256": SOURCE_SHA256, "self_heal_task_present": False}, True, 0, ("refresh", "watcher_missing")),
+    ({"self_heal_task_present": False}, True, 0, ("refresh", "source_changed")),
     ({}, True, 0, ("refresh", "source_changed")),
     ({"helper_status_present": False}, True, 0, ("install", "status_missing")),
     ({"helper_sha256": None, "helper_build": None}, True, 0, ("install", "release_unknown")),
@@ -45,7 +48,13 @@ def test_bounded_observation_and_receipt():
                   {"helper_status_present": 1}):
         with pytest.raises(HelperReadyError):
             validate_helper_ready({**READY, **extra})
+    assert validate_helper_ready({**READY, "self_heal_task_present": True})["self_heal_task_present"] is True
+    assert "self_heal_task_present" not in validate_helper_ready(READY)
+    with pytest.raises(HelperReadyError):
+        validate_helper_ready({**READY, "self_heal_task_present": 1})
     assert parse_receipt("PADIEM_HELPER_REFRESH:updated:registered") == {"action": "updated", "reason": "registered"}
+    assert parse_receipt("PADIEM_HELPER_REFRESH:updated:watcher_python_missing")["reason"] == "watcher_python_missing"
+    assert parse_receipt("PADIEM_HELPER_REFRESH:failed:watcher_unregistered")["reason"] == "watcher_unregistered"
     assert parse_receipt("PADIEM_HELPER_REFRESH:failed:private_path")["reason"] == "receipt_unverified"
     assert parse_receipt("PADIEM_HELPER_REFRESH:updated:registered\nPADIEM_HELPER_REFRESH:skipped:already_current")["action"] == "failed"
 
@@ -124,3 +133,33 @@ def test_stale_window_outlasts_the_helper_status_round():
     # #8385: the readiness report rides every drive round, so two missed
     # rounds still leave a fresh observation inside the refresh window.
     assert MAX_AGE.total_seconds() > DRIVE_REFRESH_SECONDS * 2
+
+
+def test_refresh_command_registers_the_fixed_watcher_after_the_updater():
+    """#8359 F7: the one refresh command also keeps the SYSTEM self-heal task.
+
+    Both payloads are the repository's own fixed bytes. The watcher is
+    registered only when the PC has an interpreter (read the installer's way)
+    and is not registered yet; a current updater with a present watcher is
+    skipped; no interpreter leaves the updater refreshed and says so.
+    """
+    from kagent.pc_self_heal_task import TASK_NAME, render_watcher_command
+    from app.pc_helper_update import render_helper_updater_command
+
+    command = registration_command()
+    updater, watcher = render_helper_updater_command(), render_watcher_command()
+    assert command.count(updater) == 1 and command.count(watcher) == 1
+    assert command.index(updater) < command.index(watcher)
+    assert "-TaskName " + TASK_NAME + " -ErrorAction SilentlyContinue" in command
+    assert "$py=$env:PADIEM_PYTHON" in command and "Get-Command python.exe" in command
+    assert "if($same -and $task -and ($watcher -or -not $py))" in command
+    assert "if(-not($same -and $task)){" + updater in command
+    assert "if($py -and -not $watcher){$PythonExecutable=$py;" + watcher in command
+    for marker in ("skipped:already_current", "failed:updater_running", "failed:digest_unverified",
+                   "failed:watcher_unregistered", "updated:registered", "updated:watcher_python_missing",
+                   "failed:registration_failed"):
+        assert command.count("PADIEM_HELPER_REFRESH:" + marker) == 1
+    # The marker vocabulary and the receipt parser agree.
+    for text in ("updated:registered", "updated:watcher_python_missing", "failed:watcher_unregistered"):
+        assert parse_receipt("PADIEM_HELPER_REFRESH:" + text)["reason"] == text.split(":")[1]
+    assert "http" not in command.replace("FromBase64String", "")
