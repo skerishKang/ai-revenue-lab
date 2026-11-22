@@ -22,18 +22,20 @@ from _support.claw_general_routing import (
     GENERAL_ROUTE_PATH,
     SIGNED_IN_USER_ID,
     SESSION_COOKIE,
-    app_factory_source,
-    app_js_source,
-    claw_general_routes_source,
     create_session_token,
-    streaming_module_source,
-    transport_source,
     _AuthStore,
     _client,
     _make_adapter,
     _make_outcome,
     _payload,
     _settings,
+)
+from _support.claw_routing_sources import (
+    app_factory_source,
+    app_js_source,
+    claw_general_routes_source,
+    streaming_module_source,
+    transport_source,
 )
 
 CLAW_GENERAL_SOURCE = claw_general_routes_source()

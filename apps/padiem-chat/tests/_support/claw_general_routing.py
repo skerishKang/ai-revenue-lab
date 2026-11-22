@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
 from starlette.testclient import TestClient
@@ -79,30 +78,3 @@ def _payload(**extra) -> dict:
     payload = {"messages": [{"role": "user", "content": "일반 요청입니다."}], "tier": "plus"}
     payload.update(extra)
     return payload
-
-
-# ── #8060 47차: shipped source sheets, read here not in the contract tests ───
-
-
-def _shipped(path: str) -> str:
-    return (Path(__file__).resolve().parents[2] / path).read_text(encoding="utf-8")
-
-
-def claw_general_routes_source() -> str:
-    return _shipped("app/claw_general_routes.py")
-
-
-def app_factory_source() -> str:
-    return _shipped("app/app_factory.py")
-
-
-def app_js_source() -> str:
-    return _shipped("static/app.js")
-
-
-def transport_source() -> str:
-    return _shipped("static/chat-transport.js")
-
-
-def streaming_module_source() -> str:
-    return _shipped("static/chat-streaming-module.js")
