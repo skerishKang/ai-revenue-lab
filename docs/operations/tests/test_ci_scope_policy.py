@@ -436,15 +436,12 @@ def test_workflow_and_script_changes_run_the_ci_contract_tests() -> None:
         ("b62-padiem-chat-ci.yml", "registry-ci-plan", "ubuntu-latest"),
         ("b62-padiem-chat-ci.yml", "b62-static-ui", "ubuntu-latest"),
         ("b62-padiem-chat-ci.yml", "b62-registry-contract", "ubuntu-latest"),
-        ("b62-padiem-chat-ci.yml", "b62-date-golden-contract", "ubuntu-latest"),
         ("b62-padiem-chat-ci.yml", "b62-test", "ubuntu-latest"),
         ("validate-b14-alpha.yml", "registry-ci-plan", "ubuntu-latest"),
         ("validate-b14-alpha.yml", "alpha-model-registry-contract", "ubuntu-latest"),
         ("validate-b14-alpha.yml", "alpha", "ubuntu-latest"),
-        ("b62-static-audits.yml", "dom-sink-audit", "ubuntu-latest"),
         ("b62-static-audits.yml", "static-origin-audit", "ubuntu-latest"),
         ("b62-static-audits.yml", "browser-persistence-audit", "ubuntu-24.04"),
-        ("padiem-chat-contract-tests.yml", "chat-contract-tests", "ubuntu-latest"),
         ("operations-policy-guard.yml", "pr-contract", "ubuntu-latest"),
         ("ci-contract-tests.yml", "ci-contract-tests", "ubuntu-latest"),
     ],
@@ -469,6 +466,9 @@ def test_light_pr_jobs_route_only_same_repository_to_self_hosted(
 
 
 @pytest.mark.parametrize("workflow,job_id,image", [
+    ("b62-padiem-chat-ci.yml", "b62-date-golden-contract", "ubuntu-latest"),
+    ("b62-static-audits.yml", "dom-sink-audit", "ubuntu-latest"),
+    ("padiem-chat-contract-tests.yml", "chat-contract-tests", "ubuntu-latest"),
     ("b62-padiem-chat-react-ci.yml", "react-clone", "ubuntu-24.04"),
     ("b62-cloudflare-worker-deploy.yml", "preflight", "ubuntu-24.04"),
     ("b62-cloudflare-worker-deploy.yml", "deploy-mock", "ubuntu-24.04"),

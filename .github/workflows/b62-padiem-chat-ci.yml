@@ -502,7 +502,7 @@ jobs:
   # keep on the PR path; the complete suite stays event-scoped below.
   b62-date-golden-contract:
     name: B62 date-dependent golden contract
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
       run:
