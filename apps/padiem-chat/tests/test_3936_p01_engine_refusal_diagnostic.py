@@ -23,7 +23,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
 from test_3580_web_xlsx_p01_browser_start import install_owner_run
-from test_3580_web_xlsx_p01_request import harness, prepare, projected_pause
+from _support.web_xlsx_p01_request import harness, prepare, projected_pause
 from _support.web_xlsx_selection_routes import RealSQLiteD1
 from _support.web_xlsx_sources import request, OWNER
 
