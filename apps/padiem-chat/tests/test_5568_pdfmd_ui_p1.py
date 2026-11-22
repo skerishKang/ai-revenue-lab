@@ -20,6 +20,11 @@ history rendering silently fell through to the failure state.
 
 from __future__ import annotations
 
+from _support.pdfmd_ui_p1_source import (
+    pdfmd_js_source,
+    pdfmd_pages_js_source,
+    util_menu_css_source,
+)
 from functools import lru_cache
 from pathlib import Path
 import json
@@ -39,7 +44,7 @@ UTIL_MENU_CSS = ROOT / "static/util-menu.css"
 
 
 def test_upload_zone_is_one_keyboard_operable_picker_target() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = pdfmd_js_source()
     assert 'drop.setAttribute("role", "button")' in js
     assert "drop.tabIndex = 0" in js
     # #7865: the zone copy follows the issue's 올리기 칸 wording.
@@ -58,7 +63,7 @@ def test_upload_zone_is_one_keyboard_operable_picker_target() -> None:
 
 
 def test_history_rows_use_status_chips_and_localized_labels() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = pdfmd_js_source()
     # #7865: the four badges. reviewed reads 완료, queued reads 바꾸는 중,
     # and a timed-out row (the #7842 code) reads 시간 초과.
     for status, label in (
@@ -78,7 +83,7 @@ def test_history_rows_use_status_chips_and_localized_labels() -> None:
 
 
 def test_error_codes_map_to_friendly_korean_messages() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = pdfmd_js_source()
     for code, message in (
         ("unauthorized", "로그인이 필요합니다."),
         ("pdf_magic_mismatch", "PDF 형식이 아니거나 손상된 파일입니다."),
@@ -93,7 +98,7 @@ def test_error_codes_map_to_friendly_korean_messages() -> None:
 
 
 def test_empty_states_guide_the_next_action() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = pdfmd_js_source()
     assert '"첫 PDF를 변환해 보세요."' in js
     assert '"이 작업에는 아직 파일이 없습니다."' in js
     assert '"아직 작업 이력이 없습니다."' in js
@@ -103,9 +108,9 @@ def test_empty_states_guide_the_next_action() -> None:
 
 
 def test_preview_panes_are_labelled_and_tall_enough_on_mobile() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
-    pages_js = PDFMD_PAGES_JS.read_text(encoding="utf-8")
-    css = UTIL_MENU_CSS.read_text(encoding="utf-8")
+    js = pdfmd_js_source()
+    pages_js = pdfmd_pages_js_source()
+    css = util_menu_css_source()
     # #7834: the original pane (label plus its rendered page) moved into the
     # page module; the labels themselves are still both present, once each.
     assert 'el("span", "pdfmd-pane-label", "원본 PDF")' in pages_js
@@ -118,7 +123,7 @@ def test_preview_panes_are_labelled_and_tall_enough_on_mobile() -> None:
 
 
 def test_status_chips_and_controls_reuse_theme_tokens() -> None:
-    css = UTIL_MENU_CSS.read_text(encoding="utf-8")
+    css = util_menu_css_source()
     assert ".pdfmd-shell" in css
     assert "var(--card-bg" in css
     assert "backdrop-filter: blur(24px)" in css
