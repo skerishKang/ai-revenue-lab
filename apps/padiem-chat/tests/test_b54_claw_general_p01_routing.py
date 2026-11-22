@@ -30,12 +30,18 @@ from _support.claw_general_routing import (
     _payload,
     _settings,
 )
+from _support.claw_routing_sources import (
+    app_factory_source,
+    app_js_source,
+    claw_general_routes_source,
+    streaming_module_source,
+    transport_source,
+)
 
-APP_DIR = Path(__file__).resolve().parents[1]
-CLAW_GENERAL_SOURCE = (APP_DIR / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
-APP_FACTORY_SOURCE = (APP_DIR / "app" / "app_factory.py").read_text(encoding="utf-8")
-APP_JS_SOURCE = (APP_DIR / "static" / "app.js").read_text(encoding="utf-8")
-TRANSPORT_SOURCE = (APP_DIR / "static" / "chat-transport.js").read_text(encoding="utf-8")
+CLAW_GENERAL_SOURCE = claw_general_routes_source()
+APP_FACTORY_SOURCE = app_factory_source()
+APP_JS_SOURCE = app_js_source()
+TRANSPORT_SOURCE = transport_source()
 
 
 
@@ -244,7 +250,7 @@ def test_frontend_claw_branch_uses_claw_route_without_chat_stream_fallback() -> 
     assert 'fetch("/api/chat/stream"' not in claw_fn
     # #7297: chat-streaming-module.js sends Claw general turns through the shared
     # Chat direct streaming path with payload.product = "claw".
-    stream_source = (APP_DIR / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
+    stream_source = streaming_module_source()
     assert "deps.chatTransport.requestStreaming(payload, signal)" in stream_source
     assert 'payload.product = "claw"' in stream_source
     assert "route && route.clawGeneral" in stream_source
@@ -255,7 +261,7 @@ def test_b62_chat_general_path_unchanged() -> None:
     streaming_fn = _js_function(TRANSPORT_SOURCE, "requestStreaming")
     assert '"/api/chat/stream"' in streaming_fn
     assert '"/api/orchestration"' in TRANSPORT_SOURCE
-    stream_source = (APP_DIR / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
+    stream_source = streaming_module_source()
     # The Claw decision is state-scoped in app.js and only annotates the route.
     assert "clawGeneralRequest" in APP_JS_SOURCE
     assert "clawGeneral: true" in stream_source
