@@ -11,15 +11,20 @@ from __future__ import annotations
 
 from pathlib import Path
 
+# #8060: 시트 원문 읽기는 _support/claw_static이 담당하고 시험은 css_rules 파싱
+# 값(선언 딕셔너리·토큰 값·규칙 1개)과 부재·순서 경계를 단언한다. 이 모듈은
+# 원문 read를 갖지 않는다.
+from _support import claw_static
+
 from css_rules import declaration, parse_rules
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-GLASS_CSS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
-TOKENS_CSS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
-UTILITY_CSS = (STATIC / "sidebar-utility.css").read_text(encoding="utf-8")
-DARK_CSS = (STATIC / "padiem-dark-contrast.css").read_text(encoding="utf-8")
-SCROLL_CSS = (STATIC / "sidebar-history-scroll.css").read_text(encoding="utf-8")
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
+GLASS_CSS = claw_static.sheet("padiem-glass.css")
+TOKENS_CSS = claw_static.sheet("padiem-tokens.css")
+UTILITY_CSS = claw_static.sheet("sidebar-utility.css")
+DARK_CSS = claw_static.sheet("padiem-dark-contrast.css")
+SCROLL_CSS = claw_static.sheet("sidebar-history-scroll.css")
+HTML = claw_static.sheet("index.html")
 
 ROW_BASE = (
     'html[data-theme="padiem-glass"] body .app-shell .sidebar '
@@ -28,7 +33,7 @@ ROW_BASE = (
 ROW_HOVER = ROW_BASE + ":is(:hover, :focus-within)"
 CELL_SELECTOR = 'html[data-theme="padiem-glass"] .recent-item'
 CELL_HOVER_SELECTOR = 'html[data-theme="padiem-glass"] .recent-item:hover'
-UNIFIED_CSS = (STATIC / "sidebar-unified.css").read_text(encoding="utf-8")
+UNIFIED_CSS = claw_static.sheet("sidebar-unified.css")
 
 
 def _only(rules: list, predicate, label: str):
@@ -148,8 +153,8 @@ def test_the_legal_line_is_a_permanent_sibling_under_the_account_cell() -> None:
     assert _value(link_rule, "min-height") == "24px"
 
     # 어떤 스크립트도 이 줄을 상태에 따라 숨기지 않는다.
-    for script in STATIC.glob("*.js"):
-        assert "sidebar-legal" not in script.read_text(encoding="utf-8"), script.name
+    for script_path in STATIC.glob("*.js"):
+        assert "sidebar-legal" not in claw_static.sheet(script_path.name), script_path.name
 
 
 def test_the_account_menu_carries_no_legal_links() -> None:
