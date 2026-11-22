@@ -25,7 +25,7 @@ from app.connector_pending_pc_delivery import CanonicalPendingPcDelivery
 from padiem_control_plane.pending_pc_link import (
     DurablePendingPcLink, install_pending_pc_link_schema, MIGRATION_ID,
 )
-from test_4139_pending_pc_delivery_adapter import Storage
+from _support.pending_pc_delivery import Storage
 
 DEVICE = "windows.device.1"
 REF = "link." + "a" * 32

@@ -16,7 +16,7 @@ import pytest
 from app.config import Settings
 from app.email_confirmation import EMAIL_CONFIRMATION_PATH, confirmation_token_digest
 from _support.email_recovery import BASE, EMAIL, SECRET, build
-from test_password_rpc_261106 import proof_headers
+from _support.password_rpc import proof_headers
 
 
 def build_confirm(*, enabled=True):

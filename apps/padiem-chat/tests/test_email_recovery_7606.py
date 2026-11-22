@@ -17,7 +17,7 @@ from app.d1_sqlite import SqliteD1
 from app.history import D1HistoryStore, _password_user_id
 from app.main import create_app
 from app.password_auth import PasswordAuthError, hash_password, validate_password, verify_password
-from test_password_rpc_261106 import proof_headers
+from _support.password_rpc import proof_headers
 
 from _support.email_recovery import (
     ACCOUNT,

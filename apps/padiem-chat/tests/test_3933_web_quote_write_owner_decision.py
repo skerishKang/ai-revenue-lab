@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
-from test_3933_web_quote_write_gate import prepared
+from _support.web_quote_write_gate import prepared
 from _support.web_xlsx_selection_routes import RealSQLiteD1
 from _support.web_xlsx_sources import OWNER
 from app.claw_web_xlsx_quote_write_owner_decision import (

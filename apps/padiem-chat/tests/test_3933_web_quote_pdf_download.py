@@ -10,7 +10,7 @@ import pytest
 from pypdf import PdfWriter
 
 sys.path.insert(0,str(Path(__file__).parent))
-from test_3933_web_quote_write_gate import api,prepared,OWNER,FOREIGN,VALUES
+from _support.web_quote_write_gate import api,prepared,OWNER,FOREIGN,VALUES
 from app.claw_web_xlsx_quote_pdf import (
     BrowserQuotePdfRenderer,supported_quote_print_html,WebQuoteEditUnsupported,
     PDF_MAX,

@@ -29,6 +29,7 @@ import app.b66_pc_template_routes as quote_pc                        # noqa: E40
 import app.pc_file_exchange_routes as exchange                       # noqa: E402
 import test_5895_b66_pc_template as fillbase                         # noqa: E402
 import _support.pc_file_exchange as base                            # noqa: E402
+from _support.saved_pc_form_source import migration_sql, quote_runtime_script  # noqa: E402
 from app.b66_saved_quote_skill_store import (                        # noqa: E402
     PC_FORM_CALCULATION_AUTHORITY,
     PC_FORM_RENDERER_CONTRACT,
@@ -73,13 +74,12 @@ class Lane(fillbase.Lane):
 
 
 def _db() -> sqlite3.Connection:
-    migrations = Path(__file__).resolve().parents[1] / "migrations"
     connection = sqlite3.connect(":memory:", check_same_thread=False)
     connection.row_factory = sqlite3.Row
     connection.execute("CREATE TABLE users (id TEXT PRIMARY KEY)")
     connection.executemany("INSERT INTO users(id) VALUES (?)", [(OWNER,), (OTHER,)])
     for name in ("021_b66_saved_quote_skill.sql", "079_b66_saved_quote_skill_kind.sql"):
-        connection.executescript((migrations / name).read_text(encoding="utf-8"))
+        connection.executescript(migration_sql(name))
     return connection
 
 
@@ -279,8 +279,7 @@ def test_an_owner_registered_form_still_validates_as_the_skill_kind_is_unknown()
 
 
 def test_migration_079_is_additive_and_keeps_existing_rows_as_skills():
-    sql = (Path(__file__).resolve().parents[1] / "migrations"
-           / "079_b66_saved_quote_skill_kind.sql").read_text(encoding="utf-8")
+    sql = migration_sql("079_b66_saved_quote_skill_kind.sql")
     assert "ALTER TABLE b66_saved_quote_skill ADD COLUMN skill_kind" in sql
     assert "DEFAULT 'skill'" in sql
     for forbidden in ("DROP TABLE", "project_files_rebuilt", "UPDATE b66_saved_quote_skill"):
@@ -290,9 +289,7 @@ def test_migration_079_is_additive_and_keeps_existing_rows_as_skills():
 def test_the_quote_screen_lists_and_reuses_the_saved_form():
     """The screen half: the same list, the PC form marked, and no re-pick."""
 
-    script = (Path(__file__).resolve().parents[1] / "static" / "b66-quote-runtime.js").read_text(
-        encoding="utf-8"
-    )
+    script = quote_runtime_script()
     for needle in (
         '"/api/b66/pc-quote/forms"',
         '"/api/b66/pc-quote/fill"',
