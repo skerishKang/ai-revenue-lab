@@ -1,20 +1,39 @@
-"""One release-pinned refresh using the existing owner-authorized SYSTEM lane."""
+"""One release-pinned refresh using the existing owner-authorized SYSTEM lane.
+
+#8359 F7: the refresh also keeps the SYSTEM self-heal watcher (#8193) registered.
+The watcher payload is the same fixed, offline bytes both installers embed; the
+only thing the PC contributes is where its Python interpreter lives, read the
+way the installer reads it (``PADIEM_PYTHON`` or ``python.exe`` on PATH). A PC
+without an interpreter still gets its updater refreshed and says so.
+"""
 from __future__ import annotations
 
 import hashlib
 import re
 from datetime import datetime, timedelta
+
+from kagent.pc_self_heal_task import TASK_NAME as SELF_HEAL_TASK_NAME, render_watcher_command
+
 from .pc_helper_update import helper_update_script, render_helper_updater_command
 
 MAX_AGE = timedelta(seconds=180)
 SOURCE_SHA256 = hashlib.sha256(helper_update_script().encode("utf-8")).hexdigest()
 _MARKER = re.compile(r"^PADIEM_HELPER_REFRESH:(updated|skipped|reinstall_required|failed):([a-z_]+)$")
-_REASONS = {"updated": {"registered"}, "skipped": {"already_current"},
+_REASONS = {"updated": {"registered", "watcher_python_missing"}, "skipped": {"already_current"},
             "reinstall_required": {"status_missing", "system_denied"},
-            "failed": {"registration_failed", "updater_running", "digest_unverified"}}
+            "failed": {"registration_failed", "updater_running", "digest_unverified", "watcher_unregistered"}}
 
 
 def plan_registration(row, *, system_allowed, now):
+    """One bounded verdict per fresh observation.
+
+    ``refresh`` is the #8240 updater refresh of an installed helper. ``install``
+    (#8359 F6) is a helper that is not there to refresh: the status file is
+    missing, or it is present but records no installed release (the executor
+    reports both since #8385, as ``file_missing`` and ``release_unknown``).
+    The install itself is the separate fixed command in ``pc_helper_install``;
+    this plan never runs it, and the operator button never executes it.
+    """
     if system_allowed is not True:
         return {"action": "reinstall_required", "reason": "system_denied"}
     state = (row or {}).get("state") or {}
@@ -25,13 +44,19 @@ def plan_registration(row, *, system_allowed, now):
     except (KeyError, TypeError, AttributeError, ValueError):
         return {"action": "failed", "reason": "observation_stale"}
     if state.get("helper_status_present") is False:
-        return {"action": "reinstall_required", "reason": "status_missing"}
-    if state.get("helper_status_present") is not True or not state.get("helper_sha256"):
+        return {"action": "install", "reason": "status_missing"}
+    if state.get("helper_status_present") is not True:
         return {"action": "failed", "reason": "status_unknown"}
+    if not state.get("helper_sha256"):
+        return {"action": "install", "reason": "release_unknown"}
     if (state.get("updater_source_present") is not False
             and not state.get("updater_source_sha256")) or state.get("updater_task_present") is None:
         return {"action": "failed", "reason": "digest_unverified"}
     if state.get("updater_source_sha256") == SOURCE_SHA256 and state["updater_task_present"]:
+        # #8359 F7: an observed absence of the self-heal watcher is a refresh
+        # too; an executor that does not report the key (older build) is not.
+        if state.get("self_heal_task_present") is False:
+            return {"action": "refresh", "reason": "watcher_missing"}
         return {"action": "skipped", "reason": "already_current"}
     return {"action": "refresh", "reason": "source_changed"}
 
@@ -55,15 +80,42 @@ def registration_command():
         r"try{$task=Get-ScheduledTask -TaskPath '\Padiem\' -TaskName PadiemUserHelperUpdater -ErrorAction SilentlyContinue;"
         "$same=(Test-Path -LiteralPath $scriptFile -PathType Leaf) -and "
         "((Get-FileHash -LiteralPath $scriptFile -Algorithm SHA256).Hash -eq '" + SOURCE_SHA256 + "');"
-        "if($same -and $task){Write-Output 'PADIEM_HELPER_REFRESH:skipped:already_current';return};"
+        # #8359 F7: the watcher task and the interpreter it needs, read the
+        # installer's way. No interpreter means nothing to register, not a failure.
+        r"$watcher=Get-ScheduledTask -TaskPath '\Padiem\' -TaskName " + SELF_HEAL_TASK_NAME + " -ErrorAction SilentlyContinue;"
+        "$py=$env:PADIEM_PYTHON;if(-not $py){$pyCommand=Get-Command python.exe -ErrorAction SilentlyContinue;"
+        "if($pyCommand){$py=$pyCommand.Source}};"
+        "if($same -and $task -and ($watcher -or -not $py)){Write-Output 'PADIEM_HELPER_REFRESH:skipped:already_current';return};"
         "if($task -and $task.State -eq 'Running'){Write-Output 'PADIEM_HELPER_REFRESH:failed:updater_running';return};"
+        "if(-not($same -and $task)){"
         + render_helper_updater_command() + ";"
         "if((Get-FileHash -LiteralPath $scriptFile -Algorithm SHA256).Hash -ne '" + SOURCE_SHA256 + "' -or "
         r"-not(Get-ScheduledTask -TaskPath '\Padiem\' -TaskName PadiemUserHelperUpdater)){"
-        "Write-Output 'PADIEM_HELPER_REFRESH:failed:digest_unverified';return};"
-        "Write-Output 'PADIEM_HELPER_REFRESH:updated:registered'"
+        "Write-Output 'PADIEM_HELPER_REFRESH:failed:digest_unverified';return}};"
+        "if($py -and -not $watcher){$PythonExecutable=$py;"
+        + render_watcher_command() + ";"
+        r"if(-not(Get-ScheduledTask -TaskPath '\Padiem\' -TaskName " + SELF_HEAL_TASK_NAME + " -ErrorAction SilentlyContinue)){"
+        "Write-Output 'PADIEM_HELPER_REFRESH:failed:watcher_unregistered';return}};"
+        "if($py){Write-Output 'PADIEM_HELPER_REFRESH:updated:registered'}"
+        "else{Write-Output 'PADIEM_HELPER_REFRESH:updated:watcher_python_missing'}"
         "}catch{Write-Output 'PADIEM_HELPER_REFRESH:failed:registration_failed'}}"
     )
+
+
+def is_fixed_system_refresh_command(command, *, user_mode):
+    """Exactly the repository's own SYSTEM refresh bytes, and nothing else.
+
+    The minimum-version block exists so an old helper cannot run arbitrary
+    commands; the one command that *repairs* an old helper is this fixed,
+    release-pinned refresh. It is admitted by byte identity only, in SYSTEM
+    mode only: a prefix, a suffix, an edited digest or the same text sent
+    through the user lane is not the fixed command.
+    """
+    return user_mode is False and isinstance(command, str) and command == _FIXED_REFRESH_COMMAND
+
+
+# Rendered once: the bytes are a pure function of the repository source.
+_FIXED_REFRESH_COMMAND = registration_command()
 
 
 def parse_receipt(text):

@@ -551,10 +551,12 @@ def test_two_column_rows_are_read_column_by_column() -> None:
     assert "|" not in md
 
 
-#: The conversion output is pinned to one reader version: 6.18 and 6.19 emit
-#: different Markdown for the same page, so a hash that moves is first a
-#: question about the installed reader, not about the conversion.
-EXPECTED_PYPDF_VERSION = "6.19.0"
+#: The conversion output is pinned to one reader version: pypdf emits different
+#: Markdown across reader versions for the same page, so a hash that moves is
+#: first a question about the installed reader, not about the conversion.
+#: #7424: the guard moved 6.19.0 -> 6.21.4 after the pinned hash verified
+#: byte-identical under the new reader (the whole core suite passed).
+EXPECTED_PYPDF_VERSION = "6.21.4"
 
 
 def _require_pinned_pypdf() -> None:

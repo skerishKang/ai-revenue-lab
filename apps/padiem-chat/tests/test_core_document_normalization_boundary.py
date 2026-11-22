@@ -68,8 +68,12 @@ def test_document_dependencies_are_owned_by_core_optional_extra() -> None:
     assert '"openpyxl' not in b62_project
     assert "documents = [" in core_project
     # #5568: the reader is pinned exactly, because the conversion output hash
-    # is pinned to the bytes one reader version emits.
-    assert '"pypdf==6.19.0"' in core_project
+    # is pinned to the bytes one reader version emits. #7424: which exact
+    # version is Core's own decision (6.21.4 now); this keeps the exact-pin
+    # shape so a range can never sneak back in.
+    import re
+
+    assert re.search(r'"pypdf==\d+\.\d+\.\d+"', core_project)
     assert '"openpyxl>=3.1,<4"' in core_project
 
 

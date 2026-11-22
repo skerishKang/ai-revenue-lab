@@ -566,13 +566,16 @@
   }
 
   const refreshLabels = {refresh: "갱신 대상", updated: "갱신 완료", skipped: "건너뜀",
-    reinstall_required: "재설치 필요", failed: "실패", queued: "응답 대기 중"};
+    reinstall_required: "재설치 필요", install: "신규 설치 대상", failed: "실패", queued: "응답 대기 중"};
   const refreshReasons = {system_denied: "SYSTEM 권한 없음", status_missing: "상태 파일 없음",
+    release_unknown: "설치 기록 없음",
     observation_stale: "상태 정보 오래됨", status_unknown: "상태 확인 불가",
     digest_unverified: "해시 확인 불가", already_current: "최신 상태", source_changed: "새 소스 확인",
     registered: "등록 완료", awaiting_receipt: "응답 대기", dispatch_failed: "명령 실패",
     registration_failed: "등록 실패", updater_running: "실행 중", dispatch_unconfirmed: "명령 확인 불가",
-    dispatch_refused: "명령 거부", receipt_unverified: "응답 검증 실패"};
+    dispatch_refused: "명령 거부", receipt_unverified: "응답 검증 실패",
+    watcher_missing: "감시기 없음", watcher_unregistered: "감시기 등록 실패",
+    watcher_python_missing: "감시기 미등록(Python 없음)"};
   function registrationLabel(row) {
     const label = row && refreshLabels[row.action];
     return label ? label + " · " + (refreshReasons[row.reason] || "원인 확인 불가") : "미확인";

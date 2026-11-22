@@ -49,7 +49,9 @@ async def registration_view(request, *, device, row, now, allowed=None):
     if allowed is None:
         allowed = await _pc_system_mode_allowed(request, uid=current_user_id(request), device_id=device)
     plan = plan_registration(row, system_allowed=allowed, now=now)
-    if plan["action"] == "reinstall_required":
+    if plan["action"] in ("reinstall_required", "install"):
+        # No refresh receipt can exist for a PC that has nothing to refresh; an
+        # install (#8359 F6) is reported as the plan and never executed here.
         return plan
     store = request.app.state.mesh_device_drive_store
     receipt = await store.load_updater_registration(device_id=device, sha256=SOURCE_SHA256)

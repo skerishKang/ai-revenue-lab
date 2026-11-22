@@ -14,11 +14,23 @@ owner scope. The sqlite rehearsal below runs the real forward migration.
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
 
-MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
-APP = Path(__file__).resolve().parents[1] / "app"
-STATIC = Path(__file__).resolve().parents[1] / "static"
+# #8060: 원문 read는 파일 전용 _support가 담당하고 시험은 AST·토큰 파싱 값으로
+# 단언한다. 이 모듈은 정적 파일 원문을 직접 읽지 않는다.
+from _support.asset_byte_total_source import (
+    app_comparisons,
+    app_names,
+    app_numbers,
+    forward_migration_sql,
+    js_identifiers,
+    js_numbers,
+    migration_sources,
+    negative_slice_bounds,
+    negated_startswith_prefixes,
+    not_if_targets,
+    not_in_membership_bytes,
+)
+
 FORWARD = "061_b66_quote_asset_byte_length_ceiling_release.sql"
 USER = "usr_" + "a" * 32
 OVER_OLD_CEILING = 11 * 1024 * 1024
@@ -34,10 +46,10 @@ def database(*, with_forward: bool) -> sqlite3.Connection:
     conn = sqlite3.connect(":memory:")
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
-    for path in sorted(MIGRATIONS.glob("*.sql")):
-        if path.name == FORWARD and not with_forward:
+    for name, sql in migration_sources():
+        if name == FORWARD and not with_forward:
             continue
-        conn.executescript(path.read_text(encoding="utf-8"))
+        conn.executescript(sql)
     conn.execute(
         "INSERT INTO users (id,auth_provider,provider_subject,email,created_at,updated_at) "
         "VALUES (?,'google','subject','owner@example.test','2026-01-01','2026-01-01')",
@@ -62,50 +74,49 @@ def refused(conn, sql, values) -> str:
 def test_no_application_byte_total_remains_on_the_released_d1_surfaces() -> None:
     # The app twins of the released D1 CHECK are gone, so the only remaining
     # bound on these surfaces is the platform and provider limit.
-    for name in (
+    for filename in (
         "workspace_storage.py",
         "claw_durable_drive_artifact_routes.py",
         "claw_artifact_preview_routes.py",
     ):
-        text = (APP / name).read_text(encoding="utf-8")
+        module = filename[:-3]
+        numbers = app_numbers(module)
+        names = app_names(module)
         # #5573 keeps generic D1 metadata free of byte ceilings. The separately
-        # authorized WEB XLSX input limit is now 1GiB and is not that surface.
-        if name == "workspace_storage.py":
-            text = "\n".join(line for line in text.splitlines()
-                             if not line.startswith("MAX_WEB_XLSX_BYTES = "))
-            # Transport switch, not a limit on generic metadata or document size.
-            text = text.replace("WEB_XLSX_INLINE_MAX_BYTES", "WEB_XLSX_INLINE_THRESHOLD")
-        assert "10 * 1024 * 1024" not in text, name
-        assert "10485760" not in text, name
-        assert "SINGLE_FILE_MAX_BYTES" not in text, name
-        assert "_MAX_BYTES" not in text, name
-        assert "_MAX_PDF" not in text, name
+        # authorized WEB XLSX transport switch is not a generic metadata limit.
+        if module == "workspace_storage":
+            names.discard("WEB_XLSX_INLINE_MAX_BYTES")
+            names.discard("MAX_WEB_XLSX_BYTES")
+        assert 10 * 1024 * 1024 not in numbers, filename
+        assert "SINGLE_FILE_MAX_BYTES" not in names, filename
+        assert not [name for name in names if name.endswith("_MAX_BYTES")], filename
+        assert not [name for name in names if name.endswith("_MAX_PDF")], filename
 
-    preview = (STATIC / "claw-pdf-preview.js").read_text(encoding="utf-8")
-    assert "MAX_PDF" not in preview
-    assert "10 * 1024 * 1024" not in preview
+    preview_tokens = js_identifiers("claw-pdf-preview.js")
+    assert "MAX_PDF" not in preview_tokens
+    assert 10 * 1024 * 1024 not in js_numbers("claw-pdf-preview.js")
 
 
 def test_the_real_controls_survive_the_release() -> None:
-    storage = (APP / "workspace_storage.py").read_text(encoding="utf-8")
-    assert storage.count("if not payload:") == 1
+    assert not_if_targets("workspace_storage")["payload"] == 1
 
-    drive = (APP / "claw_durable_drive_artifact_routes.py").read_text(encoding="utf-8")
-    assert "len(data) != record.size_bytes" in drive
-    assert "hashlib.sha256(data).hexdigest() != record.integrity_ref" in drive
-    assert 'not data.startswith(b"%PDF-")' in drive
-    assert 'not data.startswith(b"PK' in drive
+    drive_comparisons = app_comparisons("claw_durable_drive_artifact_routes")
+    assert "len(data) != record.size_bytes" in drive_comparisons
+    assert "hashlib.sha256(data).hexdigest() != record.integrity_ref" in drive_comparisons
+    drive_prefixes = negated_startswith_prefixes("claw_durable_drive_artifact_routes")
+    assert b"%PDF-" in drive_prefixes
+    assert any(prefix.startswith(b"PK") for prefix in drive_prefixes)
 
-    preview = (APP / "claw_artifact_preview_routes.py").read_text(encoding="utf-8")
-    assert "len(content) < 8" in preview
-    assert 'not content.startswith(b"%PDF-")' in preview
-    assert 'b"%%EOF" not in content[-1024:]' in preview
+    assert "len(content) < 8" in app_comparisons("claw_artifact_preview_routes")
+    assert b"%PDF-" in negated_startswith_prefixes("claw_artifact_preview_routes")
+    assert b"%%EOF" in not_in_membership_bytes("claw_artifact_preview_routes")
+    assert -1024 in negative_slice_bounds("claw_artifact_preview_routes")
 
-    quote = (APP / "b66_quote_assets.py").read_text(encoding="utf-8")
-    assert quote.count("if not body:") == 1
-    assert quote.count("if not _magic_matches(media_type, body):") == 1
-    assert quote.count("or meta.byte_length < 1") == 1
-    assert "MAX_B66_QUOTE_ASSET_BYTES" not in quote
+    quote_guards = not_if_targets("b66_quote_assets")
+    assert quote_guards["body"] == 1
+    assert quote_guards["_magic_matches(media_type, body)"] == 1
+    assert "meta.byte_length < 1" in app_comparisons("b66_quote_assets")
+    assert "MAX_B66_QUOTE_ASSET_BYTES" not in app_names("b66_quote_assets")
 
 
 def test_the_released_schema_did_refuse_a_quote_asset_over_the_old_ceiling() -> None:
@@ -123,7 +134,7 @@ def test_the_forward_migration_carries_every_row_and_keeps_the_floor() -> None:
     try:
         conn.execute(ASSET, asset_row("a_keep", byte_length=9 * 1024))
 
-        conn.executescript((MIGRATIONS / FORWARD).read_text(encoding="utf-8"))
+        conn.executescript(forward_migration_sql(FORWARD))
 
         assert conn.execute("PRAGMA foreign_key_check").fetchall() == []
         assert [row[0] for row in conn.execute(

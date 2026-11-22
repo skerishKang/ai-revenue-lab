@@ -47,6 +47,11 @@ def test_needs_update_covers_missing_wrong_and_old_evidence():
     assert needs_update(READY, source_sha256=SOURCE, min_version="0.4.0") is True
     outdated = {**READY, "helper_version": "0.2.0"}
     assert needs_update(outdated, source_sha256=SOURCE, min_version="0.3.0-rc1") is True
+    # #8359 F7: an observed missing watcher needs work; an unreported key does not.
+    watcher_missing = {**READY, "state": {**READY["state"], "self_heal_task_present": False}}
+    assert needs_update(watcher_missing, source_sha256=SOURCE, min_version="0.3.0-rc1") is True
+    watcher_present = {**READY, "state": {**READY["state"], "self_heal_task_present": True}}
+    assert needs_update(watcher_present, source_sha256=SOURCE, min_version="0.3.0-rc1") is False
 
 
 def test_selection_is_managed_only_once_per_source_and_stops_after_two_failures():
