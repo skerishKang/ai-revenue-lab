@@ -19,7 +19,7 @@ WATCH_DIR = HERE.parent / "connector-watch"
 MODULE = WATCH_DIR / "connector_watch_host.py"
 EXAMPLE = WATCH_DIR / "connector-watch.env.example"
 DEPLOY = HERE.parent / "deploy_from_main.sh"
-EXECUTOR = HERE.parents[2] / "apps" / "korean-ai-code-agent" / "src" / "kagent" / "local_agent_oracle_mesh_executor.py"
+EXECUTOR = HERE.parents[2] / "apps" / "korean-ai-code-agent" / "src" / "kagent" / "local_agent_mesh_concurrency.py"
 
 
 def _load():

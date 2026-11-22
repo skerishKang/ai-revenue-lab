@@ -870,6 +870,7 @@ class D1PcPairingStore:
             self.db.prepare("DELETE FROM pc_install_tokens WHERE user_id = ?").bind(owner),
             self.db.prepare("DELETE FROM pc_device_links WHERE user_id = ?").bind(owner),
             self.db.prepare("DELETE FROM pc_pairing_codes WHERE user_id = ?").bind(owner),
+            self.db.prepare("DELETE FROM pc_helper_registration WHERE actor_user_id = ?").bind(owner),
         ]
         statements.extend(
             oracle_mesh_dispatch_identity_cleanup_statements(self.db, owner)

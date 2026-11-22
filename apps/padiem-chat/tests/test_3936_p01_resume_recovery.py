@@ -23,7 +23,7 @@ from types import SimpleNamespace
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
-from test_3580_web_xlsx_p01_owner_decision import decide, ready, setup_pause
+from _support.web_xlsx_p01_owner_decision import decide, ready, setup_pause
 from _support.web_xlsx_sources import OWNER, request
 from app.web_xlsx_p01_engine_client import CloudflareWebXlsxP01EngineClient
 

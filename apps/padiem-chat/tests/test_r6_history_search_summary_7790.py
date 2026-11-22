@@ -12,7 +12,7 @@ from app import history as history_entry
 from app import history_run_summary as summary_module
 from app import history_search as search_module
 
-from test_b66_conversation_isolation_4657 import D1Sqlite, OWNER, setup_database
+from _support.b66_conversation_isolation import D1Sqlite, OWNER, setup_database
 
 
 def test_reexport_names_are_the_same_objects() -> None:

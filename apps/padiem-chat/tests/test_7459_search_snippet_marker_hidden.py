@@ -23,7 +23,7 @@ from app.history import (
     PC_SCOPE_NOTICE_LABELS,
     PRODUCT_SCOPE_CHAT,
 )
-from test_b66_conversation_isolation_4657 import D1Sqlite
+from _support.b66_conversation_isolation import D1Sqlite
 
 MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
 

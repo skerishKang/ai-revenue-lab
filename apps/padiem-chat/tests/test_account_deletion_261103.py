@@ -41,7 +41,7 @@ from app.history import D1HistoryStore, _password_user_id, _user_id
 from app.main import create_app
 from app.pc_device_pairing_store import D1PcPairingStore
 
-from test_6446_account_isolation_sweep import apply_all_migrations
+from _support.account_isolation_sweep import apply_all_migrations
 
 BASE = "https://chat.example.test"
 SESSION_SECRET = "account-delete-test-session-secret-not-real-000000"
@@ -709,6 +709,7 @@ def test_com2_queue_cleanup_runs_before_chat_batch_and_skips_pc_tables():
         assert not any("pc_pairing_codes" in statement for statement in sql)
         assert not any("pc_install_tokens" in statement for statement in sql)
         assert not any("pc_device_links" in statement for statement in sql)
+        assert not any("pc_helper_registration" in statement for statement in sql)
         assert not any("mesh_device_presence" in statement for statement in sql)
         return await original_batch(statements)
 
@@ -726,6 +727,7 @@ def test_com2_queue_cleanup_runs_before_chat_batch_and_skips_pc_tables():
         assert db.conn.execute(
             f"SELECT COUNT(*) AS n FROM {table} WHERE user_id = ?", (uid,)
         ).fetchone()["n"] == 1
+    assert user_count(db, "pc_helper_registration", "actor_user_id = ?", uid) == 1
     # Dispatch rows belong to the queue DB on COM2, so the Chat batch leaves
     # them to the queue cleanup; this row still names the account here.
     assert user_count(db, "oracle_mesh_dispatch", "user_id = ?", uid) == 1

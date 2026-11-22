@@ -51,13 +51,14 @@ from pathlib import Path
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
+# #8060 40차: 시트 원문 읽기는 _support/claw_lane_source가 담당하고 시험은
+# 계산 값(정의 수·순서·함수 범위)과 동작 확인(Node vm 하네스)을 단언한다.
+
 # R5 0단계(R-01): 함수 정의·본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import combined_source, definition_count, definition_source, function_body
+from _support import claw_lane_source
 
 ROOT = Path(__file__).resolve().parents[1]
-APP_JS = ROOT / "static/app.js"
-LOCALE_JS = locale_bundle.SOURCE
-INDEX_HTML = ROOT / "static/index.html"
 COPY_TRUTHFUL = ROOT / "tests/test_b54_claw_run_history_copy_truthful.py"
 
 SESSION_KEY = "claw-runs-open-session"
@@ -66,24 +67,14 @@ EN_TEXT = "Open session"
 
 
 def _app_source() -> str:
-    # R5 A2/A4: renderClawRunCard moved into chat-run-history-module.js and the
-    # execute payload builder moved into chat-claw-status-module.js; span all.
-    # R5 A5a: the execute entry point moved into chat-claw-run-module.js.
-    # R5 A5b: the manual form submit/preview handler moved into chat-claw-form-module.js.
-    return (APP_JS.read_text(encoding="utf-8")
-            + "\n"
-            + APP_JS.with_name("chat-run-history-module.js").read_text(encoding="utf-8")
-            + "\n"
-            + APP_JS.with_name("chat-claw-status-module.js").read_text(encoding="utf-8")
-            + "\n"
-            + APP_JS.with_name("chat-claw-run-module.js").read_text(encoding="utf-8")
-            + "\n"
-            + APP_JS.with_name("chat-claw-form-module.js").read_text(encoding="utf-8"))
+    # R5 A2/A4~A5b: the Claw lane spans app.js and the four run/status/form
+    # modules; the sheet reads live in _support/claw_lane_source(#8060 40차).
+    return claw_lane_source.lane_source()
 
 
 def _locale_table() -> dict[str, dict[str, str]]:
     """Parse the shipped KO/EN copy out of locale.js (no local duplicate)."""
-    source = LOCALE_JS.read_text(encoding="utf-8")
+    source = claw_lane_source.locale_source()
     pattern = re.compile(r'"([A-Za-z0-9_\-]+)":\s*"((?:[^"\\]|\\.)*)"')
 
     def unescape(value: str) -> str:
@@ -218,7 +209,7 @@ def test_success_echo_reuses_only_the_server_conversation_id() -> None:
 def test_chat_conversation_path_is_unchanged() -> None:
     """Regression=0: the Chat authority writes keep their exact call sites."""
     app = _app_source()
-    stream = (ROOT / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
+    stream = claw_lane_source.streaming_source()
     assert stream.count("deps.conversationState.setConversationId(data.conversation_id);") == 2
     assert app.count("conversationState.setConversationId(retryContext.conversationId);") == 1
     # Chat still owns its streaming/completed echo; Claw gained a parallel
@@ -276,7 +267,7 @@ def test_session_action_adds_no_new_route_or_second_store() -> None:
     # openSavedConversation, and the #7175 owner-scoped rename/pin PATCH (same
     # route family, same history store — no new route path or second store).
     # The session action itself still contains no fetch at all.
-    module = APP_JS.with_name("chat-history-module.js").read_text(encoding="utf-8")
+    module = claw_lane_source.history_module_source()
     # Two of the three call sites (history-row delete, #7175 rename/pin PATCH)
     # moved into chat-history-module.js (#7216 R5 step 3); the count spans the
     # two shipped sources so the "exactly three" contract keeps its strength.
@@ -318,7 +309,7 @@ def test_locale_keys_are_declared_for_both_languages() -> None:
     assert table["ko"][SESSION_KEY] == KO_TEXT
     table_en = table["en"]
     assert table_en[SESSION_KEY] == EN_TEXT
-    locale = LOCALE_JS.read_text(encoding="utf-8")
+    locale = claw_lane_source.locale_source()
     ko_block, en_block = locale.split("en: {", 1)
     assert f'"{SESSION_KEY}": "{KO_TEXT}"' in ko_block
     assert f'"{SESSION_KEY}": "{EN_TEXT}"' in en_block
@@ -338,7 +329,7 @@ def test_shipped_copy_matches_the_no_locale_fallback() -> None:
 
 def test_b54_harness_exemption_is_pinned() -> None:
     """The scoped exemption is what keeps B54's open-claim scan green."""
-    source = COPY_TRUTHFUL.read_text(encoding="utf-8")
+    source = claw_lane_source.test_module_source(COPY_TRUTHFUL)
     assert 'SESSION_OPEN_KEY = "claw-runs-open-session"' in source
     assert "key !== SESSION_OPEN_KEY" in source
 
@@ -358,7 +349,7 @@ def test_execute_entry_anchors_are_unchanged() -> None:
         or "tier: deps.selectedProductTier()," in app
     )
     # The action is created in JS; index.html gains no new locale-bound node.
-    html = INDEX_HTML.read_text(encoding="utf-8")
+    html = claw_lane_source.index_source()
     assert f'data-locale-key="{SESSION_KEY}"' not in html
 
 
@@ -759,7 +750,7 @@ def _run_harness() -> dict:
     copy_path.write_text(json.dumps(_locale_table(), ensure_ascii=False), encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(APP_JS), str(copy_path)],
+            [node, str(harness_path), str(ROOT / "static/app.js"), str(copy_path)],
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=120,

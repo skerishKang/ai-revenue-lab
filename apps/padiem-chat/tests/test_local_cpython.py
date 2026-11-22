@@ -27,6 +27,14 @@ from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuth
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.identity_call_cache import CachedIdentityAuthority
 from app.local_cpython import _ensure_session_secret, apply_migrations, build_app
+from _support.local_cpython_fixtures import (
+    apply_project_files_migrations,
+    auth_verify_vectors,
+    file_text,
+    html_refs,
+    html_text,
+    worker_lock_packages,
+)
 from app.local_r2 import LocalDiskR2
 from app.local_service_bridge import HttpRpcBinding, LocalB66PdfRendererClient
 from app.queue_store_proxy import (
@@ -340,7 +348,7 @@ def test_ensure_session_secret_generates_once_and_keeps_cookies_across_restart(t
     _ensure_session_secret(tmp_path)
     first = os.environ["PADIEM_CHAT_SESSION_SECRET"]
     assert len(first) >= 32
-    assert (tmp_path / "session_secret").read_text(encoding="utf-8").strip() == first
+    assert file_text(tmp_path / "session_secret").strip() == first
 
     # A "restart" reads the persisted key back, so last run's cookie still
     # verifies — this is the whole reason the file exists.
@@ -424,7 +432,7 @@ async def test_cpython_shared_login_es256_wire_and_existing_verifier(monkeypatch
     spec = importlib.util.spec_from_file_location('padiem_auth_verify', Path(__file__).resolve().parents[3] / 'packages/padiem-auth-verify/verify.py')
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
     monkeypatch.setitem(sys.modules, 'padiem_auth_verify', module)
-    vector = json.loads((Path(__file__).resolve().parents[3] / 'packages/padiem-auth-verify/tests/vectors.json').read_text(encoding='utf-8'))
+    vector = auth_verify_vectors()
     verifier = NativeTokenVerifier(vector['audience'])
     verifier._verifier.fetcher = lambda: vector['jwks']
     verifier._verifier.clock = lambda: vector['now']
@@ -478,8 +486,7 @@ def test_shared_login_host_switch_and_real_configuration(staging_host_env, monke
 def test_worker_dependency_lock_excludes_native_cryptography():
     import tomllib
     from pathlib import Path
-    lock = tomllib.loads((Path(__file__).resolve().parents[1] / 'pylock.toml').read_text(encoding='utf-8'))
-    assert all(package.get('name') != 'cryptography' for package in lock['packages'])
+    assert all(package.get('name') != 'cryptography' for package in worker_lock_packages())
 
 
 def test_host_missing_routes_are_owner_scoped_and_use_existing_stores(staging_host_env, monkeypatch):
@@ -631,12 +638,15 @@ def test_com2_pdfmd_missing_dependency_keeps_writes_closed(staging_host_env, mon
 def test_open_source_notice_is_reachable_from_chat(local_client):
     index = local_client.get("/")
     assert index.status_code == 200
-    assert 'href="./third-party-licenses.html"' in index.text
+    assert "./third-party-licenses.html" in html_refs(index.text).get("a", set())
     notice = local_client.get("/third-party-licenses.html")
     assert notice.status_code == 200
-    assert "PyMuPDF" in notice.text
-    assert "AGPL-3.0" in notice.text
-    assert "https://github.com/pymupdf/PyMuPDF" in notice.text
+    notice_text = html_text(notice.text)
+    notice_refs = html_refs(notice.text)
+    notice_text = html_text(notice.text)
+    assert "PyMuPDF" in notice_text
+    assert "AGPL-3.0" in notice_text
+    assert "https://github.com/pymupdf/PyMuPDF" in notice_refs.get("a", set())
 
 
 def test_com2_council_entry_and_the_retired_councillor_alias(staging_host_env):
@@ -646,7 +656,8 @@ def test_com2_council_entry_and_the_retired_councillor_alias(staging_host_env):
     with TestClient(app, base_url=origin) as client:
         council = client.get("/apps/council/")
         assert council.status_code == 200
-        assert "./static/council-app.css" in council.text
+        council_links = {ref.split("?")[0] for ref in html_refs(council.text).get("link", set())}
+        assert "./static/council-app.css" in council_links
         for url in ("/apps/council/static/council-app.css",
                     "/apps/council/static/council-app.js",
                     "/apps/council/static/assets/parliament-hero.jpg"):
@@ -729,10 +740,8 @@ def test_hwpx_schema_migration_keeps_existing_rows_and_indexes():
         INSERT INTO users VALUES ('u'); INSERT INTO projects VALUES ('p');
         INSERT INTO project_files VALUES ('f','p','u','old.txt','text/plain','hello',5,'a','b','kr');
     """)
-    con.executescript((migrations / "077_project_files_text_byte_bound.sql").read_text(encoding="utf-8"))
-    con.executescript((migrations / "078_project_files_doc_kind.sql").read_text(encoding="utf-8"))
+    apply_project_files_migrations(con, migrations)
     con.execute("UPDATE project_files SET doc_kind='meeting', doc_version_of='old' WHERE id='f'")
-    con.executescript((migrations / "083_project_files_hwpx.sql").read_text(encoding="utf-8"))
     assert con.execute("SELECT content_text,doc_kind,doc_version_of FROM project_files WHERE id='f'").fetchone() == ("hello","meeting","old")
     con.execute("INSERT INTO project_files (id,project_id,user_id,name,media_type,content_text,content_chars,created_at,updated_at) VALUES ('new','p','u','x.hwpx','extracted/hwpx','hi',2,'a','b')")
     indexes = {row[1] for row in con.execute("PRAGMA index_list(project_files)")}

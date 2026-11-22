@@ -315,7 +315,7 @@ def test_subject_keyed_statements_clear_the_claw_automation_chain():
     conn.execute("PRAGMA foreign_keys=OFF")
     from types import SimpleNamespace
 
-    from test_6446_account_isolation_sweep import apply_all_migrations
+    from _support.account_isolation_sweep import apply_all_migrations
 
     apply_all_migrations(SimpleNamespace(conn=conn))
     conn.execute("PRAGMA foreign_keys=OFF")
