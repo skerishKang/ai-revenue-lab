@@ -405,7 +405,6 @@ async def _answer_orchestration_intake(
             has_attachments=bool(attachments or tool_request or project_id or custom))
         if session_denial is not None:
             return session_denial, {}
-        user_credential_ref = None
         if custom is not None:
             return _error(
                 "orchestration_not_applicable",
@@ -529,8 +528,6 @@ async def _answer_orchestration_intake(
         "messages": messages,
         "skill": skill,
         "conversation_id": conversation_id,
-        "custom": custom,
-        "user_credential_ref": user_credential_ref,
         "policy": policy,
         "product_identity": product_identity,
         "store": store,
@@ -619,8 +616,6 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
     messages = bundle["messages"]
     skill = bundle["skill"]
     conversation_id = bundle["conversation_id"]
-    custom = bundle["custom"]
-    user_credential_ref = bundle["user_credential_ref"]
     policy = bundle["policy"]
     product_identity = bundle["product_identity"]
     store = bundle["store"]
@@ -736,7 +731,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         grounding_context,
         pc_turn_note(pc_offer, pc_connected=pc_connected) if note_applies else "",
     )
-    if model_first_on and user_credential_ref is None:
+    if model_first_on:
         model_first_response = await _answer_model_first(
             request,
             timing=timing,
@@ -759,10 +754,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         )
         if model_first_response is not None:
             return model_first_response
-    if pc_context is not None or user_credential_ref is not None:
-        if pc_context is None:
-            # A text-only BYOK turn stages message history, never a PC run.
-            pc_context = {"workspace_id": "personal", "subject_id": None, "pc_tools": None}
+    if pc_context is not None:
         from .chat_pc_drive import ChatPCDriveError, _client_lane_run_id, pc_scope_notice_for_run
         from .claw_live_events import chat_pc_orchestration_sse
         begin = getattr(store, "begin_chat_stream_turn", None)
@@ -812,9 +804,6 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             product_identity=product_identity,
             **({"pc_action_context": action_context} if action_context is not None else {}),
             **({"pc_delegation": pc_delegation} if pc_delegation is not None else {}),
-            **({"user_credential_ref": user_credential_ref,
-                "byok_selection": {"provider": custom.provider, "model": custom.model}}
-               if user_credential_ref is not None else {}),
         )
         async def scope_notice():
             return await pc_scope_notice_for_run(request, run_id=pc_run_id)

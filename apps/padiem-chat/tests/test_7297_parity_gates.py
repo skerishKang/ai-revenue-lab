@@ -22,8 +22,8 @@
      `conversations` 및 `claw_run_history`에 저장한다.
 4. `Custom + 도구`:
    - `custom` 텍스트 단독 요청은 `/api/chat`·`/api/chat/stream`에서 직접 실행되고,
-     `/api/orchestration`에서는 엔진 경유 비활성 시 `409 orchestration_not_applicable`로
-     직행 경로 폴백을 알리며, 엔진 경유 활성 시 `user_credential_ref`와 함께 스트리밍된다.
+     `/api/orchestration`에서는 설정값과 무관하게 `409 orchestration_not_applicable`로
+     직행 경로 폴백을 알린다(사용자 키 참조는 전달되지 않는다).
    - `custom`과 명시 `tool`(`web_search`·`deep_research`) 또는 `attachments`의 결합은
      세 엔드포인트 모두에서 `422`(`PADIEM Custom은 현재 텍스트 대화만 지원합니다.`)로
      일관되게 거부된다.

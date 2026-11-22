@@ -25,7 +25,6 @@ import json
 import httpx
 import pytest
 
-from app.byok_bridge import UserCredentialReference
 from app.byok_client import CustomProviderClient
 from app.byok_credentials import CustomCredentialDecryptionError
 from app.byok_endpoint import (
@@ -263,17 +262,10 @@ async def test_provider_auth_error_never_echoes_the_key():
     assert "공급사가 API 키를 거부했습니다" in answer.text
 
 
-def test_credential_reference_repr_is_redacted():
-    ref = UserCredentialReference(json.dumps(
-        {"provider": PROVIDER_ID, "key": CUSTOM_KEY}, separators=(",", ":")))
-    assert CUSTOM_KEY not in repr(ref)
-    assert repr(ref) == "UserCredentialReference(<redacted>)"
-
-
 def test_byok_modules_never_log_key_material():
     import pathlib
     for name in ("byok_routes.py", "byok_credentials.py", "byok_client.py",
-                 "byok_bridge.py", "byok_endpoint.py"):
+                 "byok_endpoint.py"):
         source = (pathlib.Path(__file__).resolve().parents[1] / "app" / name).read_text(
             encoding="utf-8")
         for forbidden in ("logger", "logging", "print(", "console.log"):
