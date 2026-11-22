@@ -16,13 +16,10 @@ exact projection (no variant, no notice, same usable state).
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import asyncio
 import json
-import re
 import subprocess
-from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock
 
@@ -45,11 +42,15 @@ from kagent.connector_version_compat import (
     DEFAULT_CONNECTOR_LATEST_VERSION,
 )
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-HANDOFF_PATH = STATIC / "claw-local-handoff.js"
-LOCALE_PATH = locale_bundle.SOURCE
-DEVICE_MANAGER_PATH = STATIC / "claw-device-manager.js"
+# #8060: 원문 읽기는 _support(connector_version_source)가 담당하고 시험은
+# 파싱된 값(변형 튜플·키 개수)과 실행 관찰 값으로 단언한다.
+from _support.connector_version_source import (  # noqa: E402
+    device_manager_has,
+    device_manager_key_count,
+    handoff_source,
+    locale_key_count,
+    presentation_variants,
+)
 
 BASE_URL = "https://chat.example.test"
 USER_ID = "usr_version_compat_owner"
@@ -131,7 +132,7 @@ def _run_node(script: str) -> str:
 
 
 def _handoff_harness(body: str) -> str:
-    module = HANDOFF_PATH.read_text(encoding="utf-8")
+    module = handoff_source()
     return (
         "global.window = globalThis;\n"
         + module
@@ -191,12 +192,7 @@ def test_non_connected_devices_never_carry_a_variant(state: str) -> None:
 
 
 def test_web_presentation_variants_mirror_the_js_module() -> None:
-    source = HANDOFF_PATH.read_text(encoding="utf-8")
-    match = re.search(
-        r"PRESENTATION_VARIANTS = Object\.freeze\(\[([^\]]*)\]\)", source,
-    )
-    assert match is not None
-    declared = tuple(item.strip().strip('"') for item in match.group(1).split(","))
+    declared = presentation_variants()
     assert declared == WEB_PRESENTATION_VARIANTS
     assert WEB_PRESENTATION_VARIANTS == ("UPDATE_REQUIRED", "UPDATE_AVAILABLE")
 
@@ -344,19 +340,17 @@ def test_handoff_js_state_copy_in_both_locales() -> None:
 
 
 def test_locale_dictionary_declares_the_new_key_in_both_languages() -> None:
-    source = LOCALE_PATH.read_text(encoding="utf-8")
-    assert source.count('"claw-local-state-update_available"') == 2
-    assert source.count('"claw-local-state-update_required"') == 2
+    assert locale_key_count("claw-local-state-update_available") == 2
+    assert locale_key_count("claw-local-state-update_required") == 2
 
 
 def test_device_manager_declares_the_notice_copy_and_branch() -> None:
-    source = DEVICE_MANAGER_PATH.read_text(encoding="utf-8")
     # Both locales carry both notices.
     for key in ("updateAvailable", "updateRequired"):
-        assert len(re.findall(rf"\b{key}: \"", source)) == 2, key
-    assert "새 버전이 있어요" in source
-    assert "업데이트가 필요합니다" in source
+        assert device_manager_key_count(key) == 2, key
+    assert device_manager_has("새 버전이 있어요")
+    assert device_manager_has("업데이트가 필요합니다")
     # The row branch is presentation-only and driven by the server judgment.
-    assert 'device.compatibility === "update_available"' in source
-    assert 'device.compatibility === "update_required"' in source
-    assert "claw-device-manager-version" in source
+    assert device_manager_has('device.compatibility === "update_available"')
+    assert device_manager_has('device.compatibility === "update_required"')
+    assert device_manager_has("claw-device-manager-version")
