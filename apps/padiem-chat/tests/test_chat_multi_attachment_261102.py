@@ -472,6 +472,20 @@ def test_frontend_selects_and_drops_multiple_files_with_per_chip_removal():
         assert chip["removeAria"] == "attachment-remove"
     assert conv["multiChips"]["payloadCount"] == 2
     assert facts["missing_chip_selectors"] == []
+    # #8442: with the file lane on, per-file items are outside the raw-single
+    # rule; the count cap (max_per_message) still bounds them, and a photo
+    # keeps refusing to share with any document in both orders.
+    lane = conv["fileLane"]
+    assert lane["on"]["afterThree"]["names"] == ["note.txt", "report.pdf", "letter.docx"]
+    assert lane["on"]["afterThree"]["invalid"] == []
+    assert lane["on"]["afterFive"] == {"valid": 5, "invalid": []}
+    assert lane["on"]["sixthInvalid"] == ["attachment-count-limit:5"]
+    assert lane["on"]["validAfterSixth"] == 5
+    assert lane["off"]["photoThenDoc"]["invalid"] == ["attachment-raw-single"]
+    assert lane["off"]["docThenPhoto"]["invalid"] == ["attachment-raw-single"]
+    assert lane["off"]["unavailable"]["invalid"] == ["file-lane-unavailable"]
+    assert lane["photoThenLane"]["invalid"] == ["attachment-raw-single"]
+    assert lane["laneThenPhoto"]["invalid"] == ["attachment-raw-single"]
     # 프레임 표시 DOM 제거 + 구현 고정 회귀 방지
     assert facts["legacy_ids"] == []
     assert facts["no_inner_html"] is True
