@@ -1,9 +1,63 @@
 """Excel file feedback must reflect the current selection, not a prior missing file."""
 from __future__ import annotations
 
+import threading
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from io import BytesIO
+from pathlib import Path
 
-from test_8211_pc_connect_entry_browser import _page, site, sync_playwright
+import pytest
+
+sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
+STATIC = Path(__file__).resolve().parents[1] / "static"
+
+
+@pytest.fixture
+def site():
+    class Handler(SimpleHTTPRequestHandler):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, directory=str(STATIC), **kwargs)
+
+        def log_message(self, *args):
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}/index.html"
+    finally:
+        server.shutdown()
+        thread.join(timeout=5)
+        server.server_close()
+
+
+def _page(playwright, url):
+    browser = playwright.chromium.launch()
+    page = browser.new_page(viewport={"width": 1440, "height": 950},
+                            reduced_motion="reduce")
+
+    def route_request(route):
+        request_url = route.request.url
+        if not request_url.startswith(url.rsplit("/", 1)[0] + "/"):
+            return route.abort()
+        if "/api/auth/status" in request_url:
+            return route.fulfill(json={
+                "ready": True, "authenticated": True,
+                "user": {"email": "qa@padiem.local", "name": "QA"},
+                "session_state": "active", "shared_login_enabled": False,
+                "shared_session_present": False, "status_reachable": True,
+                "history_ready": True, "project_files_ready": True,
+                "model_requires_session": False,
+            })
+        if "/api/" in request_url:
+            return route.fulfill(status=404, json={"ok": False})
+        return route.continue_()
+
+    page.route("**/*", route_request)
+    page.goto(f"{url}?theme=padiem-glass", wait_until="load")
+    page.wait_for_timeout(2200)
+    return browser, page
 
 
 def test_valid_excel_selection_clears_missing_file_feedback(site, tmp_path):
