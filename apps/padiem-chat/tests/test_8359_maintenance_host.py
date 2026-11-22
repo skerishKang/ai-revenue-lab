@@ -382,7 +382,8 @@ def test_guid_resolution_requires_unique_fresh_queue_observation():
                      "state TEXT,paused_at TEXT,managed_at TEXT,managed_by TEXT);"
                      "CREATE TABLE mesh_device_helper_ready (device_id TEXT,state_json TEXT,received_at TEXT);")
     pairing = D1PcPairingStore(SqliteD1(db))
-    fresh = datetime.now(timezone.utc).isoformat()
+    # Queue receipts use millisecond precision, as does the lookup upper bound.
+    fresh = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
     db.execute("INSERT INTO pc_device_links VALUES (?,?,?,'active',NULL,?,?)",
                (LINK["link_id"], UID, DEVICE, fresh, LINK["managed_by"]))
 
@@ -401,6 +402,11 @@ def test_guid_resolution_requires_unique_fresh_queue_observation():
         db.commit()
         assert await pairing.resolve_helper_rollout_device(device_id=guid, install_id=True) is None
         db.execute("UPDATE mesh_device_helper_ready SET received_at='2020-01-01T00:00:00Z'")
+        db.commit()
+        assert await pairing.resolve_helper_rollout_device(device_id=guid, install_id=True) is None
+        db.execute("DELETE FROM mesh_device_helper_ready WHERE device_id != ?", (DEVICE,))
+        future = (datetime.now(timezone.utc) + timedelta(seconds=10)).isoformat(timespec="milliseconds")
+        db.execute("UPDATE mesh_device_helper_ready SET received_at=?", (future,))
         db.commit()
         assert await pairing.resolve_helper_rollout_device(device_id=guid, install_id=True) is None
     try:
