@@ -308,15 +308,29 @@
     fileInput.accept = (fileSpec && fileSpec.accept) || ".xlsx";
     fileField.appendChild(fileInput);
     const questionCopy = fieldCopy(fileSpec, "question");
-    if (questionCopy) fileField.appendChild(element("p", "util-excel-note", questionCopy));
+    const questionNote = questionCopy ? element("p", "util-excel-note", questionCopy) : null;
+    if (questionNote) fileField.appendChild(questionNote);
     const chosenNote = element("p", "util-excel-note util-excel-file-chosen", "");
     chosenNote.hidden = true;
     chosenNote.setAttribute("data-util-carried-file", "");
     fileField.appendChild(chosenNote);
+    function syncFileFeedback() {
+      const picked = readWorkbook();
+      if (questionNote) questionNote.hidden = !picked.error;
+      if (fileInput.getAttribute("aria-invalid") === "true") {
+        if (picked.error) {
+          setStatus(picked.error, "error");
+        } else {
+          fileInput.removeAttribute("aria-invalid");
+          setStatus("", null);
+        }
+      }
+    }
     fileInput.addEventListener("change", () => {
       carriedFile = null;
       chosenNote.hidden = true;
       chosenNote.textContent = "";
+      syncFileFeedback();
     });
     form.appendChild(fileField);
 
@@ -377,6 +391,7 @@
         carriedFile = picked;
         chosenNote.textContent = picked ? String(picked.name || "") : "";
         chosenNote.hidden = !picked;
+        syncFileFeedback();
       }
     }
 
