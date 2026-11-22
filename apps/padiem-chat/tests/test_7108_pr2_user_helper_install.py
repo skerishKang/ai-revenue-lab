@@ -31,6 +31,11 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import _support.pc_device_pairing as pairing            # noqa: E402
 
+# #8060 63차: 설치 레인 원문 읽기는 _support/helper_install_source가 담당하고
+# 시험은 배포 본문 핀(함수 범위·순서·부재 금지)과 실행 관찰을 단언한다. 이
+# 모듈은 원문 read를 갖지 않는다.
+from _support import helper_install_source
+
 from app.pc_device_pairing_routes import (                # noqa: E402
     PC_PAIRING_CONNECT_EXE_MARKER,
     PC_PAIRING_HANDOFF_PATH,
@@ -270,9 +275,7 @@ def test_an_unconfigured_deployment_hands_out_no_helper_pair() -> None:
 
 def test_both_ps1_lanes_carry_the_same_helper_block() -> None:
     block = render_user_helper_install_block()
-    wrapper = (REPO / "scripts/pc_pairing/install-padiem-pc.ps1").read_text(
-        encoding="utf-8-sig",
-    )
+    wrapper = helper_install_source.wrapper_source()
     assert block in wrapper
     assert (
         "Invoke-PadiemUserHelperInstall -Url $helperUrl -Sha256 $helperSha -Tag $tag"
@@ -290,9 +293,7 @@ def test_both_ps1_lanes_carry_the_same_helper_block() -> None:
 
 
 def test_the_double_click_program_runs_the_helper_after_the_agent() -> None:
-    source = (
-        REPO / "scripts" / "pc_pairing" / "connect-exe" / "PadiemPcConnect.cs"
-    ).read_text(encoding="utf-8")
+    source = helper_install_source.program_source()
     assert 'const string KeyHelperUrl = "PADIEMHELPERURL";' in source
     assert 'const string KeyHelperSha256 = "PADIEMHELPERSHA";' in source
     assert "static bool InstallUserHelper(string tag)" in source
