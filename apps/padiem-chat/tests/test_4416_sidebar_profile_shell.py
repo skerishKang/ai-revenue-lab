@@ -1,20 +1,25 @@
-import locale_bundle
 """Presentation-only desktop sidebar collapse and account avatar contract."""
-from pathlib import Path
 from html.parser import HTMLParser
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 from _r5_auth_module_harness import observations
 from _r5_settings_sidebar_module_harness import observations as sidebar_observations
+from _support.sidebar_profile_shell import (
+    app_source,
+    auth_module_source,
+    index_html,
+    locale_source,
+    sidebar_module_source,
+    sidebar_utility_css,
+)
 
-BASE = Path(__file__).resolve().parents[1] / "static"
-HTML = (BASE / "index.html").read_text(encoding="utf-8")
-APP = (BASE / "app.js").read_text(encoding="utf-8")
+HTML = index_html()
+APP = app_source()
 #7216 R5 step 4: this contract moved into chat-auth-module.js.
-MODULE = (BASE / "chat-auth-module.js").read_text(encoding="utf-8")
-SIDEBAR = (BASE / "chat-sidebar-module.js").read_text(encoding="utf-8")
-CSS = (BASE / "sidebar-utility.css").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+MODULE = auth_module_source()
+SIDEBAR = sidebar_module_source()
+CSS = sidebar_utility_css()
+LOCALE = locale_source()
 
 
 class Nodes(HTMLParser):
