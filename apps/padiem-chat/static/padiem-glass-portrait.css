@@ -130,7 +130,7 @@ html[data-theme="padiem-glass"] .output-card,
 html[data-theme="padiem-glass"] .document-card,
 html[data-theme="padiem-glass"] .project-card,
 html[data-theme="padiem-glass"] .project-file-card,
-html[data-theme="padiem-glass"] .rich-response,
+html[data-theme="padiem-glass"] .rich-response:not(.assistant-content > .rich-response),
 html[data-theme="padiem-glass"] .route-details,
 html[data-theme="padiem-glass"] .reference-note {
   background-color: var(--glass-card-surface) !important;
@@ -399,8 +399,8 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
   html[data-theme="padiem-glass"] .starter,
   html[data-theme="padiem-glass"] .source-card,
   html[data-theme="padiem-glass"] .rich-response {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }
 
@@ -449,10 +449,10 @@ html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="c
 html[data-theme="padiem-glass"] .assistant-content > p,
 html[data-theme="padiem-glass"] .assistant-content > .rich-response {
   padding: 0;
-  border: 0 !important;
+  border: 0;
   border-radius: 0;
-  background: transparent !important;
-  box-shadow: none !important;
+  background: transparent;
+  box-shadow: none;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -468,7 +468,7 @@ html[data-theme="padiem-glass"] .answer-action {
   border-color: rgba(49, 61, 71, .14);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, .46);
-  color: #3e4b56 !important;
+  color: #3e4b56;
   font-size: 13px;
   font-weight: 650;
 }

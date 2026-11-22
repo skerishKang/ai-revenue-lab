@@ -1281,3 +1281,82 @@ def test_r15_composer_keeps_its_computed_values_without_importance(site, width, 
         for prop, want in props.items():
             got = observed[group][prop]
             assert got == want, (width, height, group, prop, want, got)
+
+
+# #8008 16차 — 남은 9개 캡(컴포저 포커스 2 · 좁은 폭 배경 1 · 답변 본문 3 · backdrop 2 · 답변 아이콘 색 1).
+# 캡을 걷어도 계산값이 그대로임을 고정한다. 포커스는 textarea에 실제 초점을 준 뒤 읽는다.
+READ_R16_JS = """() => {
+  const read = (sel, props) => {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    const row = {};
+    for (const p of props) row[p] = cs.getPropertyValue(p);
+    return row;
+  };
+  return {
+    composer: read('.composer', ['border-top-color', 'box-shadow', 'background-color']),
+    conversation: read('.conversation', ['backdrop-filter']),
+    body: read('.assistant-content > p', ['border-top-width', 'background-color', 'box-shadow']),
+    action: read('.answer-action', ['color']),
+  };
+}"""
+
+R16_FOCUS = {
+    "border-top-color": "rgba(79, 91, 101, 0.22)",
+    "box-shadow": "rgba(28, 36, 44, 0.16) 0px 20px 54px 0px, rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.34) 0px 0px 0px 1px",
+}
+
+R16_BASE = {
+    (1440, 950): {"border-top-color": "rgba(255, 255, 255, 0.22)",
+                  "box-shadow": "rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, rgba(136, 201, 255, 0.035) 0px 0px 0px 1px",
+                  "background-color": "rgba(0, 0, 0, 0)"},
+    (1100, 900): {"border-top-color": "rgba(255, 255, 255, 0.22)",
+                  "box-shadow": "rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, rgba(136, 201, 255, 0.035) 0px 0px 0px 1px",
+                  "background-color": "rgba(0, 0, 0, 0)"},
+    (390, 844): {"border-top-color": "rgba(255, 255, 255, 0.22)",
+                 "box-shadow": "rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, rgba(136, 201, 255, 0.035) 0px 0px 0px 1px",
+                 "background-color": "rgba(249, 251, 252, 0.94)"},
+}
+
+
+def _read_r16(url, width, height, focus=False):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2000)
+            marker = page.evaluate(FILL_CHAT_JS)
+            assert marker.get("ready") is True, marker
+            if focus:
+                page.evaluate("""() => {
+                  const t = document.querySelector('.composer textarea');
+                  if (t) t.focus();
+                  else { const c = document.querySelector('.composer'); if (c) c.focus(); }
+                }""")
+                page.wait_for_timeout(250)
+            return page.evaluate(READ_R16_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", sorted(R16_BASE))
+@pytest.mark.parametrize("focus", [False, True])
+def test_r16_remaining_caps_keep_their_computed_values_without_importance(site, width, height, focus):
+    observed = _read_r16(site, width, height, focus)
+    want = dict(R16_BASE[(width, height)])
+    if focus:
+        want.update(R16_FOCUS)
+    for prop, value in want.items():
+        assert observed["composer"][prop] == value, (width, height, focus, prop, value,
+                                                      observed["composer"][prop])
+    assert observed["conversation"]["backdrop-filter"] == "blur(30px) saturate(1.06)"
+    assert observed["body"] == {"border-top-width": "0px",
+                                "background-color": "rgba(0, 0, 0, 0)",
+                                "box-shadow": "none"}
+    assert observed["action"]["color"] == "rgb(83, 96, 108)"
