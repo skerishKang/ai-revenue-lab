@@ -32,6 +32,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: ${{ runner.environment != 'self-hosted' }}
+      - name: Materialize complete self-hosted checkout
+        if: runner.environment == 'self-hosted'
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Earlier sparse jobs may leave tracked files absent in the persistent workspace.
+          git restore --source=HEAD --staged --worktree --ignore-skip-worktree-bits -- .
+          test -z "$(git ls-files --deleted)"
       - uses: actions/setup-python@v5
         if: runner.environment == 'self-hosted'
         with:
@@ -55,6 +64,15 @@ jobs:
         working-directory: apps/korean-ai-platform
     steps:
       - uses: actions/checkout@v4
+      - name: Materialize complete self-hosted checkout
+        if: runner.environment == 'self-hosted'
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Earlier sparse jobs may leave tracked files absent in the persistent workspace.
+          git restore --source=HEAD --staged --worktree --ignore-skip-worktree-bits -- .
+          test -z "$(git ls-files --deleted)"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'

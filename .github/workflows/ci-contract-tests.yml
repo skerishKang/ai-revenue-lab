@@ -30,6 +30,15 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Materialize complete self-hosted checkout
+        if: runner.environment == 'self-hosted'
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Earlier sparse jobs may leave tracked files absent in the persistent workspace.
+          git restore --source=HEAD --staged --worktree --ignore-skip-worktree-bits -- .
+          test -z "$(git ls-files --deleted)"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
