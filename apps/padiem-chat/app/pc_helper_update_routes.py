@@ -39,9 +39,15 @@ def is_control_command(command):
 
 
 async def command_update_denial(state, *, device_id, command, user_mode, helper_update_control, now):
-    """The only exemption is the exact fixed owner update control, in user mode."""
+    """Two exemptions, each an exact fixed command: the owner update control in
+    user mode, and the release-pinned SYSTEM updater refresh (#8240). Every other
+    command stays blocked below the minimum supported version."""
     if helper_update_control:
         return None if user_mode and is_control_command(command) else (403, "oracle_mesh_command_unverified", None)
+    from .pc_helper_registration import is_fixed_system_refresh_command
+
+    if is_fixed_system_refresh_command(command, user_mode=user_mode):
+        return None
     view = await load_update_view(state, device_id=device_id, now=now)
     if view["update_required"]:
         return 409, "pc_helper_update_required", "업데이트 후 사용할 수 있어요"
