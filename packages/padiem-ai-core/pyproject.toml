@@ -15,15 +15,18 @@ dependencies = [
 tools = [
   "jsonschema>=4.23,<5",
 ]
-# 6.19.x is the patched line for CVE-2026-102998/102999/103000 and the release family
-# covered by PYPDF_6_19_0_* source audits. 6.20.x also adds stream/page-tree work limits,
-# but it widens accepted PDF input (Brotli filter, off-line %%EOF) and needs its own audit.
-# The pin is exact, not a range: pypdf 6.18 and 6.19 emit different Markdown for the same
-# page, and the conversion output hash in tests/test_pdf_markdown_5568.py is pinned to the
-# bytes 6.19.0 produces. A range lets one environment pick a different build of the same
+# 6.21.4 (#7424 wrap-up, 2026-10-28 release). 6.20.x widened accepted PDF input
+# (Brotli filter, off-line %%EOF) and added stream/page-tree work limits; 6.21.x
+# strengthens the work limits and fixes bugs. The PYPDF_6_19_0_* source audits
+# (korean-ai-code-agent intake #2930) cover the 6.19 line and are not a 6.21 record;
+# what carries this bump is the conversion evidence: the pin is exact, not a range,
+# because pypdf emits different Markdown across reader versions for the same page,
+# and the conversion output hash in tests/test_pdf_markdown_5568.py — pinned to the
+# bytes 6.19.0 produced — was verified byte-identical under 6.21.4 (core suite
+# 2459 passed). A range lets one environment pick a different build of the same
 # line and report a conversion change that is only a reader change (#5568).
 documents = [
-  "pypdf==6.19.0",
+  "pypdf==6.21.4",
   "openpyxl>=3.1,<4",
 ]
 render = [
@@ -38,7 +41,7 @@ authoring = [
 dev = [
   "pytest>=8,<10",
   "jsonschema>=4.23,<5",
-  "pypdf==6.19.0",
+  "pypdf==6.21.4",
   "pypdfium2==5.13.0",
   "pdfplumber==0.11.10",
   "reportlab==5.0.1",
