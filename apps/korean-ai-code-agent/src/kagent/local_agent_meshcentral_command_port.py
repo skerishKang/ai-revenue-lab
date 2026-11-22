@@ -82,10 +82,11 @@ from .local_agent_meshcentral_stop import (
     _pid_file_literal,
     cancel_job_command as _cancel_job_command,
     cancel_kill_command as _cancel_kill_command,
+    console_script_terminator,
     end_dispatch_job as _stop_end_dispatch_job,
 )
 from .local_agent_meshcentral_pid_handshake import (
-    parse_pid_handshake,
+    parse_pid_handshake, stop_pid_from_transcript,
     pid_handshake_statement,
     strip_pid_handshake,
 )
@@ -834,6 +835,12 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
             + "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
             ' Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
         ) + "; [Console]::Out.Flush()"
+        + ("\n\n" if "\n" in command else "")
+        # #8048: TWO trailing newlines are load-bearing on the SYSTEM console
+        # lane when the script contains multi-line blocks. Measured on COM1
+        # (SYSTEM task, exact bytes + EOF): 0/1 newline -> ZERO bytes and no
+        # pid handshake; 2 -> full envelope. Single-line scripts need none.
+        # The central console_script_terminator covers every entry point.
     )
 
 
@@ -957,7 +964,7 @@ def _file_dispatch_console_script(
         "Write-Output ('__PADIEM_'+'EXIT__'+[string]$__ec)",
         "[Console]::Out.Flush()",
     ])
-    return "\n".join(lines)
+    return console_script_terminator("\n".join(lines))
 
 
 
@@ -1322,6 +1329,7 @@ class MeshCentralCliCommandPort:
                 body, checked_dispatch, self._host_tag,
                 envelope_tag=envelope_tag, pid_token=pid_token,
             )
+        wrapped = console_script_terminator(wrapped)
         # The NUL the C execve boundary appends is counted, so a refusal here
         # is the kernel's own limit, not a product rule. The aggregate argv and
         # environment ceiling depends on this host's stack rlimit and is not
@@ -1750,6 +1758,18 @@ class MeshCentralCliCommandPort:
                     # dispatch complete; the owner's stop and the sweep remain the
                     # PC-side paths.
                     if silent_bound > 0 and time.monotonic() - last_byte_at >= silent_bound:
+                        # #8048: re-read the pid handshake from the whole
+                        # transcript at stop time. A wedged console can emit its
+                        # pid line in the same read slice that trips the silence
+                        # bound; without this the stop loses the only target the
+                        # agent's process lane can trust (a console script's pid
+                        # is not in its own command line, so marker matching finds
+                        # nothing). The terminal fallback cannot execute on the
+                        # observed agent, so this pid is the difference between a
+                        # stop that ends the shell and one that only kills the
+                        # local client.
+                        recorded_pid = stop_pid_from_transcript(
+                            recorded_pid, chunks, pid_token)
                         # #7994: end the wedged remote shell before closing the
                         # local client. A silent console's child can outlive the
                         # client; the marker and this stop end its tree so the

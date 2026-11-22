@@ -15,8 +15,12 @@ import pytest
 pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import sync_playwright  # noqa: E402
 
+# #8060 49차: app.js 원문 읽기는 _support(claw_static.sheet)가 담당하고 시험은
+# 실제 Chromium에서 계산된 동작 값으로 단언한다. 이 모듈은 원문 read를 갖지 않는다.
+from _support.claw_static import sheet  # noqa: E402
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
+APP = sheet("app.js")
 
 NAMES = (
     "syncComposerForClaw",

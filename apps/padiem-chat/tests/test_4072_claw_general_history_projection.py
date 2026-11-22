@@ -14,6 +14,11 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.history import PRODUCT_SCOPE_CHAT
 from app.claw_general_run_history import project_completed_general_run
 
+# #8060 51차: 시트·서버 소스 원문 읽기는 _support/claw_static이 담당하고
+# 시험은 부재 금지 경계·구조 핀과 실행 관찰을 단언한다. 이 모듈은 원문
+# read를 갖지 않는다.
+from _support import claw_static
+
 import test_b54_claw_general_p01_routing as base
 
 
@@ -148,8 +153,7 @@ def test_real_d1_history_store_owner_read_after_general_p01_execution():
 
 
 def test_storage_projection_has_no_fake_lineage_or_private_details():
-    from pathlib import Path
-    text = (Path(__file__).resolve().parents[1] / "app/claw_general_run_history.py").read_text(encoding="utf-8")
+    text = claw_static.server_source("claw_general_run_history")
     assert 'action="general"' in text
     assert 'channel="web"' in text
     assert 'status="completed"' in text
@@ -323,9 +327,8 @@ def test_history_write_failure_preserves_answer_without_forged_thread_receipt():
 
 
 def test_browser_history_bridge_requires_owner_run_link_not_title():
-    from pathlib import Path
-    app = (Path(__file__).resolve().parents[1] / "static/app.js").read_text(encoding="utf-8")
-    module = (Path(__file__).resolve().parents[1] / "static/chat-history-module.js").read_text(encoding="utf-8")
+    app = claw_static.sheet("app.js")
+    module = claw_static.sheet("chat-history-module.js")
     assert "const clawConversationIds = new Set();" in app
     # The verified run-link filter moved with loadRecentConversations into
     # chat-history-module.js (#7216 R5 step 3); the same strings pin it there.

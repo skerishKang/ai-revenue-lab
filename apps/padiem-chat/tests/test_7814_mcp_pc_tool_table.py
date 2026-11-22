@@ -21,7 +21,7 @@ import pytest
 
 from app import mcp_gateway_execution as execution
 from app.mcp_gateway_store import mcp_request_digest
-from test_mcp_gateway_execution import PRINCIPAL, harness
+from _support.mcp_gateway_execution import PRINCIPAL, harness
 
 GOLDEN_PATH = (
     Path(__file__).resolve().parent

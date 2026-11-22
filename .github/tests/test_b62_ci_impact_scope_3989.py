@@ -38,6 +38,25 @@ def fake_event(event_type="pull_request"):
 
 
 class B62ScopeTests(unittest.TestCase):
+    def test_tests_only_runner_requires_first_attempt_same_repo_and_proven_scope(self):
+        event = fake_event()
+        event["pull_request"]["head"]["repo"] = {"full_name": REPO}
+        cases = [
+            ("pull_request", module.TESTS_ONLY, False, "1", "self-hosted"),
+            ("pull_request", module.TESTS_ONLY, False, "2", "hosted"),
+            ("pull_request", module.TESTS_ONLY, True, "1", "hosted"),
+            ("pull_request", module.FULL, False, "1", "hosted"),
+            ("push", module.TESTS_ONLY, False, "1", "hosted"),
+            ("schedule", module.TESTS_ONLY, False, "1", "hosted"),
+            ("workflow_dispatch", module.TESTS_ONLY, False, "1", "hosted"),
+        ]
+        for kind, scope, source, attempt, expected in cases:
+            with self.subTest(kind=kind, scope=scope, source=source, attempt=attempt):
+                self.assertEqual(module.tests_only_runner(event, kind, REPO, scope, source, attempt), expected)
+        event["pull_request"]["head"]["repo"]["full_name"] = "fork/repo"
+        self.assertEqual(module.tests_only_runner(event, "pull_request", REPO, module.TESTS_ONLY, False, "1"), "hosted")
+        self.assertEqual(module.tests_only_runner({}, "pull_request", REPO, module.TESTS_ONLY, False, "1"), "hosted")
+
     def test_b14_attempt_policy_uses_focused_lane(self):
         paths = [file("apps/padiem-chat/app/b14_client.py"), file("apps/padiem-chat/tests/test_owner_tier_fallback_dispatch_261015.py")]
         self.assertEqual(module.impact_scope(paths), module.B14_ATTEMPT_ONLY)
@@ -398,6 +417,42 @@ class B62ScopeTests(unittest.TestCase):
         self.assertEqual(values["chat_source_changed"], "false")
         self.assertEqual(values["tests_only_tests"], " ".join(expected))
 
+    def test_indirect_staging_e2e_consumers_are_deferred_but_direct_changes_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tests_tree(tmp, {
+                "_support/shared.py": "VALUE = 1\n",
+                "test_local.py": "from _support.shared import VALUE\n",
+                "test_routing_staging.py": "from _support.shared import VALUE\n",
+                "test_e2e_routing.py": "from test_local import VALUE\n",
+                "test_restaging.py": "from _support.shared import VALUE\n",
+            })
+            files = [file("apps/padiem-chat/tests/_support/shared.py")]
+            expected = ("tests/test_local.py", "tests/test_restaging.py")
+            self.assertEqual(module.tests_only_modules(files, Path(tmp)), expected)
+            self.assertEqual(module.impact_scope(files, Path(tmp)), module.TESTS_ONLY)
+            self.assertEqual(self._run_main(files, tmp)["tests_only_tests"], " ".join(expected))
+            files += [file("apps/padiem-chat/tests/test_routing_staging.py"),
+                      file("apps/padiem-chat/tests/test_e2e_routing.py")]
+            self.assertEqual(module.tests_only_modules(files, Path(tmp)), (
+                "tests/test_e2e_routing.py", "tests/test_local.py",
+                "tests/test_restaging.py", "tests/test_routing_staging.py",
+            ))
+            self.assertEqual(module.tests_only_modules(files[1:], Path(tmp)), (
+                "tests/test_e2e_routing.py", "tests/test_routing_staging.py",
+            ))
+
+    def test_proven_deferred_only_helper_keeps_manifest_guard_not_full_fallback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tests_tree(tmp, {
+                "_support/shared.py": "VALUE = 1\n",
+                "test_routing_e2e.py": "from _support.shared import VALUE\n",
+            })
+            files = [file("apps/padiem-chat/tests/_support/shared.py")]
+            expected = ("tests/test_5002_model_path_classification.py",)
+            self.assertEqual(module.tests_only_modules(files, Path(tmp)), expected)
+            self.assertEqual(module.impact_scope(files, Path(tmp)), module.TESTS_ONLY)
+            self.assertEqual(self._run_main(files, tmp)["tests_only_tests"], " ".join(expected))
+
     def test_unknown_support_change_fails_closed_to_full_suite(self):
         with tempfile.TemporaryDirectory() as tmp:
             self._tests_tree(tmp, {
@@ -532,6 +587,8 @@ class B62ScopeTests(unittest.TestCase):
         self.assertIn("TESTS_ONLY_MODULES: ${{ needs.registry-ci-plan.outputs.tests_only_tests }}", text)
         self.assertIn('if [ -z "$TESTS_ONLY_MODULES" ]; then', text)
         self.assertIn('test "${#modules[@]}" -le 100', text)
+        self.assertIn('python -u ../../.github/scripts/b62_run_tests_only_modules.py "${modules[@]}"', text)
+        self.assertIn("test_b62_run_tests_only_modules.py", text)
         self.assertIn("needs.b62-tests-only-tests.result", text)
         self.assertIn('test "$TESTS_RESULT" = success', text)
         self.assertIn("B62_CI_MODE=TESTS_ONLY_TARGETED", text)

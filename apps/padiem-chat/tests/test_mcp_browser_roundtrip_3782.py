@@ -11,7 +11,7 @@ import pytest
 
 from app.local_r2 import LocalDiskR2
 from _support.account_selection import BASE, client_for, session
-from test_mcp_gateway_execution import DEVICE
+from _support.mcp_gateway_execution import DEVICE
 import test_mcp_gateway_roundtrip as roundtrip
 
 

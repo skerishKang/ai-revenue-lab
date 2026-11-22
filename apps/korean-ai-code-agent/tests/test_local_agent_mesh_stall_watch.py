@@ -5,6 +5,7 @@ No real sleep, no real network, no imports from other test files.
 from __future__ import annotations
 
 import os
+import threading
 import unittest
 from unittest import mock
 
@@ -155,6 +156,29 @@ class StallWatchContract(unittest.TestCase):
         self.assertEqual(display_name("7P4oxxx$pB"), "7P4oxxx")
         self.assertEqual(display_name("opaqueid"), display_name("opaqueid"))
         self.assertLessEqual(len(display_name("x" * 200)), 60)
+
+
+    def test_concurrent_workers_alert_once_per_episode(self):
+        """#8212/#8193: with the worker pool on, many threads feed the one
+        process-wide bridge. The per-node counters must not race into a missed
+        or duplicated alert. Injected clock, no real service."""
+        sent = []
+        watch = MeshStallWatch(now=lambda: 1_000.0, notify=sent.append, threshold=3)
+        barrier = threading.Barrier(9)
+
+        def feed():
+            barrier.wait()
+            watch.observe("C$worker", "silent_timeout", at=1_000.0)
+
+        threads = [threading.Thread(target=feed) for _ in range(9)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join(5)
+        # Nine failures from many threads still produce exactly one notice for
+        # one episode, and no thread saw a corrupted counter.
+        self.assertEqual(len(sent), 1)
+        self.assertEqual(sent[0].failures, 3)
 
 
 if __name__ == "__main__":

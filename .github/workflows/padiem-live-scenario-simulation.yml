@@ -40,6 +40,9 @@ jobs:
         run: uv pip install 'playwright==1.55.0'
       # The COM2 runner already carries the Chromium system libraries (the B62
       # canaries drive Chromium there); only the pinned binary is fetched here.
+      - name: Select the supported Playwright platform on self-hosted Ubuntu
+        shell: bash
+        run: bash ../../.github/scripts/b62_playwright_host_platform.sh
       - name: Install Chromium headless shell
         run: uv run playwright install --only-shell chromium
       - name: Run opted-in browser scenarios

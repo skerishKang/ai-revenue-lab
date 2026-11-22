@@ -565,6 +565,48 @@
     }
   }
 
+  const refreshLabels = {refresh: "갱신 대상", updated: "갱신 완료", skipped: "건너뜀",
+    reinstall_required: "재설치 필요", failed: "실패", queued: "응답 대기 중"};
+  const refreshReasons = {system_denied: "SYSTEM 권한 없음", status_missing: "상태 파일 없음",
+    observation_stale: "상태 정보 오래됨", status_unknown: "상태 확인 불가",
+    digest_unverified: "해시 확인 불가", already_current: "최신 상태", source_changed: "새 소스 확인",
+    registered: "등록 완료", awaiting_receipt: "응답 대기", dispatch_failed: "명령 실패",
+    registration_failed: "등록 실패", updater_running: "실행 중", dispatch_unconfirmed: "명령 확인 불가",
+    dispatch_refused: "명령 거부", receipt_unverified: "응답 검증 실패"};
+  function registrationLabel(row) {
+    const label = row && refreshLabels[row.action];
+    return label ? label + " · " + (refreshReasons[row.reason] || "원인 확인 불가") : "미확인";
+  }
+  let previewSha = null;
+  async function refreshUpdaters(dryRun) {
+    if ($("adminContent").hidden || (!dryRun && !previewSha)) return;
+    const preview = $("opsPcRefreshPreview"), apply = $("opsPcRefreshApply");
+    preview.disabled = apply.disabled = true;
+    try {
+      const result = await call("/api/admin/ops-pc-versions/refresh-updaters", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(dryRun ? {dry_run: true} : {dry_run: false, source_sha256: previewSha}),
+      });
+      previewSha = null;
+      if (result.status !== 200 || result.body?.ok !== true || !Array.isArray(result.body.devices)) {
+        setStatus("opsPcRefreshStatus", "갱신 작업을 완료하지 못했습니다.");
+        return;
+      }
+      const rows = result.body.devices;
+      if (dryRun && rows.some(row => row.action === "refresh")) previewSha = result.body.source_sha256;
+      const summary = Object.entries(refreshLabels).map(([key, value]) =>
+        value + " " + rows.filter(row => row.action === key).length + "대").join(" · ");
+      setStatus("opsPcRefreshStatus", (dryRun ? "미리 보기: " : "실행 결과: ") + summary);
+      await loadPcVersions();
+    } catch (_) {
+      previewSha = null;
+      setStatus("opsPcRefreshStatus", "갱신 작업을 완료하지 못했습니다.");
+    } finally {
+      preview.disabled = false;
+      apply.disabled = !previewSha;
+    }
+  }
+
   async function loadPcVersions() {
     const body = $("opsPcVersionsBody");
     if (!body || $("adminContent").hidden) return;
@@ -592,7 +634,7 @@
           ? version + " · " + updateLabels[item.update_result] +
             (item.update_registration_error ? " (" + item.update_registration_error + ")" : "") : version;
         for (const value of [item.device_id, reportedVersion, item.mesh_agent_version || "???",
-          item.last_healthy_at ? fmtDate(item.last_healthy_at) : "???"]) {
+          item.last_healthy_at ? fmtDate(item.last_healthy_at) : "???", registrationLabel(item.updater_registration)]) {
           row.append(node("td", value));
         }
         body.append(row);
@@ -635,6 +677,8 @@
         $("opsCenterPanel").scrollIntoView({ block: "start" });
       });
     }
+    $("opsPcRefreshPreview")?.addEventListener("click", () => { void refreshUpdaters(true); });
+    $("opsPcRefreshApply")?.addEventListener("click", () => { void refreshUpdaters(false); });
     const pcReload = $("opsPcVersionsReload");
     if (pcReload) {
       pcReload.addEventListener("click", () => { void loadPcVersions(); });

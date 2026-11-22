@@ -1,13 +1,19 @@
 """Focused #4890 follow-up: one-cell project/history controls and equal home cards."""
-from pathlib import Path
 import re
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-JS = (STATIC / "sidebar-section-collapse.js").read_text(encoding="utf-8")
-CSS = (STATIC / "sidebar-section-polish.css").read_text(encoding="utf-8")
-APP = ((STATIC / "app.js").read_text(encoding="utf-8")
-       + (STATIC / "chat-history-module.js").read_text(encoding="utf-8"))  # R5 step 3: history rows live in the module too
+from _support.sidebar_collapse import (
+    app_source,
+    chat_history_module_source,
+    glass_css,
+    index_html,
+    sidebar_section_collapse_js,
+    sidebar_section_polish_css,
+)
+
+HTML = index_html()
+JS = sidebar_section_collapse_js()
+CSS = sidebar_section_polish_css()
+APP = app_source() + chat_history_module_source()  # R5 step 3: history rows live in the module too
 
 
 def test_project_and_recent_have_independent_explicit_collapse_controls():
@@ -87,7 +93,7 @@ def test_owner_expanded_minus_collapsed_chevron_icons_are_css_only():
 
 def test_project_and_history_title_do_not_blur_half_of_single_cell():
     """Owner screenshot regression: both halves must share one paint surface."""
-    theme = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
+    theme = glass_css()
     assert "backdrop-filter: blur(" in theme
     # A transparent title button still creates a separate backdrop-blur region.
     # Disable the effect on the two titles, not on the entire sidebar.

@@ -13,6 +13,7 @@ on:
       - '.github/workflows/b14-worker-json-bundle-preflight.yml'
       - 'apps/korean-ai-platform/**'
       - 'apps/padiem-chat/**'
+      - '!apps/padiem-chat/tests/**'
       - 'apps/padiem-ai-engine/**'
       - 'apps/korean-ai-code-agent/src/kagent/**'
       - 'apps/b66-quote-adapter/app/extraction_routing.py'

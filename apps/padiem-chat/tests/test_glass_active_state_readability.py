@@ -21,7 +21,8 @@ def test_active_chat_keeps_bright_glass_composer_surface() -> None:
     background = declaration(rule, "background")
     assert background is not None and "rgba(255, 255, 255, .94)" in background
     assert background is not None and "var(--glass-composer-surface)" in background
-    assert declaration(rule, "color") == "#17202a !important"
+    # #8008 15차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+    assert declaration(rule, "color") == "#17202a"
 
 
 def test_active_chat_textarea_stays_transparent_with_dark_foreground() -> None:

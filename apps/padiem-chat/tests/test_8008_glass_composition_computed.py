@@ -1123,3 +1123,161 @@ def test_r13_answer_icon_keeps_its_computed_values_without_importance(site, widt
     for prop, want in EXPECTED_R13[(width, height)].items():
         got = observed[prop]
         assert got == want, (width, height, prop, want, got)
+
+
+# #8008 14차 — 유리 아바타 캡 11개를 걷어 낸 뒤의 계산 값.
+READ_R14A_JS = """() => {
+  const el = document.querySelector('.assistant-avatar');
+  if (!el) return null;
+  const cs = getComputedStyle(el);
+  const row = {};
+  for (const p of ['width', 'height', 'border', 'border-radius', 'background-color',
+                   'color', 'box-shadow', 'backdrop-filter', 'font-size', 'font-weight']) {
+    row[p] = cs.getPropertyValue(p);
+  }
+  return row;
+}"""
+
+EXPECTED_R14A = {
+    'width': '32px',
+    'height': '32px',
+    'border': '1px solid rgba(255, 255, 255, 0.48)',
+    'border-radius': '10px',
+    'background-color': 'rgba(73, 84, 94, 0.52)',
+    'color': 'rgb(255, 255, 255)',
+    'box-shadow': 'rgba(17, 25, 33, 0.12) 0px 10px 26px 0px, rgba(255, 255, 255, 0.16) 0px 1px 0px 0px inset',
+    'backdrop-filter': 'blur(16px)',
+    'font-size': '15px',
+    'font-weight': '800',
+}
+
+
+def _read_r14a(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_CHAT_JS)
+            assert marker.get("ready") is True, marker
+            page.wait_for_timeout(1200)
+            return page.evaluate(READ_R14A_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", [(1440, 950), (1100, 900), (390, 844)])
+def test_r14a_avatar_keeps_its_computed_values_without_importance(site, width, height):
+    observed = _read_r14a(site, width, height)
+    for prop, want in EXPECTED_R14A.items():
+        got = observed[prop]
+        assert got == want, (width, height, prop, want, got)
+
+
+# #8008 15차 — 컴포저 캡 10개를 걷어 낸 뒤의 계산 값.
+READ_R15_JS = """() => {
+  const read = (sel, props) => {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    const row = {};
+    for (const p of props) row[p] = cs.getPropertyValue(p);
+    return row;
+  };
+  return {
+    wrap: read('.composer-wrap', ['background', 'padding-top']),
+    composer: read('.composer', ['background-image', 'border-top-color', 'box-shadow', 'color']),
+    send: read('.send-button', ['display']),
+    retry: read('.retry-button', ['background-color', 'border-top-color']),
+    recent: read('.recent-section', ['display']),
+  };
+}"""
+
+EXPECTED_R15 = {
+    (1440, 950): {
+        'wrap': {'background': 'rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box',
+                 'padding-top': '20px'},
+        'composer': {'background-image': 'linear-gradient(165deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 251, 0.9))',
+                     'border-top-color': 'rgba(255, 255, 255, 0.22)',
+                     'box-shadow': 'rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, rgba(136, 201, 255, 0.035) 0px 0px 0px 1px',
+                     'color': 'rgb(23, 32, 42)'},
+        'send': {'display': 'grid'},
+        'retry': {'background-color': 'rgba(255, 255, 255, 0.82)', 'border-top-color': 'rgba(126, 48, 48, 0.28)'},
+        'recent': {'display': 'block'},
+    },
+    (1100, 900): {
+        'wrap': {'background': 'rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box',
+                 'padding-top': '20px'},
+        'composer': {'background-image': 'linear-gradient(165deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 251, 0.9))',
+                     'border-top-color': 'rgba(255, 255, 255, 0.22)',
+                     'box-shadow': 'rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, rgba(136, 201, 255, 0.035) 0px 0px 0px 1px',
+                     'color': 'rgb(23, 32, 42)'},
+        'send': {'display': 'grid'},
+        'retry': {'background-color': 'rgba(255, 255, 255, 0.82)', 'border-top-color': 'rgba(126, 48, 48, 0.28)'},
+        'recent': {'display': 'block'},
+    },
+    (390, 844): {
+        'wrap': {'background': 'rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box',
+                 'padding-top': '26px'},
+        'composer': {'background-image': 'none',
+                     'border-top-color': 'rgba(255, 255, 255, 0.22)',
+                     'box-shadow': 'rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.22) 0px 22px 64px 0px, rgba(136, 201, 255, 0.035) 0px 0px 0px 1px',
+                     'color': 'rgb(23, 32, 42)'},
+        'send': {'display': 'grid'},
+        'retry': {'background-color': 'rgba(255, 255, 255, 0.82)', 'border-top-color': 'rgba(126, 48, 48, 0.28)'},
+        'recent': {'display': 'block'},
+    },
+}
+
+
+def _read_r15(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            marker = page.evaluate(FILL_CHAT_JS)
+            assert marker.get("ready") is True, marker
+            page.evaluate("""() => {
+              const l = document.getElementById('messageList');
+              if (l) {
+                const eb = document.createElement('div');
+                eb.className = 'error-box';
+                eb.innerHTML = '<button class=retry-button>retry</button>';
+                l.appendChild(eb);
+              }
+              const actions = document.querySelector('.composer-actions');
+              if (actions) {
+                const sb = document.createElement('button');
+                sb.className = 'send-button';
+                sb.textContent = 'send';
+                actions.appendChild(sb);
+              }
+              const rc = document.createElement('div');
+              rc.className = 'recent-section';
+              document.body.appendChild(rc);
+            }""")
+            page.wait_for_timeout(1200)
+            return page.evaluate(READ_R15_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", sorted(EXPECTED_R15))
+def test_r15_composer_keeps_its_computed_values_without_importance(site, width, height):
+    observed = _read_r15(site, width, height)
+    for group, props in EXPECTED_R15[(width, height)].items():
+        assert observed[group] is not None, (width, height, group)
+        for prop, want in props.items():
+            got = observed[group][prop]
+            assert got == want, (width, height, group, prop, want, got)

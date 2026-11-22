@@ -23,6 +23,7 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                 page = browser.new_page()
                 calls = []
                 changes = []
+                refreshes = []
                 rollout = {"initialized": True, "revision": 7, "stage": "internal", "percent": 25,
                            "stable": {"version": "0.3.0-rc1"}, "target": {"version": "0.3.0-rc2", "sha256": "b" * 64},
                            "groups": {name: {"total": 1, "updated": int(name == "internal"),
@@ -40,12 +41,17 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                         rollout["revision"] += 1
                         rollout["stage"] = "paused"
                         data = {"ok": True}
+                    elif path == "/api/admin/ops-pc-versions/refresh-updaters":
+                        refreshes.append(intercept.request.post_data_json)
+                        data = {"ok": True, "source_sha256": "c" * 64, "devices": [
+                            {"device_id": "node//pc-example", "action": "refresh", "reason": "source_changed"}]}
                     elif path == "/api/admin/ops-pc-versions":
                         calls.append(path)
                         data = {"ok": True, "rollout": rollout, "devices": [
                             {"device_id": "node//pc-example", "helper_version": "0.3.0-rc1",
                              "helper_build": "a" * 12, "mesh_agent_version": "2026-02-16T00:43:44.000Z",
-                             "last_healthy_at": "2026-11-21T01:02:03Z", "update_result": "success"},
+                             "last_healthy_at": "2026-11-21T01:02:03Z", "update_result": "success",
+                             "updater_registration": {"action": "reinstall_required", "reason": "system_denied"}},
                             {"device_id": "node//unknown", "helper_build": None}]}
                     elif path.startswith("/api/"):
                         data = {"ok": True, "members": [], "feedback": [], "audit": []}
@@ -66,7 +72,7 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                     assert rows.count() == 2
                     assert rows.first.locator("td").all_inner_texts() == [
                         "node//pc-example", "0.3.0-rc1 (aaaaaaaaaaaa) · 업데이트 완료",
-                        "2026-02-16T00:43:44.000Z", "2026. 11. 21. 01:02"]
+                        "2026-02-16T00:43:44.000Z", "2026. 11. 21. 01:02", "재설치 필요 · SYSTEM 권한 없음"]
                     assert rows.last.locator("td").all_inner_texts()[0] == "node//unknown"
                     page.click("#opsPcVersionsReload")
                     page.wait_for_function("() => !document.getElementById('opsPcVersionsReload').disabled")
@@ -77,10 +83,17 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                     page.click("#opsPcRolloutPause")
                     page.wait_for_function("() => document.getElementById('opsPcRolloutPause').disabled && !document.getElementById('opsPcRolloutPercent').disabled")
                     assert changes == [{"action": "pause", "percent": 30, "revision": 7, "target_sha256": "b" * 64}]
+                    assert page.locator("#opsPcRefreshApply").is_disabled()
+                    page.click("#opsPcRefreshPreview")
+                    page.wait_for_function("() => !document.getElementById('opsPcRefreshApply').disabled")
+                    assert refreshes == [{"dry_run": True}]
+                    page.click("#opsPcRefreshApply")
+                    page.wait_for_function("() => !document.getElementById('opsPcRefreshPreview').disabled")
+                    assert refreshes[-1] == {"dry_run": False, "source_sha256": "c" * 64}
                 else:
                     page.wait_for_selector("#gatePanel:not([hidden])")
                     page.wait_for_load_state("networkidle")
-                    assert not calls and not changes and not page.locator("#opsPcVersionsBody").is_visible()
+                    assert not calls and not changes and not refreshes and not page.locator("#opsPcVersionsBody").is_visible()
                 page.close()
         finally:
             browser.close()

@@ -29,6 +29,8 @@ jobs:
           sparse-checkout: |
             .github/scripts/com2_policy_failover_watch.py
             .github/tests/test_com2_policy_failover_watch.py
+            .github/scripts/b62_tests_only_queue_watch.py
+            .github/tests/test_b62_tests_only_queue_watch.py
           sparse-checkout-cone-mode: false
       - name: Verify exact-SHA failover decision contract
         run: python3 -m unittest discover -s .github/tests -p test_com2_policy_failover_watch.py -v
@@ -37,3 +39,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: python3 .github/scripts/com2_policy_failover_watch.py
+      - name: Verify B62 tests-only queue fallback
+        id: b62-queue-contract
+        if: always()
+        run: python3 -m unittest discover -s .github/tests -p test_b62_tests_only_queue_watch.py -v
+      - name: Recover stale tests-only runner assignments
+        if: ${{ always() && github.ref == 'refs/heads/main' && steps.b62-queue-contract.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python3 .github/scripts/b62_tests_only_queue_watch.py

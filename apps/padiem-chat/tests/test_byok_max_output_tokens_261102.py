@@ -24,7 +24,7 @@ from app.byok_client import (
     _anthropic_max_tokens,
 )
 from app.byok_credentials import CUSTOM_PROVIDERS, resolve_custom_selection
-from test_5002_byok_product_e2e import DEFAULT_ANSWER, ProviderRecorder
+from _support.byok_product_e2e import DEFAULT_ANSWER, ProviderRecorder
 from test_5121_multi_provider_byok import (
     API_KEY,
     client_for,

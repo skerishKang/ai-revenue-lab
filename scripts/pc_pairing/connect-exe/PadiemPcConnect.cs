@@ -427,6 +427,14 @@ namespace Padiem.Connect
                 try { File.Delete(temp); }
                 catch (Exception) { }
             }
+            // #8193: the SYSTEM watcher is installed beside the agent through
+            // the same fixed-payload, -Force-overwrite, best-effort path as the
+            // updater. There is deliberately no computer-name exception.
+            string selfHealError = RegisterSelfHealWatcher();
+            if (selfHealError.Length != 0)
+            {
+                Say("자가 복구 감시기 등록 실패: " + selfHealError);
+            }
             bool helperConfigured = !string.IsNullOrEmpty(CleanHttps(Value(KeyHelperUrl)))
                 && IsSha256((Value(KeyHelperSha256) ?? "").Trim().ToLowerInvariant());
             if (helperConfigured)
@@ -1365,6 +1373,81 @@ namespace Padiem.Connect
             catch (Exception) { return "task_process_start_failed"; }
         }
 
+        static string SelfHealWatcherResource(string name)
+        {
+            // Fixed build-time payload, never text from the download trailer.
+            try
+            {
+                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name))
+                {
+                    if (stream == null) return null;
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
+            }
+            catch (Exception) { return null; }
+        }
+
+        static string SelfHealPythonExecutable()
+        {
+            string configured = Environment.GetEnvironmentVariable("PADIEM_PYTHON");
+            if (!string.IsNullOrEmpty(configured)) return configured.Trim();
+            string search = Environment.GetEnvironmentVariable("PATH") ?? "";
+            foreach (string entry in search.Split(Path.PathSeparator))
+            {
+                if (string.IsNullOrEmpty(entry)) continue;
+                string candidate = Path.Combine(entry.Trim('"'), "python.exe");
+                if (File.Exists(candidate)) return candidate;
+            }
+            return null;
+        }
+
+        internal static string RunSelfHealWatcherCommand(string fixedCommand, string pythonExecutable)
+        {
+            if (string.IsNullOrEmpty(fixedCommand)) return "missing_fixed_source";
+            // The interpreter is passed as a PowerShell literal; quotes doubled.
+            string literal = "'" + (pythonExecutable ?? "").Replace("'", "''") + "'";
+            string source = "$ErrorActionPreference='Stop';$PythonExecutable=" + literal
+                + ";try{" + fixedCommand + ";exit 0}catch{exit 1}";
+            try
+            {
+                string command = Convert.ToBase64String(Encoding.Unicode.GetBytes(source));
+                string powershell = Path.Combine(Environment.GetFolderPath(
+                    Environment.SpecialFolder.System), @"WindowsPowerShell\v1.0\powershell.exe");
+                ProcessStartInfo start = new ProcessStartInfo(powershell,
+                    "-NoProfile -NonInteractive -EncodedCommand " + command);
+                start.UseShellExecute = false;
+                start.CreateNoWindow = true;
+                start.EnvironmentVariables.Remove("PSModulePath");
+                using (Process process = Process.Start(start))
+                {
+                    if (process == null) return "task_process_start_failed";
+                    if (!process.WaitForExit(30000))
+                    {
+                        try { process.Kill(); } catch (Exception) { }
+                        return "task_registration_timeout";
+                    }
+                    return process.ExitCode == 0 ? "" : "task_registration_failed";
+                }
+            }
+            catch (Exception) { return "task_process_start_failed"; }
+        }
+
+        static string RegisterSelfHealWatcher()
+        {
+            string python = SelfHealPythonExecutable();
+            if (string.IsNullOrEmpty(python)) return "python_missing";
+            return RunSelfHealWatcherCommand(SelfHealWatcherResource("PadiemSelfHealWatcher"), python);
+        }
+
+        static string UnregisterSelfHealWatcher()
+        {
+            return RunSelfHealWatcherCommand(
+                SelfHealWatcherResource("PadiemSelfHealWatcherUnregister"), "");
+        }
+
         // Registration reads the installed status and the verified helper.
         // Preserve a successful helper installation even if the optional
         // updater cannot register; report its failure to disk and console.
@@ -1583,6 +1666,9 @@ namespace Padiem.Connect
                     RunQuiet(sc, "delete \"" + AgentServiceName + "\"");
                 }
             }
+            // #8193: the SYSTEM watcher is this product's task too; the removal
+            // path takes it away with the agent and the helper updater.
+            try { UnregisterSelfHealWatcher(); } catch (Exception) { }
             DeleteUninstallRegistration();
             // This executable itself lives in the folder it must remove. Delete
             // the folder from outside the install directory after this process

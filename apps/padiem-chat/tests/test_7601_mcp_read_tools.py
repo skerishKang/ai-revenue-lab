@@ -315,3 +315,16 @@ def test_the_parser_received_each_new_tool_only_after_this_change():
     # read_file originally took only the path.
     assert "offset" not in {"path"} and {"path", "offset", "length"} <= engine_table[
         "claw.pc.read_file_chunk"]
+
+
+def test_resume_tool_tables_agree_across_the_two_parsers():
+    """#8048: a recursive search resumable on one parser must be resumable on
+    the other. The two copies drifted (client lacked the search tools) and the
+    first resumed search was rejected as invalid_engine_request.
+    """
+    from padiem_ai_engine_client.client import _PC_GATEWAY_RESUME_TOOLS as engine_resume
+    from padiem_ai_core.pc_gateway import PC_GATEWAY_RESUME_TOOLS as core_resume
+
+    assert engine_resume == core_resume
+    assert "claw.pc.search_files" in engine_resume
+    assert "claw.pc.search_contents" in engine_resume

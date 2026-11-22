@@ -39,7 +39,7 @@ from app.byok_endpoint import (
 )
 from app.history import D1HistoryStore
 from app.main import create_app
-from test_5002_byok_product_e2e import (
+from _support.byok_product_e2e import (
     CUSTOM_KEY,
     CUSTOM_KEY_SECRET,
     DEFAULT_ANSWER,

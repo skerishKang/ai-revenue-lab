@@ -107,6 +107,7 @@ QUEUE_MIGRATIONS = (
     "133_pc_helper_versions.sql",
     "134_pc_helper_update_preferences.sql",
     "135_pc_helper_rollout.sql",
+    "136_pc_helper_registration.sql",
     # #7147/#7153 follow-up: the managed (contract) mark the pairing store
     # reads and writes through the queue path.
     "103_pc_managed_links.sql",
@@ -122,6 +123,7 @@ QUEUE_TABLES = (
     "mesh_device_helper_ready",
     "pc_helper_rollout",
     "pc_helper_rollout_outcomes",
+    "pc_helper_registration",
 )
 
 #: The ledger itself, plus the columns the queue's own SQL reads. A database that lacks any
@@ -149,6 +151,7 @@ REQUIRED_COLUMNS = {
     "mesh_device_drives": ("device_id", "drives_json", "received_at"),
     "pc_helper_rollout": ("singleton", "revision", "plan_json", "updated_at"),
     "pc_helper_rollout_outcomes": ("device_id", "release_sha256", "outcome", "received_at"),
+    "pc_helper_registration": ("device_id", "source_sha256", "actor_user_id", "attempt_id", "dispatch_id", "reason", "requested_at"),
     "mesh_device_helper_ready": ("device_id", "state_json", "received_at",
                                  "helper_sha256", "helper_version", "mesh_agent_version", "last_healthy_at"),
     "pc_install_tokens": ("token_id", "token_sha256", "code_id", "user_id", "expires_at", "revoked_at"),

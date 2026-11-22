@@ -103,6 +103,29 @@ class D1MeshDeviceDriveStore:
         stored = await self.load_helper_ready(device_id=device)
         return stored == {"device_id": device, "state": observed, "received_at": stamp}
 
+    async def load_updater_registration(self, *, device_id: str, sha256: str) -> dict | None:
+        row = await self.db.prepare(
+            "SELECT actor_user_id, attempt_id, dispatch_id, reason, requested_at FROM pc_helper_registration "
+            "WHERE device_id=? AND source_sha256=?"
+        ).bind(_device(device_id), sha256).first()
+        return _row_to_dict(row)
+
+    async def reserve_updater_registration(self, *, device_id: str, sha256: str, actor: str,
+                                           attempt_id: str, now: datetime) -> bool:
+        await self.db.prepare(
+            "INSERT INTO pc_helper_registration(device_id,source_sha256,actor_user_id,attempt_id,requested_at) "
+            "VALUES(?,?,?,?,?) ON CONFLICT(device_id,source_sha256) DO NOTHING"
+        ).bind(_device(device_id), sha256, actor, attempt_id, _stamp(now)).run()
+        row = await self.load_updater_registration(device_id=device_id, sha256=sha256)
+        return bool(row and row["attempt_id"] == attempt_id)
+
+    async def record_updater_registration(self, *, device_id: str, sha256: str, attempt_id: str,
+                                          dispatch_id: str | None = None, reason: str | None = None) -> None:
+        await self.db.prepare(
+            "UPDATE pc_helper_registration SET dispatch_id=?, reason=? WHERE device_id=? "
+            "AND source_sha256=? AND attempt_id=? AND dispatch_id IS NULL AND reason IS NULL"
+        ).bind(dispatch_id, reason, _device(device_id), sha256, attempt_id).run()
+
     async def load_rollout_outcomes(self, *, sha256: str) -> dict[str, str]:
         result = await self.db.prepare(
             "SELECT device_id, outcome FROM pc_helper_rollout_outcomes WHERE release_sha256=?"

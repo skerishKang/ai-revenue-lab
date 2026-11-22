@@ -139,7 +139,8 @@ CHANGED = {
         ("background", "rgba(255, 255, 255, .05)", "var(--surface-veil-faint)"),
     ],
     "padiem-glass-brand-polish.css": [
-        ("border-color", "rgba(255, 255, 255, .22) !important", "var(--line-veil-faint) !important"),
+        # #8008 15차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
+        ("border-color", "rgba(255, 255, 255, .22)", "var(--line-veil-faint)"),
         ("box-shadow",
          "0 20px 54px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .80), 0 0 0 1px rgba(255, 255, 255, .34) !important",
          "0 20px 54px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .80), 0 0 0 1px var(--inset-veil-mist) !important"),

@@ -113,6 +113,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | pc_pairing_codes | 072 | FK 없음 → 명시 삭제 |
 | pc_install_tokens | 093 | 토큰 해시와 user_id만 저장 → 명시 삭제 |
 | pc_device_links | 072 | FK 없음 → 명시 삭제 |
+| pc_helper_registration | 136 | actor_user_id: explicit deletion on D1 or COM2 queue |
 | padiem_pc_delegations | 084 | FK CASCADE 선언, 명시 삭제 |
 | padiem_mcp_tokens | 085 | FK CASCADE 선언, 명시 삭제 |
 | padiem_mcp_approvals | 085 | FK CASCADE 선언, 명시 삭제 |

@@ -87,6 +87,8 @@ B62_CHAT_EXPECTED_PATHS = (
     # #3989 scoped Chat CI source/guard changes always trigger FULL lane.
     ".github/scripts/b62_ci_impact_scope_3989.py",
     ".github/tests/test_b62_ci_impact_scope_3989.py",
+    ".github/scripts/b62_run_tests_only_modules.py",
+    ".github/tests/test_b62_run_tests_only_modules.py",
     # #5341 shared Core import-scope proof and its contract test.
     ".github/scripts/ci_core_import_scope.py",
     ".github/tests/test_5341_core_import_scope.py",
@@ -119,8 +121,8 @@ B62_CHAT_EXPECTED_JOBS = {
     "b62-core-parser-focused",  # #5341 opt-in isolated parser focused contract
     "b62-b14-attempt-focused",  # B14 outbound attempt-policy targeted regression
     "b14-multimodal-test",
-    "engine-full-regression",  # #5678 Engine whole suite on every main push
-    "b14-full-regression",  # #5678 B14 whole suite on every main push
+    "engine-full-regression",  # #5678 Engine whole suite nightly/manual
+    "b14-full-regression",  # #5678 B14 whole suite nightly/manual
     "grade-live-smoke",  # CTO 2026-11-02 one real call per declared tier, nightly
 }
 

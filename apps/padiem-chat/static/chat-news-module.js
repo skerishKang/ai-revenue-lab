@@ -144,10 +144,6 @@
       source: value.source, published_at: value.published_at,
       version: typeof value.version === "string" && VERSION.test(value.version) ? value.version : "" };
   }
-  const date = (value) => {
-    const parsed = new Date(value);
-    return Number.isFinite(parsed.getTime()) ? parsed.toLocaleDateString(document.documentElement.lang === "en" ? "en" : "ko") : "";
-  };
   const historyDate = (value) => {
     const [year, month, day] = value.split("-").map(Number);
     if (![year, month, day].every(Number.isInteger)) return value;
@@ -175,48 +171,66 @@
     nodes.historyStatus.hidden = !empty;
     nodes.historyStatus.textContent = empty ? copy("history-empty") : "";
   }
-  // The source label is bundled: consecutive items that share one source
-  // carry it only on the last row of the run, so a batch does not repeat the
-  // label on every line.
-  const lastOfRun = (items) => items.map((entry, index) => {
-    const next = items[index + 1];
-    return Boolean(SOURCES[entry.source]) && (!next || next.source !== entry.source);
-  });
-  function row(entry, active, showSource) {
-    const li = element("li", "news-item");
+  // A version is authoritative. Unversioned entries share a local calendar day.
+  function dayKey(value) {
+    const parsed = new Date(value);
+    if (!Number.isFinite(parsed.getTime())) return "";
+    return [parsed.getFullYear(), parsed.getMonth() + 1, parsed.getDate()]
+      .map((part, index) => String(part).padStart(index ? 2 : 4, "0")).join("-");
+  }
+  function row(entry) {
+    const li = element("li", "news-entry");
     li.dataset.newsNumber = String(entry.number);
-    if (active) li.dataset.active = "true";
-    const heading = element("div", "news-item-heading");
-    heading.append(element("span", "news-kind " + (entry.kind === "fixed" ? "news-kind-fixed" : "news-kind-improved"), copy(KINDS[entry.kind])));
-    const when = date(entry.published_at);
-    if (when) heading.append(element("span", "news-date", when));
-    li.append(heading, element("h3", "news-title", entry.title), element("p", "news-detail", entry.detail));
-    if (showSource) li.append(element("small", "news-source", copy(SOURCES[entry.source])));
+    if (state.focus === entry.number) li.dataset.active = "true";
+    li.append(element("span", "news-entry-title", entry.title));
+    const detail = element("span", "news-entry-detail", entry.detail);
+    if (SOURCES[entry.source]) {
+      detail.textContent += " ";
+      detail.append(element("small", "news-source", copy(SOURCES[entry.source])));
+    }
+    li.append(detail);
     return li;
   }
-  // #7847 — 같은 배포에서 낸 소식은 그 배포 제목 아래에 모으고, 배포 표시가 없는
-  // 소식은 마지막 '그 밖의 소식'에 모은다. 배포는 최신이 먼저다.
   function groups(items) {
-    const order = [];
     const buckets = new Map();
     for (const entry of items) {
-      if (!buckets.has(entry.version)) { buckets.set(entry.version, []); order.push(entry.version); }
-      buckets.get(entry.version).push(entry);
+      const day = dayKey(entry.published_at);
+      const key = entry.version ? "version:" + entry.version : "day:" + day;
+      if (!buckets.has(key)) buckets.set(key, { version: entry.version, day, items: [] });
+      const group = buckets.get(key);
+      if (day > group.day) group.day = day;
+      group.items.push(entry);
     }
-    order.sort((left, right) => (!left ? 1 : !right ? -1 : right.localeCompare(left)));
-    return order.map((version) => ({ version, items: buckets.get(version) }));
+    return [...buckets.values()].sort((left, right) => {
+      if (left.version && right.version) return right.version.localeCompare(left.version);
+      if (left.version !== right.version) return left.version ? -1 : 1;
+      return right.day.localeCompare(left.day);
+    });
   }
   function listRows() {
-    const lines = [];
-    for (const group of groups(state.items)) {
-      const heading = element("li", "news-group");
+    return groups(state.items).map((group) => {
+      const card = element("li", "news-group");
+      const heading = element("div", "news-group-heading");
       heading.append(element("h3", "news-group-title", group.version
         ? copy("version", { version: group.version }) : copy("other")));
-      lines.push(heading);
-      const runs = lastOfRun(group.items);
-      lines.push(...group.items.map((entry, index) => row(entry, state.focus === entry.number, runs[index])));
-    }
-    return lines;
+      if (group.day) {
+        const when = element("time", "news-date", historyDate(group.day));
+        when.setAttribute("datetime", group.day);
+        heading.append(when);
+      }
+      card.append(heading);
+      for (const kind of Object.keys(KINDS)) {
+        const entries = group.items.filter((entry) => entry.kind === kind);
+        if (!entries.length) continue;
+        const section = element("section", "news-kind-section");
+        const title = element("h4", "news-kind", copy(KINDS[kind]));
+        const list = element("ul", "news-entry-list");
+        list.append(...entries.map(row));
+        section.append(title, list);
+        card.append(section);
+      }
+      return card;
+    });
   }
   function paint() {
     if (!nodes) return;
@@ -274,9 +288,11 @@
     returnFocus = document.activeElement;
     if (typeof nodes.dialog.showModal === "function") nodes.dialog.showModal(); else nodes.dialog.setAttribute("open", "");
     nodes.button.setAttribute("aria-expanded", "true");
+    nodes.body.scrollTop = 0;
     paint();
     await load();
-    (state.focus ? nodes.list : nodes.close).focus?.();
+    if (state.focus) nodes.list.focus?.({ preventScroll: true });
+    else nodes.close.focus?.();
   }
   function close() {
     if (nodes.dialog.open && typeof nodes.dialog.close === "function") nodes.dialog.close();
@@ -300,7 +316,7 @@
   }
   function init() {
     const ids = { button: "newsButton", dot: "newsDot", dotText: "newsDotText", dialog: "newsDialog",
-      close: "newsClose", list: "newsList", status: "newsStatus", historyList: "newsHistoryList",
+      close: "newsClose", body: "newsBody", list: "newsList", status: "newsStatus", historyList: "newsHistoryList",
       historyStatus: "newsHistoryStatus" };
     nodes = Object.fromEntries(Object.entries(ids).map(([key, id]) => [key, document.getElementById(id)]));
     if (Object.values(nodes).some((node) => !node)) return;

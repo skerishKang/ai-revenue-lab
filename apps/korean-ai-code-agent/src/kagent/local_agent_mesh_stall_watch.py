@@ -14,6 +14,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import threading
 import urllib.request
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -110,11 +111,21 @@ class MeshStallWatch:
         self._threshold = threshold
         self._window = window_seconds
         self._nodes: dict[str, _NodeState] = {}
+        # #8212: with the opt-in worker pool, several command threads feed the
+        # one process-wide bridge at once. Guard the per-node counters so two
+        # workers cannot race a failure/success episode into a missed or
+        # duplicated alert.
+        self._lock = threading.Lock()
 
     def observe(self, node: object, phase: str, *, at: float | None = None) -> StallNotice | None:
         """Feed one observed phase; return the notice when an alert is emitted."""
+
         key = display_name(node)
         moment = self._now() if at is None else at
+        with self._lock:
+            return self._observe_locked(key, phase, moment)
+
+    def _observe_locked(self, key: str, phase: str, moment: float) -> StallNotice | None:
         state = self._nodes.setdefault(key, _NodeState())
 
         if phase == RECOVERY_PHASE:

@@ -55,6 +55,10 @@ _UI_MIXED_TEST = re.compile(r"apps/padiem-chat/tests/test_[A-Za-z0-9_]+\.py")
 _TESTS_TREE_PY = re.compile(r"apps/padiem-chat/tests/(?:_support/(?:[A-Za-z0-9_]+/)*)?[A-Za-z0-9_]+\.py")
 _TESTS_TREE_DOC = re.compile(r"apps/padiem-chat/tests/[^/\\]+\.md")
 _TESTS_TREE_CONFTEST = "apps/padiem-chat/tests/conftest.py"
+# Indirect staging/E2E consumers belong to the existing nightly/manual full
+# regression. Match filename tokens, not substrings (e.g. "test_restaging").
+_DEFERRED_CONSUMER = re.compile(r"_(?:staging|e2e)(?:_|\.py$)")
+_TESTS_ONLY_MANIFEST_GUARD = "tests/test_5002_model_path_classification.py"
 
 
 def _is_static_segment(node: ast.AST) -> bool:
@@ -543,8 +547,10 @@ def test_module_importers(module_name: str, repo_root: Path | None = None) -> tu
 def tests_only_modules(files: object, repo_root: Path | None = None) -> tuple[str, ...]:
     """Safe relative pytest arguments for a Chat tests-tree-only change.
 
-    A changed ``test_*.py`` runs itself. A changed helper runs every flat test
-    module that transitively imports it. A helper no test imports (or conftest.py) cannot be
+    A changed ``test_*.py`` runs itself, including staging/E2E. A changed
+    helper runs its transitive flat test consumers except indirect staging/E2E
+    consumers, which run in the nightly/manual full regression. A helper no
+    test imports (or conftest.py) cannot be
     covered by a reduced lane, so the result is empty and the caller fails
     closed to the full Chat suite. ``.md`` files carry no executable contract
     and are ignored. The shape is re-proven here so a malformed API listing can
@@ -585,7 +591,12 @@ def tests_only_modules(files: object, repo_root: Path | None = None) -> tuple[st
         importers = _runnable_modules(paths, _reverse_closure(edges, {helper}))
         if not importers:
             return ()
-        modules.update(importers)
+        modules.update(path for path in importers if not _DEFERRED_CONSUMER.search(path))
+    # A proven set containing only deferred consumers is not an unknown graph.
+    # Keep the mandatory cheap guard on the PR; nightly/manual still collects
+    # all of those consumers. Unknown/unparseable graphs return above.
+    if not modules:
+        modules.add(_TESTS_ONLY_MANIFEST_GUARD)
     return tuple(sorted(modules)) if len(modules) <= MAX_FILES else ()
 
 
@@ -775,6 +786,19 @@ def _core_product_argument() -> str | None:
     return product if product in ("b62", "engine") else None
 
 
+def tests_only_runner(event, event_name, repository, scope, chat_source, attempt):
+    """Only a proven same-repository PR may select the private runner label."""
+    if event_name != "pull_request" or scope != TESTS_ONLY or chat_source is not False:
+        return "hosted"
+    if not repository or attempt != "1":
+        return "hosted"
+    try:
+        head_repo = event["pull_request"]["head"]["repo"]["full_name"]
+    except (KeyError, TypeError):
+        return "hosted"
+    return "self-hosted" if head_repo == repository else "hosted"
+
+
 def main() -> None:
     if "--print-ui-contract" in sys.argv[1:]:
         print(" ".join(ui_contract_tests(REPO_ROOT)))
@@ -796,6 +820,7 @@ def main() -> None:
         )
         return
 
+    event, event_name = {}, ""
     scope = FULL
     static_changed = False
     chat_source = False
@@ -876,6 +901,8 @@ def main() -> None:
         chat_source = True
     with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as out:
         out.write(f"scope={scope}\n")
+        runner = tests_only_runner(event, event_name, os.environ.get("GITHUB_REPOSITORY"), scope, chat_source, os.environ.get("GITHUB_RUN_ATTEMPT"))
+        out.write(f"tests_only_runner={runner}\n")
         out.write(f"static_changed={'true' if static_changed else 'false'}\n")
         out.write(f"chat_source_changed={'true' if chat_source else 'false'}\n")
         out.write(f"ui_contract={' '.join(ui_contract)}\n")

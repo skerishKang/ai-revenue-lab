@@ -333,7 +333,7 @@ def test_terminal_output_is_verified_against_the_common_dispatch_hash():
 
 def test_stale_selected_pc_returns_offline_answer_without_creating_a_run(monkeypatch):
     from app import mcp_gateway_execution as execution
-    from test_mcp_gateway_execution import harness
+    from _support.mcp_gateway_execution import harness
 
     request, _transport, history, _calls = harness(monkeypatch)
     request.app.state.settings = SimpleNamespace(mcp_pc_shell_enabled=True)
@@ -356,7 +356,7 @@ def test_stale_selected_pc_returns_offline_answer_without_creating_a_run(monkeyp
 @pytest.mark.parametrize("denial", ["selection", "grant", "tool"])
 def test_unavailable_or_undelegated_pc_never_creates_a_common_dispatch(monkeypatch, denial):
     from app import mcp_gateway_execution as execution
-    from test_mcp_gateway_execution import harness
+    from _support.mcp_gateway_execution import harness
 
     request, transport, history, _calls = harness(monkeypatch)
     request.app.state.settings = SimpleNamespace(mcp_pc_shell_enabled=True)
@@ -408,7 +408,7 @@ def test_unavailable_or_undelegated_pc_never_creates_a_common_dispatch(monkeypat
 
 def test_shell_execution_uses_existing_owner_gates_and_bypasses_engine(monkeypatch):
     from app import mcp_gateway_execution as execution
-    from test_mcp_gateway_execution import harness
+    from _support.mcp_gateway_execution import harness
 
     request, transport, history, calls = harness(monkeypatch)
     request.app.state.settings = SimpleNamespace(mcp_pc_shell_enabled=True)
