@@ -10,95 +10,64 @@
 - 최근 대화의 외부 AI 도구 요청 기록("외부 AI 도구 요청: pc_…")은 사람의 대화
   목록에서 분리되어 하나의 접힘 묶음(native <details>)으로 놓인다.
 
-호출부 계약은 소스 고정, 유틸 마운트 동작은 Node DOM 셈 하네스(test_util_app_7173과
-같은 패턴)로 검증한다.
+호출부 계약은 _support가 파싱한 값으로, 유틸 마운트 동작은 Node DOM 셈 하네스
+(test_util_app_7173과 같은 패턴)로 검증한다. 시험은 정적 원문을 직접 읽지 않는다.
 """
 from __future__ import annotations
-import locale_bundle
 
 import json
 import subprocess
-from pathlib import Path
 
 from _r5_auth_module_harness import observations as auth_observations
-
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-INDEX_PATH = STATIC / "index.html"
-APP_PATH = STATIC / "app.js"
-UTIL_APP_PATH = STATIC / "util-app.js"
-HISTORY_PATH = STATIC / "chat-history-module.js"
-LOCALE_PATH = locale_bundle.SOURCE
-
-
-def _html() -> str:
-    return INDEX_PATH.read_text(encoding="utf-8")
-
-
-def _sidebar() -> str:
-    html = _html()
-    return html.split('<aside class="sidebar"', 1)[1].split("</aside>", 1)[0]
+from _support import sidebar_groups_7365 as support
 
 
 # ── 1. 새 구성 렌더 (묶음 순서) ─────────────────────────────────────────────
 
 
 def test_sidebar_groups_render_in_the_owner_decided_order() -> None:
-    sidebar = _sidebar()
-    # 대화: 새 채팅(+검색) · Claw — 위쪽 하나의 묶음.
-    chat_group = sidebar.split('class="sidebar-chat-claw-group"', 1)[1].split('id="workspaceNav"', 1)[0]
-    assert 'id="newChatButton"' in chat_group
-    assert 'id="sidebarSearchButton"' in chat_group
-    assert 'id="clawNavButton"' in chat_group
+    chat_ids = support.chat_group_ids()
+    assert "newChatButton" in chat_ids
+    assert "sidebarSearchButton" in chat_ids
+    assert "clawNavButton" in chat_ids
     # 도구·일정: 유틸 · 캘린더 · 자동화 · 라이브러리 (대표 결정 순서).
-    tools_nav = sidebar.split('id="workspaceNav"', 1)[1].split("</nav>", 1)[0]
-    ids = ("utilNavButton", "calendarNavButton", "automationNavButton", "filesNavButton")
-    positions = [tools_nav.index(f'id="{key}"') for key in ids]
-    assert positions == sorted(positions), "도구·일정 순서는 유틸·캘린더·자동화·라이브러리"
-    assert 'id="meetingNavButton"' not in tools_nav, "회의록 항목은 사이드바에서 제거"
+    positions = support.tool_nav_positions()
+    assert list(positions.values()) == sorted(positions.values()), "도구·일정 순서는 유틸·캘린더·자동화·라이브러리"
+    assert "meetingNavButton" not in support.tool_nav_ids(), "회의록 항목은 사이드바에서 제거"
     # 내 자료: 프로젝트 · 최근 대화 (순서 유지).
-    assert sidebar.index('id="projectsSection"') < sidebar.index('id="historySection"')
+    sections = support.sidebar_section_positions()
+    assert sections["projectsSection"] < sections["historySection"]
     # 아래 계정(#7780 대표 결정): 바깥 새 소식 · 의견 보내기 · 사용 안내,
     # 프로필 메뉴 안 설정 · 앱 연결 · Padiem Home, 약관 · 계정.
-    tools = sidebar.split('class="sidebar-bottom-tools"', 1)[1].split('class="sidebar-bottom"', 1)[0]
-    pinned = sidebar.split('class="sidebar-bottom"', 1)[1]
-    bottom = tools + pinned
-    outer_ids = ("newsButton", "feedbackButton", "helpNavLink")
-    outer_positions = [bottom.index(f'id="{key}"') for key in outer_ids]
-    assert outer_positions == sorted(outer_positions), "바깥 순서는 새 소식·의견 보내기·사용 안내"
-    assert bottom.index('id="helpNavLink"') < bottom.index('class="sidebar-account account-controls"')
-    menu = bottom.split('id="profileMenu"', 1)[1].split("</div>", 1)[0]
-    assert menu.index('id="settingsButton"') < menu.index('id="connectorsNavButton"') < menu.index('class="home-link"'), "메뉴 순서는 설정·앱 연결·Padiem Home"
+    bottom = support.bottom_positions()
+    outer = [bottom[key] for key in ("newsButton", "feedbackButton", "helpNavLink")]
+    assert outer == sorted(outer), "바깥 순서는 새 소식·의견 보내기·사용 안내"
+    assert bottom["helpNavLink"] < bottom["sidebar-account account-controls"]
+    menu = support.menu_positions()
+    assert menu["settingsButton"] < menu["connectorsNavButton"] < menu["home-link"], "메뉴 순서는 설정·앱 연결·Padiem Home"
     # #7953 대표 결정: 약관 줄은 메뉴 밖 계정 단추 바로 아래 상시 한 줄이다.
-    assert 'data-locale-key="legal-privacy"' not in menu
-    assert 'class="sidebar-legal"' in bottom
-    assert bottom.index('class="sidebar-legal"') > bottom.index('id="profileMenu"')
-    assert 'id="accountAvatar"' in bottom
-    assert 'class="home-link"' in menu
+    assert "legal-privacy" not in support.menu_locale_keys()
+    assert "sidebar-legal" in support.bottom_classes()
+    assert bottom["sidebar-legal"] > bottom["profileMenu"]
+    assert "accountAvatar" in support.bottom_ids()
+    assert "home-link" in support.menu_classes()
 
 
 def test_the_util_row_uses_a_pictograph_icon_like_its_peers() -> None:
-    html = _html()
     # #7365 후속(CTO 261111): the util row reads like the other tool rows —
     # a geometric pictograph, never a letter.
-    util_button = html.split('id="utilNavButton"', 1)[1].split("</button>", 1)[0]
-    assert ">▣<" in util_button
-    assert ">U<" not in util_button
+    glyphs = support.util_button_glyphs()
+    assert "▣" in glyphs
+    assert "U" not in glyphs
 
 
 def test_settings_is_a_first_class_account_menu_entry_for_guests_too() -> None:
-    html = _html()
-    bottom = html.split('class="sidebar-bottom"', 1)[1]
     # The settings entry carries no hidden attribute: guests and signed-in
     # accounts both see it in the profile menu beside 앱 연결 · Padiem Home.
-    menu = bottom.split('id="profileMenu"', 1)[1]
-    start = menu.rindex("<button", 0, menu.index('id="settingsButton"'))
-    settings_tag = menu[start:menu.index('id="settingsButton"')]
-    assert " hidden" not in settings_tag
+    assert support.settings_button_hidden() is False
 
 
 def test_guests_see_the_materials_group_honestly_empty() -> None:
-    app = APP_PATH.read_text(encoding="utf-8")
     # R2(#7186): the guest projection is observed by executing
     # chat-auth-module.js with the shipped guest session — the history group and
     # its empty note stay visible (no failure rows for an empty account).
@@ -106,84 +75,76 @@ def test_guests_see_the_materials_group_honestly_empty() -> None:
     assert guest["historyHidden"] is False
     assert guest["historyEmptyHidden"] is False
     assert guest["settingsHidden"] is True
-    # Boundary kept as text: clearProjectsUI lives in app.js, which no module
-    # owns (R5 did not move it), so its markup assignment has no execution
-    # harness. This is the projects half of the same #7438 decision.
-    clear_block = app.split("function clearProjectsUI()", 1)[1].split("renderProjectState();", 1)[0]
-    assert "projectsSection.hidden = false;" in clear_block
-    assert "projectsEmpty.hidden = false;" in clear_block
+    # Boundary kept as parsed assignments: clearProjectsUI lives in app.js,
+    # which no module owns (R5 did not move it), so its markup assignment has
+    # no execution harness. This is the projects half of the same #7438 decision.
+    assignments = support.clear_project_assignments()
+    assert "projectsSection.hidden = false;" in assignments
+    assert "projectsEmpty.hidden = false;" in assignments
 
 
 def test_the_tools_group_names_itself_for_screen_readers() -> None:
-    html = _html()
-    assert 'data-locale-aria-label="tools-menu"' in html
-    assert 'aria-label="도구·일정"' in html
-    locale = LOCALE_PATH.read_text(encoding="utf-8")
-    assert '"tools-menu": "도구·일정"' in locale
-    assert '"tools-menu": "Tools & schedule"' in locale
+    binding = support.tools_menu_binding()
+    assert binding["aria_label"] == "도구·일정"
+    assert binding["ko"] == "도구·일정"
+    assert binding["en"] == "Tools & schedule"
     # The aria applier binds the renamed landmark on language change.
-    assert '["#workspaceNav", "aria-label", "tools-menu"]' in locale
+    assert binding["aria_binding"] == ["#workspaceNav", "aria-label", "tools-menu"]
 
 
 # ── 2. 옮긴 항목이 새 위치에서 같은 동작 ────────────────────────────────────
 
 
 def test_the_meeting_trigger_is_parked_in_the_util_view() -> None:
-    html = _html()
     # Same element, same id: meeting-capture.js finds it at load and the click
     # opens the existing capture screen.
-    assert html.count('id="meetingNavButton"') == 1
-    assert 'id="meetingCaptureHost" hidden' in html
-    assert html.index('id="meetingCaptureHost"') > html.index('id="utilAppRoot"')
-    host = html.split('id="meetingCaptureHost"', 1)[1].split("</div>", 1)[0]
-    assert 'class="util-meeting-capture-entry" id="meetingNavButton"' in host
-    assert 'aria-controls="meetingView"' in host
-    assert 'data-locale-key="nav-meeting"' in host
+    trigger = support.meeting_trigger()
+    assert trigger["id_count"] == 1
+    assert trigger["host_hidden"] is True
+    assert trigger["host_after_util"] is True
+    assert "util-meeting-capture-entry" in trigger["entry_classes"]
+    assert trigger["aria_controls"] == "meetingView"
+    assert "nav-meeting" in trigger["locale_keys"]
 
 
 def test_util_module_mounts_the_meeting_entry_into_its_tool_screen() -> None:
-    util = UTIL_APP_PATH.read_text(encoding="utf-8")
     # The parked-node pattern (the same one the legacy PDF panel uses).
-    assert 'document.getElementById("meetingCaptureHost")' in util
-    assert "parkMeetingCaptureEntry()" in util
-    assert 'if (parsed.id === "meeting") mountMeetingCaptureEntry();' in util
+    facts = support.meeting_park_facts()
+    assert "meetingCaptureHost" in facts["looked_up_ids"]
+    assert "meeting" in facts["dispatched_ids"]
     # Parking happens before every root re-render, so the same node re-mounts.
-    assert util.count("parkMeetingCaptureEntry();") >= 2
+    assert facts["park_calls"] >= 2
 
 
 def test_the_moved_bottom_entries_keep_their_behavior() -> None:
-    app = APP_PATH.read_text(encoding="utf-8")
-    connectors = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8")
     # Same button element: the click listener moved into the connectors module
     # (#7216 A9), and app.js keeps the single wire call at the original spot.
-    # R5 2부 B2: the moved decl is create-scoped - the listener text is deps-stripped.
-    assert 'connectorsNavButton.addEventListener("click", openConnectorsView);' in connectors
-    assert "connectorsModule().wireConnectorsListeners();" in app
+    facts = support.moved_bottom_facts()
+    assert facts["connector_listener"] is True
+    assert facts["wire_calls"] == 1
     # The help link keeps its destination and needs no script.
-    assert 'id="helpNavLink" href="./help.html"' in _html()
+    assert facts["help_href"] == "./help.html"
 
 
 # ── 3. 옛 위치 링크(북마크·해시)가 새 위치로 이어짐 ─────────────────────────
 
 
 def test_the_old_meeting_hash_continues_into_the_util_meeting_screen() -> None:
-    app = APP_PATH.read_text(encoding="utf-8")
     # A stale #padiem-meeting bookmark lands on the Util tab's meeting tool
     # screen (#util/meeting) — the capture trigger is mounted there.
-    assert 'window.location.hash = "#util/meeting";' in app
+    facts = support.hash_facts()
+    assert "#util/meeting" in facts["hash_assignments"]
     # The capture screen itself still owns its fragment while it is open.
-    assert '"#padiem-meeting"' in app
-    assert "MEETING_ROUTE_HASH" in app
+    assert facts["padiem_meeting_literal"] is True
+    assert facts["meeting_route_hash_count"] > 0
 
 
 def test_the_connectors_hash_still_opens_the_connection_screen() -> None:
-    app = APP_PATH.read_text(encoding="utf-8")
-    assert "window.location.hash === CONNECTORS_ROUTE_HASH) connectors.openConnectorsView();" in app
+    assert support.hash_facts()["connectors_dispatch"] is True
 
 
 def test_the_util_script_loads_before_the_moved_entry_consumers() -> None:
-    html = _html()
-    assert '<script src="./util-app.js" defer></script>' in html
+    assert ("./util-app.js", True) in support.util_script_facts()
     # meeting-capture binds the parked trigger at load; the util module mounts
     # the same node later — no ordering constraint between them, but the util
     # module must exist for its own boot.
@@ -193,27 +154,26 @@ def test_the_util_script_loads_before_the_moved_entry_consumers() -> None:
 
 
 def test_history_splits_connector_tool_requests_into_a_collapsed_group() -> None:
-    history = HISTORY_PATH.read_text(encoding="utf-8")
     # One bounded prefix matches the server-side label of MCP PC-command rows.
     # The matcher mirrors the server label byte-for-byte via escapes: it is
     # data (never rendered), so no Hangul literal lands in the shipped source.
-    assert 'const TOOL_REQUEST_PREFIX = "\\uc678\\ubd80 AI \\ub3c4\\uad6c \\uc694\\uccad:";' in history
+    facts = support.history_group_facts()
+    assert facts["tool_request_prefix"] == "외부 AI 도구 요청:"
     # A native <details> group keeps the rows searchable and accessible while
     # collapsed; the count rides the summary's ARIA label.
-    assert 'document.createElement("details")' in history
-    assert 'history-tool-requests-summary' in history
-    assert 'deps.uiT("history-tool-request-group")' in history
+    assert facts["details_created"] >= 1
+    assert facts["has_summary"] is True
+    assert "history-tool-request-group" in facts["ui_t_keys"]
     # The person's list emptiness no longer counts the tool-request rows.
-    assert "deps.historyEmpty.hidden = normalConversationCount !== 0;" in history
-    locale = LOCALE_PATH.read_text(encoding="utf-8")
-    assert '"history-tool-request-group": "외부 AI 도구 요청"' in locale
-    assert '"history-tool-request-group": "External tool requests"' in locale
+    assert facts["history_empty_condition"] == "normalConversationCount !== 0"
+    assert facts["copy_ko"] == "외부 AI 도구 요청"
+    assert facts["copy_en"] == "External tool requests"
 
 
 def test_the_collapsed_group_has_its_own_styles() -> None:
-    css = (STATIC / "history.css").read_text(encoding="utf-8")
-    assert ".history-tool-requests" in css
-    assert ".history-tool-requests-summary" in css
+    selectors = support.history_css_selectors()
+    assert ".history-tool-requests" in selectors
+    assert ".history-tool-requests-summary" in selectors
 
 
 # ── 5. 동작: 유틸 회의 도구 화면에 캡처 진입점이 마운트된다 ──────────────────
@@ -320,7 +280,8 @@ def _run_node_script(script: str) -> dict:
         handle.write(script)
         handle.close()
         completed = subprocess.run(
-            ["node", handle.name, str(STATIC / "util-manifest.js"), str(UTIL_APP_PATH)],
+            ["node", handle.name, str(support.STATIC / "util-manifest.js"),
+             str(support.STATIC / "util-app.js")],
             check=True,
             capture_output=True,
             text=True, encoding="utf-8",
