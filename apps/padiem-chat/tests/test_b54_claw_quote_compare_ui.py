@@ -7,7 +7,6 @@ negotiation, and the response-bytes document handoff (#2952 follow-up).
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import json
 import re
@@ -18,115 +17,149 @@ from pathlib import Path
 
 import pytest
 
+from _support.settings_dialog_source import index_elements
+
+# #8060 56차: 원문 읽기는 _support(quote_compare_source)가 담당하고 시험은
+# 파싱된 HTML 요소·JS 토큰·CSS 선언·로케일 맵·하네스 실행 값으로 단언한다.
+from _support.quote_compare_source import (  # noqa: E402
+    compare_rules,
+    has_locale_text,
+    index_ids,
+    locale_map,
+    media_conditions,
+    module_const,
+    module_has,
+    module_identifiers,
+    module_lacks,
+    module_qc_keys,
+    module_strings,
+    rule_for,
+    rule_value,
+    selectors_of,
+    workspace_rules,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-MODULE = (STATIC / "claw-quote-compare.js").read_text(encoding="utf-8")
-CSS = (STATIC / "claw-quote-compare.css").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
 
 
 def test_compare_surface_is_wired_as_a_separate_claw_static_module() -> None:
-    assert 'id="clawQuoteCompare"' in INDEX
-    assert 'id="clawQuoteCompareForm"' in INDEX
-    assert 'id="clawQcSuppliers"' in INDEX
-    assert 'id="clawQcCompareBtn"' in INDEX
-    assert 'id="clawQcDocxBtn"' in INDEX
-    assert 'id="clawQcDownloadBtn"' in INDEX
-    assert '<link rel="stylesheet" href="./claw-quote-compare.css" />' in INDEX
-    assert '<script src="./claw-quote-compare.js"></script>' in INDEX
-    assert INDEX.count('id="clawQuoteCompare"') == 1
-    assert INDEX.count('id="clawQuoteCompareForm"') == 1
+    elements = index_elements()
+    ids = [el.attrs.get("id") for el in elements]
+    for element_id in (
+        "clawQuoteCompare", "clawQuoteCompareForm", "clawQcSuppliers",
+        "clawQcCompareBtn", "clawQcDocxBtn", "clawQcDownloadBtn",
+    ):
+        assert element_id in ids
+    links = [el.attrs for el in elements if el.tag == "link"]
+    assert any(
+        attrs.get("rel") == "stylesheet" and attrs.get("href") == "./claw-quote-compare.css"
+        for attrs in links
+    )
+    scripts = [el.attrs for el in elements if el.tag == "script"]
+    assert any(attrs.get("src") == "./claw-quote-compare.js" for attrs in scripts)
+    assert ids.count("clawQuoteCompare") == 1
+    assert ids.count("clawQuoteCompareForm") == 1
 
 
 def test_supplier_inputs_have_explicit_labels_and_captured_date_field() -> None:
+    strings = module_strings()
     for field in (
         "claw-qc-field-name", "claw-qc-field-item", "claw-qc-field-unit",
         "claw-qc-field-quantity", "claw-qc-field-total", "claw-qc-field-delivery",
         "claw-qc-field-payment", "claw-qc-field-due", "claw-qc-field-prepaid",
         "claw-qc-field-evidence",
     ):
-        assert field in MODULE
-    assert 'node.type = type' in MODULE
-    assert 'input("date", "claw-qc-delivery"' in MODULE
-    assert 'promised_delivery_date = row.delivery.value' in MODULE
-    assert "Lead-time text is never converted" in MODULE
-    assert "리드타임" in INDEX
+        assert field in strings
+    assert module_has("node.type = type")
+    assert module_has('input("date", "claw-qc-delivery"')
+    assert module_has("promised_delivery_date = row.delivery.value")
+    assert module_has("Lead-time text is never converted")
+    assert has_locale_text("리드타임")
 
 
 def test_client_requires_two_suppliers_and_preserves_missing_values() -> None:
-    assert "const MIN_SUPPLIERS = 2" in MODULE
-    assert "const MAX_SUPPLIERS = 10" in MODULE
-    assert "entries.length < MIN_SUPPLIERS" in MODULE
-    assert "supplier_price_missing" in MODULE
-    assert "if (unit) entry.unit_price_minor" in MODULE
-    assert "if (total) entry.total_minor" in MODULE
-    assert "if (row.delivery.value) entry.promised_delivery_date" in MODULE
-    assert "row.delivery.value ||" not in MODULE
-    assert "new Date" not in MODULE
+    assert module_const("MIN_SUPPLIERS") == "2"
+    assert module_const("MAX_SUPPLIERS") == "10"
+    assert module_has("entries.length < MIN_SUPPLIERS")
+    assert "supplier_price_missing" in module_identifiers()
+    assert module_has("if (unit) entry.unit_price_minor")
+    assert module_has("if (total) entry.total_minor")
+    assert module_has("if (row.delivery.value) entry.promised_delivery_date")
+    assert module_lacks("row.delivery.value ||")
+    assert module_lacks("new Date")
 
 
 def test_comparison_saves_through_response_bytes_and_never_fetches_an_artifact() -> None:
-    assert 'const ROUTE = "/api/claw/manual-intake/quote-compare"' in MODULE
-    assert 'const DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"' in MODULE
-    assert 'artifact: "docx"' in MODULE
+    assert module_const("ROUTE") == '"/api/claw/manual-intake/quote-compare"'
+    assert module_const("DOCX_MEDIA_TYPE") == (
+        '"application/vnd.openxmlformats-officedocument.wordprocessingml.document"'
+    )
+    assert module_has('artifact: "docx"')
     # #2952 follow-up ②: the document is the POST response, so nothing is stored
     # and this module must never reach the shared artifact download route again.
-    assert "/api/claw/manual-intake/artifact/" not in MODULE
-    assert "postDocx" in MODULE
-    assert "await response.blob()" in MODULE
-    assert "URL.createObjectURL(artifact.blob)" in MODULE
-    assert 'anchor.download = artifact.filename' in MODULE
-    assert "workspace_document_store" not in MODULE
-    assert "createClawRun" not in MODULE
+    assert not any("/api/claw/manual-intake/artifact/" in value for value in module_strings())
+    assert "postDocx" in module_identifiers()
+    assert module_has("await response.blob()")
+    assert module_has("URL.createObjectURL(artifact.blob)")
+    assert module_has("anchor.download = artifact.filename")
+    assert module_lacks("workspace_document_store")
+    assert module_lacks("createClawRun")
 
 
 def test_negotiation_is_explicitly_draft_only_without_external_actions() -> None:
-    assert 'negotiation.status === "draft_only"' in MODULE
-    assert 'text("claw-qc-draft")' in MODULE
-    assert 'text("claw-qc-no-external")' in MODULE
-    assert 'id="clawQcCompareBtn"' in INDEX
-    assert 'id="clawQcDocxBtn"' in INDEX
+    assert module_has('negotiation.status === "draft_only"')
+    assert module_has('text("claw-qc-draft")')
+    assert module_has('text("claw-qc-no-external")')
+    ids = [el.attrs.get("id") for el in index_elements()]
+    assert "clawQcCompareBtn" in ids and "clawQcDocxBtn" in ids
     # No actionable send, order-submit, or purchase control is present.
-    assert not re.search(r'<button[^>]+>(?:[^<]*(?:send|purchase|order submit)[^<]*)</button>', INDEX, re.I)
+    assert not [
+        el for el in index_elements()
+        if el.tag == "button"
+        and any(word in el.text.lower() for word in ("send", "purchase", "order submit"))
+    ]
 
 
 def test_result_projection_is_text_only_and_mobile_focus_tokens_exist() -> None:
-    assert "textContent" in MODULE
-    assert "innerHTML" not in MODULE
-    assert "replaceChildren" in MODULE
-    for token in ("focus-visible", "min-height: 2.75rem", "@media (max-width: 920px)", "@media (max-width: 560px)"):
-        assert token in CSS
-    assert ".app-shell:not([data-state=\"claw\"]) .claw-quote-compare" in CSS
+    assert "textContent" in module_identifiers()
+    assert "innerHTML" not in module_identifiers()
+    assert "replaceChildren" in module_identifiers()
+    rules = compare_rules()
+    assert any("focus-visible" in selector for selector in selectors_of(rules))
+    assert rule_value(rules, ".claw-qc-control select", "min-height") == "2.75rem"
+    media = media_conditions(rules)
+    assert "(max-width: 920px)" in media
+    assert "(max-width: 560px)" in media
+    assert rule_for(rules, '.app-shell:not([data-state="claw"]) .claw-quote-compare')
 
 
 def test_claw_conversation_owns_bounded_vertical_scroll_without_changing_chat() -> None:
-    workspace = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
-    claw_block = workspace.split('.app-shell[data-state="claw"] .conversation {', 1)[1].split("}", 1)[0]
+    rules = workspace_rules()
+    claw = '.app-shell[data-state="claw"] .conversation'
     # #5014/#5260: the workbench canvas no longer caps itself against the
     # viewport; the content column bounds it and the canvas owns the scroll.
-    assert "max-height: calc(100vh - 96px)" not in claw_block
-    assert "max-height: none" in claw_block
-    assert "overflow-y: auto" in claw_block
-    assert "min-height: 0" in claw_block
-    assert "overscroll-behavior-y: contain" in claw_block
-    bounded = workspace.split(
-        '.app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {',
-        1,
-    )[1].split("}", 1)[0]
-    assert "flex: 1 1 0" in bounded
+    assert rule_value(rules, claw, "max-height") == "none"
+    assert rule_value(rules, claw, "overflow-y") == "auto"
+    assert rule_value(rules, claw, "min-height") == "0"
+    assert rule_value(rules, claw, "overscroll-behavior-y") == "contain"
+    bounded = (
+        '.app-shell[data-state="claw"]:not('
+        ':has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation'
+    )
+    assert rule_value(rules, bounded, "flex") == "1 1 0"
     # The generic Chat conversation remains governed by its existing rules.
-    assert '.app-shell[data-state="chat"] .conversation' not in claw_block
+    assert not rule_for(rules, '.app-shell[data-state="chat"] .conversation')
 
 
 def test_new_locale_keys_exist_in_both_languages() -> None:
-    keys = set(re.findall(r'"(claw-qc-[^"]+)"\s*:', MODULE))
+    keys = module_qc_keys()
     assert keys
-    ko, en = LOCALE.split("    en: {", 1)
+    ko = locale_map("ko")
+    en = locale_map("en")
     for key in keys:
-        assert f'"{key}"' in ko, key
-        assert f'"{key}"' in en, key
+        assert key in ko, key
+        assert key in en, key
 
 
 _HARNESS = r"""
@@ -289,7 +322,7 @@ def test_real_quote_compare_download_runs_on_response_bytes() -> None:
     harness = directory / "harness.cjs"
     ids = directory / "ids.txt"
     harness.write_text(_HARNESS, encoding="utf-8", newline="\n")
-    found_ids = sorted(set(re.findall(r'id="([A-Za-z0-9]+)"', INDEX)))
+    found_ids = sorted(i for i in index_ids() if re.fullmatch(r"[A-Za-z0-9]+", i))
     ids.write_text("\n".join(found_ids) + "\n", encoding="utf-8", newline="\n")
 
     result = subprocess.run(
