@@ -19,10 +19,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "app"
-ROUTES_PY = APP / "voice_stt_routes.py"
-APP_FACTORY = APP / "app_factory.py"
-INDEX_HTML = ROOT / "static" / "index.html"
+
+# #8060: 시트·서버·교차 제품 소스 원문 읽기는 _support/claw_static이 담당하고
+# 시험은 구조·순서·부재 금지 경계를 단언한다. 이 모듈은 원문 read를 갖지 않는다.
+from _support import claw_static
+from _support import voice_live_token_source
 
 
 def _routes_module():
@@ -41,7 +42,7 @@ def test_the_live_token_route_exists_for_chat_and_claw() -> None:
     # The internal path stays internal: the browser never addresses it.
     assert routes.STT_LIVE_TOKEN_PATH == "/internal/v1/voice/live-token"
     assert routes.STT_INTERNAL_ORIGIN.startswith("https://")
-    factory = APP_FACTORY.read_text(encoding="utf-8")
+    factory = claw_static.server_source("app_factory")
     assert "voice_live_token" in factory
     assert "VOICE_LIVE_TOKEN_PATH" in factory
     assert "CLAW_VOICE_LIVE_TOKEN_PATH" in factory
@@ -101,7 +102,7 @@ def test_the_transport_forwards_both_opaque_clues_to_the_stt_worker() -> None:
 
 def _route_body() -> str:
     """Only the route function, not the transport class below it."""
-    source = ROUTES_PY.read_text(encoding="utf-8")
+    source = claw_static.server_source("voice_stt_routes")
     return source.split("async def voice_live_token", 1)[1].split("\nclass ", 1)[0]
 
 
@@ -144,7 +145,7 @@ def test_the_route_is_origin_and_media_type_guarded() -> None:
 
 
 def test_the_browser_reaches_the_token_over_the_same_origin_only() -> None:
-    wiring = (ROOT / "static" / "voice-stt-wiring.js").read_text(encoding="utf-8")
+    wiring = claw_static.sheet("voice-stt-wiring.js")
     code = re.sub(r"/\*.*?\*/", "", wiring, flags=re.DOTALL)
     code = re.sub(r"//[^\n]*", "", code)
     assert '"/api/voice/live-token"' in code
@@ -157,11 +158,11 @@ def test_the_browser_reaches_the_token_over_the_same_origin_only() -> None:
 
 
 def test_the_stt_worker_owns_the_live_token_route() -> None:
-    worker = (ROOT.parent / "padiem-voice-stt" / "worker.py").read_text(encoding="utf-8")
+    worker = voice_live_token_source.worker_source()
     assert 'LIVE_TOKEN_PATH = "/internal/v1/voice/live-token"' in worker
     assert "CAPABILITY_LIVE_TOKEN" in worker
     # The worker reads the provider key from its own binding only.
     assert "GEMINI_API_KEY_BINDING" in worker
-    contract = (ROOT.parent / "padiem-voice-stt" / "voice_stt_contract.py").read_text(encoding="utf-8")
+    contract = voice_live_token_source.contract_source()
     assert "liveConnectConstraints" in contract
     assert "def to_public_dict" in contract
