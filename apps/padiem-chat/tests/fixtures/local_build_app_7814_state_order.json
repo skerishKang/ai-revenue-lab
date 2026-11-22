@@ -525,6 +525,12 @@
     ]
    ],
    [
+    "/api/site-feedback/ingest",
+    [
+     "POST"
+    ]
+   ],
+   [
     "/api/admin/site-feedback",
     [
      "GET",
@@ -3095,6 +3101,12 @@
     "/api/site-feedback",
     [
      "OPTIONS",
+     "POST"
+    ]
+   ],
+   [
+    "/api/site-feedback/ingest",
+    [
      "POST"
     ]
    ],

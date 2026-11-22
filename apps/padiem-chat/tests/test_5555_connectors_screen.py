@@ -21,19 +21,24 @@ bring the old shape back:
   existing owner-scoped readback and the existing connection actions.
 """
 from __future__ import annotations
-import locale_bundle
 
 import re
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
+from _support.connectors_screen import (
+    capability_nav_css,
+    connector_management_js,
+    connection_state_js,
+    device_manager_js,
+    home_choices_js,
+    index_html,
+    locale_source,
+)
 
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
-CONNECTOR_JS = (STATIC / "claw-connector-management.js").read_text(encoding="utf-8")
-HOME_JS = (STATIC / "claw-home-choices.js").read_text(encoding="utf-8")
-CSS = (STATIC / "capability-nav.css").read_text(encoding="utf-8")
+HTML = index_html()
+LOCALE = locale_source()
+CONNECTOR_JS = connector_management_js()
+HOME_JS = home_choices_js()
+CSS = capability_nav_css()
 
 
 def _card(anchor: str) -> str:
@@ -185,7 +190,7 @@ def test_the_github_card_uses_the_shared_status_vocabulary():
 def test_a_failed_status_read_is_never_reported_as_not_connected():
     # #5553: the card reads the ONE shared state, and the shared
     # classification keeps "could not verify" separate from "not connected".
-    shared = (STATIC / "claw-connection-state.js").read_text(encoding="utf-8")
+    shared = connection_state_js()
     assert "컴퓨터 연결 상태를 확인하지 못했습니다." in HOME_JS
     assert "The computer connection status could not be confirmed." in HOME_JS
     assert 'return STATE.UNAVAILABLE' in shared
@@ -196,9 +201,7 @@ def test_a_failed_status_read_is_never_reported_as_not_connected():
 def test_the_computer_state_comes_from_the_existing_device_directory_reader():
     # #5553: the device directory module stays the ONLY reader of the
     # canonical endpoint, and the card reads what it publishes.
-    assert '"/api/claw/local-access/devices"' in (
-        STATIC / "claw-device-manager.js"
-    ).read_text(encoding="utf-8")
+    assert '"/api/claw/local-access/devices"' in device_manager_js()
     assert "/api/claw/local-access/devices" not in HOME_JS
     assert "PadiemComputerConnectionState" in HOME_JS
     assert "padiem:computer-connection" in HOME_JS

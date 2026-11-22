@@ -32,6 +32,8 @@ SECRET_FIELDS = frozenset({
     "account_delete_rpc_secret",
     "password_rpc_secret",
     "voice_rpc_secret",
+    "site_feedback_secret_lovetree",
+    "site_feedback_secret_lovetree_previous",
 })
 
 

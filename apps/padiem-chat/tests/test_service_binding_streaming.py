@@ -30,6 +30,8 @@ from padiem_ai_core.contracts import AgentProfile
 from padiem_ai_core.execution_runtime import ExecutionRequest, ExecutionRuntimeError
 from padiem_ai_core.streaming_runtime import StreamingExecutionRuntime
 
+from _support.service_binding import worker_source
+
 
 BASE_URL = "https://b14.internal"
 MODEL = "openrouter/free"
@@ -156,7 +158,7 @@ class FakeBinding:
 
 
 def _load_worker_completed_type():
-    source = WORKER_PATH.read_text(encoding="utf-8")
+    source = worker_source()
     tree = ast.parse(source)
     completed = next(
         node
@@ -190,7 +192,7 @@ def _load_worker_completed_type():
 
 
 def _load_worker_streaming_types():
-    source = WORKER_PATH.read_text(encoding="utf-8")
+    source = worker_source()
     tree = ast.parse(source)
     names = {
         "_CloudflareReadableByteStream",
@@ -233,7 +235,7 @@ def _load_worker_streaming_types():
 
 
 def test_worker_stream_bridge_uses_core_real_httpx_type_family():
-    source = WORKER_PATH.read_text(encoding="utf-8")
+    source = worker_source()
     tree = ast.parse(source)
 
     imports_real_httpx = any(
@@ -719,7 +721,7 @@ def test_service_binding_stream_unsupported_chunk_fails_closed_specifically():
 
 
 def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_response():
-    tree = ast.parse(WORKER_PATH.read_text(encoding="utf-8"))
+    tree = ast.parse(worker_source())
     classes = {
         node.name: ast.unparse(node)
         for node in tree.body
@@ -735,7 +737,7 @@ def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_r
     assert "MAX_CONFIGURED_B14_RESPONSE_BYTES" in completed
     # #5784: the Worker now hands the transport types to one composer instead of
     # constructing them inline, so the composition point is what is pinned here.
-    worker = WORKER_PATH.read_text(encoding="utf-8")
+    worker = worker_source()
     wired = " ".join(worker.split())
     assert (
         "service_transport, stream_transport = _compose_b14_transports( "

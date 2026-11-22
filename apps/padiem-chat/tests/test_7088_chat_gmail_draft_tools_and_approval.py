@@ -55,7 +55,8 @@ from padiem_ai_core.tool_runtime import (
     ToolRuntime,
     ToolRuntimeError,
 )
-from test_browser_orchestration_lifecycle_contract import LIFECYCLE_PATH, _run_node
+from test_browser_orchestration_lifecycle_contract import _run_node
+from _support.orchestration_lifecycle import message_lifecycle_source
 from _support.google_connector_ticket_bridge import cookie_for, settings
 
 ORIGIN = "https://chat.example.test"
@@ -788,7 +789,7 @@ async def test_7088_paused_orchestration_wires_into_browser_confirmation_card_in
         frames.append(frame)
 
     orch = _parse_sse(frames)[0][1]["orchestration"]
-    lifecycle_js = LIFECYCLE_PATH.read_text(encoding="utf-8")
+    lifecycle_js = message_lifecycle_source()
     card = _run_node(
         """
 global.window = globalThis;

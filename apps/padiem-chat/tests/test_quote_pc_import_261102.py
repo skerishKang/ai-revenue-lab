@@ -18,6 +18,8 @@ import subprocess
 from functools import lru_cache
 from pathlib import Path
 
+from _support.quote_pc_import import read_sheet
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 SOURCES_JS = STATIC / "claw-web-xlsx-sources.js"
@@ -26,7 +28,7 @@ EXCHANGE_JS = STATIC / "pc-file-exchange.js"
 
 
 def _read(path: Path) -> str:
-    return path.read_text(encoding="utf-8")
+    return read_sheet(path)
 
 
 # ── 정적 계약 ────────────────────────────────────────────────────────────────

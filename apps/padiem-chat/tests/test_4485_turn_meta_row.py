@@ -23,9 +23,18 @@ from __future__ import annotations
 import http.server
 import re
 import threading
-from pathlib import Path
 
 import pytest
+
+from _support.turn_meta_row import (
+    answer_css,
+    app_js,
+    glass_css,
+    lifecycle_js,
+    pc_run_js,
+    static_dir,
+    streaming_js,
+)
 
 # The static contract tests must run everywhere (the required CI lane installs
 # no browser), so Playwright is optional and only the browser checks skip.
@@ -38,18 +47,12 @@ requires_browser = pytest.mark.skipif(
     sync_playwright is None, reason="playwright is not installed in this environment"
 )
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-APP_JS = STATIC / "app.js"
-PC_RUN_JS = STATIC / "chat-pc-run-module.js"
-LIFECYCLE_JS = STATIC / "message-lifecycle.js"
-GLASS_CSS = STATIC / "padiem-glass-portrait.css"
-ANSWER_CSS = STATIC / "answer-actions.css"
+_STATIC_DIR = static_dir()
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(STATIC))
+        super().__init__(*args, directory=str(_STATIC_DIR))
 
     def log_message(self, *args):
         pass
@@ -78,15 +81,15 @@ def browser():
 
 
 def _app() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    return app_js()
 
 
 def _lifecycle() -> str:
-    return LIFECYCLE_JS.read_text(encoding="utf-8")
+    return lifecycle_js()
 
 
 def _pc_run() -> str:
-    return PC_RUN_JS.read_text(encoding="utf-8")
+    return pc_run_js()
 
 
 def _function_body(source: str, header: str) -> str:
@@ -123,11 +126,11 @@ def _defining_body(header: str) -> str:
 
 
 def _glass() -> str:
-    return GLASS_CSS.read_text(encoding="utf-8")
+    return glass_css()
 
 
 def _answer_css() -> str:
-    return ANSWER_CSS.read_text(encoding="utf-8")
+    return answer_css()
 
 
 # ── the meta row spacing rule ───────────────────────────────────────────────
@@ -194,7 +197,7 @@ def test_the_runtime_chip_has_one_owner() -> None:
 
 def test_every_completion_path_releases_the_preparing_chip() -> None:
     app = _app()
-    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
+    stream = streaming_js()
     # The answering shell starts in the preparing state.
     assert 'deps.addAssistantShell(deps.uiT("answer-preparing"), "preparing")' in stream
     # The stream done path releases it.
@@ -230,7 +233,7 @@ def test_the_orchestration_completion_path_releases_the_chip() -> None:
 def test_the_runtime_chip_behaviour_in_a_real_browser(browser, server) -> None:
     page = browser.new_page()
     page.goto(f"{server}?theme=padiem-glass")
-    page.add_script_tag(path=str(LIFECYCLE_JS))
+    page.add_script_tag(content=lifecycle_js())
 
     result = page.evaluate(
         """() => {

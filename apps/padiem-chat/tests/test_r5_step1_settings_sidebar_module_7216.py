@@ -22,17 +22,24 @@ import json
 import shutil
 import subprocess
 from html.parser import HTMLParser
-from pathlib import Path
 
 import pytest
 
 from _r5_settings_sidebar_module_harness import observations
+from _support.r5_settings_sidebar import (
+    app_js,
+    index_html,
+    module_source,
+    settings_js,
+    sidebar_js,
+    static_dir,
+)
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-SETTINGS = (STATIC / "chat-settings-module.js").read_text(encoding="utf-8")
-SIDEBAR = (STATIC / "chat-sidebar-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+APP = app_js()
+SETTINGS = settings_js()
+SIDEBAR = sidebar_js()
+INDEX = index_html()
+_STATIC_DIR = static_dir()
 
 MODULES = {
     "settings": ("PadiemChatSettingsModule", "chat-settings-module.js",
@@ -72,7 +79,7 @@ def test_module_files_expose_one_factory_and_keep_the_original_names() -> None:
     문자열로 남긴다. 함수 동작 자체는 아래 실행 시험이 직접 호출해 증명한다.
     """
     for _, (global_name, filename, names) in MODULES.items():
-        source = (STATIC / filename).read_text(encoding="utf-8")
+        source = module_source(filename)
         assert f"window.{global_name} = {{" in source
         assert "create(deps) {" in source
         for name in names:
@@ -185,7 +192,7 @@ console.log("REGISTRY_OK");
         "names": {zone: list(spec[2]) for zone, spec in MODULES.items()},
     }
     completed = subprocess.run(
-        [node, "-e", script.replace("%s", json.dumps(zone_plan), 1), str(STATIC)],
+        [node, "-e", script.replace("%s", json.dumps(zone_plan), 1), str(_STATIC_DIR)],
         capture_output=True, text=True, encoding="utf-8", timeout=30,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr

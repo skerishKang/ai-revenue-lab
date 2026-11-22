@@ -147,7 +147,8 @@ from .news_routes import news, news_unread
 from .news_store import D1NewsStore
 from .site_feedback_admin_identity import D1SiteFeedbackAdminAuthorizer
 from .site_feedback_store import D1SiteFeedbackStore
-from .site_feedback_routes import admin_site_feedback, admin_site_feedback_status, site_feedback
+from .site_feedback_routes import (admin_site_feedback, admin_site_feedback_status,
+                                 site_feedback, site_feedback_ingest)
 from .account_deletion import account_delete, chat_account_delete_rpc, shared_account_delete
 from .password_rpc import password_register_rpc, password_verify_rpc
 from .password_recovery import RECOVERY_PATHS, password_recovery_rpc
@@ -660,6 +661,8 @@ def register_admin_feedback_routes(routes: list) -> None:
 def register_site_feedback_routes(routes: list) -> None:
     routes.extend([
         Route("/api/site-feedback", site_feedback, methods=["POST", "OPTIONS"]),
+        # #7690: Lovetree 서버-서버 수신. 공개 origin·브라우저 CORS 없이 HMAC만 본다.
+        Route("/api/site-feedback/ingest", site_feedback_ingest, methods=["POST"]),
         Route("/api/admin/site-feedback", admin_site_feedback, methods=["GET"]),
         Route("/api/admin/site-feedback/{feedback_id}", admin_site_feedback_status, methods=["PATCH"]),
     ])

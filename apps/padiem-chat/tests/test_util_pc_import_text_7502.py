@@ -15,7 +15,6 @@ Pinned here:
 - every request is a fake: no real user PC is contacted by the tests.
 """
 from __future__ import annotations
-import locale_bundle
 
 import json
 import os
@@ -27,15 +26,25 @@ from pathlib import Path
 
 from css_rules import find_rules_with_selector, parse_rules
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-TOOLS_JS = (STATIC / "util-tools.js").read_text(encoding="utf-8")
-CHAT_MODE_JS = (STATIC / "util-chat-mode.js").read_text(encoding="utf-8")
-MANIFEST_JS = (STATIC / "util-manifest.js").read_text(encoding="utf-8")
-LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
-TOOLS_CSS = (STATIC / "util-tools.css").read_text(encoding="utf-8")
-CHAT_CSS = (STATIC / "util-chat-mode.css").read_text(encoding="utf-8")
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
+from _support.pc_import_text import (
+    app_js,
+    chat_css,
+    chat_mode_js,
+    locale_source,
+    manifest_js,
+    static_dir,
+    tools_css,
+    tools_js,
+)
+
+TOOLS_JS = tools_js()
+CHAT_MODE_JS = chat_mode_js()
+MANIFEST_JS = manifest_js()
+LOCALE_JS = locale_source()
+TOOLS_CSS = tools_css()
+CHAT_CSS = chat_css()
+APP_JS = app_js()
+_STATIC_DIR = static_dir()
 
 LOCALE_KEYS = (
     "util-pc-import",
@@ -373,9 +382,9 @@ def _run_harness() -> dict:
         harness = Path(tmp) / "util_pc_import_harness.js"
         harness.write_text(HARNESS, encoding="utf-8")
         completed = subprocess.run(
-            [node, str(harness), str(STATIC / "util-manifest.js"), str(STATIC / "util-tools-markdown.js"),
-             str(STATIC / "util-tools-contract.js"), str(STATIC / "util-chat-mode.js"),
-             str(STATIC / "util-tools.js")],
+            [node, str(harness), str(_STATIC_DIR / "util-manifest.js"), str(_STATIC_DIR / "util-tools-markdown.js"),
+             str(_STATIC_DIR / "util-tools-contract.js"), str(_STATIC_DIR / "util-chat-mode.js"),
+             str(_STATIC_DIR / "util-tools.js")],
             capture_output=True, text=True, encoding="utf-8", env=dict(os.environ), check=False,
         )
     assert completed.stdout.strip(), completed.stdout + completed.stderr

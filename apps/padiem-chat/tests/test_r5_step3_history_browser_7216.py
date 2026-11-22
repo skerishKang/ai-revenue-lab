@@ -14,16 +14,17 @@ from __future__ import annotations
 
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
 
 import pytest
 
 pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import sync_playwright  # noqa: E402
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+from _support.history_browser import app_js, static_dir, strict_deps_js
+
+APP = app_js()
+STRICT = strict_deps_js()
+_STATIC_DIR = static_dir()
 
 NAMES = (
     "renderTyping", "clearHistoryUI", "renderHistorySkeleton",
@@ -179,7 +180,7 @@ def _forwarder_lines() -> str:
 
 class _StaticHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(STATIC.parent), **kwargs)
+        super().__init__(*args, directory=str(_STATIC_DIR.parent), **kwargs)
 
     def log_message(self, *args):
         pass
@@ -187,7 +188,7 @@ class _StaticHandler(SimpleHTTPRequestHandler):
 
 @pytest.fixture(scope="module")
 def page_url():
-    harness = STATIC / "_r5_history_forwarder_harness.html"
+    harness = _STATIC_DIR / "_r5_history_forwarder_harness.html"
     harness.write_text(HARNESS.replace("__STRICT__", STRICT).replace("__FORWARDERS__", _forwarder_lines()),
                        encoding="utf-8", newline="\n")
     server = ThreadingHTTPServer(("127.0.0.1", 0), _StaticHandler)
