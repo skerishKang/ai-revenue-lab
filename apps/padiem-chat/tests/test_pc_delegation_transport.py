@@ -17,7 +17,7 @@ from kagent.p01_run_flow import create_claw_run
 
 import test_5015_orchestration_pc_lane as native
 import test_5484_canonical_subject_engine_admission as canonical
-import test_chat_pc_drive as legacy
+import _support.chat_pc_drive as legacy
 
 
 DEVICE = "dev_" + "a" * 32

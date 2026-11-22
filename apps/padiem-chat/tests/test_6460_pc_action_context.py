@@ -15,7 +15,7 @@ from app.task_modes import get_task_mode
 
 import test_5015_orchestration_pc_lane as native
 import test_5484_canonical_subject_engine_admission as canonical
-import test_chat_pc_drive as legacy
+import _support.chat_pc_drive as legacy
 
 
 def test_only_owner_restored_history_is_evidence_and_metadata_is_rebuilt():

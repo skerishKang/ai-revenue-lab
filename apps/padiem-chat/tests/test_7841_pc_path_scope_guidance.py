@@ -17,7 +17,7 @@ from app.chat_pc_drive import (
 )
 from app.orchestration_bridge import B62OrchestrationError
 
-import test_chat_pc_drive as legacy
+import _support.chat_pc_drive as legacy
 
 
 def _lane(bridge):

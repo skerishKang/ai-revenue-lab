@@ -28,7 +28,7 @@ from app.chat_pc_drive import (
     chat_pc_plan_for_tool,
 )
 
-import test_chat_pc_drive as legacy
+import _support.chat_pc_drive as legacy
 
 ANSWER = "C 드라이브와 D 드라이브가 있습니다."
 STAGED = "chat_" + "s" * 32
