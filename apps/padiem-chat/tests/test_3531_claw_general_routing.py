@@ -13,182 +13,156 @@ These contracts pin the repair at the static boundary:
 - the quotation workflow remains reachable only through the manual form's
   own explicit submit (초안 만들기) with its action selector;
 - the general chat transport (/api/chat/stream) is untouched.
+
+#8060 58차: 원문 read는 _support/claw_general_routing_view가 담당하고, 단언은
+파싱된 선택자·이름붙은 팩트·계산 값으로 확인한다(의미 약화 없음).
 """
 
 from __future__ import annotations
-import locale_bundle
 
-from pathlib import Path
-
-# R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
-from _r5_function_source import definition_source, function_body
-
-STATIC = Path(__file__).resolve().parents[1] / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-NAV = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
-# #7216 R5 A5a: execute 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
-CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
-# R5 A5b: the manual form submit/preview handler moved to its own module.
-CLAW_FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
-STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-
-
-def _composer_submit_handler() -> str:
-    start = APP.index('form.addEventListener("submit"')
-    end = APP.index("\n  });", start)
-    return APP[start:end]
+from _support.claw_general_routing_view import (  # noqa: E402
+    composer_submit_facts,
+    conversation_facts,
+    locale_facts,
+    manual_entry_facts,
+    manual_workflow_facts,
+    memory_facts,
+    static_diversion_tokens,
+    styles_facts,
+    transport_facts,
+    view_facts,
+    workspace_selector_has,
+)
 
 
 def test_generic_composer_submit_reaches_general_chat_unconditionally() -> None:
-    handler = _composer_submit_handler()
+    facts = composer_submit_facts()
     # The only outbound call from the composer is the general conversation.
-    assert "submitPrompt(input.value)" in handler
+    assert facts["submits_prompt"] is True
     # No shell-state fork and no manual-form diversion remain inside it.
-    assert "clawManualForm" not in handler
-    assert "dataset.state" not in handler
-    assert "requestSubmit" not in handler
+    assert facts["forbidden"] == []
 
 
 def test_no_composer_diversion_anywhere_in_static() -> None:
     # The hijack existed in exactly one place; it must not reappear under a
     # different spelling elsewhere in the composer path.
-    assert "clawManualForm.requestSubmit()" not in APP
+    assert static_diversion_tokens() == []
 
 
 def test_quotation_workflow_requires_explicit_manual_submit() -> None:
     # The manual form keeps its own submit listener posting the selected
     # action to preview; the execute button posts to execute. Both are
     # user-invoked controls, never the composer default.
-    assert 'clawManualForm.addEventListener("submit"' in CLAW_FORM
-    assert 'fetch("/api/claw/manual-intake/preview"' in CLAW_FORM
-    assert 'fetch("/api/claw/manual-intake/execute"' in CLAW_RUN
-    assert "clawAction?.value" in CLAW_FORM
-    for action in ('"quote"', '"order"', '"reply"', '"summary"'):
-        assert action in INDEX
+    facts = manual_workflow_facts()
+    for key in ("form_submit_listener", "preview_fetch", "execute_fetch", "action_value"):
+        assert facts[key] is True
+    assert facts["missing_actions"] == []
 
 
 def test_general_chat_transport_untouched() -> None:
     # The general path the composer now always takes still exists end to end.
-    assert 'fetch("/api/chat/stream"' in TRANSPORT
-    assert 'fetch("/api/chat"' in TRANSPORT
     # B7: requestAnswer lives in the streaming module and is reached through
     # the registry (app.provide("streaming")) — no app.js forwarder remains.
-    assert "async function requestAnswer(" not in APP
-    assert 'app.provide("streaming",' in APP
-    assert "async function requestAnswer(" in STREAM
-    assert "deps.requestStreamingAnswer(\n        article,\n        payload," in STREAM
-    assert "async function submitPrompt(text, selectedSkill)" in definition_source(
-        "submitPrompt", prefix="async function "
-    )
-
-
-WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
-STYLES_CSS = (STATIC / "styles.css").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    facts = transport_facts()
+    for key in (
+        "stream_fetch", "chat_fetch", "app_request_answer_absent",
+        "streaming_provided", "request_answer_in_stream",
+        "streaming_answer_call", "submit_prompt_definition",
+    ):
+        assert facts[key] is True
 
 
 def test_claw_default_view_is_general_not_manual() -> None:
     # #3531 UI hierarchy: opening Claw lands on the general conversation
     # view. The document workflow is a separate explicit view, never the
     # default. Auth loss also falls back to general, never to manual.
-    general = function_body("openClawWorkspace")
-    assert 'clawWorkspace.dataset.view = "general"' in general
-    assert "if (deps.clawManualForm) deps.clawManualForm.hidden = true;" in general
-    manual = function_body("openClawManual")
-    assert 'clawWorkspace.dataset.view = "manual"' in manual
-    assert "if (deps.clawManualForm) deps.clawManualForm.hidden = false;" in manual
+    facts = view_facts()
+    for key in (
+        "general_view_set", "general_manual_hidden", "manual_view_set",
+        "manual_visible", "session_bind", "auth_guard_before_reset",
+    ):
+        assert facts[key] is True
     # R5 A10: openClawWorkspace moved to chat-nav-module.js - the one general reset lives there.
-    assert NAV.count('clawWorkspace.dataset.view = "general"') == 1
+    assert facts["nav_general_count"] == 1
     # With the inbox gone, only the automation fallback still resets to general.
-    session = (STATIC / "claw-session.js").read_text(encoding="utf-8")
-    assert "window.PadiemClawSession.bind({" in APP
-    assert NAV.count('workspace.dataset.view = "general"') + session.count('workspace.dataset.view = "general"') == 1
-    assert session.index("if (authenticated) return;") < session.index('workspace.dataset.view = "general"')
-    assert NAV.count('clawWorkspace.dataset.view = "manual"') == 1
+    assert facts["general_reset_count"] == 1
+    assert facts["nav_manual_count"] == 1
 
 
 def test_manual_workflow_is_explicitly_reachable_only() -> None:
     # A visible entry control opens the manual view; nothing else does. It
     # lives in the fixed composer wrap (always on screen), not in the
     # workspace canvas, so geometry parity with Chat Home is preserved.
-    assert 'id="clawManualEntryBar"' in INDEX
-    assert 'id="clawManualEntryButton"' in INDEX
-    assert 'data-locale-key="claw-manual-entry"' in INDEX
-    wrap = INDEX.split('class="composer-wrap"', 1)[1]
-    assert 'id="clawManualEntryBar"' in wrap
-    # R5 A10: the entry listener moved to chat-nav-module.js; app.js keeps the wire call.
-    assert 'clawManualEntryButton.addEventListener("click", openClawManual)' in NAV
-    assert 'navModuleInstance.wireNavEntryListeners();' in APP
-    # The workspace header keeps its identity; the entry control is new.
-    assert 'id="clawWorkspaceTitle"' in INDEX
+    facts = manual_entry_facts()
+    for key in (
+        "entry_bar_id", "entry_button_id", "locale_key", "bar_in_wrap",
+        "click_listener", "wire_call", "workspace_title",
+    ):
+        assert facts[key] is True
 
 
 def test_general_view_hides_workspace_canvas() -> None:
     # Geometry parity forces the workspace canvas hidden in general view
     # (like manual): any in-flow header above the thread would push the
     # conversation down. The entry bar carries explicit access instead.
-    assert '.claw-workspace[data-view="general"]' in WORKSPACE_CSS
-    assert 'document.getElementById("clawManualEntryBar")' in NAV
+    assert workspace_selector_has('.claw-workspace[data-view="general"]') is True
+    assert manual_entry_facts()["entry_bar_lookup_in_nav"] is True
 
 
 def test_manual_chrome_hidden_unless_manual_view() -> None:
     # Workflow chip, workflow help, and the manual-entry control swap by
     # view: chip/help only in manual, entry control everywhere else.
-    assert ".claw-workspace:not([data-view=\"manual\"]) .claw-workspace-chip" in WORKSPACE_CSS
-    assert ".claw-workspace:not([data-view=\"manual\"]) .claw-workspace-help" in WORKSPACE_CSS
-    assert ".claw-entry-bar[hidden]" in WORKSPACE_CSS
+    for selector in (
+        '.claw-workspace:not([data-view="manual"]) .claw-workspace-chip',
+        '.claw-workspace:not([data-view="manual"]) .claw-workspace-help',
+        '.claw-entry-bar[hidden]',
+    ):
+        assert workspace_selector_has(selector) is True
     # The manual result empty/hint copy is workflow-view-only. The result
     # card and memory surfaces keep their own explicit reveal logic.
-    assert "#clawResultEmpty" in WORKSPACE_CSS
-    assert "#clawResultHint" in WORKSPACE_CSS
-    assert "#clawExecuteHint" in WORKSPACE_CSS
+    for element_id in ("#clawResultEmpty", "#clawResultHint", "#clawExecuteHint"):
+        assert workspace_selector_has(element_id) is True
 
 
 def test_conversation_stays_primary_in_general_view() -> None:
     # Only inbox/automation take over the canvas and hide the conversation.
     # The general view keeps the primary result surface visible.
-    assert ":not([data-view=\"manual\"]):not([data-view=\"general\"])" in WORKSPACE_CSS
+    assert workspace_selector_has(':not([data-view="manual"]):not([data-view="general"])') is True
 
 
 def test_claw_default_copy_is_general() -> None:
     # The Claw tagline must not present a quotation-only product. Values
     # changed (keys kept for locale parity); the old draft-framing copy
     # must be gone in both languages.
-    assert "견적서·발주서·답장 초안을 준비하는" not in LOCALE
-    assert "to prepare quote, order, and reply drafts" not in LOCALE
-    assert "Padiem AI 작업공간" in LOCALE
-    assert "Padiem AI workspace" in LOCALE
-    assert LOCALE.count('"claw-manual-entry": "') >= 2
+    facts = locale_facts()
+    for key in ("old_ko_absent", "old_en_absent", "new_ko", "new_en"):
+        assert facts[key] is True
+    assert facts["manual_entry_keys"] >= 2
 
 
 def test_memory_surfaces_stay_secondary() -> None:
     # Memory review and approved memory are hidden by default and render
     # only after explicit workflow action — never ahead of the primary
     # conversation result.
-    for marker in ('id="clawMemoryReview"', 'id="clawApprovedMemory"'):
-        line = next(l for l in INDEX.splitlines() if marker in l)
-        assert "hidden" in line, marker
-    # Memory proposals render from exactly one call site: preview success.
+    facts = memory_facts()
+    for element_id in ("clawMemoryReview", "clawApprovedMemory"):
+        assert facts["hidden_by_id"][element_id] is True
     # R5 A2: 1 definition in chat-memory-module.js + 1 app.renderMemoryProposalReview call in app.js.
-    memory_module = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
-    assert memory_module.count("function renderMemoryProposalReview(") == 1
-    assert (APP + CLAW_FORM).count("app.renderMemoryProposalReview(") == 1
-    assert (APP + memory_module + CLAW_FORM).count("renderMemoryProposalReview(") == 2
+    assert facts["definition_count"] == 1
+    assert facts["app_call_count"] == 1
+    assert facts["total_count"] == 2
 
 
 def test_sticky_bottom_reserve_intact() -> None:
     # The fixed bottom stack (composer; manual form hidden by default) keeps
     # its scroll reserves, so recent runs and body content are not clipped.
-    assert "position: fixed" in STYLES_CSS
-    assert "bottom: 0" in STYLES_CSS
+    styles = styles_facts()
+    assert styles["position_fixed"] is True
+    assert styles["bottom_zero"] is True
     # #5014/#5260: the reserve follows the measured composer clearance. The
     # former fixed 280px inset survives only as its fallback, never as the
     # sole padding value.
-    conversation = WORKSPACE_CSS.split('.app-shell[data-state="claw"] .conversation {', 1)[1].split("}", 1)[0]
-    assert "padding-bottom: calc(" in conversation
-    assert "var(--padiem-composer-clearance, 280px)" in conversation
-    assert "var(--padiem-visual-keyboard-inset, 0px)" in conversation
-    assert "padding-bottom: 280px" not in conversation
-    assert "overflow-y: auto" in WORKSPACE_CSS
+    conversation = conversation_facts()
+    for key in ("calc_padding", "clearance_fallback", "keyboard_inset", "no_fixed_280"):
+        assert conversation[key] is True
+    assert styles["overflow_y_auto"] is True
