@@ -42,6 +42,10 @@
     clearDraft();
     nodes.entry.setAttribute("aria-expanded", "false");
     if (returnFocus?.isConnected !== false) returnFocus?.focus?.();
+    // #8316: with the dialog closed the toast may show again. Update only the
+    // notice — a full paint() would re-render the list and invalidate node
+    // references callers hold (e.g. the news jump button).
+    nodes.notice.hidden = !state.owner || (state.unread < 1 && state.unreadReplies < 1);
   }
   function reset() {
     state.epoch += 1;
@@ -317,7 +321,11 @@
     nodes.limit.textContent = copy("limit", { count: state.dailyLimit });
     const limit = state.message === "reply-too-long" ? state.replyLimit : state.bodyLimit;
     nodes.status.textContent = state.receipt ? copy("received", { id: state.receipt }) : state.message ? copy(state.message, { limit }) : "";
-    nodes.notice.hidden = !signedIn || (state.unread < 1 && state.unreadReplies < 1);
+    // #8316: at phone widths the notice sits in the page flow; with the dialog
+    // open it overlapped the dialog title. The dialog already lists the items, so
+    // the toast steps aside while it is open.
+    nodes.notice.hidden = !signedIn || (state.unread < 1 && state.unreadReplies < 1)
+      || (nodes.dialog && nodes.dialog.open);
     nodes.noticeText.textContent = copy(state.unreadReplies > 0 ? "reply-notice" : "fixed-notice");
     for (const view of ["compose", "own", "admin", "usage"]) {
       nodes[view + "Panel"].hidden = state.view !== view;
