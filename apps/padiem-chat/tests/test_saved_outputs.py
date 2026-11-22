@@ -4,6 +4,13 @@ import json
 from dataclasses import replace
 from pathlib import Path
 
+from _support.saved_outputs import (
+    a11y_js,
+    index_html,
+    outputs_js,
+    saved_outputs_migration,
+    worker_py,
+)
 import httpx
 import pytest
 
@@ -403,10 +410,10 @@ async def test_d1_saved_output_content_is_bound_not_interpolated_into_sql():
 def test_saved_outputs_ui_is_additive_and_truthful():
     root = Path(__file__).resolve().parents[1]
     repo = root.parents[1]
-    html = (root / "static/index.html").read_text(encoding="utf-8")
-    js = (root / "static/outputs.js").read_text(encoding="utf-8")
-    a11y = (root / "static/a11y.js").read_text(encoding="utf-8")
-    worker = (root / "worker.py").read_text(encoding="utf-8")
+    html = index_html()
+    js = outputs_js()
+    a11y = a11y_js()
+    worker = worker_py()
 
     assert '<link rel="stylesheet" href="./outputs.css" />' in html
     assert '<script src="./outputs.js"></script>' in html
@@ -449,8 +456,7 @@ def test_saved_outputs_ui_is_additive_and_truthful():
 
 
 def test_migration_is_plain_text_owner_scoped_storage_only():
-    root = Path(__file__).resolve().parents[1]
-    migration = (root / "migrations/004_saved_outputs.sql").read_text(encoding="utf-8")
+    migration = saved_outputs_migration()
     assert "CREATE TABLE IF NOT EXISTS saved_outputs" in migration
     assert "content_text TEXT NOT NULL" in migration
     assert "REFERENCES users(id)" in migration
