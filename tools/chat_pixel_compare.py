@@ -418,6 +418,9 @@ class Browser:
     def start(self):
         self._playwright = sync_playwright().start()
         self.browser = self._playwright.chromium.launch(headless=True, args=[
+            # Use the same CPU raster path for both captures. GPU raster produced
+            # different antialiasing on the same SVG path in fresh Chromium contexts.
+            "--disable-gpu-rasterization",
             "--force-color-profile=srgb",
             "--disable-lcd-text",
             "--font-render-hinting=none",
