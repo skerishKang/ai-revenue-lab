@@ -197,6 +197,41 @@ def staging_host_env(tmp_path, monkeypatch):
     return tmp_path
 
 
+def test_cold_mime_initialization_finishes_before_static_requests(local_env, monkeypatch):
+    # Reproduce the cold host without depending on the OS MIME database speed.
+    # Restore the process-wide MIME database and maps after the test.
+    import mimetypes
+
+    for name in ("_db", "inited", "types_map", "common_types", "suffix_map", "encodings_map"):
+        monkeypatch.setattr(mimetypes, name, getattr(mimetypes, name))
+    mimetypes._db = None
+    mimetypes.inited = False
+    real_init = mimetypes.init
+    calls = []
+
+    def slow_init(*args, **kwargs):
+        calls.append("init")
+        time.sleep(0.25)
+        return real_init(*args, **kwargs)
+
+    monkeypatch.setattr(mimetypes, "init", slow_init)
+    started = time.perf_counter()
+    app = build_app()
+    factory_ms = (time.perf_counter() - started) * 1000
+    initialized_before_requests = len(calls)
+    with TestClient(app) as client:
+        started = time.perf_counter()
+        response = client.get("/theme-init.js")
+        first_static_ms = (time.perf_counter() - started) * 1000
+    print(f"cold_mime factory_ms={factory_ms:.2f} first_static_ms={first_static_ms:.2f}")
+    assert initialized_before_requests == 1
+    assert calls == ["init"]
+    assert response.status_code == 200
+    assert response.headers["content-type"].split(";")[0] in (
+        "text/javascript", "application/javascript",
+    )
+
+
 def test_queue_wiring_stays_off_by_default(local_env, monkeypatch):
     monkeypatch.delenv("PC_QUEUE_BACKEND", raising=False)
     monkeypatch.delenv("PC_QUEUE_SERVICE_SECRET_FILE", raising=False)
