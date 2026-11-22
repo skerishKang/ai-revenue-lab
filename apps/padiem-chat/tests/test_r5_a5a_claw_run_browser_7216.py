@@ -8,15 +8,15 @@ from __future__ import annotations
 
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
-
 import pytest
 
 pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import sync_playwright  # noqa: E402
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
+from _support.a5a_run_browser import app_js, static_dir
+
+APP = app_js()
+_STATIC_DIR = static_dir()
 
 NAMES = (
     "setClawDocumentAction",
@@ -336,7 +336,7 @@ def test_claw_run_forwarders_execute_in_headless_chromium_with_zero_console_erro
             clean = path.split("?", 1)[0].lstrip("/")
             if clean == "harness.html":
                 return str(harness_file)
-            return str(STATIC / clean)
+            return str(_STATIC_DIR / clean)
 
         def log_message(self, *_args) -> None:
             return
