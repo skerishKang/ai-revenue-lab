@@ -30,8 +30,8 @@ ROOT_TOKENS = {
 
 CHANGED = {
     "padiem-themes.css": {
-        ("color", "var(--text-deep-ink)"): 7,
-        ("color", "var(--text-deep-ink) !important"): 3,
+        ("color", "var(--text-deep-ink)"): 8,
+        ("color", "var(--text-deep-ink) !important"): 2,
     },
     "padiem-settings.css": {
         ("background", "var(--swatch-deep-ink)"): 1,
