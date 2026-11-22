@@ -129,7 +129,7 @@ test('a verified handoff mints exactly one LoveTree session', async () => {
     product_id: LOVETREE_PRODUCT_ID,
     subject: { subject_type: 'user', subject_id: SUB },
     authenticated_at: new Date(AT).toISOString(),
-    not_after: new Date(AT + 3600_000).toISOString()
+    not_after: new Date(AT + 30 * 24 * 3600_000).toISOString()
   }]);
 
   // 응답에는 발급 사실과 식별자만 담긴다 — 표의 신원을 호출자에게 되돌려 주지 않는다.
