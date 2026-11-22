@@ -256,14 +256,30 @@ class HelperStatusReadFallback:
                         and set(row) == {"device_id", "helper"}
                         and isinstance(row.get("device_id"), str)}
             now = self._clock()
+            attempted = read_ok = 0
             for node in targets if isinstance(targets, (list, tuple, set)) else ():
                 if not isinstance(node, str) or not node or node in answered:
                     continue
+                attempted += 1
+                candidates = [node]
+                if node.startswith("node/"):
+                    candidates.append(node.rsplit("/", 1)[-1])
+                if "@" in node:
+                    candidates.append(node.split("@", 1)[0])
+                raw = None
+                for ref in dict.fromkeys(candidates):
+                    try:
+                        raw = self._read_port.read_bytes(
+                            node_ref=ref, file_path=HELPER_STATUS_READ_PATH,
+                            timeout_seconds=15, max_bytes=8192,
+                        )
+                        break
+                    except Exception:
+                        continue
+                if raw is None:
+                    continue
+                read_ok += 1
                 try:
-                    raw = self._read_port.read_bytes(
-                        node_ref=node, file_path=HELPER_STATUS_READ_PATH,
-                        timeout_seconds=5, max_bytes=8192,
-                    )
                     text = json.loads(raw.decode("utf-8-sig"))
                 except Exception:
                     continue
@@ -297,6 +313,8 @@ class HelperStatusReadFallback:
                     reported += 1
                 print("oracle-mesh-executor helper_ready_file reports=%d status=%d" % (reported, status),
                       flush=True)
+            print("oracle-mesh-executor helper_ready_file_round targets=%d read_ok=%d reports=%d"
+                  % (attempted, read_ok, reported), flush=True)
         except Exception:
             pass
         return reported
