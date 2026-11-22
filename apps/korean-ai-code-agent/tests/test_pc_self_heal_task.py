@@ -6,6 +6,9 @@ pin the exact shape it will register.
 """
 from __future__ import annotations
 
+import base64
+import gzip
+import re
 import unittest
 
 from kagent.pc_self_heal_task import (
@@ -20,7 +23,10 @@ from kagent.pc_self_heal_task import (
     TRIGGER_TIMER,
     build_launch,
     register_script,
+    render_watcher_command,
     task_definition,
+    unregister_script,
+    watcher_script,
 )
 
 
@@ -66,6 +72,56 @@ class SelfHealTaskDefinitionTests(unittest.TestCase):
             build_launch(python_executable="")
         with self.assertRaises(ValueError):
             build_launch(python_executable="python.exe", module='bad"module')
+
+
+class InstallerPayloadTests(unittest.TestCase):
+    """The fixed payload both installers embed; no task store is touched."""
+
+    def test_watcher_script_registers_the_owned_system_task(self):
+        script = watcher_script()
+        self.assertTrue(script.startswith("param([string]$PythonExecutable, [switch]$Unregister)"))
+        self.assertIn("'" + TASK_NAME + "'", script)
+        self.assertIn("'" + TASK_FOLDER + "'", script)
+        self.assertIn("-UserId 'SYSTEM'", script)
+        self.assertIn("-LogonType '" + LOGON_TYPE_SERVICE + "'", script)
+        self.assertIn("-RunLevel '" + RUN_LEVEL_HIGHEST + "'", script)
+        self.assertIn("-Execute $PythonExecutable", script)
+        self.assertIn("-Argument '-m " + MODULE + "'", script)
+        self.assertIn("-Force", script)
+        self.assertIn("'PADIEM_PC_SELF_HEAL'", script)
+        self.assertIn("'PADIEM_PC_SELF_HEAL_RESTART'", script)
+        self.assertIn("'Machine'", script)
+        self.assertIn("PT%dM" % INTERVAL_MINUTES, script)
+
+    def test_watcher_script_has_no_machine_name_exception(self):
+        # #8225 removed the single-host exclusion; every managed PC registers.
+        script = watcher_script().upper()
+        self.assertNotIn("COMPUTERNAME", script)
+        self.assertNotIn("CGI", script)
+
+    def test_removal_script_unregisters_only_the_owned_task(self):
+        script = unregister_script()
+        self.assertIn("Unregister-ScheduledTask", script)
+        self.assertIn("'" + TASK_NAME + "'", script)
+        self.assertIn("'" + TASK_FOLDER + "'", script)
+        self.assertNotIn("Register-ScheduledTask", script)
+
+    def test_watcher_script_removal_branch_unregisters_the_owned_task(self):
+        script = watcher_script()
+        self.assertIn("if ($Unregister)", script)
+        self.assertIn("Unregister-ScheduledTask -TaskPath $taskPath -TaskName $taskName", script)
+        self.assertIn("exit 0", script)
+
+    def test_commands_carry_only_the_fixed_payload(self):
+        for unregister in (False, True):
+            command = render_watcher_command(unregister=unregister)
+            self.assertLess(len(command), 32767)
+            payload = re.search(r"FromBase64String\('([^']+)'\)", command)[1]
+            self.assertEqual(gzip.decompress(base64.b64decode(payload)).decode(), watcher_script())
+            self.assertTrue(command.endswith(
+                "-Unregister" if unregister else "-PythonExecutable $PythonExecutable"))
+            self.assertNotIn("Invoke-Expression", command)
+            self.assertNotIn("http", command)
 
 
 if __name__ == "__main__":

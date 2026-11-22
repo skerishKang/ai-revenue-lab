@@ -250,6 +250,7 @@ def test_the_program_was_built_from_the_source_in_this_commit() -> None:
     directory = REPO / "scripts" / "pc_pairing" / "connect-exe"
     inputs = [directory / name for name in ("PadiemPcConnect.cs", "app.manifest", "win32_reproducible.py")]
     inputs.append(REPO / "apps/padiem-chat/app/pc_helper_update.py")
+    inputs.append(REPO / "apps/korean-ai-code-agent/src/kagent/pc_self_heal_task.py")
     joined = "".join(
         hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
         for path in inputs
