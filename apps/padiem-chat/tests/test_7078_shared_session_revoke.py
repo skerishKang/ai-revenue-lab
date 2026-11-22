@@ -20,7 +20,7 @@ from test_5434_password_change import (
     call as change_call,
     seed_db as seed_change_db,
 )
-from test_5441_password_reset import (
+from _support.password_reset import (
     RecordingDelivery,
     _token_from_mail,
     build_app as build_reset_app,
