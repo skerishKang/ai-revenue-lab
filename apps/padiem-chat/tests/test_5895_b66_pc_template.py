@@ -24,7 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import app.b66_pc_template_routes as quote_pc                      # noqa: E402
 import app.pc_file_exchange_routes as exchange                    # noqa: E402
-import test_5895_pc_file_exchange as base                         # noqa: E402
+import _support.pc_file_exchange as base                         # noqa: E402
 
 OWNER = base.OWNER
 LANE_ID = "file_" + "a" * 32

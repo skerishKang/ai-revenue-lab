@@ -14,7 +14,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-import test_5895_pc_file_exchange as exchange      # noqa: E402
+import _support.pc_file_exchange as exchange      # noqa: E402
 
 from app import chat_pc_drive                     # noqa: E402
 from app import pc_file_exchange_routes as routes  # noqa: E402
