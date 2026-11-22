@@ -426,3 +426,59 @@ def test_workflow_and_script_changes_run_the_ci_contract_tests() -> None:
     runs = "\n".join(str(step.get("run", "")) for step in steps)
     assert "apps/padiem-chat/tests/test_*ci*contract*.py" in runs
     assert "docs/operations/tests/test_ci_scope_policy.py" in runs
+
+
+# PR-only runner migration: pin the complete expression, not an isolated substring.
+# Keep every non-PR event on its existing hosted image; external PRs use 24.04.
+@pytest.mark.parametrize(
+    "workflow,job_id,original_image",
+    [
+        ("b62-padiem-chat-ci.yml", "registry-ci-plan", "ubuntu-latest"),
+        ("b62-padiem-chat-ci.yml", "b62-static-ui", "ubuntu-latest"),
+        ("b62-padiem-chat-ci.yml", "b62-registry-contract", "ubuntu-latest"),
+        ("b62-padiem-chat-ci.yml", "b62-date-golden-contract", "ubuntu-latest"),
+        ("b62-padiem-chat-ci.yml", "b62-test", "ubuntu-latest"),
+        ("validate-b14-alpha.yml", "registry-ci-plan", "ubuntu-latest"),
+        ("validate-b14-alpha.yml", "alpha-model-registry-contract", "ubuntu-latest"),
+        ("validate-b14-alpha.yml", "alpha", "ubuntu-latest"),
+        ("b62-static-audits.yml", "dom-sink-audit", "ubuntu-latest"),
+        ("b62-static-audits.yml", "static-origin-audit", "ubuntu-latest"),
+        ("b62-static-audits.yml", "browser-persistence-audit", "ubuntu-24.04"),
+        ("padiem-chat-contract-tests.yml", "chat-contract-tests", "ubuntu-latest"),
+        ("operations-policy-guard.yml", "pr-contract", "ubuntu-latest"),
+        ("ci-contract-tests.yml", "ci-contract-tests", "ubuntu-latest"),
+    ],
+)
+def test_light_pr_jobs_route_only_same_repository_to_self_hosted(
+    workflow: str, job_id: str, original_image: str,
+) -> None:
+    document = yaml.safe_load((WORKFLOWS / workflow).read_text(encoding="utf-8"))
+    job = document["jobs"][job_id]
+    expected_fallback = (
+        "'ubuntu-24.04'" if original_image == "ubuntu-24.04"
+        else "(github.event_name == 'pull_request' && 'ubuntu-24.04' || '"
+        + original_image + "')"
+    )
+    expected = (
+        "${{ github.event_name == 'pull_request' && "
+        "github.event.pull_request.head.repo.full_name == github.repository && "
+        "fromJSON('[\"self-hosted\",\"padiem-com2-ci\"]') || "
+        + expected_fallback + " }}"
+    )
+    assert job["runs-on"] == expected, (workflow, job_id)
+
+
+@pytest.mark.parametrize("workflow,job_id,image", [
+    ("b62-padiem-chat-react-ci.yml", "react-clone", "ubuntu-24.04"),
+    ("b62-cloudflare-worker-deploy.yml", "preflight", "ubuntu-24.04"),
+    ("b62-cloudflare-worker-deploy.yml", "deploy-mock", "ubuntu-24.04"),
+    ("deploy-bundle-boot-test.yml", "b14-bundle-boot", "ubuntu-latest"),
+    ("deploy-bundle-boot-test.yml", "chat-bundle-boot", "ubuntu-latest"),
+    ("deploy-bundle-boot-test.yml", "p01-bundle-boot", "ubuntu-latest"),
+    ("b62-padiem-chat-ci.yml", "b62-full-suite", "ubuntu-latest"),
+    ("b62-padiem-chat-ci.yml", "engine-full-regression", "ubuntu-latest"),
+    ("b62-padiem-chat-ci.yml", "b14-full-regression", "ubuntu-latest"),
+])
+def test_hosted_only_jobs_keep_existing_runner(workflow, job_id, image):
+    jobs = yaml.safe_load((WORKFLOWS / workflow).read_text(encoding="utf-8"))["jobs"]
+    assert jobs[job_id]["runs-on"] == image

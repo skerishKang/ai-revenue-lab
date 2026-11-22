@@ -43,7 +43,7 @@ concurrency:
 
 jobs:
   dom-sink-audit:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -53,7 +53,7 @@ jobs:
         run: python .github/scripts/b62_dom_sink_audit.py
 
   static-origin-audit:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -63,7 +63,7 @@ jobs:
         run: python .github/scripts/b62_static_origin_audit.py
 
   browser-persistence-audit:
-    runs-on: ubuntu-24.04
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

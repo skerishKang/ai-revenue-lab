@@ -25,11 +25,17 @@ concurrency:
 jobs:
   registry-ci-plan:
     name: B14 changeset classifier (fail-closed)
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     outputs:
       lane: ${{ steps.classify.outputs.lane }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: ${{ runner.environment != 'self-hosted' }}
+      - uses: actions/setup-python@v5
+        if: runner.environment == 'self-hosted'
+        with:
+          python-version: '3.12'
       - name: Test CI lane fail-closed rules
         run: python -m unittest discover -s .github/tests -p test_b14_model_registration_ci_plan.py -q
       - name: Classify exact PR changes
@@ -42,7 +48,7 @@ jobs:
     name: B14 fast model registration contract
     needs: registry-ci-plan
     if: ${{ needs.registry-ci-plan.outputs.lane == 'model_registration_only' }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     timeout-minutes: 5
     defaults:
       run:
@@ -68,7 +74,7 @@ jobs:
     name: Locked Alpha contract
     if: always()
     needs: [registry-ci-plan, alpha-full-suite, alpha-model-registry-contract]
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     steps:
       - name: Enforce selected B14 lane
         env:

@@ -113,7 +113,7 @@ jobs:
 
   pr-contract:
     name: Pull request contract report
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     timeout-minutes: 10
     steps:
       # #3989: reporting is a single stdlib-only Python script. The always-on
