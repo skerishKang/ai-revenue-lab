@@ -122,6 +122,9 @@ class PcConnectorCanaryVerdictTests(unittest.TestCase):
             constants.get("_STATE_REPLACED"), canary.LINK_REPLACED)
         self.assertEqual(
             constants.get("_STATE_PENDING_VERIFICATION"), canary.LINK_PENDING_VERIFICATION)
+        # #8036: the self-reported share state is part of the server's vocabulary.
+        self.assertEqual(
+            constants.get("_STATE_CANDIDATE"), canary.LINK_CANDIDATE)
         # A granted root and an active link share the server's one granted word; the
         # browser projection also names a paused link, which the canary must know.
         self.assertEqual(canary.ROOT_GRANTED, canary.LINK_ACTIVE)
