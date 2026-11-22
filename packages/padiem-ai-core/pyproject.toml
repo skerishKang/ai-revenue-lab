@@ -23,7 +23,7 @@ tools = [
 # bytes 6.19.0 produces. A range lets one environment pick a different build of the same
 # line and report a conversion change that is only a reader change (#5568).
 documents = [
-  "pypdf==6.19.0",
+  "pypdf==6.21.4",
   "openpyxl>=3.1,<4",
 ]
 render = [
@@ -38,7 +38,7 @@ authoring = [
 dev = [
   "pytest>=8,<10",
   "jsonschema>=4.23,<5",
-  "pypdf==6.19.0",
+  "pypdf==6.21.4",
   "pypdfium2==5.13.0",
   "pdfplumber==0.11.10",
   "reportlab==5.0.1",
