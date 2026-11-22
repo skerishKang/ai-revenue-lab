@@ -55,6 +55,10 @@ _UI_MIXED_TEST = re.compile(r"apps/padiem-chat/tests/test_[A-Za-z0-9_]+\.py")
 _TESTS_TREE_PY = re.compile(r"apps/padiem-chat/tests/(?:_support/(?:[A-Za-z0-9_]+/)*)?[A-Za-z0-9_]+\.py")
 _TESTS_TREE_DOC = re.compile(r"apps/padiem-chat/tests/[^/\\]+\.md")
 _TESTS_TREE_CONFTEST = "apps/padiem-chat/tests/conftest.py"
+# Indirect staging/E2E consumers belong to the existing nightly/manual full
+# regression. Match filename tokens, not substrings (e.g. "test_restaging").
+_DEFERRED_CONSUMER = re.compile(r"_(?:staging|e2e)(?:_|\.py$)")
+_TESTS_ONLY_MANIFEST_GUARD = "tests/test_5002_model_path_classification.py"
 
 
 def _is_static_segment(node: ast.AST) -> bool:
@@ -543,8 +547,10 @@ def test_module_importers(module_name: str, repo_root: Path | None = None) -> tu
 def tests_only_modules(files: object, repo_root: Path | None = None) -> tuple[str, ...]:
     """Safe relative pytest arguments for a Chat tests-tree-only change.
 
-    A changed ``test_*.py`` runs itself. A changed helper runs every flat test
-    module that transitively imports it. A helper no test imports (or conftest.py) cannot be
+    A changed ``test_*.py`` runs itself, including staging/E2E. A changed
+    helper runs its transitive flat test consumers except indirect staging/E2E
+    consumers, which run in the nightly/manual full regression. A helper no
+    test imports (or conftest.py) cannot be
     covered by a reduced lane, so the result is empty and the caller fails
     closed to the full Chat suite. ``.md`` files carry no executable contract
     and are ignored. The shape is re-proven here so a malformed API listing can
@@ -585,7 +591,12 @@ def tests_only_modules(files: object, repo_root: Path | None = None) -> tuple[st
         importers = _runnable_modules(paths, _reverse_closure(edges, {helper}))
         if not importers:
             return ()
-        modules.update(importers)
+        modules.update(path for path in importers if not _DEFERRED_CONSUMER.search(path))
+    # A proven set containing only deferred consumers is not an unknown graph.
+    # Keep the mandatory cheap guard on the PR; nightly/manual still collects
+    # all of those consumers. Unknown/unparseable graphs return above.
+    if not modules:
+        modules.add(_TESTS_ONLY_MANIFEST_GUARD)
     return tuple(sorted(modules)) if len(modules) <= MAX_FILES else ()
 
 

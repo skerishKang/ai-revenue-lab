@@ -44,6 +44,8 @@ on:
       - ".github/scripts/b14_model_registration_ci_plan.py"
       - ".github/scripts/b62_ci_impact_scope_3989.py"
       - ".github/tests/test_b62_ci_impact_scope_3989.py"
+      - ".github/scripts/b62_run_tests_only_modules.py"
+      - ".github/tests/test_b62_run_tests_only_modules.py"
       # #5341: the shared Core import-scope proof and its contract test
       # decide which Core changes need the complete B62 regression.
       - ".github/scripts/ci_core_import_scope.py"
@@ -110,6 +112,7 @@ jobs:
       - name: Test B62 scoped-regression fail-closed contract
         run: |
           python -m unittest discover -s .github/tests -p test_b62_ci_impact_scope_3989.py -q
+          python -m unittest discover -s .github/tests -p test_b62_run_tests_only_modules.py -q
           python -m unittest discover -s .github/tests -p test_4459_b62_ui_mixed_scope.py -q
           # #5341: the shared Core import-scope proof and its lane contracts.
           python -m unittest discover -s .github/tests -p test_5341_core_import_scope.py -q
@@ -256,9 +259,9 @@ jobs:
 
   # #6810: a tests-only PR used to run no pytest module at all, so a stale or
   # broken assertion could merge green (observed on #6810). Run exactly the
-  # changed modules here; #7186 adds the tests that import a changed helper.
-  # A proven-empty list means the classifier already fell back to the full
-  # suite (`chat_source_changed`), so this job never claims an empty lane.
+  # changed modules here; #7186 adds tests importing a changed helper, except
+  # indirect staging/E2E consumers (the nightly/manual full suite retains them).
+  # An unproven list falls back to the full suite; this job rejects an empty list.
   b62-tests-only-tests:
     name: B62 tests-only changed pytest
     needs: registry-ci-plan
@@ -346,8 +349,8 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "$TESTS_ONLY_MODULES" ]; then
-            echo 'B62_TESTS_ONLY=EMPTY'
-            exit 0
+            echo 'B62_TESTS_ONLY=EMPTY' >&2
+            exit 1
           fi
           read -r -a modules <<< "$TESTS_ONLY_MODULES"
           test "${#modules[@]}" -ge 1
@@ -366,7 +369,7 @@ jobs:
             *" ${manifest_guard} "*) ;;
             *) modules+=("$manifest_guard") ;;
           esac
-          uv run --locked --no-sync python -m pytest -q "${modules[@]}"
+          uv run --locked --no-sync python -u ../../.github/scripts/b62_run_tests_only_modules.py "${modules[@]}"
       - name: Clean up job-generated files
         if: always()
         shell: bash

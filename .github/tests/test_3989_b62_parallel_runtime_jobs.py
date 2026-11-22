@@ -314,13 +314,12 @@ class ParallelB62JobsContract(unittest.TestCase):
             "TESTS_ONLY_MODULES: ${{ needs.registry-ci-plan.outputs.tests_only_tests }}",
             focused,
         )
-        # An empty proven list has nothing to run; any listed module must
-        # validate and run, and an unexpected count or path fails closed.
+        # An unexpected empty list, count, path or module result fails closed.
         self.assertIn('if [ -z "$TESTS_ONLY_MODULES" ]; then', focused)
         self.assertIn("B62_TESTS_ONLY=EMPTY", focused)
         self.assertIn('test "${#modules[@]}" -ge 1', focused)
         self.assertIn('test "${#modules[@]}" -le 100', focused)
-        self.assertIn("uv run --locked --no-sync python -m pytest -q", focused)
+        self.assertIn('uv run --locked --no-sync python -u ../../.github/scripts/b62_run_tests_only_modules.py "${modules[@]}"', focused)
         self.assertIn("tests_only_tests: ${{ steps.classify-b62.outputs.tests_only_tests }}", self.plan)
         self.assertIn("needs.b62-tests-only-tests.result", self.aggregate)
         self.assertIn('elif [ "$SCOPE" = tests_only ]; then', self.aggregate)
