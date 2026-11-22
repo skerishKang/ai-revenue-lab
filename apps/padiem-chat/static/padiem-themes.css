@@ -286,7 +286,7 @@ html[data-theme="cinematic"] .composer {
   backdrop-filter: blur(16px);
   box-shadow: 0 0 40px var(--film-blue-glow), 0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08);
 }
-html[data-theme="cinematic"] .composer-wrap { background: linear-gradient(to bottom, transparent, rgba(4,7,13,.86) 34%, #04070d 76%) !important; }
+html[data-theme="cinematic"] .composer-wrap { background: linear-gradient(to bottom, transparent, rgba(4,7,13,.86) 34%, #04070d 76%); }
 html[data-theme="cinematic"] .composer-note { color: rgba(255,255,255,.38) !important; }
 
 /* ---- PADIEM HOME — homepage continuity (padiem.net: cool gray/blue-gray atmospheric) ---- */

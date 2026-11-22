@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import asyncio
 
+import mimetypes
 import os
 import secrets
 import sqlite3
@@ -974,6 +975,12 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
     ``outbound_http_client`` is an injection seam for tests only: the host
     otherwise owns one client per composed binding and closes it at shutdown.
     """
+
+    # Starlette FileResponse guesses MIME types synchronously. On a cold
+    # process that can read the OS database on the only ASGI event loop.
+    # Finish that one-time initialization before this worker accepts requests.
+    if not mimetypes.inited:
+        mimetypes.init()
 
     settings, db, r2, connection, host_flag = _compose_local_settings_and_bindings()
 

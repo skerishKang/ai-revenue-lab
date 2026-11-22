@@ -106,6 +106,18 @@ def _transport(status, raw):
     return call
 
 
+def _sequence_transport(responses):
+    def call(url, body, headers, timeout):
+        call.calls.append((url, body, headers, timeout))
+        return responses[len(call.calls) - 1]
+    call.calls = []
+    return call
+
+
+def _no_sleep(_seconds) -> None:
+    pass
+
+
 def test_a_real_answer_is_a_pass_and_names_the_resolved_model() -> None:
     status, raw = _ok()
     transport = _transport(status, raw)
@@ -118,6 +130,7 @@ def test_provider_limit_statuses_pass_with_a_marker(limit) -> None:
     verdict, model = smoke.run(
         base_url="https://b14.example.test",
         transport=_transport(limit, json.dumps({"error": {"code": "rate_limited"}}).encode()),
+        sleep=_no_sleep,
     )
     assert verdict == "PASS_PROVIDER_LIMIT"
     assert model == free_primary_model_id()
@@ -126,7 +139,75 @@ def test_provider_limit_statuses_pass_with_a_marker(limit) -> None:
 def test_any_other_status_fails() -> None:
     for status in (400, 401, 403, 404, 500, 502, 504):
         assert smoke.run(base_url="https://b14.example.test",
-                         transport=_transport(status, b"{}"))[0] == "FAIL"
+                         transport=_transport(status, b"{}"), sleep=_no_sleep)[0] == "FAIL"
+
+
+def test_a_502_then_a_real_answer_passes_after_one_wait() -> None:
+    sleeps: list[float] = []
+    transport = _sequence_transport([
+        (502, json.dumps({"error": {"code": "upstream_server_error"}}).encode()),
+        _ok(),
+    ])
+    verdict, _ = smoke.run(base_url="https://b14.example.test", transport=transport,
+                           sleep=sleeps.append)
+    assert verdict == "PASS"
+    assert len(transport.calls) == 2
+    assert sleeps == [10]
+
+
+@pytest.mark.parametrize("status", (502, 504))
+def test_a_transient_status_then_a_real_answer_passes(status) -> None:
+    sleeps: list[float] = []
+    transport = _sequence_transport([(status, b"{}"), _ok()])
+    verdict, _ = smoke.run(base_url="https://b14.example.test", transport=transport,
+                           sleep=sleeps.append)
+    assert verdict == "PASS"
+    assert len(transport.calls) == 2
+    assert sleeps == [10]
+
+
+def test_three_502s_stay_a_failure_with_two_waits() -> None:
+    sleeps: list[float] = []
+    detail: dict = {}
+    transport = _sequence_transport([(502, b"{}")] * 3)
+    verdict, _ = smoke.run(base_url="https://b14.example.test", transport=transport,
+                           report=detail, sleep=sleeps.append)
+    assert verdict == "FAIL"
+    assert len(transport.calls) == 3
+    assert sleeps == [10, 30]
+    assert detail["status"] == 502
+
+
+def test_a_503_limit_retries_and_keeps_the_marker() -> None:
+    sleeps: list[float] = []
+    raw = json.dumps({"error": {"code": "rate_limited"}}).encode()
+    transport = _sequence_transport([(503, raw)] * 3)
+    verdict, _ = smoke.run(base_url="https://b14.example.test", transport=transport,
+                           sleep=sleeps.append)
+    assert verdict == "PASS_PROVIDER_LIMIT"
+    assert len(transport.calls) == 3
+    assert sleeps == [10, 30]
+
+
+def test_an_entitlement_503_is_not_retried() -> None:
+    sleeps: list[float] = []
+    raw = json.dumps({"error": {"code": "entitlement_unavailable"}}).encode()
+    transport = _sequence_transport([(503, raw)])
+    verdict, _ = smoke.run(base_url="https://b14.example.test", transport=transport,
+                           sleep=sleeps.append)
+    assert verdict == "FAIL"
+    assert len(transport.calls) == 1
+    assert sleeps == []
+
+
+def test_a_400_is_not_retried() -> None:
+    sleeps: list[float] = []
+    transport = _sequence_transport([(400, b"{}")])
+    verdict, _ = smoke.run(base_url="https://b14.example.test", transport=transport,
+                           sleep=sleeps.append)
+    assert verdict == "FAIL"
+    assert len(transport.calls) == 1
+    assert sleeps == []
 
 
 def test_malformed_or_truncated_body_fails_rather_than_passing() -> None:
@@ -236,16 +317,19 @@ def test_the_default_deploy_gate_call_stays_unsigned() -> None:
     assert headers == {}
 
 
-def test_the_grade_job_references_the_existing_proof_secret_name() -> None:
-    workflow = WORKFLOW.read_text(encoding="utf-8")
-    assert (
-        "PADIEM_B14_SERVICE_PROOF_SECRET: "
-        "${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}" in workflow
-    )
-    assert (
-        'b14_real_model_call_smoke.py --tier "${{ matrix.tier }}"'
-        " --base-url http://127.0.0.1:8789 --report" in workflow
-    )
+def test_the_grade_job_calls_the_serving_origin_from_every_runner() -> None:
+    import yaml
+
+    job = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))["jobs"]["grade-live-smoke"]
+    assert job["if"] == "${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}"
+    assert job["environment"] == "grade-smoke"
+    assert job["runs-on"] == ["self-hosted", "linux", "x64", "padiem-com2-ci"]
+    assert job["strategy"]["matrix"]["tier"] == ["free", "plus", "pro", "max"]
+    assert job["env"]["PADIEM_B14_SERVICE_PROOF_SECRET"] == "${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}"
+    call = next(step for step in job["steps"] if "b14_real_model_call_smoke.py" in step.get("run", ""))
+    assert call["if"] == "${{ env.PADIEM_B14_SERVICE_PROOF_SECRET != '' }}"
+    assert call["run"] == 'python3 .github/scripts/b14_real_model_call_smoke.py --tier "${{ matrix.tier }}" --report'
+    assert smoke.SERVED_ORIGIN == "https://b14.padiem.net"
 
 
 def test_the_cli_passes_the_requested_tier_through(monkeypatch) -> None:
@@ -693,6 +777,7 @@ def test_a_pass_never_prints_the_model_value(monkeypatch, capsys) -> None:
 
 
 def test_a_provider_limit_never_prints_the_model_value(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(smoke.time, "sleep", _no_sleep)
     for status in sorted(smoke.PROVIDER_LIMIT_STATUSES):
         monkeypatch.setattr(smoke, "urlopen_transport",
                             lambda *a, **k: _transport(*_leak_named_response(status)))

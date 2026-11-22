@@ -35,7 +35,9 @@ Verdict contract (CTO 2026-10-27):
   anything else: other status, malformed body, empty text, timeout -> REAL_MODEL_CALL=FAIL and exit 1
 
 CTO 2026-11-02: a 503 ``entitlement_unavailable`` is an entitlement refusal,
-not a provider limit, so it is a FAIL. ``--report`` adds one bounded
+not a provider limit, so it is a FAIL. #7801 ①: 502/503/504 are retried at
+most twice with a wait before the verdict; the last failure stays a failure.
+``--report`` adds one bounded
 ``GRADE_SMOKE tier=... status=... error_code=... verdict=... model_match=...``
 line for the nightly issue; the default output line is unchanged.
 """
@@ -83,6 +85,13 @@ MAX_TOKENS = 256
 REQUEST_TIMEOUT_SECONDS = 40
 MAX_RESPONSE_BYTES = 65_536
 PROVIDER_LIMIT_STATUSES = frozenset({429, 503})
+# #7801 ①: 502/503/504는 상위 서비스의 일시 오류로 본다. 같은 실행·같은
+# 실행기에서 한 등급이 502를 맞아도 다른 등급은 수 초 뒤 성공한 경우가
+# 있어, 최대 2회까지 대기하며 다시 친다. 마지막 실패는 그대로 실패다.
+# 다른 상태·전송 오류는 재시도하지 않는다.
+RETRY_STATUSES = frozenset({502, 503, 504})
+RETRY_ATTEMPTS = 2
+RETRY_WAITS_SECONDS = (10, 30)
 # A refusal code that means "the product will not spend on this request", which
 # no amount of provider recovery fixes. It must never read as a provider limit.
 ENTITLEMENT_DENIAL_CODES = frozenset({"entitlement_unavailable", "entitlement_denied"})
@@ -333,8 +342,10 @@ def run(*, base_url: str, transport: Transport, tier: str | None = None,
         service_proof_secret: str = "", timeout: float = REQUEST_TIMEOUT_SECONDS,
         max_tokens: int = MAX_TOKENS, product_tier: str | None = None,
         report: dict[str, Any] | None = None,
-        transport_get: TransportGet | None = None) -> tuple[str, str]:
-    """Make one call. ``tier`` selects the exact declared grade route."""
+        transport_get: TransportGet | None = None,
+        sleep: Callable[[float], None] | None = None) -> tuple[str, str]:
+    """Make one call, retrying transient upstream statuses. ``tier`` selects
+    the exact declared grade route."""
     effective_tier = tier or PRODUCT_TIER
     model = declared_tier_model(effective_tier)
     if not model and tier is not None:
@@ -360,21 +371,30 @@ def run(*, base_url: str, transport: Transport, tier: str | None = None,
         return "FAIL", effective_tier
     body = request_body(model=model, max_tokens=max_tokens,
                         product_tier=product_tier or effective_tier)
-    # Only the nightly numbered-grade invocation signs; the deploy gate's
-    # default call still carries no credential of its own.
-    headers: dict[str, str] = (
-        proof_headers(service_proof_secret, body) if tier is not None else {}
-    )
-    try:
-        status, raw = transport(
-            base_url.rstrip("/") + COMPLETIONS_PATH, body, headers, timeout
+    sleep_fn = sleep if sleep is not None else time.sleep
+    status, raw = 0, b""
+    for attempt in range(RETRY_ATTEMPTS + 1):
+        # Only the nightly numbered-grade invocation signs; the deploy gate's
+        # default call still carries no credential of its own. The proof is
+        # rebuilt each attempt so a retry never reuses an aged timestamp.
+        headers: dict[str, str] = (
+            proof_headers(service_proof_secret, body) if tier is not None else {}
         )
-    except (urllib.error.URLError, TimeoutError, OSError, ValueError):
-        # An unreachable or unanswered Worker is a failed release check, never a
-        # provider limit and never a silent pass.
-        if report is not None:
-            report.update(status=0, error_code="transport_error")
-        return "FAIL", model
+        try:
+            status, raw = transport(
+                base_url.rstrip("/") + COMPLETIONS_PATH, body, headers, timeout
+            )
+        except (urllib.error.URLError, TimeoutError, OSError, ValueError):
+            # An unreachable or unanswered Worker is a failed release check, never a
+            # provider limit and never a silent pass.
+            if report is not None:
+                report.update(status=0, error_code="transport_error")
+            return "FAIL", model
+        if (status in RETRY_STATUSES and attempt < RETRY_ATTEMPTS
+                and error_code(_payload(raw)) not in ENTITLEMENT_DENIAL_CODES):
+            sleep_fn(RETRY_WAITS_SECONDS[attempt])
+            continue
+        break
     if len(raw) > MAX_RESPONSE_BYTES:
         if report is not None:
             report.update(status=status, error_code="response_too_large",

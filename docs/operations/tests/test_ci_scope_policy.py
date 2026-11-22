@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 import json
+import subprocess
 from fnmatch import fnmatchcase
 from pathlib import Path
 
@@ -488,6 +489,8 @@ def test_hosted_only_jobs_keep_existing_runner(workflow, job_id, image):
     ("b62-padiem-chat-ci.yml", "registry-ci-plan"),
     ("b62-padiem-chat-ci.yml", "b62-static-ui"),
     ("b62-padiem-chat-ci.yml", "b62-registry-contract"),
+    ("b62-padiem-chat-ci.yml", "b62-tests-only-tests"),
+    ("b62-padiem-chat-ci.yml", "grade-live-smoke"),
     ("b62-static-audits.yml", "static-origin-audit"),
     ("b62-static-audits.yml", "browser-persistence-audit"),
     ("validate-b14-alpha.yml", "registry-ci-plan"),
@@ -499,8 +502,45 @@ def test_migrated_full_checkout_is_materialized_on_persistent_runners(workflow, 
     step = next(step for step in steps if step.get("name") == "Materialize complete self-hosted checkout")
     assert step["if"] == "runner.environment == 'self-hosted'"
     assert step["working-directory"] == "${{ github.workspace }}"
+    checkout = next(i for i, candidate in enumerate(steps) if candidate.get("uses") == "actions/checkout@v4")
+    assert steps[checkout + 1] == step
     assert "git restore --source=HEAD --staged --worktree --ignore-skip-worktree-bits -- ." in step["run"]
     assert "git ls-files --deleted" in step["run"]
+
+
+def test_b62_full_checkout_repairs_legacy_sparse_state_across_jobs(tmp_path):
+    steps = yaml.safe_load(B62_CHAT_CI.read_text(encoding="utf-8"))["jobs"]["grade-live-smoke"]["steps"]
+    repair = next(step for step in steps if step.get("name") == "Materialize complete self-hosted checkout")
+
+    def git(*args):
+        subprocess.run(["git", *args], cwd=tmp_path, check=True, capture_output=True)
+
+    git("init", "-q")
+    guard = ".github/scripts/pr_contract_guard.py"
+    smoke = ".github/scripts/b14_real_model_call_smoke.py"
+    app = "apps/padiem-chat/fixture.txt"
+    for name in (guard, smoke, app):
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(name, encoding="utf-8")
+    git("add", ".")
+    git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid",
+        "-c", "commit.gpgSign=false", "commit", "-qm", "fixture")
+
+    # actions/checkout v4's one-file, non-cone mode stores this setting in .git/config.
+    git("config", "--local", "core.sparseCheckout", "true")
+    (tmp_path / ".git/info/sparse-checkout").write_text(guard + "\n", encoding="utf-8")
+    git("checkout", "--force", "HEAD")
+    assert (tmp_path / guard).is_file()
+    assert not (tmp_path / smoke).exists()
+    assert not (tmp_path / app).parent.exists()
+
+    subprocess.run(["bash", "-c", repair["run"]], cwd=tmp_path, check=True)
+    for name in (smoke, app):
+        assert (tmp_path / name).read_text(encoding="utf-8") == name
+    git("checkout", "--force", "HEAD")
+    for name in (smoke, app):
+        assert (tmp_path / name).read_text(encoding="utf-8") == name
 
 
 def test_sparse_pr_report_checkout_does_not_replace_the_full_runner_worktree():
