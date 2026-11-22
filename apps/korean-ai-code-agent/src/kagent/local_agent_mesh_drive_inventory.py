@@ -221,9 +221,9 @@ socket.on('message', function(raw) {
             // Only the declared keys are copied; anything else stays on the PC side.
             const state = {};
             for (const key of input.helper_keys) {
-                if ((key === "helper_sha256" || key === "helper_version" || key === "mesh_agent_version") &&
-                    result[key] === undefined) continue;
-                state[key] = result[key] === undefined ? null : result[key];
+                // Missing optional fields must stay absent, not null: several
+                // closed fields (e.g. update_result and auto_update) reject null.
+                if (result[key] !== undefined) state[key] = result[key];
             }
             helperRows.push({device_id: helper.deviceId, helper: state});
         }
@@ -288,9 +288,19 @@ class MeshDriveInventorySource:
         if not targets:
             return []
         second = self._second
+
+        def observe_helper(values: Any) -> None:
+            if second is not None:
+                try:
+                    second[0](values if isinstance(values, list) else [], targets)
+                except Exception:
+                    # Readiness is a second observation; it may never cost the drives.
+                    pass
+
         try:
             password = self._password_provider()
             if not isinstance(password, str) or not password or "\n" in password or "\r" in password:
+                observe_helper([])
                 return []
             request = {"meshctrl_js": self._meshctrl_js, "mesh_url": self._mesh_url,
                        "login_user": self._login_user, "password": password,
@@ -305,17 +315,21 @@ class MeshDriveInventorySource:
                 text=True, timeout=self._timeout_seconds + 5,
             )
             if result.returncode != 0:
+                observe_helper([])
                 return []
             values = json.loads(result.stdout)
         except Exception:
             # Never attach child stderr/stdout or credentials to an exception/log.
+            observe_helper([])
             return []
         helper_values: Any = None
         if second is not None:
             if not isinstance(values, dict):
+                observe_helper([])
                 return []
             helper_values, values = values.get("helper"), values.get("drives")
         if not isinstance(values, list):
+            observe_helper(helper_values)
             return []
         rows, seen = [], set()
         for value in values:
@@ -330,10 +344,5 @@ class MeshDriveInventorySource:
                 continue
             seen.add(device_id)
             rows.append({"device_id": device_id, "drives": drives})
-        if second is not None:
-            try:
-                second[0](helper_values if isinstance(helper_values, list) else [], targets)
-            except Exception:
-                # Readiness is a second observation; it may never cost the drives.
-                pass
+        observe_helper(helper_values)
         return rows
