@@ -1347,13 +1347,15 @@ def test_connector_scope_runs_the_single_b54_read_only_when_the_key_is_on():
     assert identity.calls == [], "the scope port is never reached"
 
 
-@pytest.mark.parametrize("subject_mismatch", [False, True])
-def test_connector_scope_shadow_records_the_single_tenant_agreement(capsys, subject_mismatch):
+@pytest.mark.parametrize("mode", ["agree", "subject", "b62_absent"])
+def test_connector_scope_shadow_records_the_single_tenant_agreement(capsys, mode):
     """Shadow: the cross-check verdict stands; the journal records (closed
     codes only, from values already read) whether the single tenant check
-    would have agreed. No extra RPC is made for the comparison."""
+    would have agreed, and for a split the closed failure shape (#7542:
+    B62 axis absent vs subject mismatch). No extra RPC is made."""
     from app.pc_work_context import resolve_pc_connector_scope
-
+    subject_mismatch = (mode == "subject")
+    b62_absent = (mode == "b62_absent")
     identity = Identity()
     b62 = SimpleNamespace(
         session_id="sess-b62", tenant_id=WORKSPACE,
@@ -1367,6 +1369,8 @@ def test_connector_scope_shadow_records_the_single_tenant_agreement(capsys, subj
     )
 
     async def owner_session(_request, _owner_id):
+        if b62_absent:
+            return None, None
         return WORKSPACE, b62
 
     async def b54_bridge(_identity, _user_id):
@@ -1384,11 +1388,15 @@ def test_connector_scope_shadow_records_the_single_tenant_agreement(capsys, subj
         result = asyncio.run(resolve_pc_connector_scope(
             request, owner_id=OWNER, workspace_id=WORKSPACE,
         ))
-    assert result.ready is (not subject_mismatch)
+    assert result.ready is (mode == "agree")
     out = capsys.readouterr().out
     assert "method=pc_scope" in out
-    expected = "reason=tenant_only_allow" if subject_mismatch else "reason=match"
-    assert expected in out
+    expected = {
+        "agree": "reason=match",
+        "subject": "reason=tenant_only_allow_subject_mismatch",
+        "b62_absent": "reason=tenant_only_allow_b62_absent",
+    }[mode]
+    assert f"{expected} latency=" in out
     # No raw identities ever sit in the journal.
     for raw in ("sub-shared-owner", "sub-different-owner", "sess-b54", "sess-b62"):
         assert raw not in out
