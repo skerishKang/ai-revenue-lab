@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="./chat-pc-session.css" />
   <link rel="stylesheet" href="./chat-feedback.css" />
   <link rel="stylesheet" href="./chat-news.css" />
+  <link rel="stylesheet" href="./chat-news-cards.css" />
   <!-- #7811 C1: padiem-cinematic-chat.css가 @import로 부르던 8개 시트를
        같은 순서로 link로 펼쳤다(@import는 부르는 시트보다 앞에 온다). -->
   <link rel="stylesheet" href="./padiem-foundation.css" />
@@ -259,19 +260,21 @@
         <div class="news-panel">
           <header class="news-header">
             <h2 id="newsTitle" data-locale-key="news-entry">새 소식</h2>
-            <button class="feedback-button" id="newsClose" type="button" data-locale-aria-label="news-close" aria-label="새 소식 창 닫기">×</button>
+            <button class="feedback-button news-close" id="newsClose" type="button" data-locale-aria-label="news-close" aria-label="새 소식 창 닫기">×</button>
           </header>
-          <p class="news-help" data-locale-key="news-help">새로워진 것과 고친 것을 쉬운 말로 알려 드립니다.</p>
-          <ul class="news-list" id="newsList"></ul>
-          <p class="news-status-line" id="newsStatus" role="status" aria-live="polite"></p>
-          <section class="news-history" aria-labelledby="newsHistoryTitle">
-            <header class="news-header news-history-header">
-              <h2 id="newsHistoryTitle" data-locale-key="news-history-title">Chat이 걸어온 길</h2>
-            </header>
-            <p class="news-help news-history-help" data-locale-key="news-history-help">Chat과 Claw가 함께 만든 주요 순간을 날짜순으로 모았습니다.</p>
-            <p class="news-status-line news-history-status" id="newsHistoryStatus" role="status" aria-live="polite" hidden></p>
-            <ol class="news-list news-history-list" id="newsHistoryList"></ol>
-          </section>
+          <div class="news-body" id="newsBody">
+            <p class="news-help" data-locale-key="news-help">새로워진 것과 고친 것을 쉬운 말로 알려 드립니다.</p>
+            <ul class="news-list" id="newsList" tabindex="-1"></ul>
+            <p class="news-status-line" id="newsStatus" role="status" aria-live="polite"></p>
+            <section class="news-history" aria-labelledby="newsHistoryTitle">
+              <header class="news-header news-history-header">
+                <h2 id="newsHistoryTitle" data-locale-key="news-history-title">Chat이 걸어온 길</h2>
+              </header>
+              <p class="news-help news-history-help" data-locale-key="news-history-help">Chat과 Claw가 함께 만든 주요 순간을 날짜순으로 모았습니다.</p>
+              <p class="news-status-line news-history-status" id="newsHistoryStatus" role="status" aria-live="polite" hidden></p>
+              <ol class="news-list news-history-list" id="newsHistoryList"></ol>
+            </section>
+          </div>
         </div>
       </dialog>
       <header class="topbar">
