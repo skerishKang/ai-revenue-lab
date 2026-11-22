@@ -1,101 +1,20 @@
-from pathlib import Path
-import re
+"""#2489/#7187: Claw inherits Chat theme tokens without a private palette."""
+from __future__ import annotations
 
-ROOT = Path(__file__).resolve().parents[3]
-STATIC = ROOT / "apps" / "padiem-chat" / "static"
+from _support.claw_theme_inheritance import (
+    REQUIRED_TOKENS,
+    SURFACE_DECLARATIONS,
+    THEMES,
+    facts,
+)
 
-
-def read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
-
-
-def test_claw_shared_roles_use_chat_theme_tokens():
-    workspace = read("claw-workspace.css")
-    manual = read("claw-manual-intake.css")
-
-    for source in (workspace, manual):
-        assert "var(--text," not in source
-        assert "var(--muted," not in source
-        assert "var(--accent," not in source
-        assert "var(--line," not in source
-        assert "var(--card-bg," not in source
-
-    required = (
-        "var(--text)",
-        "var(--muted)",
-        "var(--line)",
-        "var(--card-bg)",
-        "var(--accent)",
-        "var(--accent-soft)",
-        "var(--accent-contrast)",
-    )
-    for token in required:
-        assert token in workspace
-
-
-def test_claw_has_no_padiem_glass_palette_override():
-    workspace = read("claw-workspace.css")
-
-    # The only allowed Glass-specific Claw rule is the mobile portrait suppression
-    # for the decorative Chat hero. Claw component colors themselves must inherit.
-    glass_rules = re.findall(
-        r'html\[data-theme="padiem-glass"\][^{]*\.claw[^{]*\{',
-        workspace,
-    )
-    assert glass_rules == []
-
-
-def test_all_chat_themes_define_accent_contrast():
-    # #7187 R3 3차: the theme-level --accent-contrast definitions moved to
-    # padiem-tokens.css (one owner for the whole accent family). The values
-    # are unchanged; the ownership is what this test pins.
-    themes = read("padiem-tokens.css")
-
-    expected = {
-        "light": "#ffffff",
-        "dark": "#131417",
-        "cinematic": "#04070d",
-        "padiem-home": "#0b0f14",
-        "padiem-glass": "#17202a",
-    }
-
-    for theme, value in expected.items():
-        block_match = re.search(
-            rf'html\[data-theme="{re.escape(theme)}"\]\s*\{{(.*?)\n\}}',
-            themes,
-            re.S,
-        )
-        assert block_match, theme
-        assert f"--accent-contrast: {value};" in block_match.group(1)
-
-
-def test_claw_does_not_restore_legacy_shared_aliases():
-    workspace = read("claw-workspace.css")
-    manual = read("claw-manual-intake.css")
-
-    for source in (workspace, manual):
-        assert "var(--ink" not in source
-        assert "var(--text-muted" not in source
-
-
-def test_status_and_compact_labels_use_accessible_theme_tokens():
-    workspace = read("claw-workspace.css")
-    tokens = read("padiem-tokens.css")
-    capability = read("capability-nav.css")
-
-    assert "color: #1a6b3a;" not in workspace
-    assert "color: #8a1a1a;" not in workspace
-    assert ".claw-result-success-note" in workspace and "color: var(--success);" in workspace
-    assert '.claw-status[data-state="success"]' in workspace
-    assert 'color: var(--danger);' in workspace
-    assert '.claw-workspace-chip' in workspace and 'color: var(--text);' in workspace
-    assert '.claw-result-badge' in workspace and 'color: var(--text);' in workspace
-
-    # #7187 R3 5차: the theme palette lives in padiem-tokens.css.
-    assert tokens.count("--success:") >= 4
-    assert "--success: #14532d;" in tokens
-    assert "var(--ink" not in capability
-    assert "color: var(--text);" in capability
+EXPECTED_ACCENT_CONTRAST = {
+    "light": "#ffffff",
+    "dark": "#131417",
+    "cinematic": "#04070d",
+    "padiem-home": "#0b0f14",
+    "padiem-glass": "#17202a",
+}
 
 
 def _relative_luminance(hex_color: str) -> float:
@@ -128,52 +47,64 @@ def _composite_rgb(foreground: tuple[int, int, int], alpha: float, background: s
     return "#" + "".join(f"{channel:02x}" for channel in out)
 
 
+def test_claw_shared_roles_use_chat_theme_tokens():
+    result = facts()
+    assert result["fallback_tokens"] == ()
+    assert len(result["required_tokens"]) == len(REQUIRED_TOKENS)
+
+
+def test_claw_has_no_padiem_glass_palette_override():
+    assert facts()["glass_rules"] == []
+
+
+def test_all_chat_themes_define_accent_contrast():
+    blocks = facts()["theme_blocks"]
+    assert set(THEMES).issubset(blocks)
+    for theme, value in EXPECTED_ACCENT_CONTRAST.items():
+        assert ("--accent-contrast", value) in blocks[theme]
+
+
+def test_claw_does_not_restore_legacy_shared_aliases():
+    assert facts()["legacy_aliases"] == ()
+
+
+def test_status_and_compact_labels_use_accessible_theme_tokens():
+    result = facts()
+    assert result["forbidden_colors"] == ()
+    declarations = result["workspace_declarations"]
+    for declaration in (("color", "var(--success)"), ("color", "var(--danger)"),
+                        ("color", "var(--text)")):
+        assert declaration in declarations
+    for selector in (".claw-result-success-note", '.claw-status[data-state="success"]',
+                     ".claw-workspace-chip", ".claw-result-badge"):
+        assert any(selector in entry for entry in result["workspace_selectors"])
+    assert result["success_count"] >= 4
+    assert ("--success", "#14532d") in result["token_declarations"]
+    capability = result["capability_declarations"]
+    assert ("color", "var(--text)") in capability
+
+
 def test_glass_status_surface_contract_uses_browser_audit_anchors():
-    tokens = read("padiem-tokens.css")
-    workspace = read("claw-workspace.css")
-
-    # #7187 R3 5차: the Glass palette lives in padiem-tokens.css.
-    assert "--success: #14532d;" in tokens
-    assert "--danger: #7f1d1d;" in tokens
-    assert "--success-surface: rgba(247, 251, 249, .92);" in tokens
-    assert "--danger-surface: rgba(253, 247, 247, .92);" in tokens
-
-    assert "background: var(--success-surface);" in workspace
-    assert "border: 1px solid var(--success-border);" in workspace
-    assert "background: var(--danger-surface);" in workspace
-    assert "border: 1px solid var(--danger-border);" in workspace
-
-    # Browser-audit anchors from KILO8's rendered Glass status strip BEFORE
-    # this remediation. Composite the new declared semantic surface on top of
-    # those real rendered anchors as a conservative contract. Final acceptance
-    # still comes from the independent frozen browser harness.
+    result = facts()
+    tokens = result["token_declarations"]
+    for declaration in (("--success", "#14532d"), ("--danger", "#7f1d1d"),
+                        ("--success-surface", "rgba(247, 251, 249, .92)"),
+                        ("--danger-surface", "rgba(253, 247, 247, .92)")):
+        assert declaration in tokens
+    workspace = result["workspace_declarations"]
+    for declaration in SURFACE_DECLARATIONS:
+        assert declaration in workspace
     success_surface = _composite_rgb((247, 251, 249), 0.92, "#839293")
     error_surface = _composite_rgb((253, 247, 247), 0.92, "#afa7ac")
-
     assert _contrast_ratio("#14532d", success_surface) >= 4.5
     assert _contrast_ratio("#7f1d1d", error_surface) >= 4.5
-
-    home_match = re.search(
-        r'html\[data-theme="padiem-home"\]\s*\{(.*?)\n\}',
-        tokens,
-        re.S,
-    )
-    assert home_match
-    assert "--success: #14532d;" in home_match.group(1)
+    assert ("--success", "#14532d") in result["theme_blocks"]["padiem-home"]
     assert _contrast_ratio("#14532d", "#f2f4f7") >= 4.5
 
+
 def test_result_supporting_copy_uses_primary_text_on_translucent_surfaces():
-    workspace = read("claw-workspace.css")
-
-    for selector in (".claw-result-note", ".claw-result-empty"):
-        block = re.search(rf'(?m)^{re.escape(selector)}\s*\{{(.*?)\n\}}', workspace, re.S)
-        assert block, selector
-        assert "color: var(--text);" in block.group(1)
-
-    hint_block = re.search(
-        r'\.claw-result-hint,\s*\n\.claw-execute-hint\s*\{(.*?)\n\}',
-        workspace,
-        re.S,
-    )
-    assert hint_block
-    assert "color: var(--text);" in hint_block.group(1)
+    result = facts()
+    assert set(result["result_blocks"]) == {".claw-result-note", ".claw-result-empty"}
+    for block in result["result_blocks"].values():
+        assert ("color", "var(--text)") in block
+    assert ("color", "var(--text)") in result["hint_block"]
