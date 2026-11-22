@@ -42,9 +42,10 @@
     clearDraft();
     nodes.entry.setAttribute("aria-expanded", "false");
     if (returnFocus?.isConnected !== false) returnFocus?.focus?.();
-    // #8316: with the dialog closed the toast may show again; repaint so the
-    // notice returns without waiting for the next poll.
-    paint();
+    // #8316: with the dialog closed the toast may show again. Update only the
+    // notice — a full paint() would re-render the list and invalidate node
+    // references callers hold (e.g. the news jump button).
+    nodes.notice.hidden = !state.owner || (state.unread < 1 && state.unreadReplies < 1);
   }
   function reset() {
     state.epoch += 1;
