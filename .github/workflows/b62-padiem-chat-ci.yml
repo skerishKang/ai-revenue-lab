@@ -264,7 +264,7 @@ jobs:
     needs: registry-ci-plan
     if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope == 'tests_only' }}
     # Reruns are hosted so the trusted queue watchdog can recover offline runners.
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.run_attempt == 1 && needs.registry-ci-plan.outputs.scope == 'tests_only' && needs.registry-ci-plan.outputs.chat_source_changed == 'false' && needs.registry-ci-plan.outputs.tests_only_runner == 'self-hosted' && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-latest' }}
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.run_attempt == 1 && needs.registry-ci-plan.outputs.scope == 'tests_only' && needs.registry-ci-plan.outputs.chat_source_changed == 'false' && needs.registry-ci-plan.outputs.tests_only_runner == 'self-hosted' && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
     timeout-minutes: 12
     defaults:
       run:
@@ -304,7 +304,34 @@ jobs:
         run: |
           uv sync --locked --extra dev
           uv pip install --python "$UV_PROJECT_ENVIRONMENT/bin/python" playwright==1.55.0
+      - name: Select the supported Playwright platform on self-hosted Ubuntu
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: bash ../../.github/scripts/b62_playwright_host_platform.sh
+      - name: Install hosted Chromium system dependencies
+        if: runner.environment == 'github-hosted'
+        run: uv run --locked --no-sync python -m playwright install-deps chromium
+      - name: Prepare Chromium headless shell
+        shell: bash
+        run: |
+          set -euo pipefail
           uv run --locked --no-sync python -m playwright install --only-shell chromium
+          # Fail this infrastructure step before pytest if the runner cannot
+          # load Chromium. The trusted watchdog retries it on Ubuntu 24.04.
+          browser=$(find "$PLAYWRIGHT_BROWSERS_PATH" -type f \
+            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
+          test -n "$browser"
+          missing=$(ldd "$browser" | grep 'not found' || true)
+          if [ -n "$missing" ]; then
+            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
+            exit 1
+          fi
+          uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
       - uses: actions/cache/save@v4
         if: steps.test-cache.outputs.cache-hit != 'true'
         with:

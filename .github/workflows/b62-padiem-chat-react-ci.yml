@@ -31,7 +31,7 @@ concurrency:
 jobs:
   react-clone:
     name: React clone typecheck, tests, build and browser check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     defaults:
       run:
