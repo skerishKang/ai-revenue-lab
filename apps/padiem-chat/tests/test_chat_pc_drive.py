@@ -458,7 +458,7 @@ def test_chat_drive_dispatch_uses_connector_session_with_history_only_run(monkey
     session, unlike the old double which accepted the B62 session too.
     A swallowed lookup exception is retained in the assertion diagnostic.
     """
-    import test_5015_multi_tool_result_storage as db
+    from _support import multi_tool_result_storage as db
     import app.chat_pc_drive as lane
     from app import oracle_mesh_read_return_routes as routes
     from padiem_control_plane.auth_sessions import AuthSessionSnapshot
