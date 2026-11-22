@@ -11,7 +11,6 @@ Pins items 1·3·5·6·8·9·10·12·13:
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import json
 import shutil
@@ -22,20 +21,24 @@ from pathlib import Path
 import pytest
 
 from _r5_auth_module_harness import observations as auth_observations
-from css_rules import declaration, find_rules_with_selector, parse_rules
+from css_rules import declaration, find_rules_with_selector
+
+# #8060 51차: 원문 읽기는 _support(settings_dialog_source)가 담당하고 시험은
+# 파싱된 HTML 요소·CSS 선언·토큰 값·로케일 맵과 실행 관찰 값으로 단언한다.
+from _support.settings_dialog_source import (  # noqa: E402
+    by_id,
+    by_locale_key,
+    dialog_elements,
+    index_elements,
+    locale_map,
+    settings_rules,
+    theme_class_assignments,
+    theme_strings,
+    token_value,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-THEME_JS = (STATIC / "theme.js").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
-TOKENS_CSS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
-POLISH = parse_rules((STATIC / "padiem-settings.css").read_text(encoding="utf-8"))
-
-
-def _dialog() -> str:
-    start = INDEX.index('<dialog class="settings-dialog"')
-    return INDEX[start : INDEX.index("</dialog>", start)]
 
 
 _PUSH_SWITCH_NODE = r"""
@@ -100,44 +103,57 @@ def _push_switch() -> dict:
 
 
 def test_one_close_control_and_no_done_footer() -> None:
-    dialog = _dialog()
-    assert dialog.count('type="submit"') == 1
-    submit = dialog[dialog.index('type="submit"') - 80 : dialog.index('type="submit"') + 80]
-    assert 'id="settingsCloseButton"' in submit
-    for gone in ('settings-footer', 'settings-done', 'data-locale-key="done"'):
-        assert gone not in dialog
+    elements = dialog_elements()
+    submit = [el for el in elements if el.attrs.get("type") == "submit"]
+    assert len(submit) == 1
+    assert submit[0].attrs.get("id") == "settingsCloseButton"
+    for gone in ("settings-footer", "settings-done"):
+        assert not [
+            el for el in elements
+            if el.attrs.get("id") == gone or gone in (el.attrs.get("class") or "").split()
+        ]
+    assert not by_locale_key(elements, "done")
 
 
 def test_one_big_heading_per_section_and_no_duplicate_admin_title() -> None:
-    dialog = _dialog()
-    assert '"settings-label"' not in dialog
-    assert dialog.count('data-locale-key="admin-settings-title"') == 1
-    assert 'data-locale-key="admin-section"' not in dialog
+    elements = dialog_elements()
+    assert not by_locale_key(elements, "settings-label")
+    assert len(by_locale_key(elements, "admin-settings-title")) == 1
+    assert not by_locale_key(elements, "admin-section")
     # Appearance owns the old 화면/테마 pair as one heading.
-    assert 'id="appearanceTitle" data-locale-key="appearance"' in dialog
-    assert 'data-locale-key="theme"' not in dialog
+    appearance = by_id(elements, "appearanceTitle")
+    assert len(appearance) == 1 and appearance[0].attrs.get("data-locale-key") == "appearance"
+    assert not by_locale_key(elements, "theme")
     for section_id in ("appearanceTitle", "languageTitle", "clawPushTitle", "adminSettingsTitle"):
-        assert dialog.count(f'id="{section_id}"') == 1
+        assert len(by_id(elements, section_id)) == 1
 
 
 def test_every_choice_button_wears_the_same_control_class() -> None:
-    dialog = _dialog()
-    picker = dialog[dialog.index('id="themePicker"') : dialog.index("</section>", dialog.index('id="themePicker"'))]
-    assert picker.count("settings-choice theme-option") == 4
-    language = dialog[dialog.index('id="languagePicker"') : dialog.index("</section>", dialog.index('id="languagePicker"'))]
-    assert language.count("settings-choice language-option") == 2
+    elements = dialog_elements()
+    picker = by_id(elements, "themePicker")[0]
+    assert len([
+        el for el in picker.children
+        if el.has_class("settings-choice") and el.has_class("theme-option")
+    ]) == 4
+    language = by_id(elements, "languagePicker")[0]
+    assert len([
+        el for el in language.children
+        if el.has_class("settings-choice") and el.has_class("language-option")
+    ]) == 2
     # theme.js injects the Glass theme and the Glass sub-options with the same class.
-    assert 'button.className="settings-choice theme-option"' in THEME_JS
-    assert THEME_JS.count('className="settings-choice glass-variant-option"') == 2
+    classes = theme_class_assignments()
+    assert "settings-choice theme-option" in classes
+    assert classes.count("settings-choice glass-variant-option") == 2
 
-    base = find_rules_with_selector(POLISH, "#settingsDialog .settings-choice")
+    rules = settings_rules()
+    base = find_rules_with_selector(rules, "#settingsDialog .settings-choice")
     assert base, "one choice-control rule must exist"
     assert declaration(base[0], "min-height") == "44px"
     # #7187 반경 스케일(261115): the sheet names the token; the token file pins
     # the value, so the painted radius is still 10px.
     assert declaration(base[0], "border-radius") == "var(--radius-sm)"
-    assert "--radius-sm: 10px;" in TOKENS_CSS
-    selected = find_rules_with_selector(POLISH, '#settingsDialog .settings-choice[aria-pressed="true"]')
+    assert token_value("--radius-sm") == "10px"
+    selected = find_rules_with_selector(rules, '#settingsDialog .settings-choice[aria-pressed="true"]')
     assert selected, "selected choice rule must exist"
     assert declaration(selected[0], "background") == "var(--accent-soft)"
     assert declaration(selected[0], "color") == "var(--accent-strong)"
@@ -145,7 +161,7 @@ def test_every_choice_button_wears_the_same_control_class() -> None:
 
 
 def test_glass_options_are_one_indented_group() -> None:
-    rules = find_rules_with_selector(POLISH, "#settingsDialog .glass-variant-control")
+    rules = find_rules_with_selector(settings_rules(), "#settingsDialog .glass-variant-control")
     group = [rule for rule in rules if declaration(rule, "margin-left") == "18px"]
     assert group, "the Glass group must be indented under the theme picker"
     assert any("#settingsDialog .glass-shell-control" in rule.selectors for rule in group)
@@ -154,40 +170,48 @@ def test_glass_options_are_one_indented_group() -> None:
 
 
 def test_three_action_levels_and_the_entry_alignment() -> None:
-    dialog = _dialog()
-    assert 'class="settings-action settings-action-secondary" id="settingsLogoutButton"' in dialog
-    assert 'class="settings-action settings-action-secondary settings-link" id="adminHubLink"' in dialog
-    assert 'class="settings-action settings-action-primary settings-link" id="settingsAdvancedOpen"' in dialog
+    elements = dialog_elements()
+    for element_id, expected_class in (
+        ("settingsLogoutButton", "settings-action settings-action-secondary"),
+        ("adminHubLink", "settings-action settings-action-secondary settings-link"),
+        ("settingsAdvancedOpen", "settings-action settings-action-primary settings-link"),
+    ):
+        found = by_id(elements, element_id)
+        assert len(found) == 1 and found[0].attrs.get("class") == expected_class
 
-    secondary = find_rules_with_selector(POLISH, "#settingsDialog .settings-action-secondary")
-    primary = find_rules_with_selector(POLISH, "#settingsDialog .settings-action-primary")
-    danger = find_rules_with_selector(POLISH, "#settingsDialog .settings-action-danger")
+    rules = settings_rules()
+    secondary = find_rules_with_selector(rules, "#settingsDialog .settings-action-secondary")
+    primary = find_rules_with_selector(rules, "#settingsDialog .settings-action-primary")
+    danger = find_rules_with_selector(rules, "#settingsDialog .settings-action-danger")
     assert secondary and primary and danger
     assert declaration(secondary[0], "background") == "var(--card-bg, #fafafa)"
     assert declaration(primary[0], "background") == "var(--primary-bg)"
     assert declaration(primary[0], "border-radius") == "var(--radius-pill)"
-    assert "--radius-pill: 999px;" in TOKENS_CSS
+    assert token_value("--radius-pill") == "999px"
     assert declaration(danger[0], "color") == "var(--danger)"
 
-    entry = find_rules_with_selector(POLISH, ".settings-advanced-entry")
+    entry = find_rules_with_selector(rules, ".settings-advanced-entry")
     assert entry and declaration(entry[0], "padding") == "18px 30px 26px"
 
 
 def test_edge_blur_wording_is_localized_and_the_old_term_is_gone() -> None:
-    assert '"glass-mask-mode": "가장자리 흐림 효과"' in LOCALE
-    assert '"glass-mask-mode": "Edge blur effect"' in LOCALE
-    assert "외투 마스크" not in LOCALE
-    assert "외투 마스크" not in THEME_JS
-    assert "Shell mask mode" not in THEME_JS
-    assert '"glass-mask-mode"' in THEME_JS
+    assert locale_map("ko")["glass-mask-mode"] == "가장자리 흐림 효과"
+    assert locale_map("en")["glass-mask-mode"] == "Edge blur effect"
+    for lang in ("ko", "en"):
+        for key, value in locale_map(lang).items():
+            assert "외투 마스크" not in key and "외투 마스크" not in value
+    strings = theme_strings()
+    assert not any("외투 마스크" in value for value in strings)
+    assert not any("Shell mask mode" in value for value in strings)
+    assert "glass-mask-mode" in strings
 
 
 def test_alerts_are_one_switch_and_the_old_sentence_button_is_gone() -> None:
-    dialog = _dialog()
-    assert 'role="switch"' in dialog
-    assert 'aria-checked="false"' in dialog
-    assert 'data-locale-key="claw-push-enable"' not in dialog
-    assert 'id="clawPushStatus"' in dialog
+    elements = dialog_elements()
+    assert [el for el in elements if el.attrs.get("role") == "switch"]
+    assert [el for el in elements if el.attrs.get("aria-checked") == "false"]
+    assert not by_locale_key(elements, "claw-push-enable")
+    assert by_id(elements, "clawPushStatus")
     # R2(#7186): the switch state is observed by executing claw-push.js, not by
     # reading its source. on/off write aria-checked only; the old aria-pressed
     # sentence button never comes back; only an exceptional answer keeps a line.
@@ -203,24 +227,39 @@ def test_alerts_are_one_switch_and_the_old_sentence_button_is_gone() -> None:
     # No VAPID authority on this deployment: the section offers nothing.
     assert seen["unconfigured"]["settingHidden"] is True
     # #7485 review: the switch shares the section title line.
-    assert 'class="settings-section-head"' in dialog
-    head = dialog[dialog.index('class="settings-section-head"'):]
-    head = head[: head.index("</div>")]
-    assert head.index('id="clawPushTitle"') < head.index('id="clawPushToggle"')
-    heading_rule = find_rules_with_selector(POLISH, ".settings-dialog .settings-section-head h3")
+    heads = [el for el in elements if el.has_class("settings-section-head")]
+    assert heads
+    title = by_id(heads[0].children, "clawPushTitle")
+    toggle = by_id(heads[0].children, "clawPushToggle")
+    assert len(title) == 1 and len(toggle) == 1
+    assert title[0].order < toggle[0].order
+    heading_rule = find_rules_with_selector(settings_rules(), ".settings-dialog .settings-section-head h3")
     assert heading_rule and declaration(heading_rule[0], "margin") == "0"
 
 
 def test_account_section_shows_the_session_email_and_logout_only() -> None:
-    dialog = _dialog()
-    assert 'id="accountSettingsSection" aria-labelledby="accountSettingsTitle" hidden' in dialog
-    assert 'id="accountSettingsTitle" data-locale-key="account-section">계정</h3>' in dialog
-    assert 'class="settings-account-email" id="settingsAccountEmail" hidden' in dialog
-    assert 'class="settings-action settings-action-secondary" id="settingsLogoutButton"' in dialog
+    elements = dialog_elements()
+    section = by_id(elements, "accountSettingsSection")
+    assert len(section) == 1
+    assert section[0].attrs.get("aria-labelledby") == "accountSettingsTitle"
+    assert "hidden" in section[0].attrs
+    title = by_id(elements, "accountSettingsTitle")
+    assert len(title) == 1
+    assert title[0].attrs.get("data-locale-key") == "account-section" and "계정" in title[0].text
+    email = by_id(elements, "settingsAccountEmail")
+    assert len(email) == 1
+    assert email[0].has_class("settings-account-email") and "hidden" in email[0].attrs
+    logout = by_id(elements, "settingsLogoutButton")
+    assert len(logout) == 1
+    assert logout[0].attrs.get("class") == "settings-action settings-action-secondary"
     # Risky operations stay on the advanced page (item 2 keeps them there).
+    index = index_elements()
     for risky in ('passwordChangeOpen', 'accountDeleteOpen', 'accountSharedDeleteOpen'):
-        assert risky not in dialog
-        assert f'id="{risky}"' in INDEX
+        assert not [
+            el for el in elements
+            if el.attrs.get("id") == risky or risky in (el.attrs.get("class") or "").split()
+        ]
+        assert by_id(index, risky)
 
     # R2(#7186): the section projection is observed by executing
     # chat-auth-module.js with a shipped session, not by reading its source.
@@ -235,5 +274,5 @@ def test_account_section_shows_the_session_email_and_logout_only() -> None:
         assert seen[state]["settingsHidden"] is True
         assert seen[state]["settingsEmailHidden"] is True
 
-    email_rule = find_rules_with_selector(POLISH, ".settings-dialog .settings-account-email")
+    email_rule = find_rules_with_selector(settings_rules(), ".settings-dialog .settings-account-email")
     assert email_rule and declaration(email_rule[0], "font-size") == "14px"
