@@ -73,7 +73,8 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                     assert rows.first.locator("td").all_inner_texts() == [
                         "…xample", "0.3.0-rc1 (aaaaaaaaaaaa) · 업데이트 완료",
                         "2026-02-16T00:43:44.000Z", "2026. 11. 21. 01:02", "재설치 필요 · SYSTEM 권한 없음"]
-                    assert rows.last.locator("td").all_inner_texts()[0] == "…nknown"
+                    assert rows.last.locator("td").all_inner_texts() == [
+                        "…nknown", "보고 없음", "보고 없음", "보고 없음", "미확인"]
                     assert page.locator("#opsPcVersionsHeading").inner_text() == "PC 버전 현황"
                     assert "도우미 버전 / 빌드" in page.locator("table[aria-labelledby='opsPcVersionsHeading'] thead").inner_text()
                     page.click("#opsPcVersionsReload")
@@ -122,7 +123,7 @@ def test_refresh_failure_surfaces_server_reason_and_base_version():
                     data = {"ok": True, "devices": [], "rollout": rollout}
                     status = 200
                 elif path == "/api/admin/ops-pc-versions/refresh-updaters":
-                    data = {"error": "canonical_session_required"}
+                    data = {"ok": False, "error": {"code": "canonical_session_required"}}
                     status = 401
                 elif path.startswith("/api/"):
                     data = {"ok": True, "members": [], "feedback": [], "audit": []}
@@ -138,9 +139,10 @@ def test_refresh_failure_surfaces_server_reason_and_base_version():
             page.wait_for_function("() => !document.getElementById('opsPcVersionsReload').disabled")
             page.click("#opsPcRefreshPreview")
             page.wait_for_function(
-                "() => document.getElementById('opsPcRefreshStatus').textContent.includes('canonical_session_required')")
+                "() => document.getElementById('opsPcRefreshStatus').textContent.includes('기준 버전을 먼저 등록하세요')")
             text = page.locator("#opsPcRefreshStatus").inner_text()
-            assert "기준 버전 미등록" in text
+            assert "관리자 세션을 확인할 수 없습니다" in text
+            assert "[object Object]" not in text
             page.close()
         finally:
             browser.close()
