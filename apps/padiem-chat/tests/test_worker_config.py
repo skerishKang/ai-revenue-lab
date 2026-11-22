@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from app.config import ConfigError, Settings
+from _support import worker_config_source as worker_source
 from app.worker_config import (
     BASE_SECURITY_HEADERS,
     CONTENT_SECURITY_POLICY,
@@ -226,44 +227,43 @@ def test_security_headers_and_api_auth_no_store():
 
 
 def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
-    root = Path(__file__).resolve().parents[1]
-    wrangler = (root / "wrangler.toml").read_text(encoding="utf-8")
-    worker = (root / "worker.py").read_text(encoding="utf-8")
-    assert 'name = "padiem-chat"' in wrangler
-    assert 'main = "worker.py"' in wrangler
-    assert 'base_dir = ".b66-worker-src"' in wrangler
-    assert 'command = "uv run python scripts/build_b66_worker_dependencies.py"' in wrangler
-    assert 'compatibility_flags = ["python_workers"]' in wrangler
+    # #8060 40차: wrangler.toml is checked as parsed toml values and worker.py
+    # as parsed Python (the create_app call, assignments and identifiers) —
+    # the reads live in _support, not here.
+    config = worker_source.wrangler_config()
+    assert config["name"] == "padiem-chat"
+    assert config["main"] == "worker.py"
+    assert config["base_dir"] == ".b66-worker-src"
+    assert config["build"]["command"] == "uv run python scripts/build_b66_worker_dependencies.py"
+    assert config["compatibility_flags"] == ["python_workers"]
     # The release serves the generated bundle, so the Assets set and the Python
     # moduleRoot are the same byte-verified tree (see wrangler.toml [assets]).
-    assert 'directory = ".b66-worker-src/static"' in wrangler
-    assert 'PADIEM_CHAT_RUNTIME_MODE = "mock"' in wrangler
-    assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler
-    import tomllib
+    assert config["assets"]["directory"] == ".b66-worker-src/static"
+    assert config["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
+    assert config["vars"]["PADIEM_CHAT_LIVE_ENABLED"] == "false"
     from uuid import UUID
-    databases = tomllib.loads(wrangler)["d1_databases"]
+    databases = config["d1_databases"]
     assert databases[0]["binding"] == "PADIEM_CHAT_DB"
     assert UUID(databases[0]["database_id"]).int > 0
-    assert "settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)" in worker
-    assert "await resolve_web_secrets_store_keys(self.env)" in worker
-    assert "D1HistoryStore" in worker and "PADIEM_CHAT_DB" not in worker
-    assert "D1UsageCounterStore" in worker
-    assert "UsageGate(settings, usage_store)" in worker
-    assert "usage_gate_enforced = True" in worker
-    assert "worker_app = create_app(" in worker
-    for required_arg in (
-        "settings=settings",
-        "history_store=history_store",
-        "d1_binding=db_binding",
-        "r2_binding=r2_binding",
-        "web_transport=web_transport",
-    ):
-        assert required_arg in worker
-    assert "OPENROUTER_API_KEY" not in worker
-    assert "PADIEM_CHAT_B14_BASE_URL" not in worker
-    assert "FIRECRAWL_API_KEY" not in worker
-    assert "PADIEM_CHAT_DAUM_REST_API_KEY" not in worker
-    assert "GOOGLE_CLIENT_SECRET" not in worker
+    create_app_kwargs = worker_source.worker_create_app_kwargs()
+    assert create_app_kwargs["settings"] == "settings"
+    assert create_app_kwargs["history_store"] == "history_store"
+    assert create_app_kwargs["d1_binding"] == "db_binding"
+    assert create_app_kwargs["r2_binding"] == "r2_binding"
+    assert create_app_kwargs["web_transport"] == "web_transport"
+    assert "settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)" in worker_source.worker_text()
+    assert "await resolve_web_secrets_store_keys(self.env)" in worker_source.worker_text()
+    identifiers = worker_source.worker_identifiers()
+    assert "D1HistoryStore" in identifiers and "D1UsageCounterStore" in identifiers
+    assert "PADIEM_CHAT_DB" not in identifiers
+    assert "UsageGate(settings, usage_store)" in worker_source.worker_text()
+    assert worker_source.worker_assignments().get("usage_gate_enforced") == "True"
+    assert worker_source.worker_create_app_kwargs(), "worker_app = create_app(...) missing"
+    constants = worker_source.worker_string_constants()
+    for secret in ("OPENROUTER_API_KEY", "PADIEM_CHAT_B14_BASE_URL",
+                   "FIRECRAWL_API_KEY", "PADIEM_CHAT_DAUM_REST_API_KEY",
+                   "GOOGLE_CLIENT_SECRET"):
+        assert secret not in constants, secret
 
 
 def test_phase1_css_blob_content_remains_byte_equal():
@@ -283,10 +283,7 @@ def test_b66_pdf_renderer_binding_is_fixed_server_authority():
 
 def test_source_wrangler_model_idle_matches_chat_worker_default():
     """A deploy from source must not resurrect the pre-#4200 20s timeout."""
-    import tomllib
-
-    source = Path(__file__).resolve().parents[1] / "wrangler.toml"
-    config = tomllib.loads(source.read_text(encoding="utf-8"))
+    config = worker_source.wrangler_config()
     assert config["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
     assert config["vars"]["PADIEM_CHAT_TIMEOUT_SECONDS"] == "600"
     assert settings_from_worker_bindings(config["vars"]).timeout_seconds == 600.0
