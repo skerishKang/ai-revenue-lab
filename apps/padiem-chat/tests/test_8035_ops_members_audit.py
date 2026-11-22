@@ -163,6 +163,7 @@ def test_member_detail_counts_and_the_view_is_audited():
                      if row["action"] == "member_detail_view"]
             assert len(views) == len(before["audit"]) + 1
             assert views[0]["actor_user_id"] == OTHER
+            assert views[0]["actor_label"] == "fixture"
             assert views[0]["target_id"] == OWNER
         finally:
             db.close()

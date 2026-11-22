@@ -1,77 +1,51 @@
 """#4428 B66 Connect: static, security and no-premature-activation contract."""
-from pathlib import Path
+import json
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
+from _support.b66_pc_connect import (
+    AUTH_EVENTS,
+    ENTITLEMENT_EXPRESSIONS,
+    EXPECTED_IDS,
+    LIFECYCLE_EXPRESSIONS,
+    LOADER_ALLOWED,
+    UNAVAILABLE_COPY,
+    runtime_facts,
+    script_order,
+    server_facts,
+)
 
 
 def test_b66_pc_view_reuses_canonical_claw_projection_without_execution():
-    js = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
-    assert '"b66QuotePcToggle"' in js
-    assert '"b66QuotePcPanel"' in js
-    assert '"b66QuotePcStatus"' in js
-    assert '"b66QuotePcList"' in js
-    assert '"b66QuotePcRefresh"' in js
-    assert 'PC_DIRECTORY_PATH = "/api/b66/connect/devices"' in js
-    assert "window.PadiemClawLocalHandoff?.deriveDeviceDirectory" in js
-    assert html.index('./claw-local-handoff.js') < html.index('./b66-quote-runtime.js')
-    assert 'credentials: "same-origin"' in js
+    js = runtime_facts()
+    assert set(EXPECTED_IDS).issubset(js["element_ids"])
+    assert js["directory_path"] == ("/api/b66/connect/devices",)
+    assert js["handoff_projection"] is True
+    scripts = script_order()
+    assert scripts.index("./claw-local-handoff.js") < scripts.index("./b66-quote-runtime.js")
+    assert js["credentials"] == ("same-origin",)
     # #5895-D: no client byte gate refuses the owner's own same-origin reads.
-    assert 'MAX_PC_DIRECTORY_BYTES' not in js
-    assert 'const payload = JSON.parse(raw)' in js
-    loader = js.split("async function loadPcDirectory() {", 1)[1].split(
-        "function closeDialog()", 1
-    )[0]
-    assert 'method: "GET"' in loader
-    assert "nativeFetch(PC_DIRECTORY_PATH" in loader
-    assert "directory.devices" in loader
-    for forbidden in (
-        'method: "POST"', 'method: "PUT"', 'method: "DELETE"',
-        "localStorage", "sessionStorage", "postMessage", "new WebSocket",
-        "document.cookie", "pairingToken", "fetch('/api/command",
-    ):
-        assert forbidden not in loader
-    assert "device.online" in loader
-    assert "device.revoked" in loader
-    assert "pcDirectoryEnabled: data.pc_device_list_enabled === true" in js
-    assert "pcSection.hidden = true" in js
-    assert "runtime?.pcDirectoryEnabled === true" in js
-    assert "if (!pcEnabled) resetPcDirectory();" in js
+    assert js["byte_gate_present"] is False
+    assert js["json_parse_payload"] is True
+    assert js["loader_methods"] == ("GET",)
+    assert set(LOADER_ALLOWED).issubset(js["loader_present"])
+    assert js["loader_forbidden"] == ()
+    assert js["entitlement_present"][:3] == ENTITLEMENT_EXPRESSIONS[:3]
 
 
 def test_no_eager_request_and_logout_discards_stale_pc_results():
-    js = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
-    assert "pcPanel.hidden = true;" in js
-    assert "void loadPcDirectory();" in js
-    assert "pcQuerySequence += 1" in js
-    assert "current === pcQuerySequence && !section.hidden" in js
-    assert "resetPcDirectory();" in js
-    assert '["padiem:auth-state", "padiem:auth-changed", "padiem:account-changed"]' in js
+    js = runtime_facts()
+    assert set(LIFECYCLE_EXPRESSIONS).issubset(js["lifecycle_present"])
+    assert js["auth_event_arrays"] == (json.dumps(list(AUTH_EVENTS)),)
     # #6100: the same capability event sets signedIn (the logged-out hint)
     # and refreshes only for a signed-in browser.
-    assert "signedIn = !!(auth && auth.authenticated === true);" in js
-    assert "if (signedIn) refresh();" in js
-    assert "resetPcDirectory();\n      runtime = null;" in js
-    assert 'pcUnavailable: "PC 연결 서비스가 아직 준비되지 않았습니다.' in js
-    assert "Padiem Connect installation and same-account sign-in are not ready yet" in js
-    assert "https://github.com/" not in js.split("async function loadPcDirectory()", 1)[1].split("function closeDialog()", 1)[0]
+    assert js["logout_reset"] is True
+    assert set(UNAVAILABLE_COPY).issubset(js["unavailable_copy"])
+    assert js["loader_external_url"] is False
 
 
 def test_b66_pc_directory_is_default_off_without_product_entitlement():
     """No B66 product permission adapter is live yet; do not leak Claw devices."""
-    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
-    server = (STATIC.parent / "app" / "b66_quote_routes.py").read_text(encoding="utf-8")
-    assert "pcDirectoryEnabled: data.pc_device_list_enabled === true" in source
-    assert "pcSection.hidden = true;" in source
-    assert "runtime?.pcDirectoryEnabled === true" in source
-    assert "if (pcSection) pcSection.hidden = !pcEnabled;" in source
-    # The new server permission is allowed only when the canonical
-    # default-off workspace-scoped adapter approves the B66 product.
-    gate = (STATIC.parent / "app" / "b66_pc_directory_routes.py").read_text(encoding="utf-8")
-    assert "pc_device_list_enabled" in server
-    assert "b66_pc_directory_available(request, uid)" in server
-    assert "evaluate_pc_access(" in gate
-    assert "ProductPcAccessPolicy" in gate
-    assert 'B66_PC_DIRECTORY_PATH = "/api/b66/connect/devices"' in gate
-    assert "grant.workspace_ref != workspace" in gate
-    assert "return await claw_device_directory(request)" in gate
+    js = runtime_facts()
+    assert set(ENTITLEMENT_EXPRESSIONS).issubset(js["entitlement_present"])
+    facts = server_facts()
+    assert len(facts["server_present"]) == 2
+    assert len(facts["gate_present"]) == 5

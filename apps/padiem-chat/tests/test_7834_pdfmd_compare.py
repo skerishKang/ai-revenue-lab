@@ -166,7 +166,10 @@ def test_the_original_pane_shows_a_rendered_page_image() -> None:
     assert pages["assignments_full"].get("image.className") == chr(34) + "pdfmd-original-page" + chr(34)
     assert ("itemUrl", 'item, "/original/" + number + ".jpeg"') in pages["call_args"]
     assert ("itemUrl", 'item, "/original?display=inline"') in pages["call_args"]
-    assert 'image.getAttribute("src") === target' in pages["early_returns"]
+    # #8316: the unchanged-src branch now recovers a failed page, so it is a
+    # guarded re-request rather than a bare early return.
+    from _support.pdfmd_compare import _executable
+    assert 'image.getAttribute("src") === target' in _executable("util-pdfmd-pages.js")
     # A page that cannot be rendered says so instead of showing a broken image.
     assert any("이 쪽의 원본을 그림으로 표시하지 못했습니다." in s for s in pages["string_literals"])
     # No pane, anywhere, frames the PDF: that is what the browser refused.

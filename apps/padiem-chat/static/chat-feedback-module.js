@@ -472,7 +472,9 @@
     const reply = await request(API + "/" + item.id + "/read", "POST", { fixed_version: item.fixed_version });
     // #7835: same rule as load() — never leave busy behind on an early return.
     state.busy = false;
-    if (!reply) { paint(); return; }
+    // #8316: a dropped read left the button looking dead — no state change and
+    // no message. Say the attempt failed instead of silently repainting.
+    if (!reply) { state.message = "failed"; paint(); return; }
     const next = entry(reply.data?.feedback);
     if (reply.status === 200 && reply.data?.ok === true && next) {
       state.own = state.own.map((old) => old.id === next.id ? next : old);
