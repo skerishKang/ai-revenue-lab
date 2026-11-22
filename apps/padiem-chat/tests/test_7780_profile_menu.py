@@ -15,6 +15,7 @@ import json
 import subprocess
 
 from _support import profile_menu as pm
+from css_rules import declaration, rule_selector_list_contains, rules_for_sheet
 
 
 def test_outer_three_in_owner_order_then_divider_then_account() -> None:
@@ -128,8 +129,18 @@ def test_light_theme_hero_second_line_and_empty_text_contrast() -> None:
     assert "#" not in empty
     # 실제 계산 색: cinematic-workspace의 .history-empty !important 흰 규칙이
     # 라이트에서 이기면 묻힌다. 라이트 규칙이 !important로 이기는지 확인한다.
-    cinematic = pm.CINEMATIC
-    assert ".history-empty," in cinematic and "rgba(255, 255, 255, .52) !important" in cinematic
+    floor_rules = [
+        rule for rule in rules_for_sheet("padiem-cinematic-workspace.css")
+        if rule_selector_list_contains(rule, ".history-empty")
+        and (declaration(rule, "color") or "").endswith("!important")
+    ]
+    assert len(floor_rules) == 1
+    floor = floor_rules[0]
+    assert floor.selectors[0] == ".history-empty" and len(floor.selectors) > 1
+    assert declaration(floor, "color") == "var(--ws-control-muted-text) !important"
+    token_root = next(r for r in rules_for_sheet("padiem-tokens.css")
+                      if r.selectors == [":root"] and r.media is None)
+    assert token_root.declarations["--ws-control-muted-text"] == "rgba(255, 255, 255, .52)"
     # 홈 두 번째 줄은 페이지 표면 위에, 빈 문구는 페이지 표면 위에 놓인다.
     assert _contrast(_token_hex("--muted"), _token_hex("--page-bg")) >= 4.5
     assert _contrast(_token_hex("--text"), _token_hex("--page-bg")) >= 4.5

@@ -39,6 +39,7 @@ CHANGED = {
         ("color", "rgba(255, 255, 255, .42)", "var(--text-veil-faint)"),
         ("color", "rgba(255, 255, 255, .34) !important", "var(--text-veil-mist) !important"),
         ("color", "rgba(255, 255, 255, .34)", "var(--text-veil-mist)"),
+        ("color", "rgba(255, 255, 255, .92) !important", "var(--text-veil-strong) !important"),
     ],
     "padiem-foundation.css": [
         ("color", "rgba(255, 255, 255, .92)", "var(--text-veil-strong)"),
@@ -98,4 +99,4 @@ def test_text_tokens_are_only_color_declarations() -> None:
 
 def test_this_round_replaced_exactly_eight_declarations() -> None:
     """2차 8선언은 그대로이고, 7차가 글자 토큰 2선언을 더했다."""
-    assert sum(len(items) for items in CHANGED.values()) == 10
+    assert sum(len(items) for items in CHANGED.values()) == 11

@@ -15,7 +15,7 @@
 .history-item,
 .project-item,
 .output-item {
-  color: rgba(244, 247, 251, .66);
+  color: var(--ws-item-text);
 }
 
 .project-item[aria-current="true"],
@@ -23,7 +23,7 @@
   position: relative;
   color: var(--panel-text-max);
   font-weight: 560;
-  background: linear-gradient(90deg, rgba(255, 255, 255, .075), var(--app-grid-line));
+  background: linear-gradient(90deg, var(--ws-current-wash), var(--app-grid-line));
 }
 
 .project-item[aria-current="true"]::before,
@@ -36,7 +36,7 @@
   width: 2px;
   border-radius: var(--radius-pill);
   background: var(--accent);
-  box-shadow: 0 0 9px rgba(136, 201, 255, .32);
+  box-shadow: 0 0 9px var(--ws-current-glow);
 }
 
 .section-add-button {
@@ -47,7 +47,7 @@
 
 .section-add-button:hover,
 .section-add-button:focus-visible {
-  border-color: rgba(255, 255, 255, .16);
+  border-color: var(--ws-control-hover-edge);
   background: var(--surface-veil-soft);
   color: var(--panel-text-max);
 }
@@ -57,15 +57,15 @@
   width: min(840px, calc(100% - 18px));
   margin-bottom: 9px;
   padding: 9px 11px;
-  border: 1px solid rgba(255, 255, 255, .12) !important;
-  border-left: 2px solid rgba(255, 255, 255, .42) !important;
+  border: 1px solid var(--ws-banner-edge) !important;
+  border-left: 2px solid var(--ws-banner-accent) !important;
   border-radius: var(--radius-sm);
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .02)),
+    linear-gradient(90deg, var(--ws-soft-wash), var(--ws-banner-wash-end)),
     var(--surface-panel-deep) !important;
   box-shadow:
     inset 0 1px 0 var(--inset-veil-panel) !important,
-    0 14px 38px rgba(0, 0, 0, .12);
+    0 14px 38px var(--ws-banner-shadow);
   backdrop-filter: blur(20px);
 }
 
@@ -94,16 +94,16 @@
   border-color: var(--line-veil-dim) !important;
   border-radius: 6px;
   background: var(--surface-veil-ghost) !important;
-  color: rgba(255, 255, 255, .52) !important;
+  color: var(--ws-control-muted-text) !important;
   font-family: var(--font-label);
   font-size: 9px;
   letter-spacing: .035em;
 }
 
 .project-banner-actions button:hover {
-  border-color: rgba(255, 255, 255, .20) !important;
-  background: rgba(255, 255, 255, .07) !important;
-  color: #fff !important;
+  border-color: var(--ws-control-hover-edge-strong) !important;
+  background: var(--ws-control-hover-wash) !important;
+  color: var(--ws-control-hover-text) !important;
 }
 
 /* Shared modal geometry --------------------------------------------------- */
@@ -117,7 +117,7 @@
 .saved-output-view {
   padding: 24px;
   background:
-    linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)),
+    linear-gradient(145deg, var(--surface-veil-soft), var(--ws-form-wash)),
     var(--surface-panel-solid) !important;
 }
 
@@ -125,13 +125,13 @@
 .saved-output-header {
   padding-bottom: 14px;
   margin-bottom: 4px;
-  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  border-bottom: 1px solid var(--ws-dialog-edge);
 }
 
 .project-dialog-header p,
 .saved-output-header p {
   margin-bottom: 6px;
-  color: rgba(255, 255, 255, .62) !important;
+  color: var(--ws-dialog-kicker-text) !important;
   font-family: var(--font-label);
   font-size: 9px;
   font-weight: 600;
@@ -150,16 +150,16 @@
 
 .project-dialog-close,
 .saved-output-close {
-  border: 1px solid rgba(255, 255, 255, .08) !important;
+  border: 1px solid var(--ws-dialog-edge) !important;
   border-radius: var(--radius-xs);
   background: var(--surface-veil-ghost) !important;
-  color: rgba(255, 255, 255, .52) !important;
+  color: var(--ws-control-muted-text) !important;
 }
 
 .project-dialog-close:hover,
 .saved-output-close:hover {
-  background: rgba(255, 255, 255, .075) !important;
-  color: #fff !important;
+  background: var(--ws-current-wash) !important;
+  color: var(--ws-control-hover-text) !important;
 }
 
 .project-form label,
@@ -179,10 +179,10 @@
 .project-form input,
 .project-form textarea,
 .saved-output-title-input {
-  border-color: rgba(255, 255, 255, .11) !important;
+  border-color: var(--ws-input-edge) !important;
   border-radius: 9px;
-  background: rgba(255, 255, 255, .045) !important;
-  color: rgba(255, 255, 255, .9) !important;
+  background: var(--ws-input-wash) !important;
+  color: var(--ws-input-text) !important;
   box-shadow: inset 0 1px 0 var(--app-grid-line);
 }
 
@@ -190,8 +190,8 @@
 .project-form textarea:focus,
 .saved-output-title-input:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, .28) !important;
-  box-shadow: 0 0 0 3px rgba(136, 201, 255, .045);
+  border-color: var(--ws-input-focus-edge) !important;
+  box-shadow: 0 0 0 3px var(--ws-input-focus-glow);
 }
 
 .project-form-note,
@@ -203,7 +203,7 @@
 .project-form-error,
 .saved-output-status[data-state="error"],
 .composer-note[data-state="error"] {
-  color: #ffabab !important;
+  color: var(--ws-danger-text) !important;
 }
 
 .project-secondary,
@@ -216,26 +216,26 @@
 
 .project-secondary,
 .saved-output-actions button {
-  border-color: rgba(255, 255, 255, .11) !important;
-  background: rgba(255, 255, 255, .045) !important;
-  color: rgba(255, 255, 255, .64) !important;
+  border-color: var(--ws-input-edge) !important;
+  background: var(--ws-input-wash) !important;
+  color: var(--ws-secondary-text) !important;
 }
 
 .project-primary,
 .saved-output-actions .saved-output-primary {
-  border-color: rgba(255, 255, 255, .20) !important;
+  border-color: var(--ws-control-hover-edge-strong) !important;
   background: var(--surface-veil-dim) !important;
-  color: rgba(255, 255, 255, .92) !important;
+  color: var(--text-veil-strong) !important;
 }
 
 .project-primary:hover,
 .saved-output-actions .saved-output-primary:hover {
   border-color: var(--line-veil-mist) !important;
-  background: rgba(255, 255, 255, .14) !important;
+  background: var(--ws-primary-hover-wash) !important;
 }
 
 .saved-output-actions .saved-output-danger {
-  color: #ffabab !important;
+  color: var(--ws-danger-text) !important;
 }
 
 /* Project documents ------------------------------------------------------- */
@@ -263,21 +263,21 @@
   border-color: var(--line-veil-dim) !important;
   border-radius: 7px;
   background: var(--surface-veil-ghost) !important;
-  color: rgba(255, 255, 255, .58) !important;
+  color: var(--ws-file-add-text) !important;
   font-size: 10px;
   font-weight: 560;
 }
 
 .project-file-add:hover {
-  border-color: rgba(255, 255, 255, .20) !important;
-  background: rgba(255, 255, 255, .07) !important;
-  color: #fff !important;
+  border-color: var(--ws-control-hover-edge-strong) !important;
+  background: var(--ws-control-hover-wash) !important;
+  color: var(--ws-control-hover-text) !important;
 }
 
 .project-file-row {
-  border: 1px solid rgba(255, 255, 255, .065);
+  border: 1px solid var(--ws-file-row-edge);
   border-radius: var(--radius-xs);
-  background: rgba(255, 255, 255, .03);
+  background: var(--ws-card-wash);
 }
 
 .project-file-row strong {
@@ -290,14 +290,14 @@
 }
 
 .project-file-row button:hover {
-  color: #ffb5b5;
+  color: var(--ws-danger-hover-text);
 }
 
 .document-attachment-icon {
-  border: 1px solid rgba(255, 255, 255, .10);
+  border: 1px solid var(--ws-attachment-edge);
   border-radius: 9px;
-  background: rgba(255, 255, 255, .055) !important;
-  color: rgba(255, 255, 255, .74) !important;
+  background: var(--ws-soft-wash) !important;
+  color: var(--ws-attachment-text) !important;
   font-family: var(--font-label);
   font-size: 9px;
   letter-spacing: .07em;
@@ -305,13 +305,13 @@
 
 /* Composer attachment ----------------------------------------------------- */
 .attachment-preview {
-  border-color: rgba(255, 255, 255, .10) !important;
+  border-color: var(--ws-attachment-edge) !important;
   border-radius: var(--radius-sm);
   background: var(--surface-veil-ghost) !important;
 }
 
 .attachment-preview img {
-  border: 1px solid rgba(255, 255, 255, .08);
+  border: 1px solid var(--ws-dialog-edge);
   border-radius: var(--radius-xs);
   background: var(--surface-veil-panel);
 }
@@ -331,7 +331,7 @@
 
 .attachment-remove:hover,
 .attachment-remove:focus-visible {
-  background: rgba(255, 255, 255, .07);
+  background: var(--ws-control-hover-wash);
   color: var(--panel-text-max);
 }
 
@@ -347,7 +347,7 @@
 .answer-actions {
   margin-top: 16px;
   padding-top: 11px;
-  border-top: 1px solid rgba(255, 255, 255, .07);
+  border-top: 1px solid var(--ws-divider);
 }
 
 .answer-action {
@@ -355,7 +355,7 @@
   padding-inline: 9px;
   border-color: var(--line-veil-dim);
   border-radius: 6px;
-  background: rgba(255, 255, 255, .03);
+  background: var(--ws-card-wash);
   color: var(--text-veil-faint);
   font-family: var(--font-label);
   font-size: 9px;
@@ -365,7 +365,7 @@
 
 .answer-action:hover,
 .answer-action:focus-visible {
-  border-color: rgba(255, 255, 255, .18);
+  border-color: var(--ws-answer-hover-edge);
   background: var(--surface-veil-soft);
   color: var(--panel-text-max);
 }
@@ -375,7 +375,7 @@
   border-color: var(--line-veil-dim);
   border-radius: var(--radius-sm);
   background: var(--app-grid-line);
-  color: rgba(247, 249, 252, .84);
+  color: var(--ws-output-text);
   font-size: 14px;
   line-height: 1.74;
 }
@@ -397,13 +397,13 @@ html:not([data-glass-mode]) .answer-action,
 .answer-source-copy small,
 .composer-note,
 .sidebar-footer {
-  color: rgba(255, 255, 255, .52) !important;
+  color: var(--ws-control-muted-text) !important;
 }
 
 .demo-label,
 .attachment-remove,
 .project-file-row button {
-  color: rgba(255, 255, 255, .50);
+  color: var(--ws-label-text);
 }
 
 @media (max-width: 640px) {
