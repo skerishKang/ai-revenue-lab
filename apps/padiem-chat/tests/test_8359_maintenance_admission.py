@@ -94,6 +94,31 @@ def test_install_requires_both_switches_and_explicit_absence():
     assert admit(env=INSTALL, observation=unknown) == (None, "digest_unverified")
 
 
+@pytest.mark.parametrize("missing", [
+    ("updater_source_sha256",), ("updater_task_present",),
+    ("updater_source_present", "updater_source_sha256", "updater_task_present"),
+])
+def test_fresh_installed_file_only_observation_selects_fixed_refresh(missing):
+    state = {k: v for k, v in OBS["state"].items() if k not in missing}
+    observation = {**OBS, "state": state}
+    intent, reason = admit(observation=observation)
+    assert reason is None and intent.action == "refresh"
+    assert intent.command == registration_command()
+    assert intent.registration_sha256 == SOURCE_SHA256
+    assert admit(observation=observation, owner_session=False) == (None, "owner_unresolved")
+    assert admit(observation=observation, admin_now=False) == (None, "manager_not_admin")
+    assert admit(observation=observation, command="arbitrary") == (None, "command_mismatch")
+    assert admit(observation=observation, source_sha256="d" * 64) == (None, "source_mismatch")
+
+
+@pytest.mark.parametrize("change", [
+    {"helper_sha256": None}, {"helper_sha256": "invalid"}, {"helper_version": None},
+])
+def test_missing_install_evidence_never_opens_unknown_probe_refresh(change):
+    state = {**OBS["state"], "updater_source_sha256": None, **change}
+    assert admit(observation={**OBS, "state": state}) == (None, "digest_unverified")
+
+
 def _db():
     db = sqlite3.connect(":memory:")
     db.row_factory = sqlite3.Row
