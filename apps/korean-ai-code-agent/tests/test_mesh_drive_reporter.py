@@ -131,7 +131,8 @@ def test_only_queue_executor_starts_one_independent_reporter():
         assert start.call_count == 2  # start itself is idempotent.
 
 
-def test_production_entrypoint_automatically_wires_existing_mesh_credentials():
+@pytest.mark.parametrize("login_key", [None, "fixture-login-key-path"])
+def test_production_entrypoint_automatically_wires_existing_mesh_credentials(login_key):
     import kagent.local_agent_oracle_mesh_executor as entry
     import kagent.local_agent_mesh_drive_inventory as inventory
     class Stop(Exception):
@@ -146,6 +147,8 @@ def test_production_entrypoint_automatically_wires_existing_mesh_credentials():
            "ORACLE_MESH_LOGIN_USER": "synthetic",
            "ORACLE_MESH_CHAT_ORIGIN": "https://chat.example.test",
            "ORACLE_MESH_QUEUE_ORIGIN": "http://127.0.0.1:8797"}
+    if login_key is not None:
+        env["ORACLE_MESH_LOGIN_KEY_FILE"] = login_key
     with patch.object(entry, "deployment_secret_password_provider", return_value=password_provider), \
          patch.object(entry, "_read_secret_file", return_value="synthetic-channel-secret"), \
          patch.object(entry, "make_oracle_mesh_executor", return_value=lane), \
@@ -153,6 +156,7 @@ def test_production_entrypoint_automatically_wires_existing_mesh_credentials():
         with pytest.raises(Stop):
             entry.main(env)
         source.assert_called_once_with(meshctrl_js="fixture-meshctrl.js",
-            mesh_url="wss://127.0.0.1:4443", login_user="synthetic", password_provider=password_provider)
+            mesh_url="wss://127.0.0.1:4443", login_user="synthetic", password_provider=password_provider,
+            login_key_file=login_key)
         lane.start_drive_reporting.assert_called_once_with(source.return_value)
         password_provider.assert_not_called()
