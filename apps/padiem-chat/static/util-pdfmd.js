@@ -625,9 +625,11 @@
         if (previewReviewPages.has(page.number)) {
           heading.appendChild(el("span", "pdfmd-page-review-badge", "확인 필요"));
         }
-        const text = el("pre", "pdfmd-page-text", page.text);
+        const blocks = window.PadiemPdfMdPageMap.pageBlocks
+          ? window.PadiemPdfMdPageMap.pageBlocks(page.text, el)
+          : [el("pre", "pdfmd-page-text", page.text)];
         block.appendChild(heading);
-        block.appendChild(text);
+        blocks.forEach((node) => block.appendChild(node));
         mdView.appendChild(block);
       });
 
