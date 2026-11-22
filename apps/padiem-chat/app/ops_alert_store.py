@@ -219,8 +219,11 @@ class D1OpsAlertStore:
         waiting = await self._rows(
             "SELECT COUNT(*) AS n FROM ops_alert_outbox WHERE delivered_at IS NULL"
             " AND (notify_audience IS NULL OR notify_audience!='summary')")
+        # #7690 후속: 구식 적재(site_feedback, notify_site 없음)는 label이 곧
+        # 사이트 키다. notify_site가 있는 건 그 값을 쓴다. 나머지는 Chat.
         site_rows = await self._rows(
-            "SELECT COALESCE(notify_site,'chat') AS site, COUNT(*) AS n"
+            "SELECT COALESCE(notify_site, CASE WHEN kind='site_feedback'"
+            " THEN label ELSE 'chat' END) AS site, COUNT(*) AS n"
             " FROM ops_alert_outbox WHERE delivered_at IS NULL"
             " AND (notify_audience IS NULL OR notify_audience!='summary') GROUP BY site")
         pending_by_site = {site: 0 for site in ("chat", *SITE_LINKS)}

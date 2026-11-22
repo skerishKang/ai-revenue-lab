@@ -187,6 +187,16 @@ def _stub_api(page, session_body):
                lambda route, req: route.fulfill(
                    status=200, content_type="application/json",
                    body=json.dumps({"ok": True, "feedback": ADMIN_ITEM})))
+    # #7690 후속: 받은함은 사이트 의견도 함께 부른다 — 빈 목록으로 답한다.
+    page.route(re.compile(r".*/api/admin/site-feedback(\?.*)?$"),
+               lambda route, req: route.fulfill(
+                   status=200, content_type="application/json",
+                   body=json.dumps({"ok": True, "feedback": [],
+                                    "next_cursor": None, "sites": []})))
+    page.route(re.compile(r".*/api/admin/site-feedback/.+$"),
+               lambda route, req: route.fulfill(
+                   status=200, content_type="application/json",
+                   body=json.dumps({"ok": True, "feedback": ADMIN_ITEM})))
 
 
 def _ops_calls(page):
