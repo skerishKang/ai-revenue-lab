@@ -494,3 +494,9 @@ async def test_password_handoff_refusals_and_unchanged_login(shadowless) -> None
         "identifier": IDENTIFIER, "password": PASSWORD, "handoff": signed
     }))
     assert "handoff_return" not in payload(replay), "한 번 쓰인 표는 다시 견착되지 않는다"
+
+
+def test_handoff_ttl_covers_a_full_google_sign_in() -> None:
+    # 구글 계정 고르기·비밀번호·2단계 확인까지 끝내고 돌아와도 표가 살아 있어야 한다.
+    # 러브트리 로그인 요청 쿠키(10분)보다 짧으면 돌아온 뒤 클레임이 만료로 거절된다.
+    assert auth_routes.LOVETREE_HANDOFF_TTL_SECONDS >= 600
