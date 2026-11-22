@@ -90,6 +90,19 @@ async def admin_ops_audit(request):
         rows = await audit.list_recent(limit=20)
     except Exception:
         return _error('ops_audit_unavailable', 503)
+    members = _store(request)
+    for row in rows:
+        actor = row.get('actor_user_id')
+        label = None
+        if actor and members is not None:
+            try:
+                member = await members.get_member(actor)
+                label = member.get('display_name') if isinstance(member, dict) else None
+                if not label and isinstance(member, dict) and member.get('email'):
+                    label = str(member['email']).split('@', 1)[0]
+            except Exception:
+                label = None
+        row['actor_label'] = label or '확인 불가'
     return _response({'ok': True, 'audit': rows})
 
 

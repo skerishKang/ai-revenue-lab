@@ -163,6 +163,7 @@ def test_member_detail_counts_and_the_view_is_audited():
                      if row["action"] == "member_detail_view"]
             assert len(views) == len(before["audit"]) + 1
             assert views[0]["actor_user_id"] == OTHER
+            assert views[0]["actor_label"] == "fixture"
             assert views[0]["target_id"] == OWNER
         finally:
             db.close()
@@ -205,6 +206,35 @@ def test_feedback_status_change_leaves_one_audit_row():
             assert len(mine) == 1
             assert mine[0]["actor_user_id"] == OTHER
             assert mine[0]["detail"] == {"to": "fixed"}
+        finally:
+            db.close()
+    asyncio.run(scenario())
+
+
+def test_inbox_view_leaves_one_audit_row_without_the_body():
+    async def scenario():
+        db, feedback, members, audit = _stores_with_adapter()
+        stores = {"feedback": feedback, "members": members, "audit": audit}
+        try:
+            await feedback.submit(OWNER, BODY)
+            denied_guest = await admin_feedback(
+                request(db, stores, user=None, path='/api/admin/feedback'))
+            assert denied_guest.status_code == 401
+            denied_member = await admin_feedback(
+                request(db, stores, user=OWNER, path='/api/admin/feedback'))
+            assert denied_member.status_code == 403
+            assert not [row for row in await audit.list_recent(limit=20)
+                        if row["action"] == "feedback_inbox_view"]
+            inbox = await admin_feedback(
+                request(db, stores, user=OTHER, path='/api/admin/feedback'))
+            assert inbox.status_code == 200
+            mine = [row for row in await audit.list_recent(limit=20)
+                    if row["action"] == "feedback_inbox_view"]
+            assert len(mine) == 1
+            assert mine[0]["actor_user_id"] == OTHER
+            assert mine[0]["detail"] == {"status": "all", "count": 1}
+            assert BODY not in json.dumps(mine[0])
+            assert OWNER not in json.dumps(mine[0])
         finally:
             db.close()
     asyncio.run(scenario())

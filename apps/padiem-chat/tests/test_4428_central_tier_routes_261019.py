@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import asyncio
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 from types import SimpleNamespace
 import sqlite3
 
@@ -31,8 +30,10 @@ from padiem_control_plane.model_tier_routes import (
     TierRoute, TierRouteChange, TierRouteSnapshot, effective_tier_route,
 )
 
+# #8060: 원문 읽기는 기존 _support(claw_static.migration_source)가 담당한다.
+from _support.claw_static import migration_source  # noqa: E402
+
 BASE = "https://chat.test"
-MIGRATION = Path(__file__).parents[1] / "migrations" / "050_central_model_tier_routes.sql"
 NOW = datetime(2026, 10, 19, 8, 0, tzinfo=timezone.utc)
 USER = "usr_" + "a" * 32
 ALPHA = "google/alpha-safe"
@@ -70,7 +71,9 @@ class FakeD1:
         self.conn = sqlite3.connect(":memory:", isolation_level=None)
         self.conn.row_factory = sqlite3.Row
         self.conn.execute("PRAGMA foreign_keys=ON")
-        self.conn.executescript(MIGRATION.read_text(encoding="utf8"))
+        self.conn.executescript(
+            migration_source("050_central_model_tier_routes.sql")
+        )
         self.batches: list[int] = []
 
     def prepare(self, sql):

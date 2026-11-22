@@ -20,11 +20,22 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from css_rules import declaration, find_rules_with_selector, parse_rules
+from css_rules import declaration, find_rules_with_selector
+
+# #8060: 원문 읽기는 _support(util_design_source)가 담당하고 시험은 파싱된
+# HTML id·CSS 규칙·JS 토큰으로 단언한다.
+from _support.util_design_source import (  # noqa: E402
+    chat_app_line_count,
+    chat_app_tokens,
+    index_has_class,
+    index_ids,
+    index_script_attrs,
+    util_app_rules,
+    util_tools_rules,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 MANIFEST_PATH = STATIC / "util-manifest.js"
 APP_PATH = STATIC / "util-app.js"
 MENU_PATH = STATIC / "util-menu.js"
@@ -32,35 +43,41 @@ TOOLS_PATH = STATIC / "util-tools.js"
 QUOTE_PATH = STATIC / "util-quote.js"
 CONTRACT_PATH = STATIC / "util-tools-contract.js"
 MARKDOWN_PATH = STATIC / "util-tools-markdown.js"
-UTIL_APP_CSS = (STATIC / "util-app.css").read_text(encoding="utf-8")
-UTIL_TOOLS_CSS = (STATIC / "util-tools.css").read_text(encoding="utf-8")
-CHAT_APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
 
 EXPECTED_CHIPS = ["축사·인사말", "SNS 홍보", "회의정리", "PDF→MD", "견적서", "Excel"]
 EXPECTED_IDS = ["speech", "sns", "meeting", "pdfmd", "quote", "excel"]
 
 
 def test_file_boundary_and_top_tab_removal() -> None:
-    assert 'id="appSwitch"' not in INDEX
-    assert 'class="app-switch"' not in INDEX
-    assert ".app-switch" not in UTIL_APP_CSS
-    assert 'id="utilNavButton"' in INDEX
-    assert 'id="utilSubmenu"' in INDEX
-    assert '<script src="./util-manifest.js" defer></script>' in INDEX
+    ids = index_ids()
+    assert "appSwitch" not in ids
+    assert not index_has_class("app-switch")
+    assert not any(
+        ".app-switch" in selector
+        for rule in util_app_rules()
+        for selector in rule.selectors
+    )
+    assert "utilNavButton" in ids
+    assert "utilSubmenu" in ids
+    assert any(
+        attrs.get("src") == "./util-manifest.js" and "defer" in attrs
+        for attrs in index_script_attrs()
+    )
+    tokens = chat_app_tokens()
     for forbidden in ("PadiemUtilManifest", "util-tool-chip", "util-pane-input"):
-        assert forbidden not in CHAT_APP_JS
-    assert len(CHAT_APP_JS.splitlines()) <= 5865
+        assert forbidden not in tokens
+    assert chat_app_line_count() <= 5865
 
 
 def test_layout_css_pins_pc_two_columns_phone_stacked_and_standalone_heading() -> None:
-    app_rules = parse_rules(UTIL_APP_CSS)
+    app_rules = util_app_rules()
     workbench = [r for r in app_rules if r.media is None and ".util-tool-workbench" in r.selectors]
     assert workbench and declaration(workbench[0], "display") == "grid"
     assert "minmax(0, 1fr) minmax(0, 1fr)" in (declaration(workbench[0], "grid-template-columns") or "")
     phone_workbench = [r for r in app_rules if r.media == "(max-width: 920px)" and ".util-tool-workbench" in r.selectors]
     assert phone_workbench and declaration(phone_workbench[0], "grid-template-columns") == "1fr"
 
-    tool_rules = parse_rules(UTIL_TOOLS_CSS)
+    tool_rules = util_tools_rules()
     form_grid = [r for r in tool_rules if r.media is None and ".util-tool-form" in r.selectors]
     assert form_grid and declaration(form_grid[0], "display") == "grid"
     assert "minmax(0, 1fr) minmax(0, 1fr)" in (declaration(form_grid[0], "grid-template-columns") or "")

@@ -236,10 +236,12 @@ LINK_PAUSED = "paused"
 LINK_REPLACED = "replaced"
 LINK_REVOKED = "revoked"
 LINK_PENDING_VERIFICATION = "pending_verification"
+LINK_CANDIDATE = "candidate"
 ROOT_GRANTED = "active"
 ROOT_REVOKED = "revoked"
 KNOWN_LINK_STATES = frozenset({
     LINK_ACTIVE, LINK_PAUSED, LINK_REPLACED, LINK_REVOKED, LINK_PENDING_VERIFICATION,
+    LINK_CANDIDATE,
 })
 KNOWN_ROOT_STATES = frozenset({ROOT_GRANTED, ROOT_REVOKED})
 #: A pairing read this canary cannot interpret: reported, never skipped.
@@ -255,7 +257,9 @@ def active_pairing(body: Any) -> tuple[dict | None, str]:
     """``(link, code)``: the first live pairing with a granted root, or a reason.
 
     A paused or revoked link is not something to test: revoked links only appear as
-    superseded history, and a paused one is the owner's own "not right now".
+    superseded history, and a paused one is the owner's own "not right now". A
+    candidate link (#8036) carries only self-reported shares, so no read can use
+    it until an administrator approves one.
 
     The state words come from the server's own store, not from an older guess. A
     root is granted when its state is ``active`` (the store's only granted word);

@@ -1281,3 +1281,100 @@ def test_r15_composer_keeps_its_computed_values_without_importance(site, width, 
         for prop, want in props.items():
             got = observed[group][prop]
             assert got == want, (width, height, group, prop, want, got)
+
+
+# #8008 16차 — 컴포저 포커스·좁은 폭 캡 3개를 걷어 낸 뒤의 계산 값.
+READ_R16_JS = """() => {
+  const composer = document.querySelector('.composer');
+  const wrap = document.querySelector('.composer-wrap');
+  if (!composer || !wrap) return null;
+  const cs = getComputedStyle(composer);
+  return {
+    'border-color': cs.getPropertyValue('border-top-color'),
+    'box-shadow': cs.getPropertyValue('box-shadow'),
+    'wrap-background': getComputedStyle(wrap).getPropertyValue('background'),
+  };
+}"""
+
+EXPECTED_R16 = {
+    'border-color': 'rgba(79, 91, 101, 0.22)',
+    'box-shadow': 'rgba(28, 36, 44, 0.16) 0px 20px 54px 0px, rgba(255, 255, 255, 0.8) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.34) 0px 0px 0px 1px',
+    'wrap-background': 'rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box',
+}
+
+
+def _read_r16(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2500)
+            page.evaluate("() => { const t = document.querySelector('.composer textarea'); if (t) t.focus(); }")
+            page.wait_for_timeout(900)
+            return page.evaluate(READ_R16_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", [(1440, 950), (1100, 900), (390, 844)])
+def test_r16_composer_focus_keeps_its_computed_values_without_importance(site, width, height):
+    observed = _read_r16(site, width, height)
+    for prop, want in EXPECTED_R16.items():
+        got = observed[prop]
+        assert got == want, (width, height, prop, want, got)
+
+
+# #8008 후속 — 유리 답변 캡 6개(backdrop 2 · 답변 본문 3 · 답변 아이콘 색 1).
+# 두 덮어쓰기 규칙의 범위를 좁힌 뒤에도 계산값이 그대로임을 고정한다.
+READ_R17_JS = """() => {
+  const read = (sel, props) => {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    const row = {};
+    for (const p of props) row[p] = cs.getPropertyValue(p);
+    return row;
+  };
+  return {
+    conversation: read('.conversation', ['backdrop-filter']),
+    body: read('.assistant-content > p', ['border-top-width', 'background-color', 'box-shadow']),
+    action: read('.answer-action', ['color']),
+  };
+}"""
+
+R17_BASE = {
+    (1440, 950), (1100, 900), (390, 844),
+}
+
+
+def _read_r17(url, width, height):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": width, "height": height},
+                                    reduced_motion="reduce")
+            page.route("**/*", lambda route_obj: route_obj.continue_()
+                       if "127.0.0.1" in route_obj.request.url else route_obj.abort())
+            page.add_init_script(FETCH_STUB)
+            page.goto(url + "?theme=padiem-glass", wait_until="load")
+            page.wait_for_timeout(2000)
+            marker = page.evaluate(FILL_CHAT_JS)
+            assert marker.get("ready") is True, marker
+            return page.evaluate(READ_R17_JS)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", sorted(R17_BASE))
+def test_r17_portrait_answer_caps_keep_their_computed_values_without_importance(site, width, height):
+    observed = _read_r17(site, width, height)
+    assert observed["conversation"]["backdrop-filter"] == "blur(30px) saturate(1.06)"
+    assert observed["body"] == {"border-top-width": "0px",
+                                "background-color": "rgba(0, 0, 0, 0)",
+                                "box-shadow": "none"}
+    assert observed["action"]["color"] == "rgb(83, 96, 108)"

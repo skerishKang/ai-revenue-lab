@@ -5,14 +5,29 @@ This verifies the scoped presentation contract, first-run entry clarity and
 retention of all existing functional controls across PC/mobile breakpoints.
 It intentionally tests no model/provider or production API.
 """
-from pathlib import Path
 import re
 from html.parser import HTMLParser
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-CSS = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+# #8060: 시트 원문 읽기는 _support/claw_static이 담당하고 시험은 파서 속성
+# 맵·로케일 키·시트 구조 핀을 단언한다. 이 모듈은 원문 read를 갖지 않는다.
+from _support import claw_static
+
+
+def _html() -> str:
+    return claw_static.sheet("index.html")
+
+
+def _css() -> str:
+    return claw_static.sheet("claw-focus-layout.css")
+
+
+def _locale() -> str:
+    return claw_static.locale_source()
+
+
+HTML = _html()
+CSS = _css()
+LOCALE = _locale()
 
 
 class _ClawNodes(HTMLParser):
@@ -57,7 +72,7 @@ def test_focus_stylesheet_is_last_and_loads_after_complex_claw_layout():
     assert links.index("./voice-composer.css") > focus
     assert links.index("./shared-six-panel-frame.css") > focus
     if trailing:
-        voice_css = (STATIC / "voice-composer.css").read_text(encoding="utf-8")
+        voice_css = claw_static.sheet("voice-composer.css")
         assert "#voiceMicButton" in voice_css
         assert ".voice-interim-preview" in voice_css
         assert ".claw-workspace" not in voice_css
@@ -100,11 +115,12 @@ def test_first_run_text_invites_freeform_not_only_excel_and_is_localized():
     assert nodes.locale_keys.get("claw-focus-heading") == 1
     assert nodes.locale_keys.get("claw-focus-description") == 1
     assert "입력창에 직접 요청하세요" in HTML
-    assert "Reading or editing files needs separate approval." in LOCALE
-    ko, en = LOCALE.split("en: {", 1)
+    assert "Reading or editing files needs separate approval." in _locale()
+    ko = locale_bundle.keys("ko")
+    en = locale_bundle.keys("en")
     for key in ("claw-focus-heading", "claw-focus-description"):
-        assert f'"{key}"' in ko
-        assert f'"{key}"' in en
+        assert key in ko
+        assert key in en
 
 
 def test_fewer_busy_controls_without_hiding_authorized_workflows():

@@ -208,6 +208,17 @@ const scenarios = {
     const again = app.rowButton("feedbackOwnList", "feedback-acknowledged");
     assert.ok(again); assert.equal(again.disabled, true);
   },
+  async ack_dropped_read_shows_a_message_8316() {
+    const item = record({ status: "fixed", fixed_version: 2, unread_fixed: true });
+    const app = setup({ own: [item], unread: 1 }); await settle();
+    const ack = app.rowButton("feedbackOwnList", "feedback-acknowledge");
+    assert.ok(ack); assert.equal(ack.disabled, false);
+    // The read is refused: the button must say why instead of looking dead.
+    app.server.handler = (call) => call.url.endsWith("/read") ? response(503, { error: { code: "feedback_unavailable" } }) : undefined;
+    ack.click(); await settle();
+    assert.match(app.ids.feedbackStatus.textContent, /failed/);
+    assert.equal(app.rowButton("feedbackOwnList", "feedback-acknowledge").disabled, false);
+  },
   async read_state_survives_a_reload_and_other_statuses_have_no_button() {
     const confirmed = record({ status: "fixed", fixed_version: 2, unread_fixed: false });
     const app = setup({ own: [confirmed], unread: 0 }); await settle();

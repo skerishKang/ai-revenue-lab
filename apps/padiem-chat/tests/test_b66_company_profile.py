@@ -2,8 +2,15 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from unittest.mock import MagicMock
+
+# #8060: 원문 read는 _support(b66_company_profile_source)가 담당하고,
+# 정적 계약은 이름붙인 팩트로 단언한다(런타임·API 계약은 그대로 유지).
+from _support.b66_company_profile_source import (  # noqa: E402
+    default_day_literals,
+    migration_facts,
+    runtime_overlay_facts,
+)
 
 import pytest
 from starlette.testclient import TestClient
@@ -13,7 +20,6 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.b66_company_profile import CompanyProfileError, canonicalize_company_profile
 from app.config import Settings
 
-ROOT = Path(__file__).resolve().parents[1]
 USER_A = "usr_" + "a" * 32
 USER_B = "usr_" + "b" * 32
 
@@ -82,9 +88,7 @@ def test_partial_profile_keeps_unreviewed_fields_missing() -> None:
 def test_profile_never_invents_7_or_30_day_default() -> None:
     profile = canonicalize_company_profile({"company": "Example Company"})
     assert profile["defaultValidityDays"] is None
-    source = (ROOT / "app" / "b66_company_profile.py").read_text(encoding="utf-8")
-    assert '"defaultValidityDays": 7' not in source
-    assert '"defaultValidityDays": 30' not in source
+    assert default_day_literals() == []
 
 
 @pytest.mark.parametrize("payload", [
@@ -155,28 +159,15 @@ def test_client_cannot_choose_user_or_workspace_authority() -> None:
 
 
 def test_migration_023_is_additive_partial_profile_schema() -> None:
-    sql = (ROOT / "migrations" / "023_b66_company_profile.sql").read_text(encoding="utf-8")
-    assert "CREATE TABLE IF NOT EXISTS b66_company_profile" in sql
-    assert "PRIMARY KEY (user_id, workspace_id)" in sql
-    assert "REFERENCES users(id) ON DELETE CASCADE" in sql
-    assert "default_validity_days INTEGER" in sql
-    assert "default_tax_mode TEXT" in sql
-    assert "DEFAULT 7" not in sql.upper()
-    assert "DEFAULT 30" not in sql.upper()
-    assert "DROP TABLE" not in sql.upper()
-    assert "ALTER TABLE" not in sql.upper()
+    facts = migration_facts()
+    assert facts["missing_statements"] == []
+    assert facts["forbidden_statements"] == []
 
 
 def test_chat_runtime_overlays_canonical_profile_without_browser_storage_authority() -> None:
-    source = (ROOT / "static" / "b66-quote-runtime.js").read_text(encoding="utf-8")
-    assert "companyProfileForRender" in source
-    assert "interpreted.data.company_profile" in source
-    assert "!Number.isInteger(profile.defaultValidityDays)" in source
-    assert "companyProfile: profileResult.profile" in source
-    assert "skill: effectiveSkill" not in source
-    assert "copy.fixedDefaults.sender" not in source
-    assert "copy.fixedDefaults.validDays" not in source
-    assert "localStorage" not in source
+    facts = runtime_overlay_facts()
+    assert facts["missing_rules"] == []
+    assert facts["forbidden_tokens"] == []
 
 
 def test_new_session_readback_same_account_and_foreign_isolation() -> None:

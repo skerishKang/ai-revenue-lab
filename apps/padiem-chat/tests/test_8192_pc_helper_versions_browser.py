@@ -71,9 +71,12 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                     rows = page.locator("#opsPcVersionsBody tr")
                     assert rows.count() == 2
                     assert rows.first.locator("td").all_inner_texts() == [
-                        "node//pc-example", "0.3.0-rc1 (aaaaaaaaaaaa) · 업데이트 완료",
+                        "…xample", "0.3.0-rc1 (aaaaaaaaaaaa) · 업데이트 완료",
                         "2026-02-16T00:43:44.000Z", "2026. 11. 21. 01:02", "재설치 필요 · SYSTEM 권한 없음"]
-                    assert rows.last.locator("td").all_inner_texts()[0] == "node//unknown"
+                    assert rows.last.locator("td").all_inner_texts() == [
+                        "…nknown", "보고 없음", "보고 없음", "보고 없음", "미확인"]
+                    assert page.locator("#opsPcVersionsHeading").inner_text() == "PC 버전 현황"
+                    assert "도우미 버전 / 빌드" in page.locator("table[aria-labelledby='opsPcVersionsHeading'] thead").inner_text()
                     page.click("#opsPcVersionsReload")
                     page.wait_for_function("() => !document.getElementById('opsPcVersionsReload').disabled")
                     assert len(calls) == 2
@@ -95,5 +98,51 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                     page.wait_for_load_state("networkidle")
                     assert not calls and not changes and not refreshes and not page.locator("#opsPcVersionsBody").is_visible()
                 page.close()
+        finally:
+            browser.close()
+
+
+@pytest.mark.skipif(sync_playwright is None, reason="playwright is not installed")
+def test_refresh_failure_surfaces_server_reason_and_base_version():
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        try:
+            page = browser.new_page()
+            rollout = {"initialized": False, "revision": 1, "stage": "internal", "percent": 25,
+                       "stable": {"version": "-"}, "target": {"version": "0.3.0-rc2", "sha256": "b" * 64},
+                       "groups": {name: {"total": 0, "updated": 0, "failed": 0, "rollback": 0}
+                                  for name in ("internal", "percentage", "remaining")}}
+
+            def route(intercept):
+                path = urlsplit(intercept.request.url).path
+                if path == "/api/admin/session":
+                    data = {"ok": True, "authenticated": True, "role": "ADMIN",
+                            "capabilities": {"admin_hub": True, "chat_admin": True}}
+                    status = 200
+                elif path == "/api/admin/ops-pc-versions":
+                    data = {"ok": True, "devices": [], "rollout": rollout}
+                    status = 200
+                elif path == "/api/admin/ops-pc-versions/refresh-updaters":
+                    data = {"ok": False, "error": {"code": "canonical_session_required"}}
+                    status = 401
+                elif path.startswith("/api/"):
+                    data = {"ok": True, "members": [], "feedback": [], "audit": []}
+                    status = 200
+                else:
+                    file = STATIC / path.lstrip("/")
+                    intercept.fulfill(path=str(file)) if file.is_file() else intercept.fulfill(status=404, body="")
+                    return
+                intercept.fulfill(status=status, content_type="application/json", body=json.dumps(data))
+
+            page.route(ORIGIN + "/**", route)
+            page.goto(ORIGIN + "/admin.html", wait_until="domcontentloaded")
+            page.wait_for_function("() => !document.getElementById('opsPcVersionsReload').disabled")
+            page.click("#opsPcRefreshPreview")
+            page.wait_for_function(
+                "() => document.getElementById('opsPcRefreshStatus').textContent.includes('기준 버전을 먼저 등록하세요')")
+            text = page.locator("#opsPcRefreshStatus").inner_text()
+            assert "관리자 세션을 확인할 수 없습니다" in text
+            assert "[object Object]" not in text
+            page.close()
         finally:
             browser.close()
