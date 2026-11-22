@@ -28,6 +28,13 @@ from pathlib import Path
 
 import pytest
 
+from _support.composer_pc_status import (
+    const_expression,
+    css_view,
+    index_asset_refs,
+    js_view,
+)
+
 try:  # pragma: no cover - environment dependent
     from playwright.sync_api import sync_playwright
 except ImportError:  # pragma: no cover - environment dependent
@@ -40,10 +47,6 @@ requires_browser = pytest.mark.skipif(
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
-INDEX = STATIC / "index.html"
-STATUS_JS = STATIC / "claw-composer-connection-status.js"
-STATUS_CSS = STATIC / "claw-composer-connection-status.css"
-MANAGER_JS = STATIC / "claw-device-manager.js"
 
 ENDPOINT = "/api/claw/local-access/devices"
 WIDTHS = (320, 390)
@@ -169,89 +172,99 @@ def _open(page, server) -> None:
 
 
 def test_the_control_is_a_view_over_the_existing_directory_snapshot() -> None:
-    source = STATUS_JS.read_text(encoding="utf-8")
+    js = js_view("claw-composer-connection-status.js")
     # The published snapshot is the only input.
-    assert "window.PadiemClawDeviceDirectory" in source
-    assert "padiem:claw-device-directory" in source
+    assert "window.PadiemClawDeviceDirectory" in js["member_chains"]
+    assert "padiem:claw-device-directory" in js["string_literals"]
     # No request of its own: the directory endpoint keeps exactly one reader.
-    assert "fetch(" not in source
-    assert ENDPOINT not in source
-    for forbidden in (
-        'method: "POST"',
-        'method: "PUT"',
-        'method: "DELETE"',
-        "XMLHttpRequest",
-    ):
-        assert forbidden not in source
+    assert "fetch" not in js["call_counts"]
+    assert ENDPOINT not in js["string_literals"]
+    assert not any(
+        prop == "method" and value in {"POST", "PUT", "DELETE"}
+        for prop, value in js["property_pairs"]
+    )
+    assert "XMLHttpRequest" not in js["identifiers"]
     # No new pairing, registration, identity or browser persistence.
-    for forbidden in (
-        "padiem-connector://",
-        "BroadcastChannel",
-        "localStorage",
-        "sessionStorage",
-        "indexedDB",
-        "document.cookie",
-    ):
-        assert forbidden not in source
+    for forbidden in ("BroadcastChannel", "localStorage", "sessionStorage", "indexedDB"):
+        assert forbidden not in js["identifiers"]
+    assert not any("padiem-connector://" in literal for literal in js["string_literals"])
+    assert "document.cookie" not in js["member_chains"]
 
 
 def test_the_existing_directory_module_publishes_the_confirmed_snapshot() -> None:
-    source = MANAGER_JS.read_text(encoding="utf-8")
+    manager = js_view("claw-device-manager.js")
     # The module that already read the directory now publishes what it read.
-    assert "window.PadiemClawDeviceDirectory = snapshot;" in source
-    assert 'new CustomEvent("padiem:claw-device-directory"' in source
+    assert manager["assignments_full"].get("window.PadiemClawDeviceDirectory") == "snapshot"
+    assert any(
+        callee == "CustomEvent" and '"padiem:claw-device-directory"' in args
+        for callee, args in manager["call_args"]
+    )
     # The published snapshot carries the reviewed facts only.
-    assert "readCompleted:" in source
-    assert "savedTargetId:" in source
-    assert "canTarget:" in source
+    for key in ("readCompleted", "savedTargetId", "canTarget"):
+        assert key in manager["property_names"]
     # The directory endpoint is still read exactly once, by this module.
-    assert f'const ENDPOINT = "{ENDPOINT}";' in source
-    assert "deriveDeviceDirectory" in source
+    assert const_expression("claw-device-manager.js", "ENDPOINT") == f'"{ENDPOINT}"'
+    assert "deriveDeviceDirectory" in (
+        manager["identifiers"] | manager["member_chains"] | set(manager["call_counts"])
+    )
 
 
 def test_the_control_opens_the_existing_management_surface() -> None:
-    source = STATUS_JS.read_text(encoding="utf-8")
+    js = js_view("claw-composer-connection-status.js")
+    lookups = {args for callee, args in js["call_args"] if callee == "document.getElementById"}
     # The existing device directory panel and its existing entry control.
-    assert 'document.getElementById("clawDeviceManagerToggle")' in source
+    assert '"clawDeviceManagerToggle"' in lookups
     # The existing Connectors computer card is the fallback surface.
-    assert 'document.getElementById("connectorsNavButton")' in source
-    assert 'document.getElementById("connectorComputerCard")' in source
+    assert '"connectorsNavButton"' in lookups
+    assert '"connectorComputerCard"' in lookups
     # The existing management panel is referenced, never built here. The
     # composer's control is the visible owner of that panel, so it carries the
     # expanded state and the control it points at.
-    assert 'createElement("section")' not in source
-    assert 'createElement("aside")' not in source
-    assert 'createElement("dialog")' not in source
-    assert "aria-expanded" in source
-    assert "aria-controls" in source
+    assert not any(
+        "createElement" in callee and any(f'"{tag}"' in args for tag in ("section", "aside", "dialog"))
+        for callee, args in js["call_args"]
+    )
+    assert "aria-expanded" in js["string_literals"]
+    assert "aria-controls" in js["string_literals"]
 
 
 def test_the_control_never_starts_a_polling_loop() -> None:
-    source = STATUS_JS.read_text(encoding="utf-8")
+    js = js_view("claw-composer-connection-status.js")
     # The status is a view over the published snapshot: no timer, no request.
-    assert "setInterval" not in source
-    assert "requestAnimationFrame" not in source
-    assert "setTimeout(refresh" not in source
+    assert "setInterval" not in js["call_counts"]
+    assert "requestAnimationFrame" not in js["call_counts"]
+    assert not any(
+        callee.endswith("setTimeout") and args.lstrip().startswith("refresh")
+        for callee, args in js["call_args"]
+    )
 
 
 def test_the_control_is_linked_into_the_shared_composer() -> None:
-    index = INDEX.read_text(encoding="utf-8")
-    assert 'href="./claw-composer-connection-status.css"' in index
-    assert 'src="./claw-composer-connection-status.js"' in index
-    source = STATUS_JS.read_text(encoding="utf-8")
+    refs = index_asset_refs()
+    assert "./claw-composer-connection-status.css" in refs["stylesheets"]
+    assert "./claw-composer-connection-status.js" in refs["scripts"]
+    js = js_view("claw-composer-connection-status.js")
     # Chat and Claw share one composer, so one control serves both lanes.
-    assert 'document.getElementById("composerForm")' in source
-    assert "form.append(button);" in source
-    css = STATUS_CSS.read_text(encoding="utf-8")
+    assert '"composerForm"' in {
+        args for callee, args in js["call_args"] if callee == "document.getElementById"
+    }
+    assert ("form.append", "button") in js["call_args"]
+    css = css_view("claw-composer-connection-status.css")
     # The control is taken out of the flow, so the fixed composer keeps its
     # measured height.
-    assert "position: absolute;" in css
+    assert ("position", "absolute") in css["declarations"]
     # The message text keeps the room the control occupies.
-    assert "--composer-pc-status-gutter" in css
-    assert "padding-right" in css
+    assert any(
+        "composer-pc-status-gutter" in prop or "composer-pc-status-gutter" in value
+        for prop, value in css["declarations"]
+    )
+    assert any(prop == "padding-right" for prop, _value in css["declarations"])
     # The theme sheets set the composer padding with !important, so the
     # reserved gutter rule has to outrank them.
-    assert '#composerForm[data-pc-status="ready"] > #messageInput' in css
+    assert any(
+        '[data-pc-status="ready"] > #messageInput' in selector
+        for selector in css["selectors"]
+    )
 
 
 # ---------------------------------------------------------------------------
