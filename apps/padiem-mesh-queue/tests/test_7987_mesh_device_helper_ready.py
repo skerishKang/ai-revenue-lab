@@ -29,7 +29,7 @@ from app.queue_store_proxy import (  # noqa: E402
     QueueBackedDriveStore, QueueStoreClient, QueueUnavailable,
 )
 from kagent.local_agent_mesh_helper_ready import (  # noqa: E402
-    HELPER_READY_HEARTBEAT_SECONDS, HELPER_READY_PATH, MeshHelperReadyReporter,
+    HELPER_READY_PATH, MeshHelperReadyReporter,
 )
 from service import store_resolvers  # noqa: E402
 from test_mesh_device_drives import (  # noqa: E402
@@ -378,27 +378,21 @@ def test_both_allowlists_route_the_two_public_names_to_the_drive_store():
     db.close()
 
 
-class Clock:
-    def __init__(self):
-        self.now = 500.0
-
-    def __call__(self):
-        return self.now
-
-
 def test_executor_relay_reaches_the_chat_side_and_follows_the_helper_coming_up():
+    # #8385: the executor reports one observation per linked PC every round,
+    # including repeats, so the receipt stays fresh without a heartbeat timer.
     queue, db = app_and_db()
     link(db)
     link(db, OTHER, user=BOB)
     unlinked = "node//never-linked"
-    channel_calls, clock = [], Clock()
+    channel_calls = []
 
     def channel(path, body):
         channel_calls.append((path, json.loads(json.dumps(body))))
         response = asyncio.run(post(queue, body, channel=CHANNEL, path=path))
         return response.status_code, response.json()
 
-    relay = MeshHelperReadyReporter(post=channel, clock=clock)
+    relay = MeshHelperReadyReporter(post=channel)
     proxy = chat_side(queue)
 
     def read(device):
@@ -414,19 +408,16 @@ def test_executor_relay_reaches_the_chat_side_and_follows_the_helper_coming_up()
     assert read(unlinked) is None and stored(db) == 2
     first = read(DEVICE)["received_at"]
 
-    clock.now += 30
-    assert relay.observe(rows[:2], [DEVICE, OTHER]) == 0  # Unchanged inside the minute.
-    assert read(DEVICE)["received_at"] == first
+    # An unchanged state is sent again on the next round.
+    assert relay.observe(rows[:2], [DEVICE, OTHER]) == 2
+    assert read(DEVICE)["state"] == MISSING
+    assert read(DEVICE)["received_at"] >= first
 
     # The helper is installed on the first PC; the next round carries it.
     rows[0]["helper"] = dict(READY)
-    assert relay.observe(rows[:2], [DEVICE, OTHER]) == 1
-    assert read(DEVICE)["state"] == READY
-
-    # An unchanged state is sent again once a minute so the receipt stays fresh.
-    clock.now += HELPER_READY_HEARTBEAT_SECONDS
     assert relay.observe(rows[:2], [DEVICE, OTHER]) == 2
-    assert read(DEVICE)["received_at"] >= first
+    assert read(DEVICE)["state"] == READY
+    assert stored(db) == 2
     assert {path for path, _ in channel_calls} == {HELPER_READY_PATH}
     assert all(set(body) == {"device_id", "helper"} for _, body in channel_calls)
     db.close()
