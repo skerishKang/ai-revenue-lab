@@ -1,18 +1,24 @@
 from __future__ import annotations
 
-from pathlib import Path
+from _support.frontend_ownership import (
+    app_js,
+    conversation_state_js,
+    document_binary_js,
+    index_html,
+    lifecycle_js,
+    rich_response_js,
+    streaming_js,
+    transport_js,
+)
 
-
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-LIFECYCLE = (STATIC / "message-lifecycle.js").read_text(encoding="utf-8")
-RICH = (STATIC / "rich-response.js").read_text(encoding="utf-8")
-CONVERSATION = (STATIC / "conversation-state.js").read_text(encoding="utf-8")
-BINARY = (STATIC / "document-binary.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+APP = app_js()
+STREAM = streaming_js()
+TRANSPORT = transport_js()
+LIFECYCLE = lifecycle_js()
+RICH = rich_response_js()
+CONVERSATION = conversation_state_js()
+BINARY = document_binary_js()
+INDEX = index_html()
 
 
 def test_chat_transport_is_network_only_and_dom_free() -> None:
