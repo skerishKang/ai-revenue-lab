@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.response_render_source import read, request_contract_py, rich_css, rich_response_js, search_css, search_sources_js, tokens_css
+
 import json
 import subprocess
 from pathlib import Path
@@ -10,7 +13,7 @@ RICH_PATH = ROOT / "static" / "rich-response.js"
 
 
 def _rich_runtime() -> str:
-    rich = RICH_PATH.read_text(encoding="utf-8")
+    rich = rich_response_js()
     start = rich.index("  const HEADING_PATTERN")
     end = rich.index('  messageList.addEventListener("padiem:message-lifecycle"', start)
     return rich[start:end]
