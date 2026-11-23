@@ -29,7 +29,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "websockets>=10,<16",
-  "cryptography>=42,<47",
+  "cryptography>=50,<51",
   "PyMuPDF==1.26.3",
   "padiem-ai-core[render] @ file://${PROJECT_ROOT}/../../packages/padiem-ai-core",
   "Pillow>=11,<14",
