@@ -1080,9 +1080,14 @@ def test_console_missing_file_is_a_report_not_an_installation_request(capsys):
     fallback = HelperStatusReadFallback(post=post, read_port=port)
     state = {**MISSING, "helper_status_present": False}
     assert fallback.observe([{"device_id": NODE, "helper": state}], [NODE]) == 1
-    port.read_bytes.assert_not_called()
+    # The console path now uses the same read-only port for the installed
+    # executable; it must not read the status file or any updater path.
+    assert [call.kwargs["file_path"] for call in port.read_bytes.call_args_list] == \
+        list(_MESH_AGENT_VERSION_READ_PATHS)
     assert post.call_args.args[1]["helper"] == state
-    assert "reason=file_missing report=accepted status=200" in capsys.readouterr().out
+    logs = capsys.readouterr().out
+    assert "reason=file_missing report=accepted status=200" in logs
+    assert "helper_ready_agent_version read=invalid_read_body" in logs
 
 
 def test_server_refusal_is_logged_and_retried_without_echoing_response(capsys):
@@ -1320,3 +1325,79 @@ def test_agent_version_diagnostic_is_once_per_hour_cache(capsys):
         assert fallback.observe([], [NODE]) == 1
     logs = capsys.readouterr().out
     assert logs.count("helper_ready_agent_version read=request_refused") == 2
+
+
+# ---- #8204: why a PC never entered the version read -------------------------
+def test_skip_reason_codes_cover_every_entry_condition():
+    from kagent.local_agent_mesh_helper_ready import _VERSION_REASON_CODES
+
+    assert {"no_read_port", "not_target", "no_candidate_path", "cached",
+            "already_present", "console_path_only"} <= _VERSION_REASON_CODES
+
+
+def test_console_path_reads_the_installed_version_with_same_read_port(capsys):
+    files = {_MESH_AGENT_VERSION_READ_PATHS[0]: version_resource_exe()}
+
+    def read_bytes(*, node_ref, file_path, max_bytes, timeout_seconds):
+        return files.get(file_path, b"")
+
+    fallback = HelperStatusReadFallback(
+        post=Mock(return_value=(200, {"ok": True})),
+        read_port=Mock(read_bytes=Mock(side_effect=read_bytes)))
+    state = {**READY, "helper_status_present": True}
+    assert fallback.observe([{"device_id": NODE, "helper": state}], [NODE]) == 1
+    seen = fallback._reporter._post.call_args.args[1]["helper"]
+    assert seen["mesh_agent_version"] == "2026-02-16T00:43:44.000Z"
+    assert "helper_ready_agent_version read=observed" in capsys.readouterr().out
+
+
+def test_no_read_port_is_reported_instead_of_silently_skipping(capsys):
+    from kagent.local_agent_mesh_helper_ready import (
+        HELPER_READY_SWITCH,
+        attach_helper_ready,
+    )
+
+    source = SimpleNamespace(
+        observe_helper_ready=lambda observer, **kw: observer([], [NODE]))
+    attach_helper_ready(source, {HELPER_READY_SWITCH: "1"},
+                        post=Mock(return_value=(200, {"ok": True})))
+    assert "helper_ready_agent_version read=no_read_port" in capsys.readouterr().out
+
+
+def test_no_targets_is_reported_once_per_cache_unit(capsys):
+    fallback = HelperStatusReadFallback(post=Mock(return_value=(200, {"ok": True})),
+                                        read_port=Mock())
+    assert fallback.observe([], "not-a-target-list") == 0
+    assert fallback.observe([], "not-a-target-list") == 0
+    logs = capsys.readouterr().out
+    assert logs.count("helper_ready_agent_version read=not_target") == 1
+
+
+def test_empty_candidate_paths_get_their_own_code(capsys):
+    from kagent.local_agent_mesh_helper_ready import HELPER_STATUS_READ_PATH
+
+    def read_bytes(*, node_ref, file_path, max_bytes, timeout_seconds):
+        if file_path == HELPER_STATUS_READ_PATH:
+            raise FileNotFoundError("PRIVATE-STATUS-PATH")
+        raise AssertionError("no version path must be attempted")
+
+    fallback = HelperStatusReadFallback(post=Mock(return_value=(200, {"ok": True})),
+                                        read_port=Mock(read_bytes=Mock(side_effect=read_bytes)))
+    with patch("kagent.local_agent_mesh_helper_ready._MESH_AGENT_VERSION_READ_PATHS", ()):
+        assert fallback.observe([], [NODE]) == 1
+    logs = capsys.readouterr().out
+    assert "helper_ready_agent_version read=no_candidate_path" in logs
+    assert "PRIVATE-STATUS-PATH" not in logs
+
+
+def test_diagnostic_throttle_is_one_line_per_ref_per_hour(capsys):
+    from kagent.local_agent_mesh_helper_ready import _agent_version_diagnostic
+
+    store = {}
+    _agent_version_diagnostic(store, "ref", "cached", 0)
+    _agent_version_diagnostic(store, "ref", "cached", 60)
+    _agent_version_diagnostic(store, "ref", "not_target", 3600)
+    _agent_version_diagnostic(store, "ref", "not_target", 3660)
+    logs = capsys.readouterr().out
+    assert logs.count("helper_ready_agent_version read=cached") == 1
+    assert logs.count("helper_ready_agent_version read=not_target") == 1
