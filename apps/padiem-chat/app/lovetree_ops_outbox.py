@@ -294,10 +294,27 @@ async def dispatch_pending(state: Any, *, limit: int = 20, client: Any = None,
     return result
 
 
+async def dispatch_under_lock(state: Any, **kwargs) -> dict | None:
+    """같은 DB를 쓰는 CPython 워커 중 한 곳만 줄을 보낸다.
+
+    잠금을 못 잡으면 이번 회차를 건너뛴다. 1분 뒤 다음 주기나 다른 요청의
+    백그라운드 발송이 같은 줄을 다시 본다. 보내는 내용·간격·출력은 그대로다.
+    """
+    lock = getattr(state, "lovetree_ops_process_lock", None)
+    if lock is None:
+        return await dispatch_pending(state, **kwargs)
+    if not lock.acquire(wait=False):
+        return None
+    try:
+        return await dispatch_pending(state, **kwargs)
+    finally:
+        lock.release()
+
+
 def _spawn(state: Any) -> None:
     """적재·재보내기 뒤 백그라운드로 보낸다. 루프가 없어도 다음 주기에 나간다."""
     try:
-        task = asyncio.create_task(dispatch_pending(state))
+        task = asyncio.create_task(dispatch_under_lock(state))
     except RuntimeError:
         return
     tasks = getattr(state, "lovetree_ops_tasks", None)
@@ -316,16 +333,20 @@ def schedule_dispatch(state: Any) -> None:
 async def retry_loop(state: Any, *, sleep=asyncio.sleep) -> None:
     """1분마다 줄을 본다 — 가장 짧은 재시도(1분)에 맞춘다."""
     while True:
-        await dispatch_pending(state)
+        await dispatch_under_lock(state)
         await sleep(60)
 
 
-def install_retry_loop(app: Any) -> None:
-    """CPython lifespan이 주기 재시도를 맡는다. Worker에는 붙이지 않는다."""
+def install_retry_loop(app: Any, *, process_lock: Any = None) -> None:
+    """CPython lifespan이 주기 재시도를 맡는다. Worker에는 붙이지 않는다.
+
+    같은 DB를 여는 워커마다 같은 잠금 파일을 받아 한 곳만 줄을 보낸다.
+    """
     task = None
 
     async def start():
         nonlocal task
+        app.state.lovetree_ops_process_lock = process_lock
         task = asyncio.create_task(retry_loop(app.state))
 
     async def stop():
@@ -335,6 +356,8 @@ def install_retry_loop(app: Any) -> None:
         tasks = tuple(getattr(app.state, "lovetree_ops_tasks", ()) or ())
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
+        if process_lock is not None and getattr(process_lock, "held", False):
+            process_lock.release()
 
     app.router.on_startup.append(start)
     app.router.on_shutdown.insert(0, stop)
