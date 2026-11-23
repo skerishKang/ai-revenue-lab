@@ -10,6 +10,9 @@ uses `COUNTRIES` for its filter and its storage metadata. That stays.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.locale_source import consent_html, council_app_js, index_html, locale_js, pc_ready_js, privacy_html, read, terms_html
+
 from pathlib import Path
 
 import pytest
@@ -39,7 +42,7 @@ def test_the_chat_request_refuses_a_country_key() -> None:
 
 
 def test_the_council_client_no_longer_sends_the_key() -> None:
-    source = COUNCIL.read_text(encoding="utf-8")
+    source = council_app_js()
     assert "payload.country" not in source
     # the country still shapes the prompt locally; only the request key is gone
     assert "countryInstruction(country)" in source

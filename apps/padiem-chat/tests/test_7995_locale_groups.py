@@ -1,6 +1,9 @@
 """#7995 — the split locale groups keep one ko/en authority and all contracts."""
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.locale_source import consent_html, council_app_js, index_html, locale_js, pc_ready_js, privacy_html, read, terms_html
+
 import re
 from pathlib import Path
 
@@ -8,8 +11,8 @@ import locale_bundle
 import pytest
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-BOOT = (STATIC / "locale.js").read_text(encoding="utf-8")
+INDEX = index_html()
+BOOT = locale_js()
 
 
 def test_every_group_is_loaded_before_the_bootstrap():
@@ -41,7 +44,7 @@ def test_no_key_is_declared_twice():
 
 def test_one_key_per_line_and_every_file_under_cap():
     for path in locale_bundle.GROUP_PATHS:
-        source = path.read_text(encoding="utf-8")
+        source = read(path)
         assert len(source.splitlines()) <= 1000, path.name
         for block in (locale_bundle.group_text(path, "ko"),
                       locale_bundle.group_text(path, "en")):
@@ -63,7 +66,7 @@ def test_7990_copy_lives_in_the_pc_group():
     pc = locale_bundle.group_text(locale_bundle.GROUP_PATHS[3], "ko")
     assert '"pc-command-ready-badge": "연결됨 · 명령 준비 안 됨"' in pc
     assert '"pc-command-ready-help": "이 PC 에 Windows 로 로그인돼 있는지' in pc
-    ui = (STATIC / "pc-command-ready.js").read_text(encoding="utf-8")
+    ui = pc_ready_js()
     assert "ctx.uiT(key)" in ui
     assert 'uiText("pc-command-ready-badge")' in ui
     # #8211: the missing row reads its own word through the same call.
