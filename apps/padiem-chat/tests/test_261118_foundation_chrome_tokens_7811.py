@@ -11,6 +11,9 @@ padiem-tokens.css 토큰으로 옮긴다. :root 값은 치환 전 foundation 리
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.token_foundation_source import foundation_css, index_html, read, read_static, tokens_css
+
 import re
 from pathlib import Path
 
@@ -68,7 +71,7 @@ def _norm(text: str) -> str:
 
 
 def _rules(path: Path):
-    return parse_rules(path.read_text(encoding="utf-8"))
+    return parse_rules(read(path))
 
 
 def _root(rules):
@@ -132,14 +135,14 @@ def test_changed_declarations_have_no_raw_color_literals() -> None:
 
 
 def test_tokens_are_defined_only_in_the_token_file() -> None:
-    foundation = FOUNDATION.read_text(encoding="utf-8")
+    foundation = foundation_css()
     for name in ROOT_TOKENS:
         assert f"{name}:" not in foundation, name
 
 
 def test_foundation_pages_load_tokens_before_foundation() -> None:
     for page in sorted(STATIC.rglob("*.html")):
-        html = page.read_text(encoding="utf-8")
+        html = read(page)
         links = re.findall(r"<link[^>]*?href=[\"']([^\"']+\.css)[^\"']*[\"']", html)
         if not any(h.endswith("padiem-foundation.css") for h in links):
             continue
