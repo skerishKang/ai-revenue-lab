@@ -1,19 +1,12 @@
 from __future__ import annotations
 
-from pathlib import Path
-
-
-APP_ROOT = Path(__file__).resolve().parents[1]
-INTERACTION = APP_ROOT / "static" / "interaction-polish.js"
-INTERACTION_CSS = APP_ROOT / "static" / "interaction-polish.css"
-A11Y = APP_ROOT / "static" / "a11y.js"
-INDEX = APP_ROOT / "static" / "index.html"
-OUTPUTS = APP_ROOT / "static" / "outputs.js"
-EXPORT = APP_ROOT / "static" / "conversation-export.js"
+from _support.interaction_polish_source import (
+    interaction_js, interaction_css, outputs_js, export_js, a11y_js, index_html,
+)
 
 
 def test_interaction_polish_is_presentation_only_and_public_safe() -> None:
-    source = INTERACTION.read_text(encoding="utf-8")
+    source = interaction_js()
     assert 'ATTACHMENT_LOADING: "attachment_loading"' in source
     assert 'PREPARING: "preparing"' in source
     assert 'STREAMING: "streaming"' in source
@@ -44,7 +37,7 @@ def test_interaction_polish_is_presentation_only_and_public_safe() -> None:
 
 
 def test_terminal_copy_and_focus_recovery_are_distinct_without_new_execution_semantics() -> None:
-    source = INTERACTION.read_text(encoding="utf-8")
+    source = interaction_js()
     assert 'state === "completed" ? "true" : "false"' in source
     assert 'state !== "timed_out"' in source
     assert "응답 시간이 지났습니다." in source
@@ -56,9 +49,9 @@ def test_terminal_copy_and_focus_recovery_are_distinct_without_new_execution_sem
 
 
 def test_terminal_actions_continue_to_use_existing_lifecycle_safety_contracts() -> None:
-    outputs = OUTPUTS.read_text(encoding="utf-8")
-    export = EXPORT.read_text(encoding="utf-8")
-    interaction = INTERACTION.read_text(encoding="utf-8")
+    outputs = outputs_js()
+    export = export_js()
+    interaction = interaction_js()
 
     assert "lifecycleApi().isCompleted(article)" in outputs
     assert "if (!lifecycleApi().isCompleted(article))" in outputs
@@ -71,8 +64,8 @@ def test_terminal_actions_continue_to_use_existing_lifecycle_safety_contracts() 
 
 
 def test_attachment_busy_and_accessibility_contracts_are_explicit() -> None:
-    source = INTERACTION.read_text(encoding="utf-8")
-    css = INTERACTION_CSS.read_text(encoding="utf-8")
+    source = interaction_js()
+    css = interaction_css()
     assert 'attachmentInput.addEventListener("change"' in source
     assert "guardAttachmentControls" in source
     assert "sendButton.disabled = true" in source
@@ -84,8 +77,8 @@ def test_attachment_busy_and_accessibility_contracts_are_explicit() -> None:
 
 
 def test_interaction_polish_loads_after_app_without_reordering_authority_layers() -> None:
-    a11y = A11Y.read_text(encoding="utf-8")
-    index = INDEX.read_text(encoding="utf-8")
+    a11y = a11y_js()
+    index = index_html()
     assert 'interactionPolish.src = "./interaction-polish.js"' in a11y
     assert 'interactionPolish.dataset.interactionPolishLoader = "true"' in a11y
     assert index.index('<script src="./app.js"></script>') < index.index('<script src="./a11y.js"></script>')
