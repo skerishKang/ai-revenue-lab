@@ -28,6 +28,12 @@
         const { run_id: runId, conversation_id: conversationId } = handle;
         const owner = deps.authState.user;
         if (!runId || !conversationId) return;
+        // #7543: the chat_pcq row is promoted by a later signed Engine callback.
+        // A poll that lands on another worker before that callback commits can
+        // answer 404. Treat a short run of 404s as not-yet-promoted and keep
+        // waiting; any other failure still ends this wait as before.
+        const MAX_NOT_FOUND_ROUNDS = 5;
+        let notFoundRounds = 0;
         // Chat/Claw separation: the pending run belongs to the product that submitted it, so
         // the guard compares that product's own conversation id.
         for (;;) {
@@ -41,7 +47,14 @@
             "/api/claw/runs/" + encodeURIComponent(runId) + "/pending-result",
             { headers: { Accept: "application/json" }, cache: "no-store", signal }
           );
-          if (!response.ok) return;
+          if (!response.ok) {
+            if (response.status === 404 && notFoundRounds < MAX_NOT_FOUND_ROUNDS) {
+              notFoundRounds += 1;
+              continue;
+            }
+            return;
+          }
+          notFoundRounds = 0;
           const data = await response.json();
           const result = data?.result;
           if (!result || result.run_id !== runId || result.conversation_id !== conversationId) return;
