@@ -23,6 +23,11 @@ Two layers here:
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.reinstall_selfheal_sidebar_source import (
+    app_js, build_script, index_html, install_wrapper, one_click_test_source, read,
+)
+
 import os
 import shutil
 import subprocess
@@ -41,7 +46,7 @@ ABSENT_SERVICE = "Mesh Agent #7965 Absent"
 
 
 def _source() -> str:
-    return PROGRAM_SOURCE.read_text(encoding="utf-8")
+    return read(PROGRAM_SOURCE)
 
 
 def test_a_reinstall_stops_the_running_agent_wherever_it_was_registered() -> None:

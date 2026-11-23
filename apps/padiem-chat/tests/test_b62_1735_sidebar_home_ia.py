@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.reinstall_selfheal_sidebar_source import (
+    app_js, build_script, index_html, install_wrapper, one_click_test_source, read,
+)
+
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
+INDEX = index_html()
+APP = app_js()
 
 
 def _sidebar_markup() -> str:

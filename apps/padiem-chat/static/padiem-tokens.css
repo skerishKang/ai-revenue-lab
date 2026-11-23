@@ -456,6 +456,37 @@
   --starter-panel-edge: #d2dfe7;
   --starter-panel-shadow: rgba(29,48,64,.17);
 
+  /* #7811 C2: settings의 테마 밖 선언에 쓰는 색. 값은 치환 전 리터럴 그대로다.
+     --dialog-dim·--auth-panel-border와 값이 같아도 그 토큰들은 테마별 덮개가
+     있어 그대로 쓰면 칠해지는 값이 달라지므로 여기서는 덮지 않는다. */
+  --settings-selected-text: #fff;
+  --settings-selected-shadow: rgba(0,0,0,.12);
+  --settings-dialog-dim: rgba(18, 24, 31, .38);
+  --settings-panel-edge: rgba(255, 255, 255, .72);
+  --settings-panel-bg: rgba(247, 250, 252, .94);
+  --settings-panel-shadow: rgba(17, 25, 33, .24);
+  --settings-header-edge: rgba(70, 83, 95, .12);
+  --settings-label-text: #65717c;
+  --settings-close-edge: rgba(55, 68, 80, .14);
+  --settings-close-text: #2a3741;
+  --settings-section-edge: rgba(70, 83, 95, .10);
+  --settings-heading-text: #1b2730;
+  --settings-choice-fallback: #fafafa;
+  --settings-switch-track: rgba(127, 127, 127, .24);
+  --settings-switch-knob: #fff;
+  --settings-switch-knob-shadow: rgba(0, 0, 0, .24);
+  --settings-primary-text: #fff;
+  --settings-action-edge: rgba(62, 76, 88, .14);
+  --settings-action-bg: rgba(255, 255, 255, .58);
+  --settings-action-text: #33424e;
+  --settings-focus-outline: #587c97;
+  --settings-danger-desc-text: #5b4a44;
+  --settings-input-edge: rgba(62, 76, 88, .22);
+  --settings-input-bg: rgba(255, 255, 255, .8);
+  --settings-action-hover-bg: rgba(255, 255, 255, .86);
+  --settings-action-hover-edge: rgba(42, 57, 69, .24);
+  --settings-guide-bg: rgba(255, 255, 255, .2);
+
   /* #8020: Claw 요청 말풍선. 글자는 테마의 사용자 말풍선 글자 역할을 그대로
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
   --claw-request-bubble-text: var(--user-bubble-text);

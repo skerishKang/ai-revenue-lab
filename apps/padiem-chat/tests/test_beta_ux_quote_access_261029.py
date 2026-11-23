@@ -10,6 +10,12 @@ stays exactly as the connection screen's rebuild expects it.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.login_clearance_quote_source import (
+    device_manager_js, interaction_polish_css, locale_source, pc_file_exchange_css,
+    quote_runtime_css, quote_runtime_js, read, tokens_css, util_menu_css, workspace_css,
+)
+
 import json
 from pathlib import Path
 
@@ -18,7 +24,7 @@ REPORTS = Path(__file__).resolve().parents[3] / "padiem-reports" / "2026-10-29"
 
 
 def test_logged_out_quote_dialog_names_what_signing_in_unlocks():
-    script = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    script = quote_runtime_js()
     ko = script[script.index("    ko: {"):script.index("    en: {")]
     en = script[script.index("    en: {"):]
     assert "로그인하면 내 양식과 등급을 고를 수 있어요" in ko
@@ -30,7 +36,7 @@ def test_logged_out_quote_dialog_names_what_signing_in_unlocks():
     assert "signedIn = !!(auth && auth.authenticated === true)" in script
     for field in ("b66QuoteSkillField", "b66QuoteModelField"):
         assert f'"{field}"' in script
-    css = (STATIC / "b66-quote-runtime.css").read_text(encoding="utf-8")
+    css = quote_runtime_css()
     assert ".b66-quote-signin-hint" in css
     assert ".b66-quote-signin-hint[hidden]" in css
 
@@ -38,7 +44,7 @@ def test_logged_out_quote_dialog_names_what_signing_in_unlocks():
 def test_input_border_token_is_defined_per_theme_and_applied_to_inputs():
     # #7187 R3 2차: the per-theme definitions moved to padiem-tokens.css; the
     # values are the same numbers the theme sheet used to carry.
-    tokens = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+    tokens = tokens_css()
     for theme, token in (
         ("light", "--input-border-strong: #767e8a;"),
         ("dark", "--input-border-strong: rgba(255,255,255,.45);"),
@@ -56,7 +62,7 @@ def test_input_border_token_is_defined_per_theme_and_applied_to_inputs():
     # The dark theme's effective hairline is the contrast-layer value.
     assert "--line: #405365;" in tokens
 
-    util = (STATIC / "util-menu.css").read_text(encoding="utf-8")
+    util = util_menu_css()
     # 대표 결정 #7172로 계약 값 갱신: the util first-screen card joins the shared
     # hairline (var(--line)) so it matches the other first-screen cards; the
     # input-strength token keeps its job on real inputs (the two checks below).
@@ -66,9 +72,9 @@ def test_input_border_token_is_defined_per_theme_and_applied_to_inputs():
     assert "--input-border-strong" not in card
     # 2026-11-01: the speech/SNS forms left for /apps/council/ with their own
     # design tokens; this sheet no longer carries those selectors.
-    quote = (STATIC / "b66-quote-runtime.css").read_text(encoding="utf-8")
+    quote = quote_runtime_css()
     assert quote.count("var(--input-border-strong)") >= 2
-    dialog = (STATIC / "pc-file-exchange.css").read_text(encoding="utf-8")
+    dialog = pc_file_exchange_css()
     assert "var(--input-border-strong)" in dialog
 
 
@@ -139,5 +145,5 @@ def test_rendered_evidence_meets_the_floor_in_every_theme():
                 walk(item)
 
     for path in evidence:
-        walk(json.loads(path.read_text(encoding="utf-8-sig")))
+        walk(json.loads(read(path, "utf-8-sig")))
     assert checked >= 10, checked

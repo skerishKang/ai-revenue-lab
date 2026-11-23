@@ -13,6 +13,12 @@ that design so a future state store cannot quietly grow isolate memory.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.auth_error_history_locale_source import (
+    app_js, conversation_search_js, history_css, history_module_js, index_html,
+    locale_source, outputs_js, read as _source_read,
+)
+
 import httpx
 import pytest
 
@@ -103,4 +109,4 @@ def test_the_browser_asks_once_more_before_it_presents_signed_out():
 def _read(name: str) -> str:
     from pathlib import Path
 
-    return (Path(__file__).resolve().parents[1] / "static" / name).read_text(encoding="utf-8")
+    return _source_read(name)

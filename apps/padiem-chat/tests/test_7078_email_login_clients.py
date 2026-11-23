@@ -4,7 +4,12 @@ The web/admin/native clients are source-checked here because only the web module
 has a browser-free unit harness. The React clone has its own vitest case.
 """
 from __future__ import annotations
-import locale_bundle
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.login_clearance_quote_source import (
+    device_manager_js, interaction_polish_css, locale_source, pc_file_exchange_css,
+    quote_runtime_css, quote_runtime_js, read, tokens_css, util_menu_css, workspace_css,
+)
 
 import json
 import shutil
@@ -28,12 +33,12 @@ def test_web_email_entry_is_a_link_to_the_common_login():
     # #7777: the dialog keeps no email/password inputs. The single email entry
     # is a plain link to the common login (Chat skin), so the web client never
     # sends a password body from this dialog.
-    markup = INDEX.read_text(encoding="utf-8")
+    markup = read(INDEX)
     assert 'id="passwordLoginContinue"' in markup
     assert 'href="/auth/shared/start"' in markup
     assert 'id="passwordLoginForm"' not in markup
     assert 'id="passwordRegisterSection"' not in markup
-    source = AUTH_JS.read_text(encoding="utf-8")
+    source = read(AUTH_JS)
     assert "submitPasswordLogin" not in source
     assert "submitPasswordRegister" not in source
 
@@ -103,14 +108,14 @@ def test_web_server_gate_still_moves_old_screens_to_the_common_login():
 
 
 def test_admin_reauth_follows_the_switch_login_url():
-    source = ADMIN_JS.read_text(encoding="utf-8")
+    source = read(ADMIN_JS)
     assert 'data?.error?.code === "email_login_moved"' in source
     assert 'window.location.assign(data.login_url)' in source
     assert MESSAGE in source
 
 
 def test_native_login_opens_the_common_login():
-    source = NATIVE.read_text(encoding="utf-8")
+    source = read(NATIVE)
     assert "email_login_moved" in source
     assert "Linking.openURL" in source
     assert "DEFAULT_API_BASE_URL" in source
@@ -118,5 +123,5 @@ def test_native_login_opens_the_common_login():
 
 
 def test_web_message_key_exists_in_both_languages():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = locale_source()
     assert locale.count('"auth-email-login-moved"') == 2

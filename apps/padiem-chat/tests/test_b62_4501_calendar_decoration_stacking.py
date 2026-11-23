@@ -23,6 +23,11 @@ after the rule was applied.
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.calendar_connectors_firstscreen_source import (
+    app_js, connectors_module_js, index_html, locale_source, read, util_app_css, util_app_js,
+)
+
 import re
 from pathlib import Path
 
@@ -42,7 +47,7 @@ def _css(path: Path) -> str:
     guards count, so a raw-text scan would match prose. Bind the assertions to
     declarations only.
     """
-    return re.sub(r"/\*.*?\*/", "", path.read_text(encoding="utf-8"), flags=re.DOTALL)
+    return re.sub(r"/\*.*?\*/", "", read(path), flags=re.DOTALL)
 
 
 def _block(css: str, selector: str) -> str:
@@ -131,6 +136,6 @@ def test_the_fix_is_scoped_to_calendar_only() -> None:
 def test_raised_destination_still_targets_the_markup_it_owns(selector: str) -> None:
     # The lift only helps if the elements that were occluded really live inside
     # the raised section rather than beside it.
-    html = (STYLES_CSS.parent / "index.html").read_text(encoding="utf-8")
+    html = index_html()
     band = html[html.index('id="calendarView"') : html.index('<section class="conversation"')]
     assert selector.lstrip("#") in band, f"{selector} must be inside #calendarView"

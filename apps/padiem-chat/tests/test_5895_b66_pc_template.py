@@ -12,6 +12,12 @@ fake model, and they pin the three behaviours the CTO asked for:
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.projects_recovery_template_source import (
+    app_js, event_js, index_html, lifecycle_js, quote_runtime_js, read as _source_read,
+    recovery_js, stream_js,
+)
+
 import hashlib
 import json
 import sys
@@ -200,7 +206,7 @@ def test_the_quote_screen_offers_the_shared_part_and_a_connect_line():
 
     from pathlib import Path
 
-    script = (Path(__file__).resolve().parents[1] / "static" / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    script = quote_runtime_js()
     assert "내 PC 엑셀 양식 가져오기" in script
     assert "이 양식으로 견적서 만들기" in script
     assert "내 PC에 저장" in script
@@ -221,7 +227,7 @@ def test_a_linked_pc_alone_reaches_the_quote_screen():
 
     from pathlib import Path
 
-    script = (Path(__file__).resolve().parents[1] / "static" / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    script = quote_runtime_js()
     assert "launcher.hidden = !(runtime && (skills.length > 0 || pcAccountLinked));" in script
     assert "내 PC 엑셀 양식으로 견적서" in script
     # The skill-only controls step aside so the PC form is the one action.

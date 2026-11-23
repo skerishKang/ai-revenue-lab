@@ -333,14 +333,17 @@ def test_the_capture_step_carries_its_screenshot_reference():
 
 
 def test_the_composer_stop_reaches_the_server_with_the_run_id():
-    source = Path(__file__).parents[1].joinpath("static/chat-streaming-module.js").read_text("utf-8")
+    # #8060: shipped reads live in _support; the source checks stay here.
+    from _support import pc_computer_use_3_source as sheets
+
+    source = sheets.sheet("chat-streaming-module.js")
     start = source.index("function cancelActiveStream(")
     end = source.index("\n  async function requestAnswer(", start + 1)
     body = source[start:end]
     assert "/api/pc/cancel" in body
     assert "deps.activeClawRunId" in body
     assert "pc-stop-sent" in body and "pc-stop-failed" in body
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_source()
     assert locale.count('"pc-stop-sent"') == 2
     assert locale.count('"pc-stop-failed"') == 2
 

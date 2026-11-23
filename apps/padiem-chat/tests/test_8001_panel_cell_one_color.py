@@ -72,7 +72,8 @@ def _value(rule, prop: str) -> str:
 def test_settings_dialog_cells_share_one_background_token() -> None:
     rules = _rules(SETTINGS_CSS)
     choice = _one(rules, "#settingsDialog .settings-choice", "설정 칸")
-    assert _value(choice, "background") == "var(--card-bg, #fafafa)"
+    assert _value(choice, "background") == "var(--card-bg, var(--settings-choice-fallback))"
+    assert "--settings-choice-fallback: #fafafa;" in TOKENS_CSS
     close = _one(rules, ".settings-close", "닫기 단추")
     assert _value(close, "background") == "var(--card-bg)"
 

@@ -163,8 +163,8 @@ html[data-theme="padiem-glass"] .language-option[aria-pressed="true"] {
   .theme-option[aria-pressed="true"] {
     background: var(--accent);
     border-color: var(--accent);
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    color: var(--settings-selected-text);
+    box-shadow: 0 2px 8px var(--settings-selected-shadow);
   }
 
 /* from padiem-themes.css */
@@ -344,7 +344,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
 
 /* from padiem-chat-ui-polish.css */
   .settings-dialog::backdrop {
-    background: rgba(18, 24, 31, .38);
+    background: var(--settings-dialog-dim);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
@@ -356,11 +356,11 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     width: 100%;
     margin: 0;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, .72);
+    border: 1px solid var(--settings-panel-edge);
     border-radius: 28px;
     overflow: hidden;
-    background: rgba(247, 250, 252, .94);
-    box-shadow: 0 34px 100px rgba(17, 25, 33, .24);
+    background: var(--settings-panel-bg);
+    box-shadow: 0 34px 100px var(--settings-panel-shadow);
   }
 
 /* from padiem-chat-ui-polish.css */
@@ -370,7 +370,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     justify-content: space-between;
     gap: 20px;
     padding: 28px 30px 22px;
-    border-bottom: 1px solid rgba(70, 83, 95, .12);
+    border-bottom: 1px solid var(--settings-header-edge);
   }
 
 /* from padiem-chat-ui-polish.css */
@@ -382,7 +382,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
   .settings-header p,
 .settings-label {
     margin: 0 0 6px;
-    color: #65717c;
+    color: var(--settings-label-text);
     font-size: 12px;
     font-weight: 750;
     line-height: 1.35;
@@ -408,12 +408,12 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     place-items: center;
     margin: 0;
     padding: 0;
-    border: 1px solid rgba(55, 68, 80, .14);
+    border: 1px solid var(--settings-close-edge);
     border-radius: 13px;
     /* #8001 한 판 원칙: 닫기 단추도 이 판의 칸 바탕(--card-bg) 하나로.
        테마별 덮음(glass surface-veil-mist·dark 흰 베일)은 지웠다. */
     background: var(--card-bg);
-    color: #2a3741;
+    color: var(--settings-close-text);
     font-size: 25px;
     line-height: 1;
     cursor: pointer;
@@ -431,13 +431,13 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
 
 /* from padiem-chat-ui-polish.css */
   .settings-section + .settings-section {
-    border-top: 1px solid rgba(70, 83, 95, .10);
+    border-top: 1px solid var(--settings-section-edge);
   }
 
 /* from padiem-chat-ui-polish.css */
   .settings-section h3 {
     margin: 0 0 16px;
-    color: #1b2730;
+    color: var(--settings-heading-text);
     font-size: 20px;
     line-height: 1.3;
     letter-spacing: -.02em;
@@ -462,7 +462,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     padding: 0 12px;
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
-    background: var(--card-bg, #fafafa);
+    background: var(--card-bg, var(--settings-choice-fallback));
     color: var(--text);
     font: inherit;
     font-size: 13px;
@@ -546,7 +546,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     height: 24px;
     border: 1px solid var(--line);
     border-radius: var(--radius-pill);
-    background: rgba(127, 127, 127, .24);
+    background: var(--settings-switch-track);
     transition: background .18s ease, border-color .18s ease;
   }
 
@@ -559,8 +559,8 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     width: 18px;
     height: 18px;
     border-radius: var(--radius-circle);
-    background: #fff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .24);
+    background: var(--settings-switch-knob);
+    box-shadow: 0 1px 3px var(--settings-switch-knob-shadow);
     transition: transform .18s ease;
   }
 
@@ -617,7 +617,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     padding: 8px 14px;
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
-    background: var(--card-bg, #fafafa);
+    background: var(--card-bg, var(--settings-choice-fallback));
     color: var(--text);
     box-shadow: none;
     font-size: 13px;
@@ -638,7 +638,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     border: 1px solid var(--primary-border);
     border-radius: var(--radius-pill);
     background: var(--primary-bg);
-    color: #fff;
+    color: var(--settings-primary-text);
     box-shadow: none;
     font-size: 13px;
     font-weight: 680;
@@ -669,7 +669,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
 /* from padiem-chat-ui-polish.css */
   .settings-advanced-entry {
     padding: 18px 30px 26px;
-    border-top: 1px solid rgba(70, 83, 95, .10);
+    border-top: 1px solid var(--settings-section-edge);
   }
 
 /* from padiem-chat-ui-polish.css */
@@ -689,10 +689,10 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
   .settings-action {
     min-height: 44px;
     padding: 0 18px;
-    border: 1px solid rgba(62, 76, 88, .14);
+    border: 1px solid var(--settings-action-edge);
     border-radius: var(--radius-pill);
-    background: rgba(255, 255, 255, .58);
-    color: #33424e;
+    background: var(--settings-action-bg);
+    color: var(--settings-action-text);
     font: inherit;
     font-size: 13px;
     font-weight: 680;
@@ -709,7 +709,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
 
 /* from padiem-chat-ui-polish.css */
   .settings-action:focus-visible {
-    outline: 3px solid #587c97;
+    outline: 3px solid var(--settings-focus-outline);
     outline-offset: 2px;
   }
 
@@ -738,7 +738,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     margin: 0;
     font-size: 12.5px;
     line-height: 1.55;
-    color: #5b4a44;
+    color: var(--settings-danger-desc-text);
     white-space: pre-line;
   }
 
@@ -746,18 +746,18 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
   .settings-delete-confirm .settings-delete-input {
     min-height: 44px;
     padding: 0 14px;
-    border: 1px solid rgba(62, 76, 88, .22);
+    border: 1px solid var(--settings-input-edge);
     border-radius: 12px;
-    background: rgba(255, 255, 255, .8);
-    color: #33424e;
+    background: var(--settings-input-bg);
+    color: var(--settings-action-text);
     font: inherit;
     font-size: 13px;
   }
 
 /* from padiem-chat-ui-polish.css */
   .settings-action:hover {
-    background: rgba(255, 255, 255, .86);
-    border-color: rgba(42, 57, 69, .24);
+    background: var(--settings-action-hover-bg);
+    border-color: var(--settings-action-hover-edge);
   }
 
 /* from padiem-chat-ui-polish.css */
@@ -829,7 +829,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:not([aria-pressed="true"])
     border: 1px solid var(--line);
     border-radius: 12px;
     color: var(--text);
-    background: rgba(255, 255, 255, .2);
+    background: var(--settings-guide-bg);
   }
 
 /* from padiem-chat-ui-polish.css */

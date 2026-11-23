@@ -252,21 +252,35 @@ async def _authorized(request, env, facts, session, uid, resolver):
     state = request.app.state
     device = facts["device_id"]
     identity = state.control_plane_identity_authority
+    stage = None
     scope = await mode_connector_read(identity, "owner_scope", session_id=session.session_id)
     try:
         consent = await mode_connector_read(identity, "consent", session_id=session.session_id, device_id=device)
     except Exception:
         consent = None
+        stage = "consent_read_error"
     subject = session.subject.subject_id
-    consent_ok = (
-        isinstance(scope, dict) and scope.get("owner_subject_id") == subject
-        and isinstance(consent, dict) and consent.get("owner_subject_id") == subject
-        and consent.get("device_id") == device and consent.get("withdrawn_at") is None
-        and bool(consent.get("consent_id")) and bool(scope.get("account_ref"))
-        and bool(scope.get("workspace_ref"))
-        and all(consent.get(k) == scope.get(k) for k in ("account_ref", "workspace_ref"))
-    )
-    if not consent_ok:
+    if stage is None:
+        if not isinstance(scope, dict) or not scope.get("account_ref") or not scope.get("workspace_ref"):
+            stage = "scope_missing"
+        elif scope.get("owner_subject_id") != subject:
+            stage = "scope_subject"
+        elif not isinstance(consent, dict):
+            stage = "consent_missing"
+        elif consent.get("owner_subject_id") != subject:
+            stage = "consent_subject"
+        elif consent.get("device_id") != device:
+            stage = "consent_device"
+        elif consent.get("withdrawn_at") is not None:
+            stage = "consent_withdrawn"
+        elif not consent.get("consent_id"):
+            stage = "consent_id"
+        elif consent.get("account_ref") != scope.get("account_ref"):
+            stage = "account_ref_mismatch"
+        elif consent.get("workspace_ref") != scope.get("workspace_ref"):
+            stage = "workspace_ref_mismatch"
+    if stage is not None:
+        logger.warning("pc_maintenance_owner_authority outcome=denied stage=%s", stage)
         return None, None, "owner_consent_missing"
     resolved, refusal = await resolver(request, session=session, selected_device_id=device, user_id=uid)
     target = resolved.get("target") if isinstance(resolved, dict) and resolved.get("authorized") is True else None

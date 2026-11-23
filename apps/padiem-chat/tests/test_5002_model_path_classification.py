@@ -6,6 +6,9 @@ import that another workflow would have to install.
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.pixel_ttft_classification_source import read
+
 import json
 import re
 from pathlib import Path
@@ -14,7 +17,7 @@ from app.model_policy import EXECUTABLE_B14_MODEL_IDS
 
 TESTS = Path(__file__).resolve().parent
 MANIFEST = json.loads(
-    (TESTS / "model_path_manifest.json").read_text(encoding="utf-8")
+    read(TESTS / "model_path_manifest.json")
 )
 B14_IMPORT = re.compile(
     r"^\s*(?:from\s+app\.b14_client\s+import|import\s+app\.b14_client"
@@ -37,7 +40,7 @@ B14_SOURCE_READERS = frozenset({
 def _modules_importing_b14_client() -> set[str]:
     found: set[str] = set()
     for path in TESTS.glob("test_*.py"):
-        if B14_IMPORT.search(path.read_text(encoding="utf-8")):
+        if B14_IMPORT.search(read(path)):
             found.add(path.name)
     return found
 

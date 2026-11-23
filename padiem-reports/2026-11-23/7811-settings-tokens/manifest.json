@@ -1,0 +1,49 @@
+{
+  "sheet": "padiem-settings.css",
+  "base": "33a5cda3dab64dda8747d6260951799b612d8d61",
+  "audit": {
+    "css_color_literals": {"before": 1530, "after": 1500, "delta": -30},
+    "css_color_literals_unthemed": {"before": 869, "after": 839, "delta": -30},
+    "css_important": {"before": 629, "after": 629, "delta": 0},
+    "css_themed_important": {"before": 234, "after": 234, "delta": 0},
+    "css_files": {"before": 92, "after": 92, "delta": 0},
+    "css_rules": {"before": 4385, "after": 4385, "delta": 0},
+    "css_themed_rules": {"before": 795, "after": 795, "delta": 0}
+  },
+  "verification": {
+    "computed": {
+      "targets": 43,
+      "measurements": 1935,
+      "themes": 5,
+      "viewports": ["1440x950", "820x1180", "390x844"],
+      "states": ["normal", "hover", "focus"],
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "combos": 195,
+      "themes": 5,
+      "viewports": 3,
+      "screens": 13,
+      "nonzero": [],
+      "reports": [
+        "compare_report_light.json",
+        "compare_report_dark.json",
+        "compare_report_padiem-glass.json",
+        "compare_report_cinematic.json",
+        "compare_report_padiem-home.json"
+      ]
+    },
+    "control": {"combos": 12, "nonzero": [], "report": "control_report.json"},
+    "tamper": {"pixel": 338784, "report": "tamper_report.json"},
+    "tests": "로컬 72 passed (신규 계약·토큰 목록 계약·래칫·settings 관련)",
+    "ratchet": "#8054 기준선 파일 없음. base 실측 대비 head 실측으로 자동 하향."
+  },
+  "notes": [
+    "--dialog-dim·--auth-panel-border는 값이 같아도 테마별 덮개가 있어 재사용하지 않고 새 토큰을 만들었다.",
+    "var(--card-bg, #fafafa) 두 곳은 중첩 var로 바꾸고 기존 파싱 값 단언도 같은 강도로 갱신했다.",
+    "data-theme 규칙 안의 색 리터럴은 이번 범위가 아니므로 그대로 두었다.",
+    "토큰 값은 치환 전 리터럴과 같아 최종 계산값과 대비는 변하지 않는다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 파일 정의에만 있다."
+  ]
+}

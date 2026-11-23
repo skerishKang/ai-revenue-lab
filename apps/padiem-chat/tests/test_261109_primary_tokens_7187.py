@@ -519,7 +519,21 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--admin-models-tiny-status-bg-2",
                 "--admin-models-tiny-status-text",
                 "--admin-models-tiny-status-text-2",
-                },
+                }
+             | {"--settings-selected-text", "--settings-selected-shadow",
+                "--settings-dialog-dim", "--settings-panel-edge",
+                "--settings-panel-bg", "--settings-panel-shadow",
+                "--settings-header-edge", "--settings-label-text",
+                "--settings-close-edge", "--settings-close-text",
+                "--settings-section-edge", "--settings-heading-text",
+                "--settings-choice-fallback", "--settings-switch-track",
+                "--settings-switch-knob", "--settings-switch-knob-shadow",
+                "--settings-primary-text", "--settings-action-edge",
+                "--settings-action-bg", "--settings-action-text",
+                "--settings-focus-outline", "--settings-danger-desc-text",
+                "--settings-input-edge", "--settings-input-bg",
+                "--settings-action-hover-bg", "--settings-action-hover-edge",
+                "--settings-guide-bg"},
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.
