@@ -1,0 +1,28 @@
+{
+  "sheet": "capability-nav.css",
+  "targets": 18,
+  "checked": 180,
+  "combos": 10,
+  "empty_computed_values": 0,
+  "samples": {
+    "claw-edge": "rgba(121, 188, 231, 0.28)",
+    "claw-wash": "rgba(121, 188, 231, 0.1)",
+    "claw-badge": "rgba(47, 111, 153, 0.18)",
+    "dialog-shadow": "rgba(0, 0, 0, 0.18) 0px 8px 32px 0px",
+    "dialog-dim": "rgba(0, 0, 0, 0.58)",
+    "choice-fallback": "rgb(250, 250, 250)",
+    "connectors-dim": "rgba(9, 20, 30, 0.38)",
+    "card-surface": "rgba(255, 255, 255, 0.92)",
+    "card-edge": "rgba(23, 33, 42, 0.14)",
+    "retry-surface": "rgba(255, 255, 255, 0.92)",
+    "retry-edge": "rgba(23, 33, 42, 0.16)",
+    "small-ink": "rgb(61, 76, 89)",
+    "unavailable-ink": "rgb(61, 76, 89)",
+    "connected-ink": "rgb(31, 95, 134)",
+    "pending-ink": "rgb(138, 83, 0)",
+    "activating-ink": "rgb(23, 92, 211)",
+    "active-ink": "rgb(22, 121, 76)",
+    "failed-ink": "rgb(179, 38, 30)"
+  },
+  "diffs": []
+}

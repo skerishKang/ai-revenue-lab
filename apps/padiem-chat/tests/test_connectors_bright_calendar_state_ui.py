@@ -42,6 +42,7 @@ from _support.bright_calendar_state import (  # noqa: E402
     locale_table,
     read_state_attrs,
     reviewed_dialog_colors,
+    resolve_value,
     rgba,
     run_calendar_module,
     select_count,
@@ -156,7 +157,7 @@ def test_small_text_uses_solid_aa_colors_instead_of_opacity_mutting() -> None:
     muted = declarations_for("#connectorsDialog .capability-kicker", with_property="opacity")
     assert muted is not None, "small-type group must get solid colors inside the dialog"
     assert muted.get("opacity") == "1"
-    assert muted.get("color") == "#3d4c59"
+    assert resolve_value(muted.get("color")) == "#3d4c59"
     # The muted gray and every READ-state color must pass AA (>= 4.5) on the
     # bright card surface (approximated by its near-white effective tone).
     colors = reviewed_dialog_colors()

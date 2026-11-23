@@ -275,6 +275,19 @@ class TestPrimaryTokens(unittest.TestCase):
              # 값은 위 --project-* 토큰을 재사용하고, 새 값 둘만 여기서 소유한다.
              | {"--outputs-action-hover-wash", "--outputs-content-bg",
                 "--outputs-dialog-shadow"}
+             # #7811 C2 capability-nav(261124): 내비 칩·기능 대화상자·
+             # Connectors 카드의 고정 팔레트. 재사용 토큰은 위 --settings-*·
+             # --project-* 가 이미 고정한다.
+             | {"--capability-nav-claw-edge", "--capability-nav-claw-wash",
+                "--capability-nav-claw-badge-bg", "--capability-nav-dialog-shadow",
+                "--capability-nav-dialog-dim", "--capability-nav-connectors-dim",
+                "--capability-nav-connectors-surface", "--capability-nav-connectors-edge",
+                "--capability-nav-connectors-edge-strong",
+                "--capability-nav-connectors-ink",
+                "--capability-nav-connectors-connected-ink",
+                "--capability-nav-read-pending-ink",
+                "--capability-nav-read-activating-ink",
+                "--capability-nav-read-active-ink"}
              | {"--voice-mic-active-bg", "--voice-mic-active-edge",
                 "--voice-mic-active-ring", "--voice-mic-active-hover-bg",
                 "--voice-mic-active-hover-edge", "--composer-send-text",
