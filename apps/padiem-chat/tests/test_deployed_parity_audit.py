@@ -347,7 +347,10 @@ def test_base_urls_are_bounded_to_bare_workers_dev_origins():
 
 def test_public_parity_script_requires_no_credentials_and_only_empty_probe_post():
     module = _load_module()
-    source = Path(module.__file__).read_text(encoding="utf-8")
+    # #8060: the raw read lives in _support; the credential checks stay here.
+    from _support import deployed_parity_source as sheets
+
+    source = sheets.load_source(module.__file__)
 
     assert "CLOUDFLARE_API_TOKEN" not in source
     assert "OPENROUTER_API_KEY" not in source

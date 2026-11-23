@@ -246,11 +246,13 @@ async def test_firecrawl_timeout_and_malformed_json_are_normalized():
 
 
 def test_manual_search_controls_are_removed_and_shared_css_is_unchanged():
+    # #8060: the raw read lives in _support; the absence checks stay here.
     from pathlib import Path
+    from _support import web_tools_source as sheets
 
     root = Path(__file__).resolve().parents[1]
     repo = root.parents[1]
-    html = (root / "static/index.html").read_text(encoding="utf-8")
+    html = sheets.index_html()
     for identifier in ("webSearchButton", "deepResearchButton", "webSearchStarterButton"):
         assert f'id="{identifier}"' not in html
     assert "웹 검색 · 준비 중" not in html

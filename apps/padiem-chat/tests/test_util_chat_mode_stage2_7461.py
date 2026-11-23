@@ -20,14 +20,15 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-TOOLS_JS = (STATIC / "util-tools.js").read_text(encoding="utf-8")
-CHAT_MODE_JS = (STATIC / "util-chat-mode.js").read_text(encoding="utf-8")
-QUOTE_JS = (STATIC / "util-quote.js").read_text(encoding="utf-8")
-PDFMD_JS = (STATIC / "util-pdfmd.js").read_text(encoding="utf-8")
-PDFMD_PAGES_JS = (STATIC / "util-pdfmd-pages.js").read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the source and Node checks stay.
+from _support import util_chat_mode_stage2_source as sheets
+
+APP_JS = sheets.sheet("app.js")
+TOOLS_JS = sheets.sheet("util-tools.js")
+CHAT_MODE_JS = sheets.sheet("util-chat-mode.js")
+QUOTE_JS = sheets.sheet("util-quote.js")
+PDFMD_JS = sheets.sheet("util-pdfmd.js")
+PDFMD_PAGES_JS = sheets.sheet("util-pdfmd-pages.js")
 
 
 def test_stage2_scope_and_pinned_boundaries() -> None:
@@ -604,15 +605,15 @@ def _run_stage2_harness() -> dict:
             [
                 node,
                 str(script),
-                str(STATIC / "util-manifest.js"),
-                str(STATIC / "util-tools-markdown.js"),
-                str(STATIC / "util-tools-contract.js"),
-                str(STATIC / "util-chat-mode.js"),
-                str(STATIC / "util-tools.js"),
-                str(STATIC / "util-quote.js"),
-                str(STATIC / "util-pdfmd-pages.js"),
-                str(STATIC / "util-pdfmd.js"),
-                str(STATIC / "util-app.js"),
+                sheets.static_path("util-manifest.js"),
+                sheets.static_path("util-tools-markdown.js"),
+                sheets.static_path("util-tools-contract.js"),
+                sheets.static_path("util-chat-mode.js"),
+                sheets.static_path("util-tools.js"),
+                sheets.static_path("util-quote.js"),
+                sheets.static_path("util-pdfmd-pages.js"),
+                sheets.static_path("util-pdfmd.js"),
+                sheets.static_path("util-app.js"),
             ],
             capture_output=True,
             text=True,
