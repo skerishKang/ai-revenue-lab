@@ -25,11 +25,11 @@ from pathlib import Path
 import pytest
 
 import app.local_cpython as local_cpython
+from _support.local_build_app_7814_source import (
+    bindings_golden, state_order_golden, surface_golden,
+)
 from app.config import ConfigError, Settings
 
-GOLDEN_PATH = (
-    Path(__file__).resolve().parent / "fixtures" / "local_build_app_7814_surface.json"
-)
 
 #: The smallest environment `test_local_cpython.local_env` builds an app with.
 BASE_ENV = {
@@ -78,7 +78,7 @@ def _app_surface(app: object) -> dict:
 
 def test_golden_fixture_is_the_pre_refactor_surface():
     # A truncated golden would make every comparison below vacuous.
-    golden = json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
+    golden = surface_golden()
     assert len(golden["routes"]) == 344
     assert len(golden["state"]) == 148
 
@@ -91,7 +91,7 @@ def test_golden_fixture_is_the_pre_refactor_surface():
 def test_build_app_surface_matches_the_pre_refactor_golden(
     tmp_path, monkeypatch, extra
 ):
-    golden = json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
+    golden = surface_golden()
     _isolate_environment(monkeypatch)
     _local_environment(monkeypatch, tmp_path, **extra)
 
@@ -183,9 +183,6 @@ def test_host_run_requires_an_https_public_base(tmp_path, monkeypatch):
 # 이 표는 바인딩마다 "꺼짐/켜짐" 쌍을 두고, 그 쌍이 실제로 다른 값을 내는지
 # 함께 확인한다. 골든은 같은 방식으로 리팩터링 전 main에서 먼저 떴다.
 # ---------------------------------------------------------------------------
-BINDINGS_GOLDEN_PATH = (
-    Path(__file__).resolve().parent / "fixtures" / "local_build_app_7814_bindings.json"
-)
 
 #: One toggle per binding this stage composes.
 BINDING_TOGGLES = {
@@ -252,7 +249,7 @@ def _binding_kinds(app: object) -> dict:
 
 
 def test_bindings_golden_is_the_pre_refactor_table():
-    golden = json.loads(BINDINGS_GOLDEN_PATH.read_text(encoding="utf-8"))
+    golden = bindings_golden()
     assert len(golden["routes"]) == 344
     assert set(golden["bindings"]) == {"base", *BINDING_TOGGLES}
     assert set(golden["states"]) == {"base", *BINDING_TOGGLES}
@@ -266,7 +263,7 @@ def test_bindings_golden_is_the_pre_refactor_table():
 
 @pytest.mark.parametrize("label", ["base", *BINDING_TOGGLES])
 def test_service_bindings_match_the_pre_refactor_golden(tmp_path, monkeypatch, label):
-    golden = json.loads(BINDINGS_GOLDEN_PATH.read_text(encoding="utf-8"))
+    golden = bindings_golden()
     _isolate_environment(monkeypatch)
     _local_environment(monkeypatch, tmp_path, **BINDING_TOGGLES.get(label, {}))
 
@@ -279,7 +276,7 @@ def test_service_bindings_match_the_pre_refactor_golden(tmp_path, monkeypatch, l
 
 @pytest.mark.parametrize("label", list(BINDING_TOGGLES))
 def test_each_toggle_changes_the_table_it_claims_to_change(label):
-    golden = json.loads(BINDINGS_GOLDEN_PATH.read_text(encoding="utf-8"))
+    golden = bindings_golden()
     base_bindings = golden["bindings"]["base"]
     toggled_bindings = golden["bindings"][label]
 
@@ -301,9 +298,6 @@ def test_each_toggle_changes_the_table_it_claims_to_change(label):
 # 목록만이 아니라 "대입 순서"를 Starlette State.__setattr__ 기록으로 고정한다.
 # 골든은 리팩터링 전 main에서 먼저 떴다(base·identity_on 두 입력).
 # ---------------------------------------------------------------------------
-STATE_ORDER_GOLDEN_PATH = (
-    Path(__file__).resolve().parent / "fixtures" / "local_build_app_7814_state_order.json"
-)
 
 
 def _record_state_order(monkeypatch: pytest.MonkeyPatch) -> list:
@@ -321,7 +315,7 @@ def _record_state_order(monkeypatch: pytest.MonkeyPatch) -> list:
 
 
 def test_state_order_golden_is_the_pre_refactor_order():
-    golden = json.loads(STATE_ORDER_GOLDEN_PATH.read_text(encoding="utf-8"))
+    golden = state_order_golden()
     # Re-assignment is part of the contract, so the raw list keeps duplicates.
     assert len(golden["base"]["order"]) == 153
     assert len(set(golden["base"]["order"])) == 148
@@ -336,7 +330,7 @@ def test_state_order_golden_is_the_pre_refactor_order():
 def test_state_assignment_order_matches_the_pre_refactor_golden(
     tmp_path, monkeypatch, label, extra
 ):
-    golden = json.loads(STATE_ORDER_GOLDEN_PATH.read_text(encoding="utf-8"))
+    golden = state_order_golden()
     _isolate_environment(monkeypatch)
     _local_environment(monkeypatch, tmp_path, **extra)
 
