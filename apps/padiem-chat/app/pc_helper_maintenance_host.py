@@ -13,6 +13,7 @@ import logging
 import re
 from datetime import datetime, timedelta, timezone
 
+from padiem_ai_core.pc_device_identity import bare_device_id
 from starlette.requests import Request
 
 from .d1_rows import rows_from_result
@@ -256,8 +257,15 @@ async def _authorized(request, env, facts, session, uid, resolver):
     identity = state.control_plane_identity_authority
     stage = None
     scope = await mode_connector_read(identity, "owner_scope", session_id=session.session_id)
+    # The consent store keys records by the bare device id a human screen
+    # resolves (the node-id segment of a composed Mesh identity); it refuses
+    # the composed node/ form. Look up that bare ref, never loosen the
+    # consent server's own validation to admit the composed form.
+    consent_ref = bare_device_id(device)
+    if consent_ref is None:
+        return None, None, "owner_consent_missing"
     try:
-        consent = await mode_connector_read(identity, "consent", session_id=session.session_id, device_id=device)
+        consent = await mode_connector_read(identity, "consent", session_id=session.session_id, device_id=consent_ref)
     except Exception as exc:
         consent = None
         stage = "consent_read_error"
@@ -278,7 +286,7 @@ async def _authorized(request, env, facts, session, uid, resolver):
             stage = "consent_missing"
         elif consent.get("owner_subject_id") != subject:
             stage = "consent_subject"
-        elif consent.get("device_id") != device:
+        elif consent.get("device_id") != consent_ref:
             stage = "consent_device"
         elif consent.get("withdrawn_at") is not None:
             stage = "consent_withdrawn"

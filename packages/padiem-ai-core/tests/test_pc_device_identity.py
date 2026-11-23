@@ -18,6 +18,7 @@ from padiem_ai_core.pc_device_identity import (
     PC_DEVICE_ID_MAX_CHARS,
     PC_DEVICE_ID_PATTERN,
     PC_MESH_NODE_ID_PATTERN,
+    bare_device_id,
     is_pc_device_id,
     is_pc_mesh_node_id,
     pc_device_id_form,
@@ -128,3 +129,30 @@ def test_the_composed_form_is_bounded() -> None:
     assert is_pc_device_id("node/" + "d" * 64 + "/" + "n" * 128) is True
     assert is_pc_device_id("node/" + "d" * 65 + "/" + "n" * 1) is False
     assert is_pc_device_id("node//" + "n" * 129) is False
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        (REAL_MESH_NODE_REF, REAL_MESH_NODE_REF),
+        (DEFAULT_DOMAIN_NODE_ID, REAL_MESH_NODE_REF),
+        (EXPLICIT_DOMAIN_NODE_ID, REAL_MESH_NODE_REF),
+        ("node//abc", "abc"),
+        ("node/mydomain/abc", "abc"),
+        ("node/mine_srv-1/abc.def:1@x", "abc.def:1@x"),
+    ],
+)
+def test_bare_device_id_returns_the_bare_spelling(value: str, expected: str) -> None:
+    """The bare spelling is the exact value consent lookups carry: composed
+    identities yield their node-id segment, bare inputs pass through."""
+    assert bare_device_id(value) == expected
+    assert pc_device_id_form(expected) == "bare"
+
+
+@pytest.mark.parametrize(
+    "value",
+    ["", " ", "node/", "node//", "node/a/", "node/a/b/c", "node//a/b",
+     "node//a b", "../../etc/passwd", "C:\\Windows\\x", None, 7],
+)
+def test_bare_device_id_refuses_everything_unusable(value) -> None:
+    assert bare_device_id(value) is None

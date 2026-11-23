@@ -98,6 +98,25 @@ def pc_device_id_form(value: object) -> str | None:
     return None
 
 
+def bare_device_id(value: object) -> str | None:
+    """The bare (consent-directory) spelling of a canonical device identity.
+
+    The consent store keys records by the bare device id a human typed on a
+    screen; it refuses the composed ``node/<domain>/<node-id>`` form. A bare
+    input is returned unchanged, a composed input yields its node-id
+    segment, and anything unusable yields ``None`` so the caller refuses
+    instead of guessing.
+    """
+    if not isinstance(value, str) or not value:
+        return None
+    if PC_DEVICE_ID_RE.fullmatch(value):
+        return value
+    if is_pc_mesh_node_id(value):
+        node_id = value.rsplit("/", 1)[1]
+        return node_id if PC_DEVICE_ID_RE.fullmatch(node_id) else None
+    return None
+
+
 __all__ = [
     "PC_DEVICE_ID_MAX_CHARS",
     "PC_DEVICE_ID_PATTERN",
@@ -107,6 +126,7 @@ __all__ = [
     "PC_MESH_NODE_ID_PATTERN",
     "PC_MESH_NODE_ID_PREFIX",
     "PC_MESH_NODE_ID_RE",
+    "bare_device_id",
     "is_pc_device_id",
     "is_pc_mesh_node_id",
     "pc_device_id_form",
