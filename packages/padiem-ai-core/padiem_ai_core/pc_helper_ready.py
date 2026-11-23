@@ -40,6 +40,18 @@ class HelperReadyError(ValueError):
     """Malformed readiness; messages never contain a reported value."""
 
 
+def validate_mesh_agent_version(value: Any) -> str | None:
+    """The one bounded UTC build timestamp, or ``None`` when it is not that.
+
+    #8634: the server-side node read and the wire validator now share this
+    single grammar. It reports no value on failure; callers decide which
+    value-free reason code to log.
+    """
+    if isinstance(value, str) and _AGENT_VERSION.fullmatch(value) is not None:
+        return value
+    return None
+
+
 def validate_helper_ready(value: Any) -> dict[str, Any]:
     """Validate and return a fresh, stable observation suitable for comparison."""
     if (not isinstance(value, dict) or not HELPER_READY_KEYS <= set(value)
@@ -69,8 +81,7 @@ def validate_helper_ready(value: Any) -> dict[str, Any]:
         result["helper_version"] = release
     if "mesh_agent_version" in value:
         version = value["mesh_agent_version"]
-        if version is not None and (not isinstance(version, str)
-                                    or _AGENT_VERSION.fullmatch(version) is None):
+        if version is not None and validate_mesh_agent_version(version) is None:
             raise HelperReadyError("invalid Mesh Agent version")
         result["mesh_agent_version"] = version
     if "update_result" in value:
@@ -115,4 +126,4 @@ def validate_helper_ready(value: Any) -> dict[str, Any]:
 
 
 __all__ = ["HELPER_READY_FLAGS", "HELPER_READY_KEYS", "HELPER_READY_OPTIONAL_KEYS",
-           "HelperReadyError", "validate_helper_ready"]
+           "HelperReadyError", "validate_helper_ready", "validate_mesh_agent_version"]

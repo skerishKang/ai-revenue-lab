@@ -39,6 +39,7 @@ from padiem_ai_core.pc_helper_ready import (
     HELPER_READY_KEYS, HELPER_READY_OPTIONAL_KEYS, HELPER_UPDATE_RESULTS,
     REGISTRATION_ERRORS, HelperReadyError, validate_helper_ready,
 )
+from .local_agent_meshcentral_sysinfo_port import SYSINFO_REASON_CODES
 
 HELPER_READY_PATH = "/api/claw/connector/mesh-reads/helper-ready"
 HELPER_READY_PROTOCOL = "padiem-helper-ready-v1"
@@ -284,6 +285,7 @@ _VERSION_REASON_PRECEDENCE = (
     "read_error", "invalid_read_body", "empty_body", "truncated_resource",
     "malformed_resource", "no_version_resource", "no_build_stamp",
     "ambiguous", "format_mismatch", "unavailable",
+    *sorted(SYSINFO_REASON_CODES - {"observed", "format_mismatch"}),
 )
 
 
@@ -366,6 +368,7 @@ _VERSION_REASON_CODES = frozenset({
     "no_version_resource", "malformed_resource", "truncated_resource",
     "no_build_stamp", "ambiguous", "format_mismatch", "no_candidate_path",
     "no_read_port", "not_target", "console_path_only", "cached", "already_present",
+    *SYSINFO_REASON_CODES,
 })
 
 
@@ -456,21 +459,25 @@ class HelperStatusReadFallback:
     """
 
     def __init__(self, *, post: Any, read_port: Any,
-                 reporter: MeshHelperReadyReporter | None = None) -> None:
+                 reporter: MeshHelperReadyReporter | None = None,
+                 sysinfo_port: Any = None) -> None:
         if not callable(post) or read_port is None:
             raise ValueError("a channel post and a private read port are required")
         self._reporter = reporter if reporter is not None else MeshHelperReadyReporter(post=post)
         self._read_port = read_port
+        self._sysinfo_port = sysinfo_port
         self._agent_versions: dict[str, tuple[str, float]] = {}
         self._agent_version_diagnostics: dict[str, float] = {}
 
     def _complete_mesh_agent_version(self, node: str, ref: str, state: dict[str, Any]) -> None:
-        """Fill the one version the console never supplied, if the binary can prove it.
+        """Read the server's node document first, then fall back to the binary.
 
-        Uses the same private read port as the status file. A PC without a
-        helper-status record still owns its Mesh Agent, so this runs on both
-        read-success and read-refusal paths. Cached per node because a bounded
-        executable read is far too large to repeat on every drive round.
+        #8634: ``getsysinfo(nodeid, nodeinfo:true)`` reads only the stored node
+        document over the executor's authenticated socket. It sends no device
+        command and writes nothing on the PC. When it yields the bounded build
+        stamp the executable path is not used at all; when it does not, the
+        previous fixed-file read is tried exactly as before. Cached per node
+        for one hour in both directions, with one value-free reason line.
         """
         now = time.monotonic()
         if state.get("mesh_agent_version") is not None:
@@ -483,26 +490,38 @@ class HelperStatusReadFallback:
                 state["mesh_agent_version"] = cached[0]
             _agent_version_diagnostic(self._agent_version_diagnostics, ref, "cached", now)
             return
-        value, reasons = None, []
-        for path in _MESH_AGENT_VERSION_READ_PATHS:
+        value, sysinfo_reason = None, None
+        if self._sysinfo_port is not None:
             try:
-                raw = self._read_port.read_bytes(
-                    node_ref=ref, file_path=path, timeout_seconds=15,
-                    max_bytes=_MESH_AGENT_VERSION_READ_LIMIT,
-                )
-            except Exception as exc:
-                reasons.append(_read_failure(exc))
-                continue
-            value, reason = _mesh_agent_version_reason(raw)
-            reasons.append(reason)
-            if value is not None:
-                break
+                value, sysinfo_reason = self._sysinfo_port.read_commit_date(node)
+            except Exception:
+                value, sysinfo_reason = None, "sysinfo_error"
+        reasons: list[str] = []
+        if value is None:
+            for path in _MESH_AGENT_VERSION_READ_PATHS:
+                try:
+                    raw = self._read_port.read_bytes(
+                        node_ref=ref, file_path=path, timeout_seconds=15,
+                        max_bytes=_MESH_AGENT_VERSION_READ_LIMIT,
+                    )
+                except Exception as exc:
+                    reasons.append(_read_failure(exc))
+                    continue
+                value, reason = _mesh_agent_version_reason(raw)
+                reasons.append(reason)
+                if value is not None:
+                    break
         # The outcome, including a failure, is cached for the same hour as a
         # success, so the one-line diagnostic is emitted once per cache unit.
         self._agent_versions[ref] = (value, now)
         if value is not None:
             state["mesh_agent_version"] = value
-        reason = _prefer_version_reason(reasons) if reasons else "no_candidate_path"
+        if value is not None:
+            reason = "observed"
+        elif sysinfo_reason is not None:
+            reason = sysinfo_reason
+        else:
+            reason = _prefer_version_reason(reasons) if reasons else "no_candidate_path"
         _agent_version_diagnostic(self._agent_version_diagnostics, ref, reason, now)
 
     def _complete_updater_evidence(self, node, state):
@@ -647,7 +666,8 @@ class HelperStatusReadFallback:
 
 
 def attach_helper_ready(source: Any, env: Any, *, post: Any,
-                        read_port: Any = None) -> MeshHelperReadyReporter | None:
+                        read_port: Any = None,
+                        sysinfo_port: Any = None) -> MeshHelperReadyReporter | None:
     """Ride the drive round when the deployment asks for it; otherwise change nothing."""
     if not helper_ready_enabled(env):
         return None
@@ -658,6 +678,7 @@ def attach_helper_ready(source: Any, env: Any, *, post: Any,
     if read_port is not None:
         fallback = HelperStatusReadFallback(
             post=post, read_port=read_port, reporter=reporter,
+            sysinfo_port=sysinfo_port,
         )
         observer = fallback.observe
     else:
