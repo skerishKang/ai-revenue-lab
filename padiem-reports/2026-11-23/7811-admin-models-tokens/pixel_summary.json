@@ -1,0 +1,62 @@
+[
+  {
+    "dir": "control_cinematic",
+    "combos": 1,
+    "nonzero": 0,
+    "badState": 0
+  },
+  {
+    "dir": "control_dark",
+    "combos": 1,
+    "nonzero": 0,
+    "badState": 0
+  },
+  {
+    "dir": "control_light",
+    "combos": 1,
+    "nonzero": 0,
+    "badState": 0
+  },
+  {
+    "dir": "control_padiem-glass",
+    "combos": 1,
+    "nonzero": 0,
+    "badState": 0
+  },
+  {
+    "dir": "control_padiem-home",
+    "combos": 1,
+    "nonzero": 0,
+    "badState": 0
+  },
+  {
+    "dir": "diff_cinematic",
+    "combos": 1,
+    "nonzero": 0,
+    "badState": 0
+  },
+  {
+    "dir": "diff_dark",
+    "combos": 1,
+    "nonzero": 0,
+    "badState": 0
+  },
+  {
+    "dir": "diff_light",
+    "combos": 1,
+    "nonzero": 0,
+    "badState": 0
+  },
+  {
+    "dir": "diff_padiem-glass",
+    "combos": 1,
+    "nonzero": 0,
+    "badState": 0
+  },
+  {
+    "dir": "diff_padiem-home",
+    "combos": 1,
+    "nonzero": 0,
+    "badState": 0
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "sheet": "admin-models.css",
+  "base": "c9c7ab21de",
+  "claim": "https://github.com/skerishKang/ai-revenue-lab/issues/7811#issuecomment-7096353318",
+  "audit": {
+    "css_color_literals": {"before": 1530, "after": 1254, "delta": -276},
+    "css_color_literals_unthemed": {"before": 869, "after": 593, "delta": -276},
+    "css_important": {"before": 629, "after": 629, "delta": 0},
+    "css_themed_important": {"before": 217, "after": 217, "delta": 0},
+    "css_rules": {"before": 4385, "after": 4385, "delta": 0},
+    "css_themed_rules": {"before": 795, "after": 795, "delta": 0}
+  },
+  "verification": {
+    "computed": {"targets": 247, "measurements": 1235, "themes": 5, "diffs": 0, "report": "computed_report.json"},
+    "pixel": {
+      "themes": 5, "screen": "conversation", "viewport": "1440x950",
+      "control_combos": 5, "control_nonzero": 0,
+      "diff_combos": 5, "diff_nonzero": 0,
+      "reports": ["control_*/control_report.json", "diff_*/compare_report.json", "pixel_summary.json"],
+      "visual_review": "light/dark 캡처 직접 열어 확인: 잘림·겹침·색 깨짐 없음"
+    },
+    "control": {"combos": 5, "nonzero": 0},
+    "tamper": {"pixel": 1510, "report": "tamper/tamper_report.json"},
+    "tests": "64 passed (신규 토큰 계약·토큰 목록 계약·대비 하한·래칫·veil/card 계약)",
+    "ratchet": "base 실측 대비 head 실측 compare, 통과"
+  },
+  "notes": [
+    "276개 선언(고유 값 247개)을 :root 토큰으로 옮겼고 값은 치환 전 리터럴 그대로다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 정의에만 있다.",
+    "로컬 test_4428 browser glass/brand 검사 6건은 손대지 않은 base main에서도 동일하게 실패하는 환경 의존 사항이다.",
+    "계산값이 달라진 곳은 없다."
+  ]
+}
