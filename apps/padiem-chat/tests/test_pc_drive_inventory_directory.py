@@ -3,7 +3,7 @@ from copy import deepcopy
 
 import pytest
 
-from test_4139_claw_device_directory_route import Binding, OWNER, fact, get, make_app
+from _support.claw_device_directory import Binding, OWNER, fact, get, make_app
 from test_4139_claw_device_directory_projection import online, project
 
 
