@@ -1,6 +1,11 @@
 """#8193: both installers register/remove the SYSTEM self-heal task from one payload."""
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.reinstall_selfheal_sidebar_source import (
+    app_js, build_script, index_html, install_wrapper, one_click_test_source, read,
+)
+
 import base64
 import runpy
 import subprocess
@@ -15,7 +20,7 @@ SELF_HEAL = runpy.run_path(
 
 
 def test_installer_wrapper_embeds_the_reviewed_payload():
-    wrapper = (ROOT / "scripts/pc_pairing/install-padiem-pc.ps1").read_text(encoding="utf-8-sig")
+    wrapper = install_wrapper()
     block = wrapper.split("function Register-PadiemSelfHealWatcher {", 1)[1].split("\n}", 1)[0]
     payload = block.split("FromBase64String('", 1)[1].split("')", 1)[0]
     assert gzip_decompress(payload) == SELF_HEAL["watcher_script"]()
@@ -29,7 +34,7 @@ def gzip_decompress(payload: str) -> str:
 
 
 def test_installer_registration_follows_the_agent_and_precedes_the_helper():
-    wrapper = (ROOT / "scripts/pc_pairing/install-padiem-pc.ps1").read_text(encoding="utf-8-sig")
+    wrapper = install_wrapper()
     agent = wrapper.index("Install-PadiemAgentService -SourceExe")
     register = wrapper.index("Register-PadiemSelfHealWatcher -PythonExecutable")
     helper = wrapper.index("Invoke-PadiemUserHelperInstall -Url")
@@ -51,11 +56,11 @@ def test_connect_exe_wires_registration_and_removal():
 
 
 def test_build_embeds_both_resources_and_seeds_their_source():
-    build = (ROOT / "scripts/pc_pairing/build-connect-exe.ps1").read_text(encoding="utf-8-sig")
+    build = build_script()
     assert "/resource:self-heal-watcher.ps1,PadiemSelfHealWatcher" in build
     assert "/resource:self-heal-watcher-unregister.ps1,PadiemSelfHealWatcherUnregister" in build
     assert "(Get-FileHashHex $SelfHealSource)" in build
-    test_source = (ROOT / "apps/padiem-chat/tests/test_5573_pc_one_click_install.py").read_text()
+    test_source = one_click_test_source()
     assert "src/kagent/pc_self_heal_task.py" in test_source
 
 
