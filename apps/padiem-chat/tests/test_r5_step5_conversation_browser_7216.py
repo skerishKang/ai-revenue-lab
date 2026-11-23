@@ -7,6 +7,9 @@ app.js의 전달 함수는 B7 18차+19차에 19개 전부 소멸했다. 실제 �
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.r5_browser_golden_source import app_context_js, app_js, login_golden_json, strict_deps_js
+
 import json
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -18,8 +21,8 @@ pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import sync_playwright  # noqa: E402
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+APP = app_js()
+STRICT = strict_deps_js()
 
 # name -> (js args expression, expected argument count)
 # B7 18차+19차: all 19 names are on the registry (app.provide("conversation")).
