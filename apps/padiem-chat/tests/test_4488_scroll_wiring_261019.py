@@ -6,18 +6,17 @@ window/document scroll responsibility. Script order guarantees the shared
 module is defined before its consumers run.
 """
 
-from pathlib import Path
+from _support import scroll_layout_source as sheets
 
-ROOT = Path(__file__).resolve().parents[3]
-CANONICAL = ROOT / "packages/padiem-conversation-ui/scroll-follow.js"
+CANONICAL = "packages/padiem-conversation-ui/scroll-follow.js"
 
 
 def _read(relative: str) -> str:
-    return (ROOT / relative).read_text(encoding="utf-8")
+    return sheets.repo_source(relative)
 
 
 def test_canonical_exports_shared_gap_math():
-    text = CANONICAL.read_text(encoding="utf-8")
+    text = sheets.repo_source(CANONICAL)
     assert "function remainingToEnd(container)" in text
     assert "NEAR_BOTTOM_PX = 120" in text
     assert "remainingToEnd, isNearBottom, followToBottom" in text
