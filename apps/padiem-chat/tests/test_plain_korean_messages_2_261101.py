@@ -1,7 +1,7 @@
 """Regression checks for the second plain-language error pass."""
-# #8060: shipped reads live in _support; assertions stay here.
-from _support.final_share_source import locale_source, read
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.app_model_source import app_js, claw_status_js, council_app_js, feedback_css, feedback_js, frame_css, index_html, locale_js, read, usage_log_js
 from pathlib import Path
 import re
 
@@ -47,7 +47,7 @@ def test_reference_codes_are_separate_and_bounded():
 
 def test_the_council_app_does_not_display_arbitrary_server_error_text():
     # 2026-11-01: generation moved to /apps/council/; the same rule holds there.
-    source = read(ROOT / "apps" / "padiem-council-apps" / "static" / "council-app.js")
+    source = council_app_js()
     api = source.split("async function apiChat(", 1)[1].split("// ── 저장 프로젝트", 1)[0]
     assert "data?.error?.message" not in api
     assert 'error.code = typeof data?.error?.code === "string"' in api
@@ -55,7 +55,7 @@ def test_the_council_app_does_not_display_arbitrary_server_error_text():
 
 
 def test_the_council_app_generation_does_not_show_reference_codes():
-    source = read(ROOT / "apps" / "padiem-council-apps" / "static" / "council-app.js")
+    source = council_app_js()
     failure = source.split("function generationFailureText(", 1)[1].split("function emptyResult(", 1)[0]
     assert "참고 코드" not in failure
     assert "error.code" not in failure

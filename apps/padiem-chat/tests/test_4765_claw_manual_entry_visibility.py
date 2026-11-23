@@ -1,11 +1,11 @@
 """The existing manual workflow remains reachable after the Claw hero clears."""
-from pathlib import Path
+# #8060: shipped reads live in _support; the CSS and markup checks stay.
+from _support import manual_entry_visibility_source as sheets
 
-ROOT = Path(__file__).resolve().parents[1] / "static"
-CSS = (ROOT / "claw-focus-layout.css").read_text(encoding="utf-8")
-JS = (ROOT / "app.js").read_text(encoding="utf-8")
-NAV = (ROOT / "chat-nav-module.js").read_text(encoding="utf-8")
-HTML = (ROOT / "index.html").read_text(encoding="utf-8")
+CSS = sheets.sheet("claw-focus-layout.css")
+JS = sheets.sheet("app.js")
+NAV = sheets.sheet("chat-nav-module.js")
+HTML = sheets.sheet("index.html")
 
 
 def test_manual_entry_hidden_only_before_first_use():
