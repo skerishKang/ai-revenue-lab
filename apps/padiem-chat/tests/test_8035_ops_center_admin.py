@@ -9,6 +9,12 @@ Three contracts here:
   3. browser — an administrator sees the panel and the inbox rows, a normal
      member sees the gate, and a guest makes ZERO ops-center /api/* calls.
 """
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.pc_command_ops_route_source import (
+    admin_css, admin_html, admin_ops_js, index_html, pc_command_ready_js,
+    pc_pairing_card_css, read,
+)
+
 import asyncio
 import http.server
 import json
@@ -37,7 +43,7 @@ OPS_JS = STATIC / "admin-ops.js"
 # ---- 1. static frame -------------------------------------------------------
 
 def test_admin_page_carries_the_ops_center_frame():
-    html = ADMIN_HTML.read_text(encoding="utf-8")
+    html = admin_html()
     assert 'id="opsCenterPanel"' in html
     assert 'id="opsInboxPane"' in html
     assert html.index("./admin-ops.js") > html.index("./admin.js")
@@ -56,7 +62,7 @@ def test_admin_page_carries_the_ops_center_frame():
 
 
 def test_ops_module_never_fetches_outside_the_open_gate():
-    source = OPS_JS.read_text(encoding="utf-8")
+    source = admin_ops_js()
     # Every fetch goes through call()/loadInbox, and loadInbox runs only from
     # paths guarded by the gate observer (wire() runs once the gate opened).
     assert "fetch(" in source
@@ -262,7 +268,7 @@ def test_ops_panel_theme_tokens_cover_all_five_themes():
     """#4428 keeps the dashboard palette pinned, so the panel carries scoped
     --ops-* tokens per theme; the four themed blocks must exist and be
     distinct from each other and from the light base."""
-    css = (STATIC / "admin.css").read_text(encoding="utf-8")
+    css = admin_css()
     assert ".ops-panel{--ops-panel-bg:#ffffff" in css  # light base
     themed = {}
     for theme in ("dark", "cinematic", "padiem-home", "padiem-glass"):
