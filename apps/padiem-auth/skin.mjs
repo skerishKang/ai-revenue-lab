@@ -329,6 +329,9 @@ const hiddenCarry = (carry) => carry ? `<input type="hidden" name="carry" value=
 // submit until the box is checked; the server refuses without it.
 const ageField = (s, extraClass = '') => `<label class="check${extraClass}" for="ageConfirm"><input id="ageConfirm" name="age_confirm" value="yes" type="checkbox"><span>${esc(s.ageConfirm)} <small>${esc(s.ageRequired)}</small></span></label>`;
 const ageGateScript = `<script>(function(){var c=document.getElementById("ageConfirm"),b=document.getElementById("signupSubmit");if(!c||!b)return;var t=function(){b.disabled=!c.checked};c.addEventListener("change",t);t()})();<\/script>`;
+// #7818 follow-up: the age screen sends once. A second click or Enter is
+// ignored so a double submit never lands on an error page.
+const ageSubmitOnceScript = `<script>(function(){var b=document.getElementById("signupSubmit");if(!b||!b.form)return;var s=false;b.form.addEventListener("submit",function(e){if(s){e.preventDefault();return}s=true;setTimeout(function(){b.disabled=true},0)})})();<\/script>`;
 const under14Button = (s) => `<button class="alt-link" type="submit" name="under14" value="1">${esc(s.under14)}</button>`;
 
 export function brandLoginPage({ brand, theme, lang, googleHref, formAction, signupHref, message = '', showGoogle = true }) {
@@ -370,7 +373,7 @@ export const AGE_CONFIRM_TEXT = Object.freeze({
 export function brandAgeConfirmPage({ brand, theme, lang, formAction, handle, message = '' }) {
   const s = brand.strings[lang] || brand.strings.ko;
   const t = AGE_CONFIRM_TEXT[lang] || AGE_CONFIRM_TEXT.ko;
-  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="age-confirm-title">${esc(t.title)}</h1><p class="notice">${esc(t.lead)}</p><form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}${hiddenBrand(brand)}<input type="hidden" name="handle" value="${esc(handle)}">${ageField(s, ' age-screen')}<p class="error" role="alert">${esc(message)}</p><button id="signupSubmit" class="btn primary submit" type="submit">${esc(t.submit)}</button>${under14Button(s)}</form>${docLinks(s)}${ageGateScript}`;
+  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="age-confirm-title">${esc(t.title)}</h1><p class="notice">${esc(t.lead)}</p><form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}${hiddenBrand(brand)}<input type="hidden" name="handle" value="${esc(handle)}">${ageField(s, ' age-screen')}<p class="error" role="alert">${esc(message)}</p><button id="signupSubmit" class="btn primary submit" type="submit">${esc(t.submit)}</button>${under14Button(s)}</form>${docLinks(s)}${ageGateScript}${ageSubmitOnceScript}`;
   const ageCss = brand.skin === 'chat' ? AGE_CONFIRM_CHAT_CSS : AGE_CONFIRM_LOVETREE_CSS;
   return shell({ brand, headingId: 'age-confirm-title', title: `${t.title} · ${brand.wordmark}`, lang, theme, body, head: `<style>${ageCss}</style>` });
 }
