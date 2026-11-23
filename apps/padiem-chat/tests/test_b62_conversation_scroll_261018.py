@@ -1,15 +1,12 @@
-import locale_bundle
 """Source contract for shared Chat/Claw follow and jump-to-latest behavior."""
-
-from pathlib import Path
 
 from _r5_streaming_harness import run_streaming_scenario
 
-ROOT = Path(__file__).resolve().parents[1] / "static"
+# #8060: shipped reads live in _support; the assertions stay on ownership and
+# observed streaming hooks.
+from _support import conversation_scroll_source as sheets
 
-
-def _source(name: str) -> str:
-    return (ROOT / name).read_text(encoding="utf-8")
+_source = sheets.source
 
 
 def test_shared_conversation_motion_covers_chat_and_general_claw():
@@ -35,7 +32,7 @@ def test_lifecycle_reveals_do_not_override_paused_follow():
 
 
 def test_jump_control_has_translations_and_glass_styling():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_source()
     styles = _source("interaction-polish.css")
     assert '"conversation-jump": "최신 메시지로 이동"' in locale
     assert '"conversation-jump": "Jump to latest"' in locale
