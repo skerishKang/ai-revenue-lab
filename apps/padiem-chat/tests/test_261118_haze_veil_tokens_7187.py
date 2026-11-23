@@ -14,6 +14,9 @@
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.token_sheets_source import first_use_css, history_css, index_html, read, read_static, tokens_css
+
 import re
 from collections import Counter
 from pathlib import Path
@@ -69,14 +72,14 @@ LITERALS = ("rgba(255, 255, 255, .78)", "rgba(255,255,255,.78)")
 
 
 def test_root_tokens_hold_the_pre_change_literal() -> None:
-    rules = parse_rules(TOKENS.read_text(encoding="utf-8"))
+    rules = parse_rules(tokens_css())
     root = next(r for r in rules if r.media is None and ":root" in r.selectors)
     for name, literal in ROOT_TOKENS.items():
         assert root.declarations.get(name) == literal, name
 
 
 def test_no_theme_block_overrides_the_tokens() -> None:
-    for rule in parse_rules(TOKENS.read_text(encoding="utf-8")):
+    for rule in parse_rules(tokens_css()):
         themed = rule.media is not None or any("data-theme" in s for s in rule.selectors)
         if themed:
             for name in ROOT_TOKENS:
@@ -87,7 +90,7 @@ def test_the_eleven_declarations_consume_the_right_role() -> None:
     total = 0
     for sheet, expected in CHANGED.items():
         actual: Counter = Counter()
-        for rule in parse_rules((STATIC / sheet).read_text(encoding="utf-8")):
+        for rule in parse_rules(read_static(sheet)):
             for prop, value in rule.declarations.items():
                 normalized = re.sub(r"\s+", " ", value).strip()
                 if any(name in normalized for name in ROOT_TOKENS):
@@ -108,14 +111,14 @@ def test_swapping_the_tokens_back_returns_the_original_literal() -> None:
 
 def test_no_haze_literal_remains_in_the_changed_sheets() -> None:
     for sheet in CHANGED:
-        text = (STATIC / sheet).read_text(encoding="utf-8")
+        text = read_static(sheet)
         for literal in LITERALS:
             assert literal not in text, (sheet, literal)
 
 
 def test_each_token_stays_in_its_own_property_family() -> None:
     for sheet in CHANGED:
-        for rule in parse_rules((STATIC / sheet).read_text(encoding="utf-8")):
+        for rule in parse_rules(read_static(sheet)):
             for prop, value in rule.declarations.items():
                 if "--surface-veil-haze" in value and "inset" not in value:
                     assert prop.startswith("background"), (sheet, prop)
@@ -126,7 +129,7 @@ def test_each_token_stays_in_its_own_property_family() -> None:
 
 
 def test_consumers_load_tokens_first() -> None:
-    index = (STATIC / "index.html").read_text(encoding="utf-8")
+    index = index_html()
     for sheet in CHANGED:
         link = "./" + sheet
         if link in index:
@@ -139,6 +142,6 @@ def test_consumers_load_tokens_first() -> None:
 
 def test_sidebar_sheets_and_glass_sheet_stay_out() -> None:
     for sheet in ("padiem-glass.css", "sidebar-unified.css", "sidebar-utility.css"):
-        text = (STATIC / sheet).read_text(encoding="utf-8")
+        text = read_static(sheet)
         for name in ROOT_TOKENS:
             assert name not in text, (sheet, name)

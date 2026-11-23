@@ -11,6 +11,9 @@ light·dark·cinematic·padiem-home의 홈 입력창을 소유한다.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.token_sheets_source import first_use_css, history_css, index_html, read, read_static, tokens_css
+
 import re
 from pathlib import Path
 
@@ -35,7 +38,7 @@ def _norm(text: str) -> str:
 
 
 def _rules(path: Path):
-    return parse_rules(path.read_text(encoding="utf-8"))
+    return parse_rules(read(path))
 
 
 def _root(rules) -> dict[str, str]:
@@ -76,7 +79,7 @@ def test_first_use_has_no_color_literals_left_for_the_home_composer() -> None:
             continue
         for prop, value in rule.declarations.items():
             assert re.search(r"#[0-9a-fA-F]{3,8}\b|\brgba?\(", value) is None, (prop, value)
-    text = FIRST_USE.read_text(encoding="utf-8")
+    text = first_use_css()
     assert "inset 0 1px 0 rgba(255, 255, 255, .07)" not in text
     assert "0 22px 64px rgba(0, 0, 0, .22)" not in text
     assert "0 0 0 1px rgba(136, 201, 255, .035)" not in text

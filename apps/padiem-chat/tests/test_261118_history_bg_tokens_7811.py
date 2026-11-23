@@ -22,6 +22,9 @@ history.css의 바탕 색 9선언을 padiem-tokens.css 토큰으로 옮긴다. �
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.token_sheets_source import first_use_css, history_css, index_html, read, read_static, tokens_css
+
 import re
 from pathlib import Path
 
@@ -85,7 +88,7 @@ def _norm(text: str) -> str:
 
 def test_root_tokens_hold_the_pre_change_literals() -> None:
     """토큰의 :root 값은 치환 전 리터럴과 문자 그대로 같다."""
-    rules = parse_rules(TOKENS.read_text(encoding="utf-8"))
+    rules = parse_rules(tokens_css())
     root = next(r for r in rules if r.selectors == [":root"] and r.media is None)
     for name, literal in ROOT_TOKENS.items():
         assert declaration(root, name) == literal, name
@@ -93,7 +96,7 @@ def test_root_tokens_hold_the_pre_change_literals() -> None:
 
 def test_glass_theme_block_carries_the_glass_dim() -> None:
     """--dialog-dim의 glass 값은 history.css glass 배경 선언이 읽던 값이다."""
-    rules = parse_rules(TOKENS.read_text(encoding="utf-8"))
+    rules = parse_rules(tokens_css())
     glass = [
         r for r in rules
         if r.media is None
@@ -106,7 +109,7 @@ def test_glass_theme_block_carries_the_glass_dim() -> None:
 
 def test_changed_declarations_consume_the_tokens() -> None:
     """바뀐 선언은 토큰을 쓰고, 토큰을 원래 리터럴로 되돌리면 치환 전 값이다."""
-    rules = parse_rules(HISTORY.read_text(encoding="utf-8"))
+    rules = parse_rules(history_css())
     for selector, old, new in CHANGED:
         blocks = [
             r for r in find_rules_with_selector(rules, selector)
@@ -124,7 +127,7 @@ def test_changed_declarations_consume_the_tokens() -> None:
 
 def test_glass_backdrop_rule_keeps_only_the_blur() -> None:
     """glass backdrop 규칙은 배경 선언을 지웠고 blur 덮어쓰기만 남는다."""
-    rules = parse_rules(HISTORY.read_text(encoding="utf-8"))
+    rules = parse_rules(history_css())
     glass = [
         r for r in find_rules_with_selector(
             rules, 'html[data-theme="padiem-glass"] .auth-dialog::backdrop')
@@ -146,7 +149,7 @@ def test_left_out_backgrounds_stay_literal() -> None:
     #7811 C2b: .auth-panel·.auth-primary는 이제 토큰을 쓴다 — 그 계약은
     test_261118_auth_panel_tokens_7811.py가 소유한다.
     """
-    rules = parse_rules(HISTORY.read_text(encoding="utf-8"))
+    rules = parse_rules(history_css())
     # 흰색 hover 배경: #7187 베일 라운드 소재.
     delete_hover = [
         r for r in find_rules_with_selector(rules, ".history-delete:hover")
@@ -169,7 +172,7 @@ def test_left_out_backgrounds_stay_literal() -> None:
 def test_history_consumers_load_the_token_file() -> None:
     """history.css 를 로드하는 모든 페이지는 padiem-tokens.css 도 로드한다."""
     for page in sorted(STATIC.rglob("*.html")):
-        html = page.read_text(encoding="utf-8")
+        html = read(page)
         links = re.findall(r"<link[^>]*?href=[\"']([^\"']+\.css)[^\"']*[\"']", html)
         if any(h.endswith("history.css") for h in links):
             assert any(h.endswith("padiem-tokens.css") for h in links), page
