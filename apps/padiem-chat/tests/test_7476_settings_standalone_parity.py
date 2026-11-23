@@ -18,14 +18,15 @@ from css_rules import (
     rule_selector_list_contains,
 )
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-VIEWS_CSS = (STATIC / "standalone-views.css").read_text(encoding="utf-8")
-FRAME_CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
-POLISH_CSS = (STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
-SETTINGS_CSS = (STATIC / "padiem-settings.css").read_text(encoding="utf-8")  # #7476-14
-TOKENS_CSS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the parsed CSS checks stay.
+from _support import settings_standalone_source as sheets
+
+HTML = sheets.sheet("index.html")
+VIEWS_CSS = sheets.sheet("standalone-views.css")
+FRAME_CSS = sheets.sheet("shared-six-panel-frame.css")
+POLISH_CSS = sheets.sheet("padiem-chat-ui-polish.css")
+SETTINGS_CSS = sheets.sheet("padiem-settings.css")  # #7476-14
+TOKENS_CSS = sheets.sheet("padiem-tokens.css")
 
 
 def _rules(css: str):
