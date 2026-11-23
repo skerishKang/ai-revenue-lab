@@ -76,6 +76,7 @@ async def worker(argv: list[str]) -> None:
     from app import sqlite_settings as sqlite_policy
     from app.auth import SESSION_COOKIE, create_session_token
     from app.d1_sqlite import SqliteD1
+    from app.lifespan_hooks import lifespan_hooks
     from app.local_r2 import ThreadedLocalDiskR2
     from app.main import create_app
 
@@ -153,7 +154,7 @@ async def worker(argv: list[str]) -> None:
         # deciding the job state; closing the connection here used to free the
         # handle under that last write. This is the host's shutdown path, run
         # the way a restart runs it.
-        await app.router.shutdown()
+        await lifespan_hooks(app).shutdown()
         print(json.dumps({"status": run.status_code, "final": final, "pid": os.getpid()}),
               flush=True)
     finally:

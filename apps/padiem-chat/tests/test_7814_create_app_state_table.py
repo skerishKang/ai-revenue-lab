@@ -11,6 +11,7 @@ from pathlib import Path
 
 from app.config import Settings
 from app.app_factory import create_app
+from app.lifespan_hooks import lifespan_hooks
 
 GOLDEN_PATH = Path(__file__).resolve().parent / "test_7814_create_app_state_table_golden.json"
 
@@ -54,7 +55,8 @@ def _hook_names(app):
     def _names(hooks):
         return [getattr(hook, "__name__", type(hook).__name__) for hook in hooks]
 
-    return {"on_startup": _names(app.router.on_startup), "on_shutdown": _names(app.router.on_shutdown)}
+    hooks = lifespan_hooks(app)
+    return {"on_startup": _names(hooks.on_startup), "on_shutdown": _names(hooks.on_shutdown)}
 
 
 def test_state_table_is_identical_to_golden() -> None:

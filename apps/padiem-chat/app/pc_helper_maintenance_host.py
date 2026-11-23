@@ -16,6 +16,7 @@ from datetime import datetime, timedelta, timezone
 from starlette.requests import Request
 
 from .d1_rows import rows_from_result
+from .lifespan_hooks import lifespan_hooks
 from .pc_helper_maintenance import (
     AttemptClaim, MaintenanceAttemptStore, PrecontactProof, admit_maintenance, maintenance_candidate,
 )
@@ -609,5 +610,6 @@ def install_maintenance_timer(app, *, env, db, process_lock):
             task.cancel()
             await asyncio.gather(task, return_exceptions=True)
 
-    app.router.on_startup.append(start)
-    app.router.on_shutdown.insert(0, stop)
+    hooks = lifespan_hooks(app)
+    hooks.on_startup.append(start)
+    hooks.on_shutdown.insert(0, stop)

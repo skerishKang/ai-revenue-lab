@@ -15,6 +15,7 @@ import pytest
 from starlette.applications import Starlette
 
 from app import loop_stall_watchdog as module
+from app.lifespan_hooks import LifespanHooks, lifespan_hooks
 from app.loop_stall_watchdog import LoopStallWatchdog, install, watchdog_enabled
 
 LINE = re.compile(
@@ -140,19 +141,29 @@ def test_the_defaults_fit_the_observed_stall():
 # --- the host wiring ----------------------------------------------------------
 
 
+def _app() -> Starlette:
+    return Starlette(lifespan=LifespanHooks())
+
+
+def _hook_counts(app: Starlette):
+    hooks = lifespan_hooks(app)
+    return len(hooks.on_startup), len(hooks.on_shutdown)
+
+
 def _startup_and_shutdown(app: Starlette):
-    return app.router.on_startup[-1], app.router.on_shutdown[-1]
+    hooks = lifespan_hooks(app)
+    return hooks.on_startup[-1], hooks.on_shutdown[-1]
 
 
 def test_install_starts_with_the_app_and_stops_with_it(capsys):
-    app = Starlette()
+    app = _app()
     recorder = _Recorder()
-    before = (len(app.router.on_startup), len(app.router.on_shutdown))
+    before = _hook_counts(app)
 
     installed = install(app, env={}, watchdog_factory=lambda: _watchdog(recorder))
 
     assert installed is True
-    assert (len(app.router.on_startup), len(app.router.on_shutdown)) == (before[0] + 1, before[1] + 1)
+    assert _hook_counts(app) == (before[0] + 1, before[1] + 1)
     start, stop = _startup_and_shutdown(app)
 
     async def scenario():
@@ -176,12 +187,12 @@ def test_install_starts_with_the_app_and_stops_with_it(capsys):
 
 @pytest.mark.parametrize("raw", ["off", "0", "false", "no", " OFF "])
 def test_the_env_switch_turns_the_watchdog_off(raw, capsys):
-    app = Starlette()
-    before = (len(app.router.on_startup), len(app.router.on_shutdown))
+    app = _app()
+    before = _hook_counts(app)
 
     assert install(app, env={module.WATCHDOG_ENV: raw}) is False
 
-    assert (len(app.router.on_startup), len(app.router.on_shutdown)) == before
+    assert _hook_counts(app) == before
     assert "[local] loop_stall_watchdog=off" in capsys.readouterr().out
 
 

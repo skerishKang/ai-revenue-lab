@@ -10,6 +10,7 @@ from starlette.routing import Mount, Route, WebSocketRoute
 from starlette.staticfiles import StaticFiles
 
 
+from .lifespan_hooks import LifespanHooks, lifespan_hooks
 from .android_auth_routes import (
     android_handoff_claim,
     android_handoff_confirm,
@@ -1625,7 +1626,7 @@ def install_shutdown_hooks(app):
         # (the SQLite readers and the WAL are closed there), so the drain runs
         # first and the conversions it could not finish are recorded as
         # finished rather than left working.
-        app.router.on_shutdown.append(drain_background_runs)
+        lifespan_hooks(app).on_shutdown.append(drain_background_runs)
 
 def install_platform_state(
     app,
@@ -2432,7 +2433,9 @@ def create_app(
         shared_auth_comparison_flow,
         shared_login_flow,
     )
-    app = Starlette(routes=routes)
+    # #8529: Starlette 1.x has no Router.on_startup/on_shutdown. The startup
+    # and shutdown handlers live on this object, which is the app's lifespan.
+    app = Starlette(routes=routes, lifespan=LifespanHooks())
     app.state.shared_login_flow = shared_login_flow
     install_middleware(
         app,

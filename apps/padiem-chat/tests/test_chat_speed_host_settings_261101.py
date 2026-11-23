@@ -3,6 +3,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from app import local_cpython
+from app.lifespan_hooks import lifespan_hooks
 
 
 @pytest.mark.parametrize("readers,ttl,link,expected_readers,expected_ttl,expected_link", [
@@ -43,7 +44,7 @@ def test_factory_speed_controls(tmp_path, monkeypatch, readers, ttl, link,
     else:
         assert (cache.db is db and cache.ttl_seconds == expected_ttl
                 and cache.link_ttl_seconds == expected_link)
-    assert db.close_readers in app.router.on_shutdown
+    assert db.close_readers in lifespan_hooks(app).on_shutdown
     with TestClient(app) as client:
         assert client.get("/health").status_code == 200
     db.connection.close()

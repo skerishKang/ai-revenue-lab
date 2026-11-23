@@ -51,6 +51,7 @@ from .push_http_transport import build_host_push_transport
 from .grounding import GroundedChatService
 from .history import D1HistoryStore
 from .local_r2 import ThreadedLocalDiskR2
+from .lifespan_hooks import lifespan_hooks
 from .loop_stall_watchdog import install as install_loop_stall_watchdog
 from .local_service_bridge import (
     HttpRpcBinding,
@@ -494,7 +495,7 @@ def _install_local_host_state(
         app.state.oracle_mesh_return_source = source
         print("[local] oracle_mesh_return_source=mesh_env_configured")
 
-    app.router.on_startup.append(_compose_oracle_mesh_return_source_on_startup)
+    lifespan_hooks(app).on_startup.append(_compose_oracle_mesh_return_source_on_startup)
 
     async def _arm_identity_keepwarm_on_startup() -> None:
         """Arm the identity keepwarm cycle on the running loop (host boot)."""
@@ -505,7 +506,7 @@ def _install_local_host_state(
             identity_binding.arm_warmer()
             print("[local] identity_keepwarm=armed")
 
-    app.router.on_startup.append(_arm_identity_keepwarm_on_startup)
+    lifespan_hooks(app).on_startup.append(_arm_identity_keepwarm_on_startup)
 
     wal_checkpoint_tasks = {}
     from .local_bootstrap import checkpoint_owner_lock
@@ -538,25 +539,25 @@ def _install_local_host_state(
             # Hand the checkpoint role to another worker process right away.
             wal_checkpoint_owner.release()
 
-    app.router.on_startup.append(_bound_wal_on_startup)
-    app.router.on_shutdown.append(_stop_bound_wal)
-    app.router.on_shutdown.append(db.close_readers)
+    lifespan_hooks(app).on_startup.append(_bound_wal_on_startup)
+    lifespan_hooks(app).on_shutdown.append(_stop_bound_wal)
+    lifespan_hooks(app).on_shutdown.append(db.close_readers)
     # #6923: journal event-loop stalls and dump every thread's stack while
     # one lasts (app/loop_stall_watchdog.py; PADIEM_CHAT_LOOP_STALL_WATCHDOG=off
     # turns it off on a host).
     install_loop_stall_watchdog(app, env=os.environ)
     if identity_binding is not None:
         from .identity_cache_metrics import stop as stop_identity_cache_metrics
-        app.router.on_shutdown.append(stop_identity_cache_metrics)
+        lifespan_hooks(app).on_shutdown.append(stop_identity_cache_metrics)
         # #6613: the identity RPC client is pooled for the life of the host, so
         # the same shutdown hook that stops the SQLite readers closes it.
-        app.router.on_shutdown.append(identity_binding.aclose)
+        lifespan_hooks(app).on_shutdown.append(identity_binding.aclose)
     if google_oauth_binding is not None and outbound_http_client is None:
-        app.router.on_shutdown.append(google_oauth_binding.aclose)
+        lifespan_hooks(app).on_shutdown.append(google_oauth_binding.aclose)
     if shared_login_flow is not None:
         exchange_close = getattr(getattr(shared_login_flow, 'exchange', None), 'aclose', None)
         if callable(exchange_close):
-            app.router.on_shutdown.append(exchange_close)
+            lifespan_hooks(app).on_shutdown.append(exchange_close)
     # Optional short-lived validation results; roles/entitlements stay live.
     from .auth_validation_cache import SqliteAuthValidationCache
     cache_seconds = _nonnegative_env('PADIEM_CHAT_AUTH_CACHE_SECONDS', 30)
@@ -716,7 +717,7 @@ def _install_local_host_state(
     app.state.queue_client = queue_client
     if queue_client is not None:
         # #6617: the queue client is pooled for the life of the host.
-        app.router.on_shutdown.append(queue_client.aclose)
+        lifespan_hooks(app).on_shutdown.append(queue_client.aclose)
         # The same three replacements worker.py performs when its env selects
         # the queue. Production still defaults to D1; only a deployment that
         # explicitly sets PC_QUEUE_BACKEND=com2 takes this path.

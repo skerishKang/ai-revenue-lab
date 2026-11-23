@@ -11,6 +11,7 @@ from types import SimpleNamespace
 import pytest
 
 from app.d1_sqlite import SqliteD1
+from app.lifespan_hooks import LifespanHooks
 from app.ops_alert_store import D1OpsAlertStore
 from app.ops_audit_store import OpsAuditStore
 from app import pc_helper_maintenance_host as host
@@ -521,9 +522,10 @@ def test_guid_resolution_requires_unique_fresh_queue_observation():
 
 
 def test_timer_default_off():
-    app = SimpleNamespace(router=SimpleNamespace(on_startup=[], on_shutdown=[]))
+    hooks = LifespanHooks()
+    app = SimpleNamespace(router=SimpleNamespace(lifespan_context=hooks))
     host.install_maintenance_timer(app, env={}, db=None, process_lock=None)
-    assert app.router.on_startup == app.router.on_shutdown == []
+    assert hooks.on_startup == hooks.on_shutdown == []
 
 
 def test_server_owner_context_live_authority_and_reset(caplog):

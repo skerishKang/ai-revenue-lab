@@ -11,6 +11,7 @@ from __future__ import annotations
 import asyncio
 
 from app import local_cpython
+from app.lifespan_hooks import lifespan_hooks
 
 MESH_ENV = {
     "ORACLE_MESH_EXECUTION_MODE": "off",
@@ -47,11 +48,11 @@ def _dev_env(monkeypatch, tmp_path):
 def _startup_configured():
     async def scenario():
         app = local_cpython.build_app()
-        await app.router.startup()
+        await lifespan_hooks(app).startup()
         try:
             return bool(getattr(app.state.oracle_mesh_return_source, "configured", False))
         finally:
-            await app.router.shutdown()
+            await lifespan_hooks(app).shutdown()
 
     return asyncio.run(scenario())
 
@@ -99,11 +100,11 @@ def test_the_write_freeze_wrapper_does_not_steal_the_state_target(
         outer = local_cpython.build_app()
         assert isinstance(outer, MaintenanceModeMiddleware)
         inner = outer._app
-        await inner.router.startup()
+        await lifespan_hooks(inner).startup()
         try:
             return bool(getattr(inner.state.oracle_mesh_return_source, "configured", False))
         finally:
-            await inner.router.shutdown()
+            await lifespan_hooks(inner).shutdown()
 
     assert asyncio.run(scenario()) is True
     out = capsys.readouterr().out
@@ -123,11 +124,11 @@ def test_identity_metrics_startup_under_write_freeze_wrapper(monkeypatch, tmp_pa
         outer = local_cpython.build_app()
         assert isinstance(outer, MaintenanceModeMiddleware)
         inner = outer._app
-        await inner.router.startup()
+        await lifespan_hooks(inner).startup()
         try:
             assert identity_cache_metrics._timer is not None
         finally:
-            await inner.router.shutdown()
+            await lifespan_hooks(inner).shutdown()
         assert identity_cache_metrics._timer is None
 
     asyncio.run(scenario())

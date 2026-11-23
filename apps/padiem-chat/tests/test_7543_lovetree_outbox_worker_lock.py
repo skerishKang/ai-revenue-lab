@@ -12,6 +12,7 @@ import pytest
 
 from app.config import Settings
 from app.d1_sqlite import SqliteD1
+from app.lifespan_hooks import LifespanHooks
 from app.local_bootstrap import ProcessFileLock
 from app.lovetree_ops_outbox import D1LovetreeOpsOutbox, dispatch_under_lock, install_retry_loop
 from app.site_feedback_store import D1SiteFeedbackStore
@@ -88,21 +89,17 @@ async def test_two_app_instances_sharing_one_db_dispatch_from_one_only(tmp_path)
 
 @pytest.mark.asyncio
 async def test_install_retry_loop_wires_the_shared_lock_without_a_new_timer(tmp_path):
-    class Router:
-        def __init__(self):
-            self.on_startup = []
-            self.on_shutdown = []
-
-    app = SimpleNamespace(state=SimpleNamespace(), router=Router())
+    hooks = LifespanHooks()
+    app = SimpleNamespace(state=SimpleNamespace(), router=SimpleNamespace(lifespan_context=hooks))
     lock = ProcessFileLock(tmp_path / "lovetree-outbox.lock")
     install_retry_loop(app, process_lock=lock)
-    assert len(app.router.on_startup) == 1 and len(app.router.on_shutdown) == 1
+    assert len(hooks.on_startup) == 1 and len(hooks.on_shutdown) == 1
 
-    await app.router.on_startup[0]()
+    await hooks.on_startup[0]()
     try:
         assert app.state.lovetree_ops_process_lock is lock
     finally:
-        await app.router.on_shutdown[0]()
+        await hooks.on_shutdown[0]()
         assert not lock.held
 
 
