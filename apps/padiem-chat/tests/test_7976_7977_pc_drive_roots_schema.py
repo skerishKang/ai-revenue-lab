@@ -18,6 +18,9 @@ from app import mcp_gateway_transport as transport
 from app.oracle_mesh_read_return_routes import _pc_files_command
 from test_261105_mcp_registered_folders import ROOTS, _call, harness  # noqa: F401
 
+# #8060: the raw read lives in _support; the stage assertion stays here.
+from _support import pc_drive_roots_schema_source as sheets
+
 DRIVE_ROOTS = [{"name": "C:", "path": "C:"}, {"name": "D:", "path": "D:"}]
 
 
@@ -103,9 +106,7 @@ def test_offset_beyond_the_first_page_is_sent_to_the_pc():
 
 
 def test_pc_path_not_found_is_a_distinct_stage():
-    from pathlib import Path
-    source = (Path(__file__).parents[1] / ".." / "padiem-ai-engine"
-              / "app" / "claw_pc_query_step_driver.py").read_text(encoding="utf-8")
+    source = sheets.query_step_driver()
     assert '"pc_path_not_found"' in source
 
 
