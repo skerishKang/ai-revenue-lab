@@ -17,7 +17,7 @@ they cleared the site cookies by hand.
 3. with the server fix deployed (refresh 401 + cleared cookie), the same flow
    still lands on an openable sign-in dialog.
 
-The QA runs the shipped ``static/index.html`` against a stub that reproduces
+The QA runs the shipped index.html against a stub that reproduces
 the stale-cookie state.
 """
 from __future__ import annotations
@@ -29,7 +29,9 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1] / "static"
+from _support import session_login_source as sheets
+
+ROOT = sheets.static_root()
 STATUS_ENDPOINT = "/api/auth/status"
 REFRESH_ENDPOINT = "/auth/shared/refresh"
 
@@ -44,7 +46,7 @@ class Handler(SimpleHTTPRequestHandler):
     def do_POST(self):  # noqa: N802
         length = int(self.headers.get("Content-Length") or 0)
         if length:
-            self.rfile.read(length)
+            sheets.read_request(self.rfile, length)
         status = 503 if self.server.refresh_status == 503 else 401
         body = json.dumps({"error": "authentication_unavailable" if status == 503
                            else "authentication_expired"}).encode("utf-8")
