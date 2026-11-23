@@ -6,7 +6,12 @@ owner. The list and the tool now answer from one function on one store, and a
 directory that cannot be read is an error instead of an empty list.
 """
 from __future__ import annotations
-import locale_bundle
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.consent_util_guidance_source import (
+    app_js, calendar_module_js, connectors_module_js, index_html, locale_source,
+    mcp_oauth_consent_js, nav_module_js, read, util_manifest_js, util_menu_css, util_menu_js,
+)
 
 import json
 from datetime import datetime, timezone
@@ -198,7 +203,7 @@ async def test_both_scopes_reach_the_token_through_the_same_directory(directory_
 
 def test_consent_script_shows_name_id6_and_online_together():
     static = ROOT / "static"
-    script = (static / "mcp-oauth-consent.js").read_text(encoding="utf-8")
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    script = mcp_oauth_consent_js()
+    locale = locale_source()
     assert "pc.name" in script and "pc.id6" in script and "pc.online === true" in script
     assert locale.count('"mcp-oauth-pc-online"') == 2
