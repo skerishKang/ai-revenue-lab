@@ -18,19 +18,19 @@ from __future__ import annotations
 
 import re
 
-from pathlib import Path
-
 from _r5_function_source import function_body
+from _support.claw_flow_accessibility_source import (
+    index_html, app_js, claw_run_js, claw_form_js, claw_status_js, workspace_css,
+)
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
+INDEX = index_html()
+APP = app_js()
 # #7216 R5 A5a: Claw 실행·결과 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
-CLAW_RUN = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
+CLAW_RUN = claw_run_js()
 # R5 A5b: the manual form submit/preview handler lives in its own module.
-CLAW_FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
-CLAW_STATUS = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
-WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
+CLAW_FORM = claw_form_js()
+CLAW_STATUS = claw_status_js()
+WORKSPACE_CSS = workspace_css()
 
 
 def _line(text: str, needle: str) -> str:
