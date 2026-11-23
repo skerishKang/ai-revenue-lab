@@ -12,12 +12,14 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from _support import css_display_source as sheets
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-TOKENS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
-THEMES = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
-GLASS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
-SURFACES = (STATIC / "padiem-surfaces.css").read_text(encoding="utf-8")
+TOKENS = sheets.sheet("padiem-tokens.css")
+THEMES = sheets.sheet("padiem-themes.css")
+GLASS = sheets.sheet("padiem-glass.css")
+SURFACES = sheets.sheet("padiem-surfaces.css")
 
 THEME_NAMES = ("light", "dark", "cinematic", "padiem-home", "padiem-glass")
 # Surfaces each theme paints the first screen on, measured from the running app
@@ -132,7 +134,7 @@ def test_card_title_and_description_meet_their_minimums_in_every_theme() -> None
 
 def test_guest_cards_keep_their_press_behaviour() -> None:
     """게스트라도 카드는 눌린다 — 흐리게 만들려고 잠그지 않는다."""
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = sheets.sheet("index.html")
     starters = re.findall(r'<button type="button" class="starter[^"]*"[^>]*>', html)
     assert len(starters) >= 4
     for tag in starters:

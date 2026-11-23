@@ -5,7 +5,9 @@ import json
 import subprocess
 from pathlib import Path
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
+from _support import css_display_source as sheets
+
+STATIC = sheets.static_root()
 
 
 def _run_node(script: str) -> str:
@@ -40,7 +42,7 @@ global.Element=El;
 
 
 def _rendered_meta(lang: str) -> str:
-    path = (STATIC / "claw-answer-sources.js").as_posix()
+    path = sheets.static_path("claw-answer-sources.js").as_posix()
     script = _SHIM + f'''
 global.document = {{
   createElement: (t) => new El(t),
@@ -73,8 +75,8 @@ def test_source_date_is_human_readable_in_both_locales():
 
 
 def test_source_title_uses_a_theme_common_token():
-    rich = (STATIC / "padiem-rich.css").read_text(encoding="utf-8")
-    search = (STATIC / "search-sources.css").read_text(encoding="utf-8")
+    rich = sheets.sheet("padiem-rich.css")
+    search = sheets.sheet("search-sources.css")
     assert "color: var(--text);" in rich
     assert "color: var(--text);" in search
     assert "rgba(255, 255, 255, .52)" not in rich
@@ -82,7 +84,7 @@ def test_source_title_uses_a_theme_common_token():
 
 
 def test_text_token_is_defined_in_every_theme():
-    tokens = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+    tokens = sheets.sheet("padiem-tokens.css")
     for theme in ("light", "dark", "padiem-glass", "cinematic", "padiem-home"):
         block = tokens.split(f'html[data-theme="{theme}"] {{', 1)[1].split("\n}", 1)[0]
         assert "--text:" in block, theme

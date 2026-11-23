@@ -14,15 +14,17 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from _support import css_display_source as sheets
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-TOKENS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
-RICH_BASE = (STATIC / "rich-response.css").read_text(encoding="utf-8")
-RICH_DARK = (STATIC / "padiem-rich.css").read_text(encoding="utf-8")
-A11Y = (STATIC / "accessibility-polish.css").read_text(encoding="utf-8")
-MOBILE = (STATIC / "mobile-target-legibility.css").read_text(encoding="utf-8")
-THEMES = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
-GLASS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
+TOKENS = sheets.sheet("padiem-tokens.css")
+RICH_BASE = sheets.sheet("rich-response.css")
+RICH_DARK = sheets.sheet("padiem-rich.css")
+A11Y = sheets.sheet("accessibility-polish.css")
+MOBILE = sheets.sheet("mobile-target-legibility.css")
+THEMES = sheets.sheet("padiem-themes.css")
+GLASS = sheets.sheet("padiem-glass.css")
 
 THEME_NAMES = ("light", "dark", "cinematic", "padiem-home", "padiem-glass")
 # 머리 띠와 단추 면의 지배색. 실행 중인 앱(`?theme=<이름>`)에서 코드 블록을

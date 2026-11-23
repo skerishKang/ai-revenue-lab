@@ -22,11 +22,13 @@ import pytest
 pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import sync_playwright  # noqa: E402
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
+from _support import css_display_source as sheets
 
-PORTRAIT = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
-GUTTER = (STATIC / "padiem-glass-gutter-alignment.css").read_text(encoding="utf-8")
-POLISH = (STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
+STATIC = sheets.static_root()
+
+PORTRAIT = sheets.sheet("padiem-glass-portrait.css")
+GUTTER = sheets.sheet("padiem-glass-gutter-alignment.css")
+POLISH = sheets.sheet("padiem-chat-ui-polish.css")
 
 GUEST_STATUS = {
     "ready": True, "authenticated": False, "user": None,
