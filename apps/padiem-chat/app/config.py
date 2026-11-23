@@ -625,6 +625,10 @@ class Settings:
     # wins whenever it is on; without it the shadow switch (if on) only
     # records the comparison and every answer stays on the session key.
     connector_account_key_enabled: bool = False
+    # #7542: separate switch for the PC connector-scope verdict. Off keeps
+    # today's cross-check. On returns the single tenant check's answer while
+    # the cross-check comparison is still journalled.
+    pc_scope_tenant_only_enabled: bool = False
 
     @classmethod
     def from_values(
@@ -700,6 +704,7 @@ class Settings:
         site_feedback_reply_url_lovetree: object = None,
         connector_account_shadow_enabled: object = None,
         connector_account_key_enabled: object = None,
+        pc_scope_tenant_only_enabled: object = None,
     ) -> "Settings":
         (mode, local, shell_enabled, shell_user_enabled, session_enabled,
          chat_session_enabled) = _values_runtime_flags(
@@ -880,6 +885,10 @@ class Settings:
                 _strict_bool(connector_account_key_enabled, name="PADIEM_CHAT_CONNECTOR_ACCOUNT_KEY_ENABLED")
                 if connector_account_key_enabled is not None else False
             ),
+            pc_scope_tenant_only_enabled=(
+                _strict_bool(pc_scope_tenant_only_enabled, name="PADIEM_CHAT_PC_SCOPE_TENANT_ONLY_ENABLED")
+                if pc_scope_tenant_only_enabled is not None else False
+            ),
         )
 
     @classmethod
@@ -961,4 +970,5 @@ feedback_daily_limit=os.getenv("PADIEM_CHAT_FEEDBACK_DAILY_LIMIT", "10"),
             email_confirmation_enabled=os.getenv("PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED"),
             connector_account_shadow_enabled=os.getenv("PADIEM_CHAT_CONNECTOR_ACCOUNT_SHADOW_ENABLED"),
             connector_account_key_enabled=os.getenv("PADIEM_CHAT_CONNECTOR_ACCOUNT_KEY_ENABLED"),
+            pc_scope_tenant_only_enabled=os.getenv("PADIEM_CHAT_PC_SCOPE_TENANT_ONLY_ENABLED"),
         )
