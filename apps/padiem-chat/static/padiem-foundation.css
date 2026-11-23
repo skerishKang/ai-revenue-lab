@@ -32,9 +32,9 @@ body {
   overflow-x: hidden;
   color: var(--text);
   background:
-    radial-gradient(circle at 68% 43%, rgba(255, 255, 255, .045), transparent 30%),
+    radial-gradient(circle at 68% 43%, var(--foundation-subtle-wash), transparent 30%),
     radial-gradient(circle at 32% 58%, var(--app-grid-line), transparent 34%),
-    linear-gradient(135deg, #08090b 0%, #0b0c0e 50%, #030405 100%);
+    linear-gradient(135deg, var(--foundation-body-stop-1) 0%, var(--foundation-body-stop-2) 50%, var(--foundation-body-stop-3) 100%);
   font-family: var(--font-body);
   letter-spacing: -.012em;
 }
@@ -49,11 +49,11 @@ body::after {
 
 body::before {
   z-index: 0;
-  box-shadow: inset 0 0 220px 80px rgba(0, 0, 0, .60);
+  box-shadow: inset 0 0 220px 80px var(--foundation-vignette);
   background:
-    linear-gradient(180deg, rgba(0, 0, 0, .24), rgba(0, 0, 0, .02) 42%, rgba(0, 0, 0, .45)),
-    radial-gradient(circle at 18% 52%, rgba(255, 255, 255, .018), transparent 40%),
-    radial-gradient(circle at 82% 48%, rgba(255, 255, 255, .012), transparent 38%);
+    linear-gradient(180deg, var(--foundation-scrim-top), var(--foundation-scrim-mid) 42%, var(--foundation-scrim-bottom)),
+    radial-gradient(circle at 18% 52%, var(--foundation-body-spot-a), transparent 40%),
+    radial-gradient(circle at 82% 48%, var(--foundation-body-spot-b), transparent 38%);
 }
 
 body::after {
@@ -85,8 +85,8 @@ body::after {
   z-index: 80;
   height: 2px;
   opacity: .42;
-  background: linear-gradient(90deg, var(--accent), rgba(255, 255, 255, .96), var(--gold));
-  box-shadow: 0 0 10px rgba(255, 255, 255, .08);
+  background: linear-gradient(90deg, var(--accent), var(--foundation-top-rim), var(--gold));
+  box-shadow: 0 0 10px var(--foundation-top-rim-glow);
   pointer-events: none;
 }
 
@@ -106,11 +106,11 @@ a:focus-visible {
 
 /* Sidebar / navigation ----------------------------------------------------- */
 .sidebar {
-  border-right: 1px solid rgba(255, 255, 255, .11);
+  border-right: 1px solid var(--foundation-hairline);
   background:
-    linear-gradient(180deg, rgba(8, 9, 11, .93), rgba(6, 7, 9, .83)),
-    rgba(6, 7, 9, .86);
-  box-shadow: 22px 0 70px rgba(0, 0, 0, .16);
+    linear-gradient(180deg, var(--foundation-sidebar-stop-1), var(--foundation-sidebar-stop-2)),
+    var(--foundation-sidebar-base);
+  box-shadow: 22px 0 70px var(--foundation-sidebar-shadow);
   backdrop-filter: blur(26px) saturate(108%);
 }
 
@@ -124,7 +124,7 @@ a:focus-visible {
 
 .brand {
   gap: 12px;
-  color: #fff;
+  color: var(--foundation-strong-text);
   font-family: var(--font-label);
   font-size: 15px;
   font-weight: 600;
@@ -135,14 +135,14 @@ a:focus-visible {
 .assistant-avatar {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, .18);
-  color: #fff;
+  border: 1px solid var(--foundation-mark-edge);
+  color: var(--foundation-strong-text);
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, .11), rgba(255, 255, 255, .045)),
-    rgba(10, 11, 13, .72);
+    linear-gradient(145deg, var(--foundation-hairline), var(--foundation-subtle-wash)),
+    var(--foundation-mark-base);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .11),
-    0 10px 24px rgba(0, 0, 0, .22);
+    inset 0 1px 0 var(--foundation-hairline),
+    0 10px 24px var(--foundation-mark-shadow);
   backdrop-filter: blur(12px);
 }
 
@@ -159,30 +159,30 @@ a:focus-visible {
 }
 
 .new-chat {
-  border-color: rgba(255, 255, 255, .17);
-  background: rgba(255, 255, 255, .075);
+  border-color: var(--foundation-control-edge);
+  background: var(--foundation-control-wash);
   color: var(--text-veil-strong);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+  box-shadow: inset 0 1px 0 var(--foundation-control-inset);
   backdrop-filter: blur(14px);
   transition: border-color .24s ease, background .24s ease, transform .24s ease;
 }
 
 .new-chat:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, .30);
-  background: rgba(255, 255, 255, .115);
+  border-color: var(--foundation-control-hover-edge);
+  background: var(--foundation-control-hover-wash);
   transform: translateY(-1px);
 }
 
 .side-item,
 .recent-item {
-  color: rgba(242, 246, 251, .72);
+  color: var(--foundation-item-text);
   transition: color .2s ease, background .2s ease, transform .2s ease;
 }
 
 .side-item:not(:disabled):hover,
 .recent-item:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, .07);
+  color: var(--foundation-strong-text);
+  background: var(--foundation-item-hover-wash);
 }
 
 .recent-item:hover {
@@ -206,8 +206,8 @@ a:focus-visible {
 }
 
 .mini-badge {
-  border: 1px solid rgba(255, 255, 255, .08);
-  color: rgba(238, 243, 249, .50);
+  border: 1px solid var(--foundation-badge-edge);
+  color: var(--foundation-badge-text);
   background: var(--surface-veil-faint);
 }
 
@@ -228,7 +228,7 @@ a:focus-visible {
 
 .preview-dot {
   background: var(--accent);
-  box-shadow: 0 0 11px rgba(136, 201, 255, .56);
+  box-shadow: 0 0 11px var(--foundation-preview-glow);
 }
 
 /* Topbar ------------------------------------------------------------------ */
@@ -238,17 +238,17 @@ a:focus-visible {
 
 .topbar {
   min-height: 78px;
-  border-bottom: 1px solid rgba(255, 255, 255, .11);
-  background: linear-gradient(180deg, rgba(8, 9, 11, .62), rgba(8, 9, 11, .12));
+  border-bottom: 1px solid var(--foundation-hairline);
+  background: linear-gradient(180deg, var(--foundation-topbar-stop-1), var(--foundation-topbar-stop-2));
   backdrop-filter: blur(22px) saturate(110%);
 }
 
 .model-pill,
 .login-button {
-  border-color: rgba(255, 255, 255, .17);
-  color: rgba(247, 250, 253, .82);
-  background: rgba(255, 255, 255, .075);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+  border-color: var(--foundation-control-edge);
+  color: var(--foundation-pill-text);
+  background: var(--foundation-control-wash);
+  box-shadow: inset 0 1px 0 var(--foundation-control-inset);
   backdrop-filter: blur(16px);
 }
 
@@ -265,10 +265,10 @@ a:focus-visible {
 }
 
 .login-button:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, .32);
-  background: rgba(255, 255, 255, .11);
+  border-color: var(--foundation-pill-hover-edge);
+  background: var(--foundation-hairline);
 }
 
 .account-name {
-  color: rgba(255, 255, 255, .58);
+  color: var(--foundation-account-text);
 }
