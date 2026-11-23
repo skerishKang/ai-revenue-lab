@@ -39,7 +39,7 @@ from _support.password_change import (
     CanonicalAuthority,
     seed_db,
 )
-from test_claw_automation_async_composition_seam import _load_worker
+from _support.claw_automation_worker_source import _load_worker
 
 BASE = "https://chat.example.test"
 SESSION_SECRET = "5479-concurrent-auth-test-session-secret-not-real-000"
