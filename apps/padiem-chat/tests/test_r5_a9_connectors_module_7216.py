@@ -6,6 +6,11 @@ app.js는 같은 이름의 한 줄 전달 함수 5개, connectorsModule() 팩토
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.calendar_connectors_firstscreen_source import (
+    app_js, connectors_module_js, index_html, locale_source, read, util_app_css, util_app_js,
+)
+
 import json
 import re
 import shutil
@@ -16,9 +21,9 @@ import pytest
 from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+APP = app_js()
+MODULE = connectors_module_js()
+INDEX = index_html()
 
 NAMES = (
     "setConnectorCopy",
