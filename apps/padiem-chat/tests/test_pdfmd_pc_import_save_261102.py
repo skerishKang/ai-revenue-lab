@@ -23,6 +23,10 @@ import threading
 from pathlib import Path
 
 import pytest
+from _support.pdfmd_source_261102 import (
+    council_app_js, document_convert_routes, index_html, local_cpython,
+    pc_file_exchange_js, util_app_js, util_manifest_js, util_menu_css, util_pdfmd_js,
+)
 
 from css_rules import declaration, find_rules_with_selector, parse_rules
 
@@ -33,10 +37,10 @@ except ModuleNotFoundError:  # pragma: no cover - CI without a browser
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-PDFMD_JS = (STATIC / "util-pdfmd.js").read_text(encoding="utf-8")
-EXCHANGE_JS = (STATIC / "pc-file-exchange.js").read_text(encoding="utf-8")
-UTIL_MENU_CSS = (STATIC / "util-menu.css").read_text(encoding="utf-8")
-COUNCIL_JS = (ROOT.parent / "padiem-council-apps" / "static" / "council-app.js").read_text(encoding="utf-8")
+PDFMD_JS = util_pdfmd_js()
+EXCHANGE_JS = pc_file_exchange_js()
+UTIL_MENU_CSS = util_menu_css()
+COUNCIL_JS = council_app_js()
 
 TARGET_FLOOR = 44.0
 TEXT_FLOOR = 14.0
