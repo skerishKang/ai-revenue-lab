@@ -93,6 +93,17 @@ PSINFO_SCALARS = (
     "WorkingSet64", "PeakWorkingSet64", "PrivateMemorySize64", "StartTime",
 )
 
+#: The server's greeting on an accepted ``control.ashx`` session.
+#: ``meshuser.js`` (``CreateMeshUser``) sends ``serverinfo`` and then
+#: ``userinfo`` as soon as the ``x-meshauth`` header is accepted; ``webserver.js``
+#: sends ``{"action":"close", ...}`` and drops the socket when it is not. These
+#: are the authentication confirmation the working PC command path
+#: (``meshctrl.js`` ``runcommand`` on the same socket) already relies on. An
+#: ``authcookie`` frame is a different thing: it is only issued on explicit
+#: request for relay-tunnel verbs (``shell``/``upload``/``download``).
+AUTH_GREETING_ACTIONS = frozenset({"serverinfo", "userinfo"})
+AUTH_REFUSAL_ACTION = "close"
+
 #: What one stop produced. Only CONFIRMED says the PC is finished with.
 CONFIRMED = "confirmed"
 STILL_RUNNING = "still_running"
@@ -426,7 +437,15 @@ class MeshCentralProcessSocket:
 
         Only the closed ``getsysinfo`` frame built by the sysinfo port is
         accepted. The server answers from its stored node document; this
-        method sends no device command and writes nothing on the PC. Every
+        method sends no device command and writes nothing on the PC.
+
+        Authentication is confirmed by the server's first greeting frame, not
+        by an ``authcookie`` exchange. The working PC command path opens
+        ``/control.ashx`` with this same ``x-meshauth`` header and sends its
+        server-side command as soon as the socket is accepted; ``meshuser.js``
+        proves that acceptance with ``serverinfo``/``userinfo``. Waiting for an
+        ``authcookie`` here made a healthy operator session look denied,
+        because that cookie is only issued for relay-tunnel verbs. Every
         failure carries only a value-free wire code: the operator credential,
         the node reference, the host and any reply body stay out of the log.
         """
@@ -453,11 +472,7 @@ class MeshCentralProcessSocket:
         try:
             deadline = time.monotonic() + PS_WAIT_SECONDS
             try:
-                socket.send_text('{"action":"authcookie"}')
-            except Exception:
-                raise MeshCentralSysInfoReadFailure(SYSINFO_TRANSPORT) from None
-            try:
-                authenticated = self._await_authcookie(socket, deadline)
+                authenticated = self._await_auth_greeting(socket, deadline)
             except TimeoutError:
                 raise MeshCentralSysInfoReadFailure(SYSINFO_TIMEOUT) from None
             if not authenticated:
@@ -490,6 +505,39 @@ class MeshCentralProcessSocket:
             return None
         finally:
             socket.close()
+
+    @staticmethod
+    def _await_auth_greeting(socket: Any, deadline: float) -> bool:
+        """Wait for the server's proof that the operator header was accepted.
+
+        ``meshuser.js`` sends ``serverinfo`` then ``userinfo`` unprompted once a
+        control session is authenticated. Frames that precede them (pings,
+        stats events) are skipped; a ``close`` frame or a closed socket means
+        the server refused the session. No frame is sent here: the greeting is
+        the same evidence the existing ``meshctrl.js`` command path uses, and
+        an ``authcookie`` is not needed for a server-document read.
+        """
+        while time.monotonic() < deadline:
+            message = socket.recv(deadline)
+            if message is None:
+                return False
+            opcode, payload = message
+            if opcode != 0x1:
+                continue
+            try:
+                answer = json.loads(payload.decode("utf-8"))
+            except (UnicodeDecodeError, ValueError):
+                continue
+            if not isinstance(answer, dict):
+                continue
+            action = answer.get("action")
+            if not isinstance(action, str):
+                continue
+            if action in AUTH_GREETING_ACTIONS:
+                return True
+            if action == AUTH_REFUSAL_ACTION:
+                return False
+        return False
 
     @staticmethod
     def _await_authcookie(socket: Any, deadline: float) -> bool:
