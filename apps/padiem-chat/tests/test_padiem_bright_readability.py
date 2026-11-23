@@ -1,10 +1,4 @@
-from pathlib import Path
-
-
-ROOT = Path(__file__).resolve().parents[1]
-POLISH_CSS = (ROOT / "static/padiem-bright-readability.css").read_text(encoding="utf-8")
-CINEMATIC_ENTRY = (ROOT / "static/padiem-cinematic-chat.css").read_text(encoding="utf-8")
-INDEX = (ROOT / "static/index.html").read_text(encoding="utf-8")
+from _support.bright_readability_source import polish_css, index_html
 
 
 def test_theme_polish_layer_is_loaded_last_in_cinematic_stack():
@@ -13,9 +7,9 @@ def test_theme_polish_layer_is_loaded_last_in_cinematic_stack():
     bright = 'href="./padiem-bright-readability.css"'
     first_use = 'href="./padiem-first-use.css"'
     entry = 'href="./padiem-cinematic-chat.css"'
-    assert bright in INDEX
-    assert INDEX.index(bright) > INDEX.index(first_use)
-    assert INDEX.index(bright) < INDEX.index(entry)
+    assert bright in index_html()
+    assert index_html().index(bright) > index_html().index(first_use)
+    assert index_html().index(bright) < index_html().index(entry)
 
 
 def test_bright_sidebar_foregrounds_override_dark_foundation_contract():
@@ -30,63 +24,63 @@ def test_bright_sidebar_foregrounds_override_dark_foundation_contract():
     for theme in ("light", "padiem-home"):
         prefix = f'html[data-theme="{theme}"]'
         for selector in selectors:
-            assert f"{prefix} {selector}" in POLISH_CSS
+            assert f"{prefix} {selector}" in polish_css()
 
-    assert "color: var(--text);" in POLISH_CSS
-    assert "color: var(--muted);" in POLISH_CSS
+    assert "color: var(--text);" in polish_css()
+    assert "color: var(--muted);" in polish_css()
 
 
 def test_bright_composer_active_tools_override_dark_foreground_contract():
     for theme in ("light", "padiem-home"):
         prefix = f'html[data-theme="{theme}"]'
-        assert f"{prefix} .composer .tool-button:not(:disabled)" in POLISH_CSS
-        assert f"{prefix} .composer .tool-button:hover:not(:disabled)" in POLISH_CSS
-        assert f'{prefix} .composer .tool-button[aria-pressed="true"]:not(:disabled)' in POLISH_CSS
+        assert f"{prefix} .composer .tool-button:not(:disabled)" in polish_css()
+        assert f"{prefix} .composer .tool-button:hover:not(:disabled)" in polish_css()
+        assert f'{prefix} .composer .tool-button[aria-pressed="true"]:not(:disabled)' in polish_css()
 
-    assert "background: var(--accent-soft);" in POLISH_CSS
-    assert "border-color: var(--line);" in POLISH_CSS
+    assert "background: var(--accent-soft);" in polish_css()
+    assert "border-color: var(--line);" in polish_css()
 
 
 def test_all_themes_keep_useful_microcopy_at_twelve_pixel_floor():
     for theme in ("light", "dark", "cinematic", "padiem-home"):
-        assert f'html[data-theme="{theme}"] .composer-note' in POLISH_CSS
+        assert f'html[data-theme="{theme}"] .composer-note' in polish_css()
 
     for theme in ("dark", "cinematic"):
         prefix = f'html[data-theme="{theme}"]'
-        assert f"{prefix} .sidebar .recent-section h2" in POLISH_CSS
-        assert f"{prefix} .sidebar .section-heading-row h2" in POLISH_CSS
+        assert f"{prefix} .sidebar .recent-section h2" in polish_css()
+        assert f"{prefix} .sidebar .section-heading-row h2" in polish_css()
 
-    assert "font-size: 12px;" in POLISH_CSS
-    assert "line-height: 1.5;" in POLISH_CSS
+    assert "font-size: 12px;" in polish_css()
+    assert "line-height: 1.5;" in polish_css()
 
 
 def test_cinematic_has_bounded_atmospheric_distinction_from_neutral_dark():
-    assert 'html[data-theme="cinematic"] body {' in POLISH_CSS
-    assert "rgba(108,190,255,.28)" in POLISH_CSS
-    assert "rgba(239,201,132,.20)" in POLISH_CSS
-    assert 'html[data-theme="cinematic"] .sidebar {' in POLISH_CSS
-    assert 'html[data-theme="cinematic"] .topbar {' in POLISH_CSS
-    assert 'html[data-theme="cinematic"] .starter {' in POLISH_CSS
-    assert 'html[data-theme="cinematic"] .composer {' in POLISH_CSS
+    assert 'html[data-theme="cinematic"] body {' in polish_css()
+    assert "rgba(108,190,255,.28)" in polish_css()
+    assert "rgba(239,201,132,.20)" in polish_css()
+    assert 'html[data-theme="cinematic"] .sidebar {' in polish_css()
+    assert 'html[data-theme="cinematic"] .topbar {' in polish_css()
+    assert 'html[data-theme="cinematic"] .starter {' in polish_css()
+    assert 'html[data-theme="cinematic"] .composer {' in polish_css()
     # DARK receives typography only; no cinematic atmosphere/surface override.
-    assert 'html[data-theme="dark"] body {' not in POLISH_CSS
-    assert 'html[data-theme="dark"] .composer {' not in POLISH_CSS
+    assert 'html[data-theme="dark"] body {' not in polish_css()
+    assert 'html[data-theme="dark"] .composer {' not in polish_css()
 
 
 def test_mobile_chat_theme_picker_is_compact_until_focused():
-    assert '@media (max-width: 640px)' in POLISH_CSS
+    assert '@media (max-width: 640px)' in polish_css()
     prefix = '.app-shell[data-state="chat"] .topbar .theme-picker'
-    assert prefix in POLISH_CSS
-    assert f'{prefix} .theme-option[aria-pressed="true"]' in POLISH_CSS
-    assert f"{prefix}:focus-within" in POLISH_CSS
-    assert f"{prefix}:focus-within .theme-option" in POLISH_CSS
-    assert "display: none;" in POLISH_CSS
-    assert "min-height: 44px;" in POLISH_CSS
+    assert prefix in polish_css()
+    assert f'{prefix} .theme-option[aria-pressed="true"]' in polish_css()
+    assert f"{prefix}:focus-within" in polish_css()
+    assert f"{prefix}:focus-within .theme-option" in polish_css()
+    assert "display: none;" in polish_css()
+    assert "min-height: 44px;" in polish_css()
 
 
 def test_light_mobile_home_question_keeps_single_question_line_contract():
     selector = 'html[data-theme="light"] .app-shell[data-state="home"] .empty-state h1'
-    assert '@media (max-width: 420px)' in POLISH_CSS
-    assert selector in POLISH_CSS
-    assert "font-size: 32px;" in POLISH_CSS
-    assert "letter-spacing: -.05em;" in POLISH_CSS
+    assert '@media (max-width: 420px)' in polish_css()
+    assert selector in polish_css()
+    assert "font-size: 32px;" in polish_css()
+    assert "letter-spacing: -.05em;" in polish_css()
