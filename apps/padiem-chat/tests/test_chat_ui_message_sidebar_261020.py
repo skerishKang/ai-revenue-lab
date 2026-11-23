@@ -21,16 +21,18 @@ touch auth, and they do not replace the browser verification.
 from pathlib import Path
 import re
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-OUTPUTS = (STATIC / "outputs.js").read_text(encoding="utf-8")
-GLASS = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
-ANSWER_ACTIONS = (STATIC / "answer-actions.css").read_text(encoding="utf-8")
-SURFACES = (STATIC / "padiem-surfaces.css").read_text(encoding="utf-8")
-TOOLTIP_CSS = (STATIC / "shared-tooltip.css").read_text(encoding="utf-8")
-TOOLTIP_JS = (STATIC / "shared-tooltip.js").read_text(encoding="utf-8")
-TOKENS_CSS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")  # #7187 반경 스케일(261115)
+# #8060: shipped reads live in _support; the markup and CSS checks stay.
+from _support import chat_ui_message_sidebar_source as sheets
+
+HTML = sheets.sheet("index.html")
+APP = sheets.sheet("app.js")
+OUTPUTS = sheets.sheet("outputs.js")
+GLASS = sheets.sheet("padiem-glass-portrait.css")
+ANSWER_ACTIONS = sheets.sheet("answer-actions.css")
+SURFACES = sheets.sheet("padiem-surfaces.css")
+TOOLTIP_CSS = sheets.sheet("shared-tooltip.css")
+TOOLTIP_JS = sheets.sheet("shared-tooltip.js")
+TOKENS_CSS = sheets.sheet("padiem-tokens.css")  # #7187 반경 스케일(261115)
 
 
 def test_sidebar_single_cell_sheet_is_linked_and_cascades_last():
@@ -44,7 +46,7 @@ def test_sidebar_single_cell_sheet_is_linked_and_cascades_last():
     assert re.search(
         r"project-row > \.project-item, \.history-row > \.history-item\) \{[^}]*"
         r"backdrop-filter: none !important",
-        (STATIC / "sidebar-section-polish.css").read_text(encoding="utf-8"),
+        sheets.sheet("sidebar-section-polish.css"),
         re.S,
     )
 
@@ -52,10 +54,10 @@ def test_sidebar_single_cell_sheet_is_linked_and_cascades_last():
 def test_user_avatar_uses_the_account_initial_and_keeps_name_first():
     # #7216 R5 step 4: the helper moved into chat-auth-module.js; the render
     # call site in app.js keeps calling it through the one-line forwarder.
-    module = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
+    module = sheets.sheet("chat-auth-module.js")
     assert "function accountInitial(name)" in module
     # #7216 R5 step 5a: addUserMessage moved into chat-conversation-module.js.
-    conv = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")
+    conv = sheets.sheet("chat-conversation-module.js")
     assert "avatar.textContent = deps.accountInitial(name)" in conv
     # The DOM order stays name -> avatar.
     template = HTML[HTML.index('id="userMessageTemplate"'):]
@@ -94,7 +96,7 @@ def test_answer_carries_a_completion_time_and_restored_turns_invent_none():
     assert "const completedAt = article.dataset.completedAt" in OUTPUTS
     # A restored conversation is rendered without a live stamp.
     assert "addUserMessage(item.content, null, { restored: true })" in APP
-    conv = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
+    conv = sheets.sheet("chat-conversation-module.js")  # #7216 R5 step 5a
     assert "if (restored) {" in conv
 
 
@@ -124,9 +126,8 @@ def test_hover_hints_use_the_shared_chip_tooltip_not_the_native_title():
 
 def test_static_reference_mirror_stays_byte_pinned():
     """static/styles.css is pinned to the product reference mirror."""
-    repo = STATIC.parents[2]
     from style_contract import assert_phase1_styles_match
     assert_phase1_styles_match(
-        STATIC / "styles.css",
-        repo / "reference/business-62-padiem-chat-v1/styles.css",
+        Path(sheets.static_path("styles.css")),
+        Path(sheets.repo_root()) / "reference/business-62-padiem-chat-v1/styles.css",
     )
