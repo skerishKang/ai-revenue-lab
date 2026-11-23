@@ -5,7 +5,15 @@
 - #7460: 여섯 도구 정의는 단일 등록부(static/util-manifest.js)에 있고,
   util-app.js가 그 등록부에서 카드와 칩을 그린다. 상단 #appSwitch는 제거되었다.
 """
+
 from __future__ import annotations
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.ui_sheet_source_261103 import (
+    chat_screen_polish_css, dark_contrast_css, first_use_css, history_css, index_html,
+    mode_presentation_css, read, settings_css, sidebar_section_polish_css, six_panel_css,
+    tokens_css, util_app_css, util_app_js, util_manifest_js, voice_composer_css,
+)
 
 from pathlib import Path
 
@@ -13,10 +21,10 @@ from css_rules import declaration, find_rules_with_selector, parse_rules
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-UTIL_MANIFEST_JS = (STATIC / "util-manifest.js").read_text(encoding="utf-8")
-UTIL_APP_JS = (STATIC / "util-app.js").read_text(encoding="utf-8")
-UTIL_APP_CSS = (STATIC / "util-app.css").read_text(encoding="utf-8")
+INDEX = index_html()
+UTIL_MANIFEST_JS = util_manifest_js()
+UTIL_APP_JS = util_app_js()
+UTIL_APP_CSS = util_app_css()
 
 TOOLS = (
     ("speech", "축사·인사말", "행사 축사·인사말 초안 생성·저장"),

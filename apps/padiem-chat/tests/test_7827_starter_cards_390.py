@@ -12,18 +12,26 @@ clamp로 고친다. 칩(`.document-formats-toggle`) 자리는 손대지 않는�
 시트 금지.
 """
 
+
 from __future__ import annotations
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.ui_sheet_source_261103 import (
+    chat_screen_polish_css, dark_contrast_css, first_use_css, history_css, index_html,
+    mode_presentation_css, read, settings_css, sidebar_section_polish_css, six_panel_css,
+    tokens_css, util_app_css, util_app_js, util_manifest_js, voice_composer_css,
+)
 
 import re
 from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-POLISH = (STATIC / "chat-screen-polish.css").read_text(encoding="utf-8")
-VOICE = (STATIC / "voice-composer.css").read_text(encoding="utf-8")
-FIRST_USE = (STATIC / "padiem-first-use.css").read_text(encoding="utf-8")
-SIDEBAR_POLISH = (STATIC / "sidebar-section-polish.css").read_text(encoding="utf-8")
+POLISH = chat_screen_polish_css()
+VOICE = voice_composer_css()
+FIRST_USE = first_use_css()
+SIDEBAR_POLISH = sidebar_section_polish_css()
 THEME_SHEETS = {
-    name: (STATIC / name).read_text(encoding="utf-8")
+    name: read(name)
     for name in (
         "padiem-themes.css",
         "padiem-glass.css",

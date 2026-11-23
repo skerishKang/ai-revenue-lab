@@ -11,19 +11,27 @@
 --danger-wash-soft(빨강)로 갈라져 있었다.
 """
 
+
 from __future__ import annotations
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.ui_sheet_source_261103 import (
+    chat_screen_polish_css, dark_contrast_css, first_use_css, history_css, index_html,
+    mode_presentation_css, read, settings_css, sidebar_section_polish_css, six_panel_css,
+    tokens_css, util_app_css, util_app_js, util_manifest_js, voice_composer_css,
+)
 
 from pathlib import Path
 
 from css_rules import declaration, parse_rules, rule_selector_list_contains
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-SETTINGS_CSS = (STATIC / "padiem-settings.css").read_text(encoding="utf-8")
-DARK_CSS = (STATIC / "padiem-dark-contrast.css").read_text(encoding="utf-8")
-MODE_CSS = (STATIC / "mode-presentation.css").read_text(encoding="utf-8")
-HISTORY_CSS = (STATIC / "history.css").read_text(encoding="utf-8")
-GLASS_FRAME_CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
-TOKENS_CSS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+SETTINGS_CSS = settings_css()
+DARK_CSS = dark_contrast_css()
+MODE_CSS = mode_presentation_css()
+HISTORY_CSS = history_css()
+GLASS_FRAME_CSS = six_panel_css()
+TOKENS_CSS = tokens_css()
 
 CHOICE_HOVER = '#settingsDialog .settings-choice:not([aria-pressed="true"]):hover'
 SECONDARY_HOVER = "#settingsDialog .settings-action-secondary:hover"
