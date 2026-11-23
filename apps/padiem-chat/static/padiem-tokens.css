@@ -487,6 +487,39 @@
   --settings-action-hover-edge: rgba(42, 57, 69, .24);
   --settings-guide-bg: rgba(255, 255, 255, .2);
 
+  /* #7811 C2 editorial(261123): padiem-editorial.css의 고정 어둡 베일 색.
+     값은 치환 전 사용처 리터럴 그대로이고 :root 하나로 충분하며 테마
+     블록에서 덮지 않는다 — 시네마틱 편집 레이어는 모든 테마에서 같은
+     어둡 표면을 칠해 온 고정 팔레트라(calendar·standalone 묶음과 같은
+     취지). 베일 스케일과 값이 겹치는 곳(.72·.54·.52)은 그 토큰을 그대로
+     재사용하고, 알파가 다른 곳은 쓰임새 이름으로 새로 만들었다. */
+  --editorial-glow-top: rgba(255, 255, 255, .055);
+  --editorial-glow-bottom: rgba(255, 255, 255, .025);
+  --editorial-copy-text: rgba(247, 249, 252, .76);
+  --editorial-bubble-border: rgba(255, 255, 255, .14);
+  --editorial-bubble-wash-strong: rgba(255, 255, 255, .085);
+  --editorial-bubble-wash: rgba(255, 255, 255, .045);
+  --editorial-bubble-bg: rgba(10, 11, 13, .64);
+  --editorial-bubble-text: rgba(249, 251, 253, .92);
+  --editorial-bubble-shadow: rgba(0, 0, 0, .13);
+  --editorial-meta-edge: rgba(255, 255, 255, .08);
+  --editorial-meta-text: rgba(255, 255, 255, .50);
+  --editorial-line-accent: rgba(136, 201, 255, .26);
+  --editorial-avatar-hi: rgba(255, 255, 255, .12);
+  --editorial-avatar-ring: rgba(6, 8, 13, .82);
+  --editorial-avatar-shadow: rgba(0, 0, 0, .2);
+  --editorial-assistant-text: rgba(247, 249, 252, .93);
+  --editorial-chip-edge: rgba(255, 255, 255, .10);
+  --editorial-route-edge: rgba(255, 255, 255, .18);
+  --editorial-route-note: rgba(255, 255, 255, .46);
+  --editorial-typing-glow: rgba(136, 201, 255, .38);
+  --editorial-typing-dot: rgba(255, 255, 255, .82);
+  --editorial-gold-glow: rgba(239, 201, 132, .28);
+  --editorial-pill-edge: rgba(255, 255, 255, .72);
+  --editorial-faint-text: rgba(255, 255, 255, .54);
+  --editorial-summary-text: rgba(255, 255, 255, .72);
+  --editorial-note-text: rgba(255, 255, 255, .52);
+
   /* #8020: Claw 요청 말풍선. 글자는 테마의 사용자 말풍선 글자 역할을 그대로
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
   --claw-request-bubble-text: var(--user-bubble-text);
