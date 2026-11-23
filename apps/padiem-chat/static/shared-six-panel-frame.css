@@ -81,15 +81,15 @@ html[data-theme="padiem-glass"] body .app-shell {
     .library-view, .automation-view, .meeting-view, .util-view,
     .settings-advanced-view
   ) {
-    box-sizing: border-box !important;
-    width: var(--padiem-six-panel-width) !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    height: var(--padiem-six-panel-height) !important;
+    box-sizing: border-box;
+    width: var(--padiem-six-panel-width);
+    min-width: 0;
+    max-width: none;
+    height: var(--padiem-six-panel-height);
     min-height: 0 !important;
     max-height: var(--padiem-six-panel-height) !important;
     margin: 16px 0 16px var(--padiem-six-panel-left) !important;
-    border: 1px solid rgba(255,255,255,.70) !important;
+    border: 1px solid rgba(255,255,255,.70);
     border-radius: 30px !important;
     background: linear-gradient(155deg, rgba(248,250,251,.88), rgba(233,238,241,.84)) !important;
     box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72) !important;
@@ -111,7 +111,7 @@ html[data-theme="padiem-glass"] body .app-shell {
   ) {
     margin-left: calc(
       (100vw - var(--workspace-rail, 252px) - clamp(360px, 32vw, 560px) - var(--padiem-six-panel-width)) / 2
-    ) !important;
+    );
   }
 }
   /* Calendar/Connectors/Library/Automation/Meeting use the Chat/Claw eyebrow origin:
@@ -131,9 +131,9 @@ html[data-theme="padiem-glass"] body .app-shell {
    * a long page still scrolls inside the first-screen frame. */
   html[data-theme="padiem-glass"] body .app-shell[data-state="settings"] .settings-advanced-view,
   html[data-theme="padiem-glass"] body .app-shell[data-state="connectors"] .connectors-view {
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: var(--padiem-six-panel-height) !important;
+    height: auto;
+    min-height: 0;
+    max-height: var(--padiem-six-panel-height);
   }
   /* The meeting transcript is the page's whole working surface, the same role the
    * composer has in Chat/Claw, so it takes the composer lane: inset 14px from the
@@ -144,10 +144,10 @@ html[data-theme="padiem-glass"] body .app-shell {
    * gutter, both of which the fixed composer sits over. */
   html[data-theme="padiem-glass"] body .app-shell[data-state="meeting"] #meetingTranscript {
     box-sizing: border-box;
-    width: calc(var(--padiem-six-panel-width) - (2 * var(--padiem-six-panel-input-inset))) !important;
-    max-width: none !important;
-    margin-left: calc(var(--padiem-six-panel-input-inset) - var(--padiem-six-panel-pad-x) - 1px) !important;
-    margin-right: calc(var(--padiem-six-panel-input-inset) - var(--padiem-six-panel-pad-x) - 13px) !important;
+    width: calc(var(--padiem-six-panel-width) - (2 * var(--padiem-six-panel-input-inset)));
+    max-width: none;
+    margin-left: calc(var(--padiem-six-panel-input-inset) - var(--padiem-six-panel-pad-x) - 1px);
+    margin-right: calc(var(--padiem-six-panel-input-inset) - var(--padiem-six-panel-pad-x) - 13px);
   }
   /* Keep the composer physically inside the frame at both first prompt and
      subsequent turns; let Claw's own model selector set its internal height. */
@@ -156,7 +156,7 @@ html[data-theme="padiem-glass"] body .app-shell {
   ) .composer-wrap {
     left: calc(var(--workspace-rail, 252px) + var(--padiem-six-panel-left) + var(--padiem-six-panel-input-inset)) !important;
     width: calc(var(--padiem-six-panel-width) - (2 * var(--padiem-six-panel-input-inset))) !important;
-    transform: none !important;
+    transform: none;
   }
   /* #5661: past 1920px the frame lane recenters (the margin in the 1921px block
      above), so the composer must recenter with it or the body and the input
@@ -180,9 +180,9 @@ html[data-theme="padiem-glass"] body .app-shell {
     .library-view, .automation-view, .meeting-view, .util-view,
     .settings-advanced-view
   ) {
-    width: min(920px, calc(100% - 48px)) !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    width: min(920px, calc(100% - 48px));
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 /* Reserve the scrollbar track before the async project/history rows arrive.
@@ -207,8 +207,8 @@ html[data-theme="padiem-glass"] body .sidebar :is(.project-manage, .history-dele
   align-items: center;
   justify-content: center;
   gap: 0;
-  font-size: 0 !important;
-  color: #f4f9fd !important;
+  font-size: 0;
+  color: #f4f9fd;
   border: 1px solid rgba(255,255,255,.22);
   border-radius: var(--radius-sm);
   background: rgba(21,39,52,.32);
@@ -216,7 +216,7 @@ html[data-theme="padiem-glass"] body .sidebar :is(.project-manage, .history-dele
   cursor: pointer;
 }
 html[data-theme="padiem-glass"] body .sidebar .history-delete {
-  color: #ffdadb !important;
+  color: #ffdadb;
 }
 html[data-theme="padiem-glass"] body .sidebar :is(.project-manage, .history-delete) svg {
   width: 19px;
@@ -226,7 +226,7 @@ html[data-theme="padiem-glass"] body .sidebar :is(.project-manage, .history-dele
 }
 html[data-theme="padiem-glass"] body .sidebar :is(.project-manage, .history-delete):is(:hover, :focus-visible) {
   background: rgba(28,63,87,.78);
-  color: #fff !important;
+  color: #fff;
   border-color: rgba(255,255,255,.66);
   outline-offset: 2px;
 }
@@ -248,16 +248,16 @@ html[data-theme="padiem-glass"] body .sidebar .history-delete:is(:hover, :focus-
     /* The active conversation keeps the first-screen origin instead of carrying a
      * second copy of it: landing on Home and opening a new Chat used to start the
      * same empty screen 85px apart. */
-    padding-top: var(--padiem-first-screen-inset) !important;
-    background: linear-gradient(155deg,rgba(248,250,251,.88),rgba(233,238,241,.84)) !important;
-    box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72) !important;
+    padding-top: var(--padiem-first-screen-inset);
+    background: linear-gradient(155deg,rgba(248,250,251,.88),rgba(233,238,241,.84));
+    box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72);
   }
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #composerForm {
-    min-height: 0 !important;
-    display: block !important;
+    min-height: 0;
+    display: block;
   }
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #composerForm > .composer-actions {
-    margin-top: 0 !important;
+    margin-top: 0;
   }
 }
 /* History overflow menu: persistent dots, a temporary explicit Delete action. */
@@ -326,9 +326,9 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   border: 0;
   border-radius: 7px;
   background: transparent;
-  color: #a12736 !important;
+  color: #a12736;
   font: inherit;
-  font-size: 13px !important;
+  font-size: 13px;
   font-weight: 750;
   cursor: pointer;
 }
@@ -341,13 +341,13 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   /* #8001 한 판 원칙: glass에서도 호버는 판의 한 단계(--control-wash-hover)
      하나. 위험 표시는 글자색이 담당한다. */
   background: var(--control-wash-hover);
-  color: #831a29 !important;
+  color: #831a29;
   outline-offset: 0;
 }
 /* #7175: the glass menu is a light panel on the dark Glass sidebar, so the two
  * new actions take the same dark ink the delete action already uses. */
 html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-action {
-  color: #1d3240 !important;
+  color: #1d3240;
 }
 html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-action:is(:hover,:focus-visible) {
   /* #8001 한 판 원칙: glass 리터럴 호버(#e6edf3)를 판의 한 단계 토큰으로. */
@@ -372,31 +372,31 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   /* Do not let active-reading opacity, blur or answer activity fade/translate
    * the approved portrait. The mask may still respond to pointer focus. */
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .main-panel::before {
-    opacity: var(--glass-art-opacity) !important;
-    filter: var(--glass-art-filter) !important;
-    transform: translate3d(0,0,0) scale(1) !important;
+    opacity: var(--glass-art-opacity);
+    filter: var(--glass-art-filter);
+    transform: translate3d(0,0,0) scale(1);
   }
   /* Background wash/accents must not change with data-glass-mode. */
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body::before {
     background:
       linear-gradient(90deg,rgba(17,24,31,.11),transparent 24%,transparent 72%,rgba(17,24,31,.08)),
-      linear-gradient(180deg,rgba(255,255,255,.08),transparent 38%,rgba(17,24,31,.10)) !important;
-    box-shadow: inset 0 0 180px 48px rgba(20,29,38,.12) !important;
+      linear-gradient(180deg,rgba(255,255,255,.08),transparent 38%,rgba(17,24,31,.10));
+    box-shadow: inset 0 0 180px 48px rgba(20,29,38,.12);
   }
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body::after {
-    opacity: .10 !important;
+    opacity: .10;
   }
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"]::before {
-    opacity: .34 !important;
+    opacity: .34;
   }
   /* The composer keeps its original position even during stop/send swaps. One
      rule for the three surfaces that carry it: the Claw copy below was the same
      value pasted a second time when Claw joined the Chat frame. */
   html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"],[data-state="claw"]) .composer-wrap {
-    bottom: 16px !important;
+    bottom: 16px;
   }
   html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-note {
-    display: none !important;
+    display: none;
   }
 }
 
@@ -410,28 +410,28 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
 @media (max-width: 920px) {
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation.conversation {
     background: rgba(242, 245, 247, .90);
-    border-color: rgba(255, 255, 255, .58) !important;
-    box-shadow: 0 24px 70px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .72) !important;
-    backdrop-filter: blur(30px) saturate(106%) !important;
-    -webkit-backdrop-filter: blur(30px) saturate(106%) !important;
+    border-color: rgba(255, 255, 255, .58);
+    box-shadow: 0 24px 70px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .72);
+    backdrop-filter: blur(30px) saturate(106%);
+    -webkit-backdrop-filter: blur(30px) saturate(106%);
   }
   /* The artwork keeps the first screen's narrow-window composition. */
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .main-panel::before {
-    right: -24vw !important;
-    width: 82vw !important;
-    background-position: right 52% !important;
-    background-size: auto 72vh !important;
-    opacity: .22 !important;
-    filter: saturate(.52) contrast(.86) brightness(1.16) blur(.4px) !important;
-    transform: translate3d(0, 0, 0) scale(1) !important;
+    right: -24vw;
+    width: 82vw;
+    background-position: right 52%;
+    background-size: auto 72vh;
+    opacity: .22;
+    filter: saturate(.52) contrast(.86) brightness(1.16) blur(.4px);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 @media (max-width: 620px) {
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .main-panel::before {
-    right: -34vw !important;
-    width: 94vw !important;
-    opacity: .16 !important;
+    right: -34vw;
+    width: 94vw;
+    opacity: .16;
   }
 }
 
@@ -458,12 +458,12 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
  * older content scrolls up naturally as turns are appended. No overlay, portal,
  * duplicate panel or model-API behavior. */
 html[data-theme="padiem-glass"] body .app-shell .conversation[data-continuous-thread="true"] .empty-state:not([hidden]) {
-  display: grid !important;
+  display: grid;
 }
 html[data-theme="padiem-glass"] body .app-shell .conversation[data-continuous-thread="true"] #messageList:not([hidden]) {
   display: grid;
-  margin-top: clamp(28px, 3.2vh, 48px) !important;
-  padding-top: 0 !important;
+  margin-top: clamp(28px, 3.2vh, 48px);
+  padding-top: 0;
 }
 html[data-theme="padiem-glass"] body .app-shell .conversation[data-continuous-thread="true"] {
   /* Do not force CSS smooth scroll: browser QA and fail/retry affordances
@@ -487,10 +487,10 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-tier-mo
   border-top: 1px solid rgba(56,74,88,.19);
 }
 html[data-theme="padiem-glass"] body .app-shell:not([data-state="claw"]) .claw-tier-model-options {
-  display: none !important;
+  display: none;
 }
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-tier-model-options > .claw-model-choice {
-  display: flex !important;
+  display: flex;
   width: 100%;
   min-width: 0;
   padding: 0;
@@ -499,10 +499,10 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-tier-mo
   font-size: 12px;
 }
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-tier-model-options > .claw-model-advanced {
-  display: none !important;
+  display: none;
 }
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"][data-claw-tier="plus"] .claw-tier-model-options > .claw-model-advanced {
-  display: block !important;
+  display: block;
 }
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .mode-presentation-panel {
   max-height: min(76dvh, 650px);
@@ -513,17 +513,17 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .mode-present
      attachment, voice, search or send. */
   html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] #composerForm {
     box-sizing: border-box;
-    display: block !important;
-    min-height: 0 !important;
+    display: block;
+    min-height: 0;
   }
   html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] #composerForm > .composer-actions {
-    margin-top: 0 !important;
+    margin-top: 0;
   }
   html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] #composerForm > #messageInput {
-    flex: initial !important;
-    margin: 0 !important;
-    min-height: 0 !important;
-    padding: 0 !important;
+    flex: initial;
+    margin: 0;
+    min-height: 0;
+    padding: 0;
   }
 }
 /* The card surface, its height and the ON/OFF switch placement are shared by
@@ -549,7 +549,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspa
 /* Intro memory/run disclosures are not first-use cards. Data, approvals and
    lists remain available in authorized Claw workbench surfaces. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) ~ :is(#clawApprovedDisclosure,#clawRunHistoryDisclosure,#clawApprovedMemory,#clawRunHistory) {
-  display: none !important;
+  display: none;
 }
 
 /* At short desktop heights the fixed Chat composer otherwise covers the
