@@ -182,10 +182,10 @@ def test_padiem_home_glass_utility_is_one_centered_row() -> None:
     )
     assert len(rules) == 1
     declarations = rules[0].declarations
-    assert declarations.get("display") == "flex !important"
-    assert declarations.get("align-items") == "center !important"
-    assert declarations.get("justify-content") == "flex-start !important"
-    assert declarations.get("flex-wrap") == "nowrap !important"
+    assert declarations.get("display") == "flex"
+    assert declarations.get("align-items") == "center"
+    assert declarations.get("justify-content") == "flex-start"
+    assert declarations.get("flex-wrap") == "nowrap"
     assert "place-items" not in declarations
 
 
@@ -201,6 +201,6 @@ def test_padiem_home_glass_label_cannot_wrap() -> None:
     )
     assert len(marker) == 1
     assert len(label) == 1
-    assert declaration(marker[0], "line-height") == "1 !important"
-    assert declaration(label[0], "line-height") == "1.2 !important"
-    assert declaration(label[0], "white-space") == "nowrap !important"
+    assert declaration(marker[0], "line-height") == "1"
+    assert declaration(label[0], "line-height") == "1.2"
+    assert declaration(label[0], "white-space") == "nowrap"

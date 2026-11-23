@@ -89,10 +89,10 @@ def test_glass_small_copy_uses_contrast_floor_and_bottom_home_utility() -> None:
     assert 'html[data-theme="padiem-glass"] .starter small' in POLISH
     assert "color: #394955 !important;" in POLISH
     assert 'html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link' in POLISH
-    assert "position: static !important;" in POLISH
-    assert "min-height: 44px !important;" in POLISH
+    assert "position: static;" in POLISH
+    assert "min-height: 44px;" in POLISH
     assert 'html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link::before' in POLISH
-    assert "content: none !important;" in POLISH
+    assert "content: none;" in POLISH
 
 
 def test_no_runtime_or_authority_behavior_is_embedded_in_css() -> None:
