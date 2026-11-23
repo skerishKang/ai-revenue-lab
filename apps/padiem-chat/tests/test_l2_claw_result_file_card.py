@@ -31,7 +31,6 @@ DOM shim. The harness proves actual behavior:
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import json
 import re
@@ -39,10 +38,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-APP_JS = ROOT / "static/app.js"
-LOCALE_JS = locale_bundle.SOURCE
-WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
+# #8060: shipped reads live in _support. The renderer definition pin, locale
+# ownership and Node behavior checks stay in this module.
+from _support import l2_result_file_card_source as sheets
 
 KIND_KEY = "claw-runs-kind-aria"
 DOWNLOAD_ONLY_KEY = "claw-runs-download-only"
@@ -57,9 +55,7 @@ from _r5_function_source import definition_count, definition_source  # noqa: E40
 
 def _app() -> str:
     # #7216 R5 A5a: 다운로드 본문은 chat-claw-run-module.js에 있다(핀은 정의 본문 기준).
-    return (APP_JS.read_text(encoding="utf-8")
-            + "\n"
-            + APP_JS.with_name("chat-claw-run-module.js").read_text(encoding="utf-8"))
+    return sheets.app_source() + "\n" + sheets.run_module_source()
 
 
 def _card_source() -> str:
@@ -142,7 +138,7 @@ def test_download_only_note_is_stated_only_when_no_verified_preview_exists() -> 
 def test_new_runtime_copy_is_locale_owned_in_both_languages() -> None:
     app = _app()
     card = _card_source()
-    locale = LOCALE_JS.read_text(encoding="utf-8")
+    locale = sheets.locale_source()
     assert f'deps.clawT("{KIND_KEY}", {{ kind: artifactKind }})' in card
     assert f'deps.clawT("{DOWNLOAD_ONLY_KEY}")' in card
     ko, en = locale.split("en: {", 1)
@@ -161,7 +157,7 @@ def test_app_runtime_copy_stays_free_of_hardcoded_korean() -> None:
 
 
 def test_card_styles_reuse_shared_theme_tokens() -> None:
-    css = WORKSPACE_CSS.read_text(encoding="utf-8")
+    css = sheets.workspace_css()
     for selector in (".claw-run-card-file", ".claw-run-card-kind", ".claw-run-card-download-only"):
         assert selector in css, selector
     block = css.split("#2317 recent-run presentation", 1)[1]
@@ -335,11 +331,11 @@ console.log(JSON.stringify({ ok: true, checks }));
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
-    harness_path = ROOT / "tests" / "_l2_claw_result_file_card_harness.js"
+    harness_path = Path(__file__).resolve().parent / "_l2_claw_result_file_card_harness.js"
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(APP_JS.with_name("chat-run-history-module.js"))],
+            [node, str(harness_path), sheets.run_history_module_path()],
             capture_output=True, text=True, encoding="utf-8", timeout=60,
         )
     finally:
