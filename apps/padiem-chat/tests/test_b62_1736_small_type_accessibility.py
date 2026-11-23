@@ -2,15 +2,20 @@ from __future__ import annotations
 
 from pathlib import Path
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.css_contracts_b62_source import (
+    accessibility_polish_css, index_html, settings_css, sidebar_utility_css,
+)
+
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-POLISH = (STATIC / "accessibility-polish.css").read_text(encoding="utf-8")
-UTILITY = (STATIC / "sidebar-utility.css").read_text(encoding="utf-8")
+POLISH = accessibility_polish_css()
+UTILITY = sidebar_utility_css()
 # #7476-14: settings-surface members of the shared groups moved into the
 # consolidated settings sheet; the shared groups keep the app-surface members.
-SETTINGS = (STATIC / "padiem-settings.css").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+SETTINGS = settings_css()
+INDEX = index_html()
 
 
 def test_accessibility_polish_is_loaded_after_base_theme_stack() -> None:
