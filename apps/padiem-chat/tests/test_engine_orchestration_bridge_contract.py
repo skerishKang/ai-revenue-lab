@@ -822,24 +822,22 @@ async def test_disconnected_pc_stream_does_not_claim_a_terminal_failure():
     assert failures == []
 
 
-def test_byok_stream_reference_is_only_on_wire_and_resume_requires_fresh_owner_key():
+def test_legacy_byok_snapshot_resume_requires_fresh_owner_key():
     import json
     class Client(FakeClient):
         async def stream_orchestration(self, request, **kwargs):
             self.stream_request = request
             yield {'orchestration': _paused_raw()}
     async def run():
-        ref = 'unit-opaque-user-key-reference'
         client, store = Client(), FakeStore()
         bridge = B62EngineOrchestrationBridge(client=client, store=store)
         kwargs = dict(user_id='usr_owner', messages=[{'role':'user','content':'hi'}],
             skill=get_task_mode('auto'), model_id='google/unit-model', user_text='hi',
             conversation_id=None, pc_tools=None, subject_id='usr_owner', session_id='chat_unit',
-            byok_selection={'provider':'gemini','model':'unit-model'}, user_credential_ref=ref)
-        records = [record async for record in bridge.start_stream(**kwargs)]
-        assert client.stream_request['user_credential_ref'] == ref
+            byok_selection={'provider':'gemini','model':'unit-model'})
+        [record async for record in bridge.start_stream(**kwargs)]
+        assert 'user_credential_ref' not in client.stream_request
         assert client.stream_request['max_retries'] == 0
-        assert ref not in json.dumps(store.saved) and ref not in repr(records)
         assert store.snapshot.engine_request['agent']['model_policy']['user_credential_required'] is True
         with pytest.raises(B62OrchestrationError) as error:
             await bridge.resume(user_id='usr_owner', continuation_ref=store.snapshot.continuation_ref,
@@ -857,32 +855,26 @@ def test_byok_stream_reference_is_only_on_wire_and_resume_requires_fresh_owner_k
 
 def test_chat_byok_does_not_use_b14_bridge(monkeypatch):
     import inspect
-    import app.byok_bridge as byok
+    from pathlib import Path
+    import app
     from app import chat_routes
 
-    assert not hasattr(byok, 'resolve_reference')
-    assert not hasattr(byok, 'enabled')
-    assert not hasattr(byok, 'resolve_owner_custom_credential')
+    assert not (Path(app.__file__).resolve().parent / 'byok_bridge.py').exists()
     source = inspect.getsource(chat_routes._complete_custom_chat)
     assert 'byok_bridge' not in source
     assert 'resolve_reference' not in source
-    ref = byok.UserCredentialReference('test-only-reference-do-not-log')
-    assert 'test-only-reference-do-not-log' not in repr(ref)
 
 
 @pytest.mark.asyncio
-async def test_completed_byok_bridge_passes_key_only_on_wire_and_not_into_pause_store():
+async def test_byok_selection_marks_engine_request_without_credential_reference():
     client, store = FakeClient(), FakeStore()
     bridge = B62EngineOrchestrationBridge(client=client, store=store)
-    ref = "test-only-reference-do-not-log"
     await bridge.start(user_id="usr_owner", messages=[{"role": "user", "content": "hi"}],
                        skill=None, model_id="opencode-go/beam-free", user_text="hi",
                        conversation_id=None, session_id="byok_test",
-                       user_credential_ref=ref,
                        byok_selection={"provider": "opencode-go", "model": "opencode-go/beam-free"})
-    assert client.orchestrate_request["user_credential_ref"] == ref
+    assert "user_credential_ref" not in client.orchestrate_request
     policy = client.orchestrate_request["agent"]["model_policy"]
     assert policy["user_credential_required"] is True
     assert client.orchestrate_request["max_retries"] == 0
     assert len(store.saved) == 1
-    assert ref not in repr(store.saved)

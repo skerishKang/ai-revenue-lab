@@ -180,7 +180,6 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
         conversation_id: str | None,
         subject_id: str | None,
         session_id: str,
-        user_credential_ref: str | None = None,
         byok_selection: Mapping[str, str] | None = None,
         pc_tools: Mapping[str, Any] | None = None,
         additional_system_context: str | None = None,
@@ -216,8 +215,7 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
             additional_system_context=additional_system_context,
             product_identity=product_identity,
             timeout_seconds=timeout_seconds,
-            **({"user_credential_ref": user_credential_ref, "byok_selection": byok_selection}
-               if user_credential_ref is not None else {}),
+            **({"byok_selection": byok_selection} if byok_selection is not None else {}),
         )
         try:
             async for record in iterator:
