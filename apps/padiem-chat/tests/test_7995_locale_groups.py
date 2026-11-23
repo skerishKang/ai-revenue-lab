@@ -7,9 +7,11 @@ from pathlib import Path
 import locale_bundle
 import pytest
 
+from _support import locale_usage_source as sheets
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-BOOT = (STATIC / "locale.js").read_text(encoding="utf-8")
+INDEX = sheets.sheet("index.html")
+BOOT = sheets.sheet("locale.js")
 
 
 def test_every_group_is_loaded_before_the_bootstrap():
@@ -41,7 +43,7 @@ def test_no_key_is_declared_twice():
 
 def test_one_key_per_line_and_every_file_under_cap():
     for path in locale_bundle.GROUP_PATHS:
-        source = path.read_text(encoding="utf-8")
+        source = sheets.source(path)
         assert len(source.splitlines()) <= 1000, path.name
         for block in (locale_bundle.group_text(path, "ko"),
                       locale_bundle.group_text(path, "en")):
@@ -63,7 +65,7 @@ def test_7990_copy_lives_in_the_pc_group():
     pc = locale_bundle.group_text(locale_bundle.GROUP_PATHS[3], "ko")
     assert '"pc-command-ready-badge": "연결됨 · 명령 준비 안 됨"' in pc
     assert '"pc-command-ready-help": "이 PC 에 Windows 로 로그인돼 있는지' in pc
-    ui = (STATIC / "pc-command-ready.js").read_text(encoding="utf-8")
+    ui = sheets.sheet("pc-command-ready.js")
     assert "ctx.uiT(key)" in ui
     assert 'uiText("pc-command-ready-badge")' in ui
     # #8211: the missing row reads its own word through the same call.

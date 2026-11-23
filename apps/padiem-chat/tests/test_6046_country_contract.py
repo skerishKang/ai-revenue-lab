@@ -16,6 +16,7 @@ import pytest
 
 from app import request_contract
 from app.request_contract import BrowserRequestError, _validate_payload_parts
+from _support import locale_usage_source as sheets
 
 ROOT = Path(__file__).resolve().parents[3]
 COUNCIL = ROOT / "apps" / "padiem-council-apps" / "static" / "council-app.js"
@@ -39,7 +40,7 @@ def test_the_chat_request_refuses_a_country_key() -> None:
 
 
 def test_the_council_client_no_longer_sends_the_key() -> None:
-    source = COUNCIL.read_text(encoding="utf-8")
+    source = sheets.repo_source("apps/padiem-council-apps/static/council-app.js")
     assert "payload.country" not in source
     # the country still shapes the prompt locally; only the request key is gone
     assert "countryInstruction(country)" in source
