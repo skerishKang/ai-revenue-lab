@@ -22,6 +22,9 @@ These regressions pin the fixed routing:
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
+
 import asyncio
 import json
 import subprocess
@@ -334,7 +337,7 @@ async def test_the_connectors_status_answer_fills_the_grant_cache(monkeypatch):
     assert truth_calls == [], "the seeded cache answers the next turn at 0ms"
 
 
-TRANSPORT_SOURCE = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
+TRANSPORT_SOURCE = read(STATIC / "chat-transport.js")
 
 
 def run_node(source: str) -> Any:
