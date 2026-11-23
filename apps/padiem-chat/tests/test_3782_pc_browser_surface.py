@@ -10,6 +10,7 @@ import subprocess
 import zlib
 
 import pytest
+from _support.pc_browser_surface_3782_source import app_js, index_html, stream_js
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 SOURCE = STATIC / "pc-browser-progress.js"
@@ -48,12 +49,12 @@ process.stdout.write(JSON.stringify([
 """
     result = subprocess.run([node, "-e", script, str(SOURCE)], capture_output=True, text=True, encoding="utf-8", check=True)
     assert json.loads(result.stdout) == ["run_" + "a" * 24, None, None, "chat_pcq_" + "b" * 32]
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
-    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
+    app = app_js()
+    stream = stream_js()
     assert 'recordPcProgress?.(article, value, pcProgressRunId)' in stream
     assert 'if (!clawGeneralRequest && ["pc_progress"' not in app
     assert 'if (!clawGeneralRequest && ["pc_progress"' not in stream
-    index = (STATIC / "index.html").read_text(encoding="utf-8")
+    index = index_html()
     assert index.index('./pc-browser-progress.js') < index.index('./app.js')
 
 
