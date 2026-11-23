@@ -9,6 +9,9 @@ screen copy byte-identical without touching a real account.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.r5_browser_golden_source import app_context_js, app_js, login_golden_json, strict_deps_js
+
 import json
 from pathlib import Path
 
@@ -17,7 +20,7 @@ from _r5_b4_2_login_golden import login_golden
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 SNAPSHOT = json.loads(
-    (ROOT / "tests/fixtures/r5_b4_2_login_golden.json").read_text(encoding="utf-8")
+    login_golden_json()
 )
 
 
@@ -28,7 +31,7 @@ def test_login_flow_golden_matches_main_snapshot() -> None:
 
 
 def test_branches_wire_the_moved_login_listeners() -> None:
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
+    app = app_js()
     for call in (
         "authModule().wireSessionRefresh();",
         "authModule().wireLoginButton();",
