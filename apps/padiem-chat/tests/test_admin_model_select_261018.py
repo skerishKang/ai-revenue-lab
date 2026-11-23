@@ -8,6 +8,12 @@ their executability set stay unchanged.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.admin_brand_home_source import (
+    app_js, b66_quote_routes, capabilities_js, connector_owner_setup_page, index_html,
+    install_html, locale_source, read, settings_js, six_panel_css, theme_js,
+)
+
 import asyncio
 from pathlib import Path
 from types import SimpleNamespace
@@ -32,9 +38,9 @@ from app.model_policy import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CAPABILITIES = (ROOT / "static" / "product-capabilities.js").read_text(encoding="utf-8")
-APP_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
-SETTINGS_JS = (ROOT / "static" / "chat-settings-module.js").read_text(encoding="utf-8")
+CAPABILITIES = capabilities_js()
+APP_JS = app_js()
+SETTINGS_JS = settings_js()
 
 MUSE_MODEL_ID = ADMIN_B14_MODEL_ID
 ADMIN_CONTRACT_PROFILE = "free" if ADMIN_B14_MODEL_ID == FREE_B14_MODEL_ID else "high"

@@ -1,12 +1,17 @@
 from __future__ import annotations
-import locale_bundle
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.admin_brand_home_source import (
+    app_js, b66_quote_routes, capabilities_js, connector_owner_setup_page, index_html,
+    install_html, locale_source, read, settings_js, six_panel_css, theme_js,
+)
 
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+HTML = index_html()
+LOCALE = locale_source()
 
 
 def test_visible_brand_reads_padiem_chat() -> None:
@@ -56,13 +61,13 @@ INSTALL_PATH_OWNED_LINES = (
 
 
 def test_install_path_owned_lines_are_listed_verbatim_once() -> None:
-    lines = (ROOT / "static" / "install.html").read_text(encoding="utf-8").splitlines()
+    lines = install_html().splitlines()
     for owned in INSTALL_PATH_OWNED_LINES:
         assert lines.count(owned) == 1, owned
 
 
 def _visible_lines(path):
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in read(path).splitlines():
         stripped = line.strip()
         if stripped.startswith(("//", "/*", "*", "<!--", "#")) or "PADIEM_" in line:
             continue
@@ -92,9 +97,9 @@ def test_no_visible_all_caps_brand_string_left_in_the_ui():
 
 
 def test_the_server_side_tier_label_is_title_case_too():
-    routes = (ROOT / "app" / "b66_quote_routes.py").read_text(encoding="utf-8")
+    routes = b66_quote_routes()
     assert '"name": B66_GRADE_NAMES[grade]' in routes
-    page = (ROOT / "app" / "connector_owner_setup_page.py").read_text(encoding="utf-8")
+    page = connector_owner_setup_page()
     assert "PADIEM CLAW" not in page
     assert "Padiem Claw" in page
 
@@ -102,7 +107,7 @@ def test_the_server_side_tier_label_is_title_case_too():
 def test_no_brand_rule_forces_uppercase():
     offenders = []
     for path in sorted((ROOT / "static").glob("*.css")):
-        text = path.read_text(encoding="utf-8")
+        text = read(path)
         for block in text.split("}"):
             if "text-transform: uppercase" in block or "text-transform:uppercase" in block:
                 selector = block.split("{")[0].strip().splitlines()[-1] if "{" in block else ""
