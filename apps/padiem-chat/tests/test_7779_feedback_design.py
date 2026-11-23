@@ -1,12 +1,17 @@
 """#7779 — '내 의견' 창 디자인 계약 (시안 확정분)."""
 from __future__ import annotations
 
-from pathlib import Path
+# #8060: shipped-source reads live in _support; assertions stay here.
+from _support.feedback_design_7779_source import (
+    feedback_css,
+    feedback_module_js,
+    index_html,
+    tokens_css,
+)
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-JS = (STATIC / "chat-feedback-module.js").read_text(encoding="utf-8")
-CSS = (STATIC / "chat-feedback.css").read_text(encoding="utf-8")
-TOKENS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+JS = feedback_module_js()
+CSS = feedback_css()
+TOKENS = tokens_css()
 
 
 def test_card_heading_is_date_and_first_line_not_internal_id() -> None:
@@ -64,7 +69,7 @@ def test_body_excludes_title_first_line_and_single_line_has_no_body() -> None:
 def test_tabs_use_aria_selected_with_visible_state() -> None:
     assert 'setAttribute("aria-selected"' in JS
     assert '[aria-selected="true"]' in CSS
-    assert "role=\"tablist\"" in (STATIC / "index.html").read_text(encoding="utf-8")
+    assert "role=\"tablist\"" in index_html()
 
 
 def test_glass_primary_button_keeps_accent() -> None:
