@@ -6,6 +6,9 @@ Chromium 페이지에 주입하고, chat-pc-run-module.js와 함께 각 전달 �
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
+
 import re
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -17,8 +20,8 @@ pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import sync_playwright  # noqa: E402
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+APP = read(STATIC / "app.js")
+STRICT = read(Path(__file__).resolve().parent / "_r5_strict_deps.js")
 
 NAMES = (
     "showPcRuntimeStatus",
@@ -32,19 +35,12 @@ NAMES = (
 
 
 def _extract_app_wiring() -> str:
-    factory_start = APP.index("let pcRunModuleInstance = null;")
-    factory_end = APP.index("\n  const shell = document.querySelector", factory_start)
-    factory_block = APP[factory_start:factory_end]
-    forwarders = []
-    for name in NAMES:
-        match = re.search(
-            rf"^\s*(?:async\s+)?function\s+{re.escape(name)}\(\.\.\.a\)\s*\{{[^\n]+\}}",
-            APP,
-            re.M,
-        )
-        assert match is not None, name
-        forwarders.append(match.group(0).strip())
-    return factory_block + "\n" + "\n".join(forwarders)
+    # R5 part 2 B2+ moved the creation to `app.provide("pcRun", ...)` and removed
+    # app.js's one-line forwarders. The module itself now exports the seven
+    # entry points, so the harness calls them through `pcRunModuleInstance`.
+    factory_start = APP.index('const pcRunModuleInstance = app.provide("pcRun"')
+    factory_end = APP.index("\n  });", factory_start) + len("\n  });")
+    return APP[factory_start:factory_end]
 
 
 def test_pc_run_forwarders_execute_in_headless_chromium_with_zero_console_errors(tmp_path) -> None:
@@ -73,6 +69,7 @@ def test_pc_run_forwarders_execute_in_headless_chromium_with_zero_console_errors
   window.PadiemChatPcScopeNotice = {{ render() {{}} }};
   window.PadiemChatPcRecovery = {{
     validRunId: (id) => typeof id === "string" && id.startsWith("chat_pcq_"),
+    create: () => pcResultRecovery,
   }};
   window.PadiemChatLifecycle = {{
     set(a, s) {{ a.dataset.lifecycle = s; }},
@@ -86,7 +83,8 @@ def test_pc_run_forwarders_execute_in_headless_chromium_with_zero_console_errors
   const conversationState = {{
     getConversationId: () => "conv_b1",
     setProduct() {{}},
-    setConversationId() {{}},
+    // The module now adopts a recovered run by switching the conversation id.
+    setConversationId(id) {{ if (!reopened.includes(id)) reopened.push(id); }},
     commitAssistant(_m, ans) {{ committed.push(ans); }},
   }};
   const pcResultRecovery = {{
@@ -132,6 +130,31 @@ def test_pc_run_forwarders_execute_in_headless_chromium_with_zero_console_errors
   }};
   window.setTimeout = (fn) => {{ fn(); return 1; }};
 
+  // The extracted wiring registers the module on the app registry and its deps
+  // getters read these names live. Supply the current registry entry point and
+  // the four deps the module actually uses; the other getters are inert here.
+  const app = {{
+    provide: (_name, value) => value,
+    get MESSAGE_LIFECYCLE() {{ return MESSAGE_LIFECYCLE; }},
+    get authState() {{ return authState; }},
+    get conversationProduct() {{ return conversationProduct; }},
+    get conversationState() {{ return conversationState; }},
+    get idleNote() {{ return idleNote; }},
+    get loadRecentConversations() {{ return loadRecentConversations; }},
+    get openSavedConversation() {{ return openSavedConversation; }},
+    get renderStreamError() {{ return renderStreamError; }},
+    get setNote() {{ return setNote; }},
+    get uiT() {{ return uiT; }},
+  }};
+  const showPcRuntimeStatus = (...a) => pcRunModuleInstance.showPcRuntimeStatus(...a);
+  const pcWaitElapsed = () => "01:15";
+  const findUnfinishedPcRun = async () => ({{
+    run_id: "chat_pcq_" + "9".repeat(32),
+    conversation_id: "conv_b1",
+    created_at: new Date(Date.now() - 75000).toISOString(),
+  }});
+  const renderStoredPcAnswer = (...a) => pcRunModuleInstance.renderStoredPcAnswer(...a);
+
   {wiring}
 
   window.__exercise = async () => {{
@@ -149,11 +172,11 @@ def test_pc_run_forwarders_execute_in_headless_chromium_with_zero_console_errors
     }};
 
     const a1 = makeArt();
-    const sOk = showPcRuntimeStatus(a1, "tool_started");
-    const elapsed = pcWaitElapsed(new Date(Date.now() - 75000).toISOString());
-    const found = await findUnfinishedPcRun("conv_b1");
-    await resumeUnfinishedPcRun("conv_b1");
-    await waitForAcceptedPcRun(
+    const sOk = pcRunModuleInstance.showPcRuntimeStatus(a1, "tool_started");
+    const elapsed = pcRunModuleInstance.pcWaitElapsed(new Date(Date.now() - 75000).toISOString());
+    const found = await pcRunModuleInstance.findUnfinishedPcRun("conv_b1");
+    await pcRunModuleInstance.resumeUnfinishedPcRun("conv_b1");
+    await pcRunModuleInstance.waitForAcceptedPcRun(
       a1,
       {{ run_id: "run_live_1", conversation_id: "conv_b1" }},
       [],
@@ -161,14 +184,14 @@ def test_pc_run_forwarders_execute_in_headless_chromium_with_zero_console_errors
       "claw"
     );
     const a2 = makeArt();
-    const rRendered = renderStoredPcAnswer(
+    const rRendered = pcRunModuleInstance.renderStoredPcAnswer(
       a2,
       {{ answer: "직접 렌더 응답", conversationId: "conv_b1" }},
       [],
       {{ product: "claw" }}
     );
     const a3 = makeArt();
-    const rRecovered = await recoverStoredPcResult(
+    const rRecovered = await pcRunModuleInstance.recoverStoredPcResult(
       a3,
       {{ pcRunId: "run_rec_1", conversationId: "conv_b1", product: "claw" }},
       [],
