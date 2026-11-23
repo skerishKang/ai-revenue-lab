@@ -80,7 +80,8 @@
         "password_find_enabled": false,
         "email_confirmation_enabled": false,
         "connector_account_shadow_enabled": false,
-        "connector_account_key_enabled": false
+        "connector_account_key_enabled": false,
+        "pc_scope_tenant_only_enabled": false
       }
     },
     {
@@ -165,7 +166,8 @@
         "password_find_enabled": true,
         "email_confirmation_enabled": true,
         "connector_account_shadow_enabled": true,
-        "connector_account_key_enabled": true
+        "connector_account_key_enabled": true,
+        "pc_scope_tenant_only_enabled": false
       }
     },
     {
@@ -250,7 +252,8 @@
         "password_find_enabled": false,
         "email_confirmation_enabled": false,
         "connector_account_shadow_enabled": false,
-        "connector_account_key_enabled": false
+        "connector_account_key_enabled": false,
+        "pc_scope_tenant_only_enabled": false
       }
     },
     {
@@ -333,7 +336,8 @@
         "password_find_enabled": false,
         "email_confirmation_enabled": false,
         "connector_account_shadow_enabled": false,
-        "connector_account_key_enabled": false
+        "connector_account_key_enabled": false,
+        "pc_scope_tenant_only_enabled": false
       }
     },
     {
@@ -607,7 +611,8 @@
       "PADIEM_AUTH_PASSWORD_FIND_ENABLED",
       "PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED",
       "PADIEM_CHAT_CONNECTOR_ACCOUNT_SHADOW_ENABLED",
-      "PADIEM_CHAT_CONNECTOR_ACCOUNT_KEY_ENABLED"
+      "PADIEM_CHAT_CONNECTOR_ACCOUNT_KEY_ENABLED",
+      "PADIEM_CHAT_PC_SCOPE_TENANT_ONLY_ENABLED"
     ],
     "fields": {
       "runtime_mode": "mock",
@@ -687,7 +692,8 @@
       "password_find_enabled": false,
       "email_confirmation_enabled": false,
       "connector_account_shadow_enabled": false,
-      "connector_account_key_enabled": false
+      "connector_account_key_enabled": false,
+      "pc_scope_tenant_only_enabled": false
     }
   }
 }
