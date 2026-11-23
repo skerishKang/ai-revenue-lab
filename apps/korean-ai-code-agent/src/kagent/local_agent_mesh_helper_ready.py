@@ -455,28 +455,46 @@ class HelperStatusReadFallback:
 
         def read(probe):
             field, path, limit = probe
-            try:
-                raw = self._read_port.read_bytes(node_ref=ref, file_path=path,
-                                                timeout_seconds=15, max_bytes=limit)
-                if not isinstance(raw, (bytes, bytearray)) or len(raw) > limit:
-                    return field, None, "invalid_read_body"
-                if field == "updater_source":
-                    return field, hashlib.sha256(raw).hexdigest(), "observed"
-                # An empty task file does not establish a usable task.
-                return (field, True, "observed") if raw else (field, None, "empty_file")
-            except Exception as exc:
-                return field, None, _read_failure(exc)
+            # The Windows file transport may run in a 32-bit process and
+            # redirect System32 to SysWOW64. Match the existing console's
+            # two fixed task paths, with one total bounded read budget.
+            paths = (path,) if field == "updater_source" else (
+                path, path.replace(r"\System32\Tasks", r"\Sysnative\Tasks", 1))
+            deadline = time.monotonic() + 15
+            for attempt, candidate in enumerate(paths, 1):
+                remaining = 15 if attempt == 1 else int(deadline - time.monotonic())
+                if remaining < 1:
+                    return field, None, "no_staged_read", attempt - 1
+                try:
+                    raw = self._read_port.read_bytes(
+                        node_ref=ref, file_path=candidate,
+                        timeout_seconds=remaining,
+                        max_bytes=limit)
+                    if not isinstance(raw, (bytes, bytearray)) or len(raw) > limit:
+                        return field, None, "invalid_read_body", attempt
+                    if field == "updater_source":
+                        return field, hashlib.sha256(raw).hexdigest(), "observed", attempt
+                    # An empty task file does not establish a usable task.
+                    return (field, True, "observed", attempt) if raw else (
+                        field, None, "empty_file", attempt)
+                except Exception as exc:
+                    reason = _read_failure(exc)
+                    if (attempt < len(paths)
+                            and reason in ("no_staged_read", "local_file_not_found")):
+                        continue
+                    # Missing/canceled/access denied is UNKNOWN, never false.
+                    return field, None, reason, attempt
 
         try:
             with ThreadPoolExecutor(max_workers=len(probes)) as pool:
-                for field, value, reason in pool.map(read, probes):
+                for field, value, reason, attempts in pool.map(read, probes):
                     if value is not None:
                         if field == "updater_source":
                             state.update(updater_source_present=True, updater_source_sha256=value)
                         else:
                             state[field + "_present"] = value
                     print(f"oracle-mesh-executor helper_ready_probe field={field} "
-                          f"reason={reason}", flush=True)
+                          f"reason={reason} attempts={attempts}", flush=True)
         except Exception:
             # The primary authenticated status report must still be delivered.
             print("oracle-mesh-executor helper_ready_probe reason=probe_unavailable", flush=True)

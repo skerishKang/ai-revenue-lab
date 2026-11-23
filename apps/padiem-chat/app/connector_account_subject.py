@@ -6,6 +6,7 @@ from contextvars import ContextVar
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import math
+import logging
 import time
 from typing import Any
 
@@ -14,6 +15,7 @@ from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
 
 _SEAL = object()
 _PRODUCTS = frozenset({"b62", "b54-padiem-claw"})
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True, init=False, repr=False)
@@ -183,9 +185,12 @@ async def maintenance_owner_context(app, user_id):
     Resolve current B54 authority, reverse B62 link and active membership
     without the request cache. Bind a short-lived subject to this task only.
     """
-    from padiem_control_plane.b54_identity_bridge import resolve_current_b54_canonical_session
+    from padiem_control_plane.b54_identity_bridge import (
+        B54IdentityBridgeError, resolve_current_b54_canonical_session,
+    )
     from padiem_control_plane.tenants import TenantMembership, TenantMembershipState
-    from .history import _row_to_dict
+    from .history import _row_to_dict, _user_id
+    stage = "b54_session"
     try:
         authority = app.state.control_plane_identity_authority
         uncached = getattr(authority, "maintenance_uncached_authority", None)
@@ -194,25 +199,63 @@ async def maintenance_owner_context(app, user_id):
         now = datetime.now(timezone.utc)
         session = (await resolve_current_b54_canonical_session(authority, user_id, now=now)).auth_session
         subject = session.subject.subject_id
-        linked = await authority.resolve_product_user_for_subject(
+        stage = "b62_reverse_link"
+        # The Cloudflare adapter itself has a process cache beneath the outer
+        # request cache. Maintenance authority must bypass both caches.
+        linked = await authority.resolve_product_user_for_subject_uncached(
             product_id="b62", canonical_subject_id=subject)
+        if linked != user_id:
+            raise ValueError("maintenance_owner_unresolved")
+        stage = "membership"
         membership = await authority.resolve_active_tenant_membership(
             tenant_id=session.tenant_id, canonical_subject_id=subject, now=now)
-        row = _row_to_dict(await app.state.account_data_db.prepare(
-            "SELECT provider_subject FROM users WHERE id=?").bind(user_id).first())
-        if (linked != user_id or not isinstance(membership, TenantMembership)
+        if (not isinstance(membership, TenantMembership)
                 or membership.tenant_id != session.tenant_id
                 or membership.canonical_subject_id != subject
-                or membership.state is not TenantMembershipState.ACTIVE or membership.role is None
-                or not row or row.get("provider_subject") != "shared:" + subject
-                or not session.is_active(now=datetime.now(timezone.utc))):
+                or membership.state is not TenantMembershipState.ACTIVE or membership.role is None):
             raise ValueError("maintenance_owner_unresolved")
+        stage = "provider_subject"
+        row = _row_to_dict(await app.state.account_data_db.prepare(
+            "SELECT auth_provider, provider_subject FROM users WHERE id=?").bind(user_id).first())
+        provider = row.get("provider_subject") if row else None
+        b62_session = None
+        if provider != "shared:" + subject:
+            # Existing Google accounts keep their original deterministic
+            # product user id (#7078). They are not shared: rows. Require
+            # both the exact legacy binding and a fresh, same-tenant canonical
+            # B62 session; never treat a local row alone as authentication.
+            if (not row or row.get("auth_provider") != "google"
+                    or not isinstance(provider, str) or not provider
+                    or provider.startswith(("shared:", "password:"))
+                    or _user_id(provider) != user_id):
+                raise ValueError("maintenance_owner_unresolved")
+            stage = "b62_session"
+            b62_session = await authority.resolve_current_auth_session(
+                product_id="b62", product_user_id=user_id)
+            if (not isinstance(b62_session, AuthSessionSnapshot)
+                    or b62_session.product_id != "b62"
+                    or b62_session.subject.subject_type is not SubjectType.USER
+                    or b62_session.subject.subject_id != subject
+                    or b62_session.tenant_id != session.tenant_id):
+                raise ValueError("maintenance_owner_unresolved")
+        stage = "session_expiry"
+        checked_at = datetime.now(timezone.utc)
+        if (not session.is_active(now=checked_at)
+                or (b62_session is not None and not b62_session.is_active(now=checked_at))):
+            raise ValueError("maintenance_owner_unresolved")
+        stage = "proof"
         proof = _RequestProof(
             subject=VerifiedConnectorSubject(_seal=_SEAL, product_id=session.product_id,
-                subject_id=subject, expires_at=session.expires_at.timestamp(),
+                subject_id=subject, expires_at=min(session.expires_at, b62_session.expires_at
+                    if b62_session is not None else session.expires_at).timestamp(),
                 session_id=session.session_id, tenant_id=session.tenant_id),
             sessions={session.session_id: session}, key_mode=True)
-    except Exception:
+    except Exception as exc:
+        if (stage == "b54_session" and isinstance(exc, B54IdentityBridgeError)
+                and exc.code == "b54_control_plane_session_inactive"):
+            stage = "session_expiry"
+        # Labels are chosen only by this function, not by RPC error text.
+        logger.warning("pc_maintenance_owner_context outcome=denied stage=%s", stage)
         raise ValueError("maintenance_owner_unresolved") from None
     token = _current.set(proof)
     try:
