@@ -15,11 +15,12 @@ from pathlib import Path
 
 import pytest
 
+from _support import pc_connect_file_lane_source as sheets
+
 HERE = Path(__file__).resolve().parent
-STATIC = HERE.parents[0] / "static"
-MODULE = STATIC / "pc-connect-flow.js"
+MODULE = sheets.pc_connect_flow_path()
 HARNESS = HERE / "pc_connect_flow_harness.js"
-INDEX = STATIC / "index.html"
+INDEX = sheets.index_html()
 NODE = shutil.which("node")
 
 pytestmark = pytest.mark.skipif(NODE is None, reason="node is required for the browser harness")
@@ -31,10 +32,10 @@ def _run(*args: str) -> subprocess.CompletedProcess:
 
 
 def test_the_page_loads_the_flow_and_its_own_sheet():
-    html = INDEX.read_text(encoding="utf-8")
+    html = INDEX
     assert './pc-connect-flow.js' in html
     assert './pc-connect-flow.css' in html
-    source = MODULE.read_text(encoding="utf-8")
+    source = sheets.pc_connect_flow_js()
     # The flow is one surface with one entry point; nothing here may render a
     # pairing code or speak to another endpoint.
     assert "innerHTML" not in source
@@ -68,11 +69,11 @@ def test_the_harness_itself_fails_when_the_flow_lies():
     """Differential proof: the same harness refuses a flow that reports the
     connect program as ready while the server says it is not. Edited copy, not
     shipped code."""
-    broken = MODULE.read_text(encoding="utf-8").replace(
+    broken = sheets.pc_connect_flow_js().replace(
         'notReady: "PC 연결 기능은 아직 준비 중입니다. 잠시 후 다시 시도해 주세요.",',
         'notReady: "연결됐어요 ✓",',
     )
-    assert broken != MODULE.read_text(encoding="utf-8")
+    assert broken != sheets.pc_connect_flow_js()
     temporary = HERE / "_pc_connect_flow_broken.js"
     temporary.write_text(broken, encoding="utf-8")
     try:
