@@ -94,6 +94,50 @@ test('첫 화면 칩·부제는 390에서 12px 이상, 1440에서 13px 이상이
   assert.ok(fontSize(interactionCss, '.lib-head .kicker') >= 12, '390 부제');
 });
 
+/* #6476 — 어두운 테마에서 출처 줄 글자 대비가 4.5:1 이상인지 선언값으로 확인한다.
+   배경은 어두운 테마의 읽기 종이(.reader-page-note)색이다. */
+const contrastOn = (color, background) => {
+  const luminance = (hex) => {
+    const [r, g, b] = hex.replace('#', '').match(/../g).map((h) => parseInt(h, 16) / 255)
+      .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const [hi, lo] = [luminance(color), luminance(background)].sort((a, b) => b - a);
+  return (hi + 0.05) / (lo + 0.05);
+};
+const darkSourceColor = (suffix) => {
+  const rule = html.match(new RegExp(
+    'body\\.smr-theme-dark \\.sm-verified-source-note ' + suffix + '\\{([^}]*)\\}'));
+  assert.ok(rule, '어두운 테마 출처 줄 규칙이 없다: ' + suffix);
+  const color = rule[1].match(/color:\s*(#[0-9a-fA-F]{6})/);
+  assert.ok(color, '규칙에 색이 없다: ' + suffix);
+  return color[1].toLowerCase();
+};
+
+test('어두운 테마 출처 줄은 종이 위에서 4.5:1 이상이다', () => {
+  const paper = '#2e2820';
+  const parts = {
+    요약: darkSourceColor('\\.sm-source-detail summary'),
+    마커: darkSourceColor('\\.sm-source-detail summary::after'),
+    자세히: darkSourceColor('\\.sm-source-more'),
+    상세: darkSourceColor('\\.sm-source-full'),
+    상세제목: darkSourceColor('\\.sm-source-full b'),
+  };
+  for (const [name, color] of Object.entries(parts)) {
+    const ratio = contrastOn(color, paper);
+    assert.ok(ratio >= 4.5, `${name} 대비 ${ratio.toFixed(2)}:1 — ${color} on ${paper}`);
+  }
+  assert.ok(contrastOn('#8a7c6d', paper) < 4.5, '고치기 전 색은 기준 미만이어야 의미가 있다');
+});
+
+test('밝은 테마 출처 줄 색은 바꾸지 않았다', () => {
+  assert.match(html, /\.sm-source-detail summary\{[^}]*color:#8a7c6d\}/);
+  assert.match(html, /\.sm-source-more\{[^}]*color:#a06b4d\}/);
+  assert.match(html, /\.sm-source-full\{[^}]*color:#8a7c6d[;}]/);
+  assert.doesNotMatch(html, /smr-theme-light[^}]*\.sm-verified-source-note/,
+    '밝은 테마에는 출처 줄 전용 색을 더하지 않는다');
+});
+
 test('출처 줄 기본 글자도 390에서 12px 이상, 1440에서 13px 이상이다', () => {
   assert.ok(fontSize(html, '.sm-verified-source-note') >= 12);
   assert.ok(fontSize(html, '.sm-source-detail summary') >= 12);

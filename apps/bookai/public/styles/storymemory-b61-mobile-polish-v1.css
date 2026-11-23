@@ -404,6 +404,14 @@ body.smr-theme-dark #reader .ai-panel .ask {
   #reader .smal-overflow-menu { bottom: 122px !important; z-index: 121 !important; }
 }
 
+/* 2026-11-23 #6476 — 홈 첫 화면 안내문(`.kicker`)이 떠 있는 TODAY 칩(y 28–72)과
+   겹쳐 첫 줄 위쪽이 가려졌다. 720 이하에서 안내문이 칩 아래에서 시작하도록
+   위 여백을 늘리고, 폭이 좁아도 끝까지 보이도록 줄바꿈을 허용한다. */
+@media (max-width: 720px) {
+  #library .lib-head { margin-top: 58px; }
+  #library .lib-head .kicker { white-space: normal; line-height: 1.45; }
+}
+
 /* The account entry on the TODAY screen was 27px tall and the auth sheet
    buttons 43px, both under the 44px phone target. */
 @media (max-width: 720px) {
