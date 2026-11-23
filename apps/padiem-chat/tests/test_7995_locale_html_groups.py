@@ -1,12 +1,13 @@
 """#7995 — every HTML that loads locale.js must load the groups its keys need."""
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.locale_source import consent_html, council_app_js, index_html, locale_js, pc_ready_js, privacy_html, read, terms_html
+
 import re
 from pathlib import Path
 
 import locale_bundle
-
-from _support import locale_usage_source as sheets
 import pytest
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
@@ -17,7 +18,7 @@ GROUP_NAMES = set(locale_bundle.GROUP_NAMES)
 
 def locale_html() -> list[Path]:
     return sorted(p for p in STATIC.glob("*.html")
-                  if re.search(r'<script[^>]*\bsrc="[^"]*locale\.js"', sheets.source(p)))
+                  if re.search(r'<script[^>]*\bsrc="[^"]*locale\.js"', read(p)))
 
 
 def check_page(html: str, name: str) -> list[str]:
@@ -38,18 +39,18 @@ def test_every_locale_html_loads_the_groups_its_keys_need():
     pages = locale_html()
     assert {p.name for p in pages} >= {"index.html", "mcp-oauth-consent.html"}
     for page in pages:
-        assert not check_page(sheets.source(page), page.name), page.name
+        assert not check_page(read(page), page.name), page.name
 
 
 def test_consent_page_loads_common_then_pc_connect_before_bootstrap():
-    html = sheets.sheet("mcp-oauth-consent.html")
+    html = consent_html()
     scripts = SCRIPTS.findall(html)
     order = [Path(src).name for src in scripts]
     assert order.index("locale-common.js") < order.index("locale-pc-connect.js") < order.index("locale.js")
 
 
 def test_all_consent_keys_are_declared_in_a_loaded_group():
-    html = sheets.sheet("mcp-oauth-consent.html")
+    html = consent_html()
     missing = [key for key in set(KEYS.findall(html))
                if locale_bundle.key_owner(key) is None]
     assert not missing, missing
@@ -57,7 +58,7 @@ def test_all_consent_keys_are_declared_in_a_loaded_group():
 
 def test_removing_a_required_group_fails_the_check():
     """Mutation: drop the PC-connect group from the consent page."""
-    html = sheets.sheet("mcp-oauth-consent.html")
+    html = consent_html()
     mutated = html.replace('<script src="/locale-pc-connect.js"></script>\n', "")
     assert mutated != html
     assert check_page(mutated, "mcp-oauth-consent.html")

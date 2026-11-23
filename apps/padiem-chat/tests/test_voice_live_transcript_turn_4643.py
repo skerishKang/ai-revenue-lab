@@ -9,6 +9,9 @@ pattern tests/test_voice_composer_4643.py uses for its Node harness.
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
+
 import re
 import shutil
 import subprocess
@@ -61,7 +64,7 @@ def test_ported_global_classroom_gates_pass() -> None:
 
 
 def test_authority_ships_the_global_classroom_values_verbatim() -> None:
-    source = AUTHORITY_JS.read_text(encoding="utf-8")
+    source = read(AUTHORITY_JS)
     for name, value in GC_CONTRACT.items():
         pattern = rf"const {name} = {re.escape(value)};"
         assert re.search(pattern, source), f"authority drifted from global-classroom: {name}"
@@ -70,7 +73,7 @@ def test_authority_ships_the_global_classroom_values_verbatim() -> None:
 
 
 def test_authority_exports_the_full_shared_surface() -> None:
-    source = AUTHORITY_JS.read_text(encoding="utf-8")
+    source = read(AUTHORITY_JS)
     for name in [
         "mergeLiveTranscriptChunk", "createAudioHandoffBuffer", "flushLiveTranscriptTail",
         "createTranscriptTurnBuffer", "shouldCutRecordedChunk", "shouldFlushStalledTurn",
@@ -80,7 +83,7 @@ def test_authority_exports_the_full_shared_surface() -> None:
 
 
 def test_page_loads_the_authority_before_any_consumer_of_it() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
+    html = read(INDEX_HTML)
     assert html.count('<script src="./voice-live-transcript-turn.js"></script>') == 1
     order = [
         html.index("voice-live-transcript-turn.js"),
@@ -93,7 +96,7 @@ def test_page_loads_the_authority_before_any_consumer_of_it() -> None:
 
 
 def test_adapter_has_no_local_copy_of_the_turn_logic() -> None:
-    source = ADAPTER_JS.read_text(encoding="utf-8")
+    source = read(ADAPTER_JS)
     # The adapter delegates; a re-landed numeric copy is the drift the gate in the
     # Node spec counts, and here it is named exactly.
     for name in GC_CONTRACT:

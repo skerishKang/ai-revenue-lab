@@ -10,6 +10,7 @@ import asyncio
 import hashlib
 import json
 import logging
+import re
 from datetime import datetime, timedelta, timezone
 
 from starlette.requests import Request
@@ -28,6 +29,7 @@ from .platform_admin_authority import platform_authority_for
 from .connector_account_subject import maintenance_owner_context
 from .connector_account_shadow import mode_connector_read
 
+_CLOSED_CODE = re.compile(r"[a-z0-9_]{1,64}")
 logger = logging.getLogger(__name__)
 INTERVAL = 60
 TTL = 300
@@ -256,9 +258,16 @@ async def _authorized(request, env, facts, session, uid, resolver):
     scope = await mode_connector_read(identity, "owner_scope", session_id=session.session_id)
     try:
         consent = await mode_connector_read(identity, "consent", session_id=session.session_id, device_id=device)
-    except Exception:
+    except Exception as exc:
         consent = None
         stage = "consent_read_error"
+        # Closed identity codes only (fixed strings such as
+        # connector_consent_not_found), never a value or message text.
+        code = getattr(exc, "code", None)
+        status = getattr(exc, "status_code", getattr(exc, "status", None))
+        logger.warning("pc_maintenance_consent_read outcome=error kind=%s status=%s code=%s",
+                       type(exc).__name__, status if isinstance(status, int) else "-",
+                       code if isinstance(code, str) and _CLOSED_CODE.fullmatch(code) else "-")
     subject = session.subject.subject_id
     if stage is None:
         if not isinstance(scope, dict) or not scope.get("account_ref") or not scope.get("workspace_ref"):

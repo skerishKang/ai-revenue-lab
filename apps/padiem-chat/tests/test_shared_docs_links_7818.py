@@ -6,13 +6,16 @@ reciprocal links both ways.
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.locale_source import consent_html, council_app_js, index_html, locale_js, pc_ready_js, privacy_html, read, terms_html
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 
-PRIVACY = (STATIC / "privacy.html").read_text(encoding="utf-8")
-TERMS = (STATIC / "terms.html").read_text(encoding="utf-8")
+PRIVACY = privacy_html()
+TERMS = terms_html()
 
 
 def test_chat_pages_link_the_shared_documents():
