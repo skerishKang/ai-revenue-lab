@@ -1,25 +1,21 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import subprocess
 
-
-ROOT = Path(__file__).resolve().parents[1]
-STATE_PATH = ROOT / "static" / "conversation-state.js"
-APP_PATH = ROOT / "static" / "app.js"
-INDEX_PATH = ROOT / "static" / "index.html"
+# #8060: shipped reads live in _support; the contracts stay unchanged.
+from _support import browser_conversation_state_source as sheets
 
 
 def test_conversation_state_loads_between_transport_and_app() -> None:
-    html = INDEX_PATH.read_text(encoding="utf-8")
+    html = sheets.index_html()
     assert html.index('<script src="./chat-transport.js"></script>') < html.index(
         '<script src="./conversation-state.js"></script>'
     ) < html.index('<script src="./app.js"></script>')
 
 
 def test_conversation_state_helper_has_no_model_input_tail_and_no_network() -> None:
-    source = STATE_PATH.read_text(encoding="utf-8")
+    source = sheets.state_source()
     assert 'const MAX_MESSAGES = 20;' not in source
     assert 'slice(-MAX_MESSAGES)' not in source
     assert 'window.PadiemChatConversationState = Object.freeze({' in source
@@ -29,9 +25,9 @@ def test_conversation_state_helper_has_no_model_input_tail_and_no_network() -> N
 
 
 def test_app_delegates_conversation_data_but_keeps_request_lifecycle() -> None:
-    source = APP_PATH.read_text(encoding="utf-8")
-    conv = APP_PATH.with_name("chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
-    stream = APP_PATH.with_name("chat-streaming-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5b
+    source = sheets.app_source()
+    conv = sheets.conversation_module()  # #7216 R5 step 5a
+    stream = sheets.streaming_module()  # #7216 R5 step 5b
     assert 'const conversationState = window.PadiemChatConversationState;' in source
     assert 'let messages = [];' not in source
     assert 'let conversationSkill = "auto";' not in source
@@ -49,7 +45,7 @@ def test_app_delegates_conversation_data_but_keeps_request_lifecycle() -> None:
 def test_conversation_state_preserves_all_model_turns_and_id_skill_contract() -> None:
     script = f"""
     global.window = {{}};
-    require({json.dumps(str(STATE_PATH))});
+    require({json.dumps(sheets.state_path())});
     const state = window.PadiemChatConversationState;
     for (let i = 0; i < 25; i += 1) {{
       state.appendMessage({{ role: i % 2 ? "assistant" : "user", content: String(i) }});
