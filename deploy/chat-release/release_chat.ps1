@@ -27,7 +27,13 @@
 #   5. verify: /health + /privacy 200 on chat.padiem.net, sha256 of
 #      chat-transport.js and index.html equal the -Sha static blobs,
 #      workers/domains chat.padiem.net -> padiem-chat-front, and the same
-#      checks against padiem-chat.pages.dev.
+#      checks against padiem-chat.pages.dev. STEP 4 also captures the
+#      immutable per-deployment host from wrangler's output: its index.html is
+#      compared first, so the upload is confirmed without waiting on the
+#      production alias. The alias itself is re-checked a few times (5 s
+#      apart) and ONLY while an older ?v= still answers — the deployment
+#      switch window. A same-version byte difference, a missing stamp or a
+#      fetch error fails at once and is never retried away.
 #   6. any failure after the front deploy rolls the front back to the
 #      recorded Version and prints the summary.
 #
@@ -81,6 +87,12 @@ $Script:PagesHost = "https://padiem-chat.pages.dev"
 $Script:PublicHost = "https://chat.padiem.net"
 $Script:PollMaxRounds = 60
 $Script:PollSeconds = 15
+# Production-alias re-checks: the outgoing pages deployment can answer for a
+# short window after `wrangler pages deploy` returns (measured 15-80 s on the
+# platform). Six attempts 5 s apart cover most of it; anything longer stays a
+# PAGES_VERIFY_FAIL instead of an infinite wait.
+$Script:PagesAliasAttempts = 6
+$Script:PagesAliasRetrySeconds = 5
 
 # Every npx call is npx.cmd on purpose: npm ships an npx.ps1 that runs
 # Set-StrictMode and re-parses $MyInvocation.Line, re-evaluating the ORIGINAL
@@ -178,20 +190,99 @@ function Get-Com2OriginMain {
     return ((($out -join "`n") -replace "`r","") -replace '\s','').Trim()
 }
 
-function Get-LiveAssetSha256([string]$Url, [string]$Asset) {
+function Get-BytesSha256Hex([byte[]]$Bytes) {
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try { return ([System.BitConverter]::ToString($sha.ComputeHash($Bytes))).Replace("-", "").ToLowerInvariant() }
+    finally { $sha.Dispose() }
+}
+
+function Remove-InjectedBeacon([byte[]]$Bytes) {
     # Cloudflare Web Analytics (zone setting) injects its beacon <script> into
     # served HTML at the edge, so the live index.html never equals the bytes we
-    # uploaded. Strip exactly that injected tag before hashing; every other
-    # byte must still match. Non-HTML assets are hashed as served.
+    # uploaded. Strip exactly that injected tag; every other byte must match.
+    $html = (New-Object System.Text.UTF8Encoding $false).GetString($Bytes)
+    $html = [regex]::Replace($html, '\r?\n?<script[^>]*static\.cloudflareinsights\.com/beacon\.min\.js[^>]*>\s*</script>', '')
+    return (New-Object System.Text.UTF8Encoding $false).GetBytes($html)
+}
+
+function Get-LiveAssetSha256([string]$Url, [string]$Asset) {
+    # Non-HTML assets are hashed as served; HTML loses only the injected
+    # beacon tag before hashing.
     $bytes = Get-HttpBytes $Url
-    if ($Asset -like "*.html") {
-        $html = (New-Object System.Text.UTF8Encoding $false).GetString($bytes)
-        $html = [regex]::Replace($html, '\r?\n?<script[^>]*static\.cloudflareinsights\.com/beacon\.min\.js[^>]*>\s*</script>', '')
-        $bytes = (New-Object System.Text.UTF8Encoding $false).GetBytes($html)
+    if ($Asset -like "*.html") { $bytes = Remove-InjectedBeacon $bytes }
+    return Get-BytesSha256Hex $bytes
+}
+
+function Get-PagesDeploymentUrl([string]$Output, [string]$Project) {
+    # `wrangler pages deploy` prints the immutable per-deployment host
+    # (https://<short-hash>.<project>.pages.dev) next to the moving branch
+    # alias. Only the hash-labelled host proves WHAT was uploaded; the alias
+    # can still answer from the previous deployment for a short window. A
+    # non-hex label is the branch alias, never the snapshot.
+    if (-not $Output -or -not $Project) { return $null }
+    $pattern = 'https://[0-9a-f]{6,32}\.' + [regex]::Escape($Project) + '\.pages\.dev'
+    $match = [regex]::Match($Output, $pattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+    if (-not $match.Success) { return $null }
+    return $match.Value.TrimEnd("/")
+}
+
+function Get-HtmlStampVersion([string]$Html) {
+    # The stamper puts ?v=<8-char release sha> on every local reference, so the
+    # first one names WHICH deployment answered a request.
+    $match = [regex]::Match($Html, '\?v=([A-Za-z0-9_.-]{1,64})')
+    if ($match.Success) { return $match.Groups[1].Value }
+    return ""
+}
+
+function Test-PagesAliasRetryNeeded([string]$LiveStamp, [string]$ReleaseVersion) {
+    # Only a DIFFERENT, non-empty stamp means the outgoing deployment still
+    # answers. A missing stamp, or the release's own stamp with different
+    # bytes, is a real mismatch: it fails at once instead of being retried.
+    if (-not $LiveStamp) { return $false }
+    return ($LiveStamp -ne $ReleaseVersion)
+}
+
+function Get-PagesAliasProbe {
+    # One production-alias attempt: the served HTML hash (beacon-stripped, the
+    # same rule as every other surface) plus the release stamp it carries.
+    try { $bytes = Get-HttpBytes ($Script:PagesHost + "/index.html") }
+    catch { return [pscustomobject]@{ Fetched = $false; Hash = ""; Stamp = "" } }
+    $html = (New-Object System.Text.UTF8Encoding $false).GetString($bytes)
+    return [pscustomobject]@{
+        Fetched = $true
+        Hash    = (Get-BytesSha256Hex (Remove-InjectedBeacon $bytes))
+        Stamp   = (Get-HtmlStampVersion $html)
     }
-    $sha = [System.Security.Cryptography.SHA256]::Create()
-    try { return ([System.BitConverter]::ToString($sha.ComputeHash($bytes))).Replace("-", "").ToLowerInvariant() }
-    finally { $sha.Dispose() }
+}
+
+function Invoke-PagesAliasVerify {
+    # Production alias: bounded re-checks for the deployment switch window and
+    # nothing else. The probe is injectable so the decision path is testable
+    # without a network.
+    param([string]$Pinned, [string]$Version, [scriptblock]$Probe = { Get-PagesAliasProbe })
+    $max = [int]$Script:PagesAliasAttempts
+    if ($max -lt 1) { $max = 1 }
+    # The loop variable must not be named $probe: it is the -Probe parameter
+    # (PowerShell is case-insensitive, and the assignment target is bound
+    # before the right-hand side runs, so `$probe = & $Probe` tries to invoke
+    # the just-cleared slot and every attempt turns into fetch_error).
+    $attempts = 0
+    $result = $null
+    while ($attempts -lt $max) {
+        $attempts += 1
+        $result = & $Probe
+        if ([bool]$result.Fetched -and ($result.Hash -eq $Pinned)) {
+            return [pscustomobject]@{ Matched = $true; Attempts = $attempts; Stamp = $result.Stamp; Failure = "" }
+        }
+        if (-not [bool]$result.Fetched) {
+            return [pscustomobject]@{ Matched = $false; Attempts = $attempts; Stamp = ""; Failure = "fetch_error" }
+        }
+        if (-not (Test-PagesAliasRetryNeeded $result.Stamp $Version)) {
+            return [pscustomobject]@{ Matched = $false; Attempts = $attempts; Stamp = $result.Stamp; Failure = "mismatch" }
+        }
+        if ($attempts -lt $max) { Start-Sleep -Seconds $Script:PagesAliasRetrySeconds }
+    }
+    return [pscustomobject]@{ Matched = $false; Attempts = $attempts; Stamp = $result.Stamp; Failure = "retry_exhausted" }
 }
 
 function Use-WranglerLoginForReadOnlyApi {
@@ -688,10 +779,16 @@ Pop-Location
 # previous one. A PAGES-MIRROR-ONLY failure must not touch the front: the
 # mirror is a convenience host, so it is recorded as PAGES_VERIFY_FAIL and the
 # release exits 1 with the front still serving.
+#
+# STEP 4 captures the immutable per-deployment host from wrangler's output;
+# STEP 5 compares that snapshot when present and falls back to the production
+# alias alone when the output cannot be parsed.
+$Script:PagesDeploymentUrl = $null
 try {
     Write-Step "4/6 pages mirror (padiem-chat.pages.dev)"
     if ($DryRun) {
         Write-Info "[DRYRUN] would run (in $shaPagesDir): node build.mjs ; npx wrangler pages deploy dist --project-name $Script:PagesProject --branch main"
+        Write-Info "[DRYRUN] then read the immutable deployment host from that output for the STEP 5 snapshot comparison (production alias only when absent)"
     }
     else {
         Push-Location $shaPagesDir
@@ -705,8 +802,31 @@ try {
             # may carry a $Script:-qualified variable (the npx.ps1 re-parse
             # trap, see $Script:Npx above).
             $pagesProject = $Script:PagesProject
-            & $Script:Npx wrangler pages deploy dist --project-name $pagesProject --branch main
-            if ($LASTEXITCODE -ne 0) { throw "STEP4_FAIL: wrangler pages deploy failed" }
+            # Capture the output so the deployment host can be read, without
+            # PS 5.1's NativeCommandError: a redirected native stderr becomes
+            # an ErrorRecord, and under the release-wide
+            # $ErrorActionPreference=Stop that fails the step (measured: both
+            # `2>&1 | Out-String` and `*>` throw with wrangler's progress
+            # stream). Continue is scoped to the call and restored at once;
+            # the exit code is checked immediately after.
+            $releaseEap = $ErrorActionPreference
+            $ErrorActionPreference = "Continue"
+            try {
+                $pagesDeployOutput = ([string](& $Script:Npx wrangler pages deploy dist --project-name $pagesProject --branch main 2>&1 | Out-String)).TrimEnd()
+                $pagesExit = $LASTEXITCODE
+            }
+            finally { $ErrorActionPreference = $releaseEap }
+            if ($pagesDeployOutput) { Write-Host $pagesDeployOutput }
+            if ($pagesExit -ne 0) { throw "STEP4_FAIL: wrangler pages deploy failed" }
+            $Script:PagesDeploymentUrl = Get-PagesDeploymentUrl $pagesDeployOutput $pagesProject
+            if ($Script:PagesDeploymentUrl) {
+                Write-Info "pages deployment snapshot = $($Script:PagesDeploymentUrl)"
+                Add-Summary "PAGES_DEPLOYMENT=$($Script:PagesDeploymentUrl)"
+            }
+            else {
+                Write-Info "PAGES_DEPLOYMENT_UNPARSED: no deployment host in the wrangler output; verifying the production alias only"
+                Add-Summary "PAGES_DEPLOYMENT=unparsed"
+            }
         }
         finally { Pop-Location }
     }
@@ -744,6 +864,8 @@ try {
                 Write-Info "  GET $($pair[1])/$asset (expect sha256 == the pinned SHA static)"
             }
         }
+        Write-Info "  check: pages deployment snapshot /index.html when wrangler printed the deployment host"
+        Write-Info "  alias re-check: only while an older ?v= answers (up to $Script:PagesAliasAttempts attempts, $Script:PagesAliasRetrySeconds s apart)"
     }
     else {
         foreach ($pair in $frontStatusPairs) {
@@ -785,14 +907,39 @@ try {
         # Worker owns chat.padiem.net), so a mirror-only failure must NOT roll
         # the front back — it is recorded as PAGES_VERIFY_FAIL and fails the
         # release with exit 1 after the summary.
+        if ($Script:PagesDeploymentUrl) {
+            # The immutable deployment host answers with exactly the tree that
+            # was uploaded, so this comparison confirms the upload immediately
+            # and is never affected by the alias switch window.
+            try { $snapshotHash = Get-LiveAssetSha256 ($Script:PagesDeploymentUrl + "/index.html") "index.html" }
+            catch { $snapshotHash = "fetch_error:" + $_.Exception.GetType().Name }
+            $snapshotPinned = Get-FileSha256Hex (Join-Path $stampStaticDir "index.html")
+            $snapshotOk = $snapshotHash -eq $snapshotPinned
+            $verify.Add("pages deployment snapshot/index.html sha256=$(if ($snapshotOk) { 'match' } else { 'MISMATCH' })") | Out-Null
+            if (-not $snapshotOk) {
+                $Script:PagesVerifyFailed.Add("deployment snapshot index.html sha256 mismatch") | Out-Null
+            }
+        }
         foreach ($asset in @("chat-transport.js", "index.html")) {
             # The pages build stamps dist with the same ?v=<sha8>, so the
             # mirror must serve the STAMPED bytes too.
             # A mirror fetch error must stay a mirror failure; it must never
             # escape into the catch below that rolls the front back.
+            $pinned = Get-FileSha256Hex (Join-Path $stampStaticDir $asset)
+            if ($asset -like "*.html") {
+                # The production alias can answer from the outgoing deployment
+                # for a short window, and its ?v= names that deployment. Re-check
+                # ONLY while an older stamp answers — a same-version byte
+                # difference, a missing stamp or a fetch error fails at once.
+                $alias = Invoke-PagesAliasVerify -Pinned $pinned -Version $assetVersion
+                $verify.Add("padiem-chat.pages.dev/$asset sha256=$(if ($alias.Matched) { 'match' } else { 'MISMATCH' }) attempts=$($alias.Attempts)") | Out-Null
+                if (-not $alias.Matched) {
+                    $Script:PagesVerifyFailed.Add("$asset sha256 mismatch ($($alias.Failure) after $($alias.Attempts) attempt(s))") | Out-Null
+                }
+                continue
+            }
             try { $liveHash = Get-LiveAssetSha256 ($Script:PagesHost + "/" + $asset) $asset }
             catch { $liveHash = "fetch_error:" + $_.Exception.GetType().Name }
-            $pinned = Get-FileSha256Hex (Join-Path $stampStaticDir $asset)
             $ok = $liveHash -eq $pinned
             $verify.Add("padiem-chat.pages.dev/$asset sha256=$(if ($ok) { 'match' } else { 'MISMATCH' })") | Out-Null
             if (-not $ok) {
