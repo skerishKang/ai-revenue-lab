@@ -1,3 +1,6 @@
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
+
 import locale_bundle
 """UI polish contract: auth-dialog AA contrast and the unverified card copy.
 
@@ -41,7 +44,7 @@ def _resolve_tokens(block: str, theme_selector: str) -> str:
     now read from where the browser reads them: the theme block of
     padiem-tokens.css (falling back to ``:root``).
     """
-    tokens = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+    tokens = read(STATIC / "padiem-tokens.css")
 
     def declared(selector: str) -> dict[str, str]:
         match = re.search(re.escape(selector) + r"\s*\{([^}]*)\}", tokens)
@@ -58,7 +61,7 @@ def _resolve_tokens(block: str, theme_selector: str) -> str:
 
 
 def test_polish_layer_keeps_auth_panel_ink_above_aa():
-    css = (STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
+    css = read(STATIC / "padiem-chat-ui-polish.css")
     for selector in (
         'html[data-theme="padiem-glass"] .auth-panel',
         'html[data-theme="dark"] .auth-panel',
@@ -73,14 +76,14 @@ def test_polish_layer_keeps_auth_panel_ink_above_aa():
 
 
 def test_polish_layer_is_linked_after_the_frozen_sheets():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = read(STATIC / "index.html")
     polish = html.find('href="./padiem-chat-ui-polish.css"')
     frozen = html.find('href="./history.css"')
     assert polish != -1 and frozen != -1 and frozen < polish
 
 
 def test_unverified_workspace_copy_is_preparing_ko_and_coming_soon_en():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = locale_source()
     assert '"connectors-workspace-unverified": "준비 중"' in locale
     assert '"connectors-workspace-unverified": "Coming soon"' in locale
     # The failure line stays reserved for real failures.
@@ -91,7 +94,7 @@ def test_unverified_rows_render_through_the_reviewed_key():
     # #7216 A9: renderConnectorStatus moved into chat-connectors-module.js; it
     # writes the workspace line from the row state and connectorWorkspaceKey
     # routes the unverified state to the reviewed key.
-    connectors = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8")
+    connectors = read(STATIC / "chat-connectors-module.js")
     assert 'card.dataset.connectorStatus = String(row.workspace_state || "unverified")' in connectors
     assert '"connectors-workspace-unverified"' in connectors
 
@@ -99,10 +102,10 @@ def test_unverified_rows_render_through_the_reviewed_key():
 def test_connectors_page_card_ids_match_the_client_status_set():
     """A drifted connector id makes rows go missing, which renders the real
     failure line on both card lines (#7100-era failure shape)."""
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = read(STATIC / "index.html")
     card_ids = set(re.findall(r'data-connector-id="([^"]+)"', html))
     # R5 2부 B2: CONNECTOR_STATUS_IDS moved into chat-connectors-module.js.
-    app = (STATIC / "chat-connectors-module.js").read_text(encoding="utf-8")
+    app = read(STATIC / "chat-connectors-module.js")
     set_body = app.split("CONNECTOR_STATUS_IDS = new Set([", 1)[1].split("]);", 1)[0]
     client_ids = set(re.findall(r'"(connector:[^"]+)"', set_body))
     assert card_ids == client_ids, (sorted(card_ids - client_ids), sorted(client_ids - card_ids))

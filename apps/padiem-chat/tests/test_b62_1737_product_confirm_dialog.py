@@ -1,3 +1,6 @@
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, shared_read
+
 from pathlib import Path
 
 
@@ -6,7 +9,7 @@ STATIC = ROOT / "static"
 
 
 def read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+    return shared_read(STATIC / name)
 
 
 def test_native_destructive_confirm_is_removed() -> None:
