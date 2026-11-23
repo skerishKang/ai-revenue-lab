@@ -6,7 +6,11 @@ therefore carries a copy button with a copied confirmation, and the
 re-open button is only offered while the Google sign-in itself is pending.
 """
 from __future__ import annotations
-import locale_bundle
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.android_pairing_audio_source import (
+    index_html, locale_source, meeting_capture_js, pc_pairing_card_js, read as _source_read,
+)
 
 from pathlib import Path
 
@@ -15,7 +19,7 @@ STATIC = ROOT / "static"
 
 
 def _read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+    return _source_read(name)
 
 
 def _read_handoff_view() -> str:
@@ -53,7 +57,7 @@ def test_reopening_google_is_only_offered_while_the_login_is_pending() -> None:
 
 
 def test_both_locales_carry_the_new_copy_strings() -> None:
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = locale_source()
     assert locale.count('"auth-android-copy"') == 2
     assert locale.count('"auth-android-copied"') == 2
     assert "Copy sign-in code" in locale
