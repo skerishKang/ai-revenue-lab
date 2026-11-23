@@ -1,8 +1,8 @@
 from pathlib import Path
 
 
-_REFERENCE_ASSISTANT_RULE = b".assistant-content { color: #2f3037; font-size: 16px; }"
-_APP_ASSISTANT_RULE = b".assistant-content { color: #2f3037; font-family: inherit; font-size: 16px; }"
+_REFERENCE_ASSISTANT_RULE = b".assistant-content { color: var(--styles-assistant-content-text); font-size: 16px; }"
+_APP_ASSISTANT_RULE = b".assistant-content { color: var(--styles-assistant-content-text); font-family: inherit; font-size: 16px; }"
 
 
 def assert_phase1_styles_match(static_styles: Path, reference_styles: Path) -> None:
