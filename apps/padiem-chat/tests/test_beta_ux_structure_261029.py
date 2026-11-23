@@ -10,15 +10,13 @@ padiem-reports/2026-10-29 evidence.
 """
 from __future__ import annotations
 
-from pathlib import Path
-
-STATIC = Path(__file__).resolve().parents[1] / "static"
+from _support import auth_beta_structure_source as sheets
 
 
 def test_speech_reference_lane_leads_the_form_like_sns():
     # 2026-11-01: both authoring forms moved to /apps/council/, and the 참고 글
     # lane still leads each of them before its first field.
-    council = (STATIC.parent.parent / "padiem-council-apps" / "static" / "council-app.js").read_text(encoding="utf-8")
+    council = sheets.council_app_js()
     speech = council[council.index("const speechModule"):council.index("const snsModule")]
     assert 'refFieldset.appendChild(el("legend", null, "참고 글"))' in speech
     assert speech.index("refFieldset") < speech.index('el("legend", null, "행사 정보")')
@@ -28,7 +26,7 @@ def test_speech_reference_lane_leads_the_form_like_sns():
 
 
 def test_dialog_back_is_disabled_at_the_root_and_stays_named_on_mobile():
-    script = (STATIC / "pc-file-exchange.js").read_text(encoding="utf-8")
+    script = sheets.pc_file_exchange_js()
     # The dialog opens at the root, so the button is born disabled and
     # paintList keeps the state glued to the path the owner is in.
     assert 'back.disabled = state.path === "."' in script
@@ -36,7 +34,7 @@ def test_dialog_back_is_disabled_at_the_root_and_stays_named_on_mobile():
     # The icon-only mobile form still says its name to assistive tech.
     assert 'back.setAttribute("aria-label", copy("pc-exchange-up"))' in script
 
-    css = (STATIC / "pc-file-exchange.css").read_text(encoding="utf-8")
+    css = sheets.pc_file_exchange_css()
     # Disabled is visible, not just inert.
     assert ".pc-exchange-back:disabled" in css
     assert "opacity: 0.45" in css
