@@ -11,6 +11,12 @@ duplicating renderers or forking lane geometry:
   the unified answer typography through a thin adapter.
 """
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.turn_projects_calendar_source import (
+    app_js, calendar_module_js, chat_app_context_js, foundation_css, index_html,
+    locale_source, read as _source_read, strict_deps_js,
+)
+
 from pathlib import Path
 
 
@@ -18,7 +24,7 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 
 
 def _read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+    return _source_read(name)
 
 
 EDITORIAL = _read("padiem-editorial.css")

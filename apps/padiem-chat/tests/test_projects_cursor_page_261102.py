@@ -13,7 +13,12 @@ whole page contract on the real SQLite-shaped store and on the route:
 * a caller that sends no cursor gets exactly the old first page (regression).
 """
 from __future__ import annotations
-import locale_bundle
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.turn_projects_calendar_source import (
+    app_js, calendar_module_js, chat_app_context_js, foundation_css, index_html,
+    locale_source, read as _source_read, strict_deps_js,
+)
 
 import base64
 import json
@@ -293,13 +298,13 @@ async def test_a_store_without_paging_still_answers_the_first_page():
 def test_the_screen_offers_one_more_page_at_a_time():
     """The list keeps its shape and grows only on demand: 44px, 14px copy."""
     static = Path(project_routes.__file__).resolve().parents[1] / "static"
-    script = (static / "app.js").read_text(encoding="utf-8")
+    script = app_js()
     assert "projectsMore" in script
     assert "loadMoreProjects" in script
     assert "cursor=${encodeURIComponent(cursor)}" in script
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = locale_source()
     assert locale.count('"projects-more":') == 2  # ko + en
-    css = (static / "padiem-foundation.css").read_text(encoding="utf-8")
+    css = foundation_css()
     # #5882 follow-up: the same "더 보기" rule now sizes the project, saved-answer
     # and memory buttons, so the selector lists all three (and none loses 44px).
     selector = ":is(.project-more, .output-more, .memory-more) {"

@@ -7,6 +7,12 @@ app.js의 캘린더 9개 함수가 chat-calendar-module.js로 이동했고, app.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.turn_projects_calendar_source import (
+    app_js, calendar_module_js, chat_app_context_js, foundation_css, index_html,
+    locale_source, read as _source_read, strict_deps_js,
+)
+
 from html.parser import HTMLParser
 import json
 import re
@@ -18,11 +24,11 @@ import pytest
 from _r5_b6_wiring import create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-calendar-module.js").read_text(encoding="utf-8")
-CONTEXT = (STATIC / "chat-app-context.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+APP = app_js()
+STRICT = strict_deps_js()
+MODULE = calendar_module_js()
+CONTEXT = chat_app_context_js()
+INDEX = index_html()
 
 NAMES = (
     "calendarReadStateKey", "calendarReadActivationErrorKey",
