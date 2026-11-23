@@ -5,13 +5,49 @@ S04 체크포인트와 같은 파일 잠금으로 고른다. 비밀값·운영 �
 """
 from __future__ import annotations
 
+import secrets
 from types import SimpleNamespace
 
 import pytest
 
+from app.config import Settings
+from app.d1_sqlite import SqliteD1
 from app.local_bootstrap import ProcessFileLock
-from app.lovetree_ops_outbox import dispatch_under_lock, install_retry_loop
-from test_7690_lovetree_reply_outbox import SETTINGS, FakeClient, stores
+from app.lovetree_ops_outbox import D1LovetreeOpsOutbox, dispatch_under_lock, install_retry_loop
+from app.site_feedback_store import D1SiteFeedbackStore
+from _support.feedback_store import database
+
+_SESSION_SECRET = secrets.token_urlsafe(32)
+_SECRET = secrets.token_urlsafe(32)
+SETTINGS = Settings(
+    auth_mode="password", public_base_url="https://chat.example.test",
+    session_secret=_SESSION_SECRET,
+    site_feedback_secret_lovetree=_SECRET,
+    site_feedback_reply_secret_lovetree=_SECRET,
+    site_feedback_reply_url_lovetree="https://lovetree.test/api/ops-feedback/ingest",
+)
+
+
+class FakeClient:
+    def __init__(self, *statuses):
+        self.statuses = list(statuses)
+        self.posts = []
+
+    async def post(self, url, *, content, headers):
+        self.posts.append({"url": url, "content": content, "headers": headers})
+        return SimpleNamespace(status_code=self.statuses.pop(0) if self.statuses else 200)
+
+    async def aclose(self):
+        pass
+
+
+def stores():
+    db, _ = database(full=True)
+    try:
+        return db, D1SiteFeedbackStore(SqliteD1(db)), D1LovetreeOpsOutbox(SqliteD1(db))
+    except Exception:
+        db.close()
+        raise
 
 
 @pytest.mark.asyncio
