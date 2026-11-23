@@ -258,7 +258,11 @@ class ReleaseScriptStaticContract(unittest.TestCase):
             '$Script:Npx = if ($env:OS -eq "Windows_NT") { "npx.cmd" } else { "npx" }',
             self.text)
         self.assertNotIn("wrangler rollback $Script:PrevFrontVersion", self.text)
-        self.assertIn("wrangler rollback $rollbackVersion", self.text)
+        # The rollback call moved into Invoke-FrontRollbackCommand, where the
+        # version arrives as a plain parameter; its non-interactive flags and
+        # bounded wait are pinned in test_release_chat_rollback.py.
+        # The command is built as a format string: runner, version, log path.
+        self.assertIn("wrangler rollback {1} --message release-step-failure --yes", self.text)
 
     def test_rollback_resolves_a_missing_recorded_version(self):
         """The rollback point can be unset when the failure lands before step 3

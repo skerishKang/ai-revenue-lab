@@ -93,6 +93,11 @@ $Script:PollSeconds = 15
 # PAGES_VERIFY_FAIL instead of an infinite wait.
 $Script:PagesAliasAttempts = 6
 $Script:PagesAliasRetrySeconds = 5
+# The rollback runs non-interactively and under a bounded wait: a stalled
+# rollback API call must not hold STEP 6 open forever. On timeout the release
+# records FRONT_ROLLBACK_TIMEOUT and continues; the front then still serves the
+# failed deployment, which the summary states explicitly.
+$Script:RollbackTimeoutSeconds = 120
 
 # Every npx call is npx.cmd on purpose: npm ships an npx.ps1 that runs
 # Set-StrictMode and re-parses $MyInvocation.Line, re-evaluating the ORIGINAL
@@ -308,7 +313,12 @@ function Get-HttpBytes([string]$Url) {
     # Static hosts answer /index.html with a 308 to "/" and PS 5.1's
     # Invoke-WebRequest does not follow 308, so fetch the root directly.
     if ($Url.EndsWith("/index.html")) { $Url = $Url.Substring(0, $Url.Length - "index.html".Length) }
-    $tmp = New-TemporaryFile
+    # [IO.Path]::GetTempFileName(), not New-TemporaryFile: the cmdlet lives in
+    # Microsoft.PowerShell.Utility, and a PowerShell 7 launch hands this script
+    # a PSModulePath that points at 7's modules, so Windows PowerShell 5.1
+    # cannot resolve it and STEP 5 dies before the first fetch. The .NET call
+    # needs no module at all and behaves the same on 5.1 and 7.
+    $tmp = [IO.Path]::GetTempFileName()
     try {
         Invoke-WebRequest -Uri $Url -OutFile $tmp -UseBasicParsing -TimeoutSec 40
         return [System.IO.File]::ReadAllBytes($tmp)
@@ -346,6 +356,60 @@ function Get-FrontVersionIds {
     finally { Pop-Location }
 }
 
+function Invoke-FrontRollbackCommand([string]$NpxRunner, [string]$Directory, [string]$Version, [int]$TimeoutSeconds) {
+    # `wrangler rollback` asks for a message and then for a confirmation, which
+    # is why the release used to sit on a prompt in a failure path. The current
+    # rollback command defines both `--message` (skips the message and
+    # confirmation prompts) and `--yes` (accepts the prompt defaults), so both
+    # are passed here.
+    #
+    # The call runs through a generated .cmd wrapper: the npx path carries
+    # spaces, and one quoted line inside a batch file is simpler to get right
+    # than cmd /c nesting. The wrapper sends wrangler's output to a file (no
+    # pipe to deadlock on, no PowerShell stream encoding in the way), and the
+    # bounded WaitForExit plus a tree kill means a stalled rollback cannot hold
+    # STEP 6 open: the caller records the timeout and moves on.
+    #
+    # The npx runner and directory are plain parameters — no $Script:-qualified
+    # variable may reach the npx call arguments (npx.ps1 re-parse trap).
+    if (-not $env:ComSpec) { throw "FRONT_ROLLBACK_FAIL: ComSpec is not set; cannot run wrangler rollback" }
+    $work = Join-Path ([IO.Path]::GetTempPath()) ("padiem-rollback-" + [Guid]::NewGuid().ToString("N").Substring(0, 8))
+    New-Item -ItemType Directory -Path $work -Force | Out-Null
+    $wrapper = Join-Path $work "rollback.cmd"
+    $logPath = Join-Path $work "rollback.log"
+    try {
+        $command = "`"{0}`" wrangler rollback {1} --message release-step-failure --yes > `"{2}`" 2>&1" -f $NpxRunner, $Version, $logPath
+        # The wrapper is read by cmd.exe in the ANSI code page, so write it in
+        # exactly that — [Text.Encoding]::Default is UTF-8 under PowerShell 7
+        # and would garble a non-ASCII temp path.
+        $ansi = [Text.Encoding]::GetEncoding([Globalization.CultureInfo]::CurrentCulture.TextInfo.ANSICodePage)
+        [IO.File]::WriteAllText($wrapper, "@echo off`r`n" + $command + "`r`n", $ansi)
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = $env:ComSpec
+        $psi.Arguments = '/d /s /c ""{0}""' -f $wrapper
+        $psi.WorkingDirectory = $Directory
+        $psi.UseShellExecute = $false
+        $psi.CreateNoWindow = $true
+        $process = [System.Diagnostics.Process]::Start($psi)
+        if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
+            # Kill the whole tree (cmd -> npx -> node); leaving it behind would
+            # keep a rollback running after the release already moved on.
+            try { & taskkill /T /F /PID $process.Id 2>&1 | Out-Null } catch { }
+            if (-not $process.HasExited) { try { $process.Kill() } catch { } }
+            [void]$process.WaitForExit(5000)
+            return [pscustomobject]@{ TimedOut = $true; Output = "" }
+        }
+        $output = ""
+        if (Test-Path -LiteralPath $logPath) {
+            $output = [string](Get-Content -LiteralPath $logPath -Raw -ErrorAction SilentlyContinue)
+        }
+        return [pscustomobject]@{ TimedOut = $false; Output = $output.TrimEnd() }
+    }
+    finally {
+        Remove-Item -LiteralPath $work -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
 function Invoke-FrontRollbackIfNeeded {
     # Step 6: any failure after the front deploy puts the previous Version
     # back; the summary records it. The recorded version can be missing when
@@ -364,8 +428,14 @@ function Invoke-FrontRollbackIfNeeded {
         return
     }
     Write-Info "rolling the front back to $rollbackVersion"
-    Push-Location $shaFrontDir
-    try { & $Script:Npx wrangler rollback $rollbackVersion } finally { Pop-Location }
+    $npxRunner = $Script:Npx
+    $rollback = Invoke-FrontRollbackCommand -NpxRunner $npxRunner -Directory $shaFrontDir -Version $rollbackVersion -TimeoutSeconds $Script:RollbackTimeoutSeconds
+    if ($rollback.Output) { Write-Host $rollback.Output }
+    if ($rollback.TimedOut) {
+        Write-Info "FRONT_ROLLBACK_TIMEOUT: wrangler rollback did not finish within $($Script:RollbackTimeoutSeconds)s; continuing"
+        Add-Summary "FRONT_ROLLBACK_TIMEOUT=$($Script:RollbackTimeoutSeconds)s"
+        return
+    }
     Add-Summary "FRONT_ROLLED_BACK_TO=$rollbackVersion"
 }
 
