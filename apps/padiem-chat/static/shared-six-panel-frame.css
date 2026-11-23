@@ -82,10 +82,10 @@ html[data-theme="padiem-glass"] body .app-shell {
     .settings-advanced-view
   ) {
     box-sizing: border-box;
-    width: var(--padiem-six-panel-width);
+    width: var(--padiem-six-panel-width) !important;
     min-width: 0;
     max-width: none;
-    height: var(--padiem-six-panel-height);
+    height: var(--padiem-six-panel-height) !important;
     min-height: 0 !important;
     max-height: var(--padiem-six-panel-height) !important;
     margin: 16px 0 16px var(--padiem-six-panel-left) !important;
