@@ -1,12 +1,11 @@
-import locale_bundle
 """Claw run history clarity is presentational, owner-state driven, and scoped."""
-from pathlib import Path
+# #8060: shipped reads live in _support; the markup and CSS checks stay.
+from _support import claw_run_card_clarity_source as sheets
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-RUN_HISTORY = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
-CSS = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+APP = sheets.sheet("app.js")
+RUN_HISTORY = sheets.sheet("chat-run-history-module.js")
+CSS = sheets.sheet("claw-focus-layout.css")
+LOCALE = sheets.locale_source()
 
 
 def test_status_emphasis_only_uses_canonical_known_statuses():

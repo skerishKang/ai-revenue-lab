@@ -10,13 +10,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
+# #8060: shipped reads live in _support; the route and source checks stay.
+from _support import b66_pc_txt_ui_source as sheets
+
 APP = Path(__file__).resolve().parents[1] / "app"
 REF = Path(__file__).resolve().parents[2].parent / "reference" / "business-66-padiem-quote-v1"
 
 
 def _js() -> str:
-    return (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    return sheets.sheet("b66-quote-runtime.js")
 
 
 def test_txt_request_surface_exists_and_is_bounded():
@@ -64,14 +66,14 @@ def test_txt_poll_reports_terminal_states_without_file_bytes():
 
 
 def test_common_and_product_surfaces_untouched():
-    app_js = (STATIC / "app.js").read_text(encoding="utf-8")
+    app_js = sheets.sheet("app.js")
     for marker in (
         "b66QuotePcTxt", "b66QuotePcConversation", "b66QuotePcPath",
         "b66QuotePcRequest", "b66QuotePcRunStatus", "txt-reads/request",
         "pcRunPending", "pcRunDone",
     ):
         assert marker not in app_js
-    css = (STATIC / "b66-quote-runtime.css").read_text(encoding="utf-8")
+    css = sheets.sheet("b66-quote-runtime.css")
     assert "b66-quote-connect-txt" in css
     assert "b66-quote-connect-request" in css
     assert "b66-quote-connect-run-status" in css
