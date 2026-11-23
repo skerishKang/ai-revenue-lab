@@ -10,6 +10,14 @@
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.frame_council_memory_source import (
+    app_factory_source, app_js as _app_js, chat_app_context_js, claw_form_module_js,
+    claw_run_module_js, council_app_js, glass_gutter_css, glass_portrait_css,
+    index_html, memory_module_js, run_history_module_js, strict_deps_js,
+    util_app_js, util_menu_css, util_menu_js,
+)
+
 import json
 import shutil
 import subprocess
@@ -53,9 +61,9 @@ def test_util_submenu_renders_six_tools_from_manifest_and_navigates_in_app() -> 
 
 
 def test_legacy_councillor_panels_stay_out_of_index_and_menu_bundle() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
-    js = UTIL_MENU.read_text(encoding="utf-8")
-    css = UTIL_CSS.read_text(encoding="utf-8")
+    html = index_html()
+    js = util_menu_js()
+    css = util_menu_css()
     for gone in ("utilSpeechPanel", "utilSnsPanel", "utilMeetingPanel",
                  "utilSpeechForm", "utilSpeechOutput", "councillor/util-entry-adapter.js"):
         assert gone not in html, gone
@@ -65,7 +73,7 @@ def test_legacy_councillor_panels_stay_out_of_index_and_menu_bundle() -> None:
     for gone in ("#utilSpeechPanel", ".util-photo", ".util-sns-tab", ".util-pc-ref",
                  ".util-save-choice"):
         assert gone not in css, gone
-    util_app = (STATIC / "util-app.js").read_text(encoding="utf-8")
+    util_app = util_app_js()
     assert 'panel.id = "utilPdfmdPanel"' in util_app
     assert "mountPdfmdPanel" in util_app
     assert ".pdfmd-shell" in css
@@ -74,7 +82,7 @@ def test_legacy_councillor_panels_stay_out_of_index_and_menu_bundle() -> None:
 def test_the_retired_councillor_screen_is_gone_and_the_alias_redirects() -> None:
     assert not (STATIC / "councillor").exists()
     assert not (STATIC / "councillor" / "brands" / "miraen.json").exists()
-    factory = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
+    factory = app_factory_source()
     assert 'COUNCILLOR_REDIRECT_PATH = "/councillor/"' in factory
     assert 'RedirectResponse("/apps/council/", status_code=302)' in factory
     assert 'Route(COUNCILLOR_REDIRECT_PATH, councillor_redirect, methods=["GET"])' in factory
@@ -87,8 +95,8 @@ def test_the_councillor_prototype_site_is_untouched() -> None:
 
 
 def test_the_council_connect_button_has_a_connectors_deep_link() -> None:
-    app_js = APP_JS.read_text(encoding="utf-8")
+    app_js = _app_js()
     assert 'CONNECTORS_ROUTE_HASH = "#padiem-connectors"' in app_js
     assert "openConnectorsView()" in app_js.split("CONNECTORS_ROUTE_HASH", 1)[1]
-    council = (ROOT.parent / "padiem-council-apps" / "static" / "council-app.js").read_text(encoding="utf-8")
+    council = council_app_js()
     assert 'COMPUTER_CONNECT_HREF = "/#padiem-connectors"' in council

@@ -15,6 +15,14 @@ B1 시범(#7439)에서 확정한 보강 4가지를 A2(승인된 기억 + 실행 
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.frame_council_memory_source import (
+    app_factory_source, app_js, chat_app_context_js, claw_form_module_js,
+    claw_run_module_js, council_app_js, glass_gutter_css, glass_portrait_css,
+    index_html, memory_module_js, run_history_module_js, strict_deps_js,
+    util_app_js, util_menu_css, util_menu_js,
+)
+
 import json
 import re
 import subprocess
@@ -22,12 +30,12 @@ import tempfile
 from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-CONTEXT = (STATIC / "chat-app-context.js").read_text(encoding="utf-8")
-MEMORY = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
-RUN_HISTORY = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+APP = app_js()
+CONTEXT = chat_app_context_js()
+MEMORY = memory_module_js()
+RUN_HISTORY = run_history_module_js()
+INDEX = index_html()
+STRICT = strict_deps_js()
 
 MEMORY_NAMES = (
     "setApprovedMemoryStatus",
@@ -171,10 +179,10 @@ def test_registry_replaces_one_line_forwarders_and_modules_fit_budget() -> None:
         assert f"function {name}(" not in APP, name
     # R5 A5b: the preview-success call site moved into chat-claw-form-module.js
     # (deps.app.renderMemoryProposalReview) and stays exactly one call.
-    form_module = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
+    form_module = claw_form_module_js()
     for call in REGISTRY_CALLS:
         assert call in APP + form_module, call
-    run_module = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
+    run_module = claw_run_module_js()
     for call in RUN_MODULE_REGISTRY_CALLS:
         assert call in run_module, call
     assert "window.PadiemChatMemoryModule = {" in MEMORY
