@@ -9,7 +9,7 @@ from starlette.requests import Request
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.usage_log_routes import admin_usage_log
-from test_7680_feedback_routes import AdminAuthority, SETTINGS, payload
+from _support.feedback_route_fixtures import AdminAuthority, SETTINGS, payload
 from _support.feedback_store import BODY, OWNER, OTHER, database
 
 BASE = 'https://chat.example.test'
