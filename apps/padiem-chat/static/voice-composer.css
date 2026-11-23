@@ -12,11 +12,11 @@
   display: inline-grid;
   place-items: center;
   position: relative;
-  border: 1px solid #bed0dd;
+  border: 1px solid var(--voice-control-border);
   border-radius: 14px;
-  color: #587c97;
-  background: #eaf2f7;
-  box-shadow: 0 2px 8px rgba(36, 68, 92, .07);
+  color: var(--voice-accent);
+  background: var(--voice-btn-idle-bg);
+  box-shadow: 0 2px 8px var(--voice-btn-idle-shadow);
   cursor: pointer;
   transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
 }
@@ -48,20 +48,20 @@
   border: 0;
 }
 #voiceMicButton:hover:not(:disabled):not([aria-pressed="true"]) {
-  color: #355d79;
-  background: #deebf3;
-  border-color: #a7c0d2;
+  color: var(--voice-btn-hover-text);
+  background: var(--voice-btn-hover-bg);
+  border-color: var(--voice-btn-hover-border);
 }
 #voiceMicButton[aria-pressed="true"],
 #voiceMicButton[data-voice-state="active"] {
-  color: #fff;
-  background: #d94b43;
-  border-color: #c43d36;
-  box-shadow: 0 0 0 3px rgba(217, 75, 67, .16);
+  color: var(--voice-btn-active-text);
+  background: var(--voice-mic-active-bg);
+  border-color: var(--voice-mic-active-edge);
+  box-shadow: 0 0 0 3px var(--voice-mic-active-ring);
 }
 #voiceMicButton[aria-pressed="true"]:hover:not(:disabled) {
-  background: #c63d35;
-  border-color: #b9342f;
+  background: var(--voice-mic-active-hover-bg);
+  border-color: var(--voice-mic-active-hover-edge);
 }
 #voiceMicButton:disabled {
   opacity: .5;
@@ -83,9 +83,9 @@
   padding: 0;
   border: 1px solid var(--primary-border);
   border-radius: 14px;
-  color: #fff;
+  color: var(--composer-send-text);
   background: var(--primary-bg);
-  box-shadow: 0 3px 10px rgba(34, 72, 104, .15);
+  box-shadow: 0 3px 10px var(--composer-send-shadow);
   cursor: pointer;
   transition: background-color .18s ease, box-shadow .18s ease;
 }
@@ -107,16 +107,16 @@
   display: block;
 }
 #composerForm .send-button:not(:disabled):hover {
-  color: #fff;
+  color: var(--composer-send-text);
   background: var(--primary-hover-bg);
   border-color: var(--primary-hover-border);
-  box-shadow: 0 4px 13px rgba(34, 72, 104, .22);
+  box-shadow: 0 4px 13px var(--composer-send-hover-shadow);
   transform: none;
 }
 #composerForm .send-button:disabled {
-  background: #c9d3dc;
-  border-color: #b9c7d2;
-  color: #fff;
+  background: var(--composer-send-disabled-bg);
+  border-color: var(--composer-send-disabled-edge);
+  color: var(--composer-send-text);
   box-shadow: none;
   cursor: default;
 }
@@ -126,13 +126,13 @@
 }
 /* Override legacy Claw white-fill styling without changing shell layout. */
 #composerForm .send-button:not(:disabled) {
-  color: #fff !important;
+  color: var(--composer-send-text) !important;
   background: var(--primary-bg) !important;
 }
 .voice-interim-preview {
   margin: 2px 0 0;
   padding: 0 8px;
-  color: #6b6c75;
+  color: var(--voice-interim-text);
   font-size: 12px;
   line-height: 1.5;
   overflow-wrap: anywhere;
@@ -153,7 +153,7 @@
 #composerForm .voice-status--notice {
   display: block;
   margin: 5px 8px 0;
-  color: #a04139;
+  color: var(--voice-notice-text);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -170,7 +170,7 @@
   max-width: 52%;
   margin: 0;
   padding: 0;
-  color: #bd4a40;
+  color: var(--voice-inline-hint-text);
   background: transparent;
   font-size: 12px;
   line-height: 1.3;
@@ -236,16 +236,16 @@
   z-index: 2;
   right: 11px;
   top: 10px;
-  border: 1px solid #d9e1e8;
+  border: 1px solid var(--starter-toggle-edge);
   border-radius: 9px;
-  background: rgba(247,250,253,.94);
-  color: #596c7b;
+  background: var(--starter-toggle-bg);
+  color: var(--starter-toggle-text);
   padding: 3px 6px;
   font-size: 10px;
   line-height: 1.2;
   cursor: pointer;
 }
-.starter-grid .document-formats-toggle:hover { background: #edf3f9; }
+.starter-grid .document-formats-toggle:hover { background: var(--starter-toggle-hover-bg); }
 .starter-grid .document-formats-toggle:focus-visible { outline: 2px solid var(--primary-focus); outline-offset: 2px; }
 .starter-grid .document-formats-panel {
   position: absolute;
@@ -254,11 +254,11 @@
   right: 8px;
   width: 210px;
   max-width: 90vw;
-  background: #fff;
-  color: #293d50;
-  border: 1px solid #d2dfe7;
+  background: var(--starter-panel-bg);
+  color: var(--starter-panel-text);
+  border: 1px solid var(--starter-panel-edge);
   border-radius: var(--radius-sm);
-  box-shadow: 0 8px 24px rgba(29,48,64,.17);
+  box-shadow: 0 8px 24px var(--starter-panel-shadow);
   padding: 10px 12px;
   font-size: 12px;
   line-height: 1.5;

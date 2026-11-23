@@ -1,0 +1,48 @@
+{
+  "sheet": "voice-composer.css",
+  "base": "83b239b3198f4f395af09f768640f8f76031640d",
+  "audit": {
+    "css_color_literals": {"before": 1562, "after": 1530, "delta": -32},
+    "css_color_literals_unthemed": {"before": 901, "after": 869, "delta": -32},
+    "css_important": {"before": 629, "after": 629, "delta": 0},
+    "css_themed_important": {"before": 234, "after": 234, "delta": 0},
+    "css_files": {"before": 92, "after": 92, "delta": 0},
+    "css_rules": {"before": 4385, "after": 4385, "delta": 0},
+    "css_themed_rules": {"before": 795, "after": 795, "delta": 0}
+  },
+  "verification": {
+    "computed": {
+      "targets": 26,
+      "measurements": 1170,
+      "themes": 5,
+      "viewports": ["1440x950", "820x1180", "390x844"],
+      "states": ["normal", "hover", "focus"],
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "combos": 195,
+      "themes": 5,
+      "viewports": 3,
+      "screens": 13,
+      "nonzero": [],
+      "reports": [
+        "compare_report_light.json",
+        "compare_report_dark.json",
+        "compare_report_padiem-glass.json",
+        "compare_report_cinematic.json",
+        "compare_report_padiem-home.json"
+      ]
+    },
+    "control": {"combos": 12, "nonzero": [], "report": "control_report.json"},
+    "tamper": {"pixel": 220, "report": "tamper_report.json"},
+    "tests": "로컬 86 passed (신규 계약·토큰 목록 계약·래칫·composer 관련)",
+    "ratchet": "#8054 기준선 파일 없음. base 실측 대비 head 실측으로 자동 하향."
+  },
+  "notes": [
+    "마이크 기본·호버 7곳과 활성 글자 1곳은 기존 --voice-* 토큰을 재사용했다.",
+    "토큰 값은 치환 전 리터럴과 같아 최종 계산값과 대비는 변하지 않는다.",
+    "새 !important 없음. 기존 send-button !important 선언의 강도는 유지했다.",
+    "새 색상 리터럴은 토큰 파일 정의에만 있다."
+  ]
+}
