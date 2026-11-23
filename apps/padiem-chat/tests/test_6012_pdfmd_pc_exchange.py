@@ -13,20 +13,13 @@ saving an existing result and telling an unlinked owner how to link — are live
 """
 from __future__ import annotations
 
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-PDFMD_JS = ROOT / "static/util-pdfmd.js"
-EXCHANGE_JS = ROOT / "static/pc-file-exchange.js"
-CONVERT_ROUTES = ROOT / "app/document_convert_routes.py"
-
-
-def _js() -> str:
-    return PDFMD_JS.read_text(encoding="utf-8")
+from _support.pdfmd_pc_exchange_source import (
+    pdfmd_js, exchange_js, convert_routes_source,
+)
 
 
 def test_a_picked_pc_file_is_carried_into_the_conversion_request() -> None:
-    js = _js()
+    js = pdfmd_js()
     # The pick is the shared part, opened in its import half, loaded on first use.
     assert 'loadPcExchange()' in js
     assert 'script.src = "./pc-file-exchange.js"' in js
@@ -44,12 +37,12 @@ def test_a_picked_pc_file_is_carried_into_the_conversion_request() -> None:
     assert "max_bytes" not in js and "max_files" not in js
     # 5710's pause is not lifted by this change: the button says so instead.
     assert "const PDFMD_NEW_WORK_DISABLED = true;" in js
-    assert "PDFMD_NEW_WORK_DISABLED = True" in CONVERT_ROUTES.read_text(encoding="utf-8")
+    assert "PDFMD_NEW_WORK_DISABLED = True" in convert_routes_source()
 
 
 def test_saving_a_result_asks_for_the_original_folder_and_a_new_extension() -> None:
-    js = _js()
-    exchange = EXCHANGE_JS.read_text(encoding="utf-8")
+    js = pdfmd_js()
+    exchange = exchange_js()
     # The result goes back through the same part, in its save half.
     assert 'mode: "save"' in js
     assert '"/api/document-conversions/items/" + item.id + "/markdown?display=inline"' in js
@@ -68,7 +61,7 @@ def test_saving_a_result_asks_for_the_original_folder_and_a_new_extension() -> N
 
 
 def test_a_missing_pc_is_explained_with_a_connect_link() -> None:
-    js = _js()
+    js = pdfmd_js()
     # #6460: the same sentence and action the council app shows.
     assert '"컴퓨터를 연결하면 내 PC의 PDF를 가져올 수 있습니다."' in js
     assert '"컴퓨터 연결하기"' in js
