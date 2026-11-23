@@ -20,12 +20,9 @@ Network-free: the adapter is a fake and no model/provider is called.
 """
 
 from __future__ import annotations
-import locale_bundle
-
 import json
 from contextlib import contextmanager
 from io import BytesIO
-from pathlib import Path
 
 import pytest
 from pypdf import PdfWriter
@@ -46,13 +43,23 @@ from app.config import Settings
 from app.documents import build_document_context
 from app.attachments import AttachmentValidationError, parse_attachments
 
-ROOT = Path(__file__).resolve().parents[1]
-APP_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
-STREAM_JS = (ROOT / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
-LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
-TRANSPORT_JS = (ROOT / "static" / "chat-transport.js").read_text(encoding="utf-8")
-CHAT_ROUTES = (ROOT / "app" / "chat_routes.py").read_text(encoding="utf-8")
-GENERAL = (ROOT / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
+# #8060: shipped-source reads live in _support; assertions stay here.
+from _support.attachment_parity_2505_source import (
+    app_js,
+    chat_routes,
+    claw_general_routes,
+    conversation_js,
+    locale_js,
+    stream_js,
+    transport_js,
+)
+
+APP_JS = app_js()
+STREAM_JS = stream_js()
+LOCALE_JS = locale_js()
+TRANSPORT_JS = transport_js()
+CHAT_ROUTES = chat_routes()
+GENERAL = claw_general_routes()
 
 DOCUMENT_TEXT = "2026년 3분기 매출은 1억 2천만원입니다."
 DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -361,7 +368,7 @@ def test_the_browser_refuses_a_claw_image_before_upload():
     assert routing["imageToSelectImage"] is True
     assert routing["imageChipType"] == "image"
     assert routing["documentToReader"] is True
-    conv_js = (ROOT / "static/chat-conversation-module.js").read_text(encoding="utf-8")
+    conv_js = conversation_js()
     select = conv_js[conv_js.index("async function addAttachmentFiles("): ]
     select = select[: select.index("\n  }")]
     assert 'deps.uiT("claw-image-attachment-unsupported")' not in select
