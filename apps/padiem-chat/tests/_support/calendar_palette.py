@@ -60,6 +60,12 @@ def outputs_rules():
 
 def capability_nav_rules():
     return parse_rules(_sheet("capability-nav.css"))
+def surfaces_rules():
+    return parse_rules(_sheet("padiem-surfaces.css"))
+
+
+def surfaces_source() -> str:
+    return _sheet("padiem-surfaces.css")
 
 
 def standalone_rules():
