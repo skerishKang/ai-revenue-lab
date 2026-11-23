@@ -3,7 +3,7 @@ import json
 import subprocess
 from pathlib import Path
 
-from test_4139_claw_device_directory_route import get, make_app
+from _support.claw_device_directory import get, make_app
 from test_pc_drive_inventory_directory import DISK, USB, Drives, snapshot
 
 

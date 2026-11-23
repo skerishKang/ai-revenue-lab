@@ -12,7 +12,7 @@ import uvicorn
 from app.auth import SESSION_COOKIE, create_session_token
 from app.main import create_app
 from _support.auth_history import MemoryHistoryStore, add_test_user, google_settings
-from test_4139_claw_device_directory_route import Binding
+from _support.claw_device_directory import Binding
 from app.claw_device_directory_routes import BrokerDeviceDirectorySource
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "staging_com2_e2e.py"
