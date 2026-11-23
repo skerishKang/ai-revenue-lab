@@ -15,7 +15,12 @@ created. Cookie validation and the reviewed-origin list are not widened.
 """
 
 from __future__ import annotations
-import locale_bundle
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.consent_util_guidance_source import (
+    app_js, calendar_module_js, connectors_module_js, index_html, locale_source,
+    mcp_oauth_consent_js, nav_module_js, read, util_manifest_js, util_menu_css, util_menu_js,
+)
 
 import json
 from datetime import datetime, timedelta, timezone
@@ -225,12 +230,12 @@ def test_the_connect_buttons_show_the_canonical_host_line_for_that_refusal() -> 
     import pytest
 
     static = Path(__file__).resolve().parents[1] / "static"
-    app = (static / "app.js").read_text(encoding="utf-8")
-    calendar = (static / "chat-calendar-module.js").read_text(encoding="utf-8")
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    app = app_js()
+    calendar = calendar_module_js()
+    locale = locale_source()
     # #7216 R5 A9: 거부 문구 도우미는 chat-connectors-module.js로 이동했고
     # app.js는 한 줄 전달 함수만 남긴다. 본문은 모듈에서 읽는다.
-    connectors = (static / "chat-connectors-module.js").read_text(encoding="utf-8")
+    connectors = connectors_module_js()
 
     start = connectors.index("      function connectorTicketErrorKey(")
     helper = connectors[start: connectors.index("\n      }", start) + 8]

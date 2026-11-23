@@ -16,6 +16,12 @@ it must be a top-level view owned by its own state.
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.consent_util_guidance_source import (
+    app_js, calendar_module_js, connectors_module_js, index_html, locale_source,
+    mcp_oauth_consent_js, nav_module_js, read, util_manifest_js, util_menu_css, util_menu_js,
+)
+
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -60,7 +66,7 @@ class _AncestorTracker(HTMLParser):
 
 
 def _html() -> str:
-    return INDEX_HTML.read_text(encoding="utf-8")
+    return index_html()
 
 
 def test_util_view_is_a_top_level_main_panel_view() -> None:
@@ -77,7 +83,7 @@ def test_util_view_is_a_top_level_main_panel_view() -> None:
 
 
 def test_util_view_visibility_is_owned_by_its_own_state() -> None:
-    css = UTIL_MENU_CSS.read_text(encoding="utf-8")
+    css = util_menu_css()
     assert ".util-view { display: none;" in css
     assert '.app-shell[data-state="util"] .util-view { display: block' in css
     # The shared chat column and bottom composer must not render underneath
@@ -87,7 +93,7 @@ def test_util_view_visibility_is_owned_by_its_own_state() -> None:
 
 
 def test_util_nav_enters_its_state_instead_of_hiding_its_own_ancestor() -> None:
-    js = UTIL_MENU_JS.read_text(encoding="utf-8")
+    js = util_menu_js()
     assert 'shell.dataset.state = "util"' in js
     # The production defect: the handler hid every .claw-workspace, including
     # the ancestor of #utilView.
@@ -96,8 +102,8 @@ def test_util_nav_enters_its_state_instead_of_hiding_its_own_ancestor() -> None:
 
 
 def test_shell_state_sync_covers_the_util_state() -> None:
-    js = APP_JS.read_text(encoding="utf-8")
-    nav = APP_JS.with_name("chat-nav-module.js").read_text(encoding="utf-8")  # R5 A10: the util aria rows moved here
+    js = app_js()
+    nav = nav_module_js()  # R5 A10: the util aria rows moved here  # R5 A10: the util aria rows moved here
     assert 'state === "util") ? "false" : "page"' in nav
     assert 'const utilNav = document.getElementById("utilNavButton");' in nav
     assert 'utilNav.setAttribute("aria-current", state === "util" ? "page" : "false")' in nav
@@ -105,7 +111,7 @@ def test_shell_state_sync_covers_the_util_state() -> None:
 
 def test_shipped_services_do_not_advertise_themselves_as_unavailable() -> None:
     html = _html()
-    js = (ROOT / "static/util-manifest.js").read_text(encoding="utf-8")
+    js = util_manifest_js()
     # 11-10 / #7460 결정: the six tools live in util-manifest.js and render cards/chips/menu.
     assert 'id: "sns"' in js and "SNS 홍보" in js
     assert 'id: "meeting"' in js and "회의정리·활동집" in js
