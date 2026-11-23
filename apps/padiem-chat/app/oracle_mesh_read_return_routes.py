@@ -556,6 +556,37 @@ class OracleMeshReturnSource:
             return rows_for_path[0].get("device_id") or rows_for_path[0]["node_ref"]
         return selected_device_id or ""
 
+    def consent_device_for_node(
+        self, *, account_ref: str, node_ref: str,
+    ) -> str | None:
+        """The connector device reference a consent record is keyed by.
+
+        A managed PC link names the Mesh node, while the enrollment consent
+        directory stores the connector's own device id. The ownership map is
+        the one server-owned pair of both strings, so the row that names this
+        node supplies the pinned device unchanged - the same rule
+        ``device_hint_for`` follows for the file lane. The Mesh string is
+        never reshaped into a consent key, and the consent server's own
+        reference check is not widened. No row, competing pins or a value the
+        canonical PC grammar refuses answer ``None`` so the caller refuses
+        instead of guessing.
+        """
+        if (
+            not isinstance(account_ref, str) or not account_ref
+            or not is_pc_device_id(node_ref)
+        ):
+            return None
+        devices = {
+            row.get("device_id") or row["node_ref"]
+            for row in self._rows
+            if row["account_ref"] == account_ref
+            and (row.get("node_ref") == node_ref or row.get("device_id") == node_ref)
+        }
+        if len(devices) != 1:
+            return None
+        device = next(iter(devices))
+        return device if is_pc_device_id(device) else None
+
     def command_device_ids(self, *, account_ref: str) -> list[str]:
         """Enumerate only this server-verified owner's unambiguous command targets."""
         candidates = {row.get("device_id") or row["node_ref"] for row in self._rows

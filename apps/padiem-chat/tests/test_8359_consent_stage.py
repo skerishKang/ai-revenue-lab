@@ -7,19 +7,32 @@ from types import SimpleNamespace
 
 import pytest
 
+from app import oracle_mesh_read_return_routes as routes
 from app import pc_helper_maintenance_host as host
 
 SUB = "subject_fixture"
 DEVICE = "node//fixture"
-BARE = "fixture"
+# The connector's own enrollment device id, paired with the Mesh node in the
+# deployment ownership map - the value a consent grant stores.
+CONNECTOR = "connector_fixture"
 SCOPE = {"owner_subject_id": SUB, "account_ref": "acct_fixture", "workspace_ref": "ws_fixture"}
-# The stored consent carries the bare ref a human screen resolves.
-CONSENT = {**SCOPE, "device_id": BARE, "withdrawn_at": None, "consent_id": "consent_fixture"}
+CONSENT = {**SCOPE, "device_id": CONNECTOR, "withdrawn_at": None,
+           "consent_id": "consent_fixture"}
 
 
-def _request():
+def _source(node_ref=DEVICE):
+    return routes.OracleMeshReturnSource(
+        [{"account_ref": SCOPE["account_ref"], "device_id": CONNECTOR,
+          "node_ref": node_ref, "root_ref": "pcroot_fixture",
+          "path_relative": "fixture.txt", "file_path": "C:/fixture.txt",
+          "command_exec": True}],
+        "s" * 32, routes.EXECUTION_MODE_MESH)
+
+
+def _request(source=None):
     return SimpleNamespace(app=SimpleNamespace(
-        state=SimpleNamespace(control_plane_identity_authority=object())))
+        state=SimpleNamespace(control_plane_identity_authority=object(),
+                              oracle_mesh_return_source=source or _source())))
 
 
 def _session():
@@ -59,9 +72,31 @@ def test_denial_stage_codes_are_value_free(caplog, monkeypatch):
                 _request(), None, {"device_id": DEVICE}, _session(), "user_fixture", None))
         assert result == (None, None, "owner_consent_missing"), stage
         assert f"outcome=denied stage={stage}" in caplog.text, stage
-        for value in (SUB, DEVICE, "acct_fixture", "ws_fixture", "consent_fixture",
+        for value in (SUB, DEVICE, CONNECTOR, "acct_fixture", "ws_fixture", "consent_fixture",
                       "other_account", "other_workspace"):
             assert value not in caplog.text, (stage, value)
+
+
+def test_missing_server_pair_has_its_own_stage(caplog, monkeypatch):
+    """Without the map's device pin there is no consent key to look up; the
+    refusal is staged and carries no device, account or workspace value."""
+    caplog.clear()
+    called = []
+
+    async def read(identity, method, **kwargs):
+        called.append(method)
+        return SCOPE
+
+    monkeypatch.setattr(host, "mode_connector_read", read)
+    with caplog.at_level(logging.WARNING, logger=host.logger.name):
+        result = asyncio.run(host._authorized(
+            _request(_source(node_ref="node//other")), None, {"device_id": DEVICE},
+            _session(), "user_fixture", None))
+    assert result == (None, None, "owner_consent_missing")
+    assert called == ["owner_scope"]
+    assert "outcome=denied stage=consent_reference_missing" in caplog.text
+    for value in (SUB, DEVICE, CONNECTOR, "acct_fixture", "ws_fixture"):
+        assert value not in caplog.text, value
 
 
 def test_consent_read_error_has_its_own_stage(caplog, monkeypatch):

@@ -17,10 +17,17 @@ from app import pc_helper_maintenance_host as host
 from app import oracle_mesh_read_return_routes as routes
 from app.pc_helper_registration import SOURCE_SHA256, registration_command
 from app.pc_helper_install import install_command, install_script
+from canonical_connector_enrollment_durable import (
+    IdentityDurableConnectorEnrollmentRecords,
+)
+from padiem_control_plane.contracts import ControlPlaneContractError
+from padiem_control_plane.padiem_connector_enrollment import ConnectorEnrollmentConsent
 
 NOW = datetime(2026, 11, 23, tzinfo=timezone.utc)
 DEVICE = "node//managed-fixture"
-BARE = "managed-fixture"
+#: The connector's own enrollment device id. It is a different string from
+#: the Mesh node a managed link names, and it is what a consent grant stores.
+CONNECTOR = "connector-device-fixture"
 UID = "usr_owner"
 SUB = "sub_" + "a" * 32
 TENANT = "tenant_" + "b" * 32
@@ -32,6 +39,49 @@ LINK = {"mesh_node_id": DEVICE, "state": "active", "paused_at": None,
         "link_id": "pcl_fixture"}
 ENV = {"PADIEM_PC_HELPER_AUTO_UPDATE_ENABLED": "1"}
 SCOPE = {"owner_subject_id": SUB, "account_ref": "account-fixture", "workspace_ref": "workspace-fixture"}
+#: The deployment ownership map's one server-owned row for this PC: the
+#: connector device id and the Mesh node it addresses, side by side.
+MAP = [{"account_ref": SCOPE["account_ref"], "device_id": CONNECTOR, "node_ref": DEVICE,
+        "root_ref": "pcroot_fixture", "path_relative": "fixture.txt",
+        "file_path": "C:/fixture.txt", "command_exec": True}]
+
+
+class Cursor:
+    def __init__(self, rows):
+        self._rows = rows
+
+    def toArray(self):
+        return self._rows
+
+
+class Sql:
+    def __init__(self, db):
+        self._db = db
+
+    def exec(self, statement, *args):
+        cursor = self._db.execute(statement, args)
+        if cursor.description is not None:
+            fields = [col[0] for col in cursor.description]
+            return Cursor([dict(zip(fields, row, strict=True)) for row in cursor.fetchall()])
+        return Cursor([])
+
+
+class DurableStorage:
+    """The same SQLite storage shape the canonical Identity DO exposes."""
+
+    def __init__(self):
+        self.db = sqlite3.connect(":memory:", isolation_level=None)
+        self.sql = Sql(self.db)
+
+    def transactionSync(self, callback):
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            result = callback()
+            self.db.execute("COMMIT")
+            return result
+        except Exception:
+            self.db.execute("ROLLBACK")
+            raise
 
 
 class Queue:
@@ -124,7 +174,8 @@ def rig(monkeypatch):
         pc_device_pairing_store=queue, mesh_device_presence_store=queue, mesh_device_drive_store=queue,
         history_store=history, ops_audit_store=OpsAuditStore(db), ops_alert_store=D1OpsAlertStore(db),
         control_plane_identity_authority=SimpleNamespace(resolve_connector_owner_scope=lambda: None),
-        oracle_mesh_return_source=SimpleNamespace(configured=True, execution_mode=routes.EXECUTION_MODE_MESH),
+        oracle_mesh_return_source=routes.OracleMeshReturnSource(
+            MAP, "s" * 32, routes.EXECUTION_MODE_MESH),
         pc_pairing_user_helper_url=RELEASE["download_url"], pc_pairing_user_helper_sha256=RELEASE["sha256"])
     app = SimpleNamespace(state=state)
     session = SimpleNamespace(session_id="session-fixture", tenant_id=TENANT,
@@ -144,15 +195,15 @@ def rig(monkeypatch):
     async def read(identity, method, **kw):
         if method == "owner_scope":
             return SCOPE
-        # The consent server keys records by the bare device id a human
-        # screen resolves (node-id segment); a composed node/ lookup is as
-        # refused there as a wrong id. Mirror that exactness here.
+        # The consent server keys records by the connector's own enrollment
+        # device id, not by the Mesh node. A composed node/ value is refused
+        # by its reference grammar; a wrong bare value finds no record.
         flags["consent_refs"].append(kw.get("device_id"))
         if not flags["consent"]:
             return None
-        if kw.get("device_id") != BARE:
+        if kw.get("device_id") != CONNECTOR:
             raise ValueError("connector_enrollment_invalid_reference")
-        return {**SCOPE, "device_id": BARE, "withdrawn_at": None,
+        return {**SCOPE, "device_id": CONNECTOR, "withdrawn_at": None,
                 "consent_id": "consent-fixture"}
 
     async def route_read(*args, **kwargs):
@@ -200,9 +251,9 @@ def test_actual_dispatch_path_and_next_observation(rig, monkeypatch):
         assert len(history.rows) == 1
         row = history.rows[0]
         assert row["user_id"] == UID and row["device_id"] == row["node_ref"] == DEVICE
-        # ##8359: the consent lookup must carry the same bare ref the human
-        # screens resolve, never the composed Mesh node form.
-        assert flags["consent_refs"] and set(flags["consent_refs"]) == {BARE}
+        # ##8359: the consent lookup carries the map's connector device id
+        # unchanged - not the Mesh node and not a reshaped piece of it.
+        assert flags["consent_refs"] and set(flags["consent_refs"]) == {CONNECTOR}
         assert row["user_mode"] is False and row["kind"] == "command"
         assert row["command_text"] == registration_command()
         assert history.runs[row["run_id"]]["action"] == "pc_maintenance"
@@ -220,29 +271,43 @@ def test_actual_dispatch_path_and_next_observation(rig, monkeypatch):
     asyncio.run(run())
 
 
-def test_consent_lookup_carries_only_the_bare_ref(rig):
-    """The accumulated wire calls carry only the bare ref a human screen
-    resolves; the composed Mesh form never reaches the consent server
-    (server-side refusal is pinned in the control-plane durable tests)."""
+def test_consent_lookup_carries_the_map_pin_unchanged(rig):
+    """The accumulated wire calls carry the ownership map's pinned connector
+    device id; the Mesh node and any reshaping of it never reach the consent
+    server (server-side refusal is pinned in the control-plane durable tests)."""
     app, queue, history, flags, store, db = rig
     async def run():
         await host.maintenance_round(app, ENV, store)
     asyncio.run(run())
-    assert flags["consent_refs"] and set(flags["consent_refs"]) == {BARE}
+    assert flags["consent_refs"] and set(flags["consent_refs"]) == {CONNECTOR}
+    assert CONNECTOR not in (DEVICE, DEVICE.rsplit("/", 1)[1])
 
 
-def test_bare_derivation_edges():
-    """Only a canonical identity yields a consent ref; anything else refuses
-    instead of guessing, so a bad mesh value can never slip through."""
-    from padiem_ai_core.pc_device_identity import bare_device_id
-    assert bare_device_id("node//Ab3Cd4Ef5Gh6@meshdomain1") == "Ab3Cd4Ef5Gh6@meshdomain1"
-    assert bare_device_id("node/mydomain/Ab3Cd4Ef5Gh6@meshdomain1") == "Ab3Cd4Ef5Gh6@meshdomain1"
-    assert bare_device_id("device-oracle-1") == "device-oracle-1"
-    assert bare_device_id("node//a/b") is None
-    assert bare_device_id("") is None
-    assert bare_device_id(None) is None
-    assert bare_device_id("../../etc/passwd") is None
-    assert bare_device_id("device with space") is None
+def test_no_map_row_naming_the_pc_means_no_consent_lookup(rig):
+    """Without the server-owned pair there is no reference to look up, so the
+    candidate stops before the consent call and stages no run."""
+    app, queue, history, flags, store, db = rig
+    app.state.oracle_mesh_return_source = routes.OracleMeshReturnSource(
+        [{**MAP[0], "node_ref": "node//another-pc"}], "s" * 32,
+        routes.EXECUTION_MODE_MESH)
+    async def run():
+        await host.maintenance_round(app, ENV, store)
+    asyncio.run(run())
+    assert flags["consent_refs"] == []
+    assert history.rows == []
+    assert db.execute("SELECT count(*) FROM pc_helper_maintenance_jobs").fetchone()[0] == 0
+
+
+def test_consent_device_grammar_still_refuses_the_mesh_forms(rig):
+    """The consent server's own reference check is not widened: neither the
+    composed node/ form nor a shortened node id is accepted as a device key."""
+    source = rig[0].state.oracle_mesh_return_source
+    assert source.consent_device_for_node(
+        account_ref=SCOPE["account_ref"], node_ref=DEVICE) == CONNECTOR
+    assert source.consent_device_for_node(
+        account_ref=SCOPE["account_ref"], node_ref="node//unknown") is None
+    assert source.consent_device_for_node(
+        account_ref="account-other", node_ref=DEVICE) is None
 
 
 @pytest.mark.parametrize(("denial", "expected"), [
@@ -637,3 +702,61 @@ def test_maintenance_reverse_lookup_reads_live_authority_not_process_cache(monke
                 product_id="b62", canonical_subject_id=SUB) == expected
     asyncio.run(run())
     assert len(calls) == 2
+
+
+def test_granted_consent_is_found_by_the_maintenance_lookup(rig, monkeypatch):
+    """Round trip through the real durable store: the human grant stores the
+    connector device id, and maintenance reads that exact record through the
+    managed link's server-owned map pair. No Mesh string is reshaped."""
+    app, queue, history, flags, store, db = rig
+    storage = DurableStorage()
+    records = IdentityDurableConnectorEnrollmentRecords(
+        storage=storage,
+        session_reader=SimpleNamespace(resolve_auth_session=lambda **kw: None),
+    )
+    records.install_schema()
+    records.persist_preverified_consent(
+        consent=ConnectorEnrollmentConsent(
+            consent_id="consent." + "a" * 32, owner_subject_id=SUB,
+            account_ref=SCOPE["account_ref"], workspace_ref=SCOPE["workspace_ref"],
+            device_id=CONNECTOR, granted_at=NOW,
+        ),
+        now=NOW,
+    )
+    stored = records.current_for_device(owner_subject_id=SUB, device_id=CONNECTOR, now=NOW)
+    assert stored is not None and stored.device_id == CONNECTOR
+    # The consent server's own grammar is unchanged: the composed Mesh value
+    # is refused as a reference, and a valid-but-different value finds nothing.
+    with pytest.raises(ControlPlaneContractError) as refusal:
+        records.current_for_device(owner_subject_id=SUB, device_id=DEVICE, now=NOW)
+    assert refusal.value.code == "connector_enrollment_invalid_reference"
+    assert records.current_for_device(
+        owner_subject_id=SUB, device_id=DEVICE.rsplit("/", 1)[1], now=NOW) is None
+
+    class DurableRefusal(Exception):
+        def __init__(self, code):
+            super().__init__(code)
+            self.code = code
+
+    async def durable_read(identity, method, **kw):
+        if method == "owner_scope":
+            return SCOPE
+        flags["consent_refs"].append(kw.get("device_id"))
+        try:
+            current = records.current_for_device(
+                owner_subject_id=SUB, device_id=kw.get("device_id"), now=NOW)
+        except ControlPlaneContractError as exc:
+            raise DurableRefusal(exc.code) from None
+        if (current is None or current.account_ref != SCOPE["account_ref"]
+                or current.workspace_ref != SCOPE["workspace_ref"]):
+            raise DurableRefusal("enrollment_consent_required")
+        return {"owner_subject_id": current.owner_subject_id,
+                "device_id": current.device_id, "withdrawn_at": None,
+                "consent_id": current.consent_id, "account_ref": current.account_ref,
+                "workspace_ref": current.workspace_ref}
+
+    monkeypatch.setattr(host, "mode_connector_read", durable_read)
+    asyncio.run(host.maintenance_round(app, ENV, store))
+    assert set(flags["consent_refs"]) == {CONNECTOR}
+    assert len(history.rows) == 1
+    assert history.rows[0]["node_ref"] == DEVICE
