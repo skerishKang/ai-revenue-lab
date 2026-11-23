@@ -6,6 +6,7 @@ cache and the value-free failure codes are all fixed here.
 """
 from __future__ import annotations
 
+import base64
 import json
 import struct
 from unittest.mock import Mock, patch
@@ -156,7 +157,7 @@ def test_sysinfo_uses_the_same_authenticated_control_socket():
     frame = sysinfo_frame(NODE, TAG)
     socket, opened = _socket([
         {"action": "serverinfo"},
-        {"action": "authcookie", "cookie": "c"},
+        {"action": "userinfo"},
         {"action": "event", "event": {}},
         sysinfo_answer(),
     ])
@@ -165,17 +166,76 @@ def test_sysinfo_uses_the_same_authenticated_control_socket():
     fake, host, port, path, headers, timeout = opened[0]
     assert (host, port, path) == ("127.0.0.1", 4443, "/control.ashx")
     assert timeout > 0
-    assert json.loads(fake.sent[0]) == {"action": "authcookie"}
-    assert json.loads(fake.sent[1]) == frame
+    # The greeting is the authentication proof; no relay-cookie request is
+    # sent and only the closed getsysinfo frame goes out on the wire.
+    assert [json.loads(sent) for sent in fake.sent] == [frame]
     assert "op3rator-secret" not in json.dumps(headers)
     assert fake.closed
 
 
+def test_sysinfo_opens_the_socket_exactly_like_the_existing_pc_command_path():
+    frame = sysinfo_frame(NODE, TAG)
+    command = ps_frame(NODE, "r1")
+
+    command_socket, command_opened = _socket([
+        {"action": "authcookie", "cookie": "c"},
+        {"action": "msg", "type": "ps", "responseid": "r1", "value": "{}"},
+    ])
+    command_socket.ask(command)
+    version_socket, version_opened = _socket([
+        {"action": "serverinfo"},
+        {"action": "userinfo"},
+        sysinfo_answer(),
+    ])
+    version_socket.sysinfo(frame)
+
+    _, chost, cport, cpath, cheaders, ctimeout = command_opened[0]
+    _, vhost, vport, vpath, vheaders, vtimeout = version_opened[0]
+    assert (vhost, vport, vpath, vtimeout) == (chost, cport, cpath, ctimeout)
+    assert vheaders == cheaders
+    assert vheaders["x-meshauth"].startswith(
+        base64.b64encode(b"operator").decode("ascii") + ","
+    )
+    assert base64.b64encode(b"op3rator-secret").decode("ascii") in vheaders["x-meshauth"]
+    assert "op3rator-secret" not in json.dumps(vheaders)
+
+
+def test_server_greeting_order_confirms_authentication():
+    for greeting in (
+        [{"action": "serverinfo"}, {"action": "userinfo"}],
+        [{"action": "userinfo"}, {"action": "serverinfo"}],
+    ):
+        socket, _ = _socket([*greeting, sysinfo_answer()])
+        answer = socket.sysinfo(sysinfo_frame(NODE, TAG))
+        assert answer["action"] == "getsysinfo"
+
+
+def test_unrelated_frames_before_the_greeting_are_skipped():
+    socket, _ = _socket([
+        {"action": "ping"},
+        {"action": "serverstats", "values": {}},
+        {"action": "serverinfo"},
+        sysinfo_answer(),
+    ])
+    assert socket.sysinfo(sysinfo_frame(NODE, TAG))["action"] == "getsysinfo"
+
+
 def test_sysinfo_requires_authentication_and_refuses_every_other_frame():
-    socket, opened = _socket([{"action": "serverinfo"}])
+    socket, opened = _socket([])
     with pytest.raises(Exception):
         socket.sysinfo(sysinfo_frame(NODE, TAG))
     assert opened[0][0].closed
+    # A relay cookie alone is not the server's authentication greeting. This
+    # is the exact frame the pre-fix path waited for, so it is load-bearing.
+    socket, _ = _socket([
+        {"action": "authcookie", "cookie": "c", "rcookie": "r"},
+        sysinfo_answer(),
+    ])
+    with pytest.raises(Exception):
+        socket.sysinfo(sysinfo_frame(NODE, TAG))
+    socket, _ = _socket([{"action": "close", "cause": "noauth", "msg": "noauth"}])
+    with pytest.raises(Exception):
+        socket.sysinfo(sysinfo_frame(NODE, TAG))
     socket, _ = _socket([])
     with pytest.raises(Exception):
         socket.sysinfo(ps_frame(NODE, "r1"))
@@ -185,7 +245,7 @@ def test_sysinfo_requires_authentication_and_refuses_every_other_frame():
 
 def test_sysinfo_answer_without_a_matching_tag_is_not_accepted():
     socket, _ = _socket([
-        {"action": "authcookie"},
+        {"action": "serverinfo"},
         sysinfo_answer(tag="another-tag"),
     ])
     assert socket.sysinfo(sysinfo_frame(NODE, TAG)) is None
@@ -371,13 +431,24 @@ def _wire_socket(*, answers=(), recv_error=None, connect_error=None):
     )
 
 
-def test_socket_reports_denied_when_authcookie_never_arrives():
+def test_socket_reports_denied_when_the_server_greeting_never_arrives():
     socket = _wire_socket()
     with pytest.raises(MeshCentralSysInfoReadFailure) as caught:
         socket.sysinfo(sysinfo_frame(NODE, TAG))
     assert caught.value.code == SYSINFO_DENIED
     assert str(caught.value) == SYSINFO_DENIED
     assert "op3rator-secret" not in str(caught.value)
+
+
+@pytest.mark.parametrize("refusal", [
+    {"action": "close", "cause": "noauth", "msg": "noauth"},
+    {"action": "authcookie", "cookie": "c", "rcookie": "r"},
+])
+def test_socket_reports_denied_for_a_refusal_or_only_a_relay_cookie(refusal):
+    socket = _wire_socket(answers=[refusal, sysinfo_answer()])
+    with pytest.raises(MeshCentralSysInfoReadFailure) as caught:
+        socket.sysinfo(sysinfo_frame(NODE, TAG))
+    assert caught.value.code == SYSINFO_DENIED
 
 
 def test_socket_reports_denied_for_an_invalid_operator_credential():
@@ -400,8 +471,7 @@ def test_socket_reports_transport_when_the_private_tunnel_cannot_open():
 
 
 def test_socket_reports_timeout_when_the_recv_deadline_is_hit():
-    socket = _wire_socket(answers=[{"action": "authcookie"}],
-                          recv_error=TimeoutError("PRIVATE-HOST"))
+    socket = _wire_socket(recv_error=TimeoutError("PRIVATE-HOST"))
     with pytest.raises(MeshCentralSysInfoReadFailure) as caught:
         socket.sysinfo(sysinfo_frame(NODE, TAG))
     assert caught.value.code == SYSINFO_TIMEOUT
@@ -410,7 +480,7 @@ def test_socket_reports_timeout_when_the_recv_deadline_is_hit():
 
 @pytest.mark.parametrize("payload", [b"{not-json", b"[]", b'"text"'])
 def test_socket_reports_shape_for_an_unusable_reply_frame(payload):
-    frames = [(1, b'{"action":"authcookie"}'), (1, payload)]
+    frames = [(1, b'{"action":"serverinfo"}'), (1, payload)]
 
     class RawSocket:
         def __init__(self):

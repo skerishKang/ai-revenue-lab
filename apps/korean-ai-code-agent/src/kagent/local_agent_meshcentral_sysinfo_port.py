@@ -12,6 +12,12 @@ This module owns the request shape, the response parsing, the conversion to
 the one bounded UTC stamp and the value-free failure codes. The wire itself is
 the executor's already authenticated ``control.ashx`` socket; no new
 credential, port, device command or device write is introduced.
+
+Authentication on that socket is confirmed by the server's own greeting
+(``serverinfo``/``userinfo`` from ``meshuser.js``), the same proof the existing
+PC command path uses. An ``authcookie`` is a relay-tunnel credential, not an
+authentication confirmation for a server-document read. See
+:class:`kagent.local_agent_meshcentral_process_port.MeshCentralProcessSocket`.
 """
 from __future__ import annotations
 
@@ -53,6 +59,8 @@ SYSINFO_REASON_CODES = frozenset({
 #: Named wire-stage codes. These doubles as the whole text of a wire failure,
 #: so no response body, node id, host, credential or exception text can leak.
 SYSINFO_NODEID = "sysinfo_nodeid"
+#: The operator header was rejected, or the server never sent its authenticated
+#: ``serverinfo``/``userinfo`` greeting. No credential or refusal body is kept.
 SYSINFO_DENIED = "sysinfo_denied"
 SYSINFO_TRANSPORT = "sysinfo_transport"
 SYSINFO_TIMEOUT = "sysinfo_timeout"
