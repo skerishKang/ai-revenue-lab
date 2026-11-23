@@ -18,17 +18,22 @@ saw the sidebar go blank and assumed the history was gone.
    failure renderer.
 """
 from __future__ import annotations
-import locale_bundle
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.auth_error_history_locale_source import (
+    app_js, conversation_search_js, history_css, history_module_js, index_html,
+    locale_source, outputs_js, read as _source_read,
+)
 
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parents[1] / "static"
-APP = (BASE / "app.js").read_text(encoding="utf-8")
+APP = app_js()
 # The recent-list renderers moved into chat-history-module.js (#7216 R5 step 3);
 # the bodies are pinned against the module source where they now live.
-MODULE = (BASE / "chat-history-module.js").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
-CSS = (BASE / "history.css").read_text(encoding="utf-8")
+MODULE = history_module_js()
+LOCALE = locale_source()
+CSS = history_css()
 
 
 def _load_recent_body() -> str:

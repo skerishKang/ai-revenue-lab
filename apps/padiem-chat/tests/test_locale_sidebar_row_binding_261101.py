@@ -14,19 +14,24 @@ skeleton on screen until something else reloaded.
 """
 
 from __future__ import annotations
-import locale_bundle
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.auth_error_history_locale_source import (
+    app_js, conversation_search_js, history_css, history_module_js, index_html,
+    locale_source, outputs_js, read as _source_read,
+)
 
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-APP = ((STATIC / "app.js").read_text(encoding="utf-8")
-       + (STATIC / "chat-history-module.js").read_text(encoding="utf-8"))  # R5 step 3: history rows live in the module too
-OUTPUTS = (STATIC / "outputs.js").read_text(encoding="utf-8")
-SEARCH = (STATIC / "conversation-search.js").read_text(encoding="utf-8")
+LOCALE = locale_source()
+INDEX = index_html()
+APP = (app_js()
+       + history_module_js())  # R5 step 3: history rows live in the module too
+OUTPUTS = outputs_js()
+SEARCH = conversation_search_js()
 
 
 def test_locale_copy_never_addresses_the_sidebar_row_class() -> None:
