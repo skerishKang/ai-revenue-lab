@@ -18,7 +18,7 @@ from starlette.websockets import WebSocketDisconnect
 from app.canonical_connector_gateway_source_composition import CONNECTOR_GATEWAY_WSS_PATH
 from app.com2_connector_websocket import create_com2_gateway
 from app.connector_gateway_runtime_mount import maybe_dispatch_connector_gateway
-from test_com2_connector_websocket import Broker, Identity, SECRET, signed
+from _support.com2_connector_ws_fixtures import Broker, Identity, SECRET, signed
 from test_4139_gateway_broker_do_upgrade import InternalRequest, Result, request
 
 ROOT = Path(__file__).resolve().parents[3]
