@@ -112,7 +112,7 @@ def test_no_english_width_on_any_frame_after_page_turn(base_url):
         page.locator(".smal-overflow-menu .srsg-btn").click()
         panel = page.locator(".srsg-panel")
         panel.wait_for(state="visible")
-        panel.get_by_role("group", name="번역본 표시").get_by_role("button", name="한글만").click()
+        panel.get_by_role("group", name="영어 함께 보기").get_by_role("button", name="한글만").click()
         panel.locator(".srsg-x").click()
         pages = page.evaluate(FIXTURE)
         assert pages >= 2
@@ -168,4 +168,106 @@ def test_guest_cloud_notice_shows_once_and_stays_onscreen(base_url):
         assert not page.evaluate("document.body.classList.contains('auth-gate-open')")
         page.evaluate("openAuthGate()")
         assert not page.evaluate("document.body.classList.contains('auth-gate-open')"), "notice reappeared after dismissal"
+        browser.close()
+
+
+
+def _touch_swipe(page, *, start_x=300, start_y=300, end_x=180, end_y=320):
+    """Dispatch a one-finger touch sequence on actual Reader text."""
+    page.evaluate("""([sx,sy,ex,ey]) => {
+      const target=document.querySelector('#readerPageBody .verse')
+        || document.getElementById('readerPageBody');
+      const touch=(x,y) => new Touch({
+        identifier:1,target,clientX:x,clientY:y,screenX:x,screenY:y,pageX:x,pageY:y
+      });
+      const first=touch(sx,sy),last=touch(ex,ey);
+      target.dispatchEvent(new TouchEvent('touchstart',{
+        bubbles:true,cancelable:true,touches:[first],changedTouches:[first],targetTouches:[first]
+      }));
+      target.dispatchEvent(new TouchEvent('touchend',{
+        bubbles:true,cancelable:true,touches:[],changedTouches:[last],targetTouches:[]
+      }));
+    }""", [start_x,start_y,end_x,end_y])
+
+
+def _fixture_three_pages(page):
+    page.evaluate("""() => {
+      READER_PAGES=[1,2,3].map(n =>
+        '<p class="verse">한글 본문 '+n+' · '+('읽기 ').repeat(25)+'</p>');
+      readerPageIndex=0;
+    }""")
+
+
+def test_mobile_swipe_moves_flow_pages_without_vertical_or_short_collision(base_url):
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(
+            headless=True, executable_path=CHROME
+        ) if CHROME else pw.chromium.launch(headless=True)
+        page=browser.new_page(viewport={"width":390,"height":844},is_mobile=True,has_touch=True)
+        _open_reader(page,base_url)
+        page.evaluate("() => {showScreen('reader');}")
+        _fixture_three_pages(page)
+        page.evaluate("applyReaderViewMode('flow')")
+        page.wait_for_timeout(150)
+        inner=page.locator("#paper .paper-inner")
+        initial=inner.evaluate("(e) => e.scrollTop")
+        _touch_swipe(page,start_x=280,start_y=280,end_x=270,end_y=95)
+        page.wait_for_timeout(100)
+        assert inner.evaluate("(e) => e.scrollTop") >= initial
+        assert page.evaluate("readerPageIndex") == 0
+        _touch_swipe(page,start_x=300,end_x=260)
+        assert page.evaluate("readerPageIndex") == 0
+        _touch_swipe(page,start_x=300,end_x=100)
+        page.wait_for_function("() => readerPageIndex >= 1",timeout=5000)
+        assert inner.evaluate("(e) => e.scrollTop") > initial
+        _touch_swipe(page,start_x=100,end_x=300)
+        page.wait_for_function("() => readerPageIndex === 0",timeout=5000)
+        browser.close()
+
+
+def test_mobile_swipe_turns_page_but_respects_selection_and_desktop(base_url):
+    with sync_playwright() as pw:
+        browser=pw.chromium.launch(headless=True,executable_path=CHROME) if CHROME else pw.chromium.launch(headless=True)
+        page=browser.new_page(viewport={"width":390,"height":844},is_mobile=True,has_touch=True)
+        _open_reader(page,base_url)
+        page.evaluate("showScreen('reader')")
+        _fixture_three_pages(page)
+        page.evaluate("applyReaderViewMode('page')")
+        page.evaluate("""() => {
+          const text=document.querySelector('#readerPageBody .verse').firstChild;
+          const range=document.createRange();range.selectNodeContents(text);
+          const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+        }""")
+        _touch_swipe(page)
+        assert page.evaluate("readerPageIndex") == 0
+        page.evaluate("window.getSelection().removeAllRanges()")
+        _touch_swipe(page)
+        page.wait_for_function("() => readerPageIndex === 1",timeout=5000)
+        _touch_swipe(page,start_x=100,end_x=300)
+        page.wait_for_function("() => readerPageIndex === 0",timeout=5000)
+        page.close()
+        wide=browser.new_page(viewport={"width":1440,"height":900})
+        _open_reader(wide,base_url)
+        wide.evaluate("showScreen('reader')")
+        _fixture_three_pages(wide)
+        wide.evaluate("applyReaderViewMode('page')")
+        _touch_swipe(wide)
+        assert wide.evaluate("readerPageIndex") == 0
+        browser.close()
+
+
+def test_ai_panel_copy_matches_actual_input_and_question_examples(base_url):
+    with sync_playwright() as pw:
+        browser=pw.chromium.launch(headless=True,executable_path=CHROME) if CHROME else pw.chromium.launch(headless=True)
+        for width,height in [(390,844),(1440,900)]:
+            page=browser.new_page(viewport={"width":width,"height":height})
+            _open_reader(page,base_url)
+            page.evaluate("showScreen('reader')")
+            if width==390:page.evaluate("document.body.classList.add('ai-open')")
+            status=page.locator("#voiceStatus").inner_text()
+            assert "아래 입력창" in status
+            assert "추천 질문을 누르거나" not in status
+            assert page.locator("#askInput").count()==1
+            assert page.locator("#companionEmptyState .quick button").count()>=3
+            page.close()
         browser.close()

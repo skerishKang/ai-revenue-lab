@@ -443,7 +443,7 @@
             <button data-q="고린도">고린도는 어디인가요?</button>
             <button data-q="관계">바울 ↔ 아볼로?</button>
           </div>
-          <div class="voice-status" id="voiceStatus">추천 질문을 누르거나 아래 입력창에서 바로 물어보세요.</div>
+          <div class="voice-status" id="voiceStatus">아래 입력창에서 직접 질문하거나 질문 예시를 골라보세요.</div>
         </section>
       </div>
       <div class="ask">
@@ -4964,25 +4964,48 @@ motionRange.addEventListener('input',()=>{
   __smRenderMotionControl();
 });
 
-/* v2.8.2 Mobile Reader swipe: horizontal swipe turns actual Reader pages. */
+/* #7836: touchend still fires when vertical scrolling cancels pointer events.
+   Never prevent native scrolling or text selection; only a deliberate,
+   predominantly horizontal single-finger swipe advances the reading position. */
 let __smReaderSwipeStart=null;
 const smReaderPaper=document.getElementById('paper');
-smReaderPaper.addEventListener('pointerdown',e=>{
-  if(!__smReaderCompactMode() || e.pointerType==='mouse')return;
-  if(document.body.classList.contains('memory-open')||document.body.classList.contains('ai-open'))return;
-  if(e.target.closest('button,input,textarea,a'))return;
-  __smReaderSwipeStart={x:e.clientX,y:e.clientY,id:e.pointerId};
-});
-smReaderPaper.addEventListener('pointerup',e=>{
-  if(!__smReaderSwipeStart || __smReaderSwipeStart.id!==e.pointerId)return;
-  const dx=e.clientX-__smReaderSwipeStart.x;
-  const dy=e.clientY-__smReaderSwipeStart.y;
-  __smReaderSwipeStart=null;
-  if(Math.abs(dx)>=64 && Math.abs(dx)>Math.abs(dy)*1.18){
-    animateReaderPageTurn(dx<0?1:-1);
+function __smReaderSwipeTurn(step){
+  if(readerViewMode==='flow'){
+    const sections=[...document.querySelectorAll('#readerPageBody .reader-flow-section')];
+    if(!sections.length)return;
+    const inner=document.querySelector('#paper .paper-inner');
+    const top=inner.getBoundingClientRect().top+26;
+    let active=0,best=Infinity;
+    sections.forEach((section,i)=>{
+      const distance=Math.abs(section.getBoundingClientRect().top-top);
+      if(distance<best){best=distance;active=i;}
+    });
+    const next=Math.max(0,Math.min(sections.length-1,active+step));
+    if(next!==active)sections[next].scrollIntoView({block:'start',behavior:'smooth'});
+    return;
   }
-});
-smReaderPaper.addEventListener('pointercancel',()=>{__smReaderSwipeStart=null});
+  animateReaderPageTurn(step);
+}
+smReaderPaper.addEventListener('touchstart',e=>{
+  __smReaderSwipeStart=null;
+  if(!__smReaderCompactMode() || !document.getElementById('reader').classList.contains('active'))return;
+  if(e.touches.length!==1 || document.body.classList.contains('memory-open')||document.body.classList.contains('ai-open'))return;
+  if(e.target.closest('button,input,textarea,select,a,[contenteditable],.turn-zone,.selection-toolbar'))return;
+  const t=e.touches[0];
+  __smReaderSwipeStart={x:t.clientX,y:t.clientY,id:t.identifier};
+},{passive:true});
+smReaderPaper.addEventListener('touchend',e=>{
+  const start=__smReaderSwipeStart;
+  __smReaderSwipeStart=null;
+  if(!start || e.touches.length || e.changedTouches.length!==1)return;
+  const t=e.changedTouches[0];
+  if(t.identifier!==start.id)return;
+  const dx=t.clientX-start.x,dy=t.clientY-start.y;
+  if(Math.abs(dx)<64 || Math.abs(dx)<=Math.abs(dy)*1.25)return;
+  if(window.getSelection()?.toString().trim())return;
+  __smReaderSwipeTurn(dx<0?1:-1);
+},{passive:true});
+smReaderPaper.addEventListener('touchcancel',()=>{__smReaderSwipeStart=null},{passive:true});
 
 
 /* mobile / Fold sheets */
