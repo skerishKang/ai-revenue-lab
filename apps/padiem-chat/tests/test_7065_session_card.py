@@ -6,7 +6,9 @@ from pathlib import Path
 
 import pytest
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
+from _support import session_login_source as sheets
+
+STATIC = sheets.static_dir()
 HARNESS = Path(__file__).with_name("pc_session_harness.js")
 
 
@@ -26,11 +28,11 @@ def test_session_card(scenario):
 
 
 def test_session_assets_load_after_auth_before_streaming():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = sheets.sheet("index.html")
     assert html.index('./auth-session.js') < html.index('./chat-pc-session-module.js') < html.index('./chat-streaming-module.js')
     assert 'href="./chat-pc-session.css"' in html
     assert 'id="chatPcSessionPanel"' in html
-    assert "chat-pc-session" not in (STATIC / "app.js").read_text(encoding="utf-8")
+    assert "chat-pc-session" not in sheets.sheet("app.js")
 
 
 @pytest.mark.parametrize("mode", ["completed", "orchestration_json", "orchestration_stream_json", "claw_sse"])

@@ -13,7 +13,9 @@ from pathlib import Path
 
 import pytest
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
+from _support import session_login_source as sheets
+
+STATIC = sheets.static_root()
 
 # The loopback harness rewrites this placeholder to the serving origin, so the
 # fixture can reference its CSS and modules without file:// (a page served
@@ -143,7 +145,7 @@ def _capture_over_loopback(command, tmp_path, *, timeout, fixture_file, static_r
                 self._reply(404, b"missing", "text/plain")
                 return
             length = int(self.headers.get("Content-Length") or 0)
-            raw = self.rfile.read(length)
+            raw = sheets.read_request(self.rfile, length)
             try:
                 report = json.loads(raw.decode("utf-8", "replace"))
             except (ValueError, TypeError):
@@ -230,7 +232,7 @@ def _capture_with_subprocess(command, tmp_path, *, timeout, output):
             deadline = time.monotonic() + timeout
             while True:
                 exit_code = process.poll()
-                rendered = output.read_text(encoding="utf-8", errors="replace")
+                rendered = sheets.source(output)
                 if exit_code not in (None, 0):
                     raise AssertionError("The isolated fixture process failed")
                 match = re.search(r'<pre id="report">(.*?)</pre>', rendered, re.S)

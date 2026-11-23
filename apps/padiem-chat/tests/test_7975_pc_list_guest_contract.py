@@ -30,8 +30,10 @@ try:
 except ImportError:
     sync_playwright = None
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-FLOW = STATIC / "pc-connect-flow.js"
+from _support import session_login_source as sheets
+
+STATIC = sheets.static_root()
+FLOW = sheets.static_path("pc-connect-flow.js")
 
 GUEST = {"ok": True, "authenticated": False, "ready": True, "user": None}
 SIGNED_IN = {"ok": True, "authenticated": True, "ready": True,
@@ -176,7 +178,7 @@ def test_signed_in_screen_reads_the_pc_list_once():
 def test_flow_guest_guard_removed_fires_on_the_guest_screen():
     """변조 1회: neutralise the connect flow's guest guard and the guest first
     screen does fetch — the zero-request pin above really catches it."""
-    source = FLOW.read_text(encoding="utf-8")
+    source = sheets.source(FLOW)
     marker = "if (window.PadiemAuthGate?.authenticated() === false) {"
     assert marker in source
     tampered = source.replace(marker, "if (false) {", 1)

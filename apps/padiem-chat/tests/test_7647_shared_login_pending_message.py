@@ -1,15 +1,13 @@
 """#7647: the withdrawal answer marks a pending shared-login finish on its own.
 
 The screen picks its copy from the response ``cleanup`` — the reader is
-``static/chat-account-module.js`` in ``submitAccountDelete`` (the
+the shipped chat-account-module.js in ``submitAccountDelete`` (the
 ``deps.uiT(cleanupMessageKey)`` call) — so the answer must say which kind is
 still pending: stored files and connections, the shared-login finish, or both.
 The message difference is asserted on the backend flag and, through the real
 module in Node, on the copy key the screen picks.
 """
 from __future__ import annotations
-import locale_bundle
-
 import json
 import shutil
 import subprocess
@@ -18,8 +16,9 @@ from pathlib import Path
 from app.account_deletion import _CLEANUP_PENDING_MESSAGE
 from _support.account_deletion import BASE, DELETER_EMAIL, call, token_for
 from test_bookai_account_deletion_7547 import fixture
+from _support import session_login_source as sheets
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
+STATIC = sheets.static_root()
 
 # The copy keys the screen picks, by what the answer says is pending.
 EXPECTED_KEYS = {
@@ -152,7 +151,7 @@ def test_the_screen_picks_the_copy_by_what_is_pending():
     if not node:
         raise AssertionError("node is required to run the auth module harness")
     completed = subprocess.run(
-        [node, "-e", _HARNESS, str(STATIC / "chat-account-module.js")],
+        [node, "-e", _HARNESS, str(sheets.static_path("chat-account-module.js"))],
         capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr
@@ -161,7 +160,7 @@ def test_the_screen_picks_the_copy_by_what_is_pending():
 
 
 def test_both_languages_name_the_shared_login_finish():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_js()
     for key in ("account-delete-cleanup-pending-shared-login",
                 "account-delete-cleanup-pending-shared-login-only"):
         # One Korean entry and one English entry.
