@@ -1,6 +1,10 @@
 """#7692 meeting computer-audio option: static contract and executed unit tests."""
 from __future__ import annotations
-import locale_bundle
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.android_pairing_audio_source import (
+    index_html, locale_source, meeting_capture_js, pc_pairing_card_js, read as _read,
+)
 
 import shutil
 import subprocess
@@ -11,9 +15,9 @@ import pytest
 TESTS = Path(__file__).resolve().parent
 STATIC = TESTS.parent / "static"
 SCRIPT = TESTS / "test_7692_meeting_computer_audio_node.js"
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-CAPTURE = (STATIC / "meeting-capture.js").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+HTML = index_html()
+CAPTURE = meeting_capture_js()
+LOCALE = locale_source()
 
 
 def test_computer_audio_unit_behavior_runs_green():

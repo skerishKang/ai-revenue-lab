@@ -14,12 +14,17 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.meeting_connection_ui_source import (
+    composer_connection_status_js, connection_state_js, index_html,
+    meeting_capture_css, meeting_capture_js,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 
-STATE_JS = (STATIC / "claw-connection-state.js").read_text(encoding="utf-8")
-COMPOSER_JS = (STATIC / "claw-composer-connection-status.js").read_text(encoding="utf-8")
+STATE_JS = connection_state_js()
+COMPOSER_JS = composer_connection_status_js()
 
 NODE_HARNESS = r"""
 const fs = require("node:fs");

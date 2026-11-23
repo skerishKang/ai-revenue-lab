@@ -4,11 +4,17 @@ import shutil
 import subprocess
 from pathlib import Path
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.chat_news_disclosure_source import (
+    app_js, conversation_module_js, index_html, locale_source, memory_module_js,
+    news_css, news_harness, news_js, run_history_module_js, six_panel_css, tokens_css,
+)
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 CONV_SOURCE = (STATIC / "chat-conversation-module.js").resolve()
-RUN_HISTORY = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
-MEM = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
-CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
+RUN_HISTORY = run_history_module_js()
+MEM = memory_module_js()
+CSS = six_panel_css()
 
 # #7186 R2: showConversation 본문 문자열 슬라이스 대신 모듈을 Node vm에서 실행해
 # Chat 전환 시의 실제 DOM 결과를 확인한다.

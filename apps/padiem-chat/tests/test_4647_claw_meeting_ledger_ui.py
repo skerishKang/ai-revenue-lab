@@ -10,6 +10,11 @@ import re
 import shutil
 import subprocess
 from pathlib import Path
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.meeting_connection_ui_source import (
+    composer_connection_status_js, connection_state_js, index_html,
+    meeting_capture_css, meeting_capture_js,
+)
 
 import pytest
 
@@ -24,9 +29,9 @@ MARKERS = (
     "MEETING_LEDGER_DETAIL_TRUTHFUL_STATES=PASS",
 )
 
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-CAPTURE = (STATIC / "meeting-capture.js").read_text(encoding="utf-8")
-CSS = (STATIC / "meeting-capture.css").read_text(encoding="utf-8")
+HTML = index_html()
+CAPTURE = meeting_capture_js()
+CSS = meeting_capture_css()
 
 
 def test_meeting_ledger_node_behavior_runs_green():

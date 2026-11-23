@@ -10,6 +10,8 @@ from pathlib import Path
 
 import pytest
 
+from _support import private_rpc_core_source as sheets
+
 
 ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "apps" / "padiem-chat" / "app"
@@ -17,7 +19,7 @@ CONTROL = ROOT / "packages" / "padiem-control-plane"
 
 
 def _module(path: Path) -> ast.Module:
-    return ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    return sheets.module_ast(path)
 
 
 def _klass(path: Path, name: str) -> ast.ClassDef:
@@ -141,8 +143,8 @@ def test_private_method_names_match_gateway_and_worker_binding_names():
 
 
 def test_source_rpc_shape_does_not_enable_public_connector_mount():
-    production = (ROOT / "apps/padiem-chat/worker.py").read_text("utf-8")
-    factory = (APP / "app_factory.py").read_text("utf-8")
+    production = sheets.source_text(ROOT / "apps/padiem-chat/worker.py")
+    factory = sheets.source_text(APP / "app_factory.py")
     assert "connector_gateway_worker_binding_composition" not in production
     assert "connector_gateway_worker_asgi_review" not in production
     assert "canonical_connector_gateway_source_composition" not in factory

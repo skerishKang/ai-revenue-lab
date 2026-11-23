@@ -33,10 +33,8 @@ requires_browser = pytest.mark.skipif(
     sync_playwright is None, reason="playwright is not installed in this environment"
 )
 
-APP_ROOT = Path(__file__).resolve().parents[1]
-STATIC = APP_ROOT / "static"
-VIEWS_CSS = STATIC / "standalone-views.css"
-APP_JS = STATIC / "app.js"
+# #8060: shipped reads live in _support; the CSS and browser checks stay.
+from _support import automation_mobile_source as sheets
 
 # R5 0단계(R-01): 함수 선언은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import definition_source  # noqa: E402
@@ -51,7 +49,7 @@ DESKTOP_WIDTHS = (1024, 1440, 1920)
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(STATIC), **kwargs)
+        super().__init__(*args, directory=sheets.static_dir(), **kwargs)
 
     def log_message(self, *_args):
         pass
@@ -154,7 +152,7 @@ def _narrow_automation_block(css: str) -> str:
 
 
 def test_the_narrow_window_orders_the_rules_before_the_form() -> None:
-    css = VIEWS_CSS.read_text(encoding="utf-8")
+    css = sheets.sheet("standalone-views.css")
     block = _narrow_automation_block(css)
     assert ".app-shell[data-state=\"automation\"] #clawAutomation" in block
     assert "display: flex;" in block
@@ -169,7 +167,7 @@ def test_the_narrow_window_orders_the_rules_before_the_form() -> None:
 
 def test_the_wide_screen_order_is_untouched() -> None:
     """The order rule lives in the narrow-window block only."""
-    css = VIEWS_CSS.read_text(encoding="utf-8")
+    css = sheets.sheet("standalone-views.css")
     outside = css.replace(_narrow_automation_block(css), "")
     assert "order: 2;" not in outside
     assert "order: 4;" not in outside
@@ -177,7 +175,7 @@ def test_the_wide_screen_order_is_untouched() -> None:
 
 def test_the_create_form_scrolls_into_view_when_it_opens() -> None:
     # R5 B1: 생성 열기 핸들러는 폼 모듈의 wireCreateListeners로 이동했다.
-    source = (APP_JS.parent / "chat-automation-form-module.js").read_text(encoding="utf-8")
+    source = sheets.sheet("chat-automation-form-module.js")
     assert "function scrollClawAutomationCreateIntoView()" in definition_source(
         "scrollClawAutomationCreateIntoView"
     )

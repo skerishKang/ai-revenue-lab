@@ -6,6 +6,12 @@ contract that CI can always check.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.pc_command_ops_route_source import (
+    admin_css, admin_html, admin_ops_js, index_html, pc_command_ready_js,
+    pc_pairing_card_css, read,
+)
+
 import http.server
 import json
 import re
@@ -26,7 +32,7 @@ INDEX = STATIC / "index.html"
 
 
 def test_new_module_is_its_own_small_file():
-    source = MODULE.read_text(encoding="utf-8")
+    source = pc_command_ready_js()
     assert len(source.splitlines()) < 1000
     assert '"/api/pc/pairings"' in source
     assert "command_ready" in source
@@ -35,7 +41,7 @@ def test_new_module_is_its_own_small_file():
 
 
 def test_badge_copy_is_plain_korean_and_offers_the_remedy():
-    source = MODULE.read_text(encoding="utf-8")
+    source = pc_command_ready_js()
     assert 't("pc-command-ready-badge")' in source
     # #8211: the missing row reads its own word through the same call.
     assert 't(missing ? "pc-helper-missing-help" : "pc-command-ready-help")' in source
@@ -51,17 +57,17 @@ def test_badge_copy_is_plain_korean_and_offers_the_remedy():
 
 
 def test_existing_theme_styles_are_reused_without_a_new_sheet():
-    source = MODULE.read_text(encoding="utf-8")
+    source = pc_command_ready_js()
     assert not (STATIC / "pc-command-ready.css").exists()
     assert 'element("p", "pc-pairing-help"' in source
     assert 'dataset.state !== "offline"' in source
-    css = CARD_CSS.read_text(encoding="utf-8")
+    css = pc_pairing_card_css()
     assert ".pc-pairing-help {" in css
     assert '[data-state="offline"]' in css
 
 
 def test_index_wires_module_after_the_pairing_card():
-    html = INDEX.read_text(encoding="utf-8")
+    html = index_html()
     card = html.index('./pc-pairing-card.js')
     module = html.index('./pc-command-ready.js')
     assert module > card

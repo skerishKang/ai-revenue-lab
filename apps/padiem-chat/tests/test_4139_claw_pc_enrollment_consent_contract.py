@@ -9,6 +9,9 @@ its own. No enrollment route, credential or pairing is exercised.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.enrollment_scroll_layout_source import consent_js
+
 import json
 import shutil
 import subprocess
@@ -18,7 +21,7 @@ import pytest
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 CONSENT_JS = STATIC / "claw-pc-enrollment-consent.js"
-SOURCE = CONSENT_JS.read_text(encoding="utf-8")
+SOURCE = consent_js()
 
 NODE = r"""
 const fs = require("fs");

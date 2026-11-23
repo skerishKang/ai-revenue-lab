@@ -1,13 +1,11 @@
 """#4753: user-visible Chat/Claw thread remains in its first-use frame."""
-from pathlib import Path
-
 from _r5_streaming_harness import run_streaming_scenario
+from _support import scroll_layout_source as sheets
 
-S = Path(__file__).resolve().parents[1] / "static"
-CHAT = (S / "padiem-chat-ui-polish.css").read_text(encoding="utf8")
-CLAW = (S / "claw-focus-layout.css").read_text(encoding="utf8")
-INDEX = (S / "index.html").read_text(encoding="utf8")
-APP = (S / "app.js").read_text(encoding="utf8")
+CHAT = sheets.sheet("padiem-chat-ui-polish.css")
+CLAW = sheets.sheet("claw-focus-layout.css")
+INDEX = sheets.sheet("index.html")
+APP = sheets.sheet("app.js")
 
 
 def test_chat_active_thread_uses_home_frame_and_same_composer_geometry():

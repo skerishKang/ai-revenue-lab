@@ -33,7 +33,10 @@ CONSOLIDATED_CSS = STATIC / "padiem-settings.css"  # #7476-14
 SOURCE = STATIC / "mcp-gateway-settings.js"
 HTML = STATIC / "index.html"
 LOCALE = locale_bundle.SOURCE
-READ = lambda path: path.read_text(encoding="utf-8")  # noqa: E731
+# #8060: the raw read lives in _support; the parsed CSS and markup checks stay.
+from _support import mcp_client_groups_source as sheets
+
+READ = sheets.read
 
 
 def _ai_section() -> str:

@@ -14,13 +14,10 @@ from pathlib import Path
 import pytest
 
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-APP_JS = STATIC / "app.js"
-INDEX_HTML = STATIC / "index.html"
-TRANSPORT_JS = STATIC / "chat-transport.js"
-RECOVERY_JS = STATIC / "chat-pc-result-recovery.js"
-NODE_TEST = ROOT / "tests" / "test_5015_chat_pc_recovery.mjs"
+# #8060: shipped reads live in _support; the wiring and behavior checks stay.
+from _support import chat_pc_recovery_wiring_source as sheets
+
+NODE_TEST = sheets.tests_path("test_5015_chat_pc_recovery.mjs")
 
 
 def test_frontend_recovery_controller_contract():
@@ -29,7 +26,7 @@ def test_frontend_recovery_controller_contract():
         pytest.skip("node is not installed in this runner")
     completed = subprocess.run(
         [node, "--test", str(NODE_TEST)],
-        cwd=ROOT,
+        cwd=sheets.chat_root(),
         capture_output=True,
         text=True, encoding="utf-8",
         timeout=60,
@@ -38,15 +35,15 @@ def test_frontend_recovery_controller_contract():
 
 
 def test_pc_run_handle_and_recovery_are_wired_to_the_real_consumer():
-    app_js = APP_JS.read_text(encoding="utf-8")
-    stream_js = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-    transport = TRANSPORT_JS.read_text(encoding="utf-8")
-    index = INDEX_HTML.read_text(encoding="utf-8")
+    app_js = sheets.sheet("app.js")
+    stream_js = sheets.sheet("chat-streaming-module.js")
+    transport = sheets.sheet("chat-transport.js")
+    index = sheets.sheet("index.html")
     assert "createChatPcRunId" in transport
     assert "payload.pc_run_id = pcRunId" in stream_js
     assert "contextSnapshot.pcRunId || deps.chatTransport.createChatPcRunId" in stream_js
     # R5 2부 B2: the recovery creation moved into chat-pc-run-module.js.
-    assert "PadiemChatPcRecovery?.create" in (STATIC / "chat-pc-run-module.js").read_text(encoding="utf-8")
+    assert "PadiemChatPcRecovery?.create" in sheets.sheet("chat-pc-run-module.js")
     assert "recoverStoredPcResult(" in app_js
     assert "window.PadiemChatPcRunModule.create(Object.setPrototypeOf({" in app_js
     assert "chat-pc-run-module.js" in index
@@ -122,7 +119,7 @@ mod = ctx.window.PadiemChatPcRunModule.create(deps);
 })().catch((err) => { console.error(err); process.exit(1); });
 """
     completed = subprocess.run(
-        [node, "-e", script, str(STATIC)],
+        [node, "-e", script, sheets.static_dir()],
         capture_output=True, text=True, encoding="utf-8", timeout=30,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr
@@ -133,7 +130,7 @@ mod = ctx.window.PadiemChatPcRunModule.create(deps);
     # #7297: the recovery condition no longer excludes the Claw screen — Chat
     # and Claw share the same owner-scoped PC recovery gate.
     assert "contextSnapshot?.pcRunId && !terminalError" in stream_js
-    recovery = RECOVERY_JS.read_text(encoding="utf-8")
+    recovery = sheets.sheet("chat-pc-result-recovery.js")
     assert "method: \"GET\"" in recovery
     assert "resolved.add(runId)" in recovery
     assert "answer_source" in recovery
@@ -141,13 +138,13 @@ mod = ctx.window.PadiemChatPcRunModule.create(deps);
 
 
 def test_server_accepts_only_a_canonical_client_recovery_handle():
-    source = (ROOT / "app" / "chat_pc_drive.py").read_text(encoding="utf-8")
+    source = sheets.server_source("chat_pc_drive.py")
     assert "validate_chat_pc_run_id" in source
     assert "chat_pc_run_id_invalid" in source
     assert "lane_run_id = run_id or _new_lane_run_id()" in source
     assert "chat_pc_run_id_conflict" in source
 
-    routes = (ROOT / "app" / "orchestration_routes.py").read_text(encoding="utf-8")
+    routes = sheets.server_source("orchestration_routes.py")
     # The Engine stream now receives the canonical recovery handle only after
     # the same server PC verification; the surface still owns no PC executor.
     assert "resolve_chat_pc_stream_context" in routes
@@ -155,13 +152,13 @@ def test_server_accepts_only_a_canonical_client_recovery_handle():
     assert "session_id=pc_run_id" in routes
     assert "execute_chat_pc_drive_lane" not in routes
 
-    chat_routes = (ROOT / "app" / "chat_routes.py").read_text(encoding="utf-8")
+    chat_routes = sheets.server_source("chat_routes.py")
     # The direct Chat stream entry remains compatible. Its handle travels into the
     # lane so the staged run keeps the browser's id, and into the pinned-scope
     # notice lookup for the same completion frame.
     assert chat_routes.count("run_id=raw.get(\"pc_run_id\")") == 2
 
-    contract = (ROOT / "app" / "request_contract.py").read_text(encoding="utf-8")
+    contract = sheets.server_source("request_contract.py")
     assert "\"pc_run_id\", \"web_search\"}" in contract
     assert "validate_chat_pc_run_id" in contract
 

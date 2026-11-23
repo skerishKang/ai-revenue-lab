@@ -1,4 +1,3 @@
-import locale_bundle
 """Node-only DOM contracts for the '새 소식' screen; no local service or login."""
 import json
 import re
@@ -7,6 +6,11 @@ import subprocess
 from pathlib import Path
 
 import pytest
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.chat_news_disclosure_source import (
+    app_js, conversation_module_js, index_html, locale_source, memory_module_js,
+    news_css, news_harness, news_js, run_history_module_js, six_panel_css, tokens_css,
+)
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 HARNESS = Path(__file__).with_name("chat_news_harness.js")
@@ -29,16 +33,16 @@ def test_news_dom_contract(scenario):
 
 
 def test_news_assets_and_complete_locales():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
-    js = (STATIC / "chat-news-module.js").read_text(encoding="utf-8")
-    css = (STATIC / "chat-news.css").read_text(encoding="utf-8")
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
-    tokens = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+    html = index_html()
+    js = news_js()
+    css = news_css()
+    locale = locale_source()
+    tokens = tokens_css()
     assert html.index("./chat-feedback-module.js") < html.index("./chat-news-module.js")
     assert 'href="./chat-news.css"' in html
     assert '<dialog class="news-dialog" id="newsDialog" aria-labelledby="newsTitle">' in html
     assert '<section class="news-history" aria-labelledby="newsHistoryTitle">' in html
-    assert "chat-news" not in (STATIC / "app.js").read_text(encoding="utf-8")
+    assert "chat-news" not in app_js()
     assert "min-height: 44px" in css and "font-size: 14px" in css
     assert "overflow-wrap: anywhere" in css and ".news-title" in css and ".news-detail" in css
     assert "background: var(--news-dialog-surface" in css
@@ -66,8 +70,8 @@ def test_news_assets_and_complete_locales():
 
 
 def test_history_has_verified_dates_and_no_test_fixture_data_in_operational_javascript():
-    js = (STATIC / "chat-news-module.js").read_text(encoding="utf-8")
-    harness = HARNESS.read_text(encoding="utf-8")
+    js = news_js()
+    harness = news_harness()
     start = js.index("const HISTORY_EVENTS = Object.freeze([")
     end = js.index("  ]);", start) + len("  ]);")
     history = js[start:end]

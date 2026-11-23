@@ -21,6 +21,9 @@ refused at every one of them.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.chat_capability_source import chat_transport_js, claw_local_handoff_js, read_text
+
 import asyncio
 import json
 import re
@@ -348,7 +351,7 @@ def test_the_p01_plan_boundary_accepts_the_same_identity():
 
 def test_the_browser_projection_pattern_matches_the_server_grammar():
     """The browser may project exactly what the server proved, nothing more."""
-    source = (STATIC / "claw-local-handoff.js").read_text(encoding="utf-8")
+    source = claw_local_handoff_js()
     match = re.search(
         r"const DEVICE_ID_PATTERN = /(.*?)/;", source, re.S,
     )

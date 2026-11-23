@@ -24,11 +24,8 @@ import os
 import shutil
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[1]
-PDFMD_JS = ROOT / "static/util-pdfmd.js"
-PDFMD_PAGES_JS = ROOT / "static/util-pdfmd-pages.js"
-UTIL_MENU_CSS = ROOT / "static/util-menu.css"
-LOCALE_JS = locale_bundle.SOURCE
+# #8060: shipped reads live in _support; the source and behavior checks stay.
+from _support import pdfmd_ui_p2_source as sheets
 
 LOCALE_KEYS = (
     "pdfmd-mode-help-fast",
@@ -53,7 +50,7 @@ LOCALE_KEYS = (
 # the always-visible field — the screen keeps one quiet select, and the
 # locale-key contracts that belonged to the removed paragraph went with it.
 def test_the_mode_select_names_itself_without_the_help_paragraph() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     assert 'modeSel.setAttribute("aria-label", "변환 방식")' in js
     assert 'const modeHelp = el("p", "pdfmd-mode-help")' not in js
     assert 'MODE_HELP = {' not in js
@@ -61,7 +58,7 @@ def test_the_mode_select_names_itself_without_the_help_paragraph() -> None:
 
 
 def test_history_search_and_grouping_are_client_side() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     assert 'histSearch.type = "search"' in js
     assert 'data-locale-placeholder", "pdfmd-history-search-placeholder"' in js
     assert 'data-locale-aria-label", "pdfmd-history-search-label"' in js
@@ -78,7 +75,7 @@ def test_history_search_and_grouping_are_client_side() -> None:
 
 
 def test_history_search_and_mode_help_reuse_design_tokens() -> None:
-    css = UTIL_MENU_CSS.read_text(encoding="utf-8")
+    css = sheets.util_menu_css()
     # #7865: .pdfmd-mode-help 계약은 도움말 문단이 화면에서 사라진 시점에 함께
     # 지운다(변환 방식 필드 제거 — 이슈의 없애거나 숨길 목록).
     assert ".pdfmd-history-search" in css
@@ -363,18 +360,19 @@ async function search(value) {
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the util-pdfmd behavioral harness"
-    harness_path = ROOT / "tests" / "_5568_pdfmd_ui_p2_harness.js"
+    harness_path = Path(sheets.tests_path("_5568_pdfmd_ui_p2_harness.js"))
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(PDFMD_PAGES_JS), str(PDFMD_JS)],
+            [node, str(harness_path), sheets.static_path("util-pdfmd-pages.js"),
+             sheets.static_path("util-pdfmd.js")],
             capture_output=True,
             text=True,
             encoding="utf-8",
             errors="replace",
             env={**os.environ},
             timeout=60,
-            cwd=str(ROOT),
+            cwd=sheets.chat_root(),
         )
     finally:
         harness_path.unlink(missing_ok=True)

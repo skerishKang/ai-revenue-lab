@@ -8,12 +8,15 @@ permission edits, no new design system.
 
 from pathlib import Path
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.first_screen_work_views_source import locale_source, read as _source_read
+
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
 
 def _read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+    return _source_read(name)
 
 
 FRAME = _read("standalone-views.css")

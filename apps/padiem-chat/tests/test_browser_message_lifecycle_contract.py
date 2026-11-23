@@ -7,12 +7,8 @@ import tempfile
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
-APP_PATH = ROOT / "static" / "app.js"
-INDEX_PATH = ROOT / "static" / "index.html"
-LIFECYCLE_PATH = ROOT / "static" / "message-lifecycle.js"
-OUTPUTS_PATH = ROOT / "static" / "outputs.js"
-EXPORT_PATH = ROOT / "static" / "conversation-export.js"
+# #8060: shipped reads live in _support; the markup and source checks stay.
+from _support import lifecycle_contract_source as sheets
 
 
 def _run_node(script: str) -> dict:
@@ -34,9 +30,9 @@ def _run_node(script: str) -> dict:
 
 
 def test_lifecycle_helper_load_order_and_app_ownership() -> None:
-    html = INDEX_PATH.read_text(encoding="utf-8")
-    app = APP_PATH.read_text(encoding="utf-8")
-    stream = APP_PATH.with_name("chat-streaming-module.js").read_text(encoding="utf-8")
+    html = sheets.sheet("index.html")
+    app = sheets.sheet("app.js")
+    stream = sheets.sheet("chat-streaming-module.js")
 
     assert html.index('<script src="./conversation-state.js"></script>') < html.index('<script src="./message-lifecycle.js"></script>')
     assert html.index('<script src="./message-lifecycle.js"></script>') < html.index('<script src="./app.js"></script>')
@@ -55,7 +51,7 @@ def test_lifecycle_helper_load_order_and_app_ownership() -> None:
 
 
 def test_lifecycle_helper_runtime_contract() -> None:
-    source = LIFECYCLE_PATH.read_text(encoding="utf-8")
+    source = sheets.sheet("message-lifecycle.js")
     script = r'''
 global.window = globalThis;
 global.CustomEvent = class CustomEvent {
@@ -111,8 +107,8 @@ console.log(JSON.stringify({
 
 
 def test_outputs_and_export_keep_lifecycle_consumers() -> None:
-    outputs = OUTPUTS_PATH.read_text(encoding="utf-8")
-    export = EXPORT_PATH.read_text(encoding="utf-8")
+    outputs = sheets.sheet("outputs.js")
+    export = sheets.sheet("conversation-export.js")
 
     assert 'window.PadiemChatLifecycle ||' in outputs
     assert 'if (!lifecycleApi().isCompleted(article))' in outputs

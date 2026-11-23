@@ -7,6 +7,12 @@ normal Chat and explicit manual workflow routes must remain unchanged.
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.pc_command_ops_route_source import (
+    admin_css, admin_html, admin_ops_js, index_html, pc_command_ready_js,
+    pc_pairing_card_css, read,
+)
+
 import json
 import subprocess
 import tempfile
@@ -19,13 +25,13 @@ APP_DIR = Path(__file__).resolve().parents[1]
 APP_JS = APP_DIR / "static" / "app.js"
 SOURCE = combined_source()
 #7216 R5 step 4: this contract moved into chat-auth-module.js.
-AUTH_SOURCE = APP_JS.with_name("chat-auth-module.js").read_text(encoding="utf-8")
+AUTH_SOURCE = read(APP_JS.with_name("chat-auth-module.js"))
 #7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
-CONV_SOURCE = APP_JS.with_name("chat-conversation-module.js").read_text(encoding="utf-8")
+CONV_SOURCE = read(APP_JS.with_name("chat-conversation-module.js"))
 #7216 R5 step 5b: requestAnswer / requestStreamingAnswer moved into chat-streaming-module.js.
-STREAM_SOURCE = APP_JS.with_name("chat-streaming-module.js").read_text(encoding="utf-8")
+STREAM_SOURCE = read(APP_JS.with_name("chat-streaming-module.js"))
 #7216 R5 A10: switchConversationProduct moved into chat-nav-module.js.
-NAV_SOURCE = APP_JS.with_name("chat-nav-module.js").read_text(encoding="utf-8")
+NAV_SOURCE = read(APP_JS.with_name("chat-nav-module.js"))
 
 ROUTING_FUNCTIONS = (
     "showConversation",

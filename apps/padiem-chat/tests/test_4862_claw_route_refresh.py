@@ -20,6 +20,12 @@ browser run on Production; this file is the focused load-bearing regression for
 the shipped source.
 """
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.route_session_source import (
+    app_js, claw_workspace_css, conversation_module_js, index_html, login_dialog_js,
+    memory_module_js, nav_js, product_capabilities_js, sidebar_utility_css,
+)
+
 from pathlib import Path
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
@@ -33,7 +39,7 @@ CLAW_HASH = "#padiem-claw"
 def _source() -> str:
     # R5 A10: the route rules (setNavActive/syncRouteHash) moved to
     # chat-nav-module.js; the declarations and the boot restore stay in app.js.
-    return APP_JS.read_text(encoding="utf-8") + "\n" + NAV_JS.read_text(encoding="utf-8")
+    return app_js() + "\n" + nav_js()
 
 
 def test_route_hash_constants_are_single_source() -> None:
@@ -58,7 +64,7 @@ def test_leaving_claw_strips_the_route() -> None:
     # An explicit Chat switch flips the shell to "chat" in showConversation(),
     # which then runs setNavActive(); that is the strip path.
     # #7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
-    conv = APP_JS.with_name("chat-conversation-module.js").read_text(encoding="utf-8")
+    conv = conversation_module_js()
     assert 'deps.shell.dataset.state = "chat";' in conv
 
 
@@ -80,8 +86,8 @@ def test_boot_restores_both_routes() -> None:
 
 def test_route_carries_no_identity_or_storage() -> None:
     src = _source()
-    assert "localStorage" not in APP_JS.read_text(encoding="utf-8")
-    assert "localStorage" not in NAV_JS.read_text(encoding="utf-8")
+    assert "localStorage" not in app_js()
+    assert "localStorage" not in nav_js()
     assert_session_storage_is_handoff_only(src)
     # The fragment is a fixed destination name, never a composed identity.
     for banned in ("userId", "sessionToken", "conversationId", "deviceId"):

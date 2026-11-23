@@ -388,8 +388,10 @@ def test_a_recovered_answer_releases_the_running_chip_it_was_shown():
     node = shutil.which("node")
     if node is None:
         pytest.skip("node is not installed in this runner")
-    static_dir = Path(__file__).resolve().parents[1] / "static"
-    pc_run_js = (static_dir / "chat-pc-run-module.js").read_text(encoding="utf-8")
+    # #8060: the raw read lives in _support; the source checks stay here.
+    from _support import general_run_result_lookup_source as sheets
+
+    pc_run_js = sheets.sheet("chat-pc-run-module.js")
     # R5 2부 B2: resolvedPcRuns 과 pcResultRecovery 는 chat-pc-run-module.js 의
     # create() 소유다(app.js 의 deps getter 는 의도적으로 사라졌다).
     assert "const resolvedPcRuns = new Set();" in pc_run_js
@@ -494,7 +496,7 @@ mod = ctx.window.PadiemChatPcRunModule.create(deps);
 })().catch((err) => { console.error(err); process.exit(1); });
 """
     completed = subprocess.run(
-        [node, "-e", script, str(static_dir)],
+        [node, "-e", script, sheets.static_dir()],
         capture_output=True, text=True, encoding="utf-8", timeout=30,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr
@@ -517,11 +519,9 @@ def test_the_observed_pc_step_is_carried_on_the_card_that_shows_it():
 
 def test_the_pc_progress_kinds_exist_in_the_real_stage_vocabulary():
     """An unknown kind yields no copy, and a missing chip would fail silently."""
-    from pathlib import Path
+    from _support import general_run_result_lookup_source as sheets
 
-    table = (
-        Path(__file__).resolve().parents[1] / "static" / "claw-run-event-projection.js"
-    ).read_text(encoding="utf-8")
+    table = sheets.sheet("claw-run-event-projection.js")
     for kind in ("tool_started", "run_completed", "run_failed"):
         rows = [line for line in table.splitlines() if line.strip().startswith(kind + ":")]
         assert len(rows) == 1, rows

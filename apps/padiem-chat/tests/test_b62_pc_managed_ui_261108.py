@@ -1,4 +1,3 @@
-import locale_bundle
 """Static contracts for the 관리 PC admin-page toggle (#7147 UI lane).
 
 The 관리 PC mark is administered from the 총관리자 page (admin.html), not from
@@ -8,6 +7,10 @@ owns the per-device toggle against the two #7147 endpoints. Static and
 network-free.
 """
 from pathlib import Path
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.pc_managed_ui_source import (
+    admin_html, admin_js, index_html, locale_source, mcp_settings_js, ui_polish_css,
+)
 import re
 
 REPO = Path(__file__).resolve().parents[3]
@@ -15,7 +18,7 @@ STATIC = REPO / "apps" / "padiem-chat" / "static"
 
 
 def test_admin_page_carries_the_managed_panel():
-    html = (STATIC / "admin.html").read_text(encoding="utf-8")
+    html = admin_html()
     assert 'id="pcManagedPanel" hidden' in html
     assert 'id="pcManagedList"' in html
     assert 'id="pcManagedError"' in html
@@ -24,7 +27,7 @@ def test_admin_page_carries_the_managed_panel():
 
 
 def test_admin_page_gates_the_toggle_on_the_admin_session():
-    js = (STATIC / "admin.js").read_text(encoding="utf-8")
+    js = admin_js()
     # The admin page already attests the role via /api/admin/session; the
     # managed rows render from the pairings fetch and the separate state GET
     # (the base link read never joins the migration 103 column).
@@ -39,18 +42,18 @@ def test_admin_page_gates_the_toggle_on_the_admin_session():
 
 
 def test_chat_settings_do_not_render_the_managed_toggle():
-    index = (STATIC / "index.html").read_text(encoding="utf-8")
+    index = index_html()
     assert 'id="pcManagedBlock"' not in index
     assert 'id="pcManagedList"' not in index
-    app = (STATIC / "mcp-gateway-settings.js").read_text(encoding="utf-8")
+    app = mcp_settings_js()
     assert "pcManagedBlock" not in app
     assert "paintManaged" not in app
-    advanced = (STATIC / "index.html").read_text(encoding="utf-8")
+    advanced = index_html()
     assert 'id="advancedSettingsView"' in advanced
 
 
 def test_managed_copy_exists_in_both_languages():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = locale_source()
     for key, ko, en in (
         ("pc-managed-toggle", "관리 PC", "Managed PC"),
         ("pc-managed-note",
@@ -68,7 +71,7 @@ def test_managed_copy_exists_in_both_languages():
 
 
 def test_advanced_page_rows_reuse_the_settings_card_styles():
-    js = (STATIC / "mcp-gateway-settings.js").read_text(encoding="utf-8")
+    js = mcp_settings_js()
     assert 'element("li", "mcp-settings-card")' in js
-    css = (REPO / "apps" / "padiem-chat" / "static" / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
+    css = ui_polish_css()
     assert "pc-managed" not in css

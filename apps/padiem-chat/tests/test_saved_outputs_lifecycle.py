@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from pathlib import Path
-
-
-ROOT = Path(__file__).resolve().parents[1]
-OUTPUTS_PATH = ROOT / "static" / "outputs.js"
+# #8060: the raw read lives in _support; the source checks stay here.
+from _support import saved_outputs_lifecycle_source as sheets
 
 
 def _source() -> str:
-    return OUTPUTS_PATH.read_text(encoding="utf-8")
+    return sheets.outputs_js()
 
 
 def test_saved_outputs_uses_lifecycle_not_disabled() -> None:

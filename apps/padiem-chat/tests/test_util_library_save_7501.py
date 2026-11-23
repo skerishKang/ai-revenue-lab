@@ -21,7 +21,12 @@ request method/path/body, the success sentence, the failure sentence and the
 409 retry are executed rather than grepped.
 """
 from __future__ import annotations
-import locale_bundle
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.locale_stream_library_source import (
+    app_js, index_html, library_harness_js, library_js, locale_source, read as _source_read,
+    streaming_module_js, strict_deps_js, util_tools_js,
+)
 
 import asyncio
 import json
@@ -38,11 +43,11 @@ from starlette.requests import Request
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-TOOLS_JS = (STATIC / "util-tools.js").read_text(encoding="utf-8")
-LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-LIBRARY_JS = (STATIC / "library.js").read_text(encoding="utf-8")
-HARNESS = (Path(__file__).resolve().parent / "_util_library_save_harness.js").read_text(encoding="utf-8")
+TOOLS_JS = util_tools_js()
+LOCALE_JS = locale_source()
+APP_JS = app_js()
+LIBRARY_JS = library_js()
+HARNESS = library_harness_js()
 
 TOOL_IDS = ("speech", "sns", "meeting")
 SAVE_COPY_KEYS = (

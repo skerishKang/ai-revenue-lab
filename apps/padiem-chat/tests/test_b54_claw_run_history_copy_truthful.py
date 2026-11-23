@@ -31,10 +31,8 @@ from pathlib import Path
 # R5 0단계(R-01): 함수 정의·본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import definition_count, definition_source
 
-ROOT = Path(__file__).resolve().parents[1]
-APP_JS = ROOT / "static/app.js"
-INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = locale_bundle.SOURCE
+# #8060: shipped reads live in _support; the copy and behavior checks stay.
+from _support import claw_run_history_copy_truthful_source as sheets
 
 TAGLINE_KEY = "claw-runs-tagline"
 DOWNLOAD_KEY = "claw-runs-download"
@@ -61,7 +59,7 @@ DOWNLOAD_MEANING = re.compile(r"다운로드|받기|download", re.IGNORECASE)
 
 
 def _locale_source() -> str:
-    return LOCALE_JS.read_text(encoding="utf-8")
+    return sheets.locale_source()
 
 
 def _locale_table() -> dict[str, dict[str, str]]:
@@ -87,7 +85,7 @@ def _locale_table() -> dict[str, dict[str, str]]:
 
 
 def _tagline_fallback() -> str:
-    index = INDEX_HTML.read_text(encoding="utf-8")
+    index = sheets.sheet("index.html")
     marker = f'data-locale-key="{TAGLINE_KEY}">'
     assert marker in index
     return index.split(marker, 1)[1].split("</p>", 1)[0]
@@ -132,10 +130,10 @@ def test_markup_fallback_matches_the_shipped_korean_copy() -> None:
 
 
 def test_the_tagline_is_locale_owned_so_a_switch_cannot_restore_a_claim() -> None:
-    index = INDEX_HTML.read_text(encoding="utf-8")
+    index = sheets.sheet("index.html")
     # The tagline is bound to the locale table, not written by app logic.
     assert f'data-locale-key="{TAGLINE_KEY}"' in index
-    app = APP_JS.read_text(encoding="utf-8")
+    app = sheets.sheet("app.js")
     assert TAGLINE_KEY not in app
     # Both languages must declare it, so each renders its own truthful value.
     table = _locale_table()
@@ -143,7 +141,7 @@ def test_the_tagline_is_locale_owned_so_a_switch_cannot_restore_a_claim() -> Non
 
 
 def test_historical_artifact_action_stays_one_bounded_download() -> None:
-    app = APP_JS.read_text(encoding="utf-8")
+    app = sheets.sheet("app.js")
     table = _locale_table()
     # The label of the one historical document action offers the file again, in
     # KO and EN, and never claims to open it. (The KO label is deliberately
@@ -156,15 +154,15 @@ def test_historical_artifact_action_stays_one_bounded_download() -> None:
     # active result action, historical card, and validated Calendar link-back.
     # #7216 R5 A5a: 다운로드 본문은 chat-claw-run-module.js, 이력 카드 호출 지점은
     # chat-run-history-module.js에 있다(핀은 정의 본문 기준).
-    run_module = (ROOT / "static" / "chat-claw-run-module.js").read_text(encoding="utf-8")
-    history_module = (ROOT / "static" / "chat-run-history-module.js").read_text(encoding="utf-8")
+    run_module = sheets.sheet("chat-claw-run-module.js")
+    history_module = sheets.sheet("chat-run-history-module.js")
     # R5 A5b: the single result-action handler lives in chat-claw-form-module.js.
-    form_module = (ROOT / "static" / "chat-claw-form-module.js").read_text(encoding="utf-8")
+    form_module = sheets.sheet("chat-claw-form-module.js")
     assert app.count("/api/claw/manual-intake/artifact/") == 0
     assert run_module.count("/api/claw/manual-intake/artifact/") == 1
     assert definition_count("downloadClawArtifact") == 1
     # R5 A10: the artifact link-back call moved to chat-nav-module.js (deps-prefixed).
-    assert (ROOT / "static" / "chat-nav-module.js").read_text(encoding="utf-8").count('void deps.downloadClawArtifact(targetId, "")') == 1
+    assert sheets.sheet("chat-nav-module.js").count('void deps.downloadClawArtifact(targetId, "")') == 1
     assert form_module.count("downloadClawArtifact(docId, fname)") == 1
     assert history_module.count("downloadClawArtifact(") == 1
     # Historical cards still create just ONE direct download button. #3932 may
@@ -444,13 +442,14 @@ function texts(root) { return walk(root).map((el) => String(el.textContent || ""
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
-    harness_path = ROOT / "tests" / "_b54_claw_run_history_copy_harness.js"
-    copy_path = ROOT / "tests" / "_b54_claw_run_history_copy.json"
+    harness_path = Path(sheets.tests_path("_b54_claw_run_history_copy_harness.js"))
+    copy_path = Path(sheets.tests_path("_b54_claw_run_history_copy.json"))
     harness_path.write_text(_HARNESS, encoding="utf-8")
     copy_path.write_text(json.dumps(_locale_table(), ensure_ascii=False), encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(APP_JS), str(copy_path), str(INDEX_HTML), ARTIFACT_ID],
+            [node, str(harness_path), sheets.static_path("app.js"), str(copy_path),
+             sheets.static_path("index.html"), ARTIFACT_ID],
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=120,

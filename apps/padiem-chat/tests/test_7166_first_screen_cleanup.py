@@ -12,7 +12,6 @@
 브라우저 검사는 실제 index.html·CSS·JS를 정적 서버로 열고 API만 mock한다.
 """
 from __future__ import annotations
-import locale_bundle
 
 import http.server
 import json
@@ -21,6 +20,8 @@ import threading
 from pathlib import Path
 
 import pytest
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.first_screen_work_views_source import locale_source, read as _read
 
 try:  # pragma: no cover - environment dependent
     from playwright.sync_api import sync_playwright
@@ -72,12 +73,12 @@ def browser():
 
 
 def read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+    return _read(name)
 
 
 def locale_copy(key: str, lang: str) -> str:
     """Read one literal out of locale.js by key and language block."""
-    source = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    source = locale_source()
     if lang == "ko":
         block = source[source.index("ko: {"):source.index("en: {")]
     else:
