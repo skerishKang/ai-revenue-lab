@@ -13,24 +13,22 @@ from pathlib import Path
 
 from _r2_chat_transport_harness import observe
 
-ROOT = Path(__file__).resolve().parents[1]
-REPO = ROOT.parents[1]
-APP = ROOT / "app"
-STATIC = ROOT / "static"
+# #8060: shipped reads live in _support; the source-absence checks stay.
+from _support import attachment_byte_total_source as sheets
 
 
 def test_the_intake_compares_no_byte_total() -> None:
     for name in ("attachments.py", "binary_documents.py"):
-        source = (APP / name).read_text(encoding="utf-8")
+        source = sheets.app_source(name)
         assert not re.search(r"> MAX_(?:IMAGE|BINARY_DOCUMENT)_BYTES", source), name
         assert not re.search(r"MAX_(?:IMAGE|BINARY_DOCUMENT)_BYTES \+ 2", source), name
         assert "1 GiB" not in source, name
 
 
 def test_the_browser_capability_and_gates_carry_no_byte_total() -> None:
-    capabilities = (STATIC / "attachment-capabilities.js").read_text(encoding="utf-8")
-    app_js = (STATIC / "app.js").read_text(encoding="utf-8")
-    binary_js = (STATIC / "document-binary.js").read_text(encoding="utf-8")
+    capabilities = sheets.sheet("attachment-capabilities.js")
+    app_js = sheets.sheet("app.js")
+    binary_js = sheets.sheet("document-binary.js")
     assert "limits.imageBytes" not in app_js
     assert "limits.binaryBytes" not in binary_js
     assert "MAX_BINARY_BYTES" not in binary_js
@@ -48,14 +46,12 @@ def test_the_browser_capability_and_gates_carry_no_byte_total() -> None:
 def test_the_real_image_and_document_controls_are_untouched() -> None:
     # Each marker is pinned with its delimiter so a rename of the guard itself
     # cannot keep satisfying a bare substring.
-    attachments = (APP / "attachments.py").read_text(encoding="utf-8")
-    binary = (APP / "binary_documents.py").read_text(encoding="utf-8")
+    attachments = sheets.app_source("attachments.py")
+    binary = sheets.app_source("binary_documents.py")
     # #7216 R5 A7: selectImage moved to chat-core-module.js.
-    app_js = (STATIC / "app.js").read_text(encoding="utf-8") + (STATIC / "chat-core-module.js").read_text(encoding="utf-8")
-    binary_js = (STATIC / "document-binary.js").read_text(encoding="utf-8")
-    core = (
-        REPO / "packages/padiem-ai-core/padiem_ai_core/document_normalization.py"
-    ).read_text(encoding="utf-8")
+    app_js = sheets.sheet("app.js") + sheets.sheet("chat-core-module.js")
+    binary_js = sheets.sheet("document-binary.js")
+    core = sheets.repo_source("packages/padiem-ai-core/padiem_ai_core/document_normalization.py")
     # #4379 removes byte totals, not the empty-payload rules that travelled on the
     # same source line as a total, so each rejection is pinned where it now stands.
     assert 'if (file.size < 1) throw new Error(uiT("image-data-empty"));' in app_js
@@ -118,7 +114,7 @@ def test_the_composer_still_streams_the_file_behind_a_bounded_metadata_frame() -
 
 
 def test_the_readme_names_the_platform_and_provider_as_the_ceilings() -> None:
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    readme = sheets.readme()
     assert "no PADIEM byte total" in readme
     assert "platform request limit and the selected Provider" in readme
     assert "decompression bomb" in readme

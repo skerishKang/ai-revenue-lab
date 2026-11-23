@@ -13,11 +13,12 @@ from pathlib import Path
 
 import pytest
 from _r5_b6_wiring import context_names, create_receives_app_context
+from _support import private_rpc_core_source as sheets
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-core-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+STATIC = sheets.static_dir()
+APP = sheets.app_js()
+MODULE = sheets.core_module_js()
+INDEX = sheets.index_html()
 
 NAMES = (
     "uiT",
