@@ -140,7 +140,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-wor
   width: min(1168px, calc(100vw - var(--workspace-rail, 252px) - 64px));
   padding: 8px 0 14px;
   /* Chat removes the bottom wash; match it instead of a Claw-only blue fade. */
-  background: transparent !important;
+  background: transparent;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) #composerForm {
   display: flex;
@@ -342,8 +342,8 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
     left: calc(var(--workspace-rail, 252px) + (100vw - var(--workspace-rail, 252px)) / 2) !important;
     transform: translateX(-50%) !important;
     width: min(1168px, calc(100vw - var(--workspace-rail, 252px) - 64px)) !important;
-    padding-top: 8px !important;
-    padding-bottom: 12px !important;
+    padding-top: 8px;
+    padding-bottom: 12px;
   }
 }
 /* Chat widens its side gutter from 48px to 72px at >=1440px. Claw reuses the
@@ -380,7 +380,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawManualEntryBu
  * Suppress every visual art layer on Claw, not just main-panel::before.
  */
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) :is(.glass-shell-portrait, .glass-shell-field) {
-  display: none !important;
+  display: none;
 }
 /* These are duplicated, non-executable prompts in the general workflow. The
  * real Excel details become visible immediately when the user picks Excel.
@@ -398,9 +398,9 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-wor
  */
 @media (min-width: 761px) and (max-width: 920px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .composer-wrap {
-    left: 50% !important;
-    width: calc(100vw - 28px) !important;
-    transform: translateX(-50%) !important;
+    left: 50%;
+    width: calc(100vw - 28px);
+    transform: translateX(-50%);
   }
 }
 

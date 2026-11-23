@@ -1,0 +1,23 @@
+{
+  "sheet": "claw-focus-layout.css",
+  "widths": [
+    1440,
+    1280,
+    1024,
+    921,
+    920,
+    820
+  ],
+  "states": [
+    "general",
+    "quote",
+    "collapsed",
+    "automation"
+  ],
+  "combos": 24,
+  "fields": 11,
+  "measurements": 264,
+  "core_combos": 12,
+  "core_measurements": 132,
+  "diffs": []
+}
