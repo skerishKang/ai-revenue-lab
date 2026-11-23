@@ -24,12 +24,10 @@ or provider endpoint is contacted.
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import shutil
 import subprocess
 from contextlib import contextmanager
-from pathlib import Path
 
 import pytest
 from starlette.testclient import TestClient
@@ -40,11 +38,11 @@ from app.config import Settings
 
 # R5 0단계(R-01): 함수·상수 경계는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import combined_source
+from _support import claw_hold_disclosure_source as sheets
 
-APP_DIR = Path(__file__).resolve().parents[1]
-STATIC = APP_DIR / "static"
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
+STATIC = sheets.static_dir()
+APP_JS = sheets.app_js()
+LOCALE_JS = sheets.locale_js()
 
 EXECUTE_PATH = "/api/claw/manual-intake/execute"
 SIGNED_IN_USER_ID = "usr_" + "9" * 32

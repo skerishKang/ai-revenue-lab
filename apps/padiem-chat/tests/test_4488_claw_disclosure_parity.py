@@ -14,17 +14,16 @@ run-history surface, and ``loadApprovedMemoryDetail`` must open the disclosure.
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
 # R5 0단계(R-01): 함수 경계는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import combined_source
+from _support import claw_hold_disclosure_source as sheets
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
+APP_JS = sheets.app_js()
 
 
 def _logout_block() -> str:
-    session = (STATIC / "claw-session.js").read_text(encoding="utf-8")
+    session = sheets.session_js()
     assert "window.PadiemClawSession.bind({" in APP_JS
     start = session.index("if (authenticated) return;")
     # The same signed-out cleanup lives in the session listener after R1.
@@ -56,7 +55,7 @@ def test_memory_detail_opens_its_disclosure_like_run_history_focus() -> None:
 
 
 def test_both_disclosures_stay_outside_the_approval_surface() -> None:
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = sheets.index_html()
     for did in ("clawApprovedDisclosure", "clawRunHistoryDisclosure"):
         start = html.index(f'id="{did}"')
         end = html.index("</details>", start)
