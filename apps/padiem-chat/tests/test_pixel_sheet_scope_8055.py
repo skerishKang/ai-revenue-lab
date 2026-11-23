@@ -6,6 +6,9 @@
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.pixel_ttft_classification_source import read
+
 import re
 import sys
 from pathlib import Path
@@ -21,7 +24,7 @@ TOOL = ROOT / "tools" / "chat_pixel_compare.py"
 
 
 def tool_screen_names() -> tuple[str, ...]:
-    text = TOOL.read_text(encoding="utf-8")
+    text = read(TOOL)
     block = re.search(r"^SCREENS = \((.*?)^\)$", text, re.S | re.M)
     assert block, "SCREENS 정의를 찾지 못했다"
     # 항목은 `    ("<이름>", "<페이지 파일>", ...` 로 시작한다(안쪽 튜플 제외).
