@@ -16,7 +16,8 @@ from pathlib import Path
 import threading
 import time
 
-__all__ = ["ProcessFileLock", "checkpoint_owner_lock", "migration_lock", "ops_alert_delivery_lock"]
+__all__ = ["ProcessFileLock", "checkpoint_owner_lock", "migration_lock",
+           "ops_alert_delivery_lock", "pc_maintenance_lock", "lovetree_outbox_lock"]
 
 
 def _lock_descriptor(descriptor: int, *, wait: bool) -> bool:
@@ -134,3 +135,8 @@ def ops_alert_delivery_lock(connection) -> ProcessFileLock:
 def pc_maintenance_lock(connection) -> ProcessFileLock:
     """One host maintenance round at a time across CPython workers."""
     return _lock_beside_database(connection, ".pc-maintenance.lock")
+
+
+def lovetree_outbox_lock(connection) -> ProcessFileLock:
+    """One Lovetree outbox dispatch at a time across CPython workers."""
+    return _lock_beside_database(connection, ".lovetree-outbox.lock")
