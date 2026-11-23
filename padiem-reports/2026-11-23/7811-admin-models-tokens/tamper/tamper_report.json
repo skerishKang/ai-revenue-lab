@@ -1,0 +1,8 @@
+{
+  "phase": "tamper",
+  "token": "--radius-pill",
+  "mutation": "999px→0px",
+  "screen": "claw",
+  "pixel": 1510,
+  "seconds": 13.0
+}
