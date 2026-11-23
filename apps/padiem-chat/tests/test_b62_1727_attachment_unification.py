@@ -1,16 +1,16 @@
-from pathlib import Path
-
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
 # #7186 R2: 첨부 흡수·페이로드 계약은 모듈 실행 관찰로 검사한다.
 from _r5_attachment_module_harness import observations as attachment_module_observations
+from _support.attachment_unification_source import (
+    app_js, stream_js, binary_js, index_html,
+)
 
-ROOT = Path(__file__).resolve().parents[1]
-APP_JS = (ROOT / "static/app.js").read_text(encoding="utf-8")
+APP_JS = app_js()
 #7216 R5 step 5b: the streaming area moved into chat-streaming-module.js.
-STREAM_JS = (ROOT / "static/chat-streaming-module.js").read_text(encoding="utf-8")
-BINARY_JS = (ROOT / "static/document-binary.js").read_text(encoding="utf-8")
-INDEX_HTML = (ROOT / "static/index.html").read_text(encoding="utf-8")
+STREAM_JS = stream_js()
+BINARY_JS = binary_js()
+INDEX_HTML = index_html()
 
 
 def test_binary_reader_has_no_transport_or_dom_interception():
