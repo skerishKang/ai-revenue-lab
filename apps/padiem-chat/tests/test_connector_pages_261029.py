@@ -7,12 +7,12 @@ the dedicated page adds only routing and layout.
 """
 from __future__ import annotations
 
-from pathlib import Path
+# #8060: shipped reads live in _support; the markup and CSS checks stay here.
+from _support import connector_pages_source as sheets
 
-BASE = Path(__file__).resolve().parents[1] / "static"
-HTML = (BASE / "index.html").read_text(encoding="utf-8")
-PAGES = (BASE / "connector-pages.js").read_text(encoding="utf-8")
-CSS = (BASE / "connector-pages.css").read_text(encoding="utf-8")
+HTML = sheets.html()
+PAGES = sheets.pages()
+CSS = sheets.css()
 
 
 def test_the_detail_shell_and_grid_ids_ship_with_the_page():

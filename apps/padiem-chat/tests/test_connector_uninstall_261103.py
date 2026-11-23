@@ -3,23 +3,14 @@
 The app-list registration and the removal path are pinned to the source that
 implements them. Nothing here installs or uninstalls on a real PC.
 """
-from pathlib import Path
+# #8060: shipped reads live in _support; the uninstall claims stay here.
+from _support import connector_uninstall_source as sheets
 
-ROOT = Path(__file__).resolve().parents[1]
-REPO = ROOT.parents[1]
-CS = (REPO / "scripts/pc_pairing/connect-exe/PadiemPcConnect.cs").read_text(
-    encoding="utf-8"
-)
-INSTALL = (ROOT / "static" / "install.html").read_text(encoding="utf-8")
-DOC = (REPO / "docs/operations/PC_CONNECT_EXE_20261028.md").read_text(
-    encoding="utf-8"
-)
-MENU = (REPO / "apps/claw-connect/claw_connect/menu_model.py").read_text(
-    encoding="utf-8"
-)
-RUNTIME = (REPO / "apps/claw-connect/claw_connect/runtime.py").read_text(
-    encoding="utf-8"
-)
+CS = sheets.connect_cs()
+INSTALL = sheets.install_html()
+DOC = sheets.doc()
+MENU = sheets.menu_model()
+RUNTIME = sheets.runtime()
 
 REBUILT_SHA256 = "d17dc6a674de6719ccade4a1aaf0be13ce1f0dbe756ccac45007f9d76476dbc0"
 
@@ -68,8 +59,6 @@ def test_the_install_page_centers_removal_on_windows_settings():
 
 
 def test_the_asset_points_at_the_rebuilt_bytes():
-    asset = (ROOT / "app" / "pc_pairing_connect_exe_asset.py").read_text(
-        encoding="utf-8"
-    )
+    asset = sheets.asset()
     assert REBUILT_SHA256 in asset
     assert REBUILT_SHA256 in DOC
