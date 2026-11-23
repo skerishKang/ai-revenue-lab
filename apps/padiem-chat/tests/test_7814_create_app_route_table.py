@@ -6,6 +6,9 @@
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.last_batch_source import app_js, locale_js, pylock_toml, quote_runtime_js, read, read_replace, strict_deps_js, uv_lock_toml, xlsx_migration_sql, xlsx_sources_js, xlsx_store_py
+
 import json
 from pathlib import Path
 
@@ -62,7 +65,7 @@ def _app():
 
 def test_route_table_is_identical_to_golden() -> None:
     app = _app()
-    golden = json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
+    golden = json.loads(read(GOLDEN_PATH))
     assert _route_table(app) == golden
 
 
