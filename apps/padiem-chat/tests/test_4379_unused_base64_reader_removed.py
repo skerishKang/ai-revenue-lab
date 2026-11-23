@@ -7,24 +7,18 @@ encoder. The helper and the locale key that only it used are removed, and
 this guard fails as soon as either comes back under any name.
 """
 from __future__ import annotations
-import locale_bundle
 
 import re
-from pathlib import Path
 
 # R5 0단계(R-01): 함수 선언은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import definition_source
-
-STATIC = Path(__file__).resolve().parents[1] / "static"
-
-
-def read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the absence checks stay here.
+from _support import unused_base64_reader_source as sheets
 
 
 def test_the_unused_base64_reader_helper_is_gone() -> None:
     # #7216 R5 A7: readAsText moved to chat-core-module.js.
-    app = read("app.js") + read("chat-core-module.js")
+    app = sheets.sheet("app.js") + sheets.sheet("chat-core-module.js")
     assert "readAsDataUrl" not in app
     assert "readAsDataURL" not in app
     # The FileReader is still used for the text path, so the browser API itself
@@ -34,14 +28,14 @@ def test_the_unused_base64_reader_helper_is_gone() -> None:
 
 
 def test_the_text_reader_is_still_the_one_the_composer_calls() -> None:
-    app = read("app.js") + read("chat-core-module.js")
+    app = sheets.sheet("app.js") + sheets.sheet("chat-core-module.js")
     assert "function readAsText(file)" in definition_source("readAsText")
     assert "const raw = await readAsText(file);" in app
 
 
 def test_the_locale_key_only_the_removed_helper_used_is_gone() -> None:
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
-    app = read("app.js")
+    locale = sheets.locale_source()
+    app = sheets.sheet("app.js")
     assert "image-read-failed" not in app
     assert "image-read-failed" not in locale
     # The photograph wording that other attachment paths still use stays.
@@ -50,7 +44,7 @@ def test_the_locale_key_only_the_removed_helper_used_is_gone() -> None:
 
 
 def test_the_ko_and_en_catalogues_keep_exact_key_parity() -> None:
-    source = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    source = sheets.locale_source()
 
     def keys(start: str, end: str) -> set[str]:
         left = source.index(start)
@@ -64,8 +58,8 @@ def test_the_ko_and_en_catalogues_keep_exact_key_parity() -> None:
 
 
 def test_no_runtime_translation_call_points_at_a_removed_key() -> None:
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
-    app = read("app.js")
+    locale = sheets.locale_source()
+    app = sheets.sheet("app.js")
 
     left = locale.index("ko: {")
     right = locale.index("en: {", left + len("ko: {"))

@@ -11,11 +11,10 @@ change any registration, credential or execution behaviour.
 """
 from __future__ import annotations
 
-from pathlib import Path
-
 from app.connector_one_click_approval_route import _NATIVE_FAILURE_CODES
+# #8060: the shipped read lives in _support; the route and page checks stay.
+from _support import duplicate_device_binding_source as sheets
 
-ROOT = Path(__file__).resolve().parents[1]
 ALREADY_REGISTERED = "duplicate_device_binding"
 
 
@@ -26,7 +25,7 @@ def test_route_passes_the_canonical_already_registered_code():
 
 
 def test_claw_page_recognises_and_words_the_already_registered_answer():
-    script = (ROOT / "static" / "claw-home-choices.js").read_text(encoding="utf-8")
+    script = sheets.sheet("claw-home-choices.js")
     # The code must be in the page's denial allowlist, so the exact stage is
     # recorded instead of "unclassified".
     assert f'"{ALREADY_REGISTERED}"' in script
