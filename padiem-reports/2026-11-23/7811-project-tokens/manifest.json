@@ -1,0 +1,48 @@
+{
+  "sheet": "projects.css",
+  "base": "806abb2204da3bf4b5bf71b8c31e7f02f44de32a",
+  "audit": {
+    "css_color_literals": {"before": 1634, "after": 1602, "delta": -32},
+    "css_color_literals_unthemed": {"before": 973, "after": 941, "delta": -32},
+    "css_important": {"before": 629, "after": 629, "delta": 0},
+    "css_themed_important": {"before": 234, "after": 234, "delta": 0},
+    "css_files": {"before": 92, "after": 92, "delta": 0},
+    "css_rules": {"before": 4385, "after": 4385, "delta": 0},
+    "css_themed_rules": {"before": 795, "after": 795, "delta": 0}
+  },
+  "verification": {
+    "computed": {
+      "targets": 31,
+      "measurements": 1395,
+      "themes": 5,
+      "viewports": ["1440x950", "820x1180", "390x844"],
+      "states": ["normal", "hover", "focus"],
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "combos": 195,
+      "themes": 5,
+      "viewports": 3,
+      "screens": 13,
+      "nonzero": [],
+      "reports": [
+        "compare_report_light.json",
+        "compare_report_dark.json",
+        "compare_report_padiem-glass.json",
+        "compare_report_cinematic.json",
+        "compare_report_padiem-home.json"
+      ]
+    },
+    "control": {"combos": 12, "nonzero": [], "report": "control_report.json"},
+    "tamper": {"pixel": 227, "report": "tamper_report.json"},
+    "tests": "로컬 72 passed (신규 계약·토큰 목록 계약·래칫·projects 관련)",
+    "ratchet": "#8054 기준선 파일 없음. base 실측 대비 head 실측으로 자동 하향."
+  },
+  "notes": [
+    "토큰 값은 치환 전 리터럴과 같아 최종 계산값과 대비는 변하지 않는다.",
+    "var(--surface, #fff) 두 곳은 중첩 var(--project-solid-bg)로 바꿔 리터럴을 없앴다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 파일 정의에만 있다.",
+    "계산값이 달라진 곳은 없다."
+  ]
+}
