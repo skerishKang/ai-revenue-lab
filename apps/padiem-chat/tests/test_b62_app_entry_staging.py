@@ -24,6 +24,9 @@ from starlette.applications import Starlette
 from starlette.staticfiles import StaticFiles
 from starlette.testclient import TestClient
 
+# #8060: shipped-source reads live in _support; assertions stay here.
+from _support.app_entry_staging_source import app_factory_source, council_index_html, wrangler_toml
+
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parents[1]
 COUNCIL_STATIC = REPO / "apps/padiem-council-apps" / "static"
@@ -101,19 +104,19 @@ def test_no_app_file_is_duplicated_into_the_chat_static_tree() -> None:
 def test_entry_page_root_absolute_chat_references_exist() -> None:
     """The entry borrows Chat's design system by reference, so a Chat rename or
     deletion must fail CI here rather than serve the app without its tokens."""
-    html = (COUNCIL_STATIC / "index.html").read_text(encoding="utf-8")
+    html = council_index_html()
     borrowed = re.findall(r'href="(/[^"?#]+\.(?:css|js))"', html)
     assert borrowed, "the entry must borrow a Chat stylesheet rather than restate tokens"
     for reference in borrowed:
         assert (ROOT / "static" / reference.lstrip("/")).is_file(), reference
     # The Google entry is the server's own route, not a static asset.
-    factory = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
+    factory = app_factory_source()
     for target in re.findall(r'href="(/auth/[^"]+)"', html):
         assert f'Route("{target.split("?")[0]}"' in factory, target
 
 
 def test_every_relative_reference_of_the_entry_page_resolves_in_the_staged_tree() -> None:
-    html = (COUNCIL_STATIC / "index.html").read_text(encoding="utf-8")
+    html = council_index_html()
     # Only the same-directory relative form matters: "/" would be a second
     # authority path and "../" would leave the entry directory.
     references = re.findall(r'(?:src|href)="(\./[^"]+)"', html)
@@ -225,7 +228,7 @@ def test_entry_is_never_mounted_as_a_second_asgi_path() -> None:
     """The Chat Worker keeps a runtime StaticFiles mount for its own directory,
     but an app prefix mounted there would resolve differently locally and in the
     deployed bundle. Assets is the only serving path for the entry."""
-    factory = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
+    factory = app_factory_source()
     assert "padiem-council-apps" not in factory
     assert f'Mount("/{ENTRY_PREFIX}"' not in factory
 
@@ -242,7 +245,7 @@ def test_assets_are_uploaded_from_the_generated_bundle() -> None:
     """
     import tomllib
 
-    config = tomllib.loads((ROOT / "wrangler.toml").read_text(encoding="utf-8"))
+    config = tomllib.loads(wrangler_toml())
     assert config["base_dir"] == builder.RUNTIME_DIRECTORY
     assert config["assets"]["directory"] == f"{builder.RUNTIME_DIRECTORY}/static"
     assert config["assets"]["binding"] == "ASSETS"
