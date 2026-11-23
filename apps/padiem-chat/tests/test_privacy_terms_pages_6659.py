@@ -18,18 +18,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
+# #8060: shipped reads live in _support; the markup and CSS checks stay.
+from _support import privacy_terms_source as sheets
 
-PRIVACY = (STATIC / "privacy.html").read_text(encoding="utf-8")
-TERMS = (STATIC / "terms.html").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LEGAL_CSS = (STATIC / "legal-pages.css").read_text(encoding="utf-8")
+PRIVACY = sheets.sheet("privacy.html")
+TERMS = sheets.sheet("terms.html")
+INDEX = sheets.sheet("index.html")
+LEGAL_CSS = sheets.sheet("legal-pages.css")
 
 
 def test_the_pages_exist_and_are_public_standalone_documents():
     for name in ("privacy.html", "terms.html", "legal-pages.css"):
-        assert (STATIC / name).is_file()
+        assert Path(sheets.static_path(name)).is_file()
     # Same standalone pattern as the existing public pages: plain HTML, Korean
     # document, no app-shell login gate around the content.
     for page in (PRIVACY, TERMS):
@@ -117,10 +117,10 @@ def test_the_app_links_both_pages_on_the_pre_login_screen():
     # wrapped the line and squeezed the topbar login target under 44px.
     assert 'sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span> <a href="./third-party-licenses.html">오픈소스 고지</a></div>' in INDEX
     # The line rides the sidebar utility layer, not the polish layer.
-    utility = (STATIC / "sidebar-utility.css").read_text(encoding="utf-8")
+    utility = sheets.sheet("sidebar-utility.css")
     assert ".sidebar-legal" in utility
     assert ".profile-menu-legal" not in utility
-    polish = (STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
+    polish = sheets.sheet("padiem-chat-ui-polish.css")
     assert ".guest-legal-links" not in polish
 
 
@@ -141,7 +141,7 @@ def test_the_legal_layer_uses_the_accepted_palette_and_leaves_styles_css_alone()
         assert token in LEGAL_CSS
     # #7187 R3 2차: the shared hairline number lives in the token sheet and the
     # legal layer consumes it (the pages load padiem-tokens.css first).
-    tokens_css = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+    tokens_css = sheets.sheet("padiem-tokens.css")
     assert "#e3e3e9" in tokens_css
     assert "--legal-line: var(--line);" in LEGAL_CSS
     for page in (PRIVACY, TERMS):
