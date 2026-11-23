@@ -12,13 +12,19 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+# #8060: shipped-source reads live in _support; assertions stay here.
+from _support.pdfmd_source_261102 import (
+    council_app_js, document_convert_routes, index_html, local_cpython,
+    pc_file_exchange_js, util_app_js, util_manifest_js, util_menu_css, util_pdfmd_js,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-PDFMD = (STATIC / "util-pdfmd.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-UTIL_APP = (STATIC / "util-app.js").read_text(encoding="utf-8")
-ROUTES = (ROOT / "app" / "document_convert_routes.py").read_text(encoding="utf-8")
-CPYTHON = (ROOT / "app" / "local_cpython.py").read_text(encoding="utf-8")
+PDFMD = util_pdfmd_js()
+INDEX = index_html()
+UTIL_APP = util_app_js()
+ROUTES = document_convert_routes()
+CPYTHON = local_cpython()
 
 
 def _code(source: str) -> str:
@@ -45,7 +51,7 @@ def test_the_pause_still_says_what_is_and_is_not_possible() -> None:
     assert "새 업로드는 잠시 멈춤" not in INDEX
     assert "일시 중단" not in INDEX
     # #7173 / #7460: the card copy lives in the unified util manifest.
-    manifest = (STATIC / "util-manifest.js").read_text(encoding="utf-8")
+    manifest = util_manifest_js()
     assert "PDF·ZIP을 Markdown으로 변환·비교·다운로드" in manifest
 
 

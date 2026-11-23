@@ -26,6 +26,11 @@ export class AuthState {
       handle_digest TEXT PRIMARY KEY, browser_digest TEXT NOT NULL,
       payload TEXT NOT NULL, expires INTEGER NOT NULL
     )`);
+    // A confirmed gate keeps its row for the code's lifetime with the final
+    // redirect, so a second submit of the same form (double click, resend)
+    // lands on the same place instead of an error.
+    try { this.sql.exec('ALTER TABLE age_confirmations ADD COLUMN claimed INTEGER NOT NULL DEFAULT 0'); } catch { /* column already exists */ }
+    try { this.sql.exec('ALTER TABLE age_confirmations ADD COLUMN result TEXT'); } catch { /* column already exists */ }
     this.sql.exec(`CREATE TABLE IF NOT EXISTS password_attempts (
       state_digest TEXT PRIMARY KEY, attempts INTEGER NOT NULL, expires INTEGER NOT NULL
     )`);
@@ -329,7 +334,22 @@ export class AuthState {
   }
 
   readAgeConfirmation({ handleDigest, browserDigest, now }) {
-    return this.sql.exec('SELECT payload FROM age_confirmations WHERE handle_digest=? AND browser_digest=? AND expires>?', handleDigest, browserDigest, now).toArray()[0]?.payload ?? null;
+    return this.sql.exec('SELECT payload FROM age_confirmations WHERE handle_digest=? AND browser_digest=? AND expires>? AND claimed=0', handleDigest, browserDigest, now).toArray()[0]?.payload ?? null;
+  }
+
+  // Atomic first-wins claim of a confirmed gate. A concurrent second submit
+  // gets null here and waits for the first one's recorded result instead.
+  claimAgeConfirmation({ handleDigest, browserDigest, now }) {
+    return this.sql.exec('UPDATE age_confirmations SET claimed=1 WHERE handle_digest=? AND browser_digest=? AND expires>? AND claimed=0 RETURNING payload', handleDigest, browserDigest, now).toArray()[0]?.payload ?? null;
+  }
+
+  recordAgeConfirmationResult({ handleDigest, browserDigest, result, expires }) {
+    this.sql.exec('UPDATE age_confirmations SET result=?, expires=? WHERE handle_digest=? AND browser_digest=? AND claimed=1', result, expires, handleDigest, browserDigest);
+  }
+
+  readAgeConfirmationResult({ handleDigest, browserDigest, now }) {
+    const row = this.sql.exec('SELECT claimed, result FROM age_confirmations WHERE handle_digest=? AND browser_digest=? AND expires>?', handleDigest, browserDigest, now).toArray()[0];
+    return row ? { claimed: row.claimed === 1, result: row.result ?? null } : null;
   }
 
   consumeAgeConfirmation({ handleDigest, browserDigest, now }) {

@@ -7,7 +7,6 @@ not a mock of the parser.
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import base64
 from io import BytesIO
@@ -17,6 +16,10 @@ from zipfile import ZIP_DEFLATED, ZipFile
 import httpx
 import pytest
 
+from _support.chat_source_261102_source import (
+    app_js as _app_js, attachment_capabilities_js, claw_general_routes, document_binary_js,
+    index_html, locale_source, settings_js, stream_js,
+)
 from app.attachments import parse_attachments
 from app.documents import DocumentAttachment, build_document_context
 
@@ -221,10 +224,10 @@ async def test_health_reports_binary_attachment_readiness() -> None:
 
 
 def test_browser_capability_follows_the_runtime_readiness_signal() -> None:
-    capabilities = (STATIC / "attachment-capabilities.js").read_text(encoding="utf-8")
-    binary = (STATIC / "document-binary.js").read_text(encoding="utf-8")
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
-    app_js = (STATIC / "app.js").read_text(encoding="utf-8")
+    capabilities = attachment_capabilities_js()
+    binary = document_binary_js()
+    locale = locale_source()
+    app_js = _app_js()
 
     assert "setBinarySupport(value)" in capabilities
     assert "get binarySupported()" in capabilities

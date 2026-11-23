@@ -9,6 +9,10 @@ from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from _support.chat_source_261102_source import (
+    app_js, attachment_capabilities_js, claw_general_routes, document_binary_js,
+    index_html, locale_source, settings_js, stream_js,
+)
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
@@ -24,11 +28,11 @@ from padiem_control_plane import product_tier_routes
 ORIGINAL_ACTIVE_ROUTE_FOR = product_tier_routes.active_route_for
 
 ROOT = Path(__file__).resolve().parents[1]
-INDEX = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
-FRONT = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
-STREAM = (ROOT / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
-SETTINGS = (ROOT / "static" / "chat-settings-module.js").read_text(encoding="utf-8")
-GENERAL = (ROOT / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
+INDEX = index_html()
+FRONT = app_js()
+STREAM = stream_js()
+SETTINGS = settings_js()
+GENERAL = claw_general_routes()
 MODELS = ("agnes-ai/agnes-3.0-flash", "poolside/laguna-s-2.1")
 
 

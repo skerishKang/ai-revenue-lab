@@ -22,6 +22,8 @@ from pathlib import Path
 
 import pytest
 
+from _support import composer_voice_source as sheets
+
 ROOT = Path(__file__).resolve().parents[1]
 HARNESS = Path(__file__).resolve().parent / "ttft_gate_harness.js"
 
@@ -70,7 +72,7 @@ def test_the_gate_still_waits_for_the_verified_restore(harness_result: dict) -> 
 def test_the_shipped_composer_waits_for_the_tier_restore() -> None:
     """The gate contract itself stays in the shipped composer."""
 
-    source = (ROOT / "static/product-capabilities.js").read_text(encoding="utf-8")
+    source = sheets.product_capabilities_js()
     assert "const pending = tierRestoreTail || authRefreshTail;" in source
     assert "if (!background) tierRestoreTail = run;" in source
     assert 'refreshAuth({background: true});' in source
