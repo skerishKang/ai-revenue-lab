@@ -56,14 +56,23 @@ def new_reply_id() -> str:
 
 def build_payload(*, event_key: str, external_feedback_id: Any, kind: str,
                   reply: dict | None = None, status: str | None = None) -> bytes:
-    """받는 쪽 계약 본문(JSON 바이트). kind마다 필요한 칸만 채운다."""
-    record = {
+    """받는 쪽 계약 본문(JSON 바이트). kind마다 필요한 칸만 넣는다.
+
+    러브트리 ingest는 평평한 본문을 받는다: reply는 replyId·body·createdAt을
+    맨 위 칸으로, status는 status 칸 하나만. 빈 칸(null)이나 중첩 객체는
+    400으로 거부된다(11-23 운영 실측).
+    """
+    record: dict[str, Any] = {
         "eventKey": event_key,
         "feedbackId": int(external_feedback_id),
         "kind": kind,
-        "reply": reply,
-        "status": status,
     }
+    if kind == "reply" and reply is not None:
+        record["replyId"] = reply["replyId"]
+        record["body"] = reply["body"]
+        record["createdAt"] = reply["createdAt"]
+    elif kind == "status" and status is not None:
+        record["status"] = status
     return json.dumps(record, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
 
 
