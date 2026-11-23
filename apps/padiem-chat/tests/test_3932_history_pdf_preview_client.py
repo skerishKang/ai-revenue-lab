@@ -2,14 +2,17 @@
 
 No live provider, auth credentials, or PDF generator: 200/404 are synthetic.
 """
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.file_preview_source import app_js, claw_form_module_js, claw_run_module_js, claw_session_js, claw_workspace_css, history_module_js, index_html, locale_source, pdf_preview_js, project_drive_folder_js, projects_css, run_history_module_js
 from pathlib import Path
 import subprocess
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
-RUN_HISTORY = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
-PDF = (STATIC / "claw-pdf-preview.js").read_text(encoding="utf-8")
+APP = app_js()
+MODULE = history_module_js()
+RUN_HISTORY = run_history_module_js()
+PDF = pdf_preview_js()
 
 NODE = r"""
 const fs=require("fs"),path=require("path"),vm=require("vm");
