@@ -18,8 +18,8 @@ import subprocess
 # R5 0단계(R-01): app.js와 분리 모듈을 같은 도우미로 본다.
 from _r5_function_source import combined_source
 
-TESTS = Path(__file__).parent
-STATIC = TESTS.parent / "static"
+# #8060: shipped reads live in _support; the budget contracts stay here.
+from _support import first_screen_budget_source as sheets
 
 
 def run_node(source, **environment):
@@ -63,7 +63,7 @@ emit('padiem:auth-state',{authenticated:true});await flush();
 assert.equal(calls.length,2,'a new session is checked again');
 console.log(JSON.stringify({bootRequests:1,perSession:1}));
 })().catch(e=>{console.error(e);process.exitCode=1});
-""", ADMIN_ENTRY_MODULE=str(STATIC / "admin-entry.js"))
+""", ADMIN_ENTRY_MODULE=sheets.static_path("admin-entry.js"))
     assert result == {"bootRequests": 1, "perSession": 1}
 
 
@@ -97,13 +97,13 @@ emit('padiem:tierchange');await flush();
 assert.equal(calls.length,2,'a different grade is a different question');
 console.log(JSON.stringify({bootRequests:1,sameGradeShared:true}));
 })().catch(e=>{console.error(e);process.exitCode=1});
-""", GRADE_MODULE=str(STATIC / "claw-verified-model-choice.js"))
+""", GRADE_MODULE=sheets.static_path("claw-verified-model-choice.js"))
     assert result == {"bootRequests": 1, "sameGradeShared": True}
 
 
 def claw_runs_source():
     # R5 A2: runs-read cache lives in chat-run-history-module.js right before clawRunStatusLabel.
-    source = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
+    source = sheets.sheet("chat-run-history-module.js")
     start = source.index("const CLAW_RUNS_READ_WINDOW_MS")
     end = source.index("function clawRunStatusLabel(", start)
     # Strip the single clawRunHistoryRefresh/Filter getElementById lookups if present in the slice.
@@ -150,7 +150,7 @@ console.log(JSON.stringify({widerReads:true,perGeneration:true}));
 
 
 def test_the_pairing_card_is_not_read_until_the_connectors_surface_opens():
-    source = (STATIC / "pc-pairing-card.js").read_text(encoding="utf-8")
+    source = sheets.sheet("pc-pairing-card.js")
     assert "const surfaceOpen = () => {" in source
     assert 'addEventListener("toggle", () => {' in source
     assert "if (surfaceOpen()) void load();" in source
@@ -160,8 +160,8 @@ def test_the_pairing_card_is_not_read_until_the_connectors_surface_opens():
 
 
 def test_the_connection_chips_reuse_the_device_directory_read():
-    chips = (STATIC / "claw-connection-chips.js").read_text(encoding="utf-8")
-    manager = (STATIC / "claw-device-manager.js").read_text(encoding="utf-8")
+    chips = sheets.sheet("claw-connection-chips.js")
+    manager = sheets.sheet("claw-device-manager.js")
     assert "window.PadiemClawDeviceDirectoryRead" in manager
     assert "window.PadiemClawDeviceDirectoryRead" in chips
     assert "DEVICES_SHARED_WINDOW_MS" in chips
@@ -171,16 +171,16 @@ def test_the_connection_chips_reuse_the_device_directory_read():
 
 
 def test_the_quote_runtime_shares_the_connect_flow_read():
-    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    source = sheets.sheet("b66-quote-runtime.js")
     assert "PadiemPcConnectFlow" in source
     assert "flow.read" in source
-    flow = (STATIC / "pc-connect-flow.js").read_text(encoding="utf-8")
+    flow = sheets.sheet("pc-connect-flow.js")
     assert "read: () => readPairings()" in flow
     assert "refresh: () => readPairings({ force: true })" in flow
 
 
 def test_the_voice_identity_proof_is_single_flight():
-    source = (STATIC / "voice-stt-wiring.js").read_text(encoding="utf-8")
+    source = sheets.sheet("voice-stt-wiring.js")
     assert "if (identityInflight) return identityInflight;" in source
     assert "let identityInflight = null;" in source
     # Sign-out/sign-in happens in this page, so a changed signed-in state must
@@ -190,7 +190,7 @@ def test_the_voice_identity_proof_is_single_flight():
 
 
 def test_a_changed_owner_never_reuses_the_previous_pairing_read():
-    source = (STATIC / "pc-connect-flow.js").read_text(encoding="utf-8")
+    source = sheets.sheet("pc-connect-flow.js")
     assert "if (signedIn !== lastSignedIn) {" in source
     assert "pairingsGeneration += 1;" in source
     assert "if (generation !== pairingsGeneration) return result;" in source

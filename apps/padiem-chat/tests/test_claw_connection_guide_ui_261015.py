@@ -1,10 +1,12 @@
 """Claw's compact connection guide must not become connector authority or alter shared Chat layout."""
 from pathlib import Path
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-SCRIPT = (STATIC / "claw-connection-guide.js").read_text(encoding="utf-8")
-STYLE = (STATIC / "claw-connection-guide.css").read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the markup and style checks stay.
+from _support import claw_connection_guide_source as sheets
+
+HTML = sheets.index_html()
+SCRIPT = sheets.guide_script()
+STYLE = sheets.guide_style()
 
 
 def test_three_existing_switches_share_one_compact_native_dialog():

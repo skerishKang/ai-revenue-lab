@@ -7,9 +7,8 @@ import tempfile
 from pathlib import Path
 
 
-APP_ROOT = Path(__file__).resolve().parents[1]
-LIFECYCLE_PATH = APP_ROOT / "static" / "message-lifecycle.js"
-CAPABILITY_CSS_PATH = APP_ROOT / "static" / "capability-presentation.css"
+# #8060: shipped reads live in _support; the source and CSS checks stay.
+from _support import shared_capability_presentation_source as sheets
 
 
 def _run_node(script: str) -> dict:
@@ -49,7 +48,7 @@ global.CustomEvent = class CustomEvent {
 
 
 def test_shared_capability_presentation_groups_safe_normalized_events() -> None:
-    source = LIFECYCLE_PATH.read_text(encoding="utf-8")
+    source = sheets.lifecycle()
     script = _bootstrap(source) + r'''
 const orchestration = {
   events: [
@@ -78,7 +77,7 @@ console.log(JSON.stringify({base, presentation}));
 
 
 def test_shared_capability_presentation_covers_approval_and_terminal_states() -> None:
-    source = LIFECYCLE_PATH.read_text(encoding="utf-8")
+    source = sheets.lifecycle()
     script = _bootstrap(source) + r'''
 const orchestration = {
   events: [
@@ -105,7 +104,7 @@ console.log(JSON.stringify({preview, terminals:PadiemChatCapabilityPresentation.
 
 
 def test_deterministic_preview_is_explicit_synthetic_and_complete() -> None:
-    source = LIFECYCLE_PATH.read_text(encoding="utf-8")
+    source = sheets.lifecycle()
     script = _bootstrap(source) + r'''
 console.log(JSON.stringify({
   fixtureIds:PadiemChatCapabilityPreview.fixtures.map((item) => item.id),
@@ -134,8 +133,8 @@ console.log(JSON.stringify({
 
 
 def test_presentation_kit_preserves_b62_authority_boundaries() -> None:
-    source = LIFECYCLE_PATH.read_text(encoding="utf-8")
-    css = CAPABILITY_CSS_PATH.read_text(encoding="utf-8")
+    source = sheets.lifecycle()
+    css = sheets.capability_css()
     assert "PadiemChatCapabilityPresentation" in source
     assert "requiresTrustedDecision: true" in source
     assert "/internal/v1/orchestrate" not in source
