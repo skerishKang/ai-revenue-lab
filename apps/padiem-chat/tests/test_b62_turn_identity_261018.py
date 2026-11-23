@@ -16,18 +16,21 @@ Two directions are pinned here on purpose:
   rules must also fail.
 """
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
+
 from pathlib import Path
 
 import pytest
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
-THEME = (STATIC / "theme.js").read_text(encoding="utf-8")
-PORTRAIT = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
-BRAND = (STATIC / "padiem-glass-brand-polish.css").read_text(encoding="utf-8")
-GUTTER = (STATIC / "padiem-glass-gutter-alignment.css").read_text(encoding="utf-8")
-EDITORIAL = (STATIC / "padiem-editorial.css").read_text(encoding="utf-8")
-RICH = (STATIC / "padiem-rich.css").read_text(encoding="utf-8")
+THEME = read(STATIC / "theme.js")
+PORTRAIT = read(STATIC / "padiem-glass-portrait.css")
+BRAND = read(STATIC / "padiem-glass-brand-polish.css")
+GUTTER = read(STATIC / "padiem-glass-gutter-alignment.css")
+EDITORIAL = read(STATIC / "padiem-editorial.css")
+RICH = read(STATIC / "padiem-rich.css")
 
 SHARED = ':is([data-state="chat"],[data-state="claw"])'
 

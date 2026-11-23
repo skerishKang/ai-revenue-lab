@@ -5,6 +5,9 @@ actual retry-box function. Nothing calls B14, Engine or a model. The separate
 B62 Chat retry behavior must remain unchanged.
 """
 from __future__ import annotations
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
 import locale_bundle
 
 import shutil
@@ -14,9 +17,9 @@ from pathlib import Path
 import pytest
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+APP = read(STATIC / "app.js")
+TRANSPORT = read(STATIC / "chat-transport.js")
+LOCALE = locale_source()
 
 NODE = r"""
 const fs = require("fs");

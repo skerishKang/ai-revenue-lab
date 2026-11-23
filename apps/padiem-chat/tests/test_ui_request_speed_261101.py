@@ -1,6 +1,9 @@
 """Real JS controlled-delay regressions; these are not production timings."""
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
+
 import ast
 import json
 import os
@@ -12,11 +15,11 @@ TESTS = Path(__file__).parent
 STATIC = TESTS.parent / "static"
 # Argon review of PR #7249 (d): a fake deps that omits a used property hides the
 # call inside a swallowed TypeError. The shared strict Proxy fails on the read.
-STRICT = (TESTS / "_r5_strict_deps.js").read_text(encoding="utf-8")
+STRICT = read(TESTS / "_r5_strict_deps.js")
 
 
 def literal(path, name):
-    tree = ast.parse(path.read_text(encoding="utf-8"))
+    tree = ast.parse(read(path))
     assignment = next(node for node in tree.body if isinstance(node, ast.Assign)
                       and any(isinstance(target, ast.Name) and target.id == name
                               for target in node.targets))
@@ -25,7 +28,7 @@ def literal(path, name):
 
 def function(name, source=None):
     if source is None:
-        source = (STATIC / "app.js").read_text(encoding="utf-8")
+        source = read(STATIC / "app.js")
     start = source.index("async function " + name + "(")
     depth = 0
     for index in range(source.index("{", start), len(source)):
@@ -67,7 +70,7 @@ const expireReads=()=>{for(const callback of [...readTimers.values()])callback()
 def test_projects_and_history_start_in_parallel_without_holding_claw_panels():
     # loadAuthStatus moved into chat-auth-module.js (#7216 R5 step 4); the same
     # harness runs the moved body against the same stubs through strict deps.
-    auth_module = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
+    auth_module = read(STATIC / "chat-auth-module.js")
     result = run_node(PRELUDE + STRICT + function("loadAuthStatus", auth_module) + """
 let authState={};
 const events=[], projects=deferred(), history=deferred();
@@ -101,7 +104,7 @@ def test_history_is_usable_before_optional_run_labels_and_discards_old_auth_repl
     # loadRecentConversations moved into chat-history-module.js (#7216 R5 step 3);
     # the same harness runs the moved body, now reading its closure values
     # through the deps getters/setters exactly like the shipped factory does.
-    history_module = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
+    history_module = read(STATIC / "chat-history-module.js")
     result = run_node(PRELUDE + STRICT + function("loadRecentConversations", history_module) + """
 let authViewEpoch=1,historyReadSequence=0,clawConversationLabelsRead=null;
 let authState={authenticated:true,history_ready:true};
