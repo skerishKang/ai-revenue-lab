@@ -17,7 +17,7 @@ from app import chat_pc_session as lane
 from app import claw_connector_enrollment_routes as owner_routes
 from app.config import ConfigError, Settings
 from test_7065_chat_pc_session import app_rig, opened, UID, DEVICE, CID
-from _support.mcp_pc_session_rig import rig
+from test_7065_pc_session_tools import rig
 from _support.connector_one_click import session as canonical_session
 from _support.confirmation_card import _fixture, UID as SQL_UID, WORKSPACE
 
