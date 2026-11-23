@@ -413,6 +413,46 @@
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
   --claw-request-bubble-text: var(--user-bubble-text);
   --claw-request-bubble-bg: var(--user-bubble-bg);
+  --styles-button-focus: 3px solid rgba(101, 87, 232, .24);
+  --styles-brand-mark-text: #fff;
+  --styles-brand-mark-bg: linear-gradient(135deg, #7768ee, #4f40ce);
+  --styles-brand-mark-shadow: 0 6px 18px rgba(85,70,214,.18);
+  --styles-new-chat-bg: #fff;
+  --styles-new-chat-shadow: 0 3px 10px rgba(33,33,49,.03);
+  --styles-side-item-bg: rgba(255,255,255,.72);
+  --styles-mini-badge-bg: rgba(255,255,255,.72);
+  --styles-preview-dot-bg: #8b7ff0;
+  --styles-topbar-bg: rgba(248,248,251,.86);
+  --styles-model-pill-bg: rgba(255,255,255,.78);
+  --styles-model-pill-text: #50515a;
+  --styles-login-button-bg: #fff;
+  --styles-starter-bg: rgba(255,255,255,.74);
+  --styles-starter-edge: #ccc9e9;
+  --styles-starter-bg-2: #fff;
+  --styles-message-bubble-bg: #eae8f7;
+  --styles-demo-label-bg: #f1f0f7;
+  --styles-assistant-content-text: #2f3037;
+  --styles-source-card-bg: #fff;
+  --styles-error-box-edge: 1px solid #e6caca;
+  --styles-error-box-bg: #fff8f8;
+  --styles-retry-button-edge: 1px solid #debdbd;
+  --styles-retry-button-bg: #fff;
+  --styles-typing-i-bg: #aaa7b9;
+  --styles-composer-edge: 1px solid #d9d9e2;
+  --styles-composer-bg: #fff;
+  --styles-composer-edge-2: #b9b3e9;
+  --styles-composer-shadow: 0 14px 40px rgba(55,50,95,.10), 0 0 0 3px rgba(101,87,232,.07);
+  --styles-composer-textarea-text: #9b9ca5;
+  --styles-tool-button-text: #55565f;
+  --styles-tool-button-bg: #f5f5f8;
+  --styles-send-button-text: #fff;
+  --styles-attachment-chip-bg: #fff;
+  --styles-attachment-chip-shadow: 0 5px 16px rgba(40,40,60,.05);
+  --styles-attachment-chip-file-icon-bg: #f3f2f8;
+  --styles-composer-note-text: #888993;
+  --styles-sidebar-scrim-bg: rgba(16,16,24,.28);
+  --styles-sidebar-shadow: 18px 0 40px rgba(20,20,30,.12);
+  --styles-topbar-bg-2: rgba(248,248,251,.94);
 }
 
 /* ---- 테마별 값 ---- */
