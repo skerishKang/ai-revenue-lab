@@ -26,7 +26,6 @@ Two layers, mirroring the established presentation-slice test style:
 """
 
 from __future__ import annotations
-import locale_bundle
 
 from functools import lru_cache
 
@@ -38,12 +37,8 @@ from pathlib import Path
 
 from css_rules import declaration, find_rules_with_selector, parse_rules
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"  # R5 B1: 모듈 소스 읽기용
-APP_JS = ROOT / "static/app.js"
-INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = locale_bundle.SOURCE
-WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
+# #8060: shipped reads live in _support; the static and behavioral contracts stay.
+from _support import claw_automation_create_source as sheets
 
 CREATE_PATH = "/api/claw/automation/rules"
 
@@ -110,11 +105,11 @@ CREATE_LOCALE_KEYS = (
 
 
 def _app_source() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    return sheets.app_source()
 
 
 def _html_source() -> str:
-    return INDEX_HTML.read_text(encoding="utf-8")
+    return sheets.index_html()
 
 
 # ── static structural contracts ────────────────────────────────────────────
@@ -171,7 +166,7 @@ def test_create_status_never_uses_an_html_sink() -> None:
     상태 문구가 textContent로 실제 반영되는지는 이 파일의 behavior harness가
     기록된 DOM 텍스트로 확인한다. sink 금지는 존재 자체가 금지 대상이라 유지한다.
     """
-    js = _app_source() + (STATIC / "chat-automation-form-module.js").read_text(encoding="utf-8")
+    js = _app_source() + sheets.form_module()
     assert "innerHTML" not in js
     assert "insertAdjacentHTML" not in js
 
@@ -184,9 +179,9 @@ def test_scheduler_live_overclaim_is_absent() -> None:
     """
     # R5 B1: 부재 검사 대상에 이동된 모듈 3개를 합쳐 같은 강도를 유지한다.
     js = (_app_source()
-          + (STATIC / "chat-automation-module.js").read_text(encoding="utf-8")
-          + (STATIC / "chat-automation-form-module.js").read_text(encoding="utf-8")
-          + (STATIC / "chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
+          + sheets.automation_module()
+          + sheets.form_module()
+          + sheets.local_pc_panel_module())
     html = _html_source()
     # No copy anywhere in the slice may claim live automatic execution.
     for overclaim in ("자동 실행이 활성화되었습니다", "scheduler is now live", "runs automatically now"):
@@ -197,7 +192,7 @@ def test_scheduler_live_overclaim_is_absent() -> None:
 
 
 def test_locale_tables_carry_every_create_key_in_ko_and_en() -> None:
-    locale = LOCALE_JS.read_text(encoding="utf-8")
+    locale = sheets.locale_source()
     ko = locale.split("ko: {", 1)[1].split("en: {", 1)[0]
     en = locale.split("en: {", 1)[1]
     for key in CREATE_LOCALE_KEYS:
@@ -210,7 +205,7 @@ def test_locale_tables_carry_every_create_key_in_ko_and_en() -> None:
 
 def test_create_styles_extend_the_existing_form_system() -> None:
     # R2(#7186): CSS 글자 일치 대신 규칙 블록과 선언 값으로 판정한다.
-    rules = parse_rules(WORKSPACE_CSS.read_text(encoding="utf-8"))
+    rules = parse_rules(sheets.workspace_css())
     assert find_rules_with_selector(rules, ".claw-automation-create"), "create panel style"
     cancel = find_rules_with_selector(rules, ".calendar-record-cancel")
     assert cancel, "cancel must reuse the form-system button"
@@ -550,11 +545,11 @@ function fillForm() {
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
-    harness_path = ROOT / "tests" / "_claw_automation_create_harness.js"
+    harness_path = Path(sheets.test_path("_claw_automation_create_harness.js"))
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(APP_JS)],
+            [node, str(harness_path), sheets.app_js_path()],
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=120,
