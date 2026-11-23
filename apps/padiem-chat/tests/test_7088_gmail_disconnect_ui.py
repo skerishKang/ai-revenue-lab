@@ -27,10 +27,12 @@ from pathlib import Path
 
 import pytest
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-MODULE = (STATIC / "claw-gmail-account-management.js").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the markup and locale checks stay.
+from _support import gmail_disconnect_source as sheets
+
+INDEX = sheets.sheet("index.html")
+MODULE = sheets.sheet("claw-gmail-account-management.js")
+LOCALE = sheets.locale_source()
 
 COPY_KEYS = (
     "connectors-gmail-remove",
@@ -86,7 +88,7 @@ def test_locale_declares_every_gmail_copy_key_in_ko_and_en() -> None:
 
 
 def test_app_js_does_not_own_the_gmail_disconnect_wiring() -> None:
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
+    app = sheets.sheet("app.js")
     assert "connectorGmailRemove" not in app
     assert "gmail/disconnect" not in app
 
@@ -234,7 +236,7 @@ def _run_harness() -> dict:
         harness = Path(tmp) / "harness.js"
         harness.write_text(_HARNESS_JS, encoding="utf-8", newline="\n")
         completed = subprocess.run(
-            [node, str(harness), str(STATIC / "claw-gmail-account-management.js")],
+            [node, str(harness), sheets.static_path("claw-gmail-account-management.js")],
             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,
         )
     assert completed.returncode == 0, completed.stderr

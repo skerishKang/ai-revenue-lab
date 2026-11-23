@@ -7,15 +7,16 @@ import subprocess
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "tests" / "web_xlsx_p01_owner_ui_node.js"
-STATIC = ROOT / "static"
+# #8060: shipped reads live in _support; the markup and behavior checks stay.
+from _support import web_xlsx_p01_browser_source as sheets
+
+SCRIPT = sheets.tests_path("web_xlsx_p01_owner_ui_node.js")
 
 
 def test_hark_browser_p01_ui_has_closed_explicit_controls():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
-    js = (STATIC / "claw-web-xlsx-sources.js").read_text(encoding="utf-8")
-    css = (STATIC / "claw-local-handoff.css").read_text(encoding="utf-8")
+    html = sheets.sheet("index.html")
+    js = sheets.sheet("claw-web-xlsx-sources.js")
+    css = sheets.sheet("claw-local-handoff.css")
     for ident in (
         "clawWebXlsxP01Panel", "clawWebXlsxP01Selected",
         "clawWebXlsxP01Status", "clawWebXlsxP01Refresh",
@@ -57,7 +58,7 @@ def test_browser_real_xlsx_approval_ui_one_shot_and_server_only_state():
 
 def test_existing_result_reuse_is_one_owner_scoped_adopt_call():
     """#3933: the panel owns the adopt call; nothing else may mint a source."""
-    js = (STATIC / "claw-web-xlsx-sources.js").read_text(encoding="utf-8")
+    js = sheets.sheet("claw-web-xlsx-sources.js")
     assert "function validateAdopt" in js
     assert '"/artifact-followup/adopt"' in js
     assert '"/api/claw/conversations/"' in js
