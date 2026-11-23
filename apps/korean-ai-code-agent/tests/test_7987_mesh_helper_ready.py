@@ -31,6 +31,9 @@ from kagent.local_agent_mesh_helper_ready import (
     MeshHelperReadyReporter, _MESH_AGENT_VERSION_READ_PATHS, attach_helper_ready,
     helper_ready_enabled, mesh_agent_version_from_executable,
 )
+from kagent.local_agent_meshcentral_private_reader import (
+    MeshCentralReadRequestRefused, MeshCentralReadTooLarge,
+)
 from kagent.local_agent_oracle_mesh_executor import OracleMeshExecutor, POLL_PATH
 from kagent.local_agent_user_helper_guards import (
     USER_HELPER_SECRET_FOLDER, USER_HELPER_TASK_NAME, USER_HELPER_TASK_PATH,
@@ -1226,3 +1229,94 @@ def test_mesh_agent_version_read_is_cached_between_rounds():
     assert fallback.observe([], [NODE]) == 1
     assert fallback.observe([], [NODE]) == 1
     assert calls.count(_MESH_AGENT_VERSION_READ_PATHS[0]) == 1
+
+
+# ---- #8204: code-only diagnostics for every step that yields None -----------
+def test_version_reason_codes_are_value_free():
+    from kagent.local_agent_mesh_helper_ready import _VERSION_REASON_CODES
+
+    for code in _VERSION_REASON_CODES:
+        assert re.fullmatch(r"[a-z_]+", code)
+        assert "\\" not in code and ":\\" not in code
+
+
+@pytest.mark.parametrize("raw,expected", [
+    (None, "invalid_read_body"),
+    ("private text", "invalid_read_body"),
+    (b"", "empty_body"),
+    pytest.param(b"x" * 8_000_001, "too_large", id="oversized"),
+    (b"MZ" + b"\x00" * 100, "no_version_resource"),
+    (b"MZ" + "VS_VERSION_INFO".encode("utf-16-le") + b"\x00\x00", "malformed_resource"),
+    (version_resource_exe("C:\\Program Files\\PADIEM\\MeshAgent.exe"), "no_build_stamp"),
+    (version_resource_exe("2026-Feb-15 16:43:44-0800", "2020-Jan-01 00:00:00+0000"),
+     "ambiguous"),
+    (version_resource_exe("2026-Xxx-15 16:43:44+0000"), "format_mismatch"),
+    (version_resource_exe(), "observed"),
+])
+def test_mesh_agent_version_failure_has_one_code_per_stage(raw, expected):
+    from kagent.local_agent_mesh_helper_ready import _mesh_agent_version_reason
+
+    value, reason = _mesh_agent_version_reason(raw)
+    assert reason == expected
+    assert (value is not None) is (reason == "observed")
+    if value is not None:
+        assert value == "2026-02-16T00:43:44.000Z"
+
+
+def test_truncated_version_resource_has_its_own_code():
+    from kagent.local_agent_mesh_helper_ready import _mesh_agent_version_reason
+
+    raw = bytearray(version_resource_exe())
+    struct.pack_into("<H", raw, 102, 60000)
+    assert _mesh_agent_version_reason(bytes(raw))[1] == "truncated_resource"
+
+
+def test_prefer_version_reason_is_deterministic_and_observed_wins():
+    from kagent.local_agent_mesh_helper_ready import _prefer_version_reason
+
+    assert _prefer_version_reason(["no_build_stamp", "observed"]) == "observed"
+    assert _prefer_version_reason(["ambiguous", "too_large"]) == "too_large"
+    assert _prefer_version_reason([]) == "unavailable"
+
+
+@pytest.mark.parametrize("failure,expected", [
+    (MeshCentralReadTooLarge, "too_large"),
+    (MeshCentralReadRequestRefused, "request_refused"),
+    (PermissionError, "permission_denied"),
+    (TimeoutError, "timeout"),
+])
+def test_agent_version_read_failure_logs_code_only(failure, expected, capsys):
+    from kagent.local_agent_mesh_helper_ready import HELPER_STATUS_READ_PATH
+
+    def read_bytes(*, node_ref, file_path, max_bytes, timeout_seconds):
+        if file_path == HELPER_STATUS_READ_PATH:
+            raise FileNotFoundError("PRIVATE-STATUS-PATH")
+        raise failure("PRIVATE-READ-MESSAGE")
+
+    fallback = HelperStatusReadFallback(post=Mock(return_value=(200, {"ok": True})),
+                                        read_port=Mock(read_bytes=Mock(side_effect=read_bytes)))
+    assert fallback.observe([], [NODE]) == 1
+    logs = capsys.readouterr().out
+    assert f"helper_ready_agent_version read={expected}" in logs
+    for leaked in ("PRIVATE-READ-MESSAGE", "PRIVATE-STATUS-PATH", NODE,
+                   "MeshAgent.exe", "PADIEM", "2026-"):
+        assert leaked not in logs
+
+
+def test_agent_version_diagnostic_is_once_per_hour_cache(capsys):
+    from kagent.local_agent_mesh_helper_ready import HELPER_STATUS_READ_PATH
+
+    def read_bytes(*, node_ref, file_path, max_bytes, timeout_seconds):
+        if file_path == HELPER_STATUS_READ_PATH:
+            raise FileNotFoundError("PRIVATE-STATUS-PATH")
+        raise MeshCentralReadRequestRefused("PRIVATE-READ-MESSAGE")
+
+    fallback = HelperStatusReadFallback(post=Mock(return_value=(200, {"ok": True})),
+                                        read_port=Mock(read_bytes=Mock(side_effect=read_bytes)))
+    with patch("kagent.local_agent_mesh_helper_ready.time.monotonic",
+               side_effect=[0, 60, 3601]):
+        assert fallback.observe([], [NODE]) == 1
+        assert fallback.observe([], [NODE]) == 1
+        assert fallback.observe([], [NODE]) == 1
+    logs = capsys.readouterr().out
+    assert logs.count("helper_ready_agent_version read=request_refused") == 2
