@@ -13,6 +13,9 @@ its contract must not be able to drift unnoticed.
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.voice_source import front_wrangler_toml, front_worker_mjs, index_html, read, voice_adapter_js, voice_authority_js, voice_stt_routes_py
+
 import re
 import shutil
 import subprocess
@@ -48,7 +51,7 @@ def test_voice_input_adapter_gates_pass() -> None:
 
 
 def test_the_adapter_owns_the_live_draft_contract() -> None:
-    source = ADAPTER_JS.read_text(encoding="utf-8")
+    source = voice_adapter_js()
     # The live draft is written into the composer input, so the composer must
     # not repeat the same words in its preview line.
     assert "writeLiveInput" in source

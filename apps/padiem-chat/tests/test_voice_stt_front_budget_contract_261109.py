@@ -19,6 +19,9 @@ front run, mirroring test_auth_write_timeout.test.mjs.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.voice_source import front_wrangler_toml, front_worker_mjs, index_html, read, voice_adapter_js, voice_authority_js, voice_stt_routes_py
+
 import re
 from pathlib import Path
 
@@ -32,7 +35,7 @@ VOICE_STT_WRITE_PATHS = ("/api/voice/live-token", "/api/voice/transcribe")
 
 
 def _front_source() -> str:
-    return (FRONT / "worker.mjs").read_text(encoding="utf-8")
+    return front_worker_mjs()
 
 
 def test_front_gives_the_voice_stt_writes_their_own_allowance():
@@ -44,7 +47,7 @@ def test_front_gives_the_voice_stt_writes_their_own_allowance():
 
 
 def test_front_default_is_declared_in_wrangler():
-    toml = (FRONT / "wrangler.toml").read_text(encoding="utf-8")
+    toml = front_wrangler_toml()
     assert re.search(r'VOICE_STT_WRITE_TIMEOUT_MS = "30000"', toml), (
         "wrangler.toml must declare the same contract the worker defaults to")
 
@@ -84,7 +87,7 @@ def test_voice_live_token_write_is_not_cut_by_the_generic_window():
 
 def test_chat_live_token_route_never_produces_a_504():
     """The route's own fail-closed statuses are bounded; 504 is the front's."""
-    source = ROUTES.read_text(encoding="utf-8")
+    source = voice_stt_routes_py()
     live_token = source.split("async def voice_live_token", 1)[1].split(
         "\nasync def ", 1)[0]
     statuses = set(re.findall(r"_error\([^)]*?,\s*(\d{3})\)", live_token))

@@ -11,7 +11,7 @@ catalog's own tests with checks that the remnant cannot come back.
 from __future__ import annotations
 
 # #8060: shipped reads live in _support; assertions stay here.
-from _support.final_share_source import locale_source, read
+from _support.response_render_source import read, request_contract_py, rich_css, rich_response_js, search_css, search_sources_js, tokens_css
 
 import importlib
 from pathlib import Path
@@ -81,7 +81,7 @@ def test_mode_is_refused_as_an_unknown_request_item():
 def test_the_accepted_request_keys_no_longer_name_a_mode():
     from app import request_contract
 
-    source = read(ROOT / "app" / "request_contract.py")
+    source = request_contract_py()
     # The accepted-key set literal, whichever statement holds it (#6921 moved it
     # out of the if-test so the refused key can be named in the journal).
     accepted = source.split("set(raw) - {", 1)[1].split("}", 1)[0]
