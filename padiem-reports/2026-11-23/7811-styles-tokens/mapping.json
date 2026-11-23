@@ -1,0 +1,242 @@
+[
+  {
+    "selector": "button:focus-visible, textarea:focus-visible, a:focus-visible",
+    "prop": "outline",
+    "value": "3px solid rgba(101, 87, 232, .24)",
+    "token": "--styles-button-focus"
+  },
+  {
+    "selector": ".brand-mark, .assistant-avatar",
+    "prop": "color",
+    "value": "#fff",
+    "token": "--styles-brand-mark-text"
+  },
+  {
+    "selector": ".brand-mark, .assistant-avatar",
+    "prop": "background",
+    "value": "linear-gradient(135deg, #7768ee, #4f40ce)",
+    "token": "--styles-brand-mark-bg"
+  },
+  {
+    "selector": ".brand-mark, .assistant-avatar",
+    "prop": "box-shadow",
+    "value": "0 6px 18px rgba(85,70,214,.18)",
+    "token": "--styles-brand-mark-shadow"
+  },
+  {
+    "selector": ".new-chat",
+    "prop": "background",
+    "value": "#fff",
+    "token": "--styles-new-chat-bg"
+  },
+  {
+    "selector": ".new-chat",
+    "prop": "box-shadow",
+    "value": "0 3px 10px rgba(33,33,49,.03)",
+    "token": "--styles-new-chat-shadow"
+  },
+  {
+    "selector": ".side-item:not(:disabled):hover, .recent-item:hover",
+    "prop": "background",
+    "value": "rgba(255,255,255,.72)",
+    "token": "--styles-side-item-bg"
+  },
+  {
+    "selector": ".mini-badge",
+    "prop": "background",
+    "value": "rgba(255,255,255,.72)",
+    "token": "--styles-mini-badge-bg"
+  },
+  {
+    "selector": ".preview-dot",
+    "prop": "background",
+    "value": "#8b7ff0",
+    "token": "--styles-preview-dot-bg"
+  },
+  {
+    "selector": ".topbar",
+    "prop": "background",
+    "value": "rgba(248,248,251,.86)",
+    "token": "--styles-topbar-bg"
+  },
+  {
+    "selector": ".model-pill",
+    "prop": "background",
+    "value": "rgba(255,255,255,.78)",
+    "token": "--styles-model-pill-bg"
+  },
+  {
+    "selector": ".model-pill",
+    "prop": "color",
+    "value": "#50515a",
+    "token": "--styles-model-pill-text"
+  },
+  {
+    "selector": ".login-button",
+    "prop": "background",
+    "value": "#fff",
+    "token": "--styles-login-button-bg"
+  },
+  {
+    "selector": ".starter",
+    "prop": "background",
+    "value": "rgba(255,255,255,.74)",
+    "token": "--styles-starter-bg"
+  },
+  {
+    "selector": ".starter:hover",
+    "prop": "border-color",
+    "value": "#ccc9e9",
+    "token": "--styles-starter-edge"
+  },
+  {
+    "selector": ".starter:hover",
+    "prop": "background",
+    "value": "#fff",
+    "token": "--styles-starter-bg-2"
+  },
+  {
+    "selector": ".message-bubble",
+    "prop": "background",
+    "value": "#eae8f7",
+    "token": "--styles-message-bubble-bg"
+  },
+  {
+    "selector": ".demo-label",
+    "prop": "background",
+    "value": "#f1f0f7",
+    "token": "--styles-demo-label-bg"
+  },
+  {
+    "selector": ".assistant-content",
+    "prop": "color",
+    "value": "#2f3037",
+    "token": "--styles-assistant-content-text"
+  },
+  {
+    "selector": ".source-card",
+    "prop": "background",
+    "value": "#fff",
+    "token": "--styles-source-card-bg"
+  },
+  {
+    "selector": ".error-box",
+    "prop": "border",
+    "value": "1px solid #e6caca",
+    "token": "--styles-error-box-edge"
+  },
+  {
+    "selector": ".error-box",
+    "prop": "background",
+    "value": "#fff8f8",
+    "token": "--styles-error-box-bg"
+  },
+  {
+    "selector": ".retry-button",
+    "prop": "border",
+    "value": "1px solid #debdbd",
+    "token": "--styles-retry-button-edge"
+  },
+  {
+    "selector": ".retry-button",
+    "prop": "background",
+    "value": "#fff",
+    "token": "--styles-retry-button-bg"
+  },
+  {
+    "selector": ".typing i",
+    "prop": "background",
+    "value": "#aaa7b9",
+    "token": "--styles-typing-i-bg"
+  },
+  {
+    "selector": ".composer",
+    "prop": "border",
+    "value": "1px solid #d9d9e2",
+    "token": "--styles-composer-edge"
+  },
+  {
+    "selector": ".composer",
+    "prop": "background",
+    "value": "#fff",
+    "token": "--styles-composer-bg"
+  },
+  {
+    "selector": ".composer:focus-within",
+    "prop": "border-color",
+    "value": "#b9b3e9",
+    "token": "--styles-composer-edge-2"
+  },
+  {
+    "selector": ".composer:focus-within",
+    "prop": "box-shadow",
+    "value": "0 14px 40px rgba(55,50,95,.10), 0 0 0 3px rgba(101,87,232,.07)",
+    "token": "--styles-composer-shadow"
+  },
+  {
+    "selector": ".composer textarea::placeholder",
+    "prop": "color",
+    "value": "#9b9ca5",
+    "token": "--styles-composer-textarea-text"
+  },
+  {
+    "selector": ".tool-button",
+    "prop": "color",
+    "value": "#55565f",
+    "token": "--styles-tool-button-text"
+  },
+  {
+    "selector": ".tool-button:hover",
+    "prop": "background",
+    "value": "#f5f5f8",
+    "token": "--styles-tool-button-bg"
+  },
+  {
+    "selector": ".send-button",
+    "prop": "color",
+    "value": "#fff",
+    "token": "--styles-send-button-text"
+  },
+  {
+    "selector": ".attachment-chip",
+    "prop": "background",
+    "value": "#fff",
+    "token": "--styles-attachment-chip-bg"
+  },
+  {
+    "selector": ".attachment-chip",
+    "prop": "box-shadow",
+    "value": "0 5px 16px rgba(40,40,60,.05)",
+    "token": "--styles-attachment-chip-shadow"
+  },
+  {
+    "selector": ".attachment-chip .file-icon",
+    "prop": "background",
+    "value": "#f3f2f8",
+    "token": "--styles-attachment-chip-file-icon-bg"
+  },
+  {
+    "selector": ".composer-note",
+    "prop": "color",
+    "value": "#888993",
+    "token": "--styles-composer-note-text"
+  },
+  {
+    "selector": ".sidebar-scrim",
+    "prop": "background",
+    "value": "rgba(16,16,24,.28)",
+    "token": "--styles-sidebar-scrim-bg"
+  },
+  {
+    "selector": ".sidebar",
+    "prop": "box-shadow",
+    "value": "18px 0 40px rgba(20,20,30,.12)",
+    "token": "--styles-sidebar-shadow"
+  },
+  {
+    "selector": ".topbar",
+    "prop": "background",
+    "value": "rgba(248,248,251,.94)",
+    "token": "--styles-topbar-bg-2"
+  }
+]

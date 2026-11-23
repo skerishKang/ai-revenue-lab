@@ -1,0 +1,44 @@
+{
+  "sheet": "styles.css",
+  "base": "806abb2204",
+  "claim": "https://github.com/skerishKang/ai-revenue-lab/issues/7811#issuecomment-7090359500",
+  "audit": {
+    "css_color_literals": {"before": 1634, "after": 1594, "delta": -40},
+    "css_color_literals_unthemed": {"before": 973, "after": 933, "delta": -40},
+    "css_important": {"before": 629, "after": 629, "delta": 0},
+    "css_themed_important": {"before": 217, "after": 217, "delta": 0},
+    "css_files": {"before": 92, "after": 92, "delta": 0},
+    "css_rules": {"before": 4385, "after": 4385, "delta": 0},
+    "css_themed_rules": {"before": 795, "after": 795, "delta": 0}
+  },
+  "verification": {
+    "computed": {
+      "targets": 40,
+      "measurements": 200,
+      "themes": 5,
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "themes": 5,
+      "screen": "conversation",
+      "viewport": "1440x950",
+      "control_combos": 5,
+      "control_nonzero": 0,
+      "diff_combos": 5,
+      "diff_nonzero": 0,
+      "reports": ["control_*/control_report.json", "diff_*/compare_report.json", "pixel_summary.json"],
+      "visual_review": "light/dark/padiem-glass captures opened and inspected: no clipping, overlap or color breakage"
+    },
+    "control": {"combos": 5, "nonzero": 0},
+    "tamper": {"pixel": 1510, "report": "tamper/tamper_report.json"},
+    "tests": "42 passed (신규 토큰 계약·토큰 목록 계약·래칫·대비 하한)",
+    "ratchet": "base 실측 대비 head 실측 compare, 통과"
+  },
+  "notes": [
+    "styles.css :root 팔레트 정의는 건드리지 않았다.",
+    "새 토큰 40개 값은 치환 전 리터럴과 같고 :root에만 있다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 파일 정의에만 있다.",
+    "계산값이 달라진 곳은 없다."
+  ]
+}
