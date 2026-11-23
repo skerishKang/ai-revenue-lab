@@ -12,6 +12,7 @@ import json
 import subprocess
 from pathlib import Path
 
+from _support import css_display_source as sheets
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -98,7 +99,7 @@ def test_search_sources_show_all_when_nothing_cited() -> None:
 
 
 def test_search_sources_keep_static_contract() -> None:
-    js = (ROOT / "static" / "search-sources.js").read_text(encoding="utf-8")
+    js = sheets.sheet("search-sources.js")
     assert "function renderSources(article, evidence, research = null)" in js
     assert "citedSourceNumbers(answerText)" in js
     assert "cited.size" in js
