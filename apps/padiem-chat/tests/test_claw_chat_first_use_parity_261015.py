@@ -1,13 +1,13 @@
 """Owner-approved Chat/Claw one composer / card frame boundary."""
-from pathlib import Path
+# #8060: shipped reads live in _support; the markup and CSS checks stay.
+from _support import claw_chat_first_use_source as sheets
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-CAP = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
-FOCUS = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
-CHIPS = (STATIC / "claw-connection-chips.js").read_text(encoding="utf-8")
+HTML = sheets.sheet("index.html")
+CAP = sheets.sheet("product-capabilities.js")
+APP = sheets.sheet("app.js")
+CSS = sheets.sheet("shared-six-panel-frame.css")
+FOCUS = sheets.sheet("claw-focus-layout.css")
+CHIPS = sheets.sheet("claw-connection-chips.js")
 
 
 def test_one_canonical_composer_and_tier_control_for_chat_and_claw():
@@ -53,7 +53,7 @@ def test_claw_dedicated_connectors_keep_real_buttons_inside_chat_card_geometry()
 
 
 def test_approved_memory_stays_out_of_first_screen_without_deleting_owner_data():
-    memory_mod = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
+    memory_mod = sheets.sheet("chat-memory-module.js")
     assert 'const onLanding = deps.clawWorkspace?.dataset.view === "general"' in memory_mod
     assert '&& !onLanding;' in memory_mod
     assert 'loadApprovedMemoryList()' in memory_mod
