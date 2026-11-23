@@ -12,6 +12,9 @@
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.token_foundation_source import foundation_css, index_html, read, read_static, tokens_css
+
 import re
 from collections import Counter
 from pathlib import Path
@@ -58,14 +61,14 @@ def _norm(text: str) -> str:
 
 
 def test_root_tokens_hold_the_swept_values() -> None:
-    rules = parse_rules(TOKENS.read_text(encoding="utf-8"))
+    rules = parse_rules(tokens_css())
     root = next(r for r in rules if r.media is None and ":root" in r.selectors)
     for name, literal in ROOT_TOKENS.items():
         assert root.declarations.get(name) == literal, name
 
 
 def test_no_theme_block_overrides_the_text_veil_tokens() -> None:
-    for rule in parse_rules(TOKENS.read_text(encoding="utf-8")):
+    for rule in parse_rules(tokens_css()):
         themed = rule.media is not None or any("data-theme" in s for s in rule.selectors)
         if themed:
             for name in ROOT_TOKENS:
@@ -74,7 +77,7 @@ def test_no_theme_block_overrides_the_text_veil_tokens() -> None:
 
 def test_changed_declarations_consume_the_text_tokens() -> None:
     for sheet, items in CHANGED.items():
-        rules = parse_rules((STATIC / sheet).read_text(encoding="utf-8"))
+        rules = parse_rules(read_static(sheet))
         actual: Counter = Counter()
         for rule in rules:
             for prop, value in rule.declarations.items():
@@ -91,7 +94,7 @@ def test_changed_declarations_consume_the_text_tokens() -> None:
 
 def test_text_tokens_are_only_color_declarations() -> None:
     for sheet in CHANGED:
-        for rule in parse_rules((STATIC / sheet).read_text(encoding="utf-8")):
+        for rule in parse_rules(read_static(sheet)):
             for prop, value in rule.declarations.items():
                 if "--text-veil-" in value:
                     assert prop == "color", (sheet, prop, value)
