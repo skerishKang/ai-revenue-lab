@@ -1,0 +1,63 @@
+{
+  "sheet": "claw-focus-layout.css",
+  "base": "cf77337",
+  "removed": [
+    {"line": 143, "selector": ".composer-wrap", "property": "background", "value": "transparent"},
+    {"line": 345, "selector": ".composer-wrap", "property": "padding-top", "value": "8px"},
+    {"line": 346, "selector": ".composer-wrap", "property": "padding-bottom", "value": "12px"},
+    {"line": 383, "selector": ":is(.glass-shell-portrait, .glass-shell-field)", "property": "display", "value": "none"},
+    {"line": 401, "selector": ".composer-wrap", "property": "left", "value": "50%"},
+    {"line": 402, "selector": ".composer-wrap", "property": "width", "value": "calc(100vw - 28px)"},
+    {"line": 403, "selector": ".composer-wrap", "property": "transform", "value": "translateX(-50%)"}
+  ],
+  "kept": [
+    {"line": 337, "selector": ".conversation", "property": "width", "beats": "shared-six-panel-frame.css:85 !important; claw-focus-layout.css:26"},
+    {"line": 338, "selector": ".conversation", "property": "margin-left", "beats": "padiem-glass-brand-polish.css:36/67 !important; claw-focus-layout.css:26"},
+    {"line": 339, "selector": ".conversation", "property": "margin-right", "beats": "padiem-glass-brand-polish.css:37/68 !important; claw-focus-layout.css:26"},
+    {"line": 342, "selector": ".composer-wrap", "property": "left", "beats": "padiem-glass-brand-polish.css:41/72 !important; shared-six-panel-frame.css:157 !important; claw-focus-layout.css:136"},
+    {"line": 343, "selector": ".composer-wrap", "property": "transform", "beats": "padiem-glass-brand-polish.css:52 !important; shared-six-panel-frame.css:159; claw-focus-layout.css:136"},
+    {"line": 344, "selector": ".composer-wrap", "property": "width", "beats": "padiem-glass-brand-polish.css:42/73 !important; shared-six-panel-frame.css:158 !important; claw-focus-layout.css:136"},
+    {"line": 353, "selector": ".conversation", "property": "width", "beats": "claw-focus-layout.css:337 (same sheet, earlier); shared-six-panel-frame.css:85 !important"},
+    {"line": 356, "selector": ".composer-wrap", "property": "width", "beats": "claw-focus-layout.css:344 (same sheet, earlier); padiem-glass-brand-polish.css:42 !important; shared-six-panel-frame.css:158 !important"}
+  ],
+  "audit": {
+    "css_important": {"before": 537, "after": 530, "delta": -7},
+    "css_themed_important": {"before": 125, "after": 118, "delta": -7},
+    "claw-focus-layout.css": {"before": 67, "after": 60, "delta": -7},
+    "css_color_literals": {"before": 1180, "after": 1180, "delta": 0},
+    "css_color_literals_unthemed": {"before": 519, "after": 519, "delta": 0},
+    "css_rules": {"before": 4385, "after": 4385, "delta": 0},
+    "css_themed_rules": {"before": 795, "after": 795, "delta": 0},
+    "css_files": {"before": 92, "after": 92, "delta": 0}
+  },
+  "verification": {
+    "computed": {
+      "widths": [1440, 1280, 1024, 921, 920, 820],
+      "states": ["general", "quote", "collapsed", "automation"],
+      "combos": 24,
+      "fields": 11,
+      "measurements": 264,
+      "diffs": 0,
+      "core": {"widths": [1440, 1280, 1024, 921], "states": ["quote", "collapsed", "automation"], "combos": 12, "measurements": 132, "diffs": 0},
+      "report": "computed_report.json",
+      "raw": ["computed_before.json", "computed_after.json"]
+    },
+    "pixel": {
+      "combos": 30,
+      "themes": 5,
+      "viewports": ["1440x950", "390x844"],
+      "screens": ["conversation", "claw", "calendar"],
+      "nonzero": [],
+      "report": "compare_report.json",
+      "captures": "captures/"
+    },
+    "control": {"combos": 10, "nonzero": [], "report": "control/control_report.json"},
+    "tests": "관련 claw·래칫 pytest 183 passed (137 + 46)"
+  },
+  "notes": [
+    "제거한 7건은 모두 미디어·상태 조합의 계산값이 같습니다. 920·820을 더해 761-920px 블록도 확인했습니다.",
+    "남긴 8건은 padiem-glass-brand-polish.css·shared-six-panel-frame.css의 !important와 같은 시트의 기본 규칙을 이기는 데 필요합니다.",
+    "새 색상 리터럴·새 !important·규칙 수 변화는 없습니다.",
+    "픽셀 제어쌍은 5테마 × 2폭 claw 화면 10조합입니다."
+  ]
+}
