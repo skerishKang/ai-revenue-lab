@@ -7,6 +7,12 @@ about. These checks pin that contract so the silent failure cannot come back.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.projects_recovery_template_source import (
+    app_js, event_js, index_html, lifecycle_js, quote_runtime_js, read as _source_read,
+    recovery_js, stream_js,
+)
+
 from pathlib import Path
 
 # R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
@@ -17,7 +23,7 @@ STATIC = CHAT / "static"
 
 
 def read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+    return _source_read(name)
 
 
 def test_the_project_list_owns_a_status_note_next_to_the_more_button() -> None:
