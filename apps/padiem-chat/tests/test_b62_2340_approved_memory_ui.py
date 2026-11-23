@@ -16,6 +16,12 @@ recording fetch. The harness proves actual click -> request behavior:
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.route_session_source import (
+    app_js, claw_workspace_css, conversation_module_js, index_html, login_dialog_js,
+    memory_module_js, nav_js, product_capabilities_js, sidebar_utility_css,
+)
+
 from functools import lru_cache
 
 import json
@@ -33,15 +39,14 @@ CSS = ROOT / "static/claw-workspace.css"
 
 def _app_source() -> str:
     # R5 A2: approved-memory UI moved into chat-memory-module.js; contracts span both.
-    return (APP_JS.read_text(encoding="utf-8")
-            + APP_JS.with_name("chat-memory-module.js").read_text(encoding="utf-8"))
+    return app_js() + memory_module_js()
 
 
 # ── static structural contracts ────────────────────────────────────────────
 
 
 def test_html_has_approved_memory_and_review_surfaces() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
+    html = index_html()
     assert 'id="clawApprovedMemory"' in html
     assert 'id="clawApprovedList"' in html
     assert 'id="clawApprovedRefresh"' in html
@@ -67,7 +72,7 @@ def test_approve_and_reject_endpoints_wired() -> None:
 
 
 def test_keyboard_focusable_and_visible_outline() -> None:
-    css = CSS.read_text(encoding="utf-8")
+    css = claw_workspace_css()
     assert ".claw-memory-approve:focus-visible" in css
     assert ".claw-memory-reject:focus-visible" in css
     assert ".claw-approved-action:focus-visible" in css
