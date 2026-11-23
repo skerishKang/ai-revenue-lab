@@ -11,19 +11,13 @@
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
 # #7186 R2: tus·파일 레인·첨부 역량은 모듈 실행 관찰로 검사한다.
 from _r5_transport_upload_harness import observations as transport_observations
+from _support.tus_upload_ui_source import read as _read
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
 SHARED = "tus-upload.js"
 LANES = ("project-file-upload.js", "file-lane.js", "claw-web-xlsx-sources.js")
-
-
-def _read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
 
 
 def test_only_the_shared_module_speaks_the_tus_protocol():
