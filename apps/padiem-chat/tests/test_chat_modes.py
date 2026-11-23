@@ -10,6 +10,9 @@ catalog's own tests with checks that the remnant cannot come back.
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.response_render_source import read, request_contract_py, rich_css, rich_response_js, search_css, search_sources_js, tokens_css
+
 import importlib
 from pathlib import Path
 
@@ -44,7 +47,7 @@ def test_the_mode_catalog_module_is_gone():
 def _code_lines(path: Path) -> str:
     """Source without comment lines, so history may name what was removed."""
     lines = []
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in read(path).splitlines():
         stripped = line.strip()
         if stripped.startswith(("#", "//", "/*", "*")):
             continue
@@ -78,7 +81,7 @@ def test_mode_is_refused_as_an_unknown_request_item():
 def test_the_accepted_request_keys_no_longer_name_a_mode():
     from app import request_contract
 
-    source = (ROOT / "app" / "request_contract.py").read_text(encoding="utf-8")
+    source = request_contract_py()
     # The accepted-key set literal, whichever statement holds it (#6921 moved it
     # out of the if-test so the refused key can be named in the journal).
     accepted = source.split("set(raw) - {", 1)[1].split("}", 1)[0]
@@ -90,7 +93,7 @@ def test_the_accepted_request_keys_no_longer_name_a_mode():
 def test_the_mode_promise_strings_are_not_reused_elsewhere(copy: str):
     """The catalog's labels were promises nothing keeps; none may survive in app code."""
     for path in list((ROOT / "app").rglob("*.py")) + list((ROOT / "static").glob("*.js")):
-        assert copy not in path.read_text(encoding="utf-8"), path.name
+        assert copy not in read(path), path.name
 
 
 def test_no_client_or_canary_still_sends_mode():
@@ -103,6 +106,6 @@ def test_no_client_or_canary_still_sends_mode():
         REPO / ".github" / "scripts" / "b62_cloudflare_mock_smoke.py",
     ]
     for path in senders:
-        text = path.read_text(encoding="utf-8")
+        text = read(path)
         assert 'mode: "auto"' not in text, path.name
         assert '"mode": "auto"' not in text, path.name
