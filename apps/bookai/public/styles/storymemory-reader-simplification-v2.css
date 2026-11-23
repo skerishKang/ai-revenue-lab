@@ -12,7 +12,7 @@
 .memory-rail::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
 .memory-focus-empty b{font-size:13px!important;color:#4f4944!important;font-family:var(--font-bible)!important}
 .memory-focus-empty span{font-size:13px!important;line-height:1.68!important;color:#4f4944!important;letter-spacing:-0.01em!important;font-family:var(--font-bible)!important}
-.v2-chapter-chip{display:inline-flex;align-items:center;gap:6px;margin:0 0 6px 14px;padding:5px 12px;border:1px solid rgba(79,73,68,.28);border-radius:999px;background:rgba(255,255,255,.7);color:#4f4944;font-family:var(--font-ui,inherit);font-size:11.5px;font-weight:600;letter-spacing:.02em;cursor:pointer;box-shadow:0 1px 3px rgba(30,25,20,.08)}
+.v2-chapter-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin:0 0 6px 14px;padding:5px 12px;border:1px solid rgba(79,73,68,.28);border-radius:999px;background:rgba(255,255,255,.7);color:#4f4944;font-family:var(--font-ui,inherit);font-size:11.5px;font-weight:600;letter-spacing:.02em;cursor:pointer;box-shadow:0 1px 3px rgba(30,25,20,.08)}
 .v2-chapter-chip:hover{background:#fff;border-color:rgba(79,73,68,.5)}
 @media (max-width:768px){
 .reader-layout{grid-template-columns:minmax(0,1fr)!important}

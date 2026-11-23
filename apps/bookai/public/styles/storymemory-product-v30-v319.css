@@ -92,7 +92,7 @@ body.auth-gate-open .auth-gate-sheet{opacity:1;pointer-events:auto;transform:non
 .auth-gate-handle{display:none}
 .auth-gate-close{
   position:absolute;right:13px;top:11px;
-  width:27px;height:27px;border:0;background:transparent;
+  width:40px;height:40px;border:0;background:transparent;
   color:#998a7e;font-size:18px;
 }
 .auth-gate-kicker{

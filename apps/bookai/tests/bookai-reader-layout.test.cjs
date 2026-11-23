@@ -28,3 +28,18 @@ test('ported scripts use the bookai loader and keep their relative order',()=>{
   assert.match(html.slice(search-120,search+120),new RegExp(SCRIPT_ATTR));
   assert.match(html.slice(inline-160,inline+40),new RegExp(SCRIPT_ATTR));
 });
+
+test('#6476 모바일 章 칩은 44px 이상 높이로 제공한다',()=>{
+  const css=fs.readFileSync(path.join(__dirname,'..','public','styles','storymemory-reader-simplification-v2.css'),'utf8').replace(/\s+/g,' ');
+  assert.match(css,/\.v2-chapter-chip\{[^}]*min-height:44px/,'v2ChapterChip must keep a 44px touch target');
+});
+
+test('#6476 모바일 읽기 화면에서 의견 보내기는 AI 하단 탭을 덮지 않는다',()=>{
+  const css=fs.readFileSync(path.join(__dirname,'..','public','styles','bookai-7839-feedback.css'),'utf8').replace(/\s+/g,' ');
+  assert.match(css,/body\.reader-mode \.bookai-feedback-open \{ bottom: 128px; \}/,'feedback button must move above the reader dock');
+});
+
+test('#6476 클라우드 설정 닫기 버튼은 40px 터치 영역을 제공한다',()=>{
+  const css=fs.readFileSync(path.join(__dirname,'..','public','styles','storymemory-product-v30-v319.css'),'utf8').replace(/\s+/g,' ');
+  assert.match(css,/\.auth-gate-close\{[^}]*width:40px;height:40px/,'auth gate close button must meet the 40px touch target');
+});
