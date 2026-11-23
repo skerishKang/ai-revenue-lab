@@ -22,6 +22,12 @@ request method/path/body, the success sentence, the failure sentence and the
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.locale_stream_library_source import (
+    app_js, index_html, library_harness_js, library_js, locale_source, read as _source_read,
+    streaming_module_js, strict_deps_js, util_tools_js,
+)
+
 import asyncio
 import json
 import os
@@ -35,14 +41,13 @@ from unittest.mock import patch
 import pytest
 from starlette.requests import Request
 
-from _support import streaming_library_source as sheets
-
-STATIC = sheets.static_dir()
-TOOLS_JS = sheets.sheet("util-tools.js")
-LOCALE_JS = sheets.locale_js()
-APP_JS = sheets.sheet("app.js")
-LIBRARY_JS = sheets.sheet("library.js")
-HARNESS = sheets.test_source("_util_library_save_harness.js")
+ROOT = Path(__file__).resolve().parents[1]
+STATIC = ROOT / "static"
+TOOLS_JS = util_tools_js()
+LOCALE_JS = locale_source()
+APP_JS = app_js()
+LIBRARY_JS = library_js()
+HARNESS = library_harness_js()
 
 TOOL_IDS = ("speech", "sns", "meeting")
 SAVE_COPY_KEYS = (
@@ -128,10 +133,8 @@ def _run_harness(scenario: dict) -> dict:
         env = dict(os.environ)
         env["SCENARIO"] = json.dumps(scenario)
         completed = subprocess.run(
-            [node, str(harness), str(sheets.static_path("util-tools.js")),
-             str(sheets.static_path("util-tools-contract.js")),
-             str(sheets.static_path("util-tools-markdown.js")),
-             str(sheets.static_path("util-manifest.js"))],
+            [node, str(harness), str(STATIC / "util-tools.js"), str(STATIC / "util-tools-contract.js"),
+             str(STATIC / "util-tools-markdown.js"), str(STATIC / "util-manifest.js")],
             capture_output=True, text=True, encoding="utf-8", env=env, check=False,
         )
     assert completed.stdout.strip(), completed.stdout + completed.stderr
