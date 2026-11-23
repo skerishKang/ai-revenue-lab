@@ -349,7 +349,7 @@ def test_the_pc_wait_loop_shows_the_server_observed_running_step():
     painted = poll.index('showPcRuntimeStatus(article, "tool_started")')
     # The chip is applied inside the same branch that keeps waiting and before
     # the loop continues, so an observed running state cannot be skipped.
-    assert observed < painted < poll.index("continue;")
+    assert observed < painted < poll.index("continue;", painted)
     # A still-pending run invents nothing: it keeps the preparing chip.
     assert poll.count("tool_started") == 1
 
@@ -508,7 +508,7 @@ def test_the_observed_pc_step_is_carried_on_the_card_that_shows_it():
     running = poll.index('result.status === "running"')
     hinted = poll.index('setTaskHint?.(article, "tool")')
     painted = poll.index('showPcRuntimeStatus(article, "tool_started")')
-    assert running < hinted < painted < poll.index("continue;")
+    assert running < hinted < painted < poll.index("continue;", painted)
     # Every outcome releases the hint before it settles the turn, so a step that
     # already ended cannot keep showing the running wording on a finished turn.
     for outcome in ("run_failed", "run_completed"):
