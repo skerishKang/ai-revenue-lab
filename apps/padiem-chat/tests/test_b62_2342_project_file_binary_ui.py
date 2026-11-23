@@ -35,6 +35,11 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from _support.project_file_binary_ui_source import (
+    index_html, licenses_html, app_js, tus_module_js, tus_upload_js,
+    documents_css, polish_css,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 CAPABILITIES_JS = ROOT / "static/attachment-capabilities.js"
@@ -54,12 +59,12 @@ DOCX_BYTES = bytes([0x50, 0x4B, 0x03, 0x04, 0x14, 0x00, 0x06, 0x00, 0x42, 0x42])
 
 
 def test_html_has_accessible_project_file_status_surface() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
+    html = index_html()
     assert 'class="project-files-status" id="projectFileStatus" role="status" aria-live="polite" hidden' in html
 
 
 def test_project_file_picker_accepts_text_pdf_docx_hwpx() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
+    html = index_html()
     # #6126: .hwp joined the accept list so the picker can hand the file to
     # the byte-sniffing judgment — OLE2 gets the save-as-HWPX guidance, a
     # mislabeled HWPX (ZIP) keeps working as HWPX.
@@ -73,7 +78,7 @@ def test_project_file_picker_accepts_text_pdf_docx_hwpx() -> None:
 
 def test_tus_wiring_static_contracts() -> None:
     # index.html loads the shared module once, before its lanes and app.js.
-    html = INDEX_HTML.read_text(encoding="utf-8")
+    html = index_html()
     assert html.count('src="./tus-upload.js"') == 1
     assert '<script src="./project-file-upload.js"></script>' in html
     assert html.index('src="./tus-upload.js"') < html.index("project-file-upload.js") < html.index('src="./app.js"')
@@ -81,12 +86,12 @@ def test_tus_wiring_static_contracts() -> None:
     # which the browser persistence audit refuses outright.
     assert not (ROOT / "static/tus-js-client-4.3.1.min.js").exists()
     assert not (ROOT / "static/tus-js-client-4.3.1.LICENSE.txt").exists()
-    licenses = LICENSES_HTML.read_text(encoding="utf-8")
+    licenses = licenses_html()
     assert "tus-js-client" not in licenses
 
 
 def test_binary_uploads_only_through_the_shared_tus_module() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
+    source = app_js()
     # The binary branch consumes the shared tus module; the text branch keeps
     # the exact JSON contract on the collection endpoint.
     assert "window.PadiemProjectFileUpload.upload({" in source
@@ -97,12 +102,12 @@ def test_binary_uploads_only_through_the_shared_tus_module() -> None:
     assert "X-Padiem-Filename" not in source
     assert "body: file" not in source
 
-    module = TUS_MODULE_JS.read_text(encoding="utf-8")
+    module = tus_module_js()
     assert "new tus.Upload(" not in module
     assert '"/api/projects/" + encodeURIComponent(projectId) + "/files/tus"' in module
     # The transport lives in the shared module: server-answered limits, the
     # three protocol verbs and the offset arithmetic are written once there.
-    shared = TUS_UPLOAD_JS.read_text(encoding="utf-8")
+    shared = tus_upload_js()
     for needle in ("Tus-Max-Size", "X-Padiem-Tus-Chunk-Max", "Upload-Length",
                    "Upload-Metadata", "Upload-Offset", "application/offset+octet-stream"):
         assert needle in shared, needle
@@ -114,14 +119,14 @@ def test_binary_uploads_only_through_the_shared_tus_module() -> None:
 
 
 def test_no_console_logging_and_no_leftover_removed_symbol() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
+    source = app_js()
     assert "console." not in source
     assert "PROJECT_BINARY_MEDIA" not in source
 
 
 def test_status_line_css_and_accessibility_floor_present() -> None:
-    documents = DOCUMENTS_CSS.read_text(encoding="utf-8")
-    polish = POLISH_CSS.read_text(encoding="utf-8")
+    documents = documents_css()
+    polish = polish_css()
     assert ".project-files-status" in documents
     assert ".project-files-status" in polish
 
