@@ -31,9 +31,10 @@ requires_browser = pytest.mark.skipif(
     sync_playwright is None, reason="playwright is not installed in this environment"
 )
 
-APP_ROOT = Path(__file__).resolve().parents[1]
-STATIC = APP_ROOT / "static"
-SHARED = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
+# #8060: the raw read lives in _support; the CSS and browser checks stay.
+from _support import glass_history_menu_source as sheets
+
+SHARED = sheets.shared_frame_css()
 
 GLASS_MENU = (
     'html[data-theme="padiem-glass"] body .app-shell .sidebar '
@@ -85,7 +86,7 @@ OTHER_THEMES = {
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(STATIC), **kwargs)
+        super().__init__(*args, directory=sheets.static_dir(), **kwargs)
 
     def log_message(self, *_args):
         pass

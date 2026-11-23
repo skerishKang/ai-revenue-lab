@@ -19,10 +19,12 @@ from css_rules import (
     strip_comments,
 )
 
-ROOT = Path(__file__).resolve().parents[1]
-FRAME = (ROOT / "static/shared-six-panel-frame.css").read_text(encoding="utf-8")
-UTIL_CSS = (ROOT / "static/util-menu.css").read_text(encoding="utf-8")
-MEETING_CSS = (ROOT / "static/meeting-capture.css").read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the parsed CSS checks stay.
+from _support import body_glass_unification_source as sheets
+
+FRAME = sheets.sheet("shared-six-panel-frame.css")
+UTIL_CSS = sheets.sheet("util-menu.css")
+MEETING_CSS = sheets.sheet("meeting-capture.css")
 
 
 def _by_state(blocks: list) -> dict:
@@ -70,7 +72,7 @@ def test_meeting_transcript_height_is_capped_for_the_first_screen() -> None:
 
 
 def test_util_header_joins_the_shared_page_title_contract() -> None:
-    html = (ROOT / "static/index.html").read_text(encoding="utf-8")
+    html = sheets.sheet("index.html")
     header = html[html.index('class="util-header"') : html.index("</header>", html.index('class="util-header"'))]
     # #7172: the page heading is the UTIL first screen; the one tool's name
     # (PDF → Markdown) belongs to its card below, and comes back when the
@@ -81,7 +83,7 @@ def test_util_header_joins_the_shared_page_title_contract() -> None:
     assert 'data-locale-key="util-title"' in header and ">유틸</h2>" in header
     assert 'class="standalone-view-tagline" id="utilTagline"' in header
     assert "자주 쓰는 문서·홍보 도구 모음" in header
-    STANDALONE_CSS = (ROOT / "static/standalone-views.css").read_text(encoding="utf-8")
+    STANDALONE_CSS = sheets.sheet("standalone-views.css")
     title_list = STANDALONE_CSS[STANDALONE_CSS.index(".app-shell:is([data-state=\"meeting\"],") : STANDALONE_CSS.index("font-weight: 770")]
     assert '[data-state="util"]' in title_list
     kicker_list = STANDALONE_CSS[STANDALONE_CSS.index(":is(.standalone-view-kicker,.calendar-view-kicker") - 200 : STANDALONE_CSS.index(":is(.standalone-view-kicker,.calendar-view-kicker") + 60]
@@ -99,7 +101,7 @@ def test_the_primary_action_matches_the_chat_claw_send_color() -> None:
     not part of the contract -- tests/test_css_rules_helper.py proves that
     property for every stylesheet read this way.
     """
-    polish = parse_rules((ROOT / "static/padiem-chat-ui-polish.css").read_text(encoding="utf-8"))
+    polish = parse_rules(sheets.sheet("padiem-chat-ui-polish.css"))
     blocks = find_rules_with_selector(polish, ".util-tool-open")
     assert len(blocks) == 3, "base, hover and focus-visible share one selector list"
     states = _by_state(blocks)
