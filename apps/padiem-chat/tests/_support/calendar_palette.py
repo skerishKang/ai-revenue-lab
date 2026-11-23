@@ -62,6 +62,14 @@ def capability_nav_rules():
     return parse_rules(_sheet("capability-nav.css"))
 
 
+def standalone_rules():
+    return parse_rules(_sheet("standalone-views.css"))
+
+
+def rich_rules():
+    return parse_rules(_sheet("padiem-rich.css"))
+
+
 def unthemed_literals(rules) -> list[str]:
     """Non-custom-property color literals outside html[data-theme] rules."""
     import re
@@ -93,3 +101,11 @@ def unthemed_outputs_literals() -> list[str]:
 
 def unthemed_capability_nav_literals() -> list[str]:
     return unthemed_literals(capability_nav_rules())
+
+
+def unthemed_standalone_literals() -> list[str]:
+    return unthemed_literals(standalone_rules())
+
+
+def unthemed_rich_literals() -> list[str]:
+    return unthemed_literals(rich_rules())

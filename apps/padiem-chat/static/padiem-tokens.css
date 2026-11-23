@@ -550,6 +550,57 @@
   --capability-nav-read-pending-ink: #8a5300;
   --capability-nav-read-activating-ink: #175cd3;
   --capability-nav-read-active-ink: #16794c;
+  /* #7811 C2 standalone(261123): standalone-views.css의 고정 색. 값은 치환
+     전 사용처 리터럴 그대로이고 :root 하나로 충분하며 테마 블록에서 덮지
+     않는다 — 흰 카드 판(.92)·잉크 선(.14/.16)·상태 글자 다섯 색·스크롤바
+     회청은 모든 테마에서 같은 값으로 칠해져 온 고정 팔레트라(calendar·
+     rich 묶음과 같은 취지). */
+  --standalone-nav-bg: rgba(121, 188, 231, 0.22);
+  --standalone-card-bg: rgba(255, 255, 255, 0.92);
+  --standalone-card-hairline: rgba(23, 33, 42, 0.14);
+  --standalone-retry-border: rgba(23, 33, 42, 0.16);
+  --standalone-subtle-text: #3d4c59;
+  --standalone-connected-text: #1f5f86;
+  --standalone-state-pending: #8a5300;
+  --standalone-state-activating: #175cd3;
+  --standalone-state-active: #16794c;
+  --standalone-state-failed: #b3261e;
+  --standalone-scrollbar-thumb: rgba(72, 91, 108, .72);
+  --standalone-scrollbar-track: rgba(120, 136, 148, .14);
+  --standalone-panel-border: rgba(255, 255, 255, .48);
+  --standalone-panel-bg: rgba(248, 250, 251, .28);
+  --standalone-card-soft-bg: rgba(255, 255, 255, .76);
+  /* #7811 C2 rich(261123): padiem-rich.css의 고정 어둡 표면·베일 색. 값은
+     치환 전 사용처 리터럴 그대로이고 :root 하나로 충분하며 테마 블록에서
+     덮지 않는다 — 코드 면(rgba(8,9,11,…))·흰 베일 선은 모든 테마에서 같은
+     값으로 칠해져 온 고정 팔레트라(calendar 묶음과 같은 취지). 베일
+     스케일(--surface-veil-*, --line-veil-*)의 알파와 달라 그대로 재사용
+     하지 않고 쓰임새 이름으로 새로 만들었다. */
+  --rich-text: rgba(247, 249, 252, .91);
+  --rich-heading-text: #fff;
+  --rich-quote-border: rgba(239, 201, 132, .38);
+  --rich-code-border: rgba(255, 255, 255, .12);
+  --rich-code-bg: rgba(8, 9, 11, .76);
+  --rich-edge: rgba(255, 255, 255, .10);
+  --rich-code-pre-bg: rgba(3, 4, 6, .86);
+  --rich-code-text: #e8edf3;
+  --rich-table-bg: rgba(8, 9, 11, .66);
+  --rich-table-text: rgba(247, 249, 252, .88);
+  --rich-table-edge: rgba(255, 255, 255, .08);
+  --rich-table-head-text: rgba(255, 255, 255, .9);
+  --rich-research-text: rgba(255, 255, 255, .5);
+  --rich-link-hover-bg: rgba(255, 255, 255, .065);
+  --rich-source-number: rgba(136, 201, 255, .62);
+  --rich-source-strong: rgba(248, 250, 253, .86);
+  --rich-source-small: rgba(255, 255, 255, .38);
+  --rich-card-hover-border: rgba(255, 255, 255, .20);
+  --rich-composer-fade: linear-gradient(to bottom, transparent, rgba(6, 7, 9, .88) 39%, #06080d 76%);
+  --rich-composer-border: rgba(255, 255, 255, .17);
+  --rich-composer-bg-wash: rgba(255, 255, 255, .08);
+  --rich-composer-bg-end: rgba(8, 9, 11, .90);
+  --rich-composer-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 30px 90px rgba(0, 0, 0, .48);
+  --rich-composer-note: rgba(255, 255, 255, .30);
+
 
   /* #8020: Claw 요청 말풍선. 글자는 테마의 사용자 말풍선 글자 역할을 그대로
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
