@@ -1,15 +1,15 @@
 """First-use Drive OAuth directly; removal only in the existing Connectors settings."""
-from pathlib import Path
-
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
-STATIC=Path(__file__).resolve().parents[1] / "static"
-HTML=(STATIC/"index.html").read_text(encoding="utf-8")
-APP=(STATIC/"app.js").read_text(encoding="utf-8")
-GUIDE=(STATIC/"claw-connection-guide.js").read_text(encoding="utf-8")
-CHIPS=(STATIC/"claw-connection-chips.js").read_text(encoding="utf-8")
-MANAGER=(STATIC/"claw-drive-account-management.js").read_text(encoding="utf-8")
-CONNECTORS=(STATIC/"chat-connectors-module.js").read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the contracts below stay unchanged.
+from _support import claw_drive_first_use_source as sheets
+
+HTML = sheets.index_html()
+APP = sheets.app()
+GUIDE = sheets.guide()
+CHIPS = sheets.chips()
+MANAGER = sheets.manager()
+CONNECTORS = sheets.connectors()
 
 
 def test_first_off_starts_existing_trusted_google_oauth():
