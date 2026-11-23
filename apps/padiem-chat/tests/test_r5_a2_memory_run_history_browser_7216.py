@@ -8,7 +8,7 @@ chat-app-context.js + chat-memory-module.js(12함수) + chat-run-history-module.
 from __future__ import annotations
 
 # #8060: shipped reads live in _support; assertions stay here.
-from _support.final_share_source import locale_source, read
+from _support.r5_browser_golden_source import app_context_js, app_js, login_golden_json, strict_deps_js
 
 import json
 import threading
@@ -21,7 +21,7 @@ pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import sync_playwright  # noqa: E402
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-STRICT = read(Path(__file__).resolve().parent / "_r5_strict_deps.js")
+STRICT = strict_deps_js()
 
 MEMORY_NAMES = (
     "setApprovedMemoryStatus",

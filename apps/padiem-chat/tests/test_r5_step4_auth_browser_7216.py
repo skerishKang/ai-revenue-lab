@@ -9,7 +9,7 @@ app.js에서 추출한 20개 한 줄 전달 함수를 실제 Chromium 페이지�
 from __future__ import annotations
 
 # #8060: shipped reads live in _support; assertions stay here.
-from _support.final_share_source import locale_source, read
+from _support.r5_pcrun_auth_source import app_js, claw_status_module_js, index_html, pc_run_module_js, strict_deps_js
 
 import json
 import threading
@@ -22,7 +22,7 @@ pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import sync_playwright  # noqa: E402
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = read(STATIC / "app.js")
+APP = app_js()
 DIALOG_NAMES = (
     "setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog",
     "authServerUnreachableError", "passwordAuthAnswer", "passwordAuthRequest",
@@ -46,7 +46,7 @@ ACCOUNT_REGISTRY_NAMES = (
     "openAccountDeleteConfirm", "openAccountSharedDeleteConfirm", "syncAccountDeleteButton",
     "syncAccountSharedDeleteButton", "submitAccountDelete",
 )
-STRICT = read(Path(__file__).resolve().parent / "_r5_strict_deps.js")
+STRICT = strict_deps_js()
 
 # name -> (js args expression, expected argument count)
 CALLS = {

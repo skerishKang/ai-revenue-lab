@@ -11,6 +11,9 @@ copy is only "shared" while the shipped bytes are proven equal to the canonical
 source at release time.
 """
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.shared_conversation_source import app_js, b66_easy_mode_js, b66_index_html, index_html, read, read_static, scroll_source_text
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -22,7 +25,7 @@ SYNC_SCROLL = "scripts/sync_shared_conversation_scroll.py --check"
 
 
 def _text(path: Path) -> str:
-    return path.read_text(encoding="utf-8")
+    return read(path)
 
 
 def test_b62_production_gate_checks_both_shared_modules():

@@ -12,13 +12,16 @@ provide)와의 겹침도 오류인지, (4) 기존 중복 등록·중복 이름 �
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.r5_browser_golden_source import app_context_js, app_js, login_golden_json, strict_deps_js
+
 import json
 import subprocess
 import tempfile
 from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-CONTEXT = (STATIC / "chat-app-context.js").read_text(encoding="utf-8")
+CONTEXT = app_context_js()
 
 _HARNESS = r"""
 const assert = require("node:assert/strict");

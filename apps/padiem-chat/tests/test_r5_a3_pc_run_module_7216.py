@@ -9,7 +9,7 @@ pcRunModule() 팩토리 호출만 유지한다.
 from __future__ import annotations
 
 # #8060: shipped reads live in _support; assertions stay here.
-from _support.final_share_source import locale_source, read
+from _support.r5_pcrun_auth_source import app_js, claw_status_module_js, index_html, pc_run_module_js, strict_deps_js
 
 import json
 import re
@@ -21,9 +21,9 @@ import pytest
 from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = read(STATIC / "app.js")
-MODULE = read(STATIC / "chat-pc-run-module.js")
-INDEX = read(STATIC / "index.html")
+APP = app_js()
+MODULE = pc_run_module_js()
+INDEX = index_html()
 
 NAMES = (
     "showPcRuntimeStatus",

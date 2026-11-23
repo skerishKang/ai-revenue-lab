@@ -4,6 +4,9 @@ Canonical source packages/padiem-conversation-ui/scroll-follow.js owns the
 behavior. Static copies ship from scripts/sync_shared_conversation_scroll.py.
 """
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.shared_conversation_source import app_js, b66_easy_mode_js, b66_index_html, index_html, read, read_static, scroll_source_text
+
 import subprocess
 import sys
 from pathlib import Path
@@ -17,7 +20,7 @@ TARGETS = (
 
 
 def test_scroll_canonical_source_exports_neutral_alias():
-    text = SOURCE.read_text(encoding="utf-8")
+    text = scroll_source_text()
     assert "PadiemConversationScroll" in text
     assert "SharedConversationScroll" in text
     assert "isNearBottom" in text
