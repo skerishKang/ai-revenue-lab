@@ -427,12 +427,38 @@ async def _resolve_connector_scope_crosscheck(
         b54_session is not None
         and getattr(b54_session, "tenant_id", None) == workspace_id
     )
+    # #7542: name the closed cross-check failure shape for the shadow journal.
+    # Each shape below is read only from the values already resolved above;
+    # the later fail-closed returns reuse these same values, so the shape
+    # can never be named beyond what the check itself produced. Anything
+    # else (a B54 failure alone, a missing subject on one side) stays
+    # unclassified: no new reason is invented for a case the check did
+    # not produce.
+    crosscheck_failure: str | None = None
+    if isinstance(b62_result, BaseException):
+        crosscheck_failure = "b62_absent"
+    elif isinstance(b62_result, tuple) and len(b62_result) == 2:
+        resolved_workspace_early, b62_session_early = b62_result
+        if resolved_workspace_early != workspace_id or b62_session_early is None:
+            crosscheck_failure = "b62_absent"
+        else:
+            b62_subject_early = getattr(getattr(b62_session_early, "subject", None), "subject_id", None)
+            b54_subject_early = getattr(getattr(b54_session, "subject", None), "subject_id", None)
+            if (
+                isinstance(b62_subject_early, str) and b62_subject_early
+                and isinstance(b54_subject_early, str) and b54_subject_early
+                and b62_subject_early != b54_subject_early
+            ):
+                crosscheck_failure = "subject_mismatch"
+    else:
+        crosscheck_failure = "b62_absent"
 
     def _verdict(outcome: PcConnectorScope) -> PcConnectorScope:
         if shadow_context_enabled():
             note_pc_scope_check(
                 tenant_only_ready=tenant_only_ready,
                 crosscheck_ready=bool(outcome.ready),
+                crosscheck_failure=crosscheck_failure,
                 latency_seconds=_time.monotonic() - started,
             )
         return outcome
