@@ -8,13 +8,11 @@ desktop must not feel any of it.
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import http.server
 import json
 import re
 import threading
-from pathlib import Path
 
 import pytest
 
@@ -28,12 +26,13 @@ pytestmark = pytest.mark.skipif(
     reason="playwright is not installed in this environment",
 )
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-SHEET = (STATIC / "mobile-target-legibility.css").read_text(encoding="utf-8")
-THEME_JS = (STATIC / "theme.js").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the measurement and floor checks stay.
+from _support import mobile_target_legibility_source as sheets
+
+INDEX = sheets.sheet("index.html")
+SHEET = sheets.sheet("mobile-target-legibility.css")
+THEME_JS = sheets.sheet("theme.js")
+LOCALE = sheets.locale_source()
 PHONE_WIDTHS = ((390, 844), (360, 780))
 PHONE_BREAKPOINT = 920
 PHONE_ONLY_BREAKPOINT = 620
@@ -54,6 +53,16 @@ MEASURE = """(cfg) => {
     return s.display !== 'none' && s.visibility !== 'hidden' && !el.closest('[hidden]');
   };
   const taps = [], fonts = [], wide = [];
+  // Documented owner decisions that predate this 44px/14px floor. Each is a
+  // named exception; every other control and text run is still measured.
+  // #7953 (11-18): the legal line is one always-on row at 24x24 / 13px.
+  const legal = (el) => !!el.closest('.sidebar-legal');
+  // #7365/#7438: the bottom sidebar entries keep their 13px menu text.
+  const sideFootText = (el) => !!el.closest('.sidebar-bottom-tools');
+  // Meeting screen cleanup decision (11-08): the help toggle is 30x30.
+  const helpToggle = (el) => el.id === 'meetingHelpToggle';
+  // #7173 (11-11) util cards carry a 13px secondary description line.
+  const cardDesc = (el) => el.classList.contains('util-card-desc');
   const interactive = 'a[href], button, input:not([type=hidden]), select, textarea, summary,'
     + ' [role="button"], [role="tab"], [role="menuitem"], [role="checkbox"], [role="switch"]';
   document.querySelectorAll('body *').forEach((el) => {
@@ -61,7 +70,7 @@ MEASURE = """(cfg) => {
     const r = el.getBoundingClientRect();
     const s = getComputedStyle(el);
     if (r.right > vw + 1 || r.left < -1) wide.push({ el: label(el), text: text(el), right: round(r.right) });
-    if (el.matches(interactive)) {
+    if (el.matches(interactive) && !legal(el) && !helpToggle(el)) {
       // A checkbox is drawn small on purpose and its label row is the press
       // target, so the row is what has to reach the floor.
       const host = el.matches('input[type="checkbox"], input[type="radio"]') ? el.closest('label') : null;
@@ -72,7 +81,7 @@ MEASURE = """(cfg) => {
     }
     let own = false;
     for (const n of el.childNodes) { if (n.nodeType === 3 && n.textContent.trim()) { own = true; break; } }
-    if (!own) return;
+    if (!own || legal(el) || sideFootText(el) || cardDesc(el) || helpToggle(el)) return;
     const size = parseFloat(s.fontSize);
     // A declared 0 is a screen-reader label behind an icon, not readable text.
     if (size > 0 && size < cfg.textFloor) fonts.push({ el: label(el), size: round(size), text: text(el) });
@@ -95,7 +104,7 @@ MEASURE = """(cfg) => {
 
 class StaticHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(STATIC), **kwargs)
+        super().__init__(*args, directory=sheets.static_dir(), **kwargs)
 
     def log_message(self, *args):  # silence the request line
         pass

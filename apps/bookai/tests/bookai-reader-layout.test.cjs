@@ -39,6 +39,17 @@ test('#6476 모바일 읽기 화면에서 의견 보내기는 AI 하단 탭을 �
   assert.match(css,/body\.reader-mode \.bookai-feedback-open \{ bottom: 128px; \}/,'feedback button must move above the reader dock');
 });
 
+test('#6476 홈 첫 화면 안내문은 떠 있는 TODAY 칩 아래에서 시작한다',()=>{
+  const css=fs.readFileSync(path.join(__dirname,'..','public','styles','storymemory-b61-mobile-polish-v1.css'),'utf8').replace(/\s+/g,' ');
+  assert.match(css,/@media \(max-width: 720px\) \{ #library \.lib-head \{ margin-top: 58px; \}/,
+    'TODAY 칩(높이 44, y 28~72) 아래에서 시작하도록 위 여백이 있어야 한다');
+  assert.match(css,/#library \.lib-head \.kicker \{ white-space: normal; line-height: 1\.45; \}/,
+    '폭이 좁아도 안내문이 잘리지 않도록 줄바꿈을 허용한다');
+  const html=fs.readFileSync(path.join(__dirname,'..','public','index.html'),'utf8');
+  assert.match(html,/<div class="kicker">북AI · 읽고, 묻고, 기억하는 책<\/div>/,
+    '안내문은 없애지 않고 그대로 둔다');
+});
+
 test('#6476 클라우드 설정 닫기 버튼은 40px 터치 영역을 제공한다',()=>{
   const css=fs.readFileSync(path.join(__dirname,'..','public','styles','storymemory-product-v30-v319.css'),'utf8').replace(/\s+/g,' ');
   assert.match(css,/\.auth-gate-close\{[^}]*width:40px;height:40px/,'auth gate close button must meet the 40px touch target');

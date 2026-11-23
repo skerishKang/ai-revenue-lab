@@ -63,7 +63,7 @@ function renderLibrary(){
   </div>
   <div class="book-inner-leaf"><span>북AI</span><i></i><small>내 읽기판</small><b class="leaf-folio">I</b></div>
   <span class="hinge-glow" aria-hidden="true"></span>
-  <div class="book-back"><span class="back-monogram">SM</span></div>
+  <div class="book-back"><span class="back-monogram">기억</span></div>
   <div class="book-spine"><div class="spine-copy"><small>북AI</small><span>${b.title}</span><small>${String(i+1).padStart(2,'0')}</small></div></div>
   <div class="book-pages"><span class="page-band page-band-top"></span><span class="page-band page-band-bottom"></span></div>
   <div class="book-hit-surface" aria-hidden="true"></div>`;
@@ -304,7 +304,7 @@ function renderChapters(n){
      const preview=selectedVolume==='고린도전서'
        ?CHAPTER_PREVIEW[(i-1)%CHAPTER_PREVIEW.length]
        :'이 장의 인물과 사건의 흐름을 따라 읽습니다.';
-     st.innerHTML=`<span class="paper-layer layer-a"><i class="contact-shadow"></i></span><span class="paper-layer layer-b"><i class="contact-shadow"></i></span><span class="paper-layer layer-c"><i class="contact-shadow"></i></span><span class="paper-layer layer-d"><i class="contact-shadow"></i></span><span class="paper-layer top"><span class="folio-tab">${String(i).padStart(2,'0')}</span><span class="chapter-small">${selectedVolume}</span><span class="chapter-no">${i}</span><span class="chapter-preview">${preview}</span><span class="sheet-crease"></span><span class="paper-bow"></span><span class="sheet-side-shadow"></span><span class="paper-seal">SM</span>
+     st.innerHTML=`<span class="paper-layer layer-a"><i class="contact-shadow"></i></span><span class="paper-layer layer-b"><i class="contact-shadow"></i></span><span class="paper-layer layer-c"><i class="contact-shadow"></i></span><span class="paper-layer layer-d"><i class="contact-shadow"></i></span><span class="paper-layer top"><span class="folio-tab">${String(i).padStart(2,'0')}</span><span class="chapter-small">${selectedVolume}</span><span class="chapter-no">${i}</span><span class="chapter-preview">${preview}</span><span class="sheet-crease"></span><span class="paper-bow"></span><span class="sheet-side-shadow"></span><span class="paper-seal">기억</span>
        <span class="sheet-tension tension-left"></span>
        <span class="sheet-tension tension-right"></span>
        <span class="micro-curl"></span><span class="fold-shadow"></span><span class="chapter-folio">${String(i).padStart(2,'0')} / ${String(chapterCount).padStart(2,'0')}</span>

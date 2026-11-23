@@ -344,7 +344,7 @@ function renderGlobalMemoryOverview(){
         :'읽기 기록 없음';
       main.innerHTML=`
         <div><strong>${escapeHtml(c.context)}</strong><small>${escapeHtml(progressLabel)}</small></div>
-        <div class="global-context-counts"><i title="내 메모">${myCount}</i><i title="AI">${aiCount}</i><i title="표시">${c.annotations.length}</i></div>`;
+        <div class="global-context-counts"><i title="내 메모">${myCount}</i><i title="AI 질문">${aiCount}</i><i title="표시">${c.annotations.length}</i></div>`;
       main.onclick=()=>{
         __smExpandedGlobalContext=__smExpandedGlobalContext===c.context?null:c.context;
         renderGlobalMemoryOverview();

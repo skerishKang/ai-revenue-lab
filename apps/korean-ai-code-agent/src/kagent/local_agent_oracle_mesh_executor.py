@@ -2940,7 +2940,8 @@ try {@@ARGUMENTS_SOURCE@@
         if self._queue_origin is None:
             return None
         return attach_helper_ready(source, env, post=self._post,
-                                   read_port=self._read_port)
+                                   read_port=self._read_port,
+                                   sysinfo_port=getattr(self._command_port, "_sysinfo_port", None))
 
     # ---- watchdog ------------------------------------------------------
     def channel_stalled(self, now: float | None = None) -> bool:

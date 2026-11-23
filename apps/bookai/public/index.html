@@ -27,7 +27,7 @@
   <div class="library-opening-veil" id="libraryOpeningVeil"></div>
   <div class="book-cinematic" id="bookCinematic" aria-hidden="true">
     <div class="book-cinematic-spread">
-      <div class="cinematic-page cinematic-page-left"><span class="cinematic-folio">SM</span></div>
+      <div class="cinematic-page cinematic-page-left"><span class="cinematic-folio">기억</span></div>
       <div class="cinematic-spine"></div>
       <div class="cinematic-page cinematic-page-right">
         <span class="cinematic-kicker">북AI</span>
@@ -44,7 +44,7 @@
   <div class="library-dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="library-floor-guide"><span></span><i></i><span></span></div>
   <div class="scene-meta scene-meta-left"><span></span><b>01</b></div>
-  <div class="scene-meta scene-meta-right"><span></span><b>SM</b></div>
+  <div class="scene-meta scene-meta-right"><span></span><b>기억</b></div>
   <div class="lib-head">
     <div>
       <div class="kicker">북AI · 읽고, 묻고, 기억하는 책</div>
@@ -127,7 +127,7 @@
       <div class="today-section-label">이어 읽기</div>
       <div class="today-continue-inner">
         <div class="today-book-object" aria-hidden="true">
-          <span></span><i></i><b>SM</b>
+          <span></span><i></i><b>기억</b>
         </div>
         <div class="today-continue-copy">
           <small id="todayContinueMeta">최근 읽은 곳</small>
@@ -305,7 +305,7 @@
         <button class="pill" data-memory-filter="event">사건</button>
         <button class="pill" data-memory-filter="concept">개념</button>
         <button class="pill" data-memory-filter="note">메모</button>
-        <button class="pill" data-memory-filter="ai">AI</button>
+        <button class="pill" data-memory-filter="ai">AI 질문</button>
       </div>
       <section class="memory-focus" id="memoryFocus" aria-live="polite">
         <div class="memory-focus-empty">
@@ -377,7 +377,7 @@
           <span class="deckle-edge deckle-bottom"></span>
           <span class="bookmark-ribbon" aria-hidden="true"></span>
           <span class="paper-gutter" aria-hidden="true"></span>
-          <span class="bookplate" aria-hidden="true"><b>SM</b><small>개인 소장본</small></span>
+          <span class="bookplate" aria-hidden="true"><b>기억</b><small>개인 소장본</small></span>
           <span class="paper-corner" aria-hidden="true"></span><span class="paper-folio-mark">03</span>
           <span class="crop-mark crop-tl"></span><span class="crop-mark crop-tr"></span>
           <span class="crop-mark crop-bl"></span><span class="crop-mark crop-br"></span>
@@ -426,7 +426,7 @@
 
     <aside class="ai-panel" aria-label="AI 도우미 패널">
       <button type="button" class="panel-rail-tab rail-tab-ai" id="aiRailTab" aria-expanded="false" aria-label="AI 도우미 패널 열기"><span>AI 도우미</span></button>
-      <div class="ai-folio">R</div><div class="ai-rule-label">읽기 동반자</div><div class="side-head ai-head-compact"><strong class="ai-t-desk">AI</strong><strong class="ai-t-mob">AI · 읽기 동행</strong><div class="ai-head-actions"><small>읽기 동행</small><button id="aiOverflowBtn" class="ai-overflow-btn" type="button" aria-expanded="true" aria-controls="chatThread" aria-label="보조 정보 접기/펼치기">⋯</button><button class="sheet-close" data-close-sheet type="button" aria-label="패널 닫기">×</button></div></div>
+      <div class="ai-folio">R</div><div class="ai-rule-label">읽기 동반자</div><div class="side-head ai-head-compact"><strong class="ai-t-desk">AI 질문</strong><strong class="ai-t-mob">AI 질문</strong><div class="ai-head-actions"><small>읽기 동행</small><button id="aiOverflowBtn" class="ai-overflow-btn" type="button" aria-expanded="true" aria-controls="chatThread" aria-label="보조 정보 접기/펼치기">⋯</button><button class="sheet-close" data-close-sheet type="button" aria-label="패널 닫기">×</button></div></div>
       <div class="chat-thread" id="chatThread">
         <div class="context-card ai-context-runtime" aria-live="polite"></div>
         <section class="companion-empty-state" id="companionEmptyState" aria-label="AI 읽기 동행 시작 안내">
@@ -461,7 +461,7 @@
 <div class="mobile-dock" id="mobileDock">
   <button data-mobile="memory">기억</button>
   <button class="read-tab" data-mobile="read">읽기</button>
-  <button data-mobile="ai">AI</button>
+  <button data-mobile="ai">AI 질문</button>
 </div>
 <div class="voice-toast" id="voiceToast"></div>
 <div class="morph-backdrop" id="morphBackdrop"></div>
@@ -553,7 +553,7 @@ function coverMotif(book){
  if(book.motif==='bible')return `<span class="cover-frame"></span><div class="motif motif-bible"><i class="v"></i><i class="h"></i><span class="halo"></span></div><span class="bible-caption">기억판</span>`;
  if(book.motif==='pride')return `${common}<div class="motif motif-pride"><span class="stem"></span><i class="leaf l1"></i><i class="leaf l2"></i><i class="leaf l3"></i><i class="leaf l4"></i></div>`;
  if(book.motif==='alice')return `${common}<div class="motif motif-alice"><span class="keyhole"></span><b>♠</b><em>♥</em></div>`;
- return `${common}<div class="motif motif-personal"><span>SM</span><i></i></div>`;
+ return `${common}<div class="motif motif-personal"><span>기억</span><i></i></div>`;
 }
 
 const FINISHES={
@@ -1012,7 +1012,7 @@ function todayMemoryItems(){
   const memories=__smUserMemories
     .filter(m=>todayLocalDay(Number(m.createdAt||m.updatedAt||0))===day)
     .map(m=>({
-      kind:m.kind==='ai'?'AI':'NOTE',
+      kind:m.kind==='ai'?'AI 질문':'NOTE',
       title:m.title||(m.kind==='ai'?'AI 기억':'내 메모'),
       body:m.body,
       context:m.context,
@@ -4540,8 +4540,8 @@ function setReaderContext(ctx={}){
     eyeRight.textContent='지금 책';
     footer.textContent='기억 사본';
     aiContext.textContent=book;
-    ambient.textContent='SM';
-    folioMark.textContent='SM';
+    ambient.textContent='기억';
+    folioMark.textContent='기억';
     contextRule.textContent='지금 책의 표시와 기억만 AI에 보냅니다';
 
     READER_PAGES=[
@@ -8106,6 +8106,14 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
 .sm-source-detail[open] .sm-source-more{color:#8a7c6d}
 .sm-source-full{margin-top:6px;font:400 12px/1.6 var(--serif);color:#8a7c6d;overflow-wrap:anywhere}
 .sm-source-full b{display:block;margin-bottom:4px;font:600 11px var(--sans);letter-spacing:.08em;color:#a06b4d}
+/* #6476 — 어두운 테마 출처 줄 대비: 종이(#2e2820) 위에서 4.5:1 이상.
+   요약 6.6:1, '출처 자세히'·마커 5.6:1. 밝은 테마 값은 그대로 둔다. */
+body.smr-theme-dark .sm-verified-source-note .sm-source-detail summary{color:#b7ac97}
+body.smr-theme-dark .sm-verified-source-note .sm-source-detail summary::after{color:#c9956d}
+body.smr-theme-dark .sm-verified-source-note .sm-source-more{color:#c9956d}
+body.smr-theme-dark .sm-verified-source-note .sm-source-detail[open] .sm-source-more{color:#b7ac97}
+body.smr-theme-dark .sm-verified-source-note .sm-source-full{color:#b7ac97}
+body.smr-theme-dark .sm-verified-source-note .sm-source-full b{color:#c9956d}
 @media(min-width:721px){
   .sm-verified-source-note,.sm-source-detail summary{font-size:13px}
 }

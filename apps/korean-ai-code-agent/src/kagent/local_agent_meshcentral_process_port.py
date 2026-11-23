@@ -56,6 +56,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Mapping, Sequence
 
 from .contracts import ContractError
+from .local_agent_meshcentral_sysinfo_port import GETSYSINFO_ACTION
 
 #: The only three verbs this lane may send. `pskill` is the one that changes anything on
 #: the PC, and `stop()` reaches it only with a pid this dispatch recorded or, failing that,
@@ -408,6 +409,57 @@ class MeshCentralProcessSocket:
                     continue
                 response_id = answer.get("responseid")
                 if expected is None or response_id in (None, expected):
+                    return answer
+            return None
+        finally:
+            socket.close()
+
+    def sysinfo(self, frame: dict[str, Any]) -> Mapping[str, Any] | None:
+        """Send the #8634 server-document read on this same authenticated socket.
+
+        Only the closed ``getsysinfo`` frame built by the sysinfo port is
+        accepted. The server answers from its stored node document; this
+        method sends no device command and writes nothing on the PC.
+        """
+        if (not isinstance(frame, Mapping) or frame.get("action") != GETSYSINFO_ACTION
+                or set(frame) != {"action", "nodeid", "tag", "nodeinfo"}
+                or frame.get("nodeinfo") is not True):
+            raise MeshCentralProcessLaneRefused("only a getsysinfo server read is allowed")
+        if self._connect is None:
+            from .local_agent_meshcentral_desktop_port import open_websocket
+
+            connect = open_websocket
+        else:
+            connect = self._connect
+        socket = connect(
+            self._host, self._port, "/control.ashx", self._auth_headers(),
+            PS_WAIT_SECONDS,
+        )
+        try:
+            deadline = time.monotonic() + PS_WAIT_SECONDS
+            socket.send_text('{"action":"authcookie"}')
+            if not self._await_authcookie(socket, deadline):
+                raise MeshCentralProcessLaneRefused(
+                    "the sysinfo read was not authenticated"
+                )
+            socket.send_text(json.dumps(frame, separators=(",", ":")))
+            expected = frame.get("tag")
+            while time.monotonic() < deadline:
+                message = socket.recv(deadline)
+                if message is None:
+                    return None
+                opcode, payload = message
+                if opcode != 0x1:
+                    continue
+                try:
+                    answer = json.loads(payload.decode("utf-8"))
+                except (UnicodeDecodeError, ValueError):
+                    continue
+                if not isinstance(answer, dict):
+                    continue
+                if answer.get("action") != GETSYSINFO_ACTION:
+                    continue
+                if answer.get("tag") == expected:
                     return answer
             return None
         finally:

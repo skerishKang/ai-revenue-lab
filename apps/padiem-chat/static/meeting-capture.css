@@ -44,7 +44,12 @@ html[data-theme="padiem-glass"] #meetingNavButton[aria-current="page"] {
 .meeting-modes input { accent-color: var(--primary-bg); width: 18px; height: 18px; flex-shrink: 0; }
 .meeting-computer-audio { display: grid; gap: 6px; padding: 0 2px; min-width: 0; }
 .meeting-computer-audio[hidden] { display: none; }
-.meeting-computer-audio-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 550; }
+/* #8060: the checkbox stays 18px, but its label row is the press target and
+   must reach the 44px phone floor. Negative block margins keep the grid row
+   and the visible control at the exact previous position: -9px matches the
+   26px phone line box, -9.203125px the 25.5938px desktop line box. The clamp
+   selects between them at the existing phone breakpoint without a new rule. */
+.meeting-computer-audio-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 550; min-height: 44px; margin-block: clamp(-9.203125px, calc(620px - 100vw), -9px); }
 .meeting-computer-audio-toggle input { accent-color: var(--primary-bg); width: 18px; height: 18px; flex-shrink: 0; }
 .meeting-computer-audio-hint, .meeting-computer-audio-disclosure, .meeting-computer-audio-notice { margin: 0; font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
 .meeting-computer-audio-hint, .meeting-computer-audio-disclosure { opacity: .78; }
