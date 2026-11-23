@@ -39,3 +39,35 @@ def calendar_source() -> str:
 def glass_defines_card_bg() -> bool:
     glass = parse_rules(_sheet("padiem-glass.css"))
     return any("--card-bg" in r.declarations for r in glass)
+
+
+def tokens() -> tuple[dict, set]:
+    """(:root token values, token names redeclared in any theme block)."""
+    root = root_declarations()
+    overridden = set()
+    for theme in THEMES:
+        overridden.update(theme_declarations(theme))
+    return root, overridden
+
+
+def editorial_rules():
+    return parse_rules(_sheet("padiem-editorial.css"))
+
+
+def unthemed_editorial_literals() -> list[str]:
+    import re
+
+    color_rx = re.compile(
+        r"#[0-9a-fA-F]{3,8}|rgba?\([^()]*\)|hsla?\([^()]*\)", re.IGNORECASE
+    )
+    themed_selector = re.compile(r'html\[data-theme="[^"]+"\]')
+    found = []
+    for rule in editorial_rules():
+        if any(themed_selector.search(s) for s in rule.selectors):
+            continue
+        for prop, value in rule.declarations.items():
+            if prop.startswith("--"):
+                continue
+            if color_rx.search(value):
+                found.append(f"{rule.selectors} {prop}: {value}")
+    return found
