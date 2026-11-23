@@ -10,6 +10,12 @@ chat-streaming-module.js로 이동했고, app.js는 같은 이름의 한 줄 전
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.locale_stream_library_source import (
+    app_js, index_html, library_harness_js, library_js, locale_source, read as _source_read,
+    streaming_module_js, strict_deps_js, util_tools_js,
+)
+
 import json
 import re
 import shutil
@@ -21,10 +27,10 @@ import pytest
 from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+APP = app_js()
+MODULE = streaming_module_js()
+INDEX = index_html()
+STRICT = strict_deps_js()
 
 NAMES = (
     "requestCompletedAnswer",

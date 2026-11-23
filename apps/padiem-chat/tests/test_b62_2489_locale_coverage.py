@@ -1,4 +1,9 @@
-import locale_bundle
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.locale_stream_library_source import (
+    app_js, index_html, library_harness_js, library_js, locale_source as _source_locale, read as _source_read,
+    streaming_module_js, strict_deps_js, util_tools_js,
+)
+
 from pathlib import Path
 import re
 
@@ -8,7 +13,7 @@ KOREAN = re.compile(r"[\uac00-\ud7a3]")
 
 
 def read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+    return _source_read(name)
 
 
 def locale_keys(source: str, start: str, end: str) -> set[str]:
@@ -19,7 +24,7 @@ def locale_keys(source: str, start: str, end: str) -> set[str]:
 
 
 def test_locale_dictionary_has_exact_ko_en_key_parity():
-    source = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    source = _source_locale()
     ko = locale_keys(source, "ko: {", "en: {")
     en = locale_keys(source, "en: {", "\n    }")
 
@@ -28,7 +33,7 @@ def test_locale_dictionary_has_exact_ko_en_key_parity():
 
 
 def test_static_locale_bindings_reference_declared_keys():
-    locale_source = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale_source = _source_locale()
     keys = locale_keys(locale_source, "ko: {", "en: {")
     html = read("index.html")
 
@@ -61,7 +66,7 @@ def test_app_runtime_copy_does_not_hardcode_korean_user_text():
 
 def test_static_korean_copy_uses_declared_or_selector_locale_contract():
     html = read("index.html")
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = _source_locale()
     assert '["#attachmentButton span:last-child", "file"]' in locale
     assert '[".starter:nth-child(3) strong", "document-title"]' in locale
     assert '[".starter-grid", "aria-label", "starter-grid"]' in locale
@@ -73,7 +78,7 @@ def test_static_korean_copy_uses_declared_or_selector_locale_contract():
     assert '<div class="starter-grid" aria-label="추천 질문">' in html
 
 def test_runtime_translation_calls_reference_declared_keys():
-    locale_source = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale_source = _source_locale()
     keys = locale_keys(locale_source, "ko: {", "en: {")
     app = read("app.js")
 
@@ -83,7 +88,7 @@ def test_runtime_translation_calls_reference_declared_keys():
 
 
 def test_explicit_locale_preference_uses_url_without_browser_storage():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = _source_locale()
 
     assert 'url.searchParams.set("lang", lang)' in locale
     assert 'apply(getUrlLocale() || "ko", false);' in locale
@@ -93,7 +98,7 @@ def test_explicit_locale_preference_uses_url_without_browser_storage():
 
 
 def test_hwp_upload_guidance_has_korean_and_english_locale_entries():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = _source_locale()
     ko = locale[locale.index("ko: {"):locale.index("en: {")]
     en = locale[locale.index("en: {"):]
     # #6126: the legacy-HWP answer is the save-as instruction plus the three
