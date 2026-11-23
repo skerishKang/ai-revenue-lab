@@ -333,10 +333,16 @@
         // Photos and original documents read by the browser fit only one
         // request frame, so a single attachment alone is allowed. Multiple
         // documents (tus/text) combine freely.
-        const rawByteAttachment = Boolean(next.file);
+        // #8442: file-lane items upload per file (PadiemFileLane.upload) and
+        // never share a request frame, so they are outside the raw-only
+        // limit. The per-message count cap (max_per_message via
+        // attachmentCountLimit) above still bounds them, and a photo or
+        // browser-read document is still refused when anything else is
+        // already attached (and vice versa).
+        const rawByteAttachment = Boolean(next.file) && next.fileLane !== true;
         const mixedWithExisting = validCount > 0;
         if (mixedWithExisting && (rawByteAttachment
-            || deps.selectedAttachments.some((item) => !item.invalid && item.file))) {
+            || deps.selectedAttachments.some((item) => !item.invalid && item.file && item.fileLane !== true))) {
           throw new Error(deps.uiT("attachment-raw-single"));
         }
         attachmentKeyCounter += 1;

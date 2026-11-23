@@ -382,8 +382,9 @@ def test_guid_resolution_requires_unique_fresh_queue_observation():
                      "state TEXT,paused_at TEXT,managed_at TEXT,managed_by TEXT);"
                      "CREATE TABLE mesh_device_helper_ready (device_id TEXT,state_json TEXT,received_at TEXT);")
     pairing = D1PcPairingStore(SqliteD1(db))
-    # Queue receipts use millisecond precision, as does the lookup upper bound.
-    fresh = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
+    # Millisecond precision like queue receipts, one second in the past so a
+    # same-millisecond stamp never falls outside the truncated upper bound.
+    fresh = (datetime.now(timezone.utc) - timedelta(seconds=1)).isoformat(timespec="milliseconds")
     db.execute("INSERT INTO pc_device_links VALUES (?,?,?,'active',NULL,?,?)",
                (LINK["link_id"], UID, DEVICE, fresh, LINK["managed_by"]))
 

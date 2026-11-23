@@ -303,6 +303,72 @@
   --side-icon-text: rgba(255, 255, 255, .68);
   --sidebar-footer-border: rgba(255, 255, 255, .08);
 
+  /* #7811 C2: cinematic workspace(프로젝트·출력·문서·첨부·답변)의 바탕·컨트롤
+     색. 값은 치환 전 사용처 리터럴 그대로다. 다섯 테마에서 같은 값을 쓰므로
+     :root 하나에 두고 테마 블록에서는 덮지 않는다. 뒤 시트가 덮어쓰는 값도
+     이 토큰이 이어받아 덮개를 걷어낼 때 화면이 유지된다. */
+  --ws-item-text: rgba(244, 247, 251, .66);
+  --ws-current-wash: rgba(255, 255, 255, .075);
+  --ws-current-glow: rgba(136, 201, 255, .32);
+  --ws-soft-wash: rgba(255, 255, 255, .055);
+  --ws-control-hover-edge: rgba(255, 255, 255, .16);
+  --ws-control-hover-wash: rgba(255, 255, 255, .07);
+  --ws-control-hover-text: #fff;
+  --ws-control-muted-text: rgba(255, 255, 255, .52);
+  --ws-control-hover-edge-strong: rgba(255, 255, 255, .20);
+  --ws-divider: rgba(255, 255, 255, .07);
+  --ws-banner-edge: rgba(255, 255, 255, .12);
+  --ws-banner-accent: rgba(255, 255, 255, .42);
+  --ws-banner-wash-end: rgba(255, 255, 255, .02);
+  --ws-banner-shadow: rgba(0, 0, 0, .12);
+  --ws-form-wash: rgba(255, 255, 255, .018);
+  --ws-dialog-edge: rgba(255, 255, 255, .08);
+  --ws-dialog-kicker-text: rgba(255, 255, 255, .62);
+  --ws-input-edge: rgba(255, 255, 255, .11);
+  --ws-input-wash: rgba(255, 255, 255, .045);
+  --ws-input-text: rgba(255, 255, 255, .9);
+  --ws-input-focus-edge: rgba(255, 255, 255, .28);
+  --ws-input-focus-glow: rgba(136, 201, 255, .045);
+  --ws-danger-text: #ffabab;
+  --ws-secondary-text: rgba(255, 255, 255, .64);
+  --ws-primary-hover-wash: rgba(255, 255, 255, .14);
+  --ws-file-add-text: rgba(255, 255, 255, .58);
+  --ws-file-row-edge: rgba(255, 255, 255, .065);
+  --ws-card-wash: rgba(255, 255, 255, .03);
+  --ws-danger-hover-text: #ffb5b5;
+  --ws-attachment-edge: rgba(255, 255, 255, .10);
+  --ws-attachment-text: rgba(255, 255, 255, .74);
+  --ws-answer-hover-edge: rgba(255, 255, 255, .18);
+  --ws-output-text: rgba(247, 249, 252, .84);
+  --ws-label-text: rgba(255, 255, 255, .50);
+
+  /* #7811 C2: voice UI(파형 단추·모드 메뉴·통화 판)의 쓰임새 색. 값은 치환 전
+     사용처 리터럴 그대로이고 다섯 테마에서 같은 값이므로 :root에만 둔다. */
+  --voice-control-border: #bed0dd;
+  --voice-accent: #587c97;
+  --voice-btn-idle-bg: #eaf2f7;
+  --voice-btn-idle-shadow: rgba(36, 68, 92, .07);
+  --voice-btn-hover-text: #355d79;
+  --voice-btn-hover-bg: #deebf3;
+  --voice-btn-hover-border: #a7c0d2;
+  --voice-btn-active-text: #fff;
+  --voice-btn-active-bg: #2f7d61;
+  --voice-btn-active-border: #2a6d55;
+  --voice-assistant-role-text: #2a6d55;
+  --voice-btn-active-ring: rgba(47, 125, 97, .16);
+  --voice-unavailable-text: #8aa2b3;
+  --voice-unavailable-bg: #f1f5f8;
+  --voice-unavailable-border: #d6e2ea;
+  --voice-panel-bg: #ffffff;
+  --voice-menu-shadow: rgba(0, 0, 0, .12);
+  --voice-subtle-bg: #f2f7fb;
+  --voice-menu-active-bg: #eef4f9;
+  --voice-panel-shadow: rgba(0, 0, 0, .16);
+  --voice-danger: #b3261e;
+  --voice-secondary-text: #4a6576;
+  --voice-assistant-text: #2b4453;
+  --voice-transcript-border: #e4eaef;
+
   /* #8020: Claw 요청 말풍선. 글자는 테마의 사용자 말풍선 글자 역할을 그대로
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
   --claw-request-bubble-text: var(--user-bubble-text);

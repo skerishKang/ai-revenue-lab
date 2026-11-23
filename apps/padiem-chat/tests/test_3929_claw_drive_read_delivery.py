@@ -14,11 +14,11 @@ from app.history import D1HistoryStore
 from app.claw_durable_drive_output_pipeline import ClawDurableDriveOutputPipeline
 from kagent.artifact_lineage import LineageArtifactRef
 
-from test_3929_claw_drive_output_registration import (
-    ports, PDF, ARTIFACT_ID, SHA, NOW, WORKSPACE, OWNER, CHAT, RUN,
+from _support.claw_drive_output_registration import (
+    ports, PDF, ARTIFACT_ID, SHA, NOW,
 )
 from _support.conversation_artifact_d1 import (
-    D1Sqlite, setup_database, FOREIGN_CHAT, FOREIGN,
+    D1Sqlite, setup_database, FOREIGN_CHAT, FOREIGN, WORKSPACE, OWNER, CHAT, RUN,
 )
 import test_b54_claw_general_p01_routing as base
 

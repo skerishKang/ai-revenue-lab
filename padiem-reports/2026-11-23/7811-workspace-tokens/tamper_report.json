@@ -1,0 +1,9 @@
+{
+  "phase": "tamper",
+  "token": "--ws-label-text",
+  "mutation": "rgba(255, 255, 255, .50) -> #ff00ff",
+  "screen": "conversation",
+  "theme": "dark",
+  "viewport": "1440x950",
+  "pixel": 750
+}

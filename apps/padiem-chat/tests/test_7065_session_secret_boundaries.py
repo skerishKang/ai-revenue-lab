@@ -12,7 +12,7 @@ from app import mcp_gateway_session as sessions
 from app.chat_pc_errors import ChatPCDriveError
 from test_7065_pc_session_tools import rig, call, start
 from test_7065_session_transport_audit import enable
-from test_mcp_gateway_transport import gateway, post
+from _support.mcp_gateway_transport import gateway, post
 
 
 @pytest.mark.parametrize("missing", [True, False])

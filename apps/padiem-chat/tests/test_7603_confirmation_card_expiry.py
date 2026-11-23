@@ -27,54 +27,12 @@ from app.pc_command_confirmation import (
     STATUS_AWAITING_CONFIRMATION,
     STATUS_EXPIRED,
 )
+# #8061: 공용 준비(UID·WORKSPACE·_fixture)는 _support/confirmation_card가 소유한다.
+from _support.confirmation_card import PC_CONTEXT, UID, WORKSPACE, _age, _fixture, _status
 
-UID = "usr_" + "8" * 32
-WORKSPACE = "ws-7603"
-PC_CONTEXT = {"workspace_id": WORKSPACE, "pc_tools": {"device_id": "device-1"}}
 CARD_TURN = "문서 초안입니다.\n내 PC에서 `Remove-Item C:/tmp/a.txt` 실행해"
 CARD_COMMAND = "Remove-Item C:/tmp/a.txt"
 TYPE_TURN = "내 PC에서 '첫째 줄\n둘째 줄' 입력해 줘"
-
-
-class _Bucket:
-    """Private full-text store stand-in (put/get/delete by key)."""
-
-    def __init__(self) -> None:
-        self.objects: dict[str, bytes] = {}
-
-    def put(self, key, body, httpMetadata=None):
-        self.objects[key] = bytes(body)
-
-    def delete(self, key):
-        self.objects.pop(key, None)
-
-    def get(self, key):
-        return self.objects.get(key)
-
-
-def _fixture(tmp_path):
-    connection = sqlite3.connect(str(tmp_path / "chat.sqlite3"), isolation_level=None)
-    connection.row_factory = sqlite3.Row
-    apply_migrations(connection)
-    connection.execute(
-        "INSERT INTO users (id, auth_provider, provider_subject, email, display_name, "
-        "picture_url, created_at, updated_at) VALUES (?, 'google', 'sub_7603', "
-        "'owner@example.test', '', '', '2026-11-12T00:00:00Z', '2026-11-12T00:00:00Z')",
-        (UID,),
-    )
-    store = D1HistoryStore(SqliteD1(connection), full_context_bucket=_Bucket())
-    return store, connection
-
-
-def _age(connection, run_id: str, seconds: int) -> None:
-    """Move the card's created_at into the past; the tests never sleep."""
-
-    stamp = (datetime.now(timezone.utc) - timedelta(seconds=seconds))
-    value = stamp.isoformat(timespec="milliseconds").replace("+00:00", "Z")
-    connection.execute(
-        "UPDATE claw_run_history SET created_at=? WHERE run_id=? AND user_id=?",
-        (value, run_id, UID),
-    )
 
 
 async def _stage(store, run_id: str, *, action: str, user_text: str) -> str:
@@ -96,13 +54,6 @@ async def _chat_turn(store, text: str, conversation_id: str):
         )
     return None
 
-
-def _status(connection, run_id: str) -> str:
-    row = connection.execute(
-        "SELECT status FROM claw_run_history WHERE run_id=? AND user_id=?",
-        (run_id, UID),
-    ).fetchone()
-    return str(row["status"])
 
 
 @pytest.mark.parametrize("action", ["pc_command", "desktop_type"])

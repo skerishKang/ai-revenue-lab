@@ -387,3 +387,25 @@ async def test_app_factory_switch_wraps_the_existing_authenticated_read(enabled,
     assert binding.started.is_set() is enabled
     lines=[line for line in capsys.readouterr().out.splitlines() if line.startswith("connector_account_shadow ")]
     assert lines==(["connector_account_shadow method=workspace reason=match latency=lt100ms"] if enabled else [])
+
+
+@pytest.mark.parametrize("tenant_only,crosscheck,failure,expected",[
+    (True,False,"b62_absent","tenant_only_allow_b62_absent"),
+    (True,False,"subject_mismatch","tenant_only_allow_subject_mismatch"),
+    (True,False,None,"tenant_only_allow"),
+    (True,False,"unexpected_shape","tenant_only_allow"),
+    (True,True,"b62_absent","match"),
+    (False,False,"subject_mismatch","match"),
+    (False,True,"b62_absent","tenant_only_deny"),
+    (True,True,None,"match"),
+    (False,False,None,"match"),
+])
+def test_pc_scope_shadow_types_the_tenant_only_allow_split(capsys,tenant_only,crosscheck,failure,expected):
+    shadow.note_pc_scope_check(
+        tenant_only_ready=tenant_only,
+        crosscheck_ready=crosscheck,
+        crosscheck_failure=failure,
+        latency_seconds=0.001,
+    )
+    line=capsys.readouterr().out.strip()
+    assert line==f"connector_account_shadow method=pc_scope reason={expected} latency=lt100ms"

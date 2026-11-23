@@ -5,101 +5,18 @@ No live Windows, Worker route, external HTTP, or secret persistence is involved.
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timezone
-import sqlite3
 
 import pytest
 
-from padiem_control_plane.pending_pc_link import (
-    DurablePendingPcLink, VerifiedPendingPc, MIGRATION_ID,
-    install_pending_pc_link_schema,
-)
 from app.connector_one_click_approval import OneClickOwnerApproval, OneClickDenied
 from app.connector_pending_pc_delivery import (
     CanonicalPendingPcDelivery, PcDeliveryRefused,
     PENDING_PC_DELIVERY_PRODUCTION_ENABLED, PENDING_PC_DELIVERY_HTTP_MOUNTED,
 )
 from _support.connector_one_click import Fixture, session, CODE, CHALLENGE
-
-REQUEST = "link." + "a"*32
-DEVICE = "windows.device.1"
-KEY_FINGERPRINT = "f"*64
-
-
-class Cursor:
-    def __init__(self, cursor):
-        self.cursor = cursor
-    def toArray(self):
-        if self.cursor.description is None:
-            return []
-        return [
-            dict(zip((column[0] for column in self.cursor.description), record))
-            for record in self.cursor.fetchall()
-        ]
-
-
-class Storage:
-    def __init__(self):
-        self.connection = sqlite3.connect(":memory:", isolation_level=None)
-        self.sql = self
-    def exec(self, query, *values):
-        return Cursor(self.connection.execute(query, values))
-    def transactionSync(self, fn):
-        self.connection.execute("BEGIN IMMEDIATE")
-        try:
-            result = fn()
-            self.connection.execute("COMMIT")
-            return result
-        except BaseException:
-            self.connection.execute("ROLLBACK")
-            raise
-
-
-class BrokerPort:
-    def __init__(self):
-        self.store = Storage()
-        install_pending_pc_link_schema(
-            storage=self.store, migration_id=MIGRATION_ID, operator_gate=True,
-        )
-        self.online = True
-        self.ledger = DurablePendingPcLink(
-            storage=self.store, canonical_broker_storage=self.store,
-            ref_factory=lambda: REQUEST,
-            channel_verified=lambda ref, device, key: (
-                self.online and ref == REQUEST and device == DEVICE
-                and key == KEY_FINGERPRINT
-            ),
-        )
-        self.ledger.offer(
-            attested=VerifiedPendingPc(
-                device_id=DEVICE, possession_key_sha256=KEY_FINGERPRINT,
-            ),
-            now=datetime.now(timezone.utc),
-        )
-    async def reserve_once(self, *, request_ref):
-        return self.ledger.reserve_once(
-            request_ref=request_ref, now=datetime.now(timezone.utc),
-        )
-    async def claim_delivery_once(self, *, request_ref, device_id):
-        self.ledger.claim_delivery_once(
-            request_ref=request_ref, device_id=device_id,
-            now=datetime.now(timezone.utc),
-        )
-    def state(self):
-        return self.store.exec(
-            "SELECT state FROM canonical_broker_pending_pc_link"
-        ).toArray()[0]["state"]
-
-
-class Socket:
-    def __init__(self):
-        self.calls = []
-        self.fail = False
-    async def send_once(self, **kwargs):
-        self.calls.append(kwargs)
-        if self.fail:
-            raise RuntimeError("credential prefix must not leak")
-
+from _support.pending_pc_delivery import (
+    DEVICE, REQUEST, BrokerPort, Socket,
+)
 
 def fixture():
     broker = BrokerPort()

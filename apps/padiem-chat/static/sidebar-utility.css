@@ -564,13 +564,14 @@ html[data-theme="padiem-glass"] .sidebar-account .profile-menu .home-link-mark {
 .sidebar-account > .account-avatar {
   grid-column: 1;
   grid-row: 1;
-  margin-left: 4px;
+  margin-left: var(--sidebar-control-inset);
   pointer-events: none;
   z-index: 2;
 }
 .sidebar-account > .account-name {
   grid-column: 2;
   grid-row: 1;
+  margin-left: calc(var(--sidebar-control-inset) + 8px);
   pointer-events: none;
   z-index: 2;
 }

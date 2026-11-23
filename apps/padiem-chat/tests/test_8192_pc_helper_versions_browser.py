@@ -53,6 +53,9 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                              "last_healthy_at": None, "received_at": "2026-11-21T01:02:03Z",
                              "update_result": "success",
                              "updater_registration": {"action": "reinstall_required", "reason": "system_denied"}},
+                            {"device_id": "node//bad-version", "helper_version": "0.3.0-rc2",
+                             "mesh_agent_version": "C:\\Private\\MeshAgent.exe 1.2.3",
+                             "received_at": "2026-11-21T01:02:03Z"},
                             {"device_id": "node//unknown", "helper_build": None}]}
                     elif path.startswith("/api/"):
                         data = {"ok": True, "members": [], "feedback": [], "audit": []}
@@ -70,10 +73,13 @@ def test_admin_table_displays_versions_and_guest_does_not_request_it():
                 if admin:
                     page.wait_for_selector("#opsPcVersionsBody tr")
                     rows = page.locator("#opsPcVersionsBody tr")
-                    assert rows.count() == 2
+                    assert rows.count() == 3
                     assert rows.first.locator("td").all_inner_texts() == [
                         "…xample", "0.3.0-rc1 (aaaaaaaaaaaa) · 업데이트 완료",
                         "2026-02-16T00:43:44.000Z", "2026. 11. 21. 01:02", "자동 갱신 제외 · SYSTEM 권한 없음"]
+                    assert rows.nth(1).locator("td").all_inner_texts() == [
+                        "…ersion", "0.3.0-rc2", "정보 없음", "2026. 11. 21. 01:02", "미확인"]
+                    assert "C:\\Private" not in page.locator("#opsPcVersionsBody").inner_text()
                     assert rows.last.locator("td").all_inner_texts() == [
                         "…nknown", "보고 없음", "보고 없음", "보고 없음", "미확인"]
                     assert page.locator("#opsPcVersionsHeading").inner_text() == "PC 버전 현황"

@@ -4,7 +4,7 @@ import logging
 import pytest
 
 import test_5881_queue_store_proxy as q
-import test_5573_pc_http_boundary as h
+from _support import pc_http_boundary as h
 from app.pc_correlation import run_hash, dispatch_id
 
 RUN = "chat_pcq_" + "a" * 32

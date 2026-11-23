@@ -1,10 +1,10 @@
 import json
-from pathlib import Path
 
 from _r2_chat_transport_harness import observe
 
-
-STATIC = Path(__file__).resolve().parents[1] / "static"
+# #8060: shipped sources are read through the _support accessor. The observed
+# request surface, closed labels and user-facing redaction copy stay here.
+from _support import orchestration_stream_browser_source as sheets
 
 
 def test_browser_stream_requests_ndjson_by_default_and_has_runtime_off_switch():
@@ -24,15 +24,15 @@ def test_browser_stream_requests_ndjson_by_default_and_has_runtime_off_switch():
     # 부재 계약: 브라우저는 스트림 여부를 본문 필드로 서버에 다시 묻지 않는다.
     # 본문 관찰이 payload 그대로임을 보장하지만, 토큰 자체가 다시 생기지 않도록
     # 소스 부재도 이유를 남기고 유지한다.
-    transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
+    transport = sheets.transport()
     assert "stream: 1" not in transport
 
 
 def test_progress_projection_uses_closed_labels_and_never_renders_event_payloads():
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
-    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-    lifecycle = (STATIC / "message-lifecycle.js").read_text(encoding="utf-8")
-    server = (STATIC.parent / "app" / "orchestration_stream.py").read_text(encoding="utf-8")
+    app = sheets.app()
+    stream = sheets.stream()
+    lifecycle = sheets.lifecycle()
+    server = sheets.server_source()
     assert 'frame.event === "orchestration_event"' in stream
     assert 'frame.event === "progress"' in stream
     assert 'recordProgressFrame?.(article, value)' in stream
@@ -49,9 +49,9 @@ def test_progress_projection_uses_closed_labels_and_never_renders_event_payloads
 
 
 def test_thought_summary_is_collapsible_and_sensitive_content_is_projected():
-    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-    panel = (STATIC / "thought-panel.js").read_text(encoding="utf-8")
-    css = (STATIC / "capability-presentation.css").read_text(encoding="utf-8")
+    stream = sheets.stream()
+    panel = sheets.panel()
+    css = sheets.capability_css()
     assert 'details.className = "orchestration-thought-summary"' in panel
     assert 'window.PadiemChatThoughtPanel?.renderSummary?.(article, summaryText' in stream
     assert r"[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}" in stream
@@ -66,7 +66,7 @@ def test_thought_summary_is_collapsible_and_sensitive_content_is_projected():
 
 
 def test_answer_inherits_status_font_and_rich_code_keeps_monospace():
-    styles = (STATIC / "styles.css").read_text(encoding="utf-8")
-    code_styles = (STATIC / "rich-response.css").read_text(encoding="utf-8")
+    styles = sheets.styles()
+    code_styles = sheets.rich_response_css()
     assert ".assistant-content { color: #2f3037; font-family: inherit;" in styles
     assert 'font: 0.88rem/1.62 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;' in code_styles

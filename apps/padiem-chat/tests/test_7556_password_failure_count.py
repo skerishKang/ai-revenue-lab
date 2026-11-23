@@ -173,7 +173,7 @@ def test_a_store_without_the_new_statements_keeps_the_earlier_write(helper):
 def test_the_common_login_password_check_counts_concurrent_failures(queue_wrapped):
     import json
 
-    from test_password_rpc_261106 import (
+    from _support.password_rpc import (
         BASE as RPC_BASE,
         EMAIL,
         SECRET,

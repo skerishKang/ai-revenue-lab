@@ -599,7 +599,6 @@ class B62EngineOrchestrationBridge:
         session_id: str | None = None,
         product_identity: str | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
-        user_credential_ref: str | None = None,
         byok_selection: Mapping[str, str] | None = None,
         pc_delegation: Mapping[str, Any] | None = None,
         pc_gateway: Mapping[str, Any] | None = None,
@@ -623,11 +622,8 @@ class B62EngineOrchestrationBridge:
             pc_gateway=pc_gateway,
             timeout_seconds=timeout_seconds,
         )
-        wire = engine_request if user_credential_ref is None else {
-            **engine_request, "user_credential_ref": user_credential_ref
-        }
         try:
-            raw = await self._client.orchestrate(wire)
+            raw = await self._client.orchestrate(engine_request)
         except PadiemAiEngineClientError as exc:
             raise _engine_error(exc) from exc
         except LocalEngineTransportError as exc:
@@ -647,7 +643,7 @@ class B62EngineOrchestrationBridge:
         self, *, user_id: str, messages: Sequence[Mapping[str, str]], skill: Any,
         model_id: str, user_text: str, conversation_id: str | None,
         pc_tools: Mapping[str, Any] | None, subject_id: str | None, session_id: str,
-        user_credential_ref: str | None = None, byok_selection: Mapping[str, str] | None = None,
+        byok_selection: Mapping[str, str] | None = None,
         additional_system_context: str | None = None, product_identity: str | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
         pc_delegation: Mapping[str, Any] | None = None,
@@ -665,8 +661,7 @@ class B62EngineOrchestrationBridge:
             **({"byok_selection": byok_selection} if byok_selection is not None else {}),
             timeout_seconds=timeout_seconds,
         )
-        wire = request if user_credential_ref is None else {**request, "user_credential_ref": user_credential_ref}
-        iterator = self._client.stream_orchestration(wire, pc_progress=pc_tools is not None)
+        iterator = self._client.stream_orchestration(request, pc_progress=pc_tools is not None)
         try:
             async for record in iterator:
                 if "orchestration" not in record:

@@ -16,20 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from _support.web_xlsx_p01_owner_decision import ready, setup_pause, decide
 from test_3580_web_xlsx_p01_owner_status import status
 from _support.web_xlsx_sources import OWNER, FOREIGN, request
-
-
-def enable_real_copy(app, metadata):
-    app.state.web_xlsx_p01_workcopy_after_grant_enabled = True
-
-    async def scoped_rows(*, tenant_id, key_prefix, now, limit=40):
-        return [
-            item for item in metadata.rows.values()
-            if item.tenant_id == tenant_id
-            and item.object_key.startswith(key_prefix)
-            and item.expires_at > now
-        ][:limit]
-
-    metadata.list_web_xlsx = scoped_rows
+from _support.web_xlsx_approved_copy_wire import enable_real_copy
 
 
 @pytest.mark.asyncio

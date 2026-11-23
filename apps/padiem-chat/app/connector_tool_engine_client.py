@@ -53,6 +53,15 @@ _DECISION_KEYS = frozenset(
     {"decision_id", "pause_id", "outcome", "authority_ref", "evidence_ref", "decided_at"}
 )
 _ENGINE_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
+# #7088: on the first execute a readonly-only Gmail grant reaches the Core
+# scope gate before any approval pause (403 ``tool_auth_scope_missing``).
+# The resume path already maps that refusal to reconnect guidance — the
+# execute path must answer the same way instead of a generic refusal. The
+# mapping applies to confirmation-gated Gmail draft tools only; every other
+# refusal stays the generic fail-closed message so no new authority arises.
+_EXECUTE_ERROR_MESSAGES: dict[str, str] = {
+    "tool_auth_scope_missing": "Gmail 초안 권한이 연결되어 있지 않습니다. 연결을 다시 동의해 주세요.",
+}
 _RESUME_ERROR_MESSAGES: dict[str, str] = {
     "continuation_expired": "확인 가능한 시간이 지나 작업을 이어갈 수 없습니다.",
     "approval_decision_expired": "확인 가능한 시간이 지나 작업을 이어갈 수 없습니다.",
@@ -210,9 +219,18 @@ class CloudflareConnectorToolEngineClient:
                     "사용자 확인 대기 응답 형식을 확인할 수 없습니다.",
                 )
             return tool
+        raw_error = body.get("error")
+        raw_code = raw_error.get("code") if isinstance(raw_error, Mapping) else None
+        message = "커넥터 도구 실행이 거부되었습니다."
+        if (
+            is_confirmation_connector_tool_name(tool_name)
+            and isinstance(raw_code, str)
+            and raw_code in _EXECUTE_ERROR_MESSAGES
+        ):
+            message = _EXECUTE_ERROR_MESSAGES[raw_code]
         raise ConnectorToolEngineError(
             "connector_tool_refused",
-            "커넥터 도구 실행이 거부되었습니다.",
+            message,
         )
 
     async def resume(

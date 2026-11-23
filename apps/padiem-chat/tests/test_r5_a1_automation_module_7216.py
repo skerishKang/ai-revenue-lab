@@ -22,12 +22,15 @@ import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-CONTEXT = (STATIC / "chat-app-context.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-automation-module.js").read_text(encoding="utf-8")
-FORM = (STATIC / "chat-automation-form-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+# #8060: shipped sheets are read through the _support accessor. The contract
+# stays here: ownership, parsed script order and the executed VM behavior.
+from _support import automation_a1_source as sheets
+
+APP = sheets.app_source()
+CONTEXT = sheets.context_source()
+MODULE = sheets.automation_module_source()
+FORM = sheets.automation_form_source()
+INDEX = sheets.index_source()
 
 NAMES_A = (
     "resetClawAutomationState", "setClawAutomationLoading", "setClawAutomationError",
@@ -174,7 +177,7 @@ def test_registry_replaces_the_one_line_forwarders() -> None:
         assert call in APP, call
     assert "app.openClawAutomation();" in APP
     # R5 A10: openClawWorkspace (with the automation hide) moved to chat-nav-module.js.
-    assert "deps.app.clawAutomation.hidden = true;" in (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
+    assert "deps.app.clawAutomation.hidden = true;" in sheets.nav_module_source()
 
 
 def test_modules_expose_factories_and_stay_under_1000_lines() -> None:
@@ -566,12 +569,12 @@ vm.runInContext(`
 
 
 def test_module_behavior_in_node_vm() -> None:
-    strict = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+    strict = sheets.strict_deps_source()
     harness = (_HARNESS
                .replace("__STRICT__", strict)
-               .replace("__CONTEXT__", json.dumps(str(STATIC / "chat-app-context.js")))
-               .replace("__MODULE_A__", json.dumps(str(STATIC / "chat-automation-module.js")))
-               .replace("__MODULE_B__", json.dumps(str(STATIC / "chat-automation-form-module.js")))
+               .replace("__CONTEXT__", json.dumps(sheets.sheet_path("chat-app-context.js")))
+               .replace("__MODULE_A__", json.dumps(sheets.sheet_path("chat-automation-module.js")))
+               .replace("__MODULE_B__", json.dumps(sheets.sheet_path("chat-automation-form-module.js")))
                .replace("'__SHARED_JSON__'", json.dumps(sorted(HARNESS_SHARED))))
     with tempfile.TemporaryDirectory() as directory:
         harness_path = Path(directory) / "a1_module_harness.cjs"

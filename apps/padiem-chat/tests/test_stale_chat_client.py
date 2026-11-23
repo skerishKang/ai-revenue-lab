@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
-import test_5573_pc_http_boundary as h
+from _support import pc_http_boundary as h
 
 
 @pytest.mark.asyncio

@@ -1,13 +1,10 @@
 """MCP OAuth 2.1 web-connector contracts on the existing Chat login."""
 from __future__ import annotations
 
-import base64
-import hashlib
 import re
 import secrets
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
-from urllib.parse import parse_qs, urlsplit
 
 import pytest
 from starlette.responses import Response
@@ -19,6 +16,16 @@ from _support.mcp_oauth_consent import (
     consent_script_oauth_urls,
     locale_phrases,
 )
+from _support.mcp_oauth_flow import (
+    REDIRECT,
+    RESOURCE,
+    _approve,
+    _code_from,
+    _exchange,
+    _params,
+    _pkce,
+    _register,
+)
 
 from app.mcp_oauth_metadata import authorization_challenge, canonical_resource
 from app.shared_login_flow import (
@@ -29,8 +36,6 @@ from app.shared_login_flow import (
     set_login_return_cookie,
 )
 
-RESOURCE = BASE + "/api/mcp"
-REDIRECT = "https://claude.test/callback"
 OTHER_DEVICE = "node//other-owner-pc"
 
 
@@ -52,65 +57,6 @@ def _header_tokens(header: str) -> set[str]:
 def _cookie_name(header: str) -> str:
     """The cookie name of one Set-Cookie header (#8060)."""
     return header.split(";", 1)[0].split("=", 1)[0].strip()
-
-
-def _pkce():
-    verifier = secrets.token_urlsafe(48)
-    challenge = base64.urlsafe_b64encode(
-        hashlib.sha256(verifier.encode("ascii")).digest()
-    ).rstrip(b"=").decode("ascii")
-    return verifier, challenge
-
-
-def _params(client_id, verifier, *, redirect=REDIRECT, state="state_fixture",
-            resource=RESOURCE, include_challenge=True, challenge_method="S256",
-            scope="mcp:pc"):
-    _, challenge = _pkce()
-    if verifier is not None:
-        challenge = base64.urlsafe_b64encode(
-            hashlib.sha256(verifier.encode("ascii")).digest()
-        ).rstrip(b"=").decode("ascii")
-    result = {
-        "response_type": "code", "client_id": client_id, "redirect_uri": redirect,
-        "state": state, "resource": resource, "scope": scope,
-    }
-    if include_challenge:
-        result["code_challenge"] = challenge
-        result["code_challenge_method"] = challenge_method
-    return result
-
-
-async def _register(client, *, name="Claude", redirect=REDIRECT, method="none"):
-    response = await client.post("/oauth/register", json={
-        "client_name": name, "redirect_uris": [redirect],
-        "token_endpoint_auth_method": method,
-        "grant_types": ["authorization_code", "refresh_token"],
-        "response_types": ["code"], "scope": "mcp:pc",
-    })
-    assert response.status_code == 201, response.text
-    return response.json()
-
-
-async def _approve(owner_ui, params, *, device_id=DEVICE):
-    return await owner_ui.post("/oauth/authorize", json={
-        **params, "decision": "approve", "device_id": device_id,
-    }, headers={"Origin": BASE})
-
-
-def _code_from(redirect_url):
-    query = parse_qs(urlsplit(redirect_url).query)
-    return query["code"][0], query
-
-
-async def _exchange(client, client_id, code, verifier, *, redirect=REDIRECT, secret=None,
-                   resource=RESOURCE):
-    data = {
-        "grant_type": "authorization_code", "code": code, "redirect_uri": redirect,
-        "client_id": client_id, "code_verifier": verifier, "resource": resource,
-    }
-    if secret is not None:
-        data["client_secret"] = secret
-    return await client.post("/oauth/token", data=data)
 
 
 async def _tools_list(client, token):

@@ -13,7 +13,7 @@ import pytest
 from app import chat_pc_session as lane
 from app.history import PRODUCT_SCOPE_CHAT
 from test_7065_chat_pc_session_integration import _queue_module
-from test_7603_confirmation_card_expiry import _fixture, UID, WORKSPACE
+from _support.confirmation_card import _fixture, UID, WORKSPACE
 
 
 def _assert_no_value(value, surfaces):

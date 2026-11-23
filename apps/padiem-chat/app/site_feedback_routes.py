@@ -20,6 +20,7 @@ from .site_feedback_store import (BODY_CHARS, EXTERNAL_CATEGORIES, EXTERNAL_STAT
 
 SITE_ORIGINS = {
     'miraen-home': ('https://councillor-prototype-v2.pages.dev',),
+    'bookai': ('https://bookai.padiem.net',),
 }
 _SCREEN_PATHS = frozenset({
     '/', '/index.html', '/about.html', '/about', '/activity.html', '/activity',

@@ -33,13 +33,13 @@ from app.history import D1HistoryStore
 from app.main import create_app
 from app.password_auth import verify_password
 from app.platform_admin_roles import D1PlatformAdminRoleStore
-from test_5434_password_change import (
+from _support.password_change import (
     CURRENT_PASSWORD,
     NEW_PASSWORD,
     CanonicalAuthority,
     seed_db,
 )
-from test_claw_automation_async_composition_seam import _load_worker
+from _support.claw_automation_worker_source import _load_worker
 
 BASE = "https://chat.example.test"
 SESSION_SECRET = "5479-concurrent-auth-test-session-secret-not-real-000"
