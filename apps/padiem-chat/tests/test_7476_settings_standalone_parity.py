@@ -113,7 +113,7 @@ def test_the_back_entry_is_a_header_secondary_chip() -> None:
     # the token file keep the painted chip radius at 10px.
     assert declaration(back[0], "border-radius") == "var(--radius-sm)"
     assert "--radius-sm: 10px;" in TOKENS_CSS
-    assert declaration(back[0], "background") == "var(--card-bg, #fafafa)"
+    assert declaration(back[0], "background") == "var(--card-bg)"
 
 
 def test_pc_blocks_share_one_left_edge_and_reading_size() -> None:
