@@ -23,8 +23,8 @@ from pathlib import Path
 
 import pytest
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-CALENDAR_CSS = STATIC / "calendar.css"
+# #8060: shipped reads live in _support; the parsed CSS checks stay.
+from _support import calendar_touch_source as sheets
 
 REFRESH = r"\.calendar-refresh-button\s*\{"
 TAB = r"\.calendar-tab\s*\{"
@@ -33,9 +33,9 @@ RECORD_SELECT = r"\.calendar-record-field select\s*\{"
 CALENDAR_VIEW = r"\.calendar-view\s*\{"
 
 
-def _css(path: Path = CALENDAR_CSS) -> str:
+def _css() -> str:
     """CSS with comments removed, so prose cannot satisfy a declaration guard."""
-    return re.sub(r"/\*.*?\*/", "", path.read_text(encoding="utf-8"), flags=re.DOTALL)
+    return re.sub(r"/\*.*?\*/", "", sheets.sheet("calendar.css"), flags=re.DOTALL)
 
 
 def _rule(css: str, header: str) -> str:
@@ -156,7 +156,7 @@ def test_the_hidden_field_and_sidebar_contracts_survive() -> None:
 
 
 def test_the_floored_rules_still_target_the_markup_they_own() -> None:
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = sheets.sheet("index.html")
     band = html[html.index('id="calendarView"') : html.index('<section class="conversation"')]
     for selector in ("calendarRefresh", "calendarTodayTab", "calendarRecordDate",
                      "calendarRecordTitle", "calendarAppointmentType"):

@@ -7,11 +7,19 @@ re-open button is only offered while the Google sign-in itself is pending.
 """
 from __future__ import annotations
 
-from _support import pairing_handoff_source as sheets
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.android_pairing_audio_source import (
+    index_html, locale_source, meeting_capture_js, pc_pairing_card_js, read as _source_read,
+)
+
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+STATIC = ROOT / "static"
 
 
 def _read(name: str) -> str:
-    return sheets.sheet(name)
+    return _source_read(name)
 
 
 def _read_handoff_view() -> str:
@@ -49,7 +57,7 @@ def test_reopening_google_is_only_offered_while_the_login_is_pending() -> None:
 
 
 def test_both_locales_carry_the_new_copy_strings() -> None:
-    locale = sheets.locale_js()
+    locale = locale_source()
     assert locale.count('"auth-android-copy"') == 2
     assert locale.count('"auth-android-copied"') == 2
     assert "Copy sign-in code" in locale

@@ -6,6 +6,11 @@ PC with its approved folder, revoke a folder or the link, and read a server that
 is not ready as "not ready" instead of as an empty success.
 """
 from __future__ import annotations
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.android_pairing_audio_source import (
+    index_html, locale_source, meeting_capture_js, pc_pairing_card_js, read as _read,
+)
 import re
 import shutil
 import subprocess
@@ -13,11 +18,11 @@ from pathlib import Path
 
 import pytest
 
-from _support import pairing_handoff_source as sheets
-
 HERE = Path(__file__).resolve().parent
-MODULE = sheets.static_path("pc-pairing-card.js")
+STATIC = HERE.parents[0] / "static"
+MODULE = STATIC / "pc-pairing-card.js"
 HARNESS = HERE / "pc_pairing_card_harness.js"
+INDEX = STATIC / "index.html"
 NODE = shutil.which("node")
 
 pytestmark = pytest.mark.skipif(NODE is None, reason="node is required for the browser harness")
@@ -29,8 +34,8 @@ def _run(*args: str) -> subprocess.CompletedProcess:
 
 
 def test_the_module_is_loaded_by_the_page_that_hosts_the_computer_card():
-    source = sheets.sheet("pc-pairing-card.js")
-    html = sheets.sheet("index.html")
+    source = pc_pairing_card_js()
+    html = index_html()
     assert "connectorComputerCard" in source
     assert './pc-pairing-card.js' in html
     # The card is one host: the section is created by the module, so the shipped
@@ -40,7 +45,7 @@ def test_the_module_is_loaded_by_the_page_that_hosts_the_computer_card():
 
 
 def test_only_the_windows_install_sentence_is_offered():
-    source = sheets.sheet("pc-pairing-card.js")
+    source = pc_pairing_card_js()
     # One install sentence per locale, and both name Windows and nothing else. The
     # unsigned-download warning names it once more per locale, because the screen it
     # describes is Windows'.
@@ -55,7 +60,7 @@ def test_only_the_windows_install_sentence_is_offered():
 
 
 def test_the_pairing_surface_is_the_only_thing_this_card_calls():
-    source = sheets.sheet("pc-pairing-card.js")
+    source = pc_pairing_card_js()
     urls = set(re.findall(r'"(/[a-z0-9/_.-]+)"', source, re.IGNORECASE))
     assert urls == {"/api/pc/pairings", "/api/pc/pairings/install-file",
                     "/api/pc/pairings/install-exe", "/label"}
@@ -67,7 +72,7 @@ def test_the_pairing_surface_is_the_only_thing_this_card_calls():
     # reads nothing from that projection, so hiding the desktop card can never
     # hide "connect this PC" with it.
     assert "local-access" not in source
-    html = sheets.sheet("index.html")
+    html = index_html()
     handoff_open = html.index('id="clawLocalHandoff"')
     handoff_close = html.index("</section>", handoff_open)
     card_host = html.index('id="connectorComputerCard"')
@@ -96,11 +101,11 @@ def test_the_harness_flow_passes_every_check():
 def test_the_harness_itself_fails_when_the_card_lies():
     """Differential proof: the same harness refuses a card that reports success
     while the server says it is not ready. Edited copy, not shipped code."""
-    broken = sheets.sheet("pc-pairing-card.js").replace(
+    broken = pc_pairing_card_js().replace(
         'notReady: "PC 연결 기능은 아직 준비 중입니다. 잠시 후 다시 시도해 주세요.",',
         'notReady: "PC 연결됨",',
     )
-    assert broken != sheets.sheet("pc-pairing-card.js")
+    assert broken != pc_pairing_card_js()
     temporary = HERE / "_pc_pairing_card_broken.js"
     temporary.write_text(broken, encoding="utf-8")
     try:
