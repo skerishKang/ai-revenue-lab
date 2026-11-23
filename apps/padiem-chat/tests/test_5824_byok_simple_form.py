@@ -20,9 +20,6 @@ API 호출은 Playwright로 가로챔 — 실제 백엔드·공급사 호출 없
 """
 
 from __future__ import annotations
-import locale_bundle
-
-from pathlib import Path
 
 import pytest
 
@@ -43,7 +40,8 @@ from test_5121_byok_ui_browser import (  # noqa: E402
     static_server,  # noqa: F401 — pytest fixture re-export
 )
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
+# #8060: shipped reads live in _support; the copy ownership contracts stay.
+from _support import byok_simple_form_source as sheets
 
 BYOK_LOCALE_KEYS = (
     "byok-register",
@@ -56,7 +54,7 @@ BYOK_LOCALE_KEYS = (
 
 
 def test_locale_declares_the_byok_keys_in_ko_and_en() -> None:
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_source()
     _, after = locale.split("ko: {", 1)
     ko = after.split("en: {", 1)[0]
     en = after.split("en: {", 1)[1]
@@ -67,7 +65,7 @@ def test_locale_declares_the_byok_keys_in_ko_and_en() -> None:
 
 def test_module_has_no_second_key_form_and_no_autodetect_button() -> None:
     """The old duplicates are gone from the module source, not just hidden."""
-    source = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
+    source = sheets.capabilities_js()
     assert "modeCustomApiKey" not in source
     assert "modeAutoByokResult" not in source
     assert "autoDetectButton" not in source
@@ -81,7 +79,7 @@ def test_module_has_no_second_key_form_and_no_autodetect_button() -> None:
 
 def test_screen_strings_never_invent_provider_or_model_names() -> None:
     """Copy lines rendered by the module itself carry no supplier/model id."""
-    source = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
+    source = sheets.capabilities_js()
     copy_block = source.split("const CUSTOM_COPY = Object.freeze({", 1)[1].split(
         "const CUSTOM_LOCALE_KEYS", 1
     )[0]
