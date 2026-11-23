@@ -15,12 +15,15 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _support.r5_module_source_7216 import (
+    android_handoff_module_js, app_js, index_html, login_dialog_js, nav_module_js,
+)
 from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-android-handoff-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+APP = app_js()
+MODULE = android_handoff_module_js()
+INDEX = index_html()
 
 NAMES = (
     "isAndroidWebView",
@@ -79,7 +82,7 @@ def test_app_keeps_forwarders_factory_and_one_wire_call() -> None:
     # wireAccountControls() (B7 16차: renamed from wire() — localPcPanel owns
     # the registry name "wire").
     wire_at = APP.index("androidHandoffModule().wireAndroidHandoffListeners();")
-    dialog = (STATIC / "chat-login-dialog-module.js").read_text(encoding="utf-8")
+    dialog = login_dialog_js()
     # #8312: the Google ask is built by googleStartHref() so the admin gate's
     # return can carry return_to=/admin; a login without the ask keeps the
     # same bare start URL as before.
