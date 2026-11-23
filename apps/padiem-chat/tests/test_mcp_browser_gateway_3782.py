@@ -10,7 +10,7 @@ from app.local_r2 import LocalDiskR2
 from app.mcp_browser_context import load_browser_context, save_browser_context
 from app.mcp_gateway_dispatch import dispatch_mcp_tool
 from padiem_ai_core.pc_gateway import parse_pc_gateway
-from test_mcp_gateway_transport import gateway, post
+from _support.mcp_gateway_transport import gateway, post
 
 
 OWNER = "usr_" + "a" * 32

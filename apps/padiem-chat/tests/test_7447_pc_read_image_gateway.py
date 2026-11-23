@@ -9,7 +9,7 @@ from __future__ import annotations
 import base64
 import json
 
-from test_mcp_gateway_transport import gateway, post  # noqa: F401
+from _support.mcp_gateway_transport import gateway, post  # noqa: F401
 
 
 def test_pc_read_image_is_one_image_block_and_never_inline_text(gateway):
