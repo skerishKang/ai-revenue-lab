@@ -8,7 +8,6 @@ Python gate keeps that contract inside the normal pytest run and pins that the
 client chose no give-up count, no deadline and no page size of its own.
 """
 from __future__ import annotations
-import locale_bundle
 
 import re
 import shutil
@@ -19,10 +18,11 @@ import pytest
 
 # R5 0단계(R-01): 함수 경계는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import combined_source
+from _support import pc_long_wait_stream_source as sheets
 
 ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-NODE_TEST = ROOT / "tests" / "test_5895_pc_long_wait_progress.mjs"
+STATIC = sheets.static_dir()
+NODE_TEST = sheets.node_test_path("test_5895_pc_long_wait_progress.mjs")
 
 
 def test_pc_long_wait_progress_contract_runs_under_node():
@@ -40,7 +40,7 @@ def test_pc_long_wait_progress_contract_runs_under_node():
 
 
 def test_the_read_back_has_no_client_side_give_up():
-    recovery = (STATIC / "chat-pc-result-recovery.js").read_text(encoding="utf-8")
+    recovery = sheets.recovery_js()
 
     # The attempt cap is caller-supplied only: with no bound the loop is open.
     assert "? details.maxAttempts : null;" in recovery
@@ -249,7 +249,7 @@ function makeHarness(waitOutcome) {
 
 
 def test_the_waiting_copy_names_work_in_progress_with_elapsed_time():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_js()
     assert locale.count('"pc-elapsed-note"') == 2
     assert '"pc-elapsed-note": "PC에서 작업 중 — 경과 {elapsed} · 완료되면 이 대화에 결과가 표시됩니다."' in locale
     assert '"pc-elapsed-note": "Working on your PC — elapsed {elapsed} · the answer will appear in this conversation when it completes."' in locale
