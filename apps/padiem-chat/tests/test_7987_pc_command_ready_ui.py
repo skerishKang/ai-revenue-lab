@@ -20,17 +20,16 @@ try:
 except ImportError:
     sync_playwright = None
 
+from _support.pc_command_ready_source import module_js, card_js, locale_js
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
-MODULE = STATIC / "pc-command-ready.js"
-CARD = STATIC / "pc-pairing-card.js"
-LOCALE = STATIC / "locale.js"
 READY_BADGE = "연결됨 · 명령 가능"
 NOT_READY_BADGE = "연결됨 · 명령 준비 안 됨"
 HELP = "이 PC 에 Windows 로 로그인돼 있는지 확인하고, PC 도우미를 다시 설치해 주세요."
 
 
 def test_copy_for_the_three_words_has_one_owner_each():
-    source = MODULE.read_text(encoding="utf-8")
+    source = module_js()
     # #8003's ready word stays local by Owner decision; the two #7990 strings
     # live in the PC-connect locale group and are read through uiT.
     assert READY_BADGE in source and "Connected · commands ready" in source
@@ -53,7 +52,7 @@ def test_copy_for_the_three_words_has_one_owner_each():
 
 
 def test_only_a_connected_pc_is_annotated_and_unknown_is_left_alone():
-    source = MODULE.read_text(encoding="utf-8")
+    source = module_js()
     assert 'link.online === true ? link.command_ready : "unknown"' in source
     assert 'state !== "not_ready" && state !== "ready"' in source
     # A redraw by the card is noticed by what the rows say, not by their count.
@@ -61,7 +60,7 @@ def test_only_a_connected_pc_is_annotated_and_unknown_is_left_alone():
 
 
 def test_the_module_takes_the_list_from_the_shared_reader_and_never_reads_at_boot():
-    source = MODULE.read_text(encoding="utf-8")
+    source = module_js()
     # #7073: the connect flow owns the one first-screen read of this list.
     assert "window.PadiemPcConnectFlow" in source
     assert 'detail.read === "ok" && Array.isArray(detail.links)' in source
@@ -79,9 +78,9 @@ def test_the_module_takes_the_list_from_the_shared_reader_and_never_reads_at_boo
 
 
 def test_the_card_and_locale_files_stay_where_they_were():
-    assert len(CARD.read_text(encoding="utf-8").splitlines()) == 995
-    assert len(LOCALE.read_text(encoding="utf-8").splitlines()) <= 1217
-    assert len(MODULE.read_text(encoding="utf-8").splitlines()) < 500
+    assert len(card_js().splitlines()) == 995
+    assert len(locale_js().splitlines()) <= 1217
+    assert len(module_js().splitlines()) < 500
 
 
 LINKS = [

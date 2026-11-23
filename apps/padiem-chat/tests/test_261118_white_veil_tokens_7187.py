@@ -67,6 +67,8 @@ ROOT_TOKENS = {
     "--surface-veil-haze": "rgba(255, 255, 255, .78)",
     "--line-veil-haze": "rgba(255, 255, 255, .78)",
     "--text-veil-haze": "rgba(255, 255, 255, .78)",
+    "--ws-form-wash": "rgba(255, 255, 255, .018)",
+    "--ws-banner-shadow": "rgba(0, 0, 0, .12)",
 }
 
 #: 1차에서 토큰으로 바꾼 선언: (속성, 치환 전 값, 치환 후 값). 공백 정규화 비교.
@@ -106,7 +108,7 @@ CHANGED = {
     "padiem-cinematic-workspace.css": [
         ("background",
          "linear-gradient(145deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .018)), rgba(8, 9, 11, .97) !important",
-         "linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)), var(--surface-panel-solid) !important"),
+         "linear-gradient(145deg, var(--surface-veil-soft), var(--ws-form-wash)), var(--surface-panel-solid) !important"),
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
         ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
@@ -115,7 +117,7 @@ CHANGED = {
         ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
         ("box-shadow",
          "inset 0 1px 0 rgba(255, 255, 255, .04) !important, 0 14px 38px rgba(0, 0, 0, .12)",
-         "inset 0 1px 0 var(--inset-veil-panel) !important, 0 14px 38px rgba(0, 0, 0, .12)"),
+         "inset 0 1px 0 var(--inset-veil-panel) !important, 0 14px 38px var(--ws-banner-shadow)"),
         ("background", "rgba(255, 255, 255, .04)", "var(--surface-veil-panel)"),
         ("border-color", "rgba(255, 255, 255, .09) !important", "var(--line-veil-dim) !important"),
         ("border-color", "rgba(255, 255, 255, .09) !important", "var(--line-veil-dim) !important"),
