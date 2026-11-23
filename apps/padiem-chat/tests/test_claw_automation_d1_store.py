@@ -13,6 +13,9 @@ uses, so any drift between the two homes is a failure here.
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
+
 import asyncio
 from datetime import datetime, timedelta, timezone
 import inspect
@@ -66,7 +69,7 @@ MIGRATION_PATHS = (
 
 def _apply_migrations(binding: SqliteD1Binding) -> None:
     for path in MIGRATION_PATHS:
-        binding.conn.executescript(path.read_text(encoding="utf-8"))
+        binding.conn.executescript(read(path))
 
 
 # ---------------------------------------------------------------------------
@@ -309,7 +312,7 @@ def test_readiness_flags_are_explicitly_false() -> None:
 
 
 def test_adapter_has_no_runtime_ddl_or_caller_sql() -> None:
-    source = STORE_PATH.read_text(encoding="utf-8")
+    source = read(STORE_PATH)
     for forbidden in (
         "CREATE TABLE",
         "CREATE INDEX",

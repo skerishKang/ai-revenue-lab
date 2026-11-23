@@ -7,6 +7,9 @@
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
+
 import asyncio
 import json
 import re
@@ -26,7 +29,7 @@ EXTERNAL_HTTP = re.compile(r"https://[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 
 def test_static_voice_files_carry_no_provider_address_key_or_model():
     for path in sorted(STATIC.glob("voice-*.js")):
-        src = path.read_text(encoding="utf-8")
+        src = read(path)
         assert not EXTERNAL_WS.search(src), f"{path.name}: external WebSocket host"
         http = [h for h in EXTERNAL_HTTP.findall(src) if "w3.org" not in h]
         assert not http, f"{path.name}: external https host {http}"

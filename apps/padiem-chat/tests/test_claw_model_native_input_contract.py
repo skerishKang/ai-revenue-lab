@@ -4,6 +4,9 @@ No live provider, DB, Engine, secret or approval side effects.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
+
 import asyncio
 from types import SimpleNamespace
 from pathlib import Path
@@ -104,13 +107,13 @@ def test_claw_owned_saved_history_does_not_silently_keep_only_12_or_4k(monkeypat
 def test_the_p01_context_is_not_cut_to_a_padiem_byte_total():
     # #4379: the owned prior context is not cut to a PADIEM byte total, so
     # the route declares no envelope ceiling of its own.
-    source = (Path(__file__).resolve().parents[1] / "app/claw_general_routes.py").read_text(encoding="utf-8")
+    source = read(Path(__file__).resolve().parents[1] / "app/claw_general_routes.py")
     assert "P01_ENGINE_REQUEST_ENVELOPE_BYTES: int | None = None" in source
     assert 'len(model_user_text.encode("utf-8")) > P01_ENGINE_REQUEST_ENVELOPE_BYTES' not in source
 
 
 def test_manual_ui_does_not_reapply_independent_4000_character_limit():
     from pathlib import Path
-    src = (Path(__file__).resolve().parents[1] / "static" / "app.js").read_text(encoding="utf-8")
+    src = read(Path(__file__).resolve().parents[1] / "static" / "app.js")
     assert 'input.setAttribute("maxlength", "4000")' not in src
     assert "body.length > 4000" not in src

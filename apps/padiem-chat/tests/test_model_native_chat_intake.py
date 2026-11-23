@@ -1,6 +1,9 @@
 """B62 browser native model intake, distinct from bounded saved previews (#4379)."""
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
+
 from pathlib import Path
 
 import pytest
@@ -40,9 +43,9 @@ def test_persisted_history_is_transparently_marked_as_preview():
 
 
 def test_chat_and_manual_claw_ui_have_no_independent_pilot_textarea_cap():
-    html = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
-    app_js = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
-    claw_status_js = (ROOT / "static" / "chat-claw-status-module.js").read_text(encoding="utf-8")
+    html = read(ROOT / "static" / "index.html")
+    app_js = read(ROOT / "static" / "app.js")
+    claw_status_js = read(ROOT / "static" / "chat-claw-status-module.js")
     ui_js = app_js + claw_status_js
     composer = html.split('id="messageInput"', 1)[1].split("</textarea>", 1)[0]
     assert "maxlength=" not in composer
