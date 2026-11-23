@@ -5,6 +5,7 @@ import asyncio
 import json
 import secrets
 from pathlib import Path
+import pytest
 from types import SimpleNamespace
 
 from starlette.requests import Request
@@ -15,7 +16,13 @@ from app.d1_sqlite import SqliteD1
 from app.ops_alert_store import D1OpsAlertStore
 from app.site_feedback_routes import admin_site_feedback, site_feedback
 from app.site_feedback_store import D1SiteFeedbackStore
+from _support.bookai_feedback_source import admin_ops_source, bookai_index_source
 from _support.feedback_store import database
+
+try:
+    from playwright.sync_api import sync_playwright  # noqa: E402
+except ImportError:  # lanes without a browser still collect the route tests
+    sync_playwright = None
 
 ROOT = Path(__file__).resolve().parents[1]
 BOOKAI = ROOT.parent / "bookai" / "public"
@@ -97,14 +104,14 @@ def test_bookai_public_submit_allow_deny_limit_and_one_alert(monkeypatch):
 
 
 def test_admin_ops_labels_bookai():
-    source = (ROOT / "static/admin-ops.js").read_text(encoding="utf-8")
+    source = admin_ops_source()
     assert 'bookai: "북AI"' in source
     assert '["bookai", "북AI"]' in source
     assert 'siteName("bookai")' not in source  # 라벨은 표에만 둔다
 
 
-def test_bookai_ui_button_and_form_fit(monkeypatch):
-    from playwright.sync_api import sync_playwright
+@pytest.mark.skipif(sync_playwright is None, reason="playwright is not installed in this lane")
+def test_bookai_ui_button_and_form_fit():
     from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
     import threading
 

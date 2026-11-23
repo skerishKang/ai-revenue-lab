@@ -52,6 +52,8 @@
 .bookai-feedback-status { min-height: 1.5em; margin: 0; }
 .bookai-feedback-dialog label { display: block; }
 .bookai-feedback-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+body.ai-open .bookai-feedback-open,
+body.memory-open .bookai-feedback-open { display: none; }
 @media (max-width: 768px) {
   .bookai-feedback-open { right: 8px; bottom: 8px; max-width: calc(100% - 16px); }
   .bookai-feedback-dialog { width: calc(100% - 16px); padding: 10px; }
