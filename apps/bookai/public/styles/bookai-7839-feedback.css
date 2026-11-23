@@ -56,5 +56,6 @@ body.ai-open .bookai-feedback-open,
 body.memory-open .bookai-feedback-open { display: none; }
 @media (max-width: 768px) {
   .bookai-feedback-open { right: 8px; bottom: 8px; max-width: calc(100% - 16px); }
+  body.reader-mode .bookai-feedback-open { bottom: 128px; }
   .bookai-feedback-dialog { width: calc(100% - 16px); padding: 10px; }
 }
