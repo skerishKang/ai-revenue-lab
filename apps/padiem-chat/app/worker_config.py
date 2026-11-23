@@ -336,6 +336,7 @@ def settings_from_worker_bindings(
         email_confirmation_enabled=binding_value(env, "PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED"),
         connector_account_shadow_enabled=binding_value(env, "PADIEM_CHAT_CONNECTOR_ACCOUNT_SHADOW_ENABLED"),
         connector_account_key_enabled=binding_value(env, "PADIEM_CHAT_CONNECTOR_ACCOUNT_KEY_ENABLED"),
+        pc_scope_tenant_only_enabled=binding_value(env, "PADIEM_CHAT_PC_SCOPE_TENANT_ONLY_ENABLED"),
     )
 
 

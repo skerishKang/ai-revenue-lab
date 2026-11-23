@@ -30,7 +30,9 @@ from typing import Any, Mapping
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
 from .connector_account_shadow import mode_connector_read, note_pc_scope_check
-from .connector_account_subject import account_key_mode_enabled, shadow_context_enabled
+from .connector_account_subject import (
+    account_key_mode_enabled, pc_scope_tenant_only_enabled, shadow_context_enabled,
+)
 from .pc_scope_cache import KIND_CONNECTOR_SCOPE, cached_connector_scope
 
 PC_WORK_CONTEXT_VERSION = "padiem-pc-work-context.v1"
@@ -344,6 +346,14 @@ async def _resolve_connector_scope_now(
     additionally records, with closed codes only and no extra RPC, whether
     the single tenant check would have agreed with that verdict.
     """
+    if pc_scope_tenant_only_enabled():
+        # #7542: the dedicated switch returns the single tenant check's
+        # verdict from the same reads, and keeps the cross-check comparison
+        # journalled so a disagreement stays visible after the switch is on.
+        return await _resolve_connector_scope_crosscheck(
+            request, owner_id=owner_id, workspace_id=workspace_id,
+            pc_scope_tenant_only=True,
+        )
     if account_key_mode_enabled():
         return await _resolve_connector_scope_tenant_only(
             request, owner_id=owner_id, workspace_id=workspace_id,
@@ -401,13 +411,15 @@ async def _resolve_connector_scope_tenant_only(
 
 async def _resolve_connector_scope_crosscheck(
     request: Any, *, owner_id: str, workspace_id: str,
+    pc_scope_tenant_only: bool = False,
 ) -> PcConnectorScope:
-    """Off/shadow: today's verdict unchanged. The B62 session (with its
-    shadow refresh) and the B54 canonical session are two identity RPCs
-    keyed by the same owner id - neither consumes the other's result - so
-    they run together; the connector-scope port stays sequential because
-    only it needs the B54 session id. Both reads must still succeed and
-    agree on subject and tenant, and any failure is the same
+    """Shared B62/B54 reads; the switch only picks the verdict's gate.
+
+    The two identity RPCs are keyed by the same owner id and neither consumes
+    the other's result, so they run together; the connector-scope port stays
+    sequential because only it needs the B54 session id. Off keeps today's
+    cross-check. On answers from the single tenant check while the same
+    cross-check comparison is still journalled. Any failure is the same
     owner-unavailable refusal.
     """
     state = getattr(getattr(request, "app", None), "state", None)
@@ -429,11 +441,7 @@ async def _resolve_connector_scope_crosscheck(
     )
     # #7542: name the closed cross-check failure shape for the shadow journal.
     # Each shape below is read only from the values already resolved above;
-    # the later fail-closed returns reuse these same values, so the shape
-    # can never be named beyond what the check itself produced. Anything
-    # else (a B54 failure alone, a missing subject on one side) stays
-    # unclassified: no new reason is invented for a case the check did
-    # not produce.
+    # the journal never invents a reason the check did not produce.
     crosscheck_failure: str | None = None
     if isinstance(b62_result, BaseException):
         crosscheck_failure = "b62_absent"
@@ -453,56 +461,55 @@ async def _resolve_connector_scope_crosscheck(
     else:
         crosscheck_failure = "b62_absent"
 
-    def _verdict(outcome: PcConnectorScope) -> PcConnectorScope:
-        if shadow_context_enabled():
-            note_pc_scope_check(
-                tenant_only_ready=tenant_only_ready,
-                crosscheck_ready=bool(outcome.ready),
-                crosscheck_failure=crosscheck_failure,
-                latency_seconds=_time.monotonic() - started,
-            )
-        return outcome
-
     if isinstance(b62_result, BaseException):
         resolved_workspace, b62_session = None, None
     else:
         resolved_workspace, b62_session = b62_result
-    if resolved_workspace != workspace_id or b62_session is None:
-        return _verdict(PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE))
-    if b54_failed:
-        return _verdict(PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE))
-    # Matching user ids are not enough: both server-provided canonical
-    # sessions must resolve to the same subject and tenant. Never accept a
-    # browser-provided tenant or mint a replacement grant.
+    b62_ready = resolved_workspace == workspace_id and b62_session is not None
+    # Both server-provided canonical sessions must still name the same
+    # subject whenever both are present. The switch removes the need for the
+    # B62 axis itself, never the subject or tenant rejection boundaries.
     b62_subject = getattr(getattr(b62_session, "subject", None), "subject_id", None)
     b54_subject = getattr(getattr(b54_session, "subject", None), "subject_id", None)
-    if (
-        not isinstance(b62_subject, str) or not b62_subject
-        or b62_subject != b54_subject
-        or getattr(b54_session, "tenant_id", None) != workspace_id
-    ):
-        return _verdict(PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE))
-    session_id = getattr(b54_session, "session_id", None)
-    scope_port = getattr(authority, "resolve_connector_owner_scope", None)
-    if not isinstance(session_id, str) or not session_id or not callable(scope_port):
-        return _verdict(PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE))
-    try:
-        scope = await mode_connector_read(authority, "owner_scope", session_id=session_id)
-    except Exception:
-        return _verdict(PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE))
-    account_ref = scope.get("account_ref") if isinstance(scope, Mapping) else None
-    workspace_ref = scope.get("workspace_ref") if isinstance(scope, Mapping) else None
-    if (
-        not isinstance(account_ref, str) or not account_ref
-        or not isinstance(workspace_ref, str) or not workspace_ref
-    ):
-        return _verdict(PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE))
-    return _verdict(
-        PcConnectorScope(
-            status=_PC_SCOPE_READY, account_ref=account_ref,
-            workspace_ref=workspace_ref, session_id=session_id,
-        )
+    subject_ok = (
+        isinstance(b62_subject, str) and bool(b62_subject)
+        and isinstance(b54_subject, str) and bool(b54_subject)
+        and b62_subject == b54_subject
     )
+    crosscheck_ready = (
+        b62_ready and not b54_failed and subject_ok and tenant_only_ready
+    )
+    verdict_ready = (
+        not b54_failed and tenant_only_ready and (not b62_ready or subject_ok)
+        if pc_scope_tenant_only else crosscheck_ready
+    )
+
+    outcome = PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
+    session_id = getattr(b54_session, "session_id", None) if b54_session is not None else None
+    scope_port = getattr(authority, "resolve_connector_owner_scope", None)
+    if verdict_ready and isinstance(session_id, str) and session_id and callable(scope_port):
+        try:
+            scope = await mode_connector_read(authority, "owner_scope", session_id=session_id)
+            account_ref = scope.get("account_ref") if isinstance(scope, Mapping) else None
+            workspace_ref = scope.get("workspace_ref") if isinstance(scope, Mapping) else None
+            if (
+                isinstance(account_ref, str) and account_ref
+                and isinstance(workspace_ref, str) and workspace_ref
+            ):
+                outcome = PcConnectorScope(
+                    status=_PC_SCOPE_READY, account_ref=account_ref,
+                    workspace_ref=workspace_ref, session_id=session_id,
+                )
+        except Exception:
+            pass
+    if shadow_context_enabled():
+        note_pc_scope_check(
+            tenant_only_ready=tenant_only_ready,
+            crosscheck_ready=crosscheck_ready and outcome.ready,
+            crosscheck_failure=crosscheck_failure,
+            latency_seconds=_time.monotonic() - started,
+        )
+    return outcome
 
 
 async def resolve_pc_mesh_target(
