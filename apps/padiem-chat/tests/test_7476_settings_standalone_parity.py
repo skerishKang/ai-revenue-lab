@@ -100,9 +100,9 @@ def test_settings_plate_is_member_of_every_shared_frame_lane() -> None:
     ]
     assert padding, "the shared first-screen origin must name settings"
 
-    relaxed = [rule for rule in lanes if declaration(rule, "height") == "auto !important"]
+    relaxed = [rule for rule in lanes if declaration(rule, "height") == "auto"]
     assert relaxed, "settings and connectors must size to their content"
-    assert declaration(relaxed[0], "max-height") == "var(--padiem-six-panel-height) !important"
+    assert declaration(relaxed[0], "max-height") == "var(--padiem-six-panel-height)"
 
 
 def test_the_back_entry_is_a_header_secondary_chip() -> None:

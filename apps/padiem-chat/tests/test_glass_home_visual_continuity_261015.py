@@ -17,9 +17,9 @@ def test_owner_visual_authority_outweighs_reading_css() -> None:
     assert '.app-shell[data-state="chat"] .conversation.conversation' in FRAME
     assert "rgba(248,250,251,.88)" in FRAME
     assert "rgba(233,238,241,.84)" in FRAME
-    assert "opacity: var(--glass-art-opacity) !important" in FRAME
-    assert "filter: var(--glass-art-filter) !important" in FRAME
-    assert "transform: translate3d(0,0,0) scale(1) !important" in FRAME
+    assert "opacity: var(--glass-art-opacity)" in FRAME
+    assert "filter: var(--glass-art-filter)" in FRAME
+    assert "transform: translate3d(0,0,0) scale(1)" in FRAME
 
 
 def test_reading_semantics_and_existing_layout_still_available() -> None:

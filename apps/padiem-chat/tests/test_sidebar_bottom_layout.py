@@ -153,7 +153,7 @@ def test_glass_home_frame_has_desktop_vertical_breathing_room() -> None:
     # frame's position being restyled here.
     assert not re.search(r"(?:^|[;{}\s])bottom\s*:\s*16px !important", ui_polish), \
         "the composer lane position belongs to the shared frame"
-    assert '.app-shell:is([data-state="home"],[data-state="chat"],[data-state="claw"]) .composer-wrap {\n    bottom: 16px !important;' in frame
+    assert '.app-shell:is([data-state="home"],[data-state="chat"],[data-state="claw"]) .composer-wrap {\n    bottom: 16px;' in frame
 
 
 def test_glass_home_composer_vertical_padding_is_balanced() -> None:
