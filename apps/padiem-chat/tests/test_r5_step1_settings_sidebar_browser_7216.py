@@ -16,9 +16,11 @@ import pytest
 pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import sync_playwright  # noqa: E402
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the forwarder and browser checks stay.
+from _support import r5_step1_settings_sidebar_source as sheets
+
+APP = sheets.app()
+STRICT = sheets.strict_deps()
 
 FORWARDER_NAMES = (
     "selectedProductTier", "openSettings", "closeSettings",
@@ -106,7 +108,7 @@ def _forwarder_lines() -> str:
 
 class _StaticHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(STATIC.parent), **kwargs)
+        super().__init__(*args, directory=sheets.chat_dir(), **kwargs)
 
     def log_message(self, *args):  # keep the test output quiet
         pass
@@ -114,7 +116,7 @@ class _StaticHandler(SimpleHTTPRequestHandler):
 
 @pytest.fixture(scope="module")
 def page_url():
-    harness = Path(STATIC.parent) / "tests" / "_r5_forwarder_harness.html"
+    harness = Path(sheets.harness_path())
     harness.write_text(HARNESS.replace("__STRICT__", STRICT).replace("__FORWARDERS__", _forwarder_lines()),
                        encoding="utf-8", newline="\n")
     server = ThreadingHTTPServer(("127.0.0.1", 0), _StaticHandler)
