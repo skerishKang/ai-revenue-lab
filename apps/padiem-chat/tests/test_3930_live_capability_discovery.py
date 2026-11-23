@@ -4,6 +4,9 @@ from __future__ import annotations
 from contextlib import contextmanager
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.chat_capability_source import chat_transport_js, claw_local_handoff_js, read_text
+
 import json
 import subprocess
 from pathlib import Path
@@ -93,7 +96,7 @@ def test_server_flag_never_treats_browser_header_as_capability_authority():
 
 
 def test_js_browser_probe_reuses_only_one_post_and_never_retries():
-    transport=(ROOT/"static"/"chat-transport.js").read_text(encoding="utf-8")
+    transport=chat_transport_js()
     harness=r"""
 const vm=require('vm');
 const fs=require('fs');
