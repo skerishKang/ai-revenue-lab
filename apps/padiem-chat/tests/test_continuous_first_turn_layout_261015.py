@@ -3,15 +3,15 @@ import json
 import os
 import shutil
 import subprocess
-from pathlib import Path
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-NAV = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
+from _support import chat_static_layout_source as sheets
+
+APP = sheets.sheet("app.js")
+NAV = sheets.sheet("chat-nav-module.js")
 #7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
-CONV_SOURCE = (STATIC / "chat-conversation-module.js").resolve()
-CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
+CONV_SOURCE = sheets.static_path("chat-conversation-module.js")
+CSS = sheets.sheet("shared-six-panel-frame.css")
+HTML = sheets.sheet("index.html")
 
 # #7186 R2: showConversation·resetConversationView 본문 문자열 대신 모듈을
 # Node vm에서 실행해 첫 턴 랜딩·저장 대화 재열기·새 대화 리셋의 실제 DOM 결과를
