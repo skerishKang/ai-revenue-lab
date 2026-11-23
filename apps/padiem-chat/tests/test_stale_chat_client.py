@@ -1,4 +1,7 @@
 """An old browser gets a refresh instruction and cannot trigger recovery."""
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.transport_source import app_js, pc_recovery_js, read, react_claw_ts, react_transport_ts, streaming_module_js, transport_js
 import json
 import subprocess
 from pathlib import Path
@@ -42,8 +45,8 @@ async def test_real_orchestration_contract_and_other_unknowns(monkeypatch):
 
 
 def test_http_422_is_terminal_and_shows_refresh(tmp_path):
-    transport = (Path(__file__).parents[1] / "static" / "chat-transport.js").read_text(encoding="utf-8")
-    stream = (Path(__file__).parents[1] / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
+    transport = transport_js()
+    stream = streaming_module_js()
     # The real outer catch suppresses recovery when transport marks a terminal refusal.
     assert "!error?.terminalRecord" in stream
     js = r"""

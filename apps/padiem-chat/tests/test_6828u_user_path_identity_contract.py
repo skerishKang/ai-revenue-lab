@@ -21,6 +21,9 @@ Recorded exemptions (they are decisions, not oversights):
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.last_batch_source import app_js, locale_js, pylock_toml, quote_runtime_js, read, read_replace, strict_deps_js, uv_lock_toml, xlsx_migration_sql, xlsx_sources_js, xlsx_store_py
+
 import json
 from pathlib import Path
 
@@ -42,7 +45,7 @@ LOGIN_BRAND_EXCEPTIONS = frozenset({"google"})
 
 def _identity_needles() -> list[str]:
     """Model, upstream and provider identifiers — hosts are a response check."""
-    register = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    register = json.loads(read(REGISTRY_PATH))
     names = [model["id"] for model in register.get("models", [])]
     names += [
         model["upstream_model"]
@@ -60,7 +63,7 @@ def _identity_needles() -> list[str]:
 
 
 def _offenders(path: Path, needles: list[str]) -> list[str]:
-    text = path.read_text(encoding="utf-8", errors="replace")
+    text = read_replace(path)
     return sorted(name for name in needles if name in text)
 
 

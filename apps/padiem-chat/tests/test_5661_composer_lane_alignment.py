@@ -16,8 +16,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from _support import locale_usage_source as sheets
+
 ROOT = Path(__file__).resolve().parents[1]
-FRAME = (ROOT / "static/shared-six-panel-frame.css").read_text(encoding="utf-8")
+FRAME = sheets.sheet("shared-six-panel-frame.css")
 
 COMPOSER_BASE = (
     'html[data-theme="padiem-glass"] body .app-shell:not(.sidebar-collapsed):is(\n'

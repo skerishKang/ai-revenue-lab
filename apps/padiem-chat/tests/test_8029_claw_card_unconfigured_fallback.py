@@ -23,6 +23,9 @@ links; the link-mapping branch below is the defensive half of the contract.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.claw_screen_source import app_js, claw_automation_store_py, claw_manager_js, claw_routes_py, read
+
 import http.server
 import json
 import re
@@ -440,7 +443,7 @@ def test_card_guard_removed_guest_still_zero_pc_calls():
     """변조 1회: strip the card's own guards (runLoad guest gate + fallback
     gate). The guest contract must still hold - the flow's own guest guard
     refuses without a network call and the fallback fails closed."""
-    source = MANAGER.read_text(encoding="utf-8")
+    source = claw_manager_js()
     run_gate = "if (window.PadiemAuthGate?.authenticated() === false) {"
     assert run_gate in source
     card_gate = "const flow = signedIn ? window.PadiemPcConnectFlow : null;"

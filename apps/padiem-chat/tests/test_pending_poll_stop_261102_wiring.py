@@ -10,7 +10,7 @@ own failure instead of reading a gone run again.
 from __future__ import annotations
 
 # #8060: shipped reads live in _support; assertions stay here.
-from _support.final_share_source import locale_source, read
+from _support.transport_source import app_js, pc_recovery_js, read, react_claw_ts, react_transport_ts, streaming_module_js, transport_js
 
 import shutil
 import subprocess
@@ -38,8 +38,8 @@ def test_pending_poll_stop_contract_runs_under_node():
 
 
 def test_app_skips_the_result_check_when_the_submit_was_refused():
-    transport = read(STATIC / "chat-transport.js")
-    stream = read(STATIC / "chat-streaming-module.js")
+    transport = transport_js()
+    stream = streaming_module_js()
 
     # The transport marks HTTP-level refusals of the submit call itself, and
     # only when an HTTP status was passed (a cut stream has none).
@@ -55,8 +55,8 @@ def test_app_skips_the_result_check_when_the_submit_was_refused():
 
 
 def test_app_drops_a_gone_run_from_any_further_checking():
-    app = read(STATIC / "app.js")
-    recovery = read(STATIC / "chat-pc-result-recovery.js")
+    app = app_js()
+    recovery = pc_recovery_js()
 
     # The recovery module answers a repeat read of a gone run without any GET.
     assert "var gone = new Set();" in recovery
@@ -145,7 +145,7 @@ const mod = ctx.window.PadiemChatPcRunModule.create(deps);
 
 
 def test_cut_stream_recovery_stays_allowed():
-    stream = read(STATIC / "chat-streaming-module.js")
+    stream = streaming_module_js()
     # #5895 deferral above the terminal-refusal branch is untouched.
     deferral = stream.index("deps.chatTransport.isStreamLoss?.(data)")
     terminal = stream.index("// An explicit refusal is terminal even before the first token.")

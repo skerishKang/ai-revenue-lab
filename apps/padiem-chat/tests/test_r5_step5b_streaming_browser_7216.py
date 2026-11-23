@@ -7,6 +7,9 @@ requestStreamingAnswer, cancelActiveStream, requestAnswer)를 실제 Chromium
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.last_batch_source import app_js, locale_js, pylock_toml, quote_runtime_js, read, read_replace, strict_deps_js, uv_lock_toml, xlsx_migration_sql, xlsx_sources_js, xlsx_store_py
+
 import json
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -18,8 +21,8 @@ pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import sync_playwright  # noqa: E402
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+APP = app_js()
+STRICT = strict_deps_js()
 
 # name -> (js args expression, expected argument count)
 CALLS = {

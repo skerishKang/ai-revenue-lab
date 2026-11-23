@@ -1,4 +1,3 @@
-import locale_bundle
 """#7718 3단계 — 운영센터 '사용 일지' 탭 DOM 계약 (브라우저·서비스 불필요)."""
 import json
 import re
@@ -8,7 +7,9 @@ from pathlib import Path
 
 import pytest
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
+from _support import locale_usage_source as sheets
+
+STATIC = sheets.static_dir()
 HARNESS = Path(__file__).with_name("chat_usage_log_harness.js")
 
 
@@ -25,14 +26,14 @@ def test_usage_log_dom_contract(scenario):
 
 
 def test_usage_log_assets_and_complete_locales():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
-    module = (STATIC / "chat-usage-log-module.js").read_text(encoding="utf-8")
-    css = (STATIC / "chat-feedback.css").read_text(encoding="utf-8")
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    html = sheets.sheet("index.html")
+    module = sheets.sheet("chat-usage-log-module.js")
+    css = sheets.sheet("chat-feedback.css")
+    locale = sheets.locale_js()
     assert html.index("./chat-feedback-module.js") < html.index("./chat-usage-log-module.js")
     assert 'id="feedbackUsageTab"' in html and 'id="feedbackUsagePanel"' in html
-    feedback = (STATIC / "chat-feedback-module.js").read_text(encoding="utf-8")
-    assert "usageTab" not in (STATIC / "app.js").read_text(encoding="utf-8")
+    feedback = sheets.sheet("chat-feedback-module.js")
+    assert "usageTab" not in sheets.sheet("app.js")
     assert "nodes.usageTab.hidden = !state.admin" in feedback
     assert 'if (view === "usage" && !state.admin) view = "own"' in feedback
     assert ".usage-metric" in css and ".usage-empty" in css and "min-height: 44px" in css

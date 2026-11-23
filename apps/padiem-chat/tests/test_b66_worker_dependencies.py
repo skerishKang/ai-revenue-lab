@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # #8060: shipped reads live in _support; assertions stay here.
-from _support.final_share_source import locale_source, read
+from _support.last_batch_source import app_js, locale_js, pylock_toml, quote_runtime_js, read, read_replace, strict_deps_js, uv_lock_toml, xlsx_migration_sql, xlsx_sources_js, xlsx_store_py
 
 from copy import deepcopy
 import importlib.util
@@ -20,13 +20,13 @@ spec.loader.exec_module(builder)
 
 
 def worker_lock() -> dict:
-    return tomllib.loads(read(APP_ROOT / "pylock.toml"))
+    return tomllib.loads(pylock_toml())
 
 
 def test_pymupdf_is_dev_only_and_absent_from_chat_worker_lock():
     versions = builder.validate_lock(worker_lock())
     assert "pymupdf" not in versions
-    host = tomllib.loads(read(APP_ROOT / "uv.lock"))
+    host = tomllib.loads(uv_lock_toml())
     packages = [package for package in host["package"] if package["name"] == "pymupdf"]
     assert [package["version"] for package in packages] == ["1.26.3"]
 
