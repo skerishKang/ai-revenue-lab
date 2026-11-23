@@ -1,4 +1,3 @@
-import locale_bundle
 """#5424 signup contract, moved to the common login.
 
 The signup screen and the server used to disagree about the password floor and
@@ -12,16 +11,22 @@ in Chat:
   where the browser asks for the password now).
 """
 import re
-from pathlib import Path
 
 from app.password_auth import PASSWORD_MAX_CHARS, PASSWORD_MIN_CHARS
 
-BASE = Path(__file__).resolve().parents[1] / "static"
-HTML = (BASE / "index.html").read_text(encoding="utf-8")
-APP = (BASE / "app.js").read_text(encoding="utf-8")
+# #8060: shipped-source reads live in _support; assertions stay here.
+from _support.email_login_signup_5424_source import (
+    app_js,
+    auth_js,
+    index_html,
+    locale_source,
+)
+
+HTML = index_html()
+APP = app_js()
 #7216 R5 step 4: this contract moved into chat-auth-module.js.
-AUTH = (BASE / "chat-auth-module.js").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+AUTH = auth_js()
+LOCALE = locale_source()
 
 
 def test_chat_keeps_no_signup_form_and_no_password_send_from_this_dialog():
