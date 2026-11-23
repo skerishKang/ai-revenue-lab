@@ -26,12 +26,12 @@ try:
 except ModuleNotFoundError:  # pragma: no cover
     sync_playwright = None
 
-CHAT = Path(__file__).resolve().parents[1]
-REPO = CHAT.parents[1]
-STATIC = CHAT / "static"
-HELP = (STATIC / "help.html").read_text(encoding="utf-8")
-INSTALL = (STATIC / "install.html").read_text(encoding="utf-8")
-INSTALL_CSS = (STATIC / "help.css").read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the copy and touch-target checks stay.
+from _support import connector_install_guide_source as sheets
+
+HELP = sheets.help_html()
+INSTALL = sheets.install_html()
+INSTALL_CSS = sheets.help_css()
 
 TARGET_FLOOR = 44.0
 TEXT_FLOOR = 14.0
@@ -109,7 +109,7 @@ MEASURE = """(cfg) => {
 
 class StaticHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(STATIC), **kwargs)
+        super().__init__(*args, directory=sheets.static_dir(), **kwargs)
 
     def log_message(self, *args):
         pass
@@ -142,8 +142,7 @@ def browser_page():
 def test_every_claimed_step_exists_in_the_code_that_does_it():
     stale = []
     for claim, source in sorted(GROUNDED.items()):
-        path = REPO / source
-        if claim not in path.read_text(encoding="utf-8"):
+        if claim not in sheets.repo_text(source):
             stale.append("%s (not in %s)" % (claim, source))
     assert not stale, stale
     # And the page really says each of them; a claim that quietly left the page
@@ -152,7 +151,7 @@ def test_every_claimed_step_exists_in_the_code_that_does_it():
     assert not absent, absent
     for wording, (anchor, source) in sorted(BEHAVIOUR.items()):
         assert wording in INSTALL, wording
-        assert anchor in (REPO / source).read_text(encoding="utf-8"), source
+        assert anchor in sheets.repo_text(source), source
 
 
 def test_the_page_names_only_the_controls_that_exist():
