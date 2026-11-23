@@ -8,6 +8,10 @@ ROOT = Path(__file__).resolve().parents[3]
 PUBLIC_URL = 'https://chat.padiem.net'
 
 
+def _read_workflow():
+    return (ROOT / '.github/workflows/b62-production-code-deploy-gate.yml').read_bytes().decode('utf-8')
+
+
 def _load_module():
     spec = importlib.util.spec_from_file_location('b62_cloudflare_production_deploy_config', ROOT / '.github/scripts/b62_cloudflare_production_deploy_config.py')
     mod = importlib.util.module_from_spec(spec)
@@ -50,10 +54,6 @@ PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_LIVE_ENABLED = "false"
 ''')
     return p
-
-
-def _read_workflow():
-    return (ROOT / '.github/workflows/b62-production-code-deploy-gate.yml').read_text()
 
 
 def test_repository_binding_addition_is_not_silently_omitted(tmp_path):

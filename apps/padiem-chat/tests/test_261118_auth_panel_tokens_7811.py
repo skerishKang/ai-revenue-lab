@@ -25,6 +25,9 @@ from pathlib import Path
 
 from css_rules import declaration, find_rules_with_selector, parse_rules
 
+# #8060: the raw sheet read lives in _support; parsed declarations stay here.
+from _support import auth_panel_tokens_source as sheets
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 TOKENS = STATIC / "padiem-tokens.css"
@@ -119,7 +122,7 @@ def _norm(text: str) -> str:
 
 
 def _rules(path: Path):
-    return parse_rules(path.read_text(encoding="utf-8"))
+    return parse_rules(sheets.sheet(path.name))
 
 
 def _root_declarations(rules) -> dict[str, str]:
