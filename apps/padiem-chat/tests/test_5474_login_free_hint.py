@@ -20,13 +20,14 @@ from pathlib import Path
 
 from _r5_auth_module_harness import observations
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
+# #8060: shipped reads live in _support; the markup and locale checks stay.
+from _support import login_free_hint_source as sheets
+
 LOCALE_KEYS = ["auth-free-start", "auth-free-benefit", "guest-login-hint", "guest-login-hint-action"]
 
 
 def read_static(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+    return sheets.sheet(name)
 
 
 def test_the_note_sits_under_the_login_button_in_the_existing_dialog():
@@ -42,7 +43,7 @@ def test_the_note_sits_under_the_login_button_in_the_existing_dialog():
 
 
 def test_both_locales_define_the_note():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_source()
     for key in LOCALE_KEYS:
         occurrences = re.findall(rf'"{re.escape(key)}":\s*"([^"]*)"', locale)
         assert len(occurrences) >= 2, f"{key} is missing from one of the locales"
@@ -98,7 +99,7 @@ def test_the_first_screen_has_one_quiet_guest_login_invitation():
 
 
 def test_the_chat_routes_refuse_a_guest_with_login_required():
-    routes = (ROOT / "app" / "chat_routes.py").read_text(encoding="utf-8")
+    routes = sheets.chat_routes()
     assert 'code": "login_required"' in routes
     assert "anonymous_free" not in routes
 
@@ -107,5 +108,5 @@ def test_the_claw_ui_maps_login_required_to_the_login_guidance():
     client = read_static("app.js")
     assert "login_required: Object.freeze({" in client
     assert '"claw-login-required-note"' in client
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_source()
     assert locale.count('"claw-login-required-note"') >= 2

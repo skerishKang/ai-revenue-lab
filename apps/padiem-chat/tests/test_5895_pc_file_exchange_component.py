@@ -17,9 +17,10 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-NODE_TEST = ROOT / "tests" / "pc_file_exchange_harness.js"
+# #8060: shipped reads live in _support; the component and behavior checks stay.
+from _support import pc_file_exchange_component_source as sheets
+
+NODE_TEST = sheets.tests_path("pc_file_exchange_harness.js")
 
 
 def test_the_shipped_component_flow_passes_under_node():
@@ -27,8 +28,8 @@ def test_the_shipped_component_flow_passes_under_node():
     if node is None:
         pytest.skip("node is not installed in this runner")
     completed = subprocess.run(
-        [node, str(NODE_TEST), str(STATIC / "pc-file-exchange.js"), str(locale_bundle.SOURCE)],
-        cwd=ROOT,
+        [node, NODE_TEST, sheets.static_path("pc-file-exchange.js"), str(locale_bundle.SOURCE)],
+        cwd=sheets.chat_root(),
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -40,23 +41,22 @@ def test_the_shipped_component_flow_passes_under_node():
 
 
 def test_the_component_is_loaded_once_and_calls_only_the_new_routes():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
-    script = (STATIC / "pc-file-exchange.js").read_text(encoding="utf-8")
+    html = sheets.sheet("index.html")
+    script = sheets.sheet("pc-file-exchange.js")
 
     # #5895 menu connection: the part is no longer loaded with every page. The
     # 2026-11-01 unification moved the authoring screens (and their PC bridge)
     # to /apps/council/, which loads its own copy on first use; B66's runtime
     # keeps Chat's copy for the quote sheet.
     assert 'pc-file-exchange.js' not in html and 'pc-file-exchange.css' not in html
-    quote_runtime = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    quote_runtime = sheets.sheet("b66-quote-runtime.js")
     assert 'PC_EXCHANGE_SCRIPT = "./pc-file-exchange.js"' in quote_runtime
     assert 'PC_EXCHANGE_CSS = "./pc-file-exchange.css"' in quote_runtime
-    council = ROOT.parent / "padiem-council-apps" / "static" / "council-app.js"
-    council_source = council.read_text(encoding="utf-8")
+    council_source = sheets.council_source()
     assert 'script.src = "./static/pc-file-exchange.js"' in council_source
     assert 'css.href = "./static/pc-file-exchange.css"' in council_source
-    assert (council.parent / "pc-file-exchange.js").is_file()
-    assert (council.parent / "pc-file-exchange.css").is_file()
+    assert Path(sheets.council_path("pc-file-exchange.js")).is_file()
+    assert Path(sheets.council_path("pc-file-exchange.css")).is_file()
     # The part speaks only to the eight new owner routes: nothing older, nothing the
     # composer owns, and no second pairing or dispatch surface.
     assert sorted({found for found in script.split('"') if found.startswith("/api/")}) == [
@@ -70,7 +70,7 @@ def test_the_component_is_loaded_once_and_calls_only_the_new_routes():
 
 
 def test_the_component_adds_no_deadline_no_give_up_and_no_confirmation():
-    script = (STATIC / "pc-file-exchange.js").read_text(encoding="utf-8")
+    script = sheets.sheet("pc-file-exchange.js")
     for forbidden in ("confirm(", "alert(", "maxAttempts", "max_attempts", "deadline",
                       "AbortSignal.timeout", "setTimeout(fetch"):
         assert forbidden not in script, forbidden
@@ -87,7 +87,7 @@ def test_the_component_adds_no_deadline_no_give_up_and_no_confirmation():
     assert script.count("PAGE = 60") == 1
     # A second PC and a second folder are both choices the owner makes; neither is
     # ever guessed, and the strip that asks is styled for touch like the rest.
-    css = (STATIC / "pc-file-exchange.css").read_text(encoding="utf-8")
+    css = sheets.sheet("pc-file-exchange.css")
     assert 'aria-label", copy(groupLabelKey)' in script
     for token in ("pc_link_selection_required", "pc_folder_selection_required"):
         assert token in script, token
@@ -99,7 +99,7 @@ def test_the_component_adds_no_deadline_no_give_up_and_no_confirmation():
 def test_the_waiting_copy_exists_in_both_languages_and_names_no_technical_term():
     import re
 
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_source()
     korean, english = locale.split("\n    en: {", 1)[0], locale.split("\n    en: {", 1)[1]
     pattern = re.compile(r'"(pc-exchange-[a-z-]+)": "([^"]*)"')
 
