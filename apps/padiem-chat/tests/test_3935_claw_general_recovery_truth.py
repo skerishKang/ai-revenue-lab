@@ -5,6 +5,12 @@ calls. Partial output and canonical run states are inspected after transport.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.projects_recovery_template_source import (
+    app_js, event_js, index_html, lifecycle_js, quote_runtime_js, read as _source_read,
+    recovery_js, stream_js,
+)
+
 import json
 import subprocess
 from pathlib import Path
@@ -13,12 +19,12 @@ from pathlib import Path
 from _r5_function_source import definition_source
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-STREAM_JS = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LIFECYCLE = (STATIC / "message-lifecycle.js").read_text(encoding="utf-8")
-RECOVERY = (STATIC / "claw-recovery-truth.js").read_text(encoding="utf-8")
-EVENT = (STATIC / "claw-run-event-projection.js").read_text(encoding="utf-8")
+APP = app_js()
+STREAM_JS = stream_js()
+INDEX = index_html()
+LIFECYCLE = lifecycle_js()
+RECOVERY = recovery_js()
+EVENT = event_js()
 
 NODE = r"""
 const vm=require("vm"),fs=require("fs"),path=require("path");
