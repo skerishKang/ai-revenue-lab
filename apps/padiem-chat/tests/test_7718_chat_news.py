@@ -14,7 +14,7 @@ from app.d1_sqlite import SqliteD1
 from app.local_cpython import apply_migrations
 from app.news_routes import news, news_unread
 from app.news_store import D1NewsStore
-from test_7680_feedback_routes import BASE, SETTINGS
+from _support.feedback_route_fixtures import BASE, SETTINGS
 from _support.feedback_store import BODY, OTHER, OWNER, database
 
 TOOL_PATH = Path(__file__).resolve().parents[1] / "tools" / "feedback_ops.py"
