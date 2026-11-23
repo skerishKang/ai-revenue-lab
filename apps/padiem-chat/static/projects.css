@@ -15,14 +15,14 @@
   border: 0;
   border-radius: var(--radius-xs);
   background: transparent;
-  color: #5f6368;
+  color: var(--project-muted-text);
   font-size: 18px;
   cursor: pointer;
 }
 
 .section-add-button:hover,
 .section-add-button:focus-visible {
-  background: rgba(24, 24, 27, 0.06);
+  background: var(--project-subtle-wash);
   outline: none;
 }
 
@@ -32,7 +32,7 @@
   margin: 6px 0 0;
   font-size: 14px;
   line-height: 1.5;
-  color: #a23434;
+  color: var(--project-error-text);
 }
 
 .project-row {
@@ -54,28 +54,28 @@
   border: 0;
   border-radius: 9px;
   background: transparent;
-  color: #5f6368;
+  color: var(--project-muted-text);
   cursor: pointer;
 }
 
 .project-manage:hover,
 .project-manage:focus-visible {
-  background: rgba(24, 24, 27, 0.06);
+  background: var(--project-subtle-wash);
   outline: none;
 }
 
 .project-item[aria-current="true"] {
   font-weight: 650;
-  background: rgba(24, 24, 27, 0.06);
+  background: var(--project-subtle-wash);
 }
 
 .project-banner {
   width: min(780px, calc(100% - 24px));
   margin: 0 auto 10px;
   padding: 10px 12px;
-  border: 1px solid rgba(24, 24, 27, 0.1);
+  border: 1px solid var(--project-hairline);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--project-panel-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -93,7 +93,7 @@
   flex: 0 0 auto;
   font-size: 11px;
   letter-spacing: 0.08em;
-  color: #8a8f98;
+  color: var(--project-secondary-text);
 }
 
 .project-banner-copy strong {
@@ -111,10 +111,10 @@
 .project-banner-actions button {
   min-height: 32px;
   padding: 0 10px;
-  border: 1px solid rgba(24, 24, 27, 0.12);
+  border: 1px solid var(--project-border);
   border-radius: 9px;
-  background: #fff;
-  color: #4d5156;
+  background: var(--project-solid-bg);
+  color: var(--project-strong-text);
   cursor: pointer;
 }
 
@@ -123,11 +123,11 @@
   border: 0;
   border-radius: var(--radius-lg);
   padding: 0;
-  box-shadow: 0 24px 80px rgba(24, 24, 27, 0.2);
+  box-shadow: 0 24px 80px var(--project-shadow);
 }
 
 .project-dialog::backdrop {
-  background: rgba(20, 20, 24, 0.34);
+  background: var(--project-dim);
 }
 
 .project-form {
@@ -148,7 +148,7 @@
   margin: 0 0 4px;
   font-size: 10px;
   letter-spacing: 0.12em;
-  color: #8a8f98;
+  color: var(--project-secondary-text);
 }
 
 .project-dialog-header h2 {
@@ -175,18 +175,18 @@
 .project-form label span {
   font-size: 11px;
   font-weight: 500;
-  color: #8a8f98;
+  color: var(--project-secondary-text);
 }
 
 .project-form input,
 .project-form textarea {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid rgba(24, 24, 27, 0.14);
+  border: 1px solid var(--project-hover-border);
   border-radius: 12px;
   padding: 11px 12px;
   font: inherit;
-  background: #fff;
+  background: var(--project-solid-bg);
 }
 
 .project-form textarea {
@@ -196,7 +196,7 @@
 
 .project-form input:focus,
 .project-form textarea:focus {
-  outline: 2px solid rgba(24, 24, 27, 0.16);
+  outline: 2px solid var(--project-focus-outline);
   outline-offset: 1px;
 }
 
@@ -205,11 +205,11 @@
   margin: 2px 0 0;
   font-size: 12px;
   line-height: 1.55;
-  color: #777c85;
+  color: var(--project-note-text);
 }
 
 .project-form-error {
-  color: #b3261e;
+  color: var(--project-danger-text);
 }
 
 .project-form-actions {
@@ -227,22 +227,22 @@
 }
 
 .project-secondary {
-  border: 1px solid rgba(24, 24, 27, 0.12);
-  background: #fff;
+  border: 1px solid var(--project-border);
+  background: var(--project-solid-bg);
 }
 
 .project-primary {
-  border: 1px solid #18181b;
-  background: #18181b;
-  color: #fff;
+  border: 1px solid var(--project-ink);
+  background: var(--project-ink);
+  color: var(--project-on-ink-text);
 }
 
 .project-form-actions .project-danger {
   margin-right: auto;
   min-height: 44px;
-  border: 1px solid rgba(179, 38, 30, 0.25);
-  background: #fff;
-  color: #b3261e;
+  border: 1px solid var(--project-danger-border);
+  background: var(--project-solid-bg);
+  color: var(--project-danger-text);
 }
 
 @media (max-width: 640px) {
@@ -271,11 +271,11 @@
 .project-drive-status { margin: 0; font-weight: 600; }
 .project-drive-status-live { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .project-drive-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.project-drive-button { min-height: 44px; min-width: 44px; padding: 10px 16px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface, #fff); cursor: pointer; }
+.project-drive-button { min-height: 44px; min-width: 44px; padding: 10px 16px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface, var(--project-solid-bg)); cursor: pointer; }
 .project-drive-button:disabled { opacity: 0.6; cursor: progress; }
 .project-drive-button-secondary { background: transparent; }
 .project-drive-button:not(.project-drive-button-secondary),
-.project-drive-select { color: #101828; }
+.project-drive-select { color: var(--project-select-text); }
 .project-drive-picker { border: 0; border-radius: 14px; padding: 18px; width: min(520px, 92vw); max-height: 80vh; overflow: auto; }
 .project-drive-picker-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .project-drive-search-label { display: block; margin: 12px 0 6px; font-weight: 600; }
@@ -285,7 +285,7 @@
 .project-drive-row-name { flex: 1 1 160px; min-width: 0; overflow-wrap: anywhere; }
 .project-drive-row-space { color: var(--muted); font-size: 0.9em; white-space: nowrap; }
 .project-drive-row-modified { color: var(--muted); font-size: 0.85em; white-space: nowrap; }
-.project-drive-select { min-height: 44px; min-width: 44px; padding: 8px 14px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface, #fff); cursor: pointer; }
+.project-drive-select { min-height: 44px; min-width: 44px; padding: 8px 14px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface, var(--project-solid-bg)); cursor: pointer; }
 .project-drive-picker-state { margin: 12px 0 0; color: var(--muted); }
 @media (max-width: 420px) {
   .project-drive-panel { padding: 12px; }
