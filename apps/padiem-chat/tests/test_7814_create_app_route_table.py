@@ -13,6 +13,7 @@ from starlette.testclient import TestClient
 
 from app.config import Settings
 from app.app_factory import create_app
+from _support import claw_route_identity_source as sheets
 
 GOLDEN_PATH = Path(__file__).resolve().parent / "test_7814_create_app_route_table_golden.json"
 
@@ -62,7 +63,7 @@ def _app():
 
 def test_route_table_is_identical_to_golden() -> None:
     app = _app()
-    golden = json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
+    golden = json.loads(sheets.support_source("test_7814_create_app_route_table_golden.json"))
     assert _route_table(app) == golden
 
 

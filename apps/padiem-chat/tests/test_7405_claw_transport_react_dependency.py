@@ -7,19 +7,21 @@ B62 React clone CI, so this contract keeps the cross-app dependency explicit.
 
 from pathlib import Path
 
+from _support import claw_route_identity_source as sheets
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 REACT_SRC = Path(__file__).resolve().parents[2] / "padiem-chat-react" / "src"
 
 
 def test_static_app_has_no_caller_outside_the_shared_transport():
-    for path in STATIC.rglob("*.js"):
+    for path in sheets.js_paths():
         if path.name == "chat-transport.js":
             continue
-        assert "requestClawGeneral" not in path.read_text(encoding="utf-8"), path
+        assert "requestClawGeneral" not in sheets.source(path), path
 
 
 def test_static_transport_keeps_the_react_clone_claw_sender():
-    transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
+    transport = sheets.sheet("chat-transport.js")
     assert "async function requestClawGeneral(payload, signal)" in transport
     assert "    requestClawGeneral," in transport
     start = transport.index("async function requestClawGeneral(payload, signal)")
@@ -30,8 +32,8 @@ def test_static_transport_keeps_the_react_clone_claw_sender():
 
 
 def test_react_clone_imports_and_calls_the_static_claw_sender():
-    react_transport = (REACT_SRC / "lib" / "chat-transport.ts").read_text(encoding="utf-8")
-    react_claw = (REACT_SRC / "api" / "clawApi.ts").read_text(encoding="utf-8")
+    react_transport = sheets.repo_source("padiem-chat-react/src/lib/chat-transport.ts")
+    react_claw = sheets.repo_source("padiem-chat-react/src/api/clawApi.ts")
     assert 'import "../../../../apps/padiem-chat/static/chat-transport.js";' in react_transport
     assert "requestClawGeneral(payload: unknown, signal?: AbortSignal): Promise<Response>;" in react_transport
     assert "chatTransport.requestClawGeneral(payload, request.signal)" in react_claw

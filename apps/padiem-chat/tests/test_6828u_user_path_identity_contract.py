@@ -28,6 +28,7 @@ from starlette.testclient import TestClient
 
 from test_b66_ai_chat_routes_4466 import payload, setup, sign_in
 from test_user_response_privacy_261105 import _assert_private, _needles, _privacy_app
+from _support import claw_route_identity_source as sheets
 
 STATIC_DIR = Path(__file__).resolve().parents[1] / "static"
 REGISTRY_PATH = (
@@ -42,7 +43,7 @@ LOGIN_BRAND_EXCEPTIONS = frozenset({"google"})
 
 def _identity_needles() -> list[str]:
     """Model, upstream and provider identifiers — hosts are a response check."""
-    register = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    register = json.loads(sheets.repo_source("korean-ai-platform/app/pilot/b14_models.json"))
     names = [model["id"] for model in register.get("models", [])]
     names += [
         model["upstream_model"]
@@ -60,7 +61,7 @@ def _identity_needles() -> list[str]:
 
 
 def _offenders(path: Path, needles: list[str]) -> list[str]:
-    text = path.read_text(encoding="utf-8", errors="replace")
+    text = sheets.source(path)
     return sorted(name for name in needles if name in text)
 
 
