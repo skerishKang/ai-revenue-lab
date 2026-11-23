@@ -8,6 +8,7 @@ import sqlite3
 import pytest
 
 from canonical_connector_enrollment_durable import (
+    _ref as _consent_device_ref,
     CANONICAL_IDENTITY_DURABLE_OBJECT_REUSED,
     IdentityDurableConnectorEnrollmentRecords,
     PRODUCTION_CONSENT_RPC_EXPOSED,
@@ -443,3 +444,24 @@ def test_actual_s1_durable_withdrawal_at_redeem_refuses_without_binding():
     )) == "enrollment_consent_withdrawn"
     assert not broker._bindings
     assert pairing.pending_challenge_count == 1
+
+
+@pytest.mark.parametrize("value", [
+    "node//Ab3Cd4Ef5Gh6Ij7Kl8Mn9Op0Qr1St2Uv3Wx4@meshdomain1",
+    "node/meshdomain1/Ab3Cd4Ef5Gh6@meshdomain1",
+    "node//a/b",
+    "../../etc/passwd",
+    "https://example.test/node/x",
+    "",
+    "device with space",
+])
+def test_composed_or_path_device_refs_stay_refused(value: str) -> None:
+    """##8359: the consent server accepts only the bare human-screen form.
+
+    Callers must resolve the composed Mesh form to its node-id segment
+    before lookup; loosening this grammar to admit path forms would let a
+    composed value smuggle a remote location through consent."""
+    assert _consent_device_ref("Ab3Cd4Ef5Gh6@meshdomain1") == "Ab3Cd4Ef5Gh6@meshdomain1"
+    with pytest.raises(ControlPlaneContractError) as excinfo:
+        _consent_device_ref(value)
+    assert excinfo.value.code == "connector_enrollment_invalid_reference"

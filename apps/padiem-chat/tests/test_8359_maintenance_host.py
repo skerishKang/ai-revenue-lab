@@ -20,6 +20,7 @@ from app.pc_helper_install import install_command, install_script
 
 NOW = datetime(2026, 11, 23, tzinfo=timezone.utc)
 DEVICE = "node//managed-fixture"
+BARE = "managed-fixture"
 UID = "usr_owner"
 SUB = "sub_" + "a" * 32
 TENANT = "tenant_" + "b" * 32
@@ -138,11 +139,21 @@ def rig(monkeypatch):
             raise ValueError("maintenance_owner_unresolved")
         yield session
 
+    flags["consent_refs"] = []
+
     async def read(identity, method, **kw):
         if method == "owner_scope":
             return SCOPE
-        return {**SCOPE, "device_id": DEVICE, "withdrawn_at": None,
-                "consent_id": "consent-fixture"} if flags["consent"] else None
+        # The consent server keys records by the bare device id a human
+        # screen resolves (node-id segment); a composed node/ lookup is as
+        # refused there as a wrong id. Mirror that exactness here.
+        flags["consent_refs"].append(kw.get("device_id"))
+        if not flags["consent"]:
+            return None
+        if kw.get("device_id") != BARE:
+            raise ValueError("connector_enrollment_invalid_reference")
+        return {**SCOPE, "device_id": BARE, "withdrawn_at": None,
+                "consent_id": "consent-fixture"}
 
     async def route_read(*args, **kwargs):
         if flags["precontact"]:
@@ -189,6 +200,9 @@ def test_actual_dispatch_path_and_next_observation(rig, monkeypatch):
         assert len(history.rows) == 1
         row = history.rows[0]
         assert row["user_id"] == UID and row["device_id"] == row["node_ref"] == DEVICE
+        # ##8359: the consent lookup must carry the same bare ref the human
+        # screens resolve, never the composed Mesh node form.
+        assert flags["consent_refs"] and set(flags["consent_refs"]) == {BARE}
         assert row["user_mode"] is False and row["kind"] == "command"
         assert row["command_text"] == registration_command()
         assert history.runs[row["run_id"]]["action"] == "pc_maintenance"
@@ -204,6 +218,31 @@ def test_actual_dispatch_path_and_next_observation(rig, monkeypatch):
         assert db.execute("SELECT count(*) FROM ops_alert_outbox").fetchone()[0] == 0
         assert db.execute("SELECT count(*) FROM ops_audit_log WHERE action='helper_auto_verified'").fetchone()[0] == 1
     asyncio.run(run())
+
+
+def test_consent_lookup_carries_only_the_bare_ref(rig):
+    """The accumulated wire calls carry only the bare ref a human screen
+    resolves; the composed Mesh form never reaches the consent server
+    (server-side refusal is pinned in the control-plane durable tests)."""
+    app, queue, history, flags, store, db = rig
+    async def run():
+        await host.maintenance_round(app, ENV, store)
+    asyncio.run(run())
+    assert flags["consent_refs"] and set(flags["consent_refs"]) == {BARE}
+
+
+def test_bare_derivation_edges():
+    """Only a canonical identity yields a consent ref; anything else refuses
+    instead of guessing, so a bad mesh value can never slip through."""
+    from padiem_ai_core.pc_device_identity import bare_device_id
+    assert bare_device_id("node//Ab3Cd4Ef5Gh6@meshdomain1") == "Ab3Cd4Ef5Gh6@meshdomain1"
+    assert bare_device_id("node/mydomain/Ab3Cd4Ef5Gh6@meshdomain1") == "Ab3Cd4Ef5Gh6@meshdomain1"
+    assert bare_device_id("device-oracle-1") == "device-oracle-1"
+    assert bare_device_id("node//a/b") is None
+    assert bare_device_id("") is None
+    assert bare_device_id(None) is None
+    assert bare_device_id("../../etc/passwd") is None
+    assert bare_device_id("device with space") is None
 
 
 @pytest.mark.parametrize(("denial", "expected"), [
