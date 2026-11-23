@@ -34,7 +34,7 @@ from app.mesh_device_presence_store import (
 from app.pc_device_pairing_routes import PC_PAIRING_ADOPT_PATH, PC_PAIRING_PATH
 from app.pc_device_pairing_store import D1PcPairingStore
 
-import test_5553_mesh_online_projection_261024 as existing
+import _support.mesh_online_projection as existing
 
 ROOT = Path(__file__).resolve().parents[3]
 MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
