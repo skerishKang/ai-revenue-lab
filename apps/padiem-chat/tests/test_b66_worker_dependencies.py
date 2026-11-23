@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
+
 from copy import deepcopy
 import importlib.util
 from pathlib import Path
@@ -17,13 +20,13 @@ spec.loader.exec_module(builder)
 
 
 def worker_lock() -> dict:
-    return tomllib.loads((APP_ROOT / "pylock.toml").read_text(encoding="utf-8"))
+    return tomllib.loads(read(APP_ROOT / "pylock.toml"))
 
 
 def test_pymupdf_is_dev_only_and_absent_from_chat_worker_lock():
     versions = builder.validate_lock(worker_lock())
     assert "pymupdf" not in versions
-    host = tomllib.loads((APP_ROOT / "uv.lock").read_text(encoding="utf-8"))
+    host = tomllib.loads(read(APP_ROOT / "uv.lock"))
     packages = [package for package in host["package"] if package["name"] == "pymupdf"]
     assert [package["version"] for package in packages] == ["1.26.3"]
 
@@ -76,11 +79,11 @@ def test_local_builds_use_staging_without_existing_build_metadata(tmp_path):
     staging = tmp_path / "staging"
     staging.mkdir()
     staged_lock = builder.stage_local_packages(lock, staging)
-    staged = tomllib.loads(staged_lock.read_text())["packages"][0]["directory"]["path"]
+    staged = tomllib.loads(read(staged_lock))["packages"][0]["directory"]["path"]
     assert Path(staged).is_relative_to(staging)
     assert (Path(staged) / "pyproject.toml").is_file()
     assert not (Path(staged) / "tracked.egg-info").exists()
-    assert marker.read_text() == "original"
+    assert read(marker) == "original"
 
 
 def test_runtime_copy_is_byte_identical_and_refreshes_from_canonical_source(tmp_path):
