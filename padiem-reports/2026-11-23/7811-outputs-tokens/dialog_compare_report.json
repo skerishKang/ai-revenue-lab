@@ -1,0 +1,132 @@
+[
+  {
+    "combo": "light__1440x950__outputs-dialog",
+    "pixel": 0,
+    "noise": 0,
+    "state_ok": [
+      true,
+      true
+    ],
+    "app_init": [
+      true,
+      true
+    ]
+  },
+  {
+    "combo": "light__390x844__outputs-dialog",
+    "pixel": 0,
+    "noise": 0,
+    "state_ok": [
+      true,
+      true
+    ],
+    "app_init": [
+      true,
+      true
+    ]
+  },
+  {
+    "combo": "dark__1440x950__outputs-dialog",
+    "pixel": 0,
+    "noise": 0,
+    "state_ok": [
+      true,
+      true
+    ],
+    "app_init": [
+      true,
+      true
+    ]
+  },
+  {
+    "combo": "dark__390x844__outputs-dialog",
+    "pixel": 0,
+    "noise": 0,
+    "state_ok": [
+      true,
+      true
+    ],
+    "app_init": [
+      true,
+      true
+    ]
+  },
+  {
+    "combo": "padiem-glass__1440x950__outputs-dialog",
+    "pixel": 0,
+    "noise": 0,
+    "state_ok": [
+      true,
+      true
+    ],
+    "app_init": [
+      true,
+      true
+    ]
+  },
+  {
+    "combo": "padiem-glass__390x844__outputs-dialog",
+    "pixel": 0,
+    "noise": 0,
+    "state_ok": [
+      true,
+      true
+    ],
+    "app_init": [
+      true,
+      true
+    ]
+  },
+  {
+    "combo": "cinematic__1440x950__outputs-dialog",
+    "pixel": 0,
+    "noise": 0,
+    "state_ok": [
+      true,
+      true
+    ],
+    "app_init": [
+      true,
+      true
+    ]
+  },
+  {
+    "combo": "cinematic__390x844__outputs-dialog",
+    "pixel": 0,
+    "noise": 0,
+    "state_ok": [
+      true,
+      true
+    ],
+    "app_init": [
+      true,
+      true
+    ]
+  },
+  {
+    "combo": "padiem-home__1440x950__outputs-dialog",
+    "pixel": 0,
+    "noise": 0,
+    "state_ok": [
+      true,
+      true
+    ],
+    "app_init": [
+      true,
+      true
+    ]
+  },
+  {
+    "combo": "padiem-home__390x844__outputs-dialog",
+    "pixel": 0,
+    "noise": 0,
+    "state_ok": [
+      true,
+      true
+    ],
+    "app_init": [
+      true,
+      true
+    ]
+  }
+]

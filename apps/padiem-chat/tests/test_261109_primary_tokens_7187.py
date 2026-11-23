@@ -271,6 +271,10 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--project-panel-bg", "--project-secondary-text",
                 "--project-select-text", "--project-shadow", "--project-solid-bg",
                 "--project-strong-text", "--project-subtle-wash"}
+             # #7811 C2 outputs(261123): 저장한 답변 창의 고정 팔레트. 나머지
+             # 값은 위 --project-* 토큰을 재사용하고, 새 값 둘만 여기서 소유한다.
+             | {"--outputs-action-hover-wash", "--outputs-content-bg",
+                "--outputs-dialog-shadow"}
              | {"--voice-mic-active-bg", "--voice-mic-active-edge",
                 "--voice-mic-active-ring", "--voice-mic-active-hover-bg",
                 "--voice-mic-active-hover-edge", "--composer-send-text",

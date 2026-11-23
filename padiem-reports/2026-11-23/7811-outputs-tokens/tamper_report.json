@@ -1,0 +1,8 @@
+{
+  "token": "--outputs-dialog-shadow",
+  "mutation": "rgba(24,24,27,0.2)→#ff00ff",
+  "screen": "outputs-dialog",
+  "theme": "light",
+  "viewport": "1440x950",
+  "pixel": 221122
+}
