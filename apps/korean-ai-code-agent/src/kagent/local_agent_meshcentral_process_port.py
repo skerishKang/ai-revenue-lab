@@ -56,7 +56,14 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Mapping, Sequence
 
 from .contracts import ContractError
-from .local_agent_meshcentral_sysinfo_port import GETSYSINFO_ACTION
+from .local_agent_meshcentral_sysinfo_port import (
+    GETSYSINFO_ACTION,
+    SYSINFO_DENIED,
+    SYSINFO_SHAPE,
+    SYSINFO_TIMEOUT,
+    SYSINFO_TRANSPORT,
+    MeshCentralSysInfoReadFailure,
+)
 
 #: The only three verbs this lane may send. `pskill` is the one that changes anything on
 #: the PC, and `stop()` reaches it only with a pid this dispatch recorded or, failing that,
@@ -419,7 +426,9 @@ class MeshCentralProcessSocket:
 
         Only the closed ``getsysinfo`` frame built by the sysinfo port is
         accepted. The server answers from its stored node document; this
-        method sends no device command and writes nothing on the PC.
+        method sends no device command and writes nothing on the PC. Every
+        failure carries only a value-free wire code: the operator credential,
+        the node reference, the host and any reply body stay out of the log.
         """
         if (not isinstance(frame, Mapping) or frame.get("action") != GETSYSINFO_ACTION
                 or set(frame) != {"action", "nodeid", "tag", "nodeinfo"}
@@ -431,21 +440,38 @@ class MeshCentralProcessSocket:
             connect = open_websocket
         else:
             connect = self._connect
-        socket = connect(
-            self._host, self._port, "/control.ashx", self._auth_headers(),
-            PS_WAIT_SECONDS,
-        )
+        try:
+            headers = self._auth_headers()
+        except MeshCentralProcessLaneRefused:
+            raise MeshCentralSysInfoReadFailure(SYSINFO_DENIED) from None
+        try:
+            socket = connect(
+                self._host, self._port, "/control.ashx", headers, PS_WAIT_SECONDS,
+            )
+        except Exception:
+            raise MeshCentralSysInfoReadFailure(SYSINFO_TRANSPORT) from None
         try:
             deadline = time.monotonic() + PS_WAIT_SECONDS
-            socket.send_text('{"action":"authcookie"}')
-            if not self._await_authcookie(socket, deadline):
-                raise MeshCentralProcessLaneRefused(
-                    "the sysinfo read was not authenticated"
-                )
-            socket.send_text(json.dumps(frame, separators=(",", ":")))
+            try:
+                socket.send_text('{"action":"authcookie"}')
+            except Exception:
+                raise MeshCentralSysInfoReadFailure(SYSINFO_TRANSPORT) from None
+            try:
+                authenticated = self._await_authcookie(socket, deadline)
+            except TimeoutError:
+                raise MeshCentralSysInfoReadFailure(SYSINFO_TIMEOUT) from None
+            if not authenticated:
+                raise MeshCentralSysInfoReadFailure(SYSINFO_DENIED)
+            try:
+                socket.send_text(json.dumps(frame, separators=(",", ":")))
+            except Exception:
+                raise MeshCentralSysInfoReadFailure(SYSINFO_TRANSPORT) from None
             expected = frame.get("tag")
             while time.monotonic() < deadline:
-                message = socket.recv(deadline)
+                try:
+                    message = socket.recv(deadline)
+                except TimeoutError:
+                    raise MeshCentralSysInfoReadFailure(SYSINFO_TIMEOUT) from None
                 if message is None:
                     return None
                 opcode, payload = message
@@ -454,9 +480,9 @@ class MeshCentralProcessSocket:
                 try:
                     answer = json.loads(payload.decode("utf-8"))
                 except (UnicodeDecodeError, ValueError):
-                    continue
+                    raise MeshCentralSysInfoReadFailure(SYSINFO_SHAPE) from None
                 if not isinstance(answer, dict):
-                    continue
+                    raise MeshCentralSysInfoReadFailure(SYSINFO_SHAPE)
                 if answer.get("action") != GETSYSINFO_ACTION:
                     continue
                 if answer.get("tag") == expected:

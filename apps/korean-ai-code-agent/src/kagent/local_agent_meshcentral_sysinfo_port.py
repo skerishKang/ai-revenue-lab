@@ -38,16 +38,50 @@ _MONTHS = {name: number for number, name in enumerate(
     ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"), 1)}
 
 #: Every ``None`` has its own stage code. No exception text, path, node value
-#: or response body is ever printed by this lane.
+#: or response body is ever printed by this lane. The ``sysinfo_*`` codes are
+#: wire stages: they name why the authenticated socket failed before a usable
+#: stored node document reached the parser. ``sysinfo_error`` is only the
+#: last-resort bucket for an exception no wire stage claims.
 SYSINFO_REASON_CODES = frozenset({
     "observed", "no_answer", "invalid_answer", "wrong_action", "wrong_tag",
     "info_unavailable", "no_hardware", "no_agentvers", "no_commit_date",
-    "format_mismatch", "sysinfo_error",
+    "format_mismatch",
+    "sysinfo_nodeid", "sysinfo_denied", "sysinfo_transport",
+    "sysinfo_timeout", "sysinfo_no_reply", "sysinfo_shape", "sysinfo_error",
 })
+
+#: Named wire-stage codes. These doubles as the whole text of a wire failure,
+#: so no response body, node id, host, credential or exception text can leak.
+SYSINFO_NODEID = "sysinfo_nodeid"
+SYSINFO_DENIED = "sysinfo_denied"
+SYSINFO_TRANSPORT = "sysinfo_transport"
+SYSINFO_TIMEOUT = "sysinfo_timeout"
+SYSINFO_NO_REPLY = "sysinfo_no_reply"
+SYSINFO_SHAPE = "sysinfo_shape"
+SYSINFO_ERROR = "sysinfo_error"
+
+
+class MeshCentralSysInfoReadFailure(Exception):
+    """A wire-stage failure carrying only a value-free reason code.
+
+    The exception's sole argument is its code. The authenticated socket layer
+    raises this instead of letting transport, deadline or refusal exceptions
+    escape to the reporter, where they used to collapse into ``sysinfo_error``.
+    """
+
+    def __init__(self, code: str) -> None:
+        if code not in SYSINFO_REASON_CODES:
+            raise ValueError("an unknown sysinfo failure code is not allowed")
+        super().__init__(code)
+        self.code = code
 
 
 class MeshCentralSysInfoRefused(ValueError):
     """A malformed request; never carries a node value or a credential."""
+
+    def __init__(self, message: str, code: str = SYSINFO_NODEID) -> None:
+        super().__init__(message)
+        self.code = code
 
 
 def _checked_node_ref(node_ref: Any) -> str:
@@ -59,7 +93,7 @@ def _checked_node_ref(node_ref: Any) -> str:
 def _checked_tag(tag: Any) -> str:
     if (not isinstance(tag, str) or not tag.startswith(SYSINFO_TAG_PREFIX)
             or len(tag) > 128 or any(ord(char) < 33 or ord(char) > 126 for char in tag)):
-        raise MeshCentralSysInfoRefused("tag is not a bounded sysinfo tag")
+        raise MeshCentralSysInfoRefused("tag is not a bounded sysinfo tag", SYSINFO_SHAPE)
     return tag
 
 
@@ -68,6 +102,15 @@ def sysinfo_frame(node_ref: str, tag: str) -> dict[str, Any]:
 
     ``tag`` is added only so the echoed frame can be matched to this request.
     No PC command field, response id or write verb is present.
+
+    Verified against MeshCentral's ``meshuser.js``
+    ``serverCommandGetSysInfo`` (upstream master): the reply keeps
+    ``action: 'getsysinfo'``, echoes ``tag`` and spreads the stored
+    ``si<nodeid>`` document at the top level; ``nodeinfo: true`` adds ``node``
+    and ``rights``. The handler does **not** echo ``responseid``, so sending
+    one and matching on it would never correlate - ``tag`` is the only
+    correlation key. A refusal answers ``noinfo: true, result: ...`` with the
+    same action and tag.
     """
     return {
         "action": GETSYSINFO_ACTION,
@@ -160,6 +203,23 @@ def agent_version_from_sysinfo(answer: Any, tag: str) -> tuple[str | None, str]:
     return value, "observed"
 
 
+def sysinfo_failure_code(exc: BaseException) -> str:
+    """Classify a raised exception by type only, never by its text or target.
+
+    ``MeshCentralSysInfoReadFailure`` already carries a bounded code from the
+    socket layer. A bare timeout, connect or broken-pipe error is classified
+    here as a backstop for injected transports that do not use that class.
+    Anything else keeps the generic code, still with no value attached.
+    """
+    if isinstance(exc, (MeshCentralSysInfoReadFailure, MeshCentralSysInfoRefused)):
+        return exc.code
+    if isinstance(exc, TimeoutError):
+        return SYSINFO_TIMEOUT
+    if isinstance(exc, OSError):
+        return SYSINFO_TRANSPORT
+    return SYSINFO_ERROR
+
+
 class MeshCentralSysInfoPort:
     """One bounded server-document read, over the caller's authenticated socket.
 
@@ -174,14 +234,34 @@ class MeshCentralSysInfoPort:
         self._send = send
 
     def read_commit_date(self, node_ref: str) -> tuple[str | None, str]:
-        """Return the bounded build stamp and a value-free reason code."""
+        """Return the bounded build stamp and a value-free reason code.
+
+        Each wire failure becomes its own code instead of a shared
+        ``sysinfo_error``: an uncanonical node reference, an authentication or
+        permission refusal, a private-tunnel transport fault, a deadline, a
+        closed socket with no correlated reply, or a non-frame reply. Nothing
+        from the exception or the answer reaches the log.
+        """
         tag = new_sysinfo_tag()
-        answer = self._send(sysinfo_frame(node_ref, tag))
+        try:
+            frame = sysinfo_frame(node_ref, tag)
+        except MeshCentralSysInfoRefused as exc:
+            return None, exc.code
+        try:
+            answer = self._send(frame)
+        except Exception as exc:
+            return None, sysinfo_failure_code(exc)
+        if answer is None:
+            return None, SYSINFO_NO_REPLY
         return agent_version_from_sysinfo(answer, tag)
 
 
 __all__ = [
-    "GETSYSINFO_ACTION", "SYSINFO_REASON_CODES", "MeshCentralSysInfoPort",
+    "GETSYSINFO_ACTION", "SYSINFO_REASON_CODES",
+    "SYSINFO_NODEID", "SYSINFO_DENIED", "SYSINFO_TRANSPORT",
+    "SYSINFO_TIMEOUT", "SYSINFO_NO_REPLY", "SYSINFO_SHAPE", "SYSINFO_ERROR",
+    "MeshCentralSysInfoPort", "MeshCentralSysInfoReadFailure",
     "MeshCentralSysInfoRefused", "agent_version_from_sysinfo",
     "new_sysinfo_tag", "normalize_agent_commit_date", "sysinfo_frame",
+    "sysinfo_failure_code",
 ]

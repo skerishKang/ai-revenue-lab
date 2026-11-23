@@ -39,7 +39,9 @@ from padiem_ai_core.pc_helper_ready import (
     HELPER_READY_KEYS, HELPER_READY_OPTIONAL_KEYS, HELPER_UPDATE_RESULTS,
     REGISTRATION_ERRORS, HelperReadyError, validate_helper_ready,
 )
-from .local_agent_meshcentral_sysinfo_port import SYSINFO_REASON_CODES
+from .local_agent_meshcentral_sysinfo_port import (
+    SYSINFO_REASON_CODES, sysinfo_failure_code,
+)
 
 HELPER_READY_PATH = "/api/claw/connector/mesh-reads/helper-ready"
 HELPER_READY_PROTOCOL = "padiem-helper-ready-v1"
@@ -494,8 +496,11 @@ class HelperStatusReadFallback:
         if self._sysinfo_port is not None:
             try:
                 value, sysinfo_reason = self._sysinfo_port.read_commit_date(node)
-            except Exception:
-                value, sysinfo_reason = None, "sysinfo_error"
+            except Exception as exc:
+                # The port classifies its own wire stages. This backstop only
+                # handles an injected port that lets an exception escape, and
+                # still reads no exception text, node reference or host.
+                value, sysinfo_reason = None, sysinfo_failure_code(exc)
         reasons: list[str] = []
         if value is None:
             for path in _MESH_AGENT_VERSION_READ_PATHS:
