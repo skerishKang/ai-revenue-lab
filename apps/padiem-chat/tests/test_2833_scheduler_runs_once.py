@@ -32,7 +32,7 @@ import pytest
 from kagent.claw_automation import ClawScheduledRunStatus
 
 from app.claw_automation_store import D1ClawAutomationStore
-from test_claw_automation_async_composition_seam import (
+from _support.claw_automation_worker_source import (
     _load_worker,
     _route_db,
     _run_worker_source,

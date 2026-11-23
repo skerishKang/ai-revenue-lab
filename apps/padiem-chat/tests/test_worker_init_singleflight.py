@@ -3,7 +3,7 @@ import sys
 import types
 from types import SimpleNamespace
 
-from test_claw_automation_async_composition_seam import _load_worker
+from _support.claw_automation_worker_source import _load_worker
 
 
 def _runtime(monkeypatch, module, observed):
