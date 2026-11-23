@@ -1,16 +1,17 @@
-import locale_bundle
 """Owner-requested home screen cleanup: four cards, help moved to Settings, one profile entry."""
-from pathlib import Path
+from __future__ import annotations
 
-ROOT = Path(__file__).resolve().parents[1] / "static"
-HTML = (ROOT / "index.html").read_text(encoding="utf-8")
-FIRST_USE = (ROOT / "padiem-first-use.css").read_text(encoding="utf-8")
-POLISH = (ROOT / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
-APP = (ROOT / "app.js").read_text(encoding="utf-8")
-DIALOG = (ROOT / "chat-login-dialog-module.js").read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the markup and CSS checks stay.
+from _support import home_card_help_profile_source as sheets
+
+HTML = sheets.sheet("index.html")
+FIRST_USE = sheets.sheet("padiem-first-use.css")
+POLISH = sheets.sheet("padiem-chat-ui-polish.css")
+APP = sheets.sheet("app.js")
+DIALOG = sheets.sheet("chat-login-dialog-module.js")
 # R5 1단계: 설정 dialog의 열기/닫기 ARIA는 설정 모듈이 소유한다.
-SETTINGS = (ROOT / "chat-settings-module.js").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+SETTINGS = sheets.sheet("chat-settings-module.js")
+LOCALE = sheets.locale_source()
 
 
 def test_four_cards_fit_one_desktop_row_and_mobile_keeps_two_or_one():
@@ -53,8 +54,9 @@ def test_name_avatar_opens_one_settings_dialog_no_duplicate_settings_row():
     assert " hidden" not in settings_tag, "설정 항목은 게스트에게도 보인다"
     assert '.sidebar-bottom > #settingsButton { display: none !important; }' not in POLISH
     assert 'class="sidebar-account account-controls"' in sidebar
-    assert 'profileToggle.setAttribute("aria-controls", "profileMenu")' in (ROOT / "chat-profile-menu-module.js").read_text(encoding="utf-8")
-    assert 'profileToggle.setAttribute("aria-haspopup", "menu")' in (ROOT / "chat-profile-menu-module.js").read_text(encoding="utf-8")
+    profile_menu = sheets.sheet("chat-profile-menu-module.js")
+    assert 'profileToggle.setAttribute("aria-controls", "profileMenu")' in profile_menu
+    assert 'profileToggle.setAttribute("aria-haspopup", "menu")' in profile_menu
     assert 'loginDialogModule().wireProfileToggle();' in APP
     click = (APP + DIALOG).split('deps.profileToggle.addEventListener("click"', 1)[1].split("});", 1)[0]
     assert 'PadiemChatProfileMenu?.toggle?.()' in click

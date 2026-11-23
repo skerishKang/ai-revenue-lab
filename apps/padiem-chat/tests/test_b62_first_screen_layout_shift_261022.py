@@ -38,9 +38,8 @@ requires_browser = pytest.mark.skipif(
     sync_playwright is None, reason="playwright is not installed in this environment"
 )
 
-APP_ROOT = Path(__file__).resolve().parents[1]
-STATIC = APP_ROOT / "static"
-PREVIEW_CSS = STATIC / "attachments.css"
+# #8060: shipped reads live in _support; the CSS and browser checks stay.
+from _support import first_screen_layout_shift_source as sheets
 
 # The phone and the desktop of the report.
 WINDOWS = ((390, 844), (1440, 900))
@@ -86,7 +85,7 @@ MIME = {
 
 def preview_rules() -> str:
     """The reservations without the comments, so a rule body is a rule body."""
-    css = PREVIEW_CSS.read_text(encoding="utf-8").split("/* END COMPOSER RESERVATIONS */", 1)[0]
+    css = sheets.sheet("attachments.css").split("/* END COMPOSER RESERVATIONS */", 1)[0]
     return re.sub(r"/\*.*?\*/", "", css, flags=re.S)
 
 
@@ -94,7 +93,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     """The static page plus the two endpoints the first screen waits for."""
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(STATIC), **kwargs)
+        super().__init__(*args, directory=sheets.static_dir(), **kwargs)
 
     def log_message(self, *_args):
         pass
@@ -170,7 +169,7 @@ def test_web_search_slot_is_removed_while_the_tier_slot_remains():
     assert "webSearchButton" not in css
     assert "#composerForm .composer-tools .model-pill" in css
     assert "width: 116px" in css
-    assert 'id="webSearchButton"' not in (STATIC / "index.html").read_text(encoding="utf-8")
+    assert 'id="webSearchButton"' not in sheets.sheet("index.html")
 
 def test_the_voice_controls_space_is_reserved_and_given_back():
     """The voice control is mounted after the first paint.
