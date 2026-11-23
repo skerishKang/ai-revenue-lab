@@ -11,8 +11,10 @@ from app import pc_helper_maintenance_host as host
 
 SUB = "subject_fixture"
 DEVICE = "node//fixture"
+BARE = "fixture"
 SCOPE = {"owner_subject_id": SUB, "account_ref": "acct_fixture", "workspace_ref": "ws_fixture"}
-CONSENT = {**SCOPE, "device_id": DEVICE, "withdrawn_at": None, "consent_id": "consent_fixture"}
+# The stored consent carries the bare ref a human screen resolves.
+CONSENT = {**SCOPE, "device_id": BARE, "withdrawn_at": None, "consent_id": "consent_fixture"}
 
 
 def _request():
@@ -39,7 +41,7 @@ def test_denial_stage_codes_are_value_free(caplog, monkeypatch):
         ("scope_subject", _scope(owner_subject_id="other_subject"), CONSENT),
         ("consent_missing", SCOPE, None),
         ("consent_subject", SCOPE, _consent(owner_subject_id="other_subject")),
-        ("consent_device", SCOPE, _consent(device_id="node//other")),
+        ("consent_device", SCOPE, _consent(device_id="other")),
         ("consent_withdrawn", SCOPE, _consent(withdrawn_at="2026-11-23T00:00:00Z")),
         ("consent_id", SCOPE, _consent(consent_id=None)),
         ("account_ref_mismatch", SCOPE, _consent(account_ref="other_account")),
