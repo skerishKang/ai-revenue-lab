@@ -21,16 +21,14 @@ from __future__ import annotations
 import json
 import os
 import subprocess
-from pathlib import Path
 
-TESTS = Path(__file__).parent
-STATIC = TESTS.parent / "static"
+from _support import chat_static_layout_source as sheets
 
-LIFECYCLE_SOURCE = (STATIC / "message-lifecycle.js").read_text(encoding="utf-8")
-PRESENTATION_SOURCE = (STATIC / "capability-presentation.css").read_text(encoding="utf-8")
-POLISH_SOURCE = (STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
-STYLES_SOURCE = (STATIC / "styles.css").read_text(encoding="utf-8")
-TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
+LIFECYCLE_SOURCE = sheets.sheet("message-lifecycle.js")
+PRESENTATION_SOURCE = sheets.sheet("capability-presentation.css")
+POLISH_SOURCE = sheets.sheet("padiem-chat-ui-polish.css")
+STYLES_SOURCE = sheets.sheet("styles.css")
+TRANSPORT = sheets.sheet("chat-transport.js")
 
 
 def test_a_stageless_task_card_hides_the_status_pill():
@@ -60,7 +58,7 @@ def test_the_error_card_retry_button_is_a_compact_secondary_control():
     # The base stylesheet stays byte-pinned: it must not carry the override.
     assert ".error-box .retry-button {" not in STYLES_SOURCE
     # The mobile touch-target rule still overrides for small screens.
-    assert ".retry-button," in (STATIC / "mobile-target-legibility.css").read_text(encoding="utf-8")
+    assert ".retry-button," in sheets.sheet("mobile-target-legibility.css")
 
 
 def run_node(source: str) -> dict:
@@ -76,7 +74,7 @@ def run_node(source: str) -> dict:
         result = subprocess.run(
             ["node", handle.name], capture_output=True, text=True,
             encoding="utf-8", timeout=20,
-            env={**os.environ, "TRANSPORT_MODULE": str(STATIC / "chat-transport.js")},
+            env={**os.environ, "TRANSPORT_MODULE": sheets.static_path("chat-transport.js")},
         )
     finally:
         try:
