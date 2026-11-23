@@ -13,7 +13,6 @@ import logging
 import re
 from datetime import datetime, timedelta, timezone
 
-from padiem_ai_core.pc_device_identity import bare_device_id
 from starlette.requests import Request
 
 from .d1_rows import rows_from_result
@@ -257,12 +256,25 @@ async def _authorized(request, env, facts, session, uid, resolver):
     identity = state.control_plane_identity_authority
     stage = None
     scope = await mode_connector_read(identity, "owner_scope", session_id=session.session_id)
-    # The consent store keys records by the bare device id a human screen
-    # resolves (the node-id segment of a composed Mesh identity); it refuses
-    # the composed node/ form. Look up that bare ref, never loosen the
-    # consent server's own validation to admit the composed form.
-    consent_ref = bare_device_id(device)
-    if consent_ref is None:
+    # The consent directory is keyed by the connector's own enrollment device
+    # id, not by the Mesh node this link names. The deployment ownership map
+    # is the server-owned pair of both strings, so its pinned device for this
+    # node is the exact value a human consent screen names. Use it unchanged:
+    # never reshape the Mesh string into a key and never loosen the consent
+    # server's own reference check.
+    source = getattr(state, "oracle_mesh_return_source", None)
+    consent_of = getattr(source, "consent_device_for_node", None)
+    scope_ready = (
+        isinstance(scope, dict) and bool(scope.get("account_ref"))
+        and bool(scope.get("workspace_ref"))
+    )
+    consent_ref = (
+        consent_of(account_ref=scope["account_ref"], node_ref=device)
+        if scope_ready and callable(consent_of) else None
+    )
+    if not isinstance(consent_ref, str) or not consent_ref:
+        logger.warning("pc_maintenance_owner_authority outcome=denied stage=%s",
+                       "consent_reference_missing" if scope_ready else "scope_missing")
         return None, None, "owner_consent_missing"
     try:
         consent = await mode_connector_read(identity, "consent", session_id=session.session_id, device_id=consent_ref)
