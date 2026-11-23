@@ -5,14 +5,16 @@ import json
 import subprocess
 from pathlib import Path
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-MODULE = STATIC / "claw-run-event-projection.js"
-APP = STATIC / "app.js"
-INDEX = STATIC / "index.html"
+# #8060: shipped reads live in _support; the projection contracts stay.
+from _support import claw_run_event_projection_source as sheets
+
+MODULE = sheets.projection()
+APP = sheets.app_source()
+INDEX = sheets.index_html()
 
 
 def _probe(js: str) -> dict:
-    source = MODULE.read_text(encoding="utf-8")
+    source = MODULE
     program = (
         "global.window = globalThis;\n"
         + source
@@ -26,10 +28,10 @@ def _probe(js: str) -> dict:
 
 
 def test_source_loads_only_in_existing_chat_shell_before_app() -> None:
-    html = INDEX.read_text(encoding="utf-8")
+    html = INDEX
     assert html.count('<script src="./claw-run-event-projection.js"></script>') == 1
     assert html.index("claw-run-event-projection.js") < html.index('<script src="./app.js">')
-    source = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
+    source = sheets.streaming_module()
     assert 'frame.event === "p01_event"' in source
     assert 'canonicalEventProjection.consume(envelope)' in source
     assert 'const canonicalEventProjection = clawGeneralRequest ?' in source
@@ -94,6 +96,6 @@ console.log(JSON.stringify({empty,invalid,after,keys:Object.keys(P).sort()}));
     assert result["after"]["sequence"] == 0
     assert result["invalid"]["accepted"] is False
     assert result["keys"] == ["create", "label"]
-    source = MODULE.read_text(encoding="utf-8")
+    source = MODULE
     for forbidden in ("fetch(", "setTimeout(", "setInterval(", "innerHTML", "localStorage", "sessionStorage", "indexedDB", "new WebSocket", "EventSource"):
         assert forbidden not in source

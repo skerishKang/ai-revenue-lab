@@ -29,10 +29,10 @@ try:
 except ModuleNotFoundError:  # pragma: no cover - CI without a browser
     sync_playwright = None
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-PDFMD_JS = STATIC / "util-pdfmd.js"
-UTIL_MENU_CSS = STATIC / "util-menu.css"
+# #8060: shipped reads live in _support; the parsed CSS and copy checks stay.
+from _support import pdfmd_simplify_source as sheets
+
+STATIC = sheets.static_dir()
 CHROME_CANDIDATES = [os.environ.get("B61_CHROME_PATH"),
                      r"C:\Program Files\Google\Chrome\Application\chrome.exe"]
 CHROME = next((c for c in CHROME_CANDIDATES if c and Path(c).is_file()), None)
@@ -42,14 +42,14 @@ CHROME = next((c for c in CHROME_CANDIDATES if c and Path(c).is_file()), None)
 
 
 def test_the_review_flow_controls_are_gone() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     assert "검토 완료" not in js, "[검토 완료] 단추가 돌아왔다"
     assert '"/review"' not in js, "검토 경로 호출이 돌아왔다"
     assert "검토중" not in js, "검토중 배지가 돌아왔다"
 
 
 def test_job_id_and_job_buttons_are_gone() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     assert 'pdfmd-jobid' not in js, "작업 id 표시가 돌아왔다"
     assert '"새 작업"' not in js, "[새 작업] 단추가 돌아왔다"
     assert "작업 삭제" not in js, "[작업 삭제] 단추가 돌아왔다"
@@ -58,19 +58,19 @@ def test_job_id_and_job_buttons_are_gone() -> None:
 def test_single_choice_mode_field_is_hidden_but_kept() -> None:
     """변환 방식은 한 줄로 숨겨 둔다 — 서버가 빠른·검증 두 방식을 모두 받으므로
     선택지를 완전히 없애면 검증 변환(페이지별 일치도 보고)이 사라진다."""
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     assert 'modeSel.setAttribute("aria-label", "변환 방식")' in js
     assert "pdfmd-mode-help" not in js, "긴 도움말 문단이 돌아왔다"
 
 
 def test_select_zip_controls_are_gone() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     assert "ZIP에 포함" not in js, "'ZIP에 포함' 칸이 돌아왔다"
     assert "선택 항목 ZIP" not in js, "[선택 항목 ZIP]이 돌아왔다"
 
 
 def test_the_duplicated_stage_summary_is_gone() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     assert "STAGE_LINES" not in js, "카드마다 찍히던 단계 문구가 돌아왔다"
 
 
@@ -78,14 +78,14 @@ def test_the_duplicated_stage_summary_is_gone() -> None:
 
 
 def test_the_head_carries_quota_and_the_mode_switch() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     assert 'el("span", "pdfmd-quota"' in js
     assert "건 더 바꿀 수 있어요." in js
     assert "modeSwitchHost" in js, "머리 오른쪽 전환 자리가 없다"
 
 
 def test_the_upload_box_matches_the_issue_copy() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     assert "PDF를 끌어다 놓거나 골라 주세요." in js
     assert "여러 개나 ZIP도 됩니다." in js
     assert '"파일 고르기"' in js
@@ -93,7 +93,7 @@ def test_the_upload_box_matches_the_issue_copy() -> None:
 
 
 def test_the_result_card_has_primary_secondary_and_more_menu() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     assert '"Markdown 받기"' in js
     assert '"원본과 비교"' in js
     assert 'el("details", "pdfmd-more")' in js
@@ -103,7 +103,7 @@ def test_the_result_card_has_primary_secondary_and_more_menu() -> None:
 
 
 def test_failed_card_shows_reason_and_delete_only() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     failed = js[js.index('if (item.status === "failed") {'):]
     failed = failed[: failed.index("list.appendChild(card);")]
     assert "지우기" in failed
@@ -112,7 +112,7 @@ def test_failed_card_shows_reason_and_delete_only() -> None:
 
 
 def test_the_all_zip_bar_sits_above_results_and_only_when_many() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     assert '"모두 ZIP으로 받기"' in js
     bar = js.index('resultCol.appendChild(zipBar);')
     items = js.index("resultCol.appendChild(itemsWrap);")
@@ -121,17 +121,17 @@ def test_the_all_zip_bar_sits_above_results_and_only_when_many() -> None:
 
 
 def test_the_history_folds_into_one_line() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     assert 'el("details", "pdfmd-history-fold")' in js
     assert '"지난 변환 "' in js
-    css = UTIL_MENU_CSS.read_text(encoding="utf-8")
+    css = sheets.util_menu_css()
     rules = parse_rules(css)
     fold = find_rules_with_selector(rules, ".pdfmd-history-summary")[0]
     assert int(declaration(fold, "min-height").replace("px", "")) >= 44
 
 
 def test_badges_are_exactly_the_four_states() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     for status, label in (
         ("queued", "바꾸는 중"),
         ("working", "바꾸는 중"),
@@ -141,7 +141,7 @@ def test_badges_are_exactly_the_four_states() -> None:
     ):
         assert f'{status}: "{label}"' in js
     assert '"시간 초과"' in js
-    css = UTIL_MENU_CSS.read_text(encoding="utf-8")
+    css = sheets.util_menu_css()
     rules = parse_rules(css)
     timed = find_rules_with_selector(rules, '.pdfmd-status-chip[data-status="timed-out"]')
     assert timed, "시간 초과 배지 색이 없다"
@@ -149,7 +149,7 @@ def test_badges_are_exactly_the_four_states() -> None:
 
 
 def test_the_new_css_stays_token_only_and_44px() -> None:
-    css = UTIL_MENU_CSS.read_text(encoding="utf-8")
+    css = sheets.util_menu_css()
     section = css[css.index("#7865 · PDF→MD"):]
     # 파일 전체에는 이전 계약의 !important가 남아 있고, 이 섹션은 어떤 것도 새로 붙이지 않는다.
     assert "!important" not in section, "새 !important가 들어왔다"
