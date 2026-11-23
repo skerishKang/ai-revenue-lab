@@ -16,6 +16,9 @@ still sequential the rendezvous can never complete.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.pixel_ttft_classification_source import read
+
 import asyncio
 from types import SimpleNamespace
 
@@ -216,9 +219,7 @@ def test_the_model_context_read_keeps_the_owner_scope():
 def test_the_chat_route_keeps_its_ownership_gate_before_the_full_context_read():
     from pathlib import Path
 
-    source = (Path(__file__).resolve().parents[1] / "app" / "chat_routes.py").read_text(
-        encoding="utf-8"
-    )
+    source = read(Path(__file__).resolve().parents[1] / "app" / "chat_routes.py")
     # The route must still refuse a foreign owner before the full-context read.
     assert "existing_conversation = await store.get_conversation(" in source
     assert "if existing_conversation is None:" in source
