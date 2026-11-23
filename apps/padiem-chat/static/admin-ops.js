@@ -209,110 +209,22 @@
   }
 
   // ── #7690 역방향: 러브트리로 간 답글·상태 줄 ──────────────────────────────
-  const OUTBOX_STATE_LABELS = Object.freeze({
-    sent: "러브트리로 보냄", pending: "보내기 대기 중", waiting: "보낼 주소·비밀이 없어 줄에 대기 중",
-    failed: "보내기 실패", exhausted: "보내기 실패",
-  });
-
-  function notifyState(entry) {
-    if (entry.kind === "status") {
-      return "상태 알림: " + (entry.status || "") + " — " +
-        (OUTBOX_STATE_LABELS[entry.state] || entry.state);
-    }
-    return "답글: " + fmtDate(entry.reply_created_at) + " — " +
-      (OUTBOX_STATE_LABELS[entry.state] || entry.state);
-  }
-
-  function resendButton(item, entry) {
-    const again = node("button", "다시 보내기", "ops-reply-send");
-    again.type = "button";
-    again.dataset.eventKey = entry.event_key;
-    again.addEventListener("click", () => { void resendOutbox(item, entry.event_key, again); });
-    return again;
+  // 실제 모양은 admin-ops-site-reply.js가 맡고 여기는 연결만 한다(#7216 상한).
+  if (window.PadiemOpsSiteReply) {
+    window.PadiemOpsSiteReply.bind({
+      node, call, setStatus, fmtDate,
+      refreshInbox: () => { void loadInbox(true); },
+    });
   }
 
   function outboxRows(item) {
-    const rows = [];
-    const replies = (item.outbox || []).filter((entry) => entry.kind === "reply");
-    const status = (item.outbox || []).filter((entry) => entry.kind === "status")[0];
-    for (const entry of replies) {
-      rows.push(node("p", "고객 답글: " + entry.reply_body, "ops-reply"));
-      rows.push(node("p", notifyState(entry), "ops-row-news"));
-      if (entry.state === "failed" || entry.state === "exhausted") {
-        rows.push(resendButton(item, entry));
-      }
-    }
-    if (status) {
-      rows.push(node("p", notifyState(status), "ops-row-news"));
-      if (status.state === "failed" || status.state === "exhausted") {
-        rows.push(resendButton(item, status));
-      }
-    }
-    return rows;
+    if (!window.PadiemOpsSiteReply) return [];
+    return window.PadiemOpsSiteReply.rows(item);
   }
 
   function replyForm(item) {
-    const wrap = node("div", null, "ops-reply-form");
-    wrap.append(node("p",
-      "운영 메모와 다릅니다. 아래 답글은 고객에게 보입니다.", "ops-row-news"));
-    const input = document.createElement("textarea");
-    input.className = "ops-reply-input";
-    input.rows = 2;
-    input.maxLength = 2000;
-    input.placeholder = "고객에게 보일 답글(2000자까지)";
-    input.setAttribute("aria-label", "고객에게 보일 답글 입력");
-    const send = node("button", "답글 보내기", "ops-reply-send");
-    send.type = "button";
-    send.addEventListener("click", () => { void sendSiteReply(item.id, input); });
-    wrap.append(input, send);
-    return wrap;
-  }
-
-  async function sendSiteReply(id, input) {
-    const text = input.value;
-    const send = input.parentElement ? input.parentElement.querySelector(".ops-reply-send") : null;
-    if (send) send.disabled = true;
-    try {
-      const { status: code, body } = await call(
-        SITE_ENDPOINT + "/" + encodeURIComponent(id) + "/reply", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ body: text }),
-        });
-      if (code === 201 && body?.ok === true) {
-        setStatus("opsStatus", "");
-        void loadInbox(true);
-      } else {
-        setStatus("opsStatus", "답글을 보내지 못했습니다(" +
-          (body?.error?.code || code) + ").");
-        if (send) send.disabled = false;
-      }
-    } catch (_) {
-      setStatus("opsStatus", "답글을 보내는 중 연결이 끊겼습니다.");
-      if (send) send.disabled = false;
-    }
-  }
-
-  async function resendOutbox(item, eventKey, button) {
-    button.disabled = true;
-    try {
-      const { status: code, body } = await call(
-        SITE_ENDPOINT + "/" + encodeURIComponent(item.id) + "/resend", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ eventKey }),
-        });
-      if (code === 200 && body?.ok === true) {
-        void loadInbox(true);
-      } else {
-        setStatus("opsStatus", "다시 보내지 못했습니다(" +
-          (body?.error?.code || code) + ").");
-        button.disabled = false;
-      }
-    } catch (_) {
-      setStatus("opsStatus", "다시 보내는 중 연결이 끊겼습니다.");
-      button.disabled = false;
-    }
+    if (!window.PadiemOpsSiteReply) return node("div", null);
+    return window.PadiemOpsSiteReply.replyForm(item);
   }
 
   function paintRow(item) {
