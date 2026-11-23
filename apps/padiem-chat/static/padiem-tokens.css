@@ -431,6 +431,31 @@
   --project-danger-border: rgba(179, 38, 30, 0.25);
   --project-select-text: #101828;
 
+  /* #7811 C2: composer(마이크·보내기·스타터 카드)의 쓰임새 색. 마이크 기본·
+     호버 값은 voice UI와 같은 역할이므로 기존 --voice-* 토큰을 재사용한다.
+     나머지 값은 치환 전 리터럴 그대로이고 :root에만 둔다. */
+  --voice-mic-active-bg: #d94b43;
+  --voice-mic-active-edge: #c43d36;
+  --voice-mic-active-ring: rgba(217, 75, 67, .16);
+  --voice-mic-active-hover-bg: #c63d35;
+  --voice-mic-active-hover-edge: #b9342f;
+  --composer-send-text: #fff;
+  --composer-send-shadow: rgba(34, 72, 104, .15);
+  --composer-send-hover-shadow: rgba(34, 72, 104, .22);
+  --composer-send-disabled-bg: #c9d3dc;
+  --composer-send-disabled-edge: #b9c7d2;
+  --voice-interim-text: #6b6c75;
+  --voice-notice-text: #a04139;
+  --voice-inline-hint-text: #bd4a40;
+  --starter-toggle-edge: #d9e1e8;
+  --starter-toggle-bg: rgba(247,250,253,.94);
+  --starter-toggle-text: #596c7b;
+  --starter-toggle-hover-bg: #edf3f9;
+  --starter-panel-bg: #fff;
+  --starter-panel-text: #293d50;
+  --starter-panel-edge: #d2dfe7;
+  --starter-panel-shadow: rgba(29,48,64,.17);
+
   /* #8020: Claw 요청 말풍선. 글자는 테마의 사용자 말풍선 글자 역할을 그대로
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
   --claw-request-bubble-text: var(--user-bubble-text);

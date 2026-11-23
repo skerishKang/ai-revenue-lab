@@ -257,7 +257,18 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--project-muted-text", "--project-note-text", "--project-on-ink-text",
                 "--project-panel-bg", "--project-secondary-text",
                 "--project-select-text", "--project-shadow", "--project-solid-bg",
-                "--project-strong-text", "--project-subtle-wash"},
+                "--project-strong-text", "--project-subtle-wash"}
+             | {"--voice-mic-active-bg", "--voice-mic-active-edge",
+                "--voice-mic-active-ring", "--voice-mic-active-hover-bg",
+                "--voice-mic-active-hover-edge", "--composer-send-text",
+                "--composer-send-shadow", "--composer-send-hover-shadow",
+                "--composer-send-disabled-bg", "--composer-send-disabled-edge",
+                "--voice-interim-text", "--voice-notice-text",
+                "--voice-inline-hint-text", "--starter-toggle-edge",
+                "--starter-toggle-bg", "--starter-toggle-text",
+                "--starter-toggle-hover-bg", "--starter-panel-bg",
+                "--starter-panel-text", "--starter-panel-edge",
+                "--starter-panel-shadow"},
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.
