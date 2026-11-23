@@ -1,12 +1,10 @@
-from pathlib import Path
+# #8060: shipped reads live in _support; the CSS and QA-script checks stay.
+from _support import chat_rhythm_source as sheets
 
-
-ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = ROOT.parents[1]
-ALIGNMENT_CSS = (ROOT / "static/padiem-glass-gutter-alignment.css").read_text(encoding="utf-8")
-GUTTER_QA = (REPO_ROOT / ".github/scripts/b62_chat_gutter_visual_qa.py").read_text(encoding="utf-8")
-VISUAL_WORKFLOW = (REPO_ROOT / ".github/workflows/b62-browser-qa-unified.yml").read_text(encoding="utf-8")
-VISUAL_TAIL = (REPO_ROOT / ".github/scripts/b62_browser_qa_tail_parallel.py").read_text(encoding="utf-8")
+ALIGNMENT_CSS = sheets.sheet("padiem-glass-gutter-alignment.css")
+GUTTER_QA = sheets.repo_source(".github/scripts/b62_chat_gutter_visual_qa.py")
+VISUAL_WORKFLOW = sheets.repo_source(".github/workflows/b62-browser-qa-unified.yml")
+VISUAL_TAIL = sheets.repo_source(".github/scripts/b62_browser_qa_tail_parallel.py")
 
 
 def test_1423_assistant_response_and_error_have_bounded_widths() -> None:
