@@ -366,7 +366,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   const ageConfirmFormPage = (action, handle, lang = 'ko', message = '') => {
     const a = AGE_CONFIRM_TEXT[lang] || AGE_CONFIRM_TEXT.ko;
     const t = ageText(lang);
-    const script = '<scr' + 'ipt>(function(){var c=document.getElementById("ageConfirm"),b=document.getElementById("signupSubmit");if(!c||!b)return;var f=function(){b.disabled=!c.checked};c.addEventListener("change",f);f()})();</scr' + 'ipt>';
+    const script = '<scr' + 'ipt>(function(){var c=document.getElementById("ageConfirm"),b=document.getElementById("signupSubmit");if(!c||!b)return;var f=function(){b.disabled=!c.checked};c.addEventListener("change",f);f()})();(function(){var b=document.getElementById("signupSubmit");if(!b||!b.form)return;var s=false;b.form.addEventListener("submit",function(e){if(s){e.preventDefault();return}s=true;setTimeout(function(){b.disabled=true},0)})})();</scr' + 'ipt>';
     return page(a.title, `<h1 id="age-confirm-title">${esc(a.title)}</h1><p class="padiem-notice">${esc(a.lead)}</p><form method="post" action="${esc(action)}"><input type="hidden" name="handle" value="${esc(handle)}">${message ? `<p class="message">${esc(message)}</p>` : ''}<label class="padiem-check age-screen" for="ageConfirm"><input id="ageConfirm" name="age_confirm" value="yes" type="checkbox"><span>${esc(t.confirm)} <small>${esc(t.required)}</small></span></label><button id="signupSubmit" class="btn btn-primary" type="submit">${esc(a.submit)}</button><button class="padiem-under14" type="submit" name="under14" value="1">${esc(t.under14)}</button></form>${script}`, lang, `<style>${AGE_CONFIRM_PLAIN_CSS}</style>`);
   };
   const ageConfirmNoticePage = (lang) => {
@@ -469,8 +469,20 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
     const lang = resolveLang(request.headers.get('accept-language'));
     const store = stateFor('google-age-confirmation');
     const handleDigest = await digest(handle), browserDigest = await digest(browser);
+    // A repeat of an already confirmed form (double click, browser resend)
+    // finds no open record. Send it where the first submit went instead of
+    // showing an error; wait briefly when the first one is still finishing.
+    const repeated = async () => {
+      for (let i = 0; i < 12; i += 1) {
+        const done = await store.readAgeConfirmationResult({ handleDigest, browserDigest, now: current });
+        if (!done || !done.claimed) return null;
+        if (done.result) return redirect(done.result, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
+      return refuse('claimed_pending');
+    };
     const raw = await store.readAgeConfirmation({ handleDigest, browserDigest, now: current });
-    if (!raw) return refuse('record_not_found');
+    if (!raw) return (await repeated()) || refuse('record_not_found');
     let data;
     try { data = JSON.parse(raw); } catch { return refuse('record_unreadable'); }
     // Each endpoint only accepts the kind of record it was parked for. A
@@ -492,8 +504,17 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const s = brand ? (brand.strings[lang] || brand.strings.ko) : ageText(lang);
       return passwordPage(200, ageConfirmRender({ brand, theme, lang, handle, message: s.needCheck, action }), lang);
     }
-    await store.consumeAgeConfirmation({ handleDigest, browserDigest, now: current });
-    return resume({ data, brand, theme, lang, handle });
+    // First-wins claim: a concurrent second submit that read the open record
+    // too loses here and follows the first one's result instead.
+    if (!await store.claimAgeConfirmation({ handleDigest, browserDigest, now: current })) {
+      return (await repeated()) || refuse('record_not_found');
+    }
+    const response = await resume({ data, brand, theme, lang, handle });
+    const location = response.status >= 300 && response.status < 400 ? response.headers.get('location') : null;
+    // Kept only for the issued code's lifetime (60 s), server-side.
+    if (location) await store.recordAgeConfirmationResult({ handleDigest, browserDigest, result: location, expires: current + 60 });
+    else await store.consumeAgeConfirmation({ handleDigest, browserDigest, now: current });
+    return response;
   }
 
   async function googleAgeConfirmSubmit(request, current) {
@@ -1074,7 +1095,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'ageConfirmedAt', 'putAccount', 'createAgeConfirmation', 'readAgeConfirmation', 'consumeAgeConfirmation', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
+const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'ageConfirmedAt', 'putAccount', 'createAgeConfirmation', 'readAgeConfirmation', 'consumeAgeConfirmation', 'claimAgeConfirmation', 'recordAgeConfirmationResult', 'readAgeConfirmationResult', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
 export class AuthStateObject extends AuthState {
   constructor(state, env, { recoveryFetcher = fetch, recoveryStateFor = stateBindingFor(env) } = {}) {
     super(state); this.state = state; this.env = env;

@@ -188,7 +188,9 @@ test('two visitors waiting at once: the first handle survives the second start',
   const done = await f.answer(first.cookie, firstHandle, { age_confirm: 'yes' });
   assert.equal(done.status, 302, 'the first visitor can still confirm');
   assert.equal(f.registry.ageConfirmedAt({ fingerprint: f.fingerprint }), 1000);
-  assert.equal(store.sql.exec('SELECT COUNT(*) AS n FROM age_confirmations').toArray()[0].n, 1, 'only the answered row was consumed');
+  // The answered row stays only as a short-lived result (double-submit safety);
+  // exactly one gate is still open.
+  assert.equal(store.sql.exec('SELECT COUNT(*) AS n FROM age_confirmations WHERE claimed=0').toArray()[0].n, 1, 'only the answered row was consumed');
 });
 
 test('a Google gate handle is refused at the password endpoint and stays answerable', async () => {
@@ -215,4 +217,36 @@ test('the stored handle is bound to the login cookie and expires', async () => {
   const expired = await f.answer(gate.cookie, handle, { age_confirm: 'yes' });
   assert.equal(expired.status, 400, 'the pending record expires');
   assert.equal(f.registry.accountByFingerprint(f.fingerprint), null, 'no account from an expired gate');
+});
+
+
+test('a double submit of the confirmed gate follows the first result instead of an error', async () => {
+  const f = await setup();
+  const gate = await f.callback();
+  const handle = f.handleOf(await gate.response.text());
+  // Both clicks leave the browser before either answer comes back.
+  const [one, two] = await Promise.all([
+    f.answer(gate.cookie, handle, { age_confirm: 'yes' }),
+    f.answer(gate.cookie, handle, { age_confirm: 'yes' }),
+  ]);
+  assert.equal(one.status, 302, 'first submit resumes');
+  assert.equal(two.status, 302, 'second submit is not invalid_request');
+  assert.equal(two.headers.get('location'), one.headers.get('location'), 'same place, same one-time code');
+  assert.equal(f.calls(), 1, 'the account is resolved once');
+  // A later resend (browser reload) inside the code lifetime lands the same way.
+  const resend = await f.answer(gate.cookie, handle, { age_confirm: 'yes' });
+  assert.equal(resend.status, 302);
+  assert.equal(resend.headers.get('location'), one.headers.get('location'));
+  // After the code lifetime the repeat is refused as before.
+  f.setNow(1000 + 61);
+  const late = await f.answer(gate.cookie, handle, { age_confirm: 'yes' });
+  assert.equal(late.status, 400);
+});
+
+test('the age screen locks its submit after the first press', async () => {
+  for (const clientId of ['lovetree-4-0', 'brandless']) {
+    const f = await setup({ clientId });
+    const html = await (await f.callback()).response.text();
+    assert.ok(html.includes('b.form.addEventListener("submit"'), `${clientId} submit-once script`);
+  }
 });
