@@ -76,7 +76,7 @@ def checks(base, db_path, *, ai_status, ai_code="none", opener=None,
     opener = opener or build_opener()
     # SKIP carries the reason too: a check that was never attempted has to read
     # as "not measured", not as a bare blank row next to a PASS-looking status.
-    ai_detail = ai_code if ai_status in ("FAIL", "SKIP") and ai_code != "none" else "-"
+    ai_detail = ai_code if ai_status in ("FAIL", "SKIP", "DEGRADED") and ai_code != "none" else "-"
     result = [("AI 답변", ai_status, ai_detail)]
     # 2026-11-01: /councillor/ is a redirect to the council app; the opener
     # follows it, so a 200 here means the alias still lands on the product.
@@ -126,7 +126,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-url", required=True)
     parser.add_argument("--chat-db", required=True)
-    parser.add_argument("--ai-status", choices=("PASS", "FAIL", "SKIP"), default="SKIP")
+    parser.add_argument("--ai-status", choices=("PASS", "FAIL", "SKIP", "DEGRADED"), default="SKIP")
     parser.add_argument("--ai-code", default="none")
     parser.add_argument("--chat-unit", default=DEFAULT_CHAT_UNIT)
     args = parser.parse_args()

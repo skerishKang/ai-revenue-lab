@@ -171,7 +171,9 @@ def smoke(base, cookie="", allow_mock_write=False, browser_executable=None, time
         ctx.close()
         browser.close()
     verdict, code = check_ai_answer(base)
-    set_stage("ai", verdict, **({"error_code": code} if verdict == "FAIL" else {}))
+    # DEGRADED is a provider delay, not an answer defect, but its code is still
+    # evidence: keep it on the stage exactly as a FAIL code is kept.
+    set_stage("ai", verdict, **({"error_code": code} if verdict in ("FAIL", "DEGRADED") else {}))
     considered = [stage for name, stage in stages.items() if name != "ai" or ai_check == "required"]
     result["status"] = ("FAIL" if any(s["status"] == "FAIL" for s in considered)
                         else "INCOMPLETE" if any(s["status"] == "UNVERIFIED" for s in considered)

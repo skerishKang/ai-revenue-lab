@@ -88,6 +88,16 @@ class AiCheckGateStaticContract(unittest.TestCase):
         self.assertIn("STEP2_FAIL: post-deploy AI check did not pass", self.text)
         self.assertIn("STEP2_FAIL: the COM2 qa-smoke env does not carry the AI-check credentials", self.text)
 
+    def test_degraded_is_present_but_not_a_failure(self):
+        """11-24: STEP2 names DEGRADED in the log and summary, and neither the
+        summary validation nor the verdict resolver turns it into a FAIL."""
+        validator = self.text.split('if ($summaryLine -match ":FAIL"', 1)[1].split("\n    }", 1)[0]
+        self.assertNotIn("DEGRADED", validator)
+        self.assertIn("COM2 AI check DEGRADED", self.text)
+        self.assertIn("AI_CHECK=DEGRADED (COM2 unit)", self.text)
+        self.assertIn("return 'DEGRADED'", self.text)
+        self.assertIn("ai:(PASS|DEGRADED)", self.text)
+
     def test_credentials_travel_without_printing(self):
         """The loader reads COM2's qa-smoke.env, requires the QA pair, and
         prints nothing — the values go straight into env:."""
@@ -133,12 +143,14 @@ class AiCheckRuntime(unittest.TestCase):
             "Write-Output ('A=' + (Resolve-PostDeployAiNeed 'chat:PASS p01:PASS b14:PASS queue:SKIP executor:SKIP ai:PASS'))\n"
             "Write-Output ('B=' + (Resolve-PostDeployAiNeed 'chat:SKIP p01:PASS b14:SKIP queue:SKIP executor:SKIP ai:SKIP'))\n"
             "Write-Output ('C=' + (Resolve-PostDeployAiNeed 'chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP'))\n"
+            "Write-Output ('D=' + (Resolve-PostDeployAiNeed 'chat:PASS p01:SKIP b14:SKIP queue:SKIP executor:SKIP ai:DEGRADED error_code=upstream_timeout'))\n"
         )
         rc, combined = _run_driver(_extract_functions_block() + code)
         self.assertEqual(rc, 0, combined)
         self.assertIn("A=already-verified", combined)
         self.assertIn("B=run-check", combined)
         self.assertIn("C=run-check", combined)
+        self.assertIn("D=already-verified", combined)
 
     @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
     def test_the_check_passes_on_ai_pass_output(self):
@@ -154,6 +166,38 @@ class AiCheckRuntime(unittest.TestCase):
             self.assertEqual(rc, 0, combined)
             self.assertIn("post-deploy AI check = PASS", combined)
             self.assertIn("AI_CHECK_DONE", combined)
+
+    @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
+    def test_the_check_accepts_degraded_output_by_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stub = Path(tmp) / "check.py"
+            stub.write_text("print('ai:DEGRADED error_code=upstream_timeout')\n", encoding="utf-8")
+            code = (
+                "function Write-Info([string]$Text) { Write-Host $Text }\n"
+                "$r = Invoke-PostDeployAiCheck -ScriptPath '" + str(stub) + "' -BaseUrl 'https://chat.padiem.net' "
+                "-CredentialLoader { return @{} }\n"
+                "Write-Output ('RESULT=' + $r)\n"
+            )
+            rc, combined = _run_driver(_extract_functions_block() + code)
+            self.assertEqual(rc, 0, combined)
+            self.assertIn("RESULT=DEGRADED", combined)
+            self.assertIn("post-deploy AI check = DEGRADED error_code=upstream_timeout", combined)
+            self.assertNotIn("STEP2_FAIL", combined)
+
+    @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
+    def test_a_code_free_degraded_line_fails_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stub = Path(tmp) / "check.py"
+            stub.write_text("print('ai:DEGRADED')\n", encoding="utf-8")
+            code = (
+                "try { Invoke-PostDeployAiCheck -ScriptPath '" + str(stub) + "' -BaseUrl 'https://chat.padiem.net' "
+                "-CredentialLoader { return @{} } | Out-Null; Write-Output 'NO_THROW' }\n"
+                "catch { Write-Output ('THREW: ' + $_.Exception.Message) }\n"
+            )
+            rc, combined = _run_driver(_extract_functions_block() + code)
+            self.assertEqual(rc, 0, combined)
+            self.assertIn("THREW: STEP2_FAIL: post-deploy AI check did not pass", combined)
+            self.assertNotIn("NO_THROW", combined)
 
     @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
     def test_the_check_fails_closed_on_ai_fail_output(self):
