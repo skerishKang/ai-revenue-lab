@@ -5,7 +5,7 @@ import pytest
 
 from app.account_deletion import _delete_batch
 from app.d1_sqlite import SqliteD1
-from test_7680_feedback_store import BODY, OTHER, OWNER, database
+from _support.feedback_store import BODY, OTHER, OWNER, database
 
 
 def test_reply_thread_owner_isolation_unread_marker_and_read_race():

@@ -15,7 +15,7 @@ from app.local_cpython import apply_migrations
 from app.news_routes import news, news_unread
 from app.news_store import D1NewsStore
 from test_7680_feedback_routes import BASE, SETTINGS
-from test_7680_feedback_store import BODY, OTHER, OWNER, database
+from _support.feedback_store import BODY, OTHER, OWNER, database
 
 TOOL_PATH = Path(__file__).resolve().parents[1] / "tools" / "feedback_ops.py"
 SPEC = importlib.util.spec_from_file_location("feedback_ops_7718_news", TOOL_PATH)
