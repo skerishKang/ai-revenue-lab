@@ -11,6 +11,9 @@ import json
 from pathlib import Path
 
 import pytest
+from _support.voice_mode_bounds_4816_source import (
+    voice_answer_ui_js, voice_call_ui_js, voice_ui_menu_js,
+)
 
 # Full B62 core runners intentionally do not install Playwright, so the browser
 # contracts below are skipped individually there. The wiring contract at the top
@@ -94,9 +97,9 @@ def test_the_voice_session_boundaries_are_wired_into_the_shipped_modules():
     itself covered on runners without a browser, where a UI-only change is
     reviewed.
     """
-    menu = (ROOT / "voice-ui-menu.js").read_text(encoding="utf-8")
-    answer = (ROOT / "voice-answer-ui.js").read_text(encoding="utf-8")
-    call = (ROOT / "voice-call-ui.js").read_text(encoding="utf-8")
+    menu = voice_ui_menu_js()
+    answer = voice_answer_ui_js()
+    call = voice_call_ui_js()
 
     # One boundary on the existing controller, reused by the mode picker.
     assert "function endTurn(reason)" in menu
