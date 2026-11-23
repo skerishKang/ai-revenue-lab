@@ -4,7 +4,7 @@ import json
 
 from app.ai_tester_intro_store import AiTesterIntroStore, clean_intro
 from app.feedback_routes import admin_feedback
-from test_7680_feedback_routes import AdminAuthority, request
+from _support.feedback_route_fixtures import AdminAuthority, request
 from _support.feedback_store import BODY, OWNER, OTHER, database
 from tools.feedback_ops import run_intro_set
 

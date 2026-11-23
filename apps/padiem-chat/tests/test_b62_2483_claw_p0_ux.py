@@ -6,20 +6,19 @@ synthetic successes, and the approved-memory surface has complete KO/EN copy.
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import re
-from pathlib import Path
 
+# #8060: shipped reads live in _support; the source contracts stay here.
+from _support import claw_p0_ux_source as sheets
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
+APP = sheets.app()
 # R5 A5b: the preview transport and its bounded error copy moved to the form module.
-FORM = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
-WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
-INTAKE_CSS = (STATIC / "claw-manual-intake.css").read_text(encoding="utf-8")
+FORM = sheets.form()
+INDEX = sheets.index()
+LOCALE = sheets.locale()
+WORKSPACE_CSS = sheets.workspace_css()
+INTAKE_CSS = sheets.intake_css()
 
 
 APPROVED_MEMORY_KEYS = (
@@ -87,7 +86,7 @@ def test_approved_memory_has_complete_ko_en_locale_parity() -> None:
 
 
 def test_approved_memory_dynamic_controls_do_not_use_hardcoded_korean() -> None:
-    memory_mod = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
+    memory_mod = sheets.memory_module()
     start = memory_mod.index("function renderMemoryProposalReview")
     end = memory_mod.index("function proposalBody", start)
     review_source = memory_mod[start:end]
@@ -127,8 +126,8 @@ def test_stale_claw_product_truth_copy_is_removed() -> None:
 
 def test_locale_keys_are_not_rendered_when_claw_locale_is_missing() -> None:
     # #7216 R5 A7: clawT lives in chat-core-module.js.
-    core_mod = (STATIC / "chat-core-module.js").read_text(encoding="utf-8").replace("deps.", "")
-    memory_mod = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
+    core_mod = sheets.core_module().replace("deps.", "")
+    memory_mod = sheets.memory_module()
     # B7 15차: the setClawStatus one-line forwarder is gone — the copy dict
     # is now followed by the claw-status registry accessor in app.js.
     fallback = APP[APP.index("const clawFallbackCopy"):APP.index("function clawStatusModule")]

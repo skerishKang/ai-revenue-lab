@@ -637,6 +637,18 @@ class CloudflareControlPlaneIdentityAuthority(AccountConnectorReadClient, Accoun
         cached = _product_user_cache_get(product_id, canonical_subject_id)
         if cached is not None:
             return cached
+        product_user_id = await self.resolve_product_user_for_subject_uncached(
+            product_id=product_id, canonical_subject_id=canonical_subject_id)
+        _product_user_cache_put(product_id, canonical_subject_id, product_user_id)
+        return product_user_id
+
+    async def resolve_product_user_for_subject_uncached(
+        self, *, product_id: str, canonical_subject_id: str
+    ) -> str:
+        """The exact same reverse authority RPC, without either cache lookup/put."""
+        if (not isinstance(product_id, str) or not product_id
+                or not isinstance(canonical_subject_id, str) or not canonical_subject_id):
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
         result = await self._rpc_envelope(
             "resolve_product_user_for_subject",
             {"product_id": product_id, "canonical_subject_id": canonical_subject_id},
@@ -648,7 +660,6 @@ class CloudflareControlPlaneIdentityAuthority(AccountConnectorReadClient, Accoun
         product_user_id = result.get("product_user_id")
         if not isinstance(product_user_id, str) or not product_user_id:
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity link is invalid.")
-        _product_user_cache_put(product_id, canonical_subject_id, product_user_id)
         return product_user_id
 
     async def list_active_product_links_for_subject(

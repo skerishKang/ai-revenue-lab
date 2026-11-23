@@ -16,10 +16,10 @@ from __future__ import annotations
 
 import json
 import subprocess
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-MODULE_PATH = ROOT / "static" / "project-drive-folder.js"
+# #8060: shipped module and driver reads live in _support. The assertions below
+# stay on observed behavior and user-facing copy.
+from _support import project_drive_folder_browser_source as sheets
 
 ELEMENT_IDS = (
     "projectDrivePanel",
@@ -36,8 +36,8 @@ ELEMENT_IDS = (
 
 
 def _run(scenario: str) -> dict:
-    module = MODULE_PATH.read_text(encoding="utf-8")
-    driver = (Path(__file__).resolve().parent / "drive_folder_browser_driver.js").read_text(encoding="utf-8")
+    module = sheets.module_source()
+    driver = sheets.driver_source()
     result = subprocess.run(
         ["node", "-e", driver, module, scenario],
         capture_output=True,

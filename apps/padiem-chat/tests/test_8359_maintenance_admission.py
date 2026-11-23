@@ -119,6 +119,26 @@ def test_missing_install_evidence_never_opens_unknown_probe_refresh(change):
     assert admit(observation={**OBS, "state": state}) == (None, "digest_unverified")
 
 
+@pytest.mark.parametrize("watcher", [None, False, True])
+def test_current_updater_with_unobserved_watcher_selects_only_fixed_refresh(watcher):
+    state = {**OBS["state"], "helper_version": MANIFEST["version"],
+             "updater_source_sha256": SOURCE_SHA256}
+    if watcher is None:
+        state.pop("self_heal_task_present")
+    else:
+        state["self_heal_task_present"] = watcher
+    observation = {**OBS, "state": state}
+    intent, reason = admit(observation=observation)
+    if watcher is True:
+        assert intent is None and reason == "already_current"
+    else:
+        assert reason is None and intent.action == "refresh"
+        assert intent.command == registration_command()
+        assert admit(observation=observation, owner_session=False) == (None, "owner_unresolved")
+        assert admit(observation=observation, managed_links=[]) == (None, "not_managed")
+        assert admit(observation=observation, rollout={**ROLLOUT, "stage": "paused"}) == (None, "stage_closed")
+
+
 def _db():
     db = sqlite3.connect(":memory:")
     db.row_factory = sqlite3.Row

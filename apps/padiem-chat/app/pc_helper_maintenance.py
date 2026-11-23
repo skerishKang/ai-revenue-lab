@@ -135,12 +135,20 @@ def maintenance_candidate(*, env, device_id, observation, manifest, rollout, now
     # verifies the installed EXE against its install record before registering,
     # and refuses on error. Never turn unknown installation into an install.
     # The receipt's independent post-dispatch observation remains mandatory.
-    if (plan["action"] == "failed" and plan["reason"] == "digest_unverified"
-            and state.get("helper_status_present") is True
+    installed = (state.get("helper_status_present") is True
             and isinstance(state.get("helper_sha256"), str)
             and _DIGEST.fullmatch(state["helper_sha256"]) is not None
-            and version_parts(state.get("helper_version") or observation.get("helper_version")) is not None):
+            and version_parts(state.get("helper_version") or observation.get("helper_version")) is not None)
+    if (plan["action"] == "failed" and plan["reason"] == "digest_unverified"
+            and installed):
         plan = {"action": "refresh", "reason": "updater_probe_unverified"}
+    # A canceled file download does not establish absent/present. Do not
+    # silently skip a managed installed PC just because the watcher could
+    # not be observed. The fixed refresh independently checks the scheduled
+    # task before registering it; success still requires fresh positive proof.
+    if (plan["action"] == "skipped" and installed
+            and state.get("self_heal_task_present") is None):
+        plan = {"action": "refresh", "reason": "watcher_probe_unverified"}
     if plan["action"] == "skipped":
         current = version_parts(state.get("helper_version") or observation.get("helper_version"))
         minimum = version_parts(manifest.get("min_supported_version"))

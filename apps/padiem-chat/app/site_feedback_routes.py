@@ -17,6 +17,8 @@ from .central_model_control_routes import _central_admin
 from .feedback_store import FeedbackDailyLimit, FeedbackUnavailable
 from .site_feedback_store import (BODY_CHARS, EXTERNAL_CATEGORIES, EXTERNAL_STATUSES,
                                  INGEST_EVENTS, SITE_FEEDBACK_ID, SITE_KEYS, STATUSES)
+from .lovetree_ops_outbox import (CHAT_STATUS_TO_EXTERNAL, outbox_state,
+                                  reply_config, schedule_dispatch)
 
 SITE_ORIGINS = {
     'miraen-home': ('https://councillor-prototype-v2.pages.dev',),
@@ -67,6 +69,20 @@ def _journal_rejected(site, code) -> None:
 
 def _store(request):
     return getattr(request.app.state, 'site_feedback_store', None)
+
+
+def _outbox(request):
+    return getattr(request.app.state, 'lovetree_ops_outbox', None)
+
+
+def _external_row(row) -> bool:
+    """역방향으로 보낼 수 있는 의견인가: 러브트리 정방향으로 들어온 것만."""
+    return bool(row is not None and getattr(row, 'site', None) == 'lovetree'
+                and getattr(row, 'external_feedback_id', None) is not None)
+
+
+def _lovetree_external_id(row):
+    return row.external_feedback_id if _external_row(row) else None
 
 
 def _now_ms():
@@ -396,7 +412,22 @@ async def admin_site_feedback(request):
         site=None if site == 'all' else site,
         sites=sites if role == 'site' and site == 'all' else None,
         status=status, cursor=cursor)
-    return _response({'ok': True, 'feedback': [row.public(admin=True) for row in rows],
+    items = []
+    outbox_store = _outbox(request)
+    configured = all(reply_config(request.app.state))
+    for row in rows:
+        item = row.public(admin=True)
+        if _external_row(row) and outbox_store is not None:
+            try:
+                entries = await outbox_store.list_for_feedback(row.id)
+            except FeedbackUnavailable:
+                return _error('feedback_unavailable', 503)
+            item['outbox'] = [{**entry, 'state': outbox_state(entry, configured=configured)}
+                              for entry in entries]
+        else:
+            item['outbox'] = []
+        items.append(item)
+    return _response({'ok': True, 'feedback': items,
                       'next_cursor': next_cursor,
                       'sites': sorted(sites) if role == 'site' else sorted(SITE_KEYS)})
 
@@ -430,9 +461,105 @@ async def admin_site_feedback_status(request):
             row = await store.set_ops_memo(feedback_id, value['ops_memo'])
         if row is None:
             return _error('feedback_not_found', 404)
+        # #7690 역방향: 운영자가 화면에서 직접 바꾼 상태만 러브트리로 보낸다.
+        # 정방향 수신(ingest)이 바꾼 상태는 이 경로가 아니라 줄엔 들어오지 않는다.
+        if 'status' in value and _external_row(row):
+            outbox_store = _outbox(request)
+            if outbox_store is None:
+                return _error('feedback_unavailable', 503)
+            external = CHAT_STATUS_TO_EXTERNAL[value['status']]
+            try:
+                await outbox_store.enqueue_status(
+                    feedback_id=row.id, external_feedback_id=row.external_feedback_id,
+                    status=external)
+                schedule_dispatch(request.app.state)
+            except FeedbackUnavailable:
+                return _error('feedback_unavailable', 503)
         record = await store.get_record(feedback_id)
         return _response({'ok': True, 'feedback': (record or row).public(admin=True)})
     except ValueError:
         return _error('feedback_invalid_request', 400)
     except Exception:
         return _error('feedback_unavailable', 503)
+
+
+async def _load_site_row(request, store, feedback_id):
+    """Fetch one site feedback with the same site-scope rule as the status route.
+
+    Returns (record, None) on success or (None, error_response).
+    """
+    role, sites, denied = await _site_access(request)
+    if denied is not None:
+        return None, denied
+    record = await store.get_record(feedback_id)
+    if record is None or (role == 'site' and record.site not in sites):
+        return None, _error('feedback_not_found', 404)
+    if not _external_row(record):
+        return None, _error('feedback_not_found', 404)
+    return record, None
+
+
+async def admin_site_feedback_reply(request):
+    """#7690 역방향: 운영센터 '고객에게 답글'. 운영 메모가 아니라 고객에게 간다.
+
+    러브트리 정방향으로 들어온 의견에만 받고, 답글은 줄(outbox)에 넣고
+    백그라운드로 보낸다. 비밀·주소가 없으면 줄에 대기한다.
+    """
+    store = _store(request)
+    if store is None:
+        return _error('feedback_unavailable', 503)
+    value, denied = await _body(request)
+    if denied is not None:
+        return denied
+    feedback_id = request.path_params.get('feedback_id', '')
+    if (not SITE_FEEDBACK_ID.fullmatch(feedback_id) or not value
+            or set(value) != {'body'} or not _ingest_text(value['body'], 2000)):
+        return _error('feedback_invalid_request', 400)
+    record, error = await _load_site_row(request, store, feedback_id)
+    if error is not None:
+        return error
+    outbox_store = _outbox(request)
+    if outbox_store is None:
+        return _error('feedback_unavailable', 503)
+    try:
+        row = await outbox_store.enqueue_reply(
+            feedback_id=record.id, external_feedback_id=record.external_feedback_id,
+            body=value['body'])
+    except FeedbackUnavailable:
+        return _error('feedback_unavailable', 503)
+    schedule_dispatch(request.app.state)
+    configured = all(reply_config(request.app.state))
+    return _response({'ok': True, 'feedback': record.public(admin=True),
+                      'outbox': [{**row, 'state': outbox_state(row, configured=configured)}]}, 201)
+
+
+async def admin_site_feedback_resend(request):
+    """#7690 역방향: '보내기 실패' 행을 다시 보내게 돌린다."""
+    store = _store(request)
+    if store is None:
+        return _error('feedback_unavailable', 503)
+    value, denied = await _body(request)
+    if denied is not None:
+        return denied
+    feedback_id = request.path_params.get('feedback_id', '')
+    event_key = value.get('eventKey') if isinstance(value, dict) else None
+    if (not SITE_FEEDBACK_ID.fullmatch(feedback_id)
+            or not isinstance(event_key, str) or not event_key
+            or set(value or {}) - {'eventKey'}):
+        return _error('feedback_invalid_request', 400)
+    record, error = await _load_site_row(request, store, feedback_id)
+    if error is not None:
+        return error
+    outbox_store = _outbox(request)
+    if outbox_store is None:
+        return _error('feedback_unavailable', 503)
+    try:
+        row = await outbox_store.reset_row(event_key, feedback_id=record.id)
+    except FeedbackUnavailable:
+        return _error('feedback_unavailable', 503)
+    if row is None:
+        return _error('feedback_not_found', 404)
+    schedule_dispatch(request.app.state)
+    configured = all(reply_config(request.app.state))
+    return _response({'ok': True, 'feedback': record.public(admin=True),
+                      'outbox': [{**row, 'state': outbox_state(row, configured=configured)}]})
