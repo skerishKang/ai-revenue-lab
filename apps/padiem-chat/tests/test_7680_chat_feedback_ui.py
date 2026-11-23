@@ -1,4 +1,3 @@
-import locale_bundle
 """Node-only DOM contracts: no local service, browser profile or login."""
 import json
 import re
@@ -8,7 +7,10 @@ from pathlib import Path
 
 import pytest
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
+# #8060: shipped reads live in _support; the DOM and copy contracts stay.
+from _support import chat_feedback_source as sheets
+
+STATIC = sheets.static_dir()
 HARNESS = Path(__file__).with_name("chat_feedback_harness.js")
 
 
@@ -37,16 +39,16 @@ def test_feedback_dom_contract(scenario):
 
 
 def test_feedback_assets_and_complete_locales():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
-    js = (STATIC / "chat-feedback-module.js").read_text(encoding="utf-8")
-    css = (STATIC / "chat-feedback.css").read_text(encoding="utf-8")
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    html = sheets.index_html()
+    js = sheets.feedback_js()
+    css = sheets.feedback_css()
+    locale = sheets.locale_source()
     assert html.index("./auth-session.js") < html.index("./chat-feedback-module.js")
     assert 'href="./chat-feedback.css"' in html
     assert '<dialog class="feedback-dialog" id="feedbackDialog" aria-labelledby="feedbackTitle">' in html
     checkbox = re.search(r'<input id="feedbackConsent"[^>]*>', html).group()
     assert "checked" not in checkbox
-    assert "chat-feedback" not in (STATIC / "app.js").read_text(encoding="utf-8")
+    assert "chat-feedback" not in sheets.app_js()
     assert "min-height: 44px" in css and "font-size: 14px" in css
     keys = set(re.findall(r'data-locale-(?:key|aria-label)="(feedback-[a-z-]+)"', html))
     keys |= {"feedback-" + key for key in re.findall(r'copy\("([a-z-]+)"', js) if key not in ("status-", "reply-")}
@@ -59,7 +61,7 @@ def test_feedback_assets_and_complete_locales():
 
 
 def test_7835_the_panel_never_stays_loading_after_a_lost_reply():
-    js = (STATIC / "chat-feedback-module.js").read_text(encoding="utf-8")
+    js = sheets.feedback_js()
     # A silent connection is bounded, and the loading flag is cleared before any
     # early return — otherwise one lost reply disables the button for good.
     assert "const REQUEST_TIMEOUT_MS = 15000;" in js
@@ -72,11 +74,11 @@ def test_7835_the_panel_never_stays_loading_after_a_lost_reply():
 
 
 def test_7835_the_button_is_bound_to_fixed_and_says_when_it_is_done():
-    js = (STATIC / "chat-feedback-module.js").read_text(encoding="utf-8")
+    js = sheets.feedback_js()
     assert 'if (item.status === "fixed") {' in js
     assert 'button(item.unread_fixed ? "acknowledge" : "acknowledged", () => void acknowledge(item))' in js
     assert "read.disabled = !item.unread_fixed || state.busy || state.ownLoading;" in js
     assert 'read.setAttribute("aria-disabled", String(read.disabled));' in js
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_source()
     assert '"feedback-acknowledged": "확인함"' in locale
     assert '"feedback-acknowledged": "Read"' in locale

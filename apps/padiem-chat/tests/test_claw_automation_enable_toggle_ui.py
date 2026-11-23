@@ -25,7 +25,6 @@ Mirrors the #3257 create-UI test style:
 """
 
 from __future__ import annotations
-import locale_bundle
 
 from functools import lru_cache
 
@@ -36,11 +35,8 @@ from pathlib import Path
 
 from css_rules import declaration, find_rules_with_selector, parse_rules
 
-ROOT = Path(__file__).resolve().parents[1]
-APP_JS = ROOT / "static/app.js"
-INDEX_HTML = ROOT / "static/index.html"
-LOCALE_JS = locale_bundle.SOURCE
-WORKSPACE_CSS = ROOT / "static/claw-workspace.css"
+# #8060: shipped reads live in _support; the static and behavior checks stay.
+from _support import automation_toggle_source as sheets
 
 TOGGLE_LOCALE_KEYS = (
     "claw-automation-rule-turn-off",
@@ -56,11 +52,11 @@ TOGGLE_LOCALE_KEYS = (
 
 
 def _app_source() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    return sheets.app_source()
 
 
 def _html_source() -> str:
-    return INDEX_HTML.read_text(encoding="utf-8")
+    return sheets.index_html()
 
 
 # ── static structural contracts ────────────────────────────────────────────
@@ -77,7 +73,7 @@ def test_toggle_status_is_an_aria_live_region_and_section_is_focusable() -> None
 
 
 def test_locale_tables_carry_every_toggle_key_in_ko_and_en() -> None:
-    locale = LOCALE_JS.read_text(encoding="utf-8")
+    locale = sheets.locale_source()
     ko = locale.split("ko: {", 1)[1].split("en: {", 1)[0]
     en = locale.split("en: {", 1)[1]
     for key in TOGGLE_LOCALE_KEYS:
@@ -87,7 +83,7 @@ def test_locale_tables_carry_every_toggle_key_in_ko_and_en() -> None:
 
 def test_toggle_control_meets_touch_and_focus_contract() -> None:
     # R2(#7186): CSS 글자 일치 대신 규칙 블록과 선언 값으로 판정한다.
-    rules = parse_rules(WORKSPACE_CSS.read_text(encoding="utf-8"))
+    rules = parse_rules(sheets.workspace_css())
     base = [
         rule
         for rule in find_rules_with_selector(rules, ".claw-automation-rule-toggle")
@@ -126,11 +122,9 @@ def test_toggle_never_claims_live_execution() -> None:
     문구 자체가 금지 대상이라 소스·마크업·locale 부재 검사를 유지한다.
     """
     # R5 A1: 부재 검사 대상에 이동된 두 모듈을 합쳐 같은 강도를 유지한다.
-    js = (_app_source()
-          + (ROOT / "static" / "chat-automation-module.js").read_text(encoding="utf-8")
-          + (ROOT / "static" / "chat-automation-form-module.js").read_text(encoding="utf-8"))
+    js = (_app_source() + sheets.automation_module() + sheets.form_module())
     html = _html_source()
-    locale = LOCALE_JS.read_text(encoding="utf-8")
+    locale = sheets.locale_source()
     for overclaim in (
         "자동 실행이 시작되었습니다",
         "scheduler activated",
@@ -488,11 +482,11 @@ const toggleFor = (ruleId) => {
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
-    harness_path = ROOT / "tests" / "_claw_automation_toggle_harness.js"
+    harness_path = Path(sheets.test_path("_claw_automation_toggle_harness.js"))
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(APP_JS)],
+            [node, str(harness_path), sheets.app_js_path()],
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=120,

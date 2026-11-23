@@ -11,6 +11,9 @@ from app.hark_3936_acceptance import (
     acceptance_matrix, verify_synthetic_quote_pair,
 )
 
+# #8060: the raw read lives in _support; the source-absence checks stay here.
+from _support import hark_acceptance_source as sheets
+
 ROOT = Path(__file__).resolve().parents[1]
 TEST_DIR = ROOT / "tests"
 STATIC = ROOT / "static"
@@ -97,7 +100,7 @@ def test_source_and_working_bytes_cannot_be_identical():
 
 
 def test_acceptance_code_has_no_live_provider_mutations_or_private_paths():
-    source = (ROOT / "app" / "hark_3936_acceptance.py").read_text(encoding="utf-8")
+    source = sheets.acceptance_source()
     for forbidden in ("E:\\\\PADIEM_CLAW_HARK", "cloudflare_api_token", "requests.post(",
                       "subprocess.run(", "client.post(", "put_object(", "gh api ", "wrangler deploy"):
         assert forbidden not in source
