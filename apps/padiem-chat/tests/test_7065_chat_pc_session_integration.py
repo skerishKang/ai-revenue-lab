@@ -29,7 +29,7 @@ def test_real_history_keeps_confirmation_private_and_consumes_once(tmp_path, op)
     from app.history import PRODUCT_SCOPE_CHAT
 
     async def scenario():
-        store, db = _fixture(tmp_path)
+        store, db = _fixture(tmp_path, memory=True)
         request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(history_store=store)))
         owner = (SQL_UID, SimpleNamespace(session_id="fixture"), WORKSPACE)
         value = "한글\n" * 900
@@ -60,7 +60,7 @@ def test_real_history_keeps_confirmation_private_and_consumes_once(tmp_path, op)
 
 def test_real_confirmation_expires_and_an_unrelated_turn_cannot_confirm(tmp_path):
     async def scenario():
-        store, db = _fixture(tmp_path)
+        store, db = _fixture(tmp_path, memory=True)
         request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(history_store=store)))
         owner = (SQL_UID, SimpleNamespace(session_id="fixture"), WORKSPACE)
         operation = {"op": "start", "interactive": True, "command": "x" * 201}
@@ -95,7 +95,7 @@ def test_real_queue_private_row_binds_real_app_run_and_rejects_mcp_origin(tmp_pa
     queue_class = _queue_module("background_history").QueueHistoryStore
 
     async def scenario():
-        real, db = _fixture(tmp_path)
+        real, db = _fixture(tmp_path, memory=True)
         qdb = connect(str(tmp_path / "queue.sqlite3"))
         schema.apply(qdb)
         async def owns(run_id, user_id):

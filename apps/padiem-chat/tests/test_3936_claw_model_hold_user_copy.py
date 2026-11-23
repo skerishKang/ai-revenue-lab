@@ -12,7 +12,6 @@ repo already uses for these DOM paths. No B14, Engine or provider call happens,
 and no model/provider selection or routing is changed by this module.
 """
 from __future__ import annotations
-import locale_bundle
 
 import shutil
 import subprocess
@@ -26,10 +25,18 @@ from app.claw_general_routes import _MODEL_HOLD_USER_MESSAGE
 from _r5_function_source import combined_source, function_body
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+# #8060: shipped-source reads live in _support; assertions stay here.
+from _support.claw_model_hold_3936_source import (
+    app_js as _app_js,
+    locale_source,
+    stream_js as _stream_js,
+    transport_js,
+)
+
+APP = _app_js()
+STREAM = _stream_js()
+TRANSPORT = transport_js()
+LOCALE = locale_source()
 
 NODE = r"""
 const fs = require("fs");

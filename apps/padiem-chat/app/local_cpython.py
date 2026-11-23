@@ -1182,9 +1182,10 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
         host_flag,
     )
     # #7690 역방향: 러브트리 보내기 줄 재시도 루프(1분 주기). Worker에는 붙이지 않는다.
+    from .local_bootstrap import lovetree_outbox_lock
     from .lovetree_ops_outbox import install_retry_loop as install_lovetree_outbox_loop
 
-    install_lovetree_outbox_loop(app)
+    install_lovetree_outbox_loop(app, process_lock=lovetree_outbox_lock(connection))
     app = apply_write_freeze(app)
     return app
 

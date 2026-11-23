@@ -250,7 +250,14 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--styles-topbar-bg",
                 "--styles-topbar-bg-2",
                 "--styles-typing-i-bg",
-                },
+                }
+             | {"--project-border", "--project-danger-border", "--project-danger-text",
+                "--project-dim", "--project-error-text", "--project-focus-outline",
+                "--project-hairline", "--project-hover-border", "--project-ink",
+                "--project-muted-text", "--project-note-text", "--project-on-ink-text",
+                "--project-panel-bg", "--project-secondary-text",
+                "--project-select-text", "--project-shadow", "--project-solid-bg",
+                "--project-strong-text", "--project-subtle-wash"},
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.

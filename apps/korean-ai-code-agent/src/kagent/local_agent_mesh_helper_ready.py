@@ -196,6 +196,7 @@ class MeshHelperReadyReporter:
         if not callable(post):
             raise ValueError("a channel post is required")
         self._post = post
+        self._agent_version_diagnostics: dict[str, float] = {}
 
     def report(self, node: str, state: dict[str, Any], *, source: str,
                read: str, reason: str, attempts: int = 0) -> bool:
@@ -222,9 +223,13 @@ class MeshHelperReadyReporter:
     def observe(self, rows: Any, targets: Iterable[str]) -> int:
         try:
             nodes = _targets(targets)
+            if not nodes:
+                _agent_version_diagnostic(self._agent_version_diagnostics, "-", "not_target")
             states = _console_states(rows, nodes)
             reported = 0
             for node in nodes:
+                _agent_version_diagnostic(
+                    self._agent_version_diagnostics, _node_ref(node), "no_read_port")
                 state = states.get(node)
                 if state is None:
                     print(f"oracle-mesh-executor helper_ready_node pc={_pc_suffix(node)} "
@@ -359,8 +364,26 @@ def _read_failure(exc: Exception) -> str:
 _VERSION_REASON_CODES = frozenset({
     "unavailable", "observed", "invalid_read_body", "empty_body", "too_large",
     "no_version_resource", "malformed_resource", "truncated_resource",
-    "no_build_stamp", "ambiguous", "format_mismatch",
+    "no_build_stamp", "ambiguous", "format_mismatch", "no_candidate_path",
+    "no_read_port", "not_target", "console_path_only", "cached", "already_present",
 })
+
+
+def _node_ref(node: str) -> str:
+    # The private read port accepts a bare ID, not a node/domain/id envelope.
+    return node.rsplit("/", 1)[-1] if node.startswith("node/") else node
+
+
+def _agent_version_diagnostic(store: dict[str, float], ref: str, reason: str,
+                              now: float | None = None) -> None:
+    """One value-free reason line per ref per one-hour cache unit."""
+    if now is None:
+        now = time.monotonic()
+    last = store.get(ref)
+    if last is not None and now - last < _MESH_AGENT_VERSION_CACHE_SECONDS:
+        return
+    store[ref] = now
+    print(f"oracle-mesh-executor helper_ready_agent_version read={reason}", flush=True)
 
 
 def _mesh_agent_version_reason(raw: Any) -> tuple[str | None, str]:
@@ -439,6 +462,7 @@ class HelperStatusReadFallback:
         self._reporter = reporter if reporter is not None else MeshHelperReadyReporter(post=post)
         self._read_port = read_port
         self._agent_versions: dict[str, tuple[str, float]] = {}
+        self._agent_version_diagnostics: dict[str, float] = {}
 
     def _complete_mesh_agent_version(self, node: str, ref: str, state: dict[str, Any]) -> None:
         """Fill the one version the console never supplied, if the binary can prove it.
@@ -448,13 +472,16 @@ class HelperStatusReadFallback:
         read-success and read-refusal paths. Cached per node because a bounded
         executable read is far too large to repeat on every drive round.
         """
+        now = time.monotonic()
         if state.get("mesh_agent_version") is not None:
+            _agent_version_diagnostic(
+                self._agent_version_diagnostics, ref, "already_present", now)
             return
         cached = self._agent_versions.get(ref)
-        now = time.monotonic()
         if cached is not None and now - cached[1] < _MESH_AGENT_VERSION_CACHE_SECONDS:
             if cached[0] is not None:
                 state["mesh_agent_version"] = cached[0]
+            _agent_version_diagnostic(self._agent_version_diagnostics, ref, "cached", now)
             return
         value, reasons = None, []
         for path in _MESH_AGENT_VERSION_READ_PATHS:
@@ -475,8 +502,8 @@ class HelperStatusReadFallback:
         self._agent_versions[ref] = (value, now)
         if value is not None:
             state["mesh_agent_version"] = value
-        reason = _prefer_version_reason(reasons)
-        print(f"oracle-mesh-executor helper_ready_agent_version read={reason}", flush=True)
+        reason = _prefer_version_reason(reasons) if reasons else "no_candidate_path"
+        _agent_version_diagnostic(self._agent_version_diagnostics, ref, reason, now)
 
     def _complete_updater_evidence(self, node, state):
         """Read only fixed files when the console lacks independent evidence.
@@ -548,6 +575,8 @@ class HelperStatusReadFallback:
     def observe(self, rows: Any, targets: Any) -> int:
         reported = file_attempts = read_ok = console_ok = 0
         nodes = _targets(targets) if isinstance(targets, (list, tuple, set)) else []
+        if not nodes:
+            _agent_version_diagnostic(self._agent_version_diagnostics, "-", "not_target")
         states = _console_states(rows, nodes)
         for node in nodes:
             state = states.get(node)
@@ -555,14 +584,17 @@ class HelperStatusReadFallback:
                                       or state.get("helper_sha256")):
                 console_ok += 1
                 self._complete_updater_evidence(node, state)
+                # The console path is not an excuse to skip the installed
+                # executable: it cannot supply the Mesh build version. Use the
+                # same private read port as the file path, then report.
+                self._complete_mesh_agent_version(node, _node_ref(node), state)
                 reported += self._reporter.report(
                     node, state, source="console", read="ok", reason=_state_reason(state))
                 continue
             file_attempts += 1
-            # The private read port's canonical validator accepts bare IDs,
-            # not node/domain/id. Strip only the known envelope, never a
-            # character (such as @) within the opaque node identifier.
-            refs = [node.rsplit("/", 1)[-1] if node.startswith("node/") else node]
+            # Strip only the known node/ envelope, never a character inside
+            # the opaque node identifier.
+            refs = [_node_ref(node)]
             attempts = 0
             reason = "read_error"
             for ref in dict.fromkeys(refs):

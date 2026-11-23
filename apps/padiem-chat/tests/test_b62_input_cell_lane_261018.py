@@ -17,14 +17,13 @@ not the reference: `padiem-first-use.css` gives the first screen a stronger
 border and shadow, which is a documented state treatment, not drift.
 """
 
-from pathlib import Path
+# #8060: shipped reads live in _support; the measured declarations stay here.
+from _support import input_cell_lane_source as sheets
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-
-FRAME = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
-GLASS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
-CLAW = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
-WORKSPACE = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
+FRAME = sheets.frame()
+GLASS = sheets.glass()
+CLAW = sheets.claw()
+WORKSPACE = sheets.workspace()
 
 
 def _body(css: str, selector: str) -> str:

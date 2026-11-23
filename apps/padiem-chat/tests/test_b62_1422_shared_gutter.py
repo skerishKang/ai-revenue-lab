@@ -1,10 +1,9 @@
-from pathlib import Path
+# #8060: shipped reads live in _support; the contracts stay unchanged.
+from _support import shared_gutter_source as sheets
 
-
-ROOT = Path(__file__).resolve().parents[1]
-ALIGNMENT_CSS = (ROOT / "static/padiem-glass-gutter-alignment.css").read_text(encoding="utf-8")
-CHAT_CSS = (ROOT / "static/padiem-cinematic-chat.css").read_text(encoding="utf-8")
-INDEX = (ROOT / "static/index.html").read_text(encoding="utf-8")
+ALIGNMENT_CSS = sheets.alignment_css()
+CHAT_CSS = sheets.chat_css()
+INDEX = sheets.index_html()
 
 
 def test_alignment_layer_loads_after_prior_glass_polish() -> None:

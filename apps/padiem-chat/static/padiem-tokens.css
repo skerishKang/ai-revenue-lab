@@ -409,6 +409,28 @@
   --foundation-pill-hover-edge: rgba(255, 255, 255, .32);
   --foundation-account-text: rgba(255, 255, 255, .58);
 
+  /* #7811 C2: projects.css의 쓰임새 색. 값은 치환 전 리터럴 그대로이고 다섯
+     테마에서 같은 값이므로 :root에만 둔다. */
+  --project-muted-text: #5f6368;
+  --project-subtle-wash: rgba(24, 24, 27, 0.06);
+  --project-error-text: #a23434;
+  --project-hairline: rgba(24, 24, 27, 0.1);
+  --project-panel-bg: rgba(255, 255, 255, 0.94);
+  --project-secondary-text: #8a8f98;
+  --project-border: rgba(24, 24, 27, 0.12);
+  --project-solid-bg: #fff;
+  --project-on-ink-text: #fff;
+  --project-strong-text: #4d5156;
+  --project-shadow: rgba(24, 24, 27, 0.2);
+  --project-dim: rgba(20, 20, 24, 0.34);
+  --project-hover-border: rgba(24, 24, 27, 0.14);
+  --project-focus-outline: rgba(24, 24, 27, 0.16);
+  --project-note-text: #777c85;
+  --project-danger-text: #b3261e;
+  --project-ink: #18181b;
+  --project-danger-border: rgba(179, 38, 30, 0.25);
+  --project-select-text: #101828;
+
   /* #8020: Claw 요청 말풍선. 글자는 테마의 사용자 말풍선 글자 역할을 그대로
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
   --claw-request-bubble-text: var(--user-bubble-text);

@@ -152,13 +152,15 @@ def test_claw_manual_intake_preview_oversized_body_rejected(client: TestClient) 
 
 
 def test_claw_static_assets_preserve_safe_dom_sinks() -> None:
-    from pathlib import Path
+    # #8060: shipped-source reads live in _support; assertions stay here.
+    from _support.claw_chat_preview_source import app_js as _app_js
+    from _support.claw_chat_preview_source import form_js as _form_js
+    from _support.claw_chat_preview_source import index_html as _index_html
 
-    chat_dir = Path(__file__).resolve().parents[1]
-    index_html = (chat_dir / "static" / "index.html").read_text(encoding="utf-8")
-    app_js = (chat_dir / "static" / "app.js").read_text(encoding="utf-8")
+    index_html = _index_html()
+    app_js = _app_js()
     # R5 A5b: the preview handler and its DOM writes live in the form module.
-    form_js = (chat_dir / "static" / "chat-claw-form-module.js").read_text(encoding="utf-8")
+    form_js = _form_js()
 
     # The never-wired disabled controls are gone; the false "Markdown download"
     # claim goes with them, while the real DOCX action stays in the result card.

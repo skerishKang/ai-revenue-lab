@@ -18,8 +18,6 @@ from __future__ import annotations
 import re
 import sqlite3
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
-
 import pytest
 
 import app.conversation_purge as conversation_purge
@@ -42,8 +40,8 @@ from app.d1_sqlite import SqliteD1
 from app.history import D1HistoryStore, HistoryForbidden, PRODUCT_SCOPE_CHAT
 from app.local_cpython import apply_migrations
 
-APP_DIR = Path(__file__).resolve().parents[1] / "app"
-REPO_ROOT = Path(__file__).resolve().parents[3]
+# #8060: raw source reads live in _support; guard windows stay here.
+from _support.conversation_soft_delete_7388_source import ops_restore_script, source_files
 NOW = datetime(2026, 11, 10, 12, 0, 0, tzinfo=timezone.utc)
 USER = "usr_" + "a" * 32
 OTHER_USER = "usr_" + "b" * 32
@@ -415,7 +413,7 @@ async def test_restore_clears_the_marker_only_inside_the_window(store, connectio
 
 
 def test_the_ops_script_runs_the_restore_module():
-    script = (REPO_ROOT / "ops" / "restore_conversation.sh").read_text(encoding="utf-8")
+    script = ops_restore_script()
     assert "-m app.conversation_restore" in script
     assert "exec " in script
 
@@ -450,16 +448,15 @@ def test_the_purge_shares_the_store_preview_rule():
 
 
 def _source_files():
-    return sorted(path for path in APP_DIR.glob("*.py") if path.name != "__init__.py")
+    return source_files()
 
 
 def test_every_conversation_read_carries_the_marker_condition():
     missing = []
     pattern = re.compile(r"\bFROM\s+conversations\b", re.IGNORECASE)
-    for path in _source_files():
-        if path.name in _MARKER_GUARD_ALLOWED:
+    for name, lines in _source_files():
+        if name in _MARKER_GUARD_ALLOWED:
             continue
-        lines = path.read_text(encoding="utf-8").splitlines()
         for index, line in enumerate(lines):
             if pattern.search(line) is None:
                 continue
@@ -468,23 +465,22 @@ def test_every_conversation_read_carries_the_marker_condition():
                 continue
             window = "\n".join(lines[index:index + 6])
             if "deleted_at" not in window:
-                missing.append(f"{path.name}:{index + 1}")
+                missing.append(f"{name}:{index + 1}")
     assert missing == []
 
 
 def test_no_conversation_delete_skips_its_messages():
     missing = []
-    for path in _source_files():
-        if path.name in _DELETE_GUARD_ALLOWED:
+    for name, lines in _source_files():
+        if name in _DELETE_GUARD_ALLOWED:
             continue
-        lines = path.read_text(encoding="utf-8").splitlines()
         for index, line in enumerate(lines):
             if "DELETE FROM conversations" not in line:
                 continue
             start = max(0, index - 8)
             window = "\n".join(lines[start:index + 9])
             if "DELETE FROM messages" not in window:
-                missing.append(f"{path.name}:{index + 1}")
+                missing.append(f"{name}:{index + 1}")
     assert missing == []
 
 

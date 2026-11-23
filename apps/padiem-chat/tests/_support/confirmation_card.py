@@ -33,8 +33,12 @@ class _Bucket:
         return self.objects.get(key)
 
 
-def _fixture(tmp_path):
-    connection = sqlite3.connect(str(tmp_path / "chat.sqlite3"), isolation_level=None)
+def _fixture(tmp_path, *, memory=False):
+    # 테스트마다 마이그레이션을 파일에 다시 적용하면 디스크가 느린 CI에서
+    # 수십 초가 걸릴 수 있다. 파일 내용을 단언하지 않는 시험은 메모리 DB를
+    # 써도 검증하는 동작이 그대로다(기본값은 파일 — 기존 호출부 유지).
+    target = ":memory:" if memory else str(tmp_path / "chat.sqlite3")
+    connection = sqlite3.connect(target, isolation_level=None)
     connection.row_factory = sqlite3.Row
     apply_migrations(connection)
     connection.execute(

@@ -5,7 +5,6 @@ import logging
 import sqlite3
 import subprocess
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -17,7 +16,8 @@ from app.oracle_mesh_read_return_routes import OracleMeshReturnSource, EXECUTION
 from app.pc_work_context import PcConnectorScope, _mesh_presence_online
 import _support.mesh_online_projection as existing
 
-ROOT = Path(__file__).resolve().parents[3]
+# #8060: shipped reads live in _support; the behavior contracts stay here.
+from _support import mesh_only_presence_source as sheets
 
 
 class D1:
@@ -30,7 +30,7 @@ class D1:
             "090_mesh_device_presence_last_connected.sql",
             "091_mesh_device_presence_accounts.sql",
         ):
-            self.db.executescript((ROOT / "apps/padiem-chat/migrations" / name).read_text())
+            self.db.executescript(sheets.migration(name))
 
     def prepare(self, sql):
         db = self.db
@@ -143,8 +143,11 @@ const raw=JSON.parse(fs.readFileSync(0,'utf8'));
 const projected=window.PadiemClawLocalHandoff.deriveDeviceDirectory(raw);
 console.log(window.PadiemComputerConnectionState.classify({...projected,readCompleted:true,statusCode:'ok'}));
 '''
-    static = ROOT / "apps/padiem-chat/static"
-    result = subprocess.run(["node", "-e", script, str(static/"claw-local-handoff.js"), str(static/"claw-connection-state.js")], input=json.dumps(payload), text=True, encoding="utf-8", capture_output=True, check=True)
+    result = subprocess.run(["node", "-e", script,
+                             sheets.static_path("claw-local-handoff.js"),
+                             sheets.static_path("claw-connection-state.js")],
+                            input=json.dumps(payload), text=True, encoding="utf-8",
+                            capture_output=True, check=True)
     assert result.stdout.strip() == expected
     async def no_scope(*args, **kwargs):
         return PcConnectorScope(status="owner_unavailable")
