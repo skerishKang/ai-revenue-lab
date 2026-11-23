@@ -458,18 +458,25 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
     if (contentLength > 4096) return json(400, { error: 'invalid_request' });
     const form = new URLSearchParams(await request.text());
     const handle = one(form, 'handle'), browser = cookieValue(request);
-    if (!handle || !opaque.test(handle) || !opaque.test(browser)) return json(400, { error: 'invalid_request' });
+    // Value-free reason line for each refusal, so an operator can tell a
+    // missing cookie from an expired record without any identifier in logs.
+    const refuse = (reason) => {
+      console.error(JSON.stringify({ auth_stage: 'age_confirm_refused', provider: expectProvider, reason }));
+      return json(400, { error: 'invalid_request' });
+    };
+    if (!handle || !opaque.test(handle)) return refuse(handle ? 'handle_malformed' : 'handle_missing');
+    if (!opaque.test(browser)) return refuse(browser ? 'cookie_malformed' : ((request.headers.get('cookie') || '').includes(`${cookie}=`) ? 'cookie_duplicate' : 'cookie_missing'));
     const lang = resolveLang(request.headers.get('accept-language'));
     const store = stateFor('google-age-confirmation');
     const handleDigest = await digest(handle), browserDigest = await digest(browser);
     const raw = await store.readAgeConfirmation({ handleDigest, browserDigest, now: current });
-    if (!raw) return json(400, { error: 'invalid_request' });
+    if (!raw) return refuse('record_not_found');
     let data;
-    try { data = JSON.parse(raw); } catch { return json(400, { error: 'invalid_request' }); }
+    try { data = JSON.parse(raw); } catch { return refuse('record_unreadable'); }
     // Each endpoint only accepts the kind of record it was parked for. A
     // mismatch is refused without consuming the handle, so the rightful
     // endpoint can still answer it.
-    if (data.provider !== expectProvider) return json(400, { error: 'invalid_request' });
+    if (data.provider !== expectProvider) return refuse('provider_mismatch');
     // The skin comes from the verified client stored with the pending login;
     // the form's cosmetic fields are never trusted for the rendered notice.
     const brand = resolveBrand(data.client);
