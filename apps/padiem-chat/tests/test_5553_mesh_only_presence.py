@@ -15,7 +15,7 @@ from app.claw_local_access_source import mesh_presence_online, CanonicalClawLoca
 from app.mesh_device_presence_store import D1MeshDevicePresenceStore, MeshDevicePresenceStoreError
 from app.oracle_mesh_read_return_routes import OracleMeshReturnSource, EXECUTION_MODE_MESH
 from app.pc_work_context import PcConnectorScope, _mesh_presence_online
-import test_5553_mesh_online_projection_261024 as existing
+import _support.mesh_online_projection as existing
 
 ROOT = Path(__file__).resolve().parents[3]
 
