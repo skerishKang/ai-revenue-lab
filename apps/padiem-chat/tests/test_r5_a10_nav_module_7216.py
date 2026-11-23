@@ -16,12 +16,15 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _support.r5_module_source_7216 import (
+    android_handoff_module_js, app_js, index_html, login_dialog_js, nav_module_js,
+)
 from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-nav-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+APP = app_js()
+MODULE = nav_module_js()
+INDEX = index_html()
 
 NAMES = (
     "pageViewFor",
