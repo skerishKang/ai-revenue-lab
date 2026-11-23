@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import secrets
 import sqlite3
-from pathlib import Path
 
 import pytest
 
@@ -42,10 +41,8 @@ from _support.document_convert_routes import (
     zip_bytes,
 )
 
-MIGRATIONS = Path(__file__).parents[1] / "migrations"
-ROOT = Path(__file__).resolve().parents[3]
-STATIC = ROOT / "apps" / "padiem-chat" / "static"
-PDFMD_JS = STATIC / "util-pdfmd.js"
+# #8060: shipped reads live in _support; the contracts stay unchanged.
+from _support import pdfmd_failures_source as sheets
 
 UID = "usr_" + "a" * 32
 
@@ -60,12 +57,12 @@ def _legacy_conversion_contract(monkeypatch):
 
 def test_migration_122_widens_the_bucket_check_and_keeps_rows() -> None:
     conn = sqlite3.connect(":memory:")
-    conn.executescript((MIGRATIONS / "005_live_usage_quota.sql").read_text(encoding="utf8"))
+    conn.executescript(sheets.migration("005_live_usage_quota.sql"))
     conn.execute(
         "INSERT INTO live_usage_buckets (subject_type, subject_key, bucket_type, bucket_start, request_count, updated_at) "
         "VALUES ('user', 'u1', 'day', '2026-11-14', 3, '2026-11-14T01:00:00Z')"
     )
-    conn.executescript((MIGRATIONS / "122_live_usage_conversion_bucket.sql").read_text(encoding="utf8"))
+    conn.executescript(sheets.migration("122_live_usage_conversion_bucket.sql"))
     conn.execute(
         "INSERT INTO live_usage_buckets (subject_type, subject_key, bucket_type, bucket_start, request_count, updated_at) "
         "VALUES ('user', 'u1', 'conversion_day', '2026-11-14', 1, '2026-11-14T01:00:00Z')"
@@ -87,8 +84,8 @@ async def test_the_real_conversion_allowance_succeeds_after_122() -> None:
 
     conn = sqlite3.connect(":memory:", isolation_level=None, check_same_thread=False)
     conn.row_factory = sqlite3.Row
-    conn.executescript((MIGRATIONS / "005_live_usage_quota.sql").read_text(encoding="utf8"))
-    conn.executescript((MIGRATIONS / "122_live_usage_conversion_bucket.sql").read_text(encoding="utf8"))
+    conn.executescript(sheets.migration("005_live_usage_quota.sql"))
+    conn.executescript(sheets.migration("122_live_usage_conversion_bucket.sql"))
     db = SqliteD1(conn, threaded=True, read_workers=0)
     settings = Settings.from_values(
         runtime_mode="mock",
@@ -226,7 +223,7 @@ async def test_a_daily_quota_refusal_still_leaves_the_item_as_it_was() -> None:
 
 
 def test_the_front_end_speaks_in_user_words_and_shows_no_raw_code() -> None:
-    js = PDFMD_JS.read_text(encoding="utf-8")
+    js = sheets.pdfmd_js()
     # File problems, the scan guidance, and the transient outage each speak
     # Korean; the retry timing is stated for the transient family.
     assert 'pdf_encrypted: "암호가 있는 PDF는 변환할 수 없습니다.' in js

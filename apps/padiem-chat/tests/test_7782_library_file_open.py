@@ -32,15 +32,14 @@ from app import project_file_routes
 from app.project_file_routes import owner_files_collection, project_file_detail, project_file_original
 from app.project_files import D1ProjectFileStore
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-LIBRARY_JS = (STATIC / "library.js").read_text(encoding="utf-8")
-VIEWER_JS = (STATIC / "library-file-viewer.js").read_text(encoding="utf-8")
-INDEX_HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-HARNESS = (Path(__file__).resolve().parent / "_util_library_open_harness.js").read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the contracts stay unchanged.
+from _support import library_file_open_source as sheets
 
-MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
+LIBRARY_JS = sheets.library_js()
+VIEWER_JS = sheets.viewer_js()
+INDEX_HTML = sheets.index_html()
+APP_JS = sheets.app_js()
+HARNESS = sheets.harness()
 OWNER = "usr_" + "a" * 32
 FOREIGN = "usr_" + "b" * 32
 PROJECT = "proj_" + "1" * 32
@@ -76,7 +75,7 @@ def test_the_viewer_is_the_only_new_module_and_app_js_gains_nothing() -> None:
 
 
 def test_the_viewer_styles_use_chat_tokens_and_stay_out_of_the_module() -> None:
-    library_css = (STATIC / "library.css").read_text(encoding="utf-8")
+    library_css = sheets.library_css()
     assert ".library-file-dialog" in library_css and ".library-files-dialog" in library_css
     assert "var(--radius-md)" in library_css and "var(--accent-strong)" in library_css
     # The module itself paints nothing: no inline colour, no hex, no radius.
@@ -96,7 +95,8 @@ def _run_harness(scenario: dict) -> dict:
         env = dict(os.environ)
         env["SCENARIO"] = json.dumps(scenario)
         completed = subprocess.run(
-            [node, str(harness), str(STATIC / "library.js"), str(STATIC / "library-file-viewer.js")],
+            [node, str(harness), sheets.static_path("library.js"),
+             sheets.static_path("library-file-viewer.js")],
             capture_output=True, text=True, encoding="utf-8", env=env, check=False,
         )
     assert completed.stdout.strip(), completed.stdout + completed.stderr
@@ -205,7 +205,7 @@ def setup_database() -> sqlite3.Connection:
         "075_project_files_country.sql", "077_project_files_text_byte_bound.sql",
         "078_project_files_doc_kind.sql", "083_project_files_hwpx.sql",
     ):
-        db.executescript((MIGRATIONS / name).read_text(encoding="utf-8"))
+        db.executescript(sheets.migration(name))
     for owner, subject in ((OWNER, "subject-owner-7782"), (FOREIGN, "subject-foreign-7782")):
         db.execute(
             "INSERT INTO users(id,auth_provider,provider_subject,email,created_at,updated_at) "
@@ -345,7 +345,7 @@ def test_the_file_list_separates_the_name_and_the_meta_line() -> None:
     stacks them (block display in library.css), so the name and the meta read
     as two lines at 1440 and 390 widths alike.
     """
-    library_css = (STATIC / "library.css").read_text(encoding="utf-8")
+    library_css = sheets.library_css()
     assert ".library-file-list .library-item-title," in library_css
     assert ".library-file-list .library-item-meta" in library_css
     assert "display: block" in library_css
