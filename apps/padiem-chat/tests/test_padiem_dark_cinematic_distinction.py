@@ -9,16 +9,18 @@ silently re-converge the two themes.
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-THEMES_CSS = (ROOT / "static/padiem-themes.css").read_text(encoding="utf-8")
-SETTINGS_CSS = (ROOT / "static/padiem-settings.css").read_text(encoding="utf-8")  # #7476-14
+# #8060: sheet reads live in the _support accessor. The assertions below stay
+# unchanged: parsed token values, computed luma and source-structure ownership.
+from _support import claw_static
+
+THEMES_CSS = claw_static.sheet("padiem-themes.css")
+SETTINGS_CSS = claw_static.sheet("padiem-settings.css")  # #7476-14
 # #7187 R3 3차: --card-border moved to the token sheet (one owner per theme).
-TOKENS_CSS = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
-POLISH_CSS = (ROOT / "static/padiem-bright-readability.css").read_text(encoding="utf-8")
-THEME_JS = (ROOT / "static/theme.js").read_text(encoding="utf-8")
-THEME_INIT_JS = (ROOT / "static/theme-init.js").read_text(encoding="utf-8")
+TOKENS_CSS = claw_static.sheet("padiem-tokens.css")
+POLISH_CSS = claw_static.sheet("padiem-bright-readability.css")
+THEME_JS = claw_static.sheet("theme.js")
+THEME_INIT_JS = claw_static.sheet("theme-init.js")
 
 FILMIC_TOKENS = (
     "--film-blue-glow",
