@@ -8,6 +8,9 @@ pytest run and pins that the detached after() call cannot come back.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.last_batch_source import app_js, locale_js, pylock_toml, quote_runtime_js, read, read_replace, strict_deps_js, uv_lock_toml, xlsx_migration_sql, xlsx_sources_js, xlsx_store_py
+
 import shutil
 import subprocess
 from pathlib import Path
@@ -34,7 +37,7 @@ def test_quote_pc_form_attach_contract_runs_under_node():
 
 
 def test_the_pc_form_is_appended_with_the_form_never_after_a_detached_node():
-    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    source = quote_runtime_js()
     # Element.after() on a parentless node is a per-DOM no-op; the call ran
     # before either node was attached, so the PC form never reached the dialog
     # and the launcher advertised a form the dialog could not show.
