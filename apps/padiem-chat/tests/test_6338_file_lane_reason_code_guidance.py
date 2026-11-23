@@ -32,6 +32,7 @@ from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.file_lane import ticket_headers
+from _support import pc_connect_file_lane_source as sheets
 
 ROOT = Path(__file__).resolve().parents[1]
 LANE_SRC = ROOT.parent / "padiem-file-lane" / "src"
@@ -257,9 +258,7 @@ def test_chat_allowlist_matches_the_lane_allowlist_source():
     """One catalog: the Chat set equals the lane's PARSER_REASON_CODES (#6338)."""
     from app.file_lane import REASON_CODES
 
-    lane_storage = (ROOT.parent / "padiem-file-lane" / "src" / "padiem_file_lane" / "storage.py").read_text(
-        encoding="utf-8"
-    )
+    lane_storage = sheets.file_lane_storage_source()
     start = lane_storage.index("PARSER_REASON_CODES = frozenset({")
     end = lane_storage.index("})", start)
     import re
