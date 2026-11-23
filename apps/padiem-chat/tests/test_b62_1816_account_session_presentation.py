@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.route_session_source import (
+    app_js as _app_js, claw_workspace_css, conversation_module_js, index_html, login_dialog_js,
+    memory_module_js, nav_js, product_capabilities_js, sidebar_utility_css,
+)
+
 from pathlib import Path
 
 import httpx
@@ -133,9 +139,9 @@ async def test_auth_status_storage_failure_never_self_asserts_identity() -> None
 
 def test_browser_projection_is_presentation_only_and_has_no_identity_authority() -> None:
     root = Path(__file__).resolve().parents[1]
-    js = (root / "static/product-capabilities.js").read_text(encoding="utf-8")
-    app_js = (root / "static/app.js").read_text(encoding="utf-8")
-    css = (root / "static/sidebar-utility.css").read_text(encoding="utf-8")
+    js = product_capabilities_js()
+    app_js = _app_js()
+    css = sidebar_utility_css()
 
     for marker in (
         '"unavailable", "guest", "signed_in", "expired"',
@@ -160,6 +166,6 @@ def test_browser_projection_is_presentation_only_and_has_no_identity_authority()
     assert 'nativeFetch("/api/auth/status"' in js
     # #8312: the Google ask is built by googleStartHref() — the bare start URL
     # stays the no-ask default; the admin return rides return_to only when asked.
-    assert 'window.location.assign(googleStartHref());' in (app_js + (root / "static/chat-login-dialog-module.js").read_text(encoding="utf-8"))
+    assert 'window.location.assign(googleStartHref());' in (app_js + login_dialog_js())
     assert "min-height: 44px" in css
     assert '.sidebar-account[data-account-state="expired"]' in css
