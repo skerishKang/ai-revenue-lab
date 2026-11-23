@@ -12,13 +12,12 @@ mock은 서버처럼 pinned 먼저 → 최근 순으로 정렬하고 PATCH를 �
   - 4테마 × 1440/390: 가로 넘침 없음, 메뉴 3항목 가독(대비), 입력 칸이 행 안에 들어감.
 """
 from __future__ import annotations
-import locale_bundle
-
 import http.server
 import json
 import re
 import threading
 from pathlib import Path
+from _support.recent_menu_browser_source import locale_source
 
 import pytest
 
@@ -138,7 +137,7 @@ def titles(page):
 
 
 def locale_copy(key, lang="ko"):
-    source = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    source = locale_source()
     if lang == "ko":
         block = source[source.index("ko: {"):source.index("en: {")]
     else:
