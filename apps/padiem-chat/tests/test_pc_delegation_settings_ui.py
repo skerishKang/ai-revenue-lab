@@ -1,4 +1,3 @@
-import locale_bundle
 """Execute the shipped settings module with DOM and account API fakes."""
 from pathlib import Path
 import re
@@ -7,13 +6,14 @@ import subprocess
 
 import pytest
 
+from _support import settings_ui_source as sheets
+
 HERE = Path(__file__).resolve().parent
-STATIC = HERE.parent / "static"
 NODE = shutil.which("node")
 
 
 def test_settings_are_in_the_shared_chat_claw_dialog_with_accessible_localized_controls():
-    html = (STATIC / "index.html").read_text()
+    html = sheets.index_html()
     section = html[html.index('id="pcDelegationSettings"'):html.index('id="mcpGatewaySettings"')]
     assert 'aria-labelledby="pcDelegationTitle"' in section
     assert 'role="status" aria-live="polite"' in section
@@ -26,12 +26,12 @@ def test_settings_are_in_the_shared_chat_claw_dialog_with_accessible_localized_c
 
 
 def test_every_delegation_copy_key_has_both_locales_and_send_is_not_an_action():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_js()
     ko, en = locale.split('    en: {', 1)
     keys = set(re.findall(r'"(pc-delegation-[^"]+)":', ko))
     assert len(keys) >= 30
     assert keys <= set(re.findall(r'"(pc-delegation-[^"]+)":', en))
-    source = (STATIC / "pc-delegation-settings.js").read_text()
+    source = sheets.delegation_js()
     assert 'const ACTIONS = ["write", "move", "delete"]' in source
     assert set(re.findall(r'copy\("(pc-delegation-[^"]+)"\)', source)) <= keys
 
@@ -39,7 +39,7 @@ def test_every_delegation_copy_key_has_both_locales_and_send_is_not_an_action():
 @pytest.mark.skipif(NODE is None, reason="node is required for the DOM harness")
 def test_account_settings_flow():
     result = subprocess.run(
-        [NODE, str(HERE / "pc_delegation_settings_harness.js"), str(STATIC / "pc-delegation-settings.js")],
+        [NODE, str(HERE / "pc_delegation_settings_harness.js"), str(sheets.static_path("pc-delegation-settings.js"))],
         text=True, encoding="utf-8", capture_output=True, timeout=30,
     )
     assert result.returncode == 0, result.stdout + result.stderr
