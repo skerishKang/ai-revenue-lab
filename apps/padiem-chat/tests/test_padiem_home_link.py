@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from pathlib import Path
+from _support import first_paint_home_source as sheets
 
-
-ROOT = Path(__file__).resolve().parents[1]
-HTML = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+HTML = sheets.index_html()
 
 
 def test_sidebar_padiem_home_link_exists() -> None:

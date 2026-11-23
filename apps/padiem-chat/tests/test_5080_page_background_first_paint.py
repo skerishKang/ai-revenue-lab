@@ -10,19 +10,13 @@ theme never gave the <html> element a background.
 These checks pin the first-paint contract so the background stays steady.
 """
 
-from pathlib import Path
-
 import pytest
 
-STATIC_DIR = Path(__file__).resolve().parents[1] / "static"
-INDEX = STATIC_DIR / "index.html"
-GLASS = STATIC_DIR / "padiem-glass.css"
-GLASS_PORTRAIT = STATIC_DIR / "padiem-glass-portrait.css"
-THEME_INIT = STATIC_DIR / "theme-init.js"
+from _support import first_paint_home_source as sheets
 
 
 def _index() -> str:
-    return INDEX.read_text(encoding="utf-8")
+    return sheets.index_html()
 
 
 def test_the_index_is_still_valid_utf8_korean_text():
@@ -68,19 +62,19 @@ def test_the_theme_initializer_runs_after_the_glass_links():
 
 
 def test_the_theme_initializer_keeps_its_runtime_fallback():
-    source = THEME_INIT.read_text(encoding="utf-8")
+    source = sheets.theme_init_js()
     assert "link[data-padiem-glass-theme]" in source
     assert "link[data-padiem-glass-portrait]" in source
 
 
 def test_the_glass_theme_gives_the_canvas_a_background():
-    css = GLASS.read_text(encoding="utf-8")
+    css = sheets.glass_css()
     block = css.split('html[data-theme="padiem-glass"] {', 1)[1].split("}", 1)[0]
     assert "background-color: #aeb6bf" in block
 
 
 def test_the_body_background_is_unchanged():
-    css = GLASS.read_text(encoding="utf-8")
+    css = sheets.glass_css()
     body = css.split('html[data-theme="padiem-glass"] body {', 1)[1].split("}", 1)[0]
     assert "background-color: #aeb6bf" in body
     assert "background-attachment: fixed" in body
@@ -88,7 +82,8 @@ def test_the_body_background_is_unchanged():
 
 @pytest.mark.parametrize(
     "path",
-    [INDEX, GLASS, GLASS_PORTRAIT, THEME_INIT],
+    [sheets.static_path(name) for name in (
+        "index.html", "padiem-glass.css", "padiem-glass-portrait.css", "theme-init.js")],
 )
 def test_the_static_files_stay_lf_only(path):
     assert b"\r\n" not in path.read_bytes()
