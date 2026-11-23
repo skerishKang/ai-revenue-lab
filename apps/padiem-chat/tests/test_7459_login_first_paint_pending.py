@@ -21,11 +21,13 @@ import shutil
 import subprocess
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parents[1] / "static"
-INDEX = (BASE / "index.html").read_text(encoding="utf-8")
-AUTH = (BASE / "auth-session.js").read_text(encoding="utf-8")
-CAPABILITIES = (BASE / "product-capabilities.js").read_text(encoding="utf-8")
-CSS = (BASE / "sidebar-utility.css").read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the markup and CSS checks stay.
+from _support import login_first_paint_source as sheets
+
+INDEX = sheets.index_html()
+AUTH = sheets.auth_session()
+CAPABILITIES = sheets.capabilities()
+CSS = sheets.sidebar_css()
 
 
 def test_first_paint_claims_neither_a_guest_entry_nor_an_initial() -> None:
@@ -141,7 +143,7 @@ assert.equal(bare.lastKnownAuthenticated(), false);
 bare.update({ ready: true, authenticated: true }, 7);
 ''', encoding="utf-8")
     result = subprocess.run(
-        [shutil.which("node") or "node", str(harness), str(BASE / "auth-session.js")],
+        [shutil.which("node") or "node", str(harness), sheets.static_path("auth-session.js")],
         capture_output=True,
         text=True,
     )
