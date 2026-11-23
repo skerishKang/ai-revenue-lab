@@ -1,0 +1,9 @@
+{
+  "phase": "tamper",
+  "token": "--voice-unavailable-bg",
+  "mutation": "#f1f5f8 -> #ff00ff",
+  "screen": "conversation",
+  "theme": "light",
+  "viewport": "1440x950",
+  "pixel": 1655
+}

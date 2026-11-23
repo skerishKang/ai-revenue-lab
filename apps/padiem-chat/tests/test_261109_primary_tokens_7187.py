@@ -177,7 +177,18 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--ws-primary-hover-wash", "--ws-file-add-text",
                 "--ws-file-row-edge", "--ws-card-wash", "--ws-danger-hover-text",
                 "--ws-attachment-edge", "--ws-attachment-text",
-                "--ws-answer-hover-edge", "--ws-output-text", "--ws-label-text"},
+                "--ws-answer-hover-edge", "--ws-output-text", "--ws-label-text"}
+             | {"--voice-control-border", "--voice-accent", "--voice-btn-idle-bg",
+                "--voice-btn-idle-shadow", "--voice-btn-hover-text",
+                "--voice-btn-hover-bg", "--voice-btn-hover-border",
+                "--voice-btn-active-text", "--voice-btn-active-bg",
+                "--voice-btn-active-border", "--voice-assistant-role-text",
+                "--voice-btn-active-ring", "--voice-unavailable-text",
+                "--voice-unavailable-bg", "--voice-unavailable-border",
+                "--voice-panel-bg", "--voice-menu-shadow", "--voice-subtle-bg",
+                "--voice-menu-active-bg", "--voice-panel-shadow", "--voice-danger",
+                "--voice-secondary-text", "--voice-assistant-text",
+                "--voice-transcript-border"},
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.

@@ -1,0 +1,782 @@
+[
+ {
+  "combo": "padiem-glass__1440x950__home-logout",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__home-login",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__claw",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__util",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__calendar",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__automation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__library",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__settings-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__profile-menu",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__feedback-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__auth-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__home-logout",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__home-login",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__claw",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__util",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__calendar",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__automation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__library",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__settings-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__profile-menu",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__feedback-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__820x1180__auth-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__home-logout",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__home-login",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__claw",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__util",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__calendar",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__automation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__library",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__settings-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__profile-menu",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   3,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__feedback-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   3,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__auth-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ }
+]

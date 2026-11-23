@@ -13,11 +13,11 @@
   padding: 0;
   display: inline-grid;
   place-items: center;
-  border: 1px solid #bed0dd;
+  border: 1px solid var(--voice-control-border);
   border-radius: 14px;
-  color: #587c97;
-  background: #eaf2f7;
-  box-shadow: 0 2px 8px rgba(36, 68, 92, .07);
+  color: var(--voice-accent);
+  background: var(--voice-btn-idle-bg);
+  box-shadow: 0 2px 8px var(--voice-btn-idle-shadow);
   cursor: pointer;
   transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
 }
@@ -27,16 +27,16 @@
   display: block;
 }
 #voiceWaveformButton:hover:not(:disabled):not([aria-pressed="true"]) {
-  color: #355d79;
-  background: #deebf3;
-  border-color: #a7c0d2;
+  color: var(--voice-btn-hover-text);
+  background: var(--voice-btn-hover-bg);
+  border-color: var(--voice-btn-hover-border);
 }
 #voiceWaveformButton[aria-pressed="true"],
 #voiceWaveformButton[data-voice-state="active"] {
-  color: #fff;
-  background: #2f7d61;
-  border-color: #2a6d55;
-  box-shadow: 0 0 0 3px rgba(47, 125, 97, .16);
+  color: var(--voice-btn-active-text);
+  background: var(--voice-btn-active-bg);
+  border-color: var(--voice-btn-active-border);
+  box-shadow: 0 0 0 3px var(--voice-btn-active-ring);
 }
 #voiceWaveformButton:disabled {
   opacity: .5;
@@ -45,9 +45,9 @@
 /* Visible but inactive: an icon that disappears teaches nothing. The reason
    arrives through the tooltip, the aria-label and the notice after a press. */
 #voiceWaveformButton[data-voice-state="unavailable"] {
-  color: #8aa2b3;
-  background: #f1f5f8;
-  border-color: #d6e2ea;
+  color: var(--voice-unavailable-text);
+  background: var(--voice-unavailable-bg);
+  border-color: var(--voice-unavailable-border);
   box-shadow: none;
 }
 #voiceWaveformButton:focus-visible,
@@ -85,10 +85,10 @@
   position: absolute;
   z-index: 60;
   min-width: 170px;
-  border: 1px solid #bed0dd;
+  border: 1px solid var(--voice-control-border);
   border-radius: var(--radius-sm);
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+  background: var(--voice-panel-bg);
+  box-shadow: 0 8px 24px var(--voice-menu-shadow);
   padding: 6px 0;
   outline: none;
 }
@@ -108,8 +108,8 @@
   display: flex;
   align-items: center;
 }
-.voice-mode-menu-item:focus-visible { outline: 2px solid #587c97; outline-offset: -2px; background: #f2f7fb; }
-.voice-mode-menu-item[data-active="true"] { font-weight: 700; background: #eef4f9; }
+.voice-mode-menu-item:focus-visible { outline: 2px solid var(--voice-accent); outline-offset: -2px; background: var(--voice-subtle-bg); }
+.voice-mode-menu-item[data-active="true"] { font-weight: 700; background: var(--voice-menu-active-bg); }
 .voice-mode-menu-item[data-active="true"][data-recommended="true"]::after {
   content: " (추천)";
   margin-left: auto;
@@ -141,10 +141,10 @@
   transform: translateX(-50%);
   width: min(420px, 92vw);
   max-height: 72vh;
-  border: 1px solid #bed0dd;
+  border: 1px solid var(--voice-control-border);
   border-radius: var(--radius-md);
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .16);
+  background: var(--voice-panel-bg);
+  box-shadow: 0 10px 30px var(--voice-panel-shadow);
   display: grid;
   /* state · timer · mute · end · transcript (#4816 M4) */
   grid-template-rows: auto auto auto auto minmax(0, 1fr);
@@ -162,7 +162,7 @@
 .voice-call-panel__btn {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid #bed0dd;
+  border: 1px solid var(--voice-control-border);
   border-radius: var(--radius-sm);
   background: transparent;
   color: inherit;
@@ -172,13 +172,13 @@
   text-align: left;
   margin: 6px 0;
 }
-.voice-call-panel__btn--end { color: #b3261e; border-color: #b3261e; }
-.voice-call-panel__btn[aria-pressed="true"] { background: #f2f7fb; font-weight: 700; }
+.voice-call-panel__btn--end { color: var(--voice-danger); border-color: var(--voice-danger); }
+.voice-call-panel__btn[aria-pressed="true"] { background: var(--voice-subtle-bg); font-weight: 700; }
 /* #4816 M4: elapsed call time, then the per-turn history under the panel. */
 .voice-call-panel__timer {
   font-variant-numeric: tabular-nums;
   font-size: 0.92rem;
-  color: #4a6576;
+  color: var(--voice-secondary-text);
   text-align: center;
   margin-bottom: 6px;
 }
@@ -196,23 +196,23 @@
 .voice-call-turn__role {
   font-size: 0.74rem;
   font-weight: 700;
-  color: #587c97;
+  color: var(--voice-accent);
   white-space: nowrap;
 }
-.voice-call-turn--assistant .voice-call-turn__role { color: #2a6d55; }
-.voice-call-turn--assistant .voice-call-turn__text { color: #2b4453; }
+.voice-call-turn--assistant .voice-call-turn__role { color: var(--voice-assistant-role-text); }
+.voice-call-turn--assistant .voice-call-turn__text { color: var(--voice-assistant-text); }
 .voice-call-interim {
   margin: 6px 0 0;
   min-height: 1em;
-  color: #587c97;
+  color: var(--voice-accent);
   font-style: italic;
 }
 .voice-call-interim:empty { display: none; }
 .voice-call-panel__transcript {
-  border-top: 1px solid #e4eaef;
+  border-top: 1px solid var(--voice-transcript-border);
   padding-top: 10px;
   font-size: 0.86rem;
-  color: #4a6576;
+  color: var(--voice-secondary-text);
   overflow: auto;
   max-height: 140px;
 }
