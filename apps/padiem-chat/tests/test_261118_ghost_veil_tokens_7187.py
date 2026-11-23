@@ -11,6 +11,9 @@
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.token_veil_source import admin_models_css, index_html, read, read_static, tokens_css
+
 from collections import Counter
 from pathlib import Path
 
@@ -42,14 +45,14 @@ ORIGINAL = "rgba(255, 255, 255, .035)"
 
 
 def test_root_tokens_hold_the_pre_change_literal() -> None:
-    rules = parse_rules(TOKENS.read_text(encoding="utf-8"))
+    rules = parse_rules(tokens_css())
     root = next(r for r in rules if r.media is None and ":root" in r.selectors)
     for name, literal in ROOT_TOKENS.items():
         assert root.declarations.get(name) == literal, name
 
 
 def test_no_theme_block_overrides_the_tokens() -> None:
-    for rule in parse_rules(TOKENS.read_text(encoding="utf-8")):
+    for rule in parse_rules(tokens_css()):
         themed = rule.media is not None or any("data-theme" in s for s in rule.selectors)
         if themed:
             for name in ROOT_TOKENS:
@@ -60,7 +63,7 @@ def test_the_ten_declarations_consume_the_right_role() -> None:
     total = 0
     for sheet, expected in CHANGED.items():
         actual: Counter = Counter()
-        for rule in parse_rules((STATIC / sheet).read_text(encoding="utf-8")):
+        for rule in parse_rules(read_static(sheet)):
             for prop, value in rule.declarations.items():
                 if "--surface-veil-ghost" in value or "--inset-veil-ghost" in value:
                     actual[(prop, value)] += 1
@@ -80,13 +83,13 @@ def test_swapping_the_tokens_back_returns_the_original_literal() -> None:
 
 def test_no_ghost_literal_remains_in_the_changed_sheets() -> None:
     for sheet in CHANGED:
-        text = (STATIC / sheet).read_text(encoding="utf-8")
+        text = read_static(sheet)
         assert ORIGINAL not in text, sheet
 
 
 def test_each_token_stays_in_its_own_property_family() -> None:
     for sheet in CHANGED:
-        for rule in parse_rules((STATIC / sheet).read_text(encoding="utf-8")):
+        for rule in parse_rules(read_static(sheet)):
             for prop, value in rule.declarations.items():
                 if "--surface-veil-ghost" in value:
                     assert prop.startswith("background"), (sheet, prop)
@@ -95,13 +98,13 @@ def test_each_token_stays_in_its_own_property_family() -> None:
 
 
 def test_consumers_load_tokens_first() -> None:
-    index = (STATIC / "index.html").read_text(encoding="utf-8")
+    index = index_html()
     for sheet in CHANGED:
         assert index.index("padiem-tokens.css") < index.index("./" + sheet), sheet
 
 
 def test_sidebar_sheets_stay_out_of_this_change() -> None:
     for sheet in ("padiem-glass.css", "sidebar-unified.css", "sidebar-utility.css"):
-        text = (STATIC / sheet).read_text(encoding="utf-8")
+        text = read_static(sheet)
         assert "--surface-veil-ghost" not in text, sheet
         assert "--inset-veil-ghost" not in text, sheet
