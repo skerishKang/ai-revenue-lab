@@ -6,6 +6,9 @@ filters the count on expires_at, and these tests pin both halves -- plus the
 closed 409 body the panel maps to its Korean copy.
 """
 from __future__ import annotations
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.last_batch_source import app_js, locale_js, pylock_toml, quote_runtime_js, read, read_replace, strict_deps_js, uv_lock_toml, xlsx_migration_sql, xlsx_sources_js, xlsx_store_py
 import locale_bundle
 
 import sqlite3
@@ -44,7 +47,7 @@ def _source():
 def _conn() -> sqlite3.Connection:
     conn = sqlite3.connect(":memory:", isolation_level=None)
     conn.row_factory = sqlite3.Row
-    sql = (ROOT / "migrations" / "029_claw_web_xlsx_selection.sql").read_text(encoding="utf-8")
+    sql = xlsx_migration_sql()
     conn.executescript(sql)
     return conn
 
@@ -53,7 +56,7 @@ def test_the_cap_is_a_protective_bound_not_storage():
     # The value stays 20 by decision (#5573): one 30-minute window of pending
     # selections, matching the bounded panel. The count excludes expired rows.
     assert _MAX_PENDING == 20
-    store_source = (ROOT / "app" / "claw_web_xlsx_selection_store.py").read_text(encoding="utf-8")
+    store_source = xlsx_store_py()
     assert 'AND expires_at>?' in store_source
 
 
@@ -99,9 +102,9 @@ async def test_the_http_refusal_body_carries_only_the_closed_code():
 
 
 def test_the_pending_full_sentence_is_owned_by_locale():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = locale_js()
     assert locale.count('"web-xlsx-pending-full"') == 2
-    sources = (ROOT / "static" / "claw-web-xlsx-sources.js").read_text(encoding="utf-8")
+    sources = xlsx_sources_js()
     assert '"web-xlsx-pending-full"' in sources
     assert "엑셀 선택 대기가" not in sources
 
