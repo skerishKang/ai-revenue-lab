@@ -132,10 +132,22 @@ def test_glass_home_frame_has_desktop_vertical_breathing_room() -> None:
     # what keeps the frame from being restyled per product.
     assert '@media (min-width: 921px)' in ui_polish
     assert '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation' in ui_polish
-    assert 'margin-top: 16px !important' in ui_polish
-    assert 'margin-bottom: 16px !important' in ui_polish
+    rules = rules_for_sheet("padiem-chat-ui-polish.css")
+    conversation = find_rules_with_selector(
+        rules,
+        'html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation',
+    )
+    assert len(conversation) == 1
+    assert declaration(conversation[0], "margin-top") == "16px"
+    assert declaration(conversation[0], "margin-bottom") == "16px"
     assert '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer-wrap' in ui_polish
-    assert 'padding-bottom: 16px !important' in ui_polish
+    wrap = find_rules_with_selector(
+        rules,
+        'html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer-wrap',
+    )
+    assert len(wrap) == 1
+    assert declaration(wrap[0], "padding-bottom") == "16px"
+    assert declaration(wrap[0], "padding-top") == "20px"
     # The property has to start a declaration: a note about the lane, a comment
     # between the brace and the property, or `margin-bottom` must not read as the
     # frame's position being restyled here.
@@ -147,9 +159,20 @@ def test_glass_home_frame_has_desktop_vertical_breathing_room() -> None:
 def test_glass_home_composer_vertical_padding_is_balanced() -> None:
     ui_polish = _ui_polish()
     assert '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer {' in ui_polish
-    assert 'padding: 12px 12px 11px !important' in ui_polish
     assert '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer textarea {' in ui_polish
-    assert 'padding: 9px 9px 7px !important' in ui_polish
+    rules = rules_for_sheet("padiem-chat-ui-polish.css")
+    composer = find_rules_with_selector(
+        rules,
+        'html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer',
+    )
+    textarea = find_rules_with_selector(
+        rules,
+        'html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer textarea',
+    )
+    assert len(composer) == 1
+    assert len(textarea) == 1
+    assert declaration(composer[0], "padding") == "12px 12px 11px"
+    assert declaration(textarea[0], "padding") == "9px 9px 7px"
 
 
 def test_padiem_home_glass_utility_is_one_centered_row() -> None:
