@@ -17,6 +17,12 @@
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.handoff_direct_markdown_source import (
+    app_js, chat_routes, conversation_js, history_js, home_choices_js, index_html,
+    read, run_history_js, six_panel_css, streaming_js,
+)
+
 import json
 import shutil
 import subprocess
@@ -30,13 +36,13 @@ from _r5_function_source import combined_source
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-CONV_JS = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")
-STREAM_JS = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-HIST_JS = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
-RUN_HISTORY_JS = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
-INDEX_HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-FRAME_CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
+APP_JS = app_js()
+CONV_JS = conversation_js()
+STREAM_JS = streaming_js()
+HIST_JS = history_js()
+RUN_HISTORY_JS = run_history_js()
+INDEX_HTML = index_html()
+FRAME_CSS = six_panel_css()
 
 
 def test_show_conversation_iterates_panel_id_array_not_comma_expression() -> None:
@@ -82,7 +88,7 @@ def test_stream_route_projection_tags_action_from_answer_status() -> None:
     # stream completion must carry the same action tag the JSON route uses —
     # a web-search evidence turn must not be recorded as a general turn and
     # disappear from the default view.
-    routes = (ROOT / "app" / "chat_routes.py").read_text(encoding="utf-8")
+    routes = chat_routes()
     stream_tag = 'user_text=latest_user, answer=answer, conversation_id=saved_id, action=("web_search" if done_payload.get("answer_status") == "answered_with_evidence" else "general")'
     assert stream_tag in routes
     json_tag = 'action=(tool_request.tool.id if tool_request else "web_search" if result.get("answer_status") == "answered_with_evidence" else "general")'
