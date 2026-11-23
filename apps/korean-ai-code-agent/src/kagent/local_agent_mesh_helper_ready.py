@@ -273,6 +273,23 @@ def _state_reason(state: dict[str, Any]) -> str:
     return "observed"
 
 
+_VERSION_REASON_PRECEDENCE = (
+    "observed", "too_large", "permission_denied", "request_refused",
+    "no_staged_read", "timeout", "port_refused", "local_file_not_found",
+    "read_error", "invalid_read_body", "empty_body", "truncated_resource",
+    "malformed_resource", "no_version_resource", "no_build_stamp",
+    "ambiguous", "format_mismatch", "unavailable",
+)
+
+
+def _prefer_version_reason(reasons: list[str]) -> str:
+    """Pick one stage code from two path attempts, most decisive first."""
+    for code in _VERSION_REASON_PRECEDENCE:
+        if code in reasons:
+            return code
+    return reasons[0] if reasons else "unavailable"
+
+
 def _file_state(raw: Any) -> tuple[dict[str, Any], str]:
     # Reading a file proves its presence, not installation or readiness.
     state = dict.fromkeys(HELPER_READY_KEYS)
@@ -337,6 +354,62 @@ def _read_failure(exc: Exception) -> str:
     return "read_error"
 
 
+#: Codes are deliberately value-free: no path, node reference, file content or
+#: exception text may appear in the diagnostic line.
+_VERSION_REASON_CODES = frozenset({
+    "unavailable", "observed", "invalid_read_body", "empty_body", "too_large",
+    "no_version_resource", "malformed_resource", "truncated_resource",
+    "no_build_stamp", "ambiguous", "format_mismatch",
+})
+
+
+def _mesh_agent_version_reason(raw: Any) -> tuple[str | None, str]:
+    """Return the bounded build timestamp and a code-only failure reason.
+
+    Every ``None`` has a distinct stage code so an operator can tell a refused
+    read from an oversized binary or a version resource that parsed to nothing,
+    without any value leaving this module.
+    """
+    if not isinstance(raw, (bytes, bytearray)):
+        return None, "invalid_read_body"
+    data = bytes(raw)
+    if not data:
+        return None, "empty_body"
+    if len(data) > _MESH_AGENT_VERSION_READ_LIMIT:
+        return None, "too_large"
+    marker = data.find(_VERSION_RESOURCE_KEY)
+    if marker < 0:
+        return None, "no_version_resource"
+    # A VS_VERSIONINFO header is six bytes before the UTF-16 key. The key must
+    # be even-aligned or the surrounding block is not UTF-16 text.
+    if marker < 6 or marker % 2:
+        return None, "malformed_resource"
+    start = marker - 6
+    length = struct.unpack_from("<H", data, start)[0]
+    if length < 32 or start + length > len(data):
+        return None, "truncated_resource"
+    block = data[start:start + length].decode("utf-16-le", "ignore")
+    stamps = {match.group(0) for match in _BUILD_STAMP.finditer(block)}
+    if not stamps:
+        return None, "no_build_stamp"
+    if len(stamps) != 1:
+        return None, "ambiguous"
+    try:
+        year, month, day, hour, minute, second, sign, offset_hour, offset_minute = \
+            _BUILD_STAMP.fullmatch(stamps.pop()).groups()
+        if month not in _MONTHS:
+            return None, "format_mismatch"
+        offset = timedelta(hours=int(offset_hour), minutes=int(offset_minute))
+        if sign == "-":
+            offset = -offset
+        built = datetime(int(year), _MONTHS[month], int(day), int(hour), int(minute),
+                         int(second), tzinfo=timezone(offset))
+        utc = built.astimezone(timezone.utc)
+    except (ValueError, TypeError, struct.error, OverflowError):
+        return None, "format_mismatch"
+    return utc.strftime("%Y-%m-%dT%H:%M:%S.") + f"{utc.microsecond // 1000:03d}Z", "observed"
+
+
 def mesh_agent_version_from_executable(raw: Any) -> str | None:
     """Return the agent's bounded UTC build timestamp, or ``None``.
 
@@ -345,40 +418,10 @@ def mesh_agent_version_from_executable(raw: Any) -> str | None:
     installer). Only a single, strictly formatted build date inside a version
     resource is accepted. A path, identifier, arbitrary text, a truncated or
     oversized binary, and any parse failure produce ``None`` - never a value
-    that could be shown to a user. No exception text leaves this function.
+    that could be shown to a user. No exception text leaves this function; the
+    matching code-only reason is available from ``_mesh_agent_version_reason``.
     """
-    try:
-        if not isinstance(raw, (bytes, bytearray)):
-            return None
-        data = bytes(raw)
-        if not data or len(data) > _MESH_AGENT_VERSION_READ_LIMIT:
-            return None
-        marker = data.find(_VERSION_RESOURCE_KEY)
-        # A VS_VERSIONINFO header is six bytes before the UTF-16 key. The key
-        # must be even-aligned or the surrounding block is not UTF-16 text.
-        if marker < 6 or marker % 2:
-            return None
-        start = marker - 6
-        length = struct.unpack_from("<H", data, start)[0]
-        if length < 32 or start + length > len(data):
-            return None
-        block = data[start:start + length].decode("utf-16-le", "ignore")
-        stamps = {match.group(0) for match in _BUILD_STAMP.finditer(block)}
-        if len(stamps) != 1:
-            return None
-        year, month, day, hour, minute, second, sign, offset_hour, offset_minute = \
-            _BUILD_STAMP.fullmatch(stamps.pop()).groups()
-        if month not in _MONTHS:
-            return None
-        offset = timedelta(hours=int(offset_hour), minutes=int(offset_minute))
-        if sign == "-":
-            offset = -offset
-        built = datetime(int(year), _MONTHS[month], int(day), int(hour), int(minute),
-                         int(second), tzinfo=timezone(offset))
-        utc = built.astimezone(timezone.utc)
-        return utc.strftime("%Y-%m-%dT%H:%M:%S.") + f"{utc.microsecond // 1000:03d}Z"
-    except (ValueError, TypeError, struct.error, OverflowError):
-        return None
+    return _mesh_agent_version_reason(raw)[0]
 
 
 class HelperStatusReadFallback:
@@ -410,27 +453,30 @@ class HelperStatusReadFallback:
         cached = self._agent_versions.get(ref)
         now = time.monotonic()
         if cached is not None and now - cached[1] < _MESH_AGENT_VERSION_CACHE_SECONDS:
-            state["mesh_agent_version"] = cached[0]
+            if cached[0] is not None:
+                state["mesh_agent_version"] = cached[0]
             return
-        value, reason = None, "unavailable"
+        value, reasons = None, []
         for path in _MESH_AGENT_VERSION_READ_PATHS:
             try:
                 raw = self._read_port.read_bytes(
                     node_ref=ref, file_path=path, timeout_seconds=15,
                     max_bytes=_MESH_AGENT_VERSION_READ_LIMIT,
                 )
-            except Exception:
+            except Exception as exc:
+                reasons.append(_read_failure(exc))
                 continue
-            value = mesh_agent_version_from_executable(raw)
+            value, reason = _mesh_agent_version_reason(raw)
+            reasons.append(reason)
             if value is not None:
-                reason = "observed"
                 break
-            reason = "invalid_version_resource"
+        # The outcome, including a failure, is cached for the same hour as a
+        # success, so the one-line diagnostic is emitted once per cache unit.
+        self._agent_versions[ref] = (value, now)
         if value is not None:
-            self._agent_versions[ref] = (value, now)
             state["mesh_agent_version"] = value
-        print(f"oracle-mesh-executor helper_ready_agent_version pc={_pc_suffix(node)} "
-              f"read={reason}", flush=True)
+        reason = _prefer_version_reason(reasons)
+        print(f"oracle-mesh-executor helper_ready_agent_version read={reason}", flush=True)
 
     def _complete_updater_evidence(self, node, state):
         """Read only fixed files when the console lacks independent evidence.
