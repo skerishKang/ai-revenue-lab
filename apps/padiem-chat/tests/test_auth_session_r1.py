@@ -1,4 +1,7 @@
 """Execute the R1 store in a browser-like event target, not source snapshots."""
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.session_auth_source import app_js, index_html, locale_source, read
 from pathlib import Path
 from html.parser import HTMLParser
 from urllib.parse import urlsplit
@@ -66,7 +69,7 @@ for (const event of events) {
 
 
 def test_auth_session_loads_before_app_and_app_has_no_mutation_observer():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = index_html()
     class Scripts(HTMLParser):
         paths = []
         def handle_starttag(self, tag, attrs):
@@ -78,4 +81,4 @@ def test_auth_session_loads_before_app_and_app_has_no_mutation_observer():
     for module in ("chat-session.js", "claw-session.js"):
         assert scripts.paths.count(module) == 1
         assert scripts.paths.index("auth-session.js") < scripts.paths.index(module) < scripts.paths.index("app.js")
-    assert "MutationObserver" not in (STATIC / "app.js").read_text(encoding="utf-8")
+    assert "MutationObserver" not in app_js()

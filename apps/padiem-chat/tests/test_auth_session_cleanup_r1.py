@@ -1,4 +1,7 @@
 """R1 step2: real session listeners preserve transition-only cleanup."""
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.session_auth_source import app_js, index_html, locale_source, read
 from pathlib import Path
 import shutil
 import subprocess
@@ -88,7 +91,7 @@ assert.deepEqual(calls.approval,[false,true,false,true]);
 
 
 def test_cleanup_bindings_are_bootstrap_only_not_auth_dialog_handlers():
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
+    app = app_js()
     # Binding on each dialog open would accumulate listeners and reset twice.
     # R5 0단계(R-01): openAuthDialog/closeAuthDialog의 실제 정의는 모듈에 있을 수
     # 있으므로 도우미로 정의 파일을 찾아 그 소스에서 경계를 잡는다.
