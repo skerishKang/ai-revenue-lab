@@ -95,44 +95,44 @@ html[data-theme="padiem-glass"] .sidebar .account-name {
  * theme presented it as a 36px absolute icon beside the brand; explicitly
  * neutralize that legacy projection so DOM and visual IA agree. */
 html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link {
-  position: static !important;
-  inset: auto !important;
-  z-index: auto !important;
-  width: 100% !important;
-  height: auto !important;
-  min-height: 44px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  flex-wrap: nowrap !important;
-  gap: 10px !important;
-  margin: 0 !important;
-  padding: 0 12px !important;
-  border-radius: 12px !important;
+  position: static;
+  inset: auto;
+  z-index: auto;
+  width: 100%;
+  height: auto;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0 12px;
+  border-radius: 12px;
 }
 
 html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link::before {
-  content: none !important;
+  content: none;
 }
 
 html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link .home-link-mark {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 0 0 auto !important;
-  line-height: 1 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  line-height: 1;
 }
 
 html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data-locale-key="home-link"] {
-  position: static !important;
-  width: auto !important;
-  height: auto !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  overflow: visible !important;
-  clip: auto !important;
-  line-height: 1.2 !important;
-  white-space: nowrap !important;
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 /* B62 #1737 — one reusable first-party destructive confirmation surface. */
