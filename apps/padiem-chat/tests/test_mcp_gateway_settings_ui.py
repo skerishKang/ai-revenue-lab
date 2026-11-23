@@ -1,4 +1,3 @@
-import locale_bundle
 """Exercise the shipped token/approval settings code without issuing real tokens."""
 from pathlib import Path
 import re
@@ -7,13 +6,14 @@ import subprocess
 
 import pytest
 
+from _support import settings_ui_source as sheets
+
 HERE = Path(__file__).resolve().parent
-STATIC = HERE.parent / "static"
 NODE = shutil.which("node")
 
 
 def test_mcp_settings_use_the_shared_dialog_and_accessible_controls():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = sheets.index_html()
     start = html.index('id="mcpGatewaySettings"')
     section = html[start:start + 4000]
     assert 'aria-labelledby="mcpGatewayTitle"' in section
@@ -28,13 +28,13 @@ def test_mcp_settings_use_the_shared_dialog_and_accessible_controls():
 
 
 def test_all_mcp_settings_copy_and_exact_operation_labels_are_localized():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_js()
     ko, en = locale.split('    en: {', 1)
     keys = set(re.findall(r'"(mcp-settings-[^"]+)":', ko))
     assert keys == set(re.findall(r'"(mcp-settings-[^"]+)":', en))
-    source = (STATIC / "mcp-gateway-settings.js").read_text(encoding="utf-8")
-    css = (STATIC / "mcp-gateway-settings.css").read_text(encoding="utf-8")
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    source = sheets.mcp_settings_js()
+    css = sheets.mcp_settings_css()
+    html = sheets.index_html()
     used = set(re.findall(r'"(mcp-settings-[a-z-]+)"', source))
     used |= set(re.findall(r'data-locale-[\w-]+="(mcp-settings-[^"]+)"', html))
     classes = set(re.findall(r'\.(mcp-settings-[a-z-]+)', css))
@@ -45,7 +45,7 @@ def test_all_mcp_settings_copy_and_exact_operation_labels_are_localized():
 @pytest.mark.skipif(NODE is None, reason="node is required for the DOM harness")
 def test_personal_tokens_and_exact_request_approvals_in_the_settings_module():
     result = subprocess.run(
-        [NODE, str(HERE / "mcp_gateway_settings_harness.js"), str(STATIC / "mcp-gateway-settings.js")],
+        [NODE, str(HERE / "mcp_gateway_settings_harness.js"), str(sheets.static_path("mcp-gateway-settings.js"))],
         text=True, encoding="utf-8", capture_output=True, timeout=30,
     )
     assert result.returncode == 0, result.stdout + result.stderr
