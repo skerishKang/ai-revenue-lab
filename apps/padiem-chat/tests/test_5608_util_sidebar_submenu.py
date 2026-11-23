@@ -9,13 +9,14 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-INDEX_HTML = ROOT / "static/index.html"
-UTIL_MANIFEST_JS = ROOT / "static/util-manifest.js"
-UTIL_MENU_JS = ROOT / "static/util-menu.js"
-UTIL_MENU_CSS = ROOT / "static/util-menu.css"
+# #8060: shipped-source reads live in _support; assertions stay here.
+from _support.util_sidebar_submenu_5608_source import (
+    index_html as _index_html_source,
+    util_app_css,
+    util_manifest_js,
+    util_menu_css,
+    util_menu_js,
+)
 
 SUBMENU = [
     ("speech", "축사·인사말"),
@@ -28,7 +29,7 @@ SUBMENU = [
 
 
 def _html() -> str:
-    return INDEX_HTML.read_text(encoding="utf-8")
+    return _index_html_source()
 
 
 def test_sidebar_util_entry_is_a_disclosure_driven_by_the_manifest() -> None:
@@ -38,7 +39,7 @@ def test_sidebar_util_entry_is_a_disclosure_driven_by_the_manifest() -> None:
     assert 'id="utilNavButton"' in html and 'aria-expanded="false"' in html
     assert 'class="side-chevron" aria-hidden="true">›<' in html
     assert 'id="utilSubmenu" hidden' in html
-    manifest = UTIL_MANIFEST_JS.read_text(encoding="utf-8")
+    manifest = util_manifest_js()
     for key, label in SUBMENU:
         assert f'id: "{key}"' in manifest, f"missing manifest tool: {key}"
         assert f'"{label}"' in manifest, f"missing manifest label: {label}"
@@ -50,13 +51,13 @@ def test_top_app_switch_and_legacy_in_page_tabs_are_retired() -> None:
     html = _html()
     assert '<nav class="util-tabs"' not in html
     assert 'id="appSwitch"' not in html
-    css = (ROOT / "static/util-app.css").read_text(encoding="utf-8")
+    css = util_app_css()
     assert "#utilNavGroup { display: none; }" not in css
     assert ".app-switch" not in css
 
 
 def test_util_menu_js_renders_submenu_from_manifest_and_routes_in_app() -> None:
-    js = UTIL_MENU_JS.read_text(encoding="utf-8")
+    js = util_menu_js()
     assert "window.PadiemUtilManifest" in js
     assert "function renderSubmenu()" in js
     assert "markActiveUtilSubmenuItem" in js
@@ -70,7 +71,7 @@ def test_util_menu_js_renders_submenu_from_manifest_and_routes_in_app() -> None:
 
 
 def test_util_menu_css_hides_duplicate_tabs_and_styles_submenu() -> None:
-    css = UTIL_MENU_CSS.read_text(encoding="utf-8")
+    css = util_menu_css()
     assert ".util-tabs[hidden] { display: none; }" in css
     assert ".util-submenu[hidden] { display: none; }" in css
     assert ".util-submenu-item" in css
@@ -80,7 +81,7 @@ def test_util_menu_css_hides_duplicate_tabs_and_styles_submenu() -> None:
 
 
 def test_util_parent_shows_the_active_treatment_while_a_tool_is_open() -> None:
-    css = UTIL_MENU_CSS.read_text(encoding="utf-8")
+    css = util_menu_css()
     rule = css[css.index('#utilNavButton[aria-current="page"]') :]
     assert "var(--accent-soft" in rule[:200]
     assert "inset 3px 0 0 var(--accent" in rule[:200]
