@@ -13,7 +13,7 @@ from starlette.requests import Request
 
 from app import chat_pc_session as lane
 from app import mcp_gateway_session as transport
-from test_7065_pc_session_tools import rig, UID, DEVICE, IDENTITY, call as mcp_call
+from _support.mcp_pc_session_rig import rig, UID, DEVICE, IDENTITY, call as mcp_call
 
 CID = "chat_" + "9" * 32
 

@@ -10,7 +10,7 @@ import pytest
 
 from app import mcp_gateway_session as sessions
 from app.chat_pc_errors import ChatPCDriveError
-from test_7065_pc_session_tools import rig, call, start
+from _support.mcp_pc_session_rig import rig, call, start
 from test_7065_session_transport_audit import enable
 from _support.mcp_gateway_transport import gateway, post
 
