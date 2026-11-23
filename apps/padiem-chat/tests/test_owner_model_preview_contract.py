@@ -1,4 +1,3 @@
-import locale_bundle
 """#6828: the public model-name preview is gone; only grades reach the browser.
 
 The removed surface had no owner decision behind it: an unauthenticated GET
@@ -13,11 +12,11 @@ from starlette.testclient import TestClient
 
 from app.app_factory import create_app
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = Path(__file__).resolve().parents[1] / "app"
+# #8060: shipped reads live in _support; absence and copy contracts stay here.
+from _support import owner_model_preview_source as sheets
+
 PREVIEW_PATH = "/api/models/owner-name-preview"
-REMOVED_ASSET = STATIC / "owner-model-preview.js"
-LAYOUT_CSS = STATIC / "attachments.css"
+REMOVED_ASSET = Path(sheets.static_path("owner-model-preview.js"))
 
 
 def test_public_model_name_preview_route_is_not_registered():
@@ -32,8 +31,8 @@ def test_public_model_name_preview_route_is_not_registered():
 
 
 def test_preview_handler_and_registration_are_gone_from_the_source():
-    app_source = (APP / "app_factory.py").read_text(encoding="utf-8")
-    routes_source = (APP / "owner_model_preview_routes.py").read_text(encoding="utf-8")
+    app_source = sheets.app_source("app_factory")
+    routes_source = sheets.app_source("owner_model_preview_routes")
     assert PREVIEW_PATH not in app_source
     assert "owner_model_name_preview" not in app_source
     assert "owner_model_name_preview" not in routes_source
@@ -41,7 +40,7 @@ def test_preview_handler_and_registration_are_gone_from_the_source():
 
 def test_removed_browser_asset_is_absent_and_no_longer_referenced():
     assert not REMOVED_ASSET.exists(), REMOVED_ASSET
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = sheets.index_html()
     assert "owner-model-preview.js" not in html
     for identifier in (
         "ownerModelPreviewDialog",
@@ -53,22 +52,22 @@ def test_removed_browser_asset_is_absent_and_no_longer_referenced():
         "ownerModelPreviewOpen",
     ):
         assert identifier not in html, identifier
-    for js in STATIC.glob("*.js"):
-        assert "owner-model-preview.js" not in js.read_text(encoding="utf-8"), js.name
+    for name, js_source in sheets.static_js_texts():
+        assert "owner-model-preview.js" not in js_source, name
 
 
 def test_preview_copy_is_gone_from_every_locale():
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_source()
     assert "owner-model-preview" not in locale
     assert "모델 현황" not in locale
     assert "model status" not in locale
 
 
 def test_layout_sheet_is_kept_because_composer_reservations_live_there():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
-    css = LAYOUT_CSS.read_text(encoding="utf-8")
+    html = sheets.index_html()
+    css = sheets.attachments_css()
     assert 'owner-model-preview.css' not in html
-    assert not (STATIC / "owner-model-preview.css").exists()
+    assert not Path(sheets.static_path("owner-model-preview.css")).exists()
     assert "width: 116px" in css
     assert ".send-button { flex: 0 0 44px;" in css
 
@@ -83,9 +82,9 @@ def test_authenticated_claw_chooser_is_untouched_by_the_removal():
 
 
 def test_grade_pill_remains_the_only_model_choice_surface_in_the_composer():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
-    mode = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    html = sheets.index_html()
+    mode = sheets.capabilities_js()
+    locale = sheets.locale_source()
     assert 'class="model-pill composer-tier-trigger" type="button"' in html
     assert 'id="ownerModelPreviewOpen"' not in html
     assert html.count('class="model-pill composer-tier-trigger"') == 1
@@ -95,7 +94,7 @@ def test_grade_pill_remains_the_only_model_choice_surface_in_the_composer():
 
 
 def test_grade_pill_stays_in_the_mobile_composer_tools_row():
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = sheets.index_html()
     assert 'id="ownerModelPreviewOpen"' not in html
     tools_start = html.index('class="composer-tools"')
     tools_end = html.index('id="sendButton"', tools_start)
