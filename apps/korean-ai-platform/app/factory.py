@@ -94,7 +94,7 @@ def create_app() -> Starlette:
         Route("/health", endpoint=_health, methods=["GET"]),
     ]
 
-    app = Starlette(routes=routes, on_startup=None)
+    app = Starlette(routes=routes)
     app.state.jinja_env = jinja_env
     from app.pilot.deferred_writes import DeferredWritesMiddleware
     app.add_middleware(DeferredWritesMiddleware)

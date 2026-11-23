@@ -8,7 +8,7 @@ version = "0.2.0"
 description = "Korean AI Platform (Business 14) — API Provider Phase 0 Demo"
 requires-python = ">=3.11"
 dependencies = [
-    "starlette>=0.45,<1",
+    "starlette>=1.3.1,<2",
     "jinja2>=3.1,<4",
     "python-multipart>=0.0.9,<1",
     "httpx>=0.28,<1",
