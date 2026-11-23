@@ -32,13 +32,13 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
         - clamp(360px, 32vw, 560px)
         - 48px
       )
-    ) !important;
-    margin-left: clamp(48px, 4vw, 72px) !important;
-    margin-right: 0 !important;
+    );
+    margin-left: clamp(48px, 4vw, 72px);
+    margin-right: 0;
   }
 
   html[data-theme="padiem-glass"] body .app-shell .composer-wrap {
-    left: calc(var(--workspace-rail, 252px) + clamp(48px, 4vw, 72px) + 16px) !important;
+    left: calc(var(--workspace-rail, 252px) + clamp(48px, 4vw, 72px) + 16px);
     width: min(
       1168px,
       calc(
@@ -48,8 +48,8 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
         - clamp(360px, 32vw, 560px)
         - 80px
       )
-    ) !important;
-    transform: none !important;
+    );
+    transform: none;
   }
 }
 
@@ -63,13 +63,13 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
         - clamp(300px, 32vw, 380px)
         - 48px
       )
-    ) !important;
-    margin-left: 24px !important;
-    margin-right: 0 !important;
+    );
+    margin-left: 24px;
+    margin-right: 0;
   }
 
   html[data-theme="padiem-glass"] body .app-shell .composer-wrap {
-    left: calc(var(--workspace-rail, 252px) + 38px) !important;
+    left: calc(var(--workspace-rail, 252px) + 38px);
     width: min(
       672px,
       calc(
@@ -78,8 +78,8 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
         - clamp(300px, 32vw, 380px)
         - 76px
       )
-    ) !important;
-    transform: none !important;
+    );
+    transform: none;
   }
 }
 
