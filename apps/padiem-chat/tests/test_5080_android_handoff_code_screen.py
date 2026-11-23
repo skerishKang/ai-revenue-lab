@@ -6,16 +6,12 @@ therefore carries a copy button with a copied confirmation, and the
 re-open button is only offered while the Google sign-in itself is pending.
 """
 from __future__ import annotations
-import locale_bundle
 
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
+from _support import pairing_handoff_source as sheets
 
 
 def _read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+    return sheets.sheet(name)
 
 
 def _read_handoff_view() -> str:
@@ -53,7 +49,7 @@ def test_reopening_google_is_only_offered_while_the_login_is_pending() -> None:
 
 
 def test_both_locales_carry_the_new_copy_strings() -> None:
-    locale = locale_bundle.SOURCE.read_text(encoding="utf-8")
+    locale = sheets.locale_js()
     assert locale.count('"auth-android-copy"') == 2
     assert locale.count('"auth-android-copied"') == 2
     assert "Copy sign-in code" in locale
