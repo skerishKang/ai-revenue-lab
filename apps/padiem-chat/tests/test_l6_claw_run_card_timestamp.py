@@ -36,14 +36,14 @@ from pathlib import Path
 
 # R5 0단계(R-01): 카드 렌더러는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import definition_source
+from _support import claw_bubble_card_source as sheets
 
 ROOT = Path(__file__).resolve().parents[1]
-APP_JS = ROOT / "static/app.js"
 ISO_INSTANT = "2026-09-19T01:00:00Z"
 
 
 def _app() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    return sheets.app_js()
 
 
 def _card_fn() -> str:
@@ -199,7 +199,7 @@ def _run_harness() -> dict:
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(APP_JS.with_name("chat-run-history-module.js"))],
+            [node, str(harness_path), sheets.static_path("chat-run-history-module.js")],
             capture_output=True, text=True, encoding="utf-8", timeout=60,
         )
     finally:

@@ -7,25 +7,19 @@
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
 from css_rules import declaration, find_rules_with_selector, parse_rules
-
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-TOKENS = STATIC / "padiem-tokens.css"
-INTERACTION = STATIC / "interaction-polish.css"
-GLASS = STATIC / "padiem-glass.css"
+from _support import claw_bubble_card_source as sheets
 
 COLOR_LITERAL = re.compile(r"#[0-9a-fA-F]{3,8}\b|\brgba?\(")
 
 
-def _rules(path: Path):
-    return parse_rules(path.read_text(encoding="utf-8"))
+def _rules(name: str):
+    return parse_rules(sheets.css_text(name))
 
 
 def _root():
-    roots = [r for r in _rules(TOKENS) if r.selectors == [":root"] and r.media is None]
+    roots = [r for r in _rules("padiem-tokens.css") if r.selectors == [":root"] and r.media is None]
     assert len(roots) == 1
     return roots[0]
 
@@ -33,7 +27,7 @@ def _root():
 def _theme(theme: str):
     selector = f'html[data-theme="{theme}"]'
     blocks = [
-        r for r in _rules(TOKENS)
+        r for r in _rules("padiem-tokens.css")
         if r.media is None and r.selectors == [selector]
     ]
     assert len(blocks) == 1, theme
@@ -92,7 +86,7 @@ def test_glass_keeps_its_original_bubble_background() -> None:
     assert "--claw-request-bubble-text" not in props
     glass_bubble = [
         r for r in find_rules_with_selector(
-            _rules(GLASS), 'html[data-theme="padiem-glass"] .message-bubble'
+            _rules("padiem-glass.css"), 'html[data-theme="padiem-glass"] .message-bubble'
         )
         if r.media is None and declaration(r, "background") is not None
     ]
@@ -103,7 +97,7 @@ def test_glass_keeps_its_original_bubble_background() -> None:
 def test_the_claw_echo_consumes_both_tokens() -> None:
     selector = ".conversation .claw-request-echo .message-bubble"
     blocks = [
-        r for r in find_rules_with_selector(_rules(INTERACTION), selector)
+        r for r in find_rules_with_selector(_rules("interaction-polish.css"), selector)
         if r.media is None and declaration(r, "color") is not None
     ]
     assert len(blocks) == 1
