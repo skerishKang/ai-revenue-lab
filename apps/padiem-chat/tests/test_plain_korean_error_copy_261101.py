@@ -15,23 +15,20 @@
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import re
-from pathlib import Path
 
-CHAT = Path(__file__).resolve().parents[1]
-STATIC = CHAT / "static"
-FRONT = CHAT.parent / "padiem-chat-front"
+# #8060: shipped reads live in _support; the copy contracts stay here.
+from _support import plain_korean_error_copy_source as sheets
 
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-MEMORY_JS = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
-RUN_HISTORY_JS = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
-TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-FRONT_WORKER = (FRONT / "worker.mjs").read_text(encoding="utf-8")
-FRONT_COPY = (FRONT / "error-copy.mjs").read_text(encoding="utf-8")
-FRONT_TEST = (FRONT / "test" / "error_copy.test.mjs").read_text(encoding="utf-8")
+LOCALE = sheets.locale()
+APP_JS = sheets.app_js()
+MEMORY_JS = sheets.memory_js()
+RUN_HISTORY_JS = sheets.run_history_js()
+TRANSPORT = sheets.transport()
+FRONT_WORKER = sheets.front_worker()
+FRONT_COPY = sheets.front_copy()
+FRONT_TEST = sheets.front_test()
 
 # The technical tokens that must never be the words a user reads.
 TECHNICAL = re.compile(

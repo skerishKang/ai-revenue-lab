@@ -19,13 +19,15 @@ Contract under test:
 from __future__ import annotations
 
 import re
-from pathlib import Path
 from typing import Any
 
 import pytest
 
 from app import history as history_module
 from app.history import D1HistoryStore, HistoryError
+
+# #8060: the migration read lives in _support; the additive-column checks stay.
+from _support import history_workspace_linkage_source as sheets
 
 USER_ID = "usr_" + "7" * 32
 WORKSPACE_A = "ws-alpha"
@@ -338,11 +340,9 @@ async def test_workspace_id_shape_is_validated_with_canonical_grammar() -> None:
 def test_migration_is_additive_workspace_column() -> None:
     """Exactly one migration adds the nullable workspace_id column, additively."""
 
-    migrations_dir = Path(history_module.__file__).resolve().parents[1] / "migrations"
-    migration_files = sorted(migrations_dir.glob("*.sql"))
-    names = [p.name for p in migration_files]
+    names = sheets.migration_names()
     assert "015_claw_run_history_workspace.sql" in names
-    content = (migrations_dir / "015_claw_run_history_workspace.sql").read_text(encoding="utf-8").lower()
+    content = sheets.migration("015_claw_run_history_workspace.sql").lower()
     assert "alter table claw_run_history add column workspace_id text;" in content
     assert "create table" not in content
     assert "drop table" not in content
