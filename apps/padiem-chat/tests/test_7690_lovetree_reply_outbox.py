@@ -154,7 +154,7 @@ async def ingested(store):
 def test_signature_bytes_match_the_contract():
     """CTO 계약 예시 바이트와 같은 서명(시각\\n사이트\\n본문 원문 바이트)."""
     raw = json.dumps({'eventKey': 'ops_testkey_00000000', 'feedbackId': 101, 'kind': 'status',
-                      'reply': None, 'status': 'fixed'},
+                      'status': 'fixed'},
                      ensure_ascii=False, separators=(',', ':')).encode()
     message = str(NOW_MS).encode('utf-8') + b'\n' + b'lovetree' + b'\n' + raw
     expect = hmac.new(_SECRET.encode('utf-8'), message, hashlib.sha256).hexdigest()
@@ -258,9 +258,11 @@ def test_retries_reuse_the_same_event_key_and_payload():
             value = json.loads(first['content'])
             assert value['eventKey'] == json.loads(second['content'])['eventKey']
             assert value['feedbackId'] == 101 and value['kind'] == 'reply'
-            assert value['reply']['body'] == '같은 답글'
-            assert value['reply']['replyId'].startswith('rpb_')
-            assert value['status'] is None and value['reply']['createdAt']
+            # LoveTree ingest takes a flat body only (nested or null fields -> 400).
+            assert value['body'] == '같은 답글'
+            assert value['replyId'].startswith('rpb_')
+            assert value['createdAt']
+            assert set(value) == {'eventKey', 'feedbackId', 'kind', 'replyId', 'body', 'createdAt'}
         finally:
             db.close()
     asyncio.run(scenario())
