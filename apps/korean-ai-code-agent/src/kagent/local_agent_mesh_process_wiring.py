@@ -16,6 +16,7 @@ from .local_agent_meshcentral_process_port import (
     MeshCentralProcessLane,
     MeshCentralProcessSocket,
 )
+from .local_agent_meshcentral_sysinfo_port import MeshCentralSysInfoPort
 
 
 def process_lane_kwargs(
@@ -31,12 +32,16 @@ def process_lane_kwargs(
     must not reuse one lane's node id for a stop on another PC.
     """
     if login_key_file is not None:
-        return {"process_lane_factory": None, "process_lane_enabled": False}
+        return {"process_lane_factory": None, "process_lane_enabled": False,
+                "sysinfo_port": None}
     socket = MeshCentralProcessSocket(
         login_user=login_user,
         password_provider=password_provider,
         url=mesh_url,
     )
+    # #8634: the server-document read borrows this same authenticated socket;
+    # no second login, port or device command is created.
+    sysinfo_port = MeshCentralSysInfoPort(send=socket.sysinfo)
 
     def lane_for(node_ref: str) -> MeshCentralProcessLane:
         return MeshCentralProcessLane(
@@ -49,6 +54,7 @@ def process_lane_kwargs(
     return {
         "process_lane_factory": lane_for,
         "process_lane_enabled": flag not in ("0", "false", "no", "off"),
+        "sysinfo_port": sysinfo_port,
     }
 
 
@@ -61,12 +67,13 @@ class MeshCentralProcessCommandPort(MeshCentralCliCommandPort):
     """
 
     def __init__(self, **kwargs: Any) -> None:
-        super().__init__(
-            **kwargs,
-            **process_lane_kwargs(
-                kwargs["login_user"],
-                kwargs["password_provider"],
-                kwargs.get("url", "wss://127.0.0.1:4443"),
-                kwargs.get("login_key_file"),
-            ),
+        lane_kwargs = process_lane_kwargs(
+            kwargs["login_user"],
+            kwargs["password_provider"],
+            kwargs.get("url", "wss://127.0.0.1:4443"),
+            kwargs.get("login_key_file"),
         )
+        # #8634: kept here, not in the capped command-port module. The helper
+        # readiness reporter reaches the same authenticated socket through it.
+        self._sysinfo_port = lane_kwargs.pop("sysinfo_port")
+        super().__init__(**kwargs, **lane_kwargs)
