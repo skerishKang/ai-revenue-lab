@@ -4,15 +4,15 @@ The static browser wiring stays unchanged; no new search endpoint or auth
 authority is added. These focused checks qualify the existing B62 UI-mixed
 lane and avoid running unrelated model/Claw backend regression.
 """
-from pathlib import Path
 import re
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
-CSS = (STATIC / "sidebar-unified.css").read_text(encoding="utf-8")
-APP = ((STATIC / "app.js").read_text(encoding="utf-8")
-       + (STATIC / "chat-history-module.js").read_text(encoding="utf-8"))  # R5 step 3: history rows live in the module too
-SEARCH = (STATIC / "conversation-search.js").read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the markup and CSS checks stay here.
+from _support import sidebar_single_cell_source as sheets
+
+HTML = sheets.html()
+CSS = sheets.css()
+APP = sheets.app()  # R5 step 3: history rows live in the module too
+SEARCH = sheets.search()
 
 
 def test_one_visual_row_has_two_distinct_keyboard_actions():
