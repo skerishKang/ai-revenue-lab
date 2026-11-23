@@ -1,3 +1,8 @@
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.enrollment_scroll_layout_source import (
+    app_js, chat_ui_polish_css, claw_focus_layout_css, consent_js, index_html, read, read_repo,
+)
+
 """#4488 stage 1: the shared scroll module is actually wired, not shipped.
 
 B62 conversation-motion and B66 easy-mode must call the shared
@@ -13,11 +18,11 @@ CANONICAL = ROOT / "packages/padiem-conversation-ui/scroll-follow.js"
 
 
 def _read(relative: str) -> str:
-    return (ROOT / relative).read_text(encoding="utf-8")
+    return read_repo(relative)
 
 
 def test_canonical_exports_shared_gap_math():
-    text = CANONICAL.read_text(encoding="utf-8")
+    text = read(CANONICAL)
     assert "function remainingToEnd(container)" in text
     assert "NEAR_BOTTOM_PX = 120" in text
     assert "remainingToEnd, isNearBottom, followToBottom" in text

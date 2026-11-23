@@ -1,13 +1,18 @@
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.enrollment_scroll_layout_source import (
+    app_js, chat_ui_polish_css, claw_focus_layout_css, consent_js, index_html, read, read_repo,
+)
+
 """#4753: user-visible Chat/Claw thread remains in its first-use frame."""
 from pathlib import Path
 
 from _r5_streaming_harness import run_streaming_scenario
 
 S = Path(__file__).resolve().parents[1] / "static"
-CHAT = (S / "padiem-chat-ui-polish.css").read_text(encoding="utf8")
-CLAW = (S / "claw-focus-layout.css").read_text(encoding="utf8")
-INDEX = (S / "index.html").read_text(encoding="utf8")
-APP = (S / "app.js").read_text(encoding="utf8")
+CHAT = chat_ui_polish_css()
+CLAW = claw_focus_layout_css()
+INDEX = index_html()
+APP = app_js()
 
 
 def test_chat_active_thread_uses_home_frame_and_same_composer_geometry():
