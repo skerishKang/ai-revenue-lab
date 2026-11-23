@@ -1,10 +1,8 @@
-from pathlib import Path
-
-STATIC = Path(__file__).resolve().parents[1] / "static"
+from _support import plain_message_launcher_source as sheets
 
 
 def test_project_errors_do_not_render_server_message_or_raw_exception():
-    source = (STATIC / "app.js").read_text(encoding="utf-8")
+    source = sheets.sheet("app.js")
     project = source[source.index("async function loadProjectFiles"):source.index('uiT("project-delete-failed")') + 200]
     assert "data.error.message" not in project
     assert "projectFormError.textContent = error.message" not in project
@@ -13,12 +11,12 @@ def test_project_errors_do_not_render_server_message_or_raw_exception():
 
 
 def test_claw_error_sinks_use_safe_local_messages_and_keep_history_guidance():
-    source = (STATIC / "app.js").read_text(encoding="utf-8")
+    source = sheets.sheet("app.js")
     # setClawRunHistoryStatus moved into chat-run-history-module.js (#7216 R5 B3)
     # and setApprovedMemoryStatus moved into chat-memory-module.js (#7216 R5 A2);
     # all shipped sources are checked so the raw-error ban keeps its strength.
-    module = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
-    memory_mod = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
+    module = sheets.sheet("chat-run-history-module.js")
+    memory_mod = sheets.sheet("chat-memory-module.js")
     for sink in ("setApprovedMemoryStatus", "setClawRunHistoryStatus"):
         assert sink + "(error instanceof Error ? error.message" not in source
         assert sink + "(error instanceof Error ? error.message" not in module
@@ -30,8 +28,8 @@ def test_claw_error_sinks_use_safe_local_messages_and_keep_history_guidance():
 
 
 def test_claw_modules_do_not_display_raw_caught_errors():
-    office = (STATIC / "claw-office-chooser.js").read_text(encoding="utf-8")
-    xlsx = (STATIC / "claw-web-xlsx-sources.js").read_text(encoding="utf-8")
+    office = sheets.sheet("claw-office-chooser.js")
+    xlsx = sheets.sheet("claw-web-xlsx-sources.js")
     assert "setMessage(error.message);" not in office
     assert "report(error.message);" not in xlsx
     for source in (office, xlsx):
