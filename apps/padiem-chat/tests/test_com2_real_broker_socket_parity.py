@@ -28,7 +28,7 @@ from com2_edge_proof import EdgeProofVerifier
 from app.com2_connector_websocket import create_com2_gateway
 from app.com2_edge_middleware import EdgeProofMiddleware
 from app.canonical_connector_gateway_source_composition import CONNECTOR_GATEWAY_WSS_PATH
-from test_com2_connector_websocket import Broker, Identity
+from _support.com2_connector_ws_fixtures import Broker, Identity
 
 SECRET = 'synthetic-service-' + 'x' * 32
 DEVICE = 'device.test'
