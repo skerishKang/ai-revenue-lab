@@ -24,6 +24,11 @@ import threading
 from pathlib import Path
 
 import pytest
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.css_contracts_b62_source import (
+    conversation_motion_js, glass_brand_polish_css, interaction_polish_css,
+    interaction_polish_js,
+)
 
 # The static contract tests below must run everywhere (the required CI lane
 # installs no browser), so Playwright is optional here and only the real
@@ -39,10 +44,10 @@ requires_browser = pytest.mark.skipif(
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
-MOTION_JS = STATIC / "conversation-motion.js"
-POLISH_JS = STATIC / "interaction-polish.js"
-POLISH_CSS = STATIC / "interaction-polish.css"
-BRAND_CSS = STATIC / "padiem-glass-brand-polish.css"
+MOTION_JS = conversation_motion_js()
+POLISH_JS = interaction_polish_js()
+POLISH_CSS = interaction_polish_css()
+BRAND_CSS = glass_brand_polish_css()
 
 # The representative's own window sizes: a narrowed desktop window and the
 # short laptop height, plus the narrow-desktop breakpoint.
@@ -94,8 +99,8 @@ def test_both_clearance_writers_use_the_same_floor_and_gap():
     composer. The two writers therefore have to declare the same floor and
     the same gap, and this contract keeps them equal.
     """
-    polish = POLISH_JS.read_text(encoding="utf-8")
-    motion = MOTION_JS.read_text(encoding="utf-8")
+    polish = POLISH_JS
+    motion = MOTION_JS
 
     def constants(text: str) -> tuple[int, int]:
         floor = re.search(r"MIN_CONVERSATION_CLEARANCE\s*=\s*(\d+)", text)
@@ -105,14 +110,14 @@ def test_both_clearance_writers_use_the_same_floor_and_gap():
 
     assert constants(polish) == constants(motion), (constants(polish), constants(motion))
     # The reservation follows the measured composer and the keyboard inset.
-    assert "var(--padiem-visual-keyboard-inset, 0px)" in POLISH_CSS.read_text(encoding="utf-8")
+    assert "var(--padiem-visual-keyboard-inset, 0px)" in POLISH_CSS
     assert 'setProperty("--padiem-composer-clearance"' in motion
 
 
 def test_no_lane_declares_a_second_reserved_bottom_space():
     """One reservation per lane: a second copy drops the keyboard inset."""
-    polish = POLISH_CSS.read_text(encoding="utf-8")
-    brand = BRAND_CSS.read_text(encoding="utf-8")
+    polish = POLISH_CSS
+    brand = BRAND_CSS
     # The shared Chat/Claw/home rule owns the reserved space for every
     # conversation surface. It stays keyed on the shell state rather than the
     # first-screen layout variant: the reservation is needed while a thread is
@@ -143,7 +148,7 @@ def test_the_phone_landing_keeps_the_compact_first_screen():
     no block padding and a 25px card gap — the same brand line began 14px and
     then 6px lower on one phone for no product reason (measured at 390x844).
     """
-    polish = POLISH_CSS.read_text(encoding="utf-8")
+    polish = POLISH_CSS
     phone = re.search(
         r"@media \(max-width: 620px\) \{(?P<body>.*?)\n\}", polish, re.S
     )
