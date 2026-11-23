@@ -184,7 +184,8 @@ def test_three_action_levels_and_the_entry_alignment() -> None:
     primary = find_rules_with_selector(rules, "#settingsDialog .settings-action-primary")
     danger = find_rules_with_selector(rules, "#settingsDialog .settings-action-danger")
     assert secondary and primary and danger
-    assert declaration(secondary[0], "background") == "var(--card-bg, #fafafa)"
+    assert declaration(secondary[0], "background") == "var(--card-bg, var(--settings-choice-fallback))"
+    assert token_value("--settings-choice-fallback") == "#fafafa"
     assert declaration(primary[0], "background") == "var(--primary-bg)"
     assert declaration(primary[0], "border-radius") == "var(--radius-pill)"
     assert token_value("--radius-pill") == "999px"
