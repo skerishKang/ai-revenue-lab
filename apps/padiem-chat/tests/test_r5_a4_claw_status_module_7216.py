@@ -6,6 +6,9 @@ app.js의 Claw 상태·대기·재시도 구역 24개 함수가 chat-claw-status
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.final_share_source import locale_source, read
+
 import json
 import re
 import shutil
@@ -16,9 +19,9 @@ import pytest
 from _r5_b6_wiring import context_names, create_receives_app_context
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-claw-status-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+APP = read(STATIC / "app.js")
+MODULE = read(STATIC / "chat-claw-status-module.js")
+INDEX = read(STATIC / "index.html")
 
 NAMES = (
     "syncComposerForClaw",
