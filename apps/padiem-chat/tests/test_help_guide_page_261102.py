@@ -15,7 +15,6 @@ Three things are pinned here, in this order of importance:
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import http.server
 import json
@@ -31,13 +30,14 @@ try:
 except ModuleNotFoundError:  # pragma: no cover
     sync_playwright = None
 
-CHAT = Path(__file__).resolve().parents[1]
-REPO = CHAT.parents[1]
-STATIC = CHAT / "static"
-HELP = (STATIC / "help.html").read_text(encoding="utf-8")
-HELP_CSS = (STATIC / "help.css").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
+# #8060: shipped reads live in _support; the copy and markup checks stay.
+from _support import help_guide_source as sheets
+
+STATIC = sheets.static_dir()
+HELP = sheets.help_html()
+HELP_CSS = sheets.help_css()
+INDEX = sheets.index_html()
+LOCALE = sheets.locale_source()
 
 TARGET_FLOOR = 44.0
 TEXT_FLOOR = 14.0
@@ -177,7 +177,7 @@ def test_the_guide_offers_only_sentences_that_are_evidenced():
 def test_every_evidenced_sentence_really_sits_in_the_file_that_acts_on_it():
     stale = []
     for sentence, source in sorted(EVIDENCE.items()):
-        text = (REPO / source).read_text(encoding="utf-8")
+        text = sheets.repo_text(source)
         if sentence not in text:
             stale.append("%s (expected in %s)" % (sentence, source))
     assert not stale, stale
@@ -186,7 +186,7 @@ def test_every_evidenced_sentence_really_sits_in_the_file_that_acts_on_it():
 def test_the_refusal_examples_are_refusals_too():
     offered = {sentence for sentence, _ in _say_links()}
     for sentence, source in sorted(REFUSAL_EVIDENCE.items()):
-        assert sentence in (REPO / source).read_text(encoding="utf-8"), source
+        assert sentence in sheets.repo_text(source), source
         # The guide names them to warn about what will not run, never to invite.
         assert sentence not in offered
 
@@ -200,10 +200,7 @@ def test_the_page_carries_no_script_no_network_and_no_shout():
     assert "<script" not in HELP
     # The guide lists the product MCP endpoint. Tutorial pages add only the
     # approved media origin for the versioned guest recordings.
-    media_pages = "\n".join(
-        path.read_text(encoding="utf-8")
-        for path in sorted((STATIC / "help-tutorials").glob("*.html"))
-    )
+    media_pages = "\n".join(sheets.tutorial_texts())
     scanned = HELP + "\n" + media_pages
     found_urls = set(re.findall(r"https?://[^\s\"'<>]+", scanned))
     api_url = "https://chat.padiem.net/api/mcp"
@@ -241,7 +238,7 @@ def test_the_chat_is_called_채팅_wherever_a_person_reads_it():
         ("help.html", HELP),
         ("locale.js", LOCALE),
         ("index.html", INDEX),
-        ("install.html", (STATIC / "install.html").read_text(encoding="utf-8")),
+        ("install.html", sheets.install_html()),
     ):
         assert "채트" not in text, name
 
@@ -254,7 +251,7 @@ def test_the_external_ai_section_matches_the_consent_screen():
     )
     assert section, "the guide must explain how to connect an external AI"
     body = section.group(0)
-    consent = (STATIC / "mcp-oauth-consent.html").read_text(encoding="utf-8")
+    consent = sheets.consent_html()
     # Consent-page wording, so the guide cannot describe a screen that is not there.
     for phrase in ("외부 AI 연결 승인", "승인하고 연결", "내 PC의 파일·명령·브라우저 작업"):
         assert phrase in consent, phrase
