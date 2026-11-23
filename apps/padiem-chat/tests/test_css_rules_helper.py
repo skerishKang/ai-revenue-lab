@@ -20,17 +20,18 @@ from css_rules import (
     strip_comments,
 )
 
-POLISH_CSS = Path(__file__).resolve().parents[1] / "static" / "padiem-chat-ui-polish.css"
-SETTINGS_CSS = Path(__file__).resolve().parents[1] / "static" / "padiem-settings.css"  # #7476-14
+# #8060: shipped reads live in _support; the parsed-rule checks stay here.
+from _support import css_rules_helper_source as sheets
+
 MOBILE_MEDIA = "(max-width: 640px)"
 
 
 def _rules() -> list[Rule]:
-    return parse_rules(POLISH_CSS.read_text(encoding="utf-8"))
+    return parse_rules(sheets.sheet("padiem-chat-ui-polish.css"))
 
 
 def _settings_rules() -> list[Rule]:
-    return parse_rules(SETTINGS_CSS.read_text(encoding="utf-8"))
+    return parse_rules(sheets.sheet("padiem-settings.css"))
 
 
 def _primary_blocks(rules: list[Rule]) -> list[Rule]:

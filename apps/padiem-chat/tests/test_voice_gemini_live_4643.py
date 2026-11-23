@@ -20,11 +20,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-ENGINE_JS = STATIC / "voice-live-session.js"
-WIRING_JS = STATIC / "voice-stt-wiring.js"
-INDEX_HTML = STATIC / "index.html"
+# #8060: shipped reads live in _support; the source and behavior checks stay.
+from _support import voice_gemini_live_source as sheets
+
 NODE_SPEC = Path(__file__).with_name("voice_gemini_live_4643.cjs")
 
 
@@ -36,7 +34,7 @@ def _run_node_spec() -> subprocess.CompletedProcess[str]:
         capture_output=True,
         text=True, encoding="utf-8",
         timeout=180,
-        cwd=str(ROOT),
+        cwd=sheets.chat_root(),
     )
 
 
@@ -53,7 +51,7 @@ def test_gemini_live_engine_gates_pass() -> None:
 
 
 def test_engine_is_the_global_classroom_port_with_its_provenance() -> None:
-    source = ENGINE_JS.read_text(encoding="utf-8")
+    source = sheets.sheet("voice-live-session.js")
     assert "GLOBAL_CLASSROOM_DIRECT_PORT" in source
     assert "ffa27e6a93605614031fed314ef33571c85b8f18" in source
     # The original's own names, so a drift is visible in review. The one whose
@@ -68,7 +66,7 @@ def test_engine_is_the_global_classroom_port_with_its_provenance() -> None:
 
 
 def test_engine_never_holds_a_long_lived_provider_key() -> None:
-    source = ENGINE_JS.read_text(encoding="utf-8")
+    source = sheets.sheet("voice-live-session.js")
     code = re.sub(r"/\*.*?\*/", "", source, flags=re.DOTALL)
     code = re.sub(r"//[^\n]*", "", code)
     # The only credential the browser may hold is the short-lived,
@@ -84,7 +82,7 @@ def test_engine_never_holds_a_long_lived_provider_key() -> None:
 
 
 def test_engine_reads_the_window_from_the_server_contract_but_never_the_model() -> None:
-    source = ENGINE_JS.read_text(encoding="utf-8")
+    source = sheets.sheet("voice-live-session.js")
     # #6828 voice-relay: the activity-detection window, rotation window and
     # transcription mode come from the server's public session block; the model
     # is injected by the COM2 relay and must NOT be read or sent by the browser.
@@ -100,7 +98,7 @@ def test_engine_reads_the_window_from_the_server_contract_but_never_the_model() 
 
 
 def test_wiring_uses_the_live_engine_first_and_keeps_the_recorded_fallback() -> None:
-    source = WIRING_JS.read_text(encoding="utf-8")
+    source = sheets.sheet("voice-stt-wiring.js")
     assert "PadiemVoiceLiveSession" in source
     assert "fallbackFactory: recordedFactory" in source
     # The recorded-chunk path stays reachable as the next provider.
@@ -111,7 +109,7 @@ def test_wiring_uses_the_live_engine_first_and_keeps_the_recorded_fallback() -> 
 
 
 def test_page_loads_the_engine_before_the_wiring_that_uses_it() -> None:
-    html = INDEX_HTML.read_text(encoding="utf-8")
+    html = sheets.sheet("index.html")
     assert html.count('<script src="./voice-live-session.js"></script>') == 1
     order = [
         html.index("voice-live-transcript-turn.js"),
@@ -124,8 +122,8 @@ def test_page_loads_the_engine_before_the_wiring_that_uses_it() -> None:
 
 
 def test_m1_live_transcript_lands_in_the_input_box() -> None:
-    adapter = (STATIC / "voice-stt-input.js").read_text(encoding="utf-8")
-    composer = (STATIC / "voice-composer.js").read_text(encoding="utf-8")
+    adapter = sheets.sheet("voice-stt-input.js")
+    composer = sheets.sheet("voice-composer.js")
     # The shared adapter writes the live words into the input itself.
     assert "writeLiveInput" in adapter
     assert "writeFinalInput" in adapter
@@ -136,7 +134,7 @@ def test_m1_live_transcript_lands_in_the_input_box() -> None:
 
 def test_no_voice_path_sends_a_chat_message() -> None:
     for name in ("voice-live-session.js", "voice-stt-wiring.js", "voice-stt-input.js"):
-        source = (STATIC / name).read_text(encoding="utf-8")
+        source = sheets.sheet(name)
         code = re.sub(r"/\*.*?\*/", "", source, flags=re.DOTALL)
         code = re.sub(r"//[^\n]*", "", code)
         for forbidden in ("composerForm.requestSubmit", "form.submit", "requestSubmit"):
@@ -144,7 +142,7 @@ def test_no_voice_path_sends_a_chat_message() -> None:
 
 
 def test_the_engine_opens_nothing_before_the_microphone_runs() -> None:
-    source = ENGINE_JS.read_text(encoding="utf-8")
+    source = sheets.sheet("voice-live-session.js")
     # The factory is the microphone seam. The token request and the socket are
     # created inside it, never at module load.
     assert "fetchLiveToken()" in source
