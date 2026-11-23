@@ -23,6 +23,9 @@ help.css — help-tutorials 7페이지)는 원시 리터럴로 남는다 → 다
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.token_veil_source import admin_models_css, index_html, read, read_static, tokens_css
+
 import re
 from collections import Counter
 from pathlib import Path
@@ -249,7 +252,7 @@ def _norm(text: str) -> str:
 
 def test_root_tokens_hold_the_swept_values() -> None:
     """토큰의 :root 값은 바꾸기 전 리터럴과 문자 그대로 같다."""
-    rules = parse_rules(TOKENS.read_text(encoding="utf-8"))
+    rules = parse_rules(tokens_css())
     root = next(r for r in rules if r.media is None and ":root" in r.selectors)
     for name, literal in {**ROOT_TOKENS, **PANEL_TOKENS}.items():
         assert root.declarations.get(name) == literal, name
@@ -257,7 +260,7 @@ def test_root_tokens_hold_the_swept_values() -> None:
 
 def test_no_theme_block_overrides_the_veil_tokens() -> None:
     """베일은 테마 값이 아니라 역할 스케일이라 테마 블록에서 덮지 않는다."""
-    for rule in parse_rules(TOKENS.read_text(encoding="utf-8")):
+    for rule in parse_rules(tokens_css()):
         themed = rule.media is not None or any("data-theme" in s for s in rule.selectors)
         if themed:
             for name in ROOT_TOKENS:
@@ -267,7 +270,7 @@ def test_no_theme_block_overrides_the_veil_tokens() -> None:
 def test_changed_declarations_consume_the_tokens() -> None:
     """바뀐 줄들은 토큰을 쓰고, 토큰을 원래 리터럴로 되돌리면 치환 전 값과 같다."""
     for sheet, items in CHANGED.items():
-        rules = parse_rules((STATIC / sheet).read_text(encoding="utf-8"))
+        rules = parse_rules(read_static(sheet))
         actual: Counter = Counter()
         for rule in rules:
             for prop, value in rule.declarations.items():
@@ -287,7 +290,7 @@ def test_changed_declarations_consume_the_tokens() -> None:
 def test_veil_tokens_keep_their_role_discipline() -> None:
     """구분선 토큰은 border 계열이, 표면 토큰은 background 계열이 쓴다."""
     for sheet in CHANGED:
-        for rule in parse_rules((STATIC / sheet).read_text(encoding="utf-8")):
+        for rule in parse_rules(read_static(sheet)):
             for prop, value in rule.declarations.items():
                 if "--line-veil-" in value:
                     assert prop.startswith("border"), (sheet, prop, value)
@@ -298,9 +301,9 @@ def test_veil_tokens_keep_their_role_discipline() -> None:
 def test_excluded_sheets_stay_literal() -> None:
     """토큰을 로드하지 않는 페이지가 쓰는 시트는 리터럴을 유지한다."""
     for sheet in EXCLUDED_SHEETS:
-        css = (STATIC / sheet).read_text(encoding="utf-8")
+        css = read_static(sheet)
         assert "--veil-" not in css, sheet
-    admin = (STATIC / "admin-models.css").read_text(encoding="utf-8")
+    admin = admin_models_css()
     for token in ADMIN_MODELS_VEIL_TOKENS:
         assert f"var({token})" in admin, token
     for token in ROOT_TOKENS:
@@ -310,7 +313,7 @@ def test_excluded_sheets_stay_literal() -> None:
 
 def _page_sheets(page: Path) -> set[str]:
     """한 페이지가 로드하는 시트: <link> + @import 체인 + 동적 로더."""
-    html = page.read_text(encoding="utf-8")
+    html = read(page)
     stack: list[Path] = []
     for href in re.findall(r"<link[^>]*?href=[\"']([^\"']+\.css)[^\"']*[\"']", html):
         cand = page.parent / href.split("?")[0]
@@ -328,7 +331,7 @@ def _page_sheets(page: Path) -> set[str]:
             continue
         seen.add(p)
         sheets.add(p.name)
-        css_text = p.read_text(encoding="utf-8")
+        css_text = read(p)
         for href in re.findall(r"@import\s+(?:url\()?['\"]([^'\")]+\.css)['\"]\)?", css_text):
             cand = p.parent / href.split("?")[0]
             if cand.is_file():
@@ -346,7 +349,7 @@ def test_changed_sheets_are_only_consumed_by_pages_that_load_tokens() -> None:
         pages = consumers.get(sheet, set())
         assert pages, f"{sheet}: 소비하는 페이지를 찾지 못했다"
         for page in pages:
-            html = (STATIC / page).read_text(encoding="utf-8")
+            html = read_static(page)
             assert "padiem-tokens.css" in html, f"{page} → {sheet}"
 
 
