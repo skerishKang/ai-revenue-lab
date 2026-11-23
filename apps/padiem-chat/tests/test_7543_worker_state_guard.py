@@ -135,3 +135,11 @@ def test_background_task_sites_are_the_audited_set():
 def test_stateful_module_globals_are_the_audited_set():
     _hooks, _tasks, stateful = _read_facts()
     assert stateful == STATEFUL_GLOBALS, "새 프로세스 전역 상태 — #7543 표에 판정을 추가할 것"
+
+
+def test_pending_result_poll_tolerates_the_promotion_gap():
+    from _support.worker_state_source import pending_result_poll_source
+
+    source = pending_result_poll_source()
+    assert "MAX_NOT_FOUND_ROUNDS" in source
+    assert "response.status === 404" in source
