@@ -356,9 +356,9 @@ def test_the_narrow_window_is_locked_to_the_first_screen() -> None:
     assert "background: rgba(242, 245, 247, .90);" in tablet
     assert "blur(30px) saturate(106%);" in tablet
     assert ".main-panel::before" in tablet
-    assert "opacity: .22;" in tablet
+    assert "opacity: .22 !important;" in tablet
     phone = css.split("@media (max-width: 620px)", 1)[1].split("/* The surface tokens", 1)[0]
-    assert "opacity: .16;" in phone
+    assert "opacity: .16 !important;" in phone
 
 
 def test_the_chat_composer_row_spacing_stays_first_screen() -> None:

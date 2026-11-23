@@ -372,7 +372,7 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   /* Do not let active-reading opacity, blur or answer activity fade/translate
    * the approved portrait. The mask may still respond to pointer focus. */
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .main-panel::before {
-    opacity: var(--glass-art-opacity);
+    opacity: var(--glass-art-opacity) !important;
     filter: var(--glass-art-filter);
     transform: translate3d(0,0,0) scale(1);
   }
@@ -384,10 +384,10 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
     box-shadow: inset 0 0 180px 48px rgba(20,29,38,.12);
   }
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body::after {
-    opacity: .10;
+    opacity: .10 !important;
   }
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"]::before {
-    opacity: .34;
+    opacity: .34 !important;
   }
   /* The composer keeps its original position even during stop/send swaps. One
      rule for the three surfaces that carry it: the Claw copy below was the same
@@ -421,7 +421,7 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
     width: 82vw;
     background-position: right 52%;
     background-size: auto 72vh;
-    opacity: .22;
+    opacity: .22 !important;
     filter: saturate(.52) contrast(.86) brightness(1.16) blur(.4px);
     transform: translate3d(0, 0, 0) scale(1);
   }
@@ -431,7 +431,7 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .main-panel::before {
     right: -34vw;
     width: 94vw;
-    opacity: .16;
+    opacity: .16 !important;
   }
 }
 
