@@ -9,15 +9,18 @@
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.glass_contrast_source import a11y_css, chat_ui_polish_css, glass_css, glass_gutter_css, glass_portrait_css, index_html, mobile_legibility_css, rich_css, rich_response_css, surfaces_css, themes_css, tokens_css
+
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-TOKENS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
-THEMES = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
-GLASS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
-SURFACES = (STATIC / "padiem-surfaces.css").read_text(encoding="utf-8")
+TOKENS = tokens_css()
+THEMES = themes_css()
+GLASS = glass_css()
+SURFACES = surfaces_css()
 
 THEME_NAMES = ("light", "dark", "cinematic", "padiem-home", "padiem-glass")
 # Surfaces each theme paints the first screen on, measured from the running app
@@ -132,7 +135,7 @@ def test_card_title_and_description_meet_their_minimums_in_every_theme() -> None
 
 def test_guest_cards_keep_their_press_behaviour() -> None:
     """게스트라도 카드는 눌린다 — 흐리게 만들려고 잠그지 않는다."""
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    html = index_html()
     starters = re.findall(r'<button type="button" class="starter[^"]*"[^>]*>', html)
     assert len(starters) >= 4
     for tag in starters:

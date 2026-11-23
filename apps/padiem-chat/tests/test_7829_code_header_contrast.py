@@ -11,18 +11,21 @@
 
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.glass_contrast_source import a11y_css, chat_ui_polish_css, glass_css, glass_gutter_css, glass_portrait_css, index_html, mobile_legibility_css, rich_css, rich_response_css, surfaces_css, themes_css, tokens_css
+
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-TOKENS = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
-RICH_BASE = (STATIC / "rich-response.css").read_text(encoding="utf-8")
-RICH_DARK = (STATIC / "padiem-rich.css").read_text(encoding="utf-8")
-A11Y = (STATIC / "accessibility-polish.css").read_text(encoding="utf-8")
-MOBILE = (STATIC / "mobile-target-legibility.css").read_text(encoding="utf-8")
-THEMES = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
-GLASS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
+TOKENS = tokens_css()
+RICH_BASE = rich_response_css()
+RICH_DARK = rich_css()
+A11Y = a11y_css()
+MOBILE = mobile_legibility_css()
+THEMES = themes_css()
+GLASS = glass_css()
 
 THEME_NAMES = ("light", "dark", "cinematic", "padiem-home", "padiem-glass")
 # 머리 띠와 단추 면의 지배색. 실행 중인 앱(`?theme=<이름>`)에서 코드 블록을

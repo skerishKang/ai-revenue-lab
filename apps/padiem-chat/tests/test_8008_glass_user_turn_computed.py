@@ -12,6 +12,9 @@ getComputedStyle 값을 비교한다.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.glass_contrast_source import a11y_css, chat_ui_polish_css, glass_css, glass_gutter_css, glass_portrait_css, index_html, mobile_legibility_css, rich_css, rich_response_css, surfaces_css, themes_css, tokens_css
+
 import json
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -24,9 +27,9 @@ from playwright.sync_api import sync_playwright  # noqa: E402
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
-PORTRAIT = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
-GUTTER = (STATIC / "padiem-glass-gutter-alignment.css").read_text(encoding="utf-8")
-POLISH = (STATIC / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
+PORTRAIT = glass_portrait_css()
+GUTTER = glass_gutter_css()
+POLISH = chat_ui_polish_css()
 
 GUEST_STATUS = {
     "ready": True, "authenticated": False, "user": None,
