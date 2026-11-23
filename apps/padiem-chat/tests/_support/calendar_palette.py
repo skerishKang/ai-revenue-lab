@@ -54,15 +54,21 @@ def editorial_rules():
     return parse_rules(_sheet("padiem-editorial.css"))
 
 
-def unthemed_editorial_literals() -> list[str]:
+def outputs_rules():
+    return parse_rules(_sheet("outputs.css"))
+
+
+def unthemed_literals(rules) -> list[str]:
+    """Non-custom-property color literals outside html[data-theme] rules."""
     import re
 
     color_rx = re.compile(
-        r"#[0-9a-fA-F]{3,8}|rgba?\([^()]*\)|hsla?\([^()]*\)", re.IGNORECASE
+        r"#[0-9a-fA-F]{3,8}(?![0-9a-fA-F])|rgba?\([^()]*\)|hsla?\([^()]*\)",
+        re.IGNORECASE,
     )
     themed_selector = re.compile(r'html\[data-theme="[^"]+"\]')
     found = []
-    for rule in editorial_rules():
+    for rule in rules:
         if any(themed_selector.search(s) for s in rule.selectors):
             continue
         for prop, value in rule.declarations.items():
@@ -71,3 +77,11 @@ def unthemed_editorial_literals() -> list[str]:
             if color_rx.search(value):
                 found.append(f"{rule.selectors} {prop}: {value}")
     return found
+
+
+def unthemed_editorial_literals() -> list[str]:
+    return unthemed_literals(editorial_rules())
+
+
+def unthemed_outputs_literals() -> list[str]:
+    return unthemed_literals(outputs_rules())

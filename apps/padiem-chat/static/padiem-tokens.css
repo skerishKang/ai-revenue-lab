@@ -431,6 +431,15 @@
   --project-danger-border: rgba(179, 38, 30, 0.25);
   --project-select-text: #101828;
 
+  /* #7811 C2 outputs(261123): outputs.css(저장한 답변 창)의 고정 밝은 팔레트.
+     이 시트는 projects.css와 같은 밝은 판·잉크·경고 색을 다섯 테마에서 그대로
+     칠해 왔다. 값이 같은 --project-* 토큰을 재사용하고(테마 블록에서 덮지 않는
+     :root 전용), 그 팔레트에 없던 두 알파와 이 시트가 직접 소유할 그림자
+     하나만 쓰임새 이름으로 새로 만든다. */
+  --outputs-action-hover-wash: rgba(24, 24, 27, 0.05);
+  --outputs-content-bg: rgba(24, 24, 27, 0.025);
+  --outputs-dialog-shadow: rgba(24, 24, 27, 0.2);
+
   /* #7811 C2: composer(마이크·보내기·스타터 카드)의 쓰임새 색. 마이크 기본·
      호버 값은 voice UI와 같은 역할이므로 기존 --voice-* 토큰을 재사용한다.
      나머지 값은 치환 전 리터럴 그대로이고 :root에만 둔다. */

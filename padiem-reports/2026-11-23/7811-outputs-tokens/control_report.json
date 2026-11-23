@@ -1,0 +1,52 @@
+[
+  {
+    "combo": "light__1440x950__outputs-dialog",
+    "pixel": 0,
+    "noise": 0
+  },
+  {
+    "combo": "light__390x844__outputs-dialog",
+    "pixel": 0,
+    "noise": 0
+  },
+  {
+    "combo": "dark__1440x950__outputs-dialog",
+    "pixel": 0,
+    "noise": 0
+  },
+  {
+    "combo": "dark__390x844__outputs-dialog",
+    "pixel": 0,
+    "noise": 0
+  },
+  {
+    "combo": "padiem-glass__1440x950__outputs-dialog",
+    "pixel": 0,
+    "noise": 0
+  },
+  {
+    "combo": "padiem-glass__390x844__outputs-dialog",
+    "pixel": 0,
+    "noise": 0
+  },
+  {
+    "combo": "cinematic__1440x950__outputs-dialog",
+    "pixel": 0,
+    "noise": 0
+  },
+  {
+    "combo": "cinematic__390x844__outputs-dialog",
+    "pixel": 0,
+    "noise": 0
+  },
+  {
+    "combo": "padiem-home__1440x950__outputs-dialog",
+    "pixel": 0,
+    "noise": 0
+  },
+  {
+    "combo": "padiem-home__390x844__outputs-dialog",
+    "pixel": 0,
+    "noise": 0
+  }
+]
