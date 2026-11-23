@@ -10,9 +10,7 @@ its own. No enrollment route, credential or pairing is exercised.
 from __future__ import annotations
 
 # #8060: shipped reads live in _support; assertions stay here.
-from _support.enrollment_scroll_layout_source import (
-    app_js, chat_ui_polish_css, claw_focus_layout_css, consent_js, index_html, read, read_repo,
-)
+from _support.enrollment_scroll_layout_source import consent_js
 
 import json
 import shutil
