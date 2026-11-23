@@ -1,4 +1,7 @@
 """One canonical composer behavior for Chat, Claw and B66, with adapters."""
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.shared_conversation_source import app_js, b66_easy_mode_js, b66_index_html, index_html, read, read_static, scroll_source_text
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
@@ -18,17 +21,17 @@ def test_canonical_bytes_are_exactly_same_for_two_release_targets():
 
 
 def test_all_three_load_canonical_before_product_adapters():
-    chat = (STATIC / "index.html").read_text(encoding="utf-8")
-    b66 = (B66 / "index.html").read_text(encoding="utf-8")
+    chat = index_html()
+    b66 = b66_index_html()
     assert chat.index('src="./shared-conversation-composer.js"') < chat.index('src="./app.js"')
     assert b66.index('src="shared-conversation-composer.js"') < b66.index('src="easy-mode.js"')
-    assert 'window.PadiemConversationComposer || localHandoffModule' in (STATIC / "app.js").read_text(encoding="utf-8")
-    assert 'sharedComposer?.shouldSubmitOnEnter?.(event, compositionGuard)' in (B66 / "easy-mode.js").read_text(encoding="utf-8")
+    assert 'window.PadiemConversationComposer || localHandoffModule' in app_js()
+    assert 'sharedComposer?.shouldSubmitOnEnter?.(event, compositionGuard)' in b66_easy_mode_js()
 
 
 def test_product_server_boundaries_stay_distinct():
-    chat = (STATIC / "app.js").read_text(encoding="utf-8")
-    b66 = (B66 / "easy-mode.js").read_text(encoding="utf-8")
+    chat = app_js()
+    b66 = b66_easy_mode_js()
     assert "submitPrompt(input.value)" in chat
     assert "submitComposer();" in b66
     assert "inputHandler(text)" in b66
