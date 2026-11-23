@@ -3,7 +3,11 @@
 Execute the shipped Claw run-card renderer (not a copy of its logic) using Node
 against minimal DOM fixtures. No provider, authority, storage, or network use.
 """
+
 from __future__ import annotations
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.file_preview_source import app_js, claw_form_module_js, claw_run_module_js, claw_session_js, claw_workspace_css, history_module_js, index_html, locale_source, pdf_preview_js, project_drive_folder_js, projects_css, run_history_module_js
 import locale_bundle
 
 import subprocess
@@ -107,8 +111,8 @@ def test_actual_run_card_failed_partial_artifact_truth():
 
 def test_two_locales_and_theme_preserve_warning_without_granting_authority():
     card_source = definition_source("renderClawRunCard")
-    locale = LOCALE.read_text(encoding="utf-8")
-    css = CSS.read_text(encoding="utf-8")
+    locale = locale_source()
+    css = claw_workspace_css()
     key = '"claw-runs-artifact-unverified"'
     assert card_source.count('deps.clawT("claw-runs-artifact-unverified")') == 1
     assert locale.count(key) == 2

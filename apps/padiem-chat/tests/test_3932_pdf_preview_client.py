@@ -1,17 +1,21 @@
 """#3932 real Claw result-card PDF UI, using actual shipped JavaScript."""
+
 from __future__ import annotations
+
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.file_preview_source import app_js, claw_form_module_js, claw_run_module_js, claw_session_js, claw_workspace_css, history_module_js, index_html, locale_source, pdf_preview_js, project_drive_folder_js, projects_css, run_history_module_js
 
 from pathlib import Path
 import subprocess
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-SOURCE = (STATIC / "claw-pdf-preview.js").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
+SOURCE = pdf_preview_js()
+APP = app_js()
 # #7216 R5 A5a: Claw 결과물 본문은 chat-claw-run-module.js에 있다(정의 본문 기준 핀).
-RUN_MODULE = (STATIC / "chat-claw-run-module.js").read_text(encoding="utf-8")
+RUN_MODULE = claw_run_module_js()
 # R5 A5b: the single result-action download handler lives in the form module.
-FORM_MODULE = (STATIC / "chat-claw-form-module.js").read_text(encoding="utf-8")
-HTML = (STATIC / "index.html").read_text(encoding="utf-8")
+FORM_MODULE = claw_form_module_js()
+HTML = index_html()
 
 NODE = r"""
 const fs=require("fs"),vm=require("vm"),path=require("path");
@@ -127,7 +131,7 @@ def test_document_download_contract_and_script_order_unchanged():
     assert "clawPdfPreviewController?.clear()" in RUN_MODULE
     assert "downloadClawArtifact(docId, fname)" in FORM_MODULE
     assert "PadiemClawPdfPreview" in SOURCE
-    session = (STATIC / "claw-session.js").read_text(encoding="utf-8")
+    session = claw_session_js()
     assert "window.PadiemClawSession.bind({" in APP
     assert "window.PadiemClawPdfPreview?.revokeAll?.()" in session
     for disallowed in ("innerHTML", "localStorage", "sessionStorage",
