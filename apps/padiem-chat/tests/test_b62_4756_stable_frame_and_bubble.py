@@ -4,12 +4,20 @@ The user turn no longer draws a bubble surface, so the original "slightly bright
 bubble" premise is superseded; what must stay pinned is that no surface comes back
 and that the geometry stays the three-column Plan 4 grid.
 """
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.frame_council_memory_source import (
+    app_factory_source, app_js, chat_app_context_js, claw_form_module_js,
+    claw_run_module_js, council_app_js, glass_gutter_css, glass_portrait_css,
+    index_html, memory_module_js, run_history_module_js, strict_deps_js,
+    util_app_js, util_menu_css, util_menu_js,
+)
+
 import re
 from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-GUTTER = (STATIC / "padiem-glass-gutter-alignment.css").read_text(encoding="utf8")
-PORTRAIT = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf8")
+GUTTER = glass_gutter_css()
+PORTRAIT = glass_portrait_css()
 RULES = [(sel.strip(), body) for sel, body in re.findall(r"([^{}]+)\{([^{}]*)\}", PORTRAIT)]
 BUBBLE_SELECTOR_FRAGMENT = ".user-message .message-bubble"
 
