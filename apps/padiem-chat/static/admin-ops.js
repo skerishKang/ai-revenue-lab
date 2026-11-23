@@ -181,8 +181,13 @@
     if (item.ops_memo) {
       li.append(node("p", "운영 메모: " + item.ops_memo, "ops-reply"));
     }
-    // 사이트 의견은 고객에게 돌려보내는 길이 없다 — 메모만 가능.
-    li.append(node("p", "운영 메모만 가능합니다. 고객에게 답글을 보낼 수 없습니다.", "ops-row-news"));
+    // #7690 역방향: 러브트리로 들어온 의견은 답글·상태를 고객에게 돌려보낸다
+    // (운영 메모는 고객에게 안 보인다). 그 밖의 사이트 의견은 메모만 가능하다.
+    if (item.external_feedback_id != null) {
+      li.append(...outboxRows(item));
+    } else {
+      li.append(node("p", "운영 메모만 가능합니다. 고객에게 답글을 보낼 수 없습니다.", "ops-row-news"));
+    }
 
     const form = document.createElement("div");
     form.className = "ops-reply-form";
@@ -197,7 +202,29 @@
     save.addEventListener("click", () => { void saveSiteMemo(item.id, input, li); });
     form.append(input, save);
     li.append(form);
+    if (item.external_feedback_id != null) {
+      li.append(replyForm(item));
+    }
     return li;
+  }
+
+  // ── #7690 역방향: 러브트리로 간 답글·상태 줄 ──────────────────────────────
+  // 실제 모양은 admin-ops-site-reply.js가 맡고 여기는 연결만 한다(#7216 상한).
+  if (window.PadiemOpsSiteReply) {
+    window.PadiemOpsSiteReply.bind({
+      node, call, setStatus, fmtDate,
+      refreshInbox: () => { void loadInbox(true); },
+    });
+  }
+
+  function outboxRows(item) {
+    if (!window.PadiemOpsSiteReply) return [];
+    return window.PadiemOpsSiteReply.rows(item);
+  }
+
+  function replyForm(item) {
+    if (!window.PadiemOpsSiteReply) return node("div", null);
+    return window.PadiemOpsSiteReply.replyForm(item);
   }
 
   function paintRow(item) {

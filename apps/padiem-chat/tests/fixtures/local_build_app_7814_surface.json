@@ -240,6 +240,18 @@
    ]
   ],
   [
+   "/api/admin/site-feedback/{feedback_id}/reply",
+   [
+    "POST"
+   ]
+  ],
+  [
+   "/api/admin/site-feedback/{feedback_id}/resend",
+   [
+    "POST"
+   ]
+  ],
+  [
    "/api/admin/models/me",
    [
     "GET",
@@ -2373,6 +2385,7 @@
   "identity_shadow_store",
   "local_task_result_source",
   "lovetree_handoff_store",
+  "lovetree_ops_outbox",
   "mcp_gateway_executor",
   "mcp_gateway_store",
   "meeting_drive_upload_session_port",

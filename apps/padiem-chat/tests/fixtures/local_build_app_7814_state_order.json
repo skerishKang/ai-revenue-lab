@@ -20,6 +20,7 @@
    "ops_alert_store",
    "news_store",
    "site_feedback_store",
+   "lovetree_ops_outbox",
    "site_feedback_admin_authorizer",
    "central_admin_google_email",
    "android_handoff_store",
@@ -253,6 +254,7 @@
    "identity_shadow_store",
    "local_task_result_source",
    "lovetree_handoff_store",
+   "lovetree_ops_outbox",
    "mcp_gateway_executor",
    "mcp_gateway_store",
    "meeting_drive_upload_session_port",
@@ -541,6 +543,18 @@
     "/api/admin/site-feedback/{feedback_id}",
     [
      "PATCH"
+    ]
+   ],
+   [
+    "/api/admin/site-feedback/{feedback_id}/reply",
+    [
+     "POST"
+    ]
+   ],
+   [
+    "/api/admin/site-feedback/{feedback_id}/resend",
+    [
+     "POST"
     ]
    ],
    [
@@ -2600,6 +2614,7 @@
    "ops_alert_store",
    "news_store",
    "site_feedback_store",
+   "lovetree_ops_outbox",
    "site_feedback_admin_authorizer",
    "central_admin_google_email",
    "android_handoff_store",
@@ -2833,6 +2848,7 @@
    "identity_shadow_store",
    "local_task_result_source",
    "lovetree_handoff_store",
+   "lovetree_ops_outbox",
    "mcp_gateway_executor",
    "mcp_gateway_store",
    "meeting_drive_upload_session_port",
@@ -3121,6 +3137,18 @@
     "/api/admin/site-feedback/{feedback_id}",
     [
      "PATCH"
+    ]
+   ],
+   [
+    "/api/admin/site-feedback/{feedback_id}/reply",
+    [
+     "POST"
+    ]
+   ],
+   [
+    "/api/admin/site-feedback/{feedback_id}/resend",
+    [
+     "POST"
     ]
    ],
    [

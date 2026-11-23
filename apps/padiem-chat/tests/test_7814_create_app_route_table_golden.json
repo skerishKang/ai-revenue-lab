@@ -308,6 +308,22 @@
  },
  {
   "type": "Route",
+  "path": "/api/admin/site-feedback/{feedback_id}/reply",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "admin_site_feedback_reply"
+ },
+ {
+  "type": "Route",
+  "path": "/api/admin/site-feedback/{feedback_id}/resend",
+  "methods": [
+   "POST"
+  ],
+  "endpoint": "admin_site_feedback_resend"
+ },
+ {
+  "type": "Route",
   "path": "/api/admin/models/me",
   "methods": [
    "GET",

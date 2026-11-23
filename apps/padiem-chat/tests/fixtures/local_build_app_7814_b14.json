@@ -1,7 +1,7 @@
 {
   "mock_local": {
     "outcome": "ok",
-    "state_count": 147,
+    "state_count": 148,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -101,6 +101,7 @@
       "identity_shadow_store",
       "local_task_result_source",
       "lovetree_handoff_store",
+      "lovetree_ops_outbox",
       "mcp_gateway_executor",
       "mcp_gateway_store",
       "meeting_drive_upload_session_port",
@@ -194,6 +195,7 @@
       "ops_alert_store",
       "news_store",
       "site_feedback_store",
+      "lovetree_ops_outbox",
       "site_feedback_admin_authorizer",
       "central_admin_google_email",
       "android_handoff_store",
@@ -331,7 +333,7 @@
   },
   "b14_local": {
     "outcome": "ok",
-    "state_count": 150,
+    "state_count": 151,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -434,6 +436,7 @@
       "identity_shadow_store",
       "local_task_result_source",
       "lovetree_handoff_store",
+      "lovetree_ops_outbox",
       "mcp_gateway_executor",
       "mcp_gateway_store",
       "meeting_drive_upload_session_port",
@@ -530,6 +533,7 @@
       "ops_alert_store",
       "news_store",
       "site_feedback_store",
+      "lovetree_ops_outbox",
       "site_feedback_admin_authorizer",
       "central_admin_google_email",
       "android_handoff_store",
@@ -684,7 +688,7 @@
   },
   "host_gates_off": {
     "outcome": "ok",
-    "state_count": 149,
+    "state_count": 150,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -786,6 +790,7 @@
       "identity_shadow_store",
       "local_task_result_source",
       "lovetree_handoff_store",
+      "lovetree_ops_outbox",
       "mcp_gateway_executor",
       "mcp_gateway_store",
       "meeting_drive_upload_session_port",
@@ -870,7 +875,7 @@
   },
   "edge_on": {
     "outcome": "ok",
-    "state_count": 149,
+    "state_count": 150,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -972,6 +977,7 @@
       "identity_shadow_store",
       "local_task_result_source",
       "lovetree_handoff_store",
+      "lovetree_ops_outbox",
       "mcp_gateway_executor",
       "mcp_gateway_store",
       "meeting_drive_upload_session_port",
@@ -1053,7 +1059,7 @@
   },
   "connector_on": {
     "outcome": "ok",
-    "state_count": 149,
+    "state_count": 150,
     "state": [
       "_workspace_metadata_store",
       "account_data_db",
@@ -1155,6 +1161,7 @@
       "identity_shadow_store",
       "local_task_result_source",
       "lovetree_handoff_store",
+      "lovetree_ops_outbox",
       "mcp_gateway_executor",
       "mcp_gateway_store",
       "meeting_drive_upload_session_port",
