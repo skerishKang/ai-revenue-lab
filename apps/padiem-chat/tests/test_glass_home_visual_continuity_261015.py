@@ -1,9 +1,15 @@
 """Source contract for Chat first-frame appearance during reading mode."""
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.admin_brand_home_source import (
+    app_js, b66_quote_routes, capabilities_js, connector_owner_setup_page, index_html,
+    install_html, locale_source, read, settings_js, six_panel_css, theme_js,
+)
+
 from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-FRAME = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
-THEME = (STATIC / "theme.js").read_text(encoding="utf-8")
+FRAME = six_panel_css()
+THEME = theme_js()
 
 
 def test_owner_visual_authority_outweighs_reading_css() -> None:
