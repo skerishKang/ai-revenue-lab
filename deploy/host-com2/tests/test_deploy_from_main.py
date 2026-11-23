@@ -498,6 +498,9 @@ class DeployHarness(unittest.TestCase):
 import os
 import sys
 code = os.getenv("FAKE_AI_CODE", "none")
+if code.startswith("DEGRADED:"):
+    print("ai:DEGRADED error_code=" + code.split(":", 1)[1])
+    sys.exit(0)
 print("ai:PASS" if code == "none" else "ai:FAIL error_code=" + code)
 sys.exit(0 if code == "none" else 1)
 """)
@@ -888,6 +891,45 @@ class ChatScenarioTest(DeployHarness):
         result = self._run_apply()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("ai:PASS", result.stdout)
+
+    def test_ai_degraded_warn_keeps_deploy_with_visible_verdict(self) -> None:
+        self.env["FAKE_AI_CODE"] = "DEGRADED:upstream_timeout"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("ai:DEGRADED error_code=upstream_timeout", result.stdout)
+        self.assertIn("COM2_DEPLOY_AI_DEGRADED=YES error_code=upstream_timeout", result.stdout)
+        self.assertNotIn("ai:FAIL", result.stdout)
+        self.assertEqual(len([x for x in self._calls() if x.startswith("install chat")]), 1)
+
+    def test_ai_degraded_required_still_passes_without_rollback(self) -> None:
+        self.env["FAKE_AI_CODE"] = "DEGRADED:upstream_timeout"
+        self.env["FAKE_AI_MODE"] = "required"
+        self.env["QA_DEPLOY_USERNAME"] = "qa-fixture"
+        self.env["QA_DEPLOY_PASSWORD"] = "qa-fixture"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("ai:DEGRADED error_code=upstream_timeout", result.stdout)
+        self.assertNotIn("ROLLBACK", result.stdout)
+        self.assertEqual(len([x for x in self._calls() if x.startswith("install chat")]), 1)
+
+    def test_no_safe_error_code_stays_fail_in_warn(self) -> None:
+        # #8629: the generic sanitizer fallback is not a named provider delay,
+        # so it keeps the existing FAIL contract instead of being laundered.
+        self.env["FAKE_AI_CODE"] = "no_safe_error_code"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("ai:FAIL error_code=no_safe_error_code", result.stdout)
+        self.assertNotIn("ai:DEGRADED", result.stdout)
+
+    def test_no_safe_error_code_required_still_rolls_back(self) -> None:
+        self.env["FAKE_AI_CODE"] = "no_safe_error_code"
+        self.env["FAKE_AI_MODE"] = "required"
+        self.env["QA_DEPLOY_USERNAME"] = "qa-fixture"
+        self.env["QA_DEPLOY_PASSWORD"] = "qa-fixture"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("ai:FAIL error_code=no_safe_error_code", result.stdout)
+        self.assertIn("chat:ROLLBACK", result.stdout)
 
     def test_ai_credential_missing_warn_reports_skip_not_fail(self) -> None:
         # The QA identity the check signs in with lives in GitHub's grade-smoke

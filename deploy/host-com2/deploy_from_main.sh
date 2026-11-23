@@ -2176,8 +2176,13 @@ run_deploy() {
   if (( ! failed )); then
     ai_status=FAIL
     ai_code=ai_check_unavailable
-    if ai_output=$("$python_bin" "$staged/.github/scripts/post_deploy_ai_answer_check.py" --base-url "$ai_base_url" 2>/dev/null); then
-      if [[ $ai_output == 'ai:PASS' ]]; then ai_status=PASS; ai_code=none; fi
+    # DEGRADED exits 0 like PASS, but parse the verdict from the text rather
+    # than the exit status: one bounded line is the whole check contract.
+    ai_output=$("$python_bin" "$staged/.github/scripts/post_deploy_ai_answer_check.py" --base-url "$ai_base_url" 2>/dev/null) || true
+    if [[ $ai_output == 'ai:PASS' ]]; then
+      ai_status=PASS; ai_code=none
+    elif [[ $ai_output =~ ^ai:DEGRADED\ error_code=([a-z][a-z0-9_]{0,80})$ ]]; then
+      ai_status=DEGRADED; ai_code=${BASH_REMATCH[1]}
     elif [[ $ai_output =~ ^ai:FAIL\ error_code=([a-z][a-z0-9_]{0,80})$ ]]; then
       ai_code=${BASH_REMATCH[1]}
     fi
@@ -2211,6 +2216,11 @@ run_deploy() {
   local ai_word="ai:$ai_status"
   if [[ $ai_status == FAIL ]]; then
     ai_word="ai:FAIL error_code=$ai_code"
+  elif [[ $ai_status == DEGRADED ]]; then
+    ai_word="ai:DEGRADED error_code=$ai_code"
+    # #8629: leave the degraded verdict and its code in the journal even when
+    # the release side only reads COM2_DEPLOY_SUMMARY.
+    say "COM2_DEPLOY_AI_DEGRADED=YES error_code=$ai_code"
   elif [[ $ai_status == SKIP && $ai_code != none ]]; then
     ai_word="ai:SKIP reason=$ai_code"
   fi

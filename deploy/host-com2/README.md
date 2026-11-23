@@ -104,6 +104,11 @@ sudo env PADIEM_COM2_OPS_CHECKOUT=/mnt/d/work/ai-revenue-lab-ops \
 않는다. `--ai-check=required`에서는 SKIP이 나오지 않는다: 같은 코드도 `ai:FAIL`이고 exit 1·되돌림이다.
 확인이 실행 자체를 못 한 `ai_check_unavailable`은 자격 문제가 아니라 고장이라 warn에서도 `ai:FAIL`로 남는다.
 
+외부 모델 지연 코드(`upstream_timeout`, `provider_server_error`)는 5초 간격으로 최대 2회 다시 시도한다. 같은
+지연이 계속되면 `ai:DEGRADED error_code=…`로 남기고 실패로 치지 않는다. DEGRADED는 warn·required 모두 exit 0이고
+되돌림이 없으며, `COM2_DEPLOY_AI_DEGRADED=YES error_code=…` 줄이 저널에 함께 남는다. 지연이 아닌 오류 코드와
+`no_safe_error_code`(오류 본문에서 안전한 코드를 읽지 못한 일반 fallback)는 기존처럼 첫 시도에서 `ai:FAIL`이다.
+
 ### 동시 실행
 
 계획, `--stage-only`, `--apply`는 모두 같은 잠금(`<state-dir>/deploy.lock`)을 잡는다. 다른 실행이

@@ -183,3 +183,83 @@ def test_a_real_dropped_connection_is_retried_end_to_end(monkeypatch):
         server.shutdown()
         thread.join()
         server.server_close()
+
+
+def _fake_once(codes):
+    """A scripted _check_once: returns the next code on each call."""
+    calls = []
+    def fake(base_url):
+        calls.append(base_url)
+        code = codes[min(len(calls) - 1, len(codes) - 1)]
+        return ("FAIL", code) if code else ("PASS", "none")
+    return fake, calls
+
+
+def test_a_provider_delay_is_retried_with_a_short_gap(monkeypatch):
+    """11-24: one slow provider answer, then the same request passes."""
+    sleeps = []
+    fake, calls = _fake_once(["upstream_timeout", None])
+    monkeypatch.setattr(check, "_check_once", fake)
+    monkeypatch.setattr(check.time, "sleep", sleeps.append)
+    assert check.check("https://chat.padiem.net") == ("PASS", "none")
+    assert len(calls) == 2
+    assert sleeps == [check.DELAY_RETRY_SECONDS]
+
+
+def test_a_persistent_provider_delay_is_degraded_not_fail(monkeypatch):
+    """A provider that stays slow for the whole window cannot redden a deploy."""
+    sleeps = []
+    fake, calls = _fake_once(["upstream_timeout"])
+    monkeypatch.setattr(check, "_check_once", fake)
+    monkeypatch.setattr(check.time, "sleep", sleeps.append)
+    assert check.check("https://chat.padiem.net") == ("DEGRADED", "upstream_timeout")
+    assert len(calls) == check.TRANSPORT_ATTEMPTS
+    assert sleeps == [check.DELAY_RETRY_SECONDS] * (check.TRANSPORT_ATTEMPTS - 1)
+
+
+def test_other_provider_delay_codes_share_the_degraded_path(monkeypatch):
+    sleeps = []
+    fake, calls = _fake_once(["provider_server_error"])
+    monkeypatch.setattr(check, "_check_once", fake)
+    monkeypatch.setattr(check.time, "sleep", sleeps.append)
+    assert check.check("https://chat.padiem.net") == ("DEGRADED", "provider_server_error")
+    assert len(calls) == check.TRANSPORT_ATTEMPTS
+    assert sleeps == [check.DELAY_RETRY_SECONDS] * (check.TRANSPORT_ATTEMPTS - 1)
+
+
+@pytest.mark.parametrize("code", [
+    "no_safe_error_code", "empty_answer", "entitlement_unavailable",
+    "qa_login_refused", "ai_check_unavailable", "unexpected_http_json_shape",
+])
+def test_other_error_codes_still_fail_on_the_first_attempt(monkeypatch, code):
+    """Only the named delay classes get a retry; every other code keeps FAIL."""
+    sleeps = []
+    fake, calls = _fake_once([code])
+    monkeypatch.setattr(check, "_check_once", fake)
+    monkeypatch.setattr(check.time, "sleep", sleeps.append)
+    assert check.check("https://chat.padiem.net") == ("FAIL", code)
+    assert len(calls) == 1
+    assert sleeps == []
+
+
+def test_a_delay_that_turns_into_a_real_defect_fails_immediately(monkeypatch):
+    sleeps = []
+    fake, calls = _fake_once(["upstream_timeout", "empty_answer"])
+    monkeypatch.setattr(check, "_check_once", fake)
+    monkeypatch.setattr(check.time, "sleep", sleeps.append)
+    assert check.check("https://chat.padiem.net") == ("FAIL", "empty_answer")
+    assert len(calls) == 2
+    assert sleeps == [check.DELAY_RETRY_SECONDS]
+
+
+@pytest.mark.parametrize(("verdict", "code", "line", "exit_code"), [
+    ("PASS", "none", "ai:PASS", 0),
+    ("DEGRADED", "upstream_timeout", "ai:DEGRADED error_code=upstream_timeout", 0),
+    ("FAIL", "no_safe_error_code", "ai:FAIL error_code=no_safe_error_code", 1),
+])
+def test_main_verdict_line_and_exit_code(monkeypatch, capsys, verdict, code, line, exit_code):
+    monkeypatch.setattr(check, "check", lambda _base: (verdict, code))
+    monkeypatch.setattr(check.argparse.ArgumentParser, "parse_args", lambda self: type(
+        "Args", (), {"base_url": "https://chat.padiem.net"})())
+    assert check.main() == exit_code
+    assert capsys.readouterr().out.strip() == line

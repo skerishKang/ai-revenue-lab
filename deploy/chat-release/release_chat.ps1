@@ -499,11 +499,13 @@ function Invoke-Com2Capture([string]$RemoteCommand) {
 }
 
 function Resolve-PostDeployAiNeed([string]$SummaryLine) {
-    # 'already-verified' only when the COM2 deploy unit itself produced the
-    # AI verdict (ai:PASS). A skipped unit reports ai:SKIP — and the
-    # checkout-only summaries carry no ai token at all — so the release
+    # 'already-verified' when the COM2 deploy unit itself produced an AI
+    # verdict: ai:PASS or ai:DEGRADED (11-24, external model delay). A
+    # degraded verdict is still a verdict, so spending another model call
+    # during the same delay is not useful. A skipped unit reports ai:SKIP —
+    # and checkout-only summaries carry no ai token at all — so the release
     # cannot end without a fresh verdict.
-    if ($SummaryLine -match 'ai:PASS') { return 'already-verified' }
+    if ($SummaryLine -match 'ai:(PASS|DEGRADED)') { return 'already-verified' }
     return 'run-check'
 }
 
@@ -539,9 +541,10 @@ function Get-Com2QaCredentials {
 
 function Invoke-PostDeployAiCheck {
     # Runs the release's post_deploy_ai_answer_check.py from COM1 against the
-    # public origin and requires ai:PASS. Every failure mode — non-200, empty
-    # answer, any error code — stops the release; -Force has no path into
-    # this function's callers.
+    # public origin. ai:PASS passes; ai:DEGRADED (the provider stayed slow
+    # after the bounded retries) also passes but is reported by name. Every
+    # other failure mode — non-200, empty answer, any other error code —
+    # stops the release; -Force has no path into this function's callers.
     param(
         [string]$ScriptPath,
         [string]$BaseUrl,
@@ -552,7 +555,14 @@ function Invoke-PostDeployAiCheck {
     $output = (& python $ScriptPath --base-url $BaseUrl 2>&1 | Out-String).Trim()
     if ($output -match 'ai:PASS') {
         Write-Info "post-deploy AI check = PASS"
-        return
+        return 'PASS'
+    }
+    # Bounded code shape only; a bare "ai:DEGRADED" with no code is not a
+    # verdict and falls through to STEP2_FAIL.
+    if ($output -match 'ai:DEGRADED\s+error_code=([a-z][a-z0-9_]{0,80})') {
+        $code = $Matches[1]
+        Write-Info "post-deploy AI check = DEGRADED error_code=$code (external model delay)"
+        return 'DEGRADED'
     }
     $head = $output.Substring(0, [Math]::Min(200, $output.Length))
     throw "STEP2_FAIL: post-deploy AI check did not pass (output: $head)"
@@ -728,6 +738,12 @@ else {
     if ($summaryLine -match ":FAIL" -or $summaryLine -notmatch "chat:(PASS|SKIP)") {
         throw "STEP2_FAIL: COM2 deploy did not end chat:PASS/SKIP without FAIL ($summaryLine)"
     }
+    # 11-24: a provider delay reads as ai:DEGRADED, never ai:FAIL, so the
+    # validation above passes it through. Name it in the log as well — the
+    # full summary line with its error_code is already in Add-Summary above.
+    if ($summaryLine -match 'ai:DEGRADED') {
+        Write-Info "COM2 AI check DEGRADED (external model delay); verdict kept in the summary"
+    }
     # (release_70/71 hole): a -Force rerun lands on the same COM2 SHA, the
     # deploy unit reports ai:SKIP — or a checkout-only summary carries no ai
     # token at all — and the release went green without a single AI verdict.
@@ -739,8 +755,12 @@ else {
         if (-not (Test-Path -LiteralPath $aiScript)) {
             throw "STEP2_FAIL: the post-deploy AI check script is missing from the release checkout ($aiScript)"
         }
-        Invoke-PostDeployAiCheck -ScriptPath $aiScript -BaseUrl "https://chat.padiem.net" -CredentialLoader ${function:Get-Com2QaCredentials}
-        Add-Summary "AI_CHECK=PASS (COM1 side)"
+        $aiResult = Invoke-PostDeployAiCheck -ScriptPath $aiScript -BaseUrl "https://chat.padiem.net" -CredentialLoader ${function:Get-Com2QaCredentials}
+        Add-Summary "AI_CHECK=$aiResult (COM1 side)"
+    }
+    elseif ($summaryLine -match 'ai:DEGRADED') {
+        Write-Info "post-deploy AI check = DEGRADED (the COM2 deploy unit produced the verdict)"
+        Add-Summary "AI_CHECK=DEGRADED (COM2 unit)"
     }
     else {
         Write-Info "post-deploy AI check = PASS (the COM2 deploy unit produced the verdict)"
