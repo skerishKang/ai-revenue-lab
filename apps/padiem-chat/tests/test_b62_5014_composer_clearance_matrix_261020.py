@@ -17,6 +17,12 @@ pixel inset may stand in for it.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.login_clearance_quote_source import (
+    device_manager_js, interaction_polish_css, locale_source, pc_file_exchange_css,
+    quote_runtime_css, quote_runtime_js, read, tokens_css, util_menu_css, workspace_css,
+)
+
 import http.server
 import json
 import re
@@ -298,7 +304,7 @@ def test_a_long_answer_can_be_scrolled_above_the_composer(browser, server, produ
 
 def test_the_reserved_space_is_measured_not_an_arbitrary_inset():
     """One measured clearance authority for every surface above the composer."""
-    polish = (STATIC / "interaction-polish.css").read_text(encoding="utf-8")
+    polish = interaction_polish_css()
     assert "var(--padiem-composer-clearance, 230px)" in polish
     assert "var(--padiem-visual-keyboard-inset, 0px)" in polish
     for sheet, forbidden in (
@@ -306,11 +312,11 @@ def test_the_reserved_space_is_measured_not_an_arbitrary_inset():
         ("claw-focus-layout.css", "max-height: calc(100dvh - 92px)"),
         ("claw-task-hub.css", "--claw-composer-clearance"),
     ):
-        text = (STATIC / sheet).read_text(encoding="utf-8")
+        text = read(STATIC / sheet)
         assert forbidden not in text, f"{sheet} still pins an arbitrary inset: {forbidden}"
     # The directory panel is owned by the shared composer: it opens directly
     # above the composer area, inside the composer's width.
-    manager = (STATIC / "claw-device-manager.js").read_text(encoding="utf-8")
+    manager = device_manager_js()
     assert "root.append(toggle, panel)" in manager
     assert "composerColumn.insertBefore(panel, composerArea)" not in manager
 
@@ -379,6 +385,6 @@ def test_the_claw_landing_keeps_scrolling_with_the_document(browser, server, wid
 
 def test_the_workbench_canvas_uses_a_content_independent_flex_basis():
     """The canvas base size may not follow the content height again."""
-    workspace = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
+    workspace = workspace_css()
     assert 'data-view="general"] ~ .conversation)) .conversation' in workspace
     assert "flex: 1 1 0;" in workspace
