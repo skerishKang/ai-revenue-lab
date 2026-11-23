@@ -350,11 +350,14 @@ def test_reference_context_has_hard_bounded_budget():
 
 
 def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_files_and_keeps_phase1_css():
+    # #8060: shipped reads live in _support; the markup and schema checks stay.
+    from _support import documents_source as sheets
+
     root = Path(__file__).resolve().parents[1]
-    html = (root / "static/index.html").read_text(encoding="utf-8")
-    js = (root / "static/app.js").read_text(encoding="utf-8")
-    capabilities = (root / "static/attachment-capabilities.js").read_text(encoding="utf-8")
-    migration = (root / "migrations/003_project_files.sql").read_text(encoding="utf-8")
+    html = sheets.sheet("index.html")
+    js = sheets.sheet("app.js")
+    capabilities = sheets.sheet("attachment-capabilities.js")
+    migration = sheets.migration("003_project_files.sql")
     assert 'id="attachmentFileInput"' in html
     assert 'id="projectFilesPanel"' in html
     assert ".pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx" in html
