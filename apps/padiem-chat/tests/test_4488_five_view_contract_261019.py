@@ -5,6 +5,9 @@ server-contract edits. Real selectors only: existing error/status IDs and
 page bodies.
 """
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.shared_conversation_source import app_js, b66_easy_mode_js, b66_index_html, index_html, read, read_static, scroll_source_text
+
 from pathlib import Path
 
 
@@ -12,7 +15,7 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 
 
 def _read(name: str) -> str:
-    return (STATIC / name).read_text(encoding="utf-8")
+    return read_static(name)
 
 
 FRAME = _read("standalone-views.css")
