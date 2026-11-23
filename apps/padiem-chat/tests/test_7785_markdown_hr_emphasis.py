@@ -8,6 +8,12 @@ text, never markup.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.handoff_direct_markdown_source import (
+    app_js, chat_routes, conversation_js, history_js, home_choices_js, index_html,
+    read, run_history_js, six_panel_css, streaming_js,
+)
+
 import json
 import subprocess
 from pathlib import Path
@@ -18,7 +24,7 @@ RICH_PATH = ROOT / "static" / "rich-response.js"
 
 
 def _rich_runtime() -> str:
-    rich = RICH_PATH.read_text(encoding="utf-8")
+    rich = read(RICH_PATH)
     start = rich.index("  const HEADING_PATTERN")
     end = rich.index('  messageList.addEventListener("padiem:message-lifecycle"', start)
     return rich[start:end]

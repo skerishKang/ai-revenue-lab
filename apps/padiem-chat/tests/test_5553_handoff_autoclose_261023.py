@@ -15,6 +15,12 @@ route authorization stays covered by test_4139_owner_setup_page.py.
 """
 from __future__ import annotations
 
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.handoff_direct_markdown_source import (
+    app_js, chat_routes, conversation_js, history_js, home_choices_js, index_html,
+    read, run_history_js, six_panel_css, streaming_js,
+)
+
 import http.server
 import threading
 from pathlib import Path
@@ -190,9 +196,7 @@ def test_a_blocked_close_shows_the_way_back(browser, handoff_server):
         context.close()
 
 
-HOME_JS = (Path(__file__).resolve().parents[1] / "static" / "claw-home-choices.js").read_text(
-    encoding="utf-8"
-)
+HOME_JS = home_choices_js()
 
 
 def test_the_original_claw_tab_reports_the_settlement_after_the_one_post():
