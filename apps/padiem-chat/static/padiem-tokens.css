@@ -369,6 +369,46 @@
   --voice-assistant-text: #2b4453;
   --voice-transcript-border: #e4eaef;
 
+  /* #7811 C2: foundation 바탕·크롬의 남은 리터럴을 쓰임새 토큰으로 옮긴다.
+     :root 팔레트 정의(--bg·--panel·--accent 등)는 그대로 두고, 실제로 칠하는
+     선언만 토큰을 읽는다. 값은 치환 전 리터럴 그대로다. */
+  --foundation-subtle-wash: rgba(255, 255, 255, .045);
+  --foundation-body-stop-1: #08090b;
+  --foundation-body-stop-2: #0b0c0e;
+  --foundation-body-stop-3: #030405;
+  --foundation-vignette: rgba(0, 0, 0, .60);
+  --foundation-scrim-top: rgba(0, 0, 0, .24);
+  --foundation-scrim-mid: rgba(0, 0, 0, .02);
+  --foundation-scrim-bottom: rgba(0, 0, 0, .45);
+  --foundation-body-spot-a: rgba(255, 255, 255, .018);
+  --foundation-body-spot-b: rgba(255, 255, 255, .012);
+  --foundation-top-rim: rgba(255, 255, 255, .96);
+  --foundation-top-rim-glow: rgba(255, 255, 255, .08);
+  --foundation-hairline: rgba(255, 255, 255, .11);
+  --foundation-sidebar-stop-1: rgba(8, 9, 11, .93);
+  --foundation-sidebar-stop-2: rgba(6, 7, 9, .83);
+  --foundation-sidebar-base: rgba(6, 7, 9, .86);
+  --foundation-sidebar-shadow: rgba(0, 0, 0, .16);
+  --foundation-strong-text: #fff;
+  --foundation-mark-edge: rgba(255, 255, 255, .18);
+  --foundation-mark-base: rgba(10, 11, 13, .72);
+  --foundation-mark-shadow: rgba(0, 0, 0, .22);
+  --foundation-control-edge: rgba(255, 255, 255, .17);
+  --foundation-control-wash: rgba(255, 255, 255, .075);
+  --foundation-control-inset: rgba(255, 255, 255, .05);
+  --foundation-control-hover-edge: rgba(255, 255, 255, .30);
+  --foundation-control-hover-wash: rgba(255, 255, 255, .115);
+  --foundation-item-text: rgba(242, 246, 251, .72);
+  --foundation-item-hover-wash: rgba(255, 255, 255, .07);
+  --foundation-badge-edge: rgba(255, 255, 255, .08);
+  --foundation-badge-text: rgba(238, 243, 249, .50);
+  --foundation-preview-glow: rgba(136, 201, 255, .56);
+  --foundation-topbar-stop-1: rgba(8, 9, 11, .62);
+  --foundation-topbar-stop-2: rgba(8, 9, 11, .12);
+  --foundation-pill-text: rgba(247, 250, 253, .82);
+  --foundation-pill-hover-edge: rgba(255, 255, 255, .32);
+  --foundation-account-text: rgba(255, 255, 255, .58);
+
   /* #8020: Claw 요청 말풍선. 글자는 테마의 사용자 말풍선 글자 역할을 그대로
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
   --claw-request-bubble-text: var(--user-bubble-text);

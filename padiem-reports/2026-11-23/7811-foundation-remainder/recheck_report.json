@@ -1,0 +1,8 @@
+{
+  "note": "세 조합은 5테마 전체 실행에서 state_ok=false 또는 큰 pair 분산으로 하네스 플레이크가 의심되어 단독 재실행했다.",
+  "reruns": [
+    {"combo": "padiem-glass__390x844__feedback-dialog", "raw": 0, "noise": 0},
+    {"combo": "padiem-home__390x844__claw", "raw": 0, "noise": 0},
+    {"combo": "padiem-home__390x844__profile-menu", "raw": 0, "noise": 0}
+  ]
+}

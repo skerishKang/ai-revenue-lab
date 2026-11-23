@@ -188,7 +188,25 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--voice-panel-bg", "--voice-menu-shadow", "--voice-subtle-bg",
                 "--voice-menu-active-bg", "--voice-panel-shadow", "--voice-danger",
                 "--voice-secondary-text", "--voice-assistant-text",
-                "--voice-transcript-border"},
+                "--voice-transcript-border"}
+             | {"--foundation-account-text", "--foundation-badge-edge",
+                "--foundation-badge-text", "--foundation-body-spot-a",
+                "--foundation-body-spot-b", "--foundation-body-stop-1",
+                "--foundation-body-stop-2", "--foundation-body-stop-3",
+                "--foundation-control-edge", "--foundation-control-hover-edge",
+                "--foundation-control-hover-wash", "--foundation-control-inset",
+                "--foundation-control-wash", "--foundation-hairline",
+                "--foundation-item-hover-wash", "--foundation-item-text",
+                "--foundation-mark-base", "--foundation-mark-edge",
+                "--foundation-mark-shadow", "--foundation-pill-hover-edge",
+                "--foundation-pill-text", "--foundation-preview-glow",
+                "--foundation-scrim-bottom", "--foundation-scrim-mid",
+                "--foundation-scrim-top", "--foundation-sidebar-base",
+                "--foundation-sidebar-shadow", "--foundation-sidebar-stop-1",
+                "--foundation-sidebar-stop-2", "--foundation-strong-text",
+                "--foundation-subtle-wash", "--foundation-top-rim",
+                "--foundation-top-rim-glow", "--foundation-topbar-stop-1",
+                "--foundation-topbar-stop-2", "--foundation-vignette"},
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token
         # file; its values are the replaced use-site values, pinned here.
