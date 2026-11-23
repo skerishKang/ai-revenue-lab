@@ -15,7 +15,10 @@ import pytest
 from kagent.local_agent_mesh_helper_ready import HelperStatusReadFallback
 from kagent.local_agent_meshcentral_process_port import MeshCentralProcessSocket, ps_frame
 from kagent.local_agent_meshcentral_sysinfo_port import (
-    MeshCentralSysInfoPort, MeshCentralSysInfoRefused, agent_version_from_sysinfo,
+    SYSINFO_DENIED, SYSINFO_ERROR, SYSINFO_NODEID, SYSINFO_NO_REPLY,
+    SYSINFO_REASON_CODES, SYSINFO_SHAPE, SYSINFO_TIMEOUT, SYSINFO_TRANSPORT,
+    MeshCentralSysInfoPort, MeshCentralSysInfoReadFailure,
+    MeshCentralSysInfoRefused, agent_version_from_sysinfo,
     new_sysinfo_tag, normalize_agent_commit_date, sysinfo_frame,
 )
 from kagent.local_agent_mesh_process_wiring import process_lane_kwargs
@@ -286,3 +289,147 @@ def test_the_executor_hands_the_sysinfo_port_to_helper_readiness():
     with patch("kagent.local_agent_mesh_helper_ready.attach_helper_ready") as attach:
         executor.start_helper_ready_reporting(Mock(), {"ORACLE_MESH_HELPER_READY_REPORT": "1"})
     assert attach.call_args.kwargs["sysinfo_port"] is sysinfo
+
+
+# ---- #8634B: one value-free code per wire failure ---------------------------
+WIRE_CODES = (SYSINFO_NODEID, SYSINFO_DENIED, SYSINFO_TRANSPORT,
+              SYSINFO_TIMEOUT, SYSINFO_NO_REPLY, SYSINFO_SHAPE, SYSINFO_ERROR)
+
+
+def test_each_wire_failure_has_its_own_bounded_code():
+    assert len(set(WIRE_CODES)) == len(WIRE_CODES)
+    assert set(WIRE_CODES) <= SYSINFO_REASON_CODES
+    for code in WIRE_CODES:
+        assert code.startswith("sysinfo_")
+        assert NODE not in code and "secret" not in code and "127.0.0.1" not in code
+
+
+@pytest.mark.parametrize("raised,code", [
+    (MeshCentralSysInfoReadFailure(SYSINFO_DENIED), SYSINFO_DENIED),
+    (MeshCentralSysInfoReadFailure(SYSINFO_SHAPE), SYSINFO_SHAPE),
+    (TimeoutError("PRIVATE-HOST"), SYSINFO_TIMEOUT),
+    (ConnectionRefusedError("PRIVATE-HOST"), SYSINFO_TRANSPORT),
+    (RuntimeError("private credential on PRIVATE-HOST"), SYSINFO_ERROR),
+])
+def test_port_classifies_a_raised_failure_by_type_only(raised, code):
+    port = MeshCentralSysInfoPort(send=Mock(side_effect=raised))
+    assert port.read_commit_date(NODE) == (None, code)
+
+
+def test_port_reports_uncanonical_node_without_raising_or_sending():
+    port = MeshCentralSysInfoPort(send=Mock(side_effect=AssertionError("must not send")))
+    assert port.read_commit_date("node//bad id") == (None, SYSINFO_NODEID)
+
+
+def test_port_reports_no_correlated_reply():
+    port = MeshCentralSysInfoPort(send=Mock(return_value=None))
+    assert port.read_commit_date(NODE) == (None, SYSINFO_NO_REPLY)
+
+
+@pytest.mark.parametrize("code", WIRE_CODES)
+def test_helper_logs_each_wire_code_on_its_own_line(capsys, code):
+    sysinfo = Mock(read_commit_date=Mock(side_effect=MeshCentralSysInfoReadFailure(code)))
+    read_port = Mock(read_bytes=Mock(side_effect=FileNotFoundError()))
+    fallback = HelperStatusReadFallback(
+        post=Mock(return_value=(200, {"ok": True})),
+        read_port=read_port, sysinfo_port=sysinfo,
+    )
+    fallback._complete_mesh_agent_version(NODE, NODE, dict(READY))
+    logs = capsys.readouterr().out
+    assert f"helper_ready_agent_version read={code}" in logs
+    assert NODE not in logs and "private" not in logs.lower()
+
+
+def _wire_socket(*, answers=(), recv_error=None, connect_error=None):
+    class FakeSocket:
+        def __init__(self):
+            self.sent = []
+            self.answers = list(answers)
+            self.closed = False
+
+        def send_text(self, text):
+            self.sent.append(text)
+
+        def recv(self, deadline):
+            if recv_error is not None:
+                raise recv_error
+            if not self.answers:
+                return None
+            return 1, json.dumps(self.answers.pop(0)).encode("utf-8")
+
+        def close(self):
+            self.closed = True
+
+    def connect(host, port, path, headers, timeout):
+        if connect_error is not None:
+            raise connect_error
+        return FakeSocket()
+
+    return MeshCentralProcessSocket(
+        login_user="operator", password_provider=lambda: "op3rator-secret",
+        websocket_factory=connect,
+    )
+
+
+def test_socket_reports_denied_when_authcookie_never_arrives():
+    socket = _wire_socket()
+    with pytest.raises(MeshCentralSysInfoReadFailure) as caught:
+        socket.sysinfo(sysinfo_frame(NODE, TAG))
+    assert caught.value.code == SYSINFO_DENIED
+    assert str(caught.value) == SYSINFO_DENIED
+    assert "op3rator-secret" not in str(caught.value)
+
+
+def test_socket_reports_denied_for_an_invalid_operator_credential():
+    socket = MeshCentralProcessSocket(
+        login_user="operator", password_provider=lambda: "bad\nsecret",
+        websocket_factory=lambda *args: None,
+    )
+    with pytest.raises(MeshCentralSysInfoReadFailure) as caught:
+        socket.sysinfo(sysinfo_frame(NODE, TAG))
+    assert caught.value.code == SYSINFO_DENIED
+    assert "secret" not in str(caught.value)
+
+
+def test_socket_reports_transport_when_the_private_tunnel_cannot_open():
+    socket = _wire_socket(connect_error=OSError("PRIVATE-HOST"))
+    with pytest.raises(MeshCentralSysInfoReadFailure) as caught:
+        socket.sysinfo(sysinfo_frame(NODE, TAG))
+    assert caught.value.code == SYSINFO_TRANSPORT
+    assert "PRIVATE-HOST" not in str(caught.value)
+
+
+def test_socket_reports_timeout_when_the_recv_deadline_is_hit():
+    socket = _wire_socket(answers=[{"action": "authcookie"}],
+                          recv_error=TimeoutError("PRIVATE-HOST"))
+    with pytest.raises(MeshCentralSysInfoReadFailure) as caught:
+        socket.sysinfo(sysinfo_frame(NODE, TAG))
+    assert caught.value.code == SYSINFO_TIMEOUT
+    assert "PRIVATE-HOST" not in str(caught.value)
+
+
+@pytest.mark.parametrize("payload", [b"{not-json", b"[]", b'"text"'])
+def test_socket_reports_shape_for_an_unusable_reply_frame(payload):
+    frames = [(1, b'{"action":"authcookie"}'), (1, payload)]
+
+    class RawSocket:
+        def __init__(self):
+            self.closed = False
+
+        def send_text(self, text):
+            pass
+
+        def recv(self, deadline):
+            return frames.pop(0) if frames else None
+
+        def close(self):
+            self.closed = True
+
+    socket = MeshCentralProcessSocket(
+        login_user="operator", password_provider=lambda: "op3rator-secret",
+        websocket_factory=lambda *args: RawSocket(),
+    )
+    with pytest.raises(MeshCentralSysInfoReadFailure) as caught:
+        socket.sysinfo(sysinfo_frame(NODE, TAG))
+    assert caught.value.code == SYSINFO_SHAPE
+    assert payload.decode("utf-8", "replace") not in str(caught.value)
