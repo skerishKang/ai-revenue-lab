@@ -21,7 +21,6 @@ request method/path/body, the success sentence, the failure sentence and the
 409 retry are executed rather than grepped.
 """
 from __future__ import annotations
-import locale_bundle
 
 import asyncio
 import json
@@ -36,13 +35,14 @@ from unittest.mock import patch
 import pytest
 from starlette.requests import Request
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
-TOOLS_JS = (STATIC / "util-tools.js").read_text(encoding="utf-8")
-LOCALE_JS = locale_bundle.SOURCE.read_text(encoding="utf-8")
-APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
-LIBRARY_JS = (STATIC / "library.js").read_text(encoding="utf-8")
-HARNESS = (Path(__file__).resolve().parent / "_util_library_save_harness.js").read_text(encoding="utf-8")
+from _support import streaming_library_source as sheets
+
+STATIC = sheets.static_dir()
+TOOLS_JS = sheets.sheet("util-tools.js")
+LOCALE_JS = sheets.locale_js()
+APP_JS = sheets.sheet("app.js")
+LIBRARY_JS = sheets.sheet("library.js")
+HARNESS = sheets.test_source("_util_library_save_harness.js")
 
 TOOL_IDS = ("speech", "sns", "meeting")
 SAVE_COPY_KEYS = (
@@ -128,8 +128,10 @@ def _run_harness(scenario: dict) -> dict:
         env = dict(os.environ)
         env["SCENARIO"] = json.dumps(scenario)
         completed = subprocess.run(
-            [node, str(harness), str(STATIC / "util-tools.js"), str(STATIC / "util-tools-contract.js"),
-             str(STATIC / "util-tools-markdown.js"), str(STATIC / "util-manifest.js")],
+            [node, str(harness), str(sheets.static_path("util-tools.js")),
+             str(sheets.static_path("util-tools-contract.js")),
+             str(sheets.static_path("util-tools-markdown.js")),
+             str(sheets.static_path("util-manifest.js"))],
             capture_output=True, text=True, encoding="utf-8", env=env, check=False,
         )
     assert completed.stdout.strip(), completed.stdout + completed.stderr

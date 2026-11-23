@@ -19,12 +19,13 @@ from pathlib import Path
 
 import pytest
 from _r5_b6_wiring import context_names, create_receives_app_context
+from _support import streaming_library_source as sheets
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
-MODULE = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+STATIC = sheets.static_dir()
+APP = sheets.sheet("app.js")
+MODULE = sheets.sheet("chat-streaming-module.js")
+INDEX = sheets.sheet("index.html")
+STRICT = sheets.test_source("_r5_strict_deps.js")
 
 NAMES = (
     "requestCompletedAnswer",
@@ -521,7 +522,7 @@ def _run_harness() -> dict:
         harness = Path(tmp) / "harness.js"
         harness.write_text(STRICT + "\n" + _HARNESS, encoding="utf-8", newline="\n")
         completed = subprocess.run(
-            [node, str(harness), str(STATIC / "chat-streaming-module.js")],
+            [node, str(harness), str(sheets.static_path("chat-streaming-module.js"))],
             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,
         )
     assert completed.returncode == 0, completed.stderr
