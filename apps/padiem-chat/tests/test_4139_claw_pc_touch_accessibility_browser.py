@@ -23,6 +23,8 @@ import json
 import re
 import threading
 from pathlib import Path
+# #8060: shipped reads live in _support; assertions stay here.
+from _support.chat_capability_source import chat_transport_js, claw_local_handoff_js, read_text
 
 import pytest
 
@@ -61,7 +63,7 @@ BASELINE_FONT_SIZES = {
 
 def _css(path: Path) -> str:
     """CSS with comments stripped, so prose cannot satisfy a declaration guard."""
-    return re.sub(r"/\*.*?\*/", "", path.read_text(encoding="utf-8"), flags=re.DOTALL)
+    return re.sub(r"/\*.*?\*/", "", read_text(path), flags=re.DOTALL)
 
 
 def _rule(css: str, header: str) -> str:
