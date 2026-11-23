@@ -68,5 +68,5 @@ def test_thought_summary_is_collapsible_and_sensitive_content_is_projected():
 def test_answer_inherits_status_font_and_rich_code_keeps_monospace():
     styles = sheets.styles()
     code_styles = sheets.rich_response_css()
-    assert ".assistant-content { color: #2f3037; font-family: inherit;" in styles
+    assert ".assistant-content { color: var(--styles-assistant-content-text); font-family: inherit;" in styles
     assert 'font: 0.88rem/1.62 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;' in code_styles
