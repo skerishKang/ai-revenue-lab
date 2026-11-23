@@ -13,23 +13,23 @@
 """
 
 from __future__ import annotations
-import locale_bundle
 
 import http.server
 import re
 import threading
-from pathlib import Path
 from urllib import parse as uparse
 
 import pytest
 
+from _support import plain_message_launcher_source as sheets
+
 sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-LOCALE = locale_bundle.SOURCE.read_text(encoding="utf-8")
-LIBRARY_JS = (STATIC / "library.js").read_text(encoding="utf-8")
-DOCUMENTS_CSS = (STATIC / "documents.css").read_text(encoding="utf-8")
+STATIC = sheets.static_dir()
+INDEX = sheets.sheet("index.html")
+LOCALE = sheets.locale_js()
+LIBRARY_JS = sheets.sheet("library.js")
+DOCUMENTS_CSS = sheets.sheet("documents.css")
 PID = "proj_" + "1" * 32
 FID = "file_" + "2" * 32
 
@@ -107,7 +107,7 @@ def test_the_sidebar_carries_no_quick_launch_block():
     for token in ('id="quickLaunchTitle"', 'id="quickRecentFiles"', 'id="quickAllFiles"',
                   "data-quick-util", 'class="recent-section quick-launch"'):
         assert token not in INDEX, token
-    assert not (STATIC / "quick-launch.css").exists()
+    assert not sheets.static_path("quick-launch.css").exists()
     assert "./quick-launch.css" not in INDEX
 
 
@@ -184,7 +184,7 @@ def test_the_sidebar_order_is_menu_then_projects_then_recent_conversations():
 # ── 5. the selection highlight still exists, in its new home ─────────────────
 def test_the_project_row_selection_rule_moved_to_documents_css():
     assert ".project-file-row.quick-selected-file" in DOCUMENTS_CSS
-    assert 'row.classList.add("quick-selected-file");' in (STATIC / "app.js").read_text(encoding="utf-8")
+    assert 'row.classList.add("quick-selected-file");' in sheets.sheet("app.js")
 
 
 def test_the_two_argument_opener_lost_its_only_caller():
@@ -195,4 +195,4 @@ def test_the_two_argument_opener_lost_its_only_caller():
     so the next pass can decide to retire them rather than lose it in a diff.
     """
     assert "opener.openFile(" not in LIBRARY_JS
-    assert "openFile: async (projectId, fileId)" in (STATIC / "app.js").read_text(encoding="utf-8")
+    assert "openFile: async (projectId, fileId)" in sheets.sheet("app.js")
