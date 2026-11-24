@@ -1,0 +1,136 @@
+{
+ "method": "계산값 기준. 반투명 색은 아래 면에 합성. 입력 글자·자리표시는 입력창 면(그라디언트는 양 끝) 위, 안내문은 입력창 뒤 페이드 끝색 위.",
+ "viewport": "1440x950",
+ "before_equals_after": true,
+ "min_input_text": 12.14,
+ "displayed_note_below_4_5": [
+  [
+   "cinematic",
+   "chat-state",
+   2.57
+  ]
+ ],
+ "note": "note_displayed 가 false 인 행은 안내문이 display:none 이다. 4.5 미만으로 표시되는 안내문은 이번 변경과 무관한 기존 상태다(manifest notes).",
+ "rows": [
+  {
+   "theme": "cinematic",
+   "state": "chat-state",
+   "input_text": 16.19,
+   "placeholder": 4.86,
+   "note": 2.57,
+   "note_displayed": true
+  },
+  {
+   "theme": "cinematic",
+   "state": "claw",
+   "input_text": 16.82,
+   "placeholder": 4.9,
+   "note": 10.33,
+   "note_displayed": false
+  },
+  {
+   "theme": "cinematic",
+   "state": "home",
+   "input_text": 16.82,
+   "placeholder": 4.9,
+   "note": 10.33,
+   "note_displayed": true
+  },
+  {
+   "theme": "dark",
+   "state": "chat-state",
+   "input_text": 12.14,
+   "placeholder": 7.72,
+   "note": 11.32,
+   "note_displayed": true
+  },
+  {
+   "theme": "dark",
+   "state": "claw",
+   "input_text": 12.14,
+   "placeholder": 7.72,
+   "note": 11.32,
+   "note_displayed": false
+  },
+  {
+   "theme": "dark",
+   "state": "home",
+   "input_text": 12.14,
+   "placeholder": 7.72,
+   "note": 11.32,
+   "note_displayed": true
+  },
+  {
+   "theme": "light",
+   "state": "chat-state",
+   "input_text": 17.53,
+   "placeholder": 2.73,
+   "note": 4.64,
+   "note_displayed": true
+  },
+  {
+   "theme": "light",
+   "state": "claw",
+   "input_text": 17.53,
+   "placeholder": 2.73,
+   "note": 6.19,
+   "note_displayed": false
+  },
+  {
+   "theme": "light",
+   "state": "home",
+   "input_text": 17.53,
+   "placeholder": 2.73,
+   "note": 6.19,
+   "note_displayed": true
+  },
+  {
+   "theme": "padiem-glass",
+   "state": "chat-state",
+   "input_text": 14.8,
+   "placeholder": 2.71,
+   "note": 1.27,
+   "note_displayed": false
+  },
+  {
+   "theme": "padiem-glass",
+   "state": "claw",
+   "input_text": 14.8,
+   "placeholder": 2.71,
+   "note": 4.54,
+   "note_displayed": false
+  },
+  {
+   "theme": "padiem-glass",
+   "state": "home",
+   "input_text": 14.8,
+   "placeholder": 2.71,
+   "note": 4.54,
+   "note_displayed": false
+  },
+  {
+   "theme": "padiem-home",
+   "state": "chat-state",
+   "input_text": 14.98,
+   "placeholder": 3.45,
+   "note": 4.84,
+   "note_displayed": true
+  },
+  {
+   "theme": "padiem-home",
+   "state": "claw",
+   "input_text": 14.98,
+   "placeholder": 3.45,
+   "note": 5.84,
+   "note_displayed": false
+  },
+  {
+   "theme": "padiem-home",
+   "state": "home",
+   "input_text": 14.98,
+   "placeholder": 3.45,
+   "note": 5.84,
+   "note_displayed": true
+  }
+ ]
+}

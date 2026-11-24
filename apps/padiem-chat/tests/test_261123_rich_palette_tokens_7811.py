@@ -44,7 +44,14 @@ def test_rich_tokens_defined_once_with_the_literal_values():
     found, overridden = tokens()
     for name, expected in RICH_TOKENS.items():
         assert found.get(name) == expected, f"{name} = {found.get(name)}"
-    assert all(name not in overridden for name in RICH_TOKENS)
+    # #7811 C3: 대화 상태 입력창 토큰 4개는 이제 테마 블록이 값을 준다(light·
+    # padiem-home, 페이드는 dark도). 그 값은
+    # test_261124_themes_composer_c3_7811.py가 고정하고, 나머지는 계속 테마 불변이다.
+    themed_by_c3 = {
+        "--rich-composer-fade", "--rich-composer-border",
+        "--rich-composer-shadow", "--rich-composer-note",
+    }
+    assert {name for name in RICH_TOKENS if name in overridden} == themed_by_c3
 
 
 def test_rich_sheet_reads_through_tokens_not_literals():

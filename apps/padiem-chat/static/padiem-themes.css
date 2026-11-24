@@ -81,7 +81,6 @@ html[data-theme="light"] .starter-icon {
 }
 html[data-theme="light"] .composer { background: var(--composer-bg); border: 1px solid var(--composer-border); box-shadow: var(--composer-shadow); }
 html[data-theme="light"] .composer-wrap { background: linear-gradient(to bottom, transparent, var(--bg) 28%, var(--bg)); }
-html[data-theme="light"] .composer-note { color: var(--muted); }
 /* LIGHT chat-state — override dark cinematic chat selectors (padiem-editorial/rich) */
 html[data-theme="light"] .app-shell[data-state="chat"] .message-bubble { background: var(--user-bubble-bg); color: var(--user-bubble-text); border-color: var(--user-bubble-border); box-shadow: 0 2px 10px rgba(101,87,232,.06); backdrop-filter: none; }
 html[data-theme="light"] .app-shell[data-state="chat"] .assistant-avatar { background: linear-gradient(135deg, #7768ee, #4f40ce); border: none; color: #fff; box-shadow: 0 6px 18px rgba(85,70,214,.12); }
@@ -89,11 +88,7 @@ html[data-theme="light"] .app-shell[data-state="chat"] .assistant-meta { color: 
 html[data-theme="light"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label { background: var(--accent-soft); border-color: var(--line); color: var(--muted); }
 html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content { color: #1e1e22; }
 html[data-theme="light"] .app-shell[data-state="chat"] .assistant-message::before { background: linear-gradient(to bottom, rgba(101,87,232,.18), rgba(0,0,0,.04), transparent); }
-html[data-theme="light"] .app-shell[data-state="chat"] .composer { background: var(--composer-bg); border-color: var(--composer-border); box-shadow: var(--composer-shadow); backdrop-filter: none; }
-html[data-theme="light"] .app-shell[data-state="chat"] .composer-wrap { background: linear-gradient(to bottom, transparent, var(--bg) 28%, var(--bg)); }
-html[data-theme="light"] .app-shell[data-state="chat"] .composer textarea { color: var(--input-text); }
-html[data-theme="light"] .app-shell[data-state="chat"] .composer textarea::placeholder { color: var(--placeholder); }
-html[data-theme="light"] .app-shell[data-state="chat"] .composer-note { color: var(--muted) !important; }
+html[data-theme="light"] .app-shell[data-state="chat"] .composer { background: var(--composer-bg); backdrop-filter: none; }
 /* LIGHT refinement — subtle hierarchy, pearl cues */
 html[data-theme="light"] .sidebar { background: linear-gradient(180deg, #f1f1f5 0%, #ececf1 100%); border-right-color: #e0e0e6; }
 html[data-theme="light"] .starter { background: linear-gradient(180deg, #ffffff 0%, #fcfcfe 100%); border-color: #e6e6eb; box-shadow: 0 2px 10px rgba(101,87,232,.05), 0 1px 3px rgba(30,28,54,.04); }
@@ -102,7 +97,6 @@ html[data-theme="light"] .starter-icon { background: linear-gradient(180deg, #f3
 html[data-theme="light"] .empty-state h1 { letter-spacing: -.03em; }
 html[data-theme="light"] .eyebrow { letter-spacing: .14em; }
 html[data-theme="light"] .sidebar-footer { border-top: 1px solid rgba(101,87,232,.06); }
-html[data-theme="light"] .composer textarea { color: var(--input-text); }
 html[data-theme="light"] .composer textarea::placeholder { color: var(--placeholder); }
 html[data-theme="light"] .message-bubble {
   background: var(--user-bubble-bg); color: var(--user-bubble-text);
@@ -192,15 +186,7 @@ html[data-theme="dark"] .message-bubble {
   box-shadow: none;
   backdrop-filter: none;
 }
-html[data-theme="dark"] .composer {
-  background: var(--composer-bg); border-color: var(--composer-border);
-  box-shadow: 0 2px 14px rgba(0,0,0,.24);
-  backdrop-filter: none;
-}
-html[data-theme="dark"] body .app-shell .composer-wrap { background: linear-gradient(to bottom, transparent, rgba(19,20,23,.92) 34%, #131417 76%); }
-html[data-theme="dark"] .composer-note { color: rgba(255,255,255,.42); }
-html[data-theme="dark"] .composer textarea { color: #f2f3f4; }
-html[data-theme="dark"] .composer textarea::placeholder { color: rgba(255,255,255,.40); }
+html[data-theme="dark"] .composer { backdrop-filter: none; }
 
 /* ---- CINEMATIC — filmic atmospheric mode (#1273) ----
  * Deep blue-black canvas, strong spatial gradients, glass depth, blue/gold
@@ -280,14 +266,7 @@ html[data-theme="cinematic"] .message-bubble {
   box-shadow: 0 0 18px var(--film-blue-glow), inset 0 1px 0 rgba(255,255,255,.05);
   backdrop-filter: blur(14px);
 }
-html[data-theme="cinematic"] .composer {
-  background: linear-gradient(145deg, rgba(18,30,46,.8), rgba(8,11,17,.76));
-  border-color: var(--composer-border);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 0 40px var(--film-blue-glow), 0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08);
-}
-html[data-theme="cinematic"] .composer-wrap { background: linear-gradient(to bottom, transparent, rgba(4,7,13,.86) 34%, #04070d 76%); }
-html[data-theme="cinematic"] .composer-note { color: rgba(255,255,255,.38) !important; }
+html[data-theme="cinematic"] .composer { backdrop-filter: blur(16px); }
 
 /* ---- PADIEM HOME — homepage continuity (padiem.net: cool gray/blue-gray atmospheric) ---- */
 html[data-theme="padiem-home"] {
@@ -381,8 +360,7 @@ html[data-theme="padiem-home"] .message-bubble {
 html[data-theme="padiem-home"] .assistant-content { color: #1e2a3a; }
 html[data-theme="padiem-home"] .assistant-meta { color: #5a6578; }
 html[data-theme="padiem-home"] .composer { background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(250,252,255,.78)); border-color: rgba(26,34,48,.10); border-top: 1px solid rgba(255,255,255,.9); box-shadow: 0 14px 40px rgba(26,34,48,.09), inset 0 1px 0 rgba(255,255,255,.85); backdrop-filter: blur(18px); }
-html[data-theme="padiem-home"] .composer-wrap { background: linear-gradient(to bottom, transparent, rgba(230,233,238,.84) 32%, var(--bg) 78%) !important; }
-html[data-theme="padiem-home"] .composer-note { color: var(--muted) !important; }
+html[data-theme="padiem-home"] .composer-wrap { background: linear-gradient(to bottom, transparent, rgba(230,233,238,.84) 32%, var(--bg) 78%); }
 /* PADIEM_HOME chat-state — override dark cinematic chat selectors */
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .message-bubble { background: var(--user-bubble-bg); color: var(--user-bubble-text); border-color: transparent; box-shadow: 0 4px 16px rgba(26,34,48,.10); }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-avatar { background: rgba(255,255,255,.72); border: 1px solid var(--line); color: var(--text-deep-ink); box-shadow: 0 6px 18px rgba(26,34,48,.08); }
@@ -390,11 +368,7 @@ html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-meta { c
 html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label { background: rgba(255,255,255,.62) !important; border-color: rgba(26,34,48,.10) !important; color: var(--muted) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content { color: #1e2a3a !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-message::before { background: linear-gradient(to bottom, rgba(26,34,48,.12), rgba(26,34,48,.04), transparent) !important; }
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer { background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(250,252,255,.78)) !important; border-color: rgba(26,34,48,.10) !important; box-shadow: 0 14px 40px rgba(26,34,48,.09), inset 0 1px 0 rgba(255,255,255,.85) !important; backdrop-filter: blur(18px) !important; }
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer-wrap { background: linear-gradient(to bottom, transparent, rgba(230,233,238,.84) 32%, var(--bg) 78%) !important; }
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer textarea { color: var(--text-deep-ink) !important; }
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer textarea::placeholder { color: #7a869a !important; }
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer-note { color: var(--muted) !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer { background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(250,252,255,.78)); }
 /* Bright chat — assistant answer subtree.
    .rich-response (and answer-action / reference-note) hold an
    !important near-white color from padiem-surfaces.css, loaded via @import
@@ -421,7 +395,6 @@ html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="cl
 html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response a,
 html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .answer-action,
 html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .reference-note { color: #1e2a3a !important; }
-html[data-theme="padiem-home"] .composer textarea { color: var(--text-deep-ink); }
 html[data-theme="padiem-home"] .composer textarea::placeholder { color: #7a869a; }
 html[data-theme="padiem-home"] .source-card,
 html[data-theme="padiem-home"] .rich-block,

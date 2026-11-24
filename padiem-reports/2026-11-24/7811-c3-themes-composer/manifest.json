@@ -1,0 +1,649 @@
+{
+ "issue": 7811,
+ "stage": "C3 테마 덮어쓰기 시트 해체",
+ "sheet": "padiem-themes.css",
+ "component": "입력창(.composer · .composer-wrap · .composer-note · 입력칸)",
+ "base": "1e4e36d (다시 맞춘 뒤의 base). 계산값 전체·픽셀·변조·선언별 확인은 37c01b5c6354653e60394138289b76dada262062 위에서 쟀다 — rebase 항목 참고",
+ "line_numbers": "padiem-themes.css 줄 번호는 base 기준",
+ "component_pick": {
+  "rule": "시트의 테마 규칙을 부품별로 묶어 선언 수가 가장 많은 부품(60선언 안쪽)",
+  "counts": {
+   "입력창": 46,
+   "스타터 카드": 43,
+   "말풍선": 26,
+   "아바타·브랜드 표식": 25,
+   "사이드바": 20,
+   "바탕(body)": 19,
+   "새 채팅": 18,
+   "머리말(eyebrow)": 18,
+   "모델 알약·로그인": 15,
+   "상단바": 14,
+   "빈 화면 제목": 14
+  }
+ },
+ "summary": {
+  "declarations_before": 46,
+  "declarations_after": 17,
+  "removed": 29,
+  "removed_dead": 17,
+  "moved_to_token": 12,
+  "important_before": 12,
+  "important_after": 0,
+  "important_dropped_on_kept": 2
+ },
+ "moved_to_token": [
+  {
+   "line": 92,
+   "theme": "light",
+   "selector": ".app-shell[data-state=\"chat\"] .composer",
+   "property": "border-color",
+   "token": "--rich-composer-border",
+   "value": "var(--composer-border)"
+  },
+  {
+   "line": 92,
+   "theme": "light",
+   "selector": ".app-shell[data-state=\"chat\"] .composer",
+   "property": "box-shadow",
+   "token": "--rich-composer-shadow",
+   "value": "var(--composer-shadow)"
+  },
+  {
+   "line": 93,
+   "theme": "light",
+   "selector": ".app-shell[data-state=\"chat\"] .composer-wrap",
+   "property": "background",
+   "token": "--rich-composer-fade",
+   "value": "linear-gradient(to bottom, transparent, var(--bg) 28%, var(--bg))"
+  },
+  {
+   "line": 96,
+   "theme": "light",
+   "selector": ".app-shell[data-state=\"chat\"] .composer-note",
+   "property": "color",
+   "important": true,
+   "token": "--rich-composer-note",
+   "value": "var(--muted)"
+  },
+  {
+   "line": 105,
+   "theme": "light",
+   "selector": ".composer textarea",
+   "property": "color",
+   "token": "--surfaces-composer-text",
+   "value": "var(--input-text)"
+  },
+  {
+   "line": 200,
+   "theme": "dark",
+   "selector": "body .app-shell .composer-wrap",
+   "property": "background",
+   "token": "--surface-fade-deep · --surface-fade-solid · --rich-composer-fade",
+   "value": "rgba(19,20,23,.92) · #131417 · linear-gradient(to bottom, transparent, rgba(19,20,23,.92) 34%, #131417 76%)"
+  },
+  {
+   "line": 289,
+   "theme": "cinematic",
+   "selector": ".composer-wrap",
+   "property": "background",
+   "token": "--surface-fade-deep · --surface-fade-solid",
+   "value": "rgba(4,7,13,.86) · #04070d"
+  },
+  {
+   "line": 393,
+   "theme": "padiem-home",
+   "selector": ".app-shell[data-state=\"chat\"] .composer",
+   "property": "border-color",
+   "important": true,
+   "token": "--rich-composer-border",
+   "value": "rgba(26,34,48,.10)"
+  },
+  {
+   "line": 393,
+   "theme": "padiem-home",
+   "selector": ".app-shell[data-state=\"chat\"] .composer",
+   "property": "box-shadow",
+   "important": true,
+   "token": "--rich-composer-shadow",
+   "value": "0 14px 40px rgba(26,34,48,.09), inset 0 1px 0 rgba(255,255,255,.85)"
+  },
+  {
+   "line": 394,
+   "theme": "padiem-home",
+   "selector": ".app-shell[data-state=\"chat\"] .composer-wrap",
+   "property": "background",
+   "important": true,
+   "token": "--rich-composer-fade",
+   "value": "linear-gradient(to bottom, transparent, rgba(230,233,238,.84) 32%, var(--bg) 78%)"
+  },
+  {
+   "line": 397,
+   "theme": "padiem-home",
+   "selector": ".app-shell[data-state=\"chat\"] .composer-note",
+   "property": "color",
+   "important": true,
+   "token": "--rich-composer-note",
+   "value": "var(--muted)"
+  },
+  {
+   "line": 424,
+   "theme": "padiem-home",
+   "selector": ".composer textarea",
+   "property": "color",
+   "token": "--surfaces-composer-text",
+   "value": "var(--text-deep-ink)"
+  }
+ ],
+ "removed_dead": [
+  {
+   "line": 84,
+   "theme": "light",
+   "selector": ".composer-note",
+   "property": "color",
+   "painted_by": "accessibility-polish.css:37 (같은 선택자, !important)"
+  },
+  {
+   "line": 94,
+   "theme": "light",
+   "selector": ".app-shell[data-state=\"chat\"] .composer textarea",
+   "property": "color",
+   "painted_by": "같은 값의 기본 규칙(중복)"
+  },
+  {
+   "line": 95,
+   "theme": "light",
+   "selector": ".app-shell[data-state=\"chat\"] .composer textarea::placeholder",
+   "property": "color",
+   "painted_by": "같은 값의 기본 규칙 padiem-themes.css:106 (중복)"
+  },
+  {
+   "line": 195,
+   "theme": "dark",
+   "selector": ".composer",
+   "property": "background",
+   "painted_by": "padiem-dark-contrast.css:18 (특이도 0,3,2)"
+  },
+  {
+   "line": 195,
+   "theme": "dark",
+   "selector": ".composer",
+   "property": "border-color",
+   "painted_by": "padiem-dark-contrast.css:18 (border 단축 속성)"
+  },
+  {
+   "line": 195,
+   "theme": "dark",
+   "selector": ".composer",
+   "property": "box-shadow",
+   "painted_by": "padiem-dark-contrast.css:18"
+  },
+  {
+   "line": 201,
+   "theme": "dark",
+   "selector": ".composer-note",
+   "property": "color",
+   "painted_by": "padiem-dark-contrast.css:13 (!important)"
+  },
+  {
+   "line": 202,
+   "theme": "dark",
+   "selector": ".composer textarea",
+   "property": "color",
+   "painted_by": "padiem-dark-contrast.css:30"
+  },
+  {
+   "line": 203,
+   "theme": "dark",
+   "selector": ".composer textarea::placeholder",
+   "property": "color",
+   "painted_by": "padiem-dark-contrast.css:34"
+  },
+  {
+   "line": 283,
+   "theme": "cinematic",
+   "selector": ".composer",
+   "property": "background",
+   "painted_by": "padiem-bright-readability.css:133 (같은 선택자·같은 값 — 중복)"
+  },
+  {
+   "line": 283,
+   "theme": "cinematic",
+   "selector": ".composer",
+   "property": "border-color",
+   "painted_by": "padiem-bright-readability.css:133 (!important)"
+  },
+  {
+   "line": 283,
+   "theme": "cinematic",
+   "selector": ".composer",
+   "property": "box-shadow",
+   "painted_by": "padiem-bright-readability.css:133 (!important)"
+  },
+  {
+   "line": 290,
+   "theme": "cinematic",
+   "selector": ".composer-note",
+   "property": "color",
+   "important": true,
+   "painted_by": "accessibility-polish.css:48 (같은 선택자, !important, 뒤 시트) · 대화 상태는 padiem-rich.css 의 !important"
+  },
+  {
+   "line": 385,
+   "theme": "padiem-home",
+   "selector": ".composer-note",
+   "property": "color",
+   "important": true,
+   "painted_by": "accessibility-polish.css:41 (같은 선택자, !important, 뒤 시트)"
+  },
+  {
+   "line": 393,
+   "theme": "padiem-home",
+   "selector": ".app-shell[data-state=\"chat\"] .composer",
+   "property": "backdrop-filter",
+   "important": true,
+   "painted_by": "padiem-themes.css:383 (같은 값 — 중복)"
+  },
+  {
+   "line": 395,
+   "theme": "padiem-home",
+   "selector": ".app-shell[data-state=\"chat\"] .composer textarea",
+   "property": "color",
+   "important": true,
+   "painted_by": "같은 값의 기본 규칙(중복)"
+  },
+  {
+   "line": 396,
+   "theme": "padiem-home",
+   "selector": ".app-shell[data-state=\"chat\"] .composer textarea::placeholder",
+   "property": "color",
+   "important": true,
+   "painted_by": "같은 값의 기본 규칙 padiem-themes.css:425 (중복)"
+  }
+ ],
+ "important_dropped": {
+  "reason": "선택자 특이도(0,2,1 / 0,4,1)로 이미 이긴다. 같은 대상의 !important 경쟁 규칙은 claw-task-hub.css 의 접힌 클로 규칙 하나이고 특이도가 더 높아 전후 모두 그 규칙이 이긴다",
+  "declarations": [
+   {
+    "line": 384,
+    "theme": "padiem-home",
+    "selector": ".composer-wrap",
+    "property": "background"
+   },
+   {
+    "line": 393,
+    "theme": "padiem-home",
+    "selector": ".app-shell[data-state=\"chat\"] .composer",
+    "property": "background"
+   }
+  ]
+ },
+ "kept": [
+  {
+   "line": 82,
+   "theme": "light",
+   "selector": ".composer",
+   "properties": [
+    "background"
+   ],
+   "reason": "바탕(padiem-surfaces.css .composer)은 두 겹 그라디언트 — light 는 단색이라 background-image 가 달라진다"
+  },
+  {
+   "line": 82,
+   "theme": "light",
+   "selector": ".composer",
+   "properties": [
+    "border",
+    "box-shadow"
+   ],
+   "reason": "바탕 그림자는 두 겹 고정 — light 는 한 겹. border 는 규칙을 내리면 .composer:focus-within(0,2,0)이 초점 때 이긴다"
+  },
+  {
+   "line": 83,
+   "theme": "light",
+   "selector": ".composer-wrap",
+   "properties": [
+    "background"
+   ],
+   "reason": "바탕 정지점 34%·76% 고정 — light 는 28%·100%"
+  },
+  {
+   "line": 92,
+   "theme": "light",
+   "selector": ".app-shell[data-state=\"chat\"] .composer",
+   "properties": [
+    "background"
+   ],
+   "reason": "padiem-rich.css 바탕은 두 겹 그라디언트 — light 는 단색"
+  },
+  {
+   "line": 92,
+   "theme": "light",
+   "selector": ".app-shell[data-state=\"chat\"] .composer",
+   "properties": [
+    "backdrop-filter"
+   ],
+   "reason": "padiem-surfaces.css .composer 의 흐림 값이 리터럴"
+  },
+  {
+   "line": 106,
+   "theme": "light",
+   "selector": ".composer textarea::placeholder",
+   "properties": [
+    "color"
+   ],
+   "reason": "바탕이 읽는 --panel-text-faint 는 11곳이 함께 쓰는 토큰"
+  },
+  {
+   "line": 195,
+   "theme": "dark",
+   "selector": ".composer",
+   "properties": [
+    "backdrop-filter"
+   ],
+   "reason": "흐림 리터럴"
+  },
+  {
+   "line": 283,
+   "theme": "cinematic",
+   "selector": ".composer",
+   "properties": [
+    "backdrop-filter"
+   ],
+   "reason": "흐림 리터럴"
+  },
+  {
+   "line": 383,
+   "theme": "padiem-home",
+   "selector": ".composer",
+   "properties": [
+    "background",
+    "border-color",
+    "border-top",
+    "box-shadow"
+   ],
+   "reason": "바탕과 구조가 다르다(한 겹 그라디언트, 위 테두리만 다른 색, 그림자 겹 순서)"
+  },
+  {
+   "line": 383,
+   "theme": "padiem-home",
+   "selector": ".composer",
+   "properties": [
+    "backdrop-filter"
+   ],
+   "reason": "흐림 리터럴"
+  },
+  {
+   "line": 384,
+   "theme": "padiem-home",
+   "selector": ".composer-wrap",
+   "properties": [
+    "background"
+   ],
+   "reason": "바탕 정지점 34%·76% 고정 — home 은 32%·78%"
+  },
+  {
+   "line": 393,
+   "theme": "padiem-home",
+   "selector": ".app-shell[data-state=\"chat\"] .composer",
+   "properties": [
+    "background"
+   ],
+   "reason": "padiem-rich.css 바탕 구조와 다르다"
+  },
+  {
+   "line": 425,
+   "theme": "padiem-home",
+   "selector": ".composer textarea::placeholder",
+   "properties": [
+    "color"
+   ],
+   "reason": "공용 토큰 --panel-text-faint"
+  }
+ ],
+ "tokens": {
+  "new_names": [],
+  "theme_values_added": 15,
+  "by_theme": {
+   "light": [
+    "--surfaces-composer-text",
+    "--rich-composer-fade",
+    "--rich-composer-border",
+    "--rich-composer-shadow",
+    "--rich-composer-note"
+   ],
+   "dark": [
+    "--surface-fade-deep",
+    "--surface-fade-solid",
+    "--rich-composer-fade"
+   ],
+   "cinematic": [
+    "--surface-fade-deep",
+    "--surface-fade-solid"
+   ],
+   "padiem-home": [
+    "--surfaces-composer-text",
+    "--rich-composer-fade",
+    "--rich-composer-border",
+    "--rich-composer-shadow",
+    "--rich-composer-note"
+   ]
+  },
+  "readers": "토큰마다 읽는 선언은 바탕 규칙 하나뿐(시험 test_261124_themes_composer_c3_7811.py 가 고정)"
+ },
+ "audit": {
+  "css_files": {
+   "before": 92,
+   "after": 92,
+   "delta": 0
+  },
+  "css_rules": {
+   "before": 4385,
+   "after": 4367,
+   "delta": -18
+  },
+  "css_important": {
+   "before": 475,
+   "after": 463,
+   "delta": -12
+  },
+  "css_themed_rules": {
+   "before": 795,
+   "after": 777,
+   "delta": -18
+  },
+  "css_themed_important": {
+   "before": 104,
+   "after": 92,
+   "delta": -12
+  },
+  "css_color_literals": {
+   "before": 1027,
+   "after": 1014,
+   "delta": -13
+  },
+  "css_color_literals_unthemed": {
+   "before": 366,
+   "after": 366,
+   "delta": 0
+  },
+  "css_local_imports": {
+   "before": 0,
+   "after": 0,
+   "delta": 0
+  },
+  "padiem-themes.css !important": {
+   "before": 25,
+   "after": 13
+  },
+  "padiem-themes.css rules": {
+   "before": 137,
+   "after": 119
+  }
+ },
+ "verification": {
+  "computed_full_document": {
+   "themes": 5,
+   "viewports": [
+    "1440x950",
+    "390x844"
+   ],
+   "states": [
+    "home",
+    "home-focus",
+    "conversation",
+    "chat-state",
+    "chat-state-focus",
+    "claw",
+    "claw-blur"
+   ],
+   "measurements": 70,
+   "elements_compared": 119653,
+   "element_diffs": 0,
+   "element_diffs_note": "첫 측정에서 dark 1440 claw·claw-blur 의 숨은 요소 #meetingStart(0×0) 1개가 흔들려 같은 방법으로 다시 재어 0 확인",
+   "composer_and_root_standard_values": 201600,
+   "standard_value_diffs": 0,
+   "custom_property_diffs": "이번에 테마 값을 정한 (테마, 토큰) 15쌍뿐",
+   "report": "computed_report.json",
+   "values": "computed_targets.json",
+   "method": "tools/chat_pixel_compare.py 의 모의 API·고정 시계·화면 만들기·정착 규칙을 그대로 쓰고, 화면을 찍는 대신 문서의 모든 요소와 ::before/::after/::placeholder/::backdrop 의 표준 속성 계산값 전체를 읽어 요소별로 비교. backdrop-filter 를 none 으로 고정하는 안정화 CSS 는 넣지 않았다. margin 은 computedStyleMap 의 계산값으로(flex 항목의 auto margin 은 getComputedStyle 이 0px/쓰인 px 로 실행마다 다르게 돌려준다), url() 의 서버 포트는 고정 문자열로 읽는다."
+  },
+  "computed_forced_states": {
+   "measurements": 190,
+   "state_labels": 19,
+   "values_compared": 456000,
+   "diffs": 0,
+   "report": "computed_states_report.json",
+   "method": "data-state 7종(home·chat·claw·util·calendar·automation·library) × 초점, 클로 접힘, 안내문 오류 상태를 직접 만들어 입력창 5대상의 계산값 전체 비교"
+  },
+  "per_declaration": {
+   "report": "liveness_report.json",
+   "note": "선언을 하나씩 뺐을 때 계산값이 달라지는 상태 목록. 그냥 지운 17선언은 어느 상태에서도 차이 0."
+  },
+  "pixel_standard": {
+   "tool": "tools/chat_pixel_compare.py run_compare",
+   "screens": [
+    "home-logout",
+    "home-login",
+    "conversation",
+    "claw"
+   ],
+   "combos": 40,
+   "nonzero": [],
+   "report": "standard/compare_report.json",
+   "control": {
+    "combos": 40,
+    "nonzero": [],
+    "report": "standard/control_report.json"
+   },
+   "scope_note": "입력창이 나오는 표준 화면만 골랐다(표준 13화면 × 10 = 130조합 중 40)."
+  },
+  "pixel_chat_state": {
+   "why": "표준 13화면에는 data-state=\"chat\" 이 없다. 같은 고정 장치로 대화 상태·대화 상태 초점 화면을 만들어 찍었다.",
+   "real_rendering": {
+    "phase": "before-after",
+    "combos": 20,
+    "nonzero": [],
+    "state_not_ok": [],
+    "seconds": 328.8,
+    "report": "chat-state/compare_report.json"
+   },
+   "control": {
+    "phase": "control",
+    "combos": 10,
+    "nonzero": [],
+    "state_not_ok": [],
+    "seconds": 152.9,
+    "report": "chat-state/control_report.json"
+   },
+   "with_tool_stabilizer_padiem_home": {
+    "phase": "before-after",
+    "combos": 4,
+    "nonzero": [
+     "padiem-home__1440x950__chat-state",
+     "padiem-home__1440x950__chat-state-focus",
+     "padiem-home__390x844__chat-state",
+     "padiem-home__390x844__chat-state-focus"
+    ],
+    "state_not_ok": [],
+    "seconds": 180.6,
+    "report": "chat-state/compare_report_tool_stabilizer_padiem-home.json",
+    "diff_image": "chat-state/tool_stabilizer_artifact__padiem-home__1440x950__chat-state__diff.png",
+    "cause": "픽셀 도구의 안정화 CSS(*{backdrop-filter:none!important})를, 지운 줄 393의 backdrop-filter: blur(18px) !important(특이도 0,4,1)가 before 쪽에서만 이겼다. after 쪽은 줄 383의 같은 값(일반 선언)이 안정화 CSS 에 진다. 제품에는 안정화 CSS 가 없고 계산값은 전후 모두 blur(18px)이며, 안정화 없이 찍으면 0이다."
+   }
+  },
+  "tamper": {
+   "ok": true,
+   "cases": 15,
+   "min_noise": 605,
+   "max_noise": 160503,
+   "leak": {
+    "check": "cinematic 블록 변조가 dark 화면에 새지 않는다",
+    "pixel": 0
+   },
+   "report": "tamper_report.json",
+   "note": "테마 값을 정한 15개를 하나씩 #ff00ff 로 바꿔 모두 검출. 입력 글자색은 입력칸에 글자를 넣고 찍었다."
+  },
+  "contrast": {
+   "report": "contrast_report.json",
+   "min_input_text": 12.14,
+   "displayed_note_below_4_5": [
+    [
+     "cinematic",
+     "chat-state",
+     2.57
+    ]
+   ],
+   "note": "전후 같은 값. 4.5 미만 한 건은 이번 변경과 무관한 기존 상태(notes)."
+  },
+  "tests": {
+   "related_modules": "751 passed, 150 skipped(브라우저 없는 환경의 건너뜀)",
+   "contrast_ratchet_structure": "32 passed, 1 skipped",
+   "composer_browser_contracts": "183 passed (8 모듈)",
+   "new": "apps/padiem-chat/tests/test_261124_themes_composer_c3_7811.py",
+   "updated": [
+    "test_padiem_themes.py",
+    "test_261111_theme_palette_tokens_7187.py",
+    "test_261118_deep_ink_tokens_7187.py",
+    "test_261123_rich_palette_tokens_7811.py",
+    "test_261124_surfaces_palette_tokens_7811.py",
+    "_support/theme_sheets.py"
+   ]
+  }
+ },
+ "captures": {
+  "light__1440x950__chat-state.png": "실제 렌더링, 대화 상태",
+  "dark__1440x950__chat-state.png": "실제 렌더링, 대화 상태",
+  "padiem-glass__1440x950__chat-state.png": "실제 렌더링, 대화 상태",
+  "padiem-home__1440x950__chat-state.png": "실제 렌더링, 대화 상태",
+  "cinematic__1440x950__home-logout.png": "표준 도구, 홈",
+  "cinematic__390x844__home-logout.png": "표준 도구, 홈 390"
+ },
+ "notes": [
+  "기존 상태(이번 변경과 무관, 전후 같은 값 — 고치지 않음): cinematic 대화 상태의 안내문 색은 padiem-rich.css 의 --rich-composer-note(rgba(255,255,255,.30))가 !important 로 테마 값을 이겨 계산값 기준 대비 2.57 이다. padiem-glass 는 안내문을 표시하지 않는다.",
+  "기존 상태: 안내문 오류 상태(.composer-note[data-state=\"error\"], padiem-cinematic-workspace.css)의 색이 5테마 모두 적용되지 않는다(테마별 !important 가 이긴다).",
+  "기존 상태: padiem-home 사이드바의 빈 목록 문구가 밝은 면 위에서 거의 보이지 않는다(captures/padiem-home__1440x950__chat-state.png).",
+  "padiem-themes.css 를 함께 부르는 의원3종 앱에는 입력창이 없다. React 비교용 복제본(apps/padiem-chat-react)은 불러오는 시트 구성이 Chat 과 달라 입력창 값이 달라질 수 있다. 측정은 Chat index.html 기준이다."
+ ],
+ "next": [
+  "padiem-themes.css 다음 부품: 스타터 카드(.starter 계열) 43선언",
+  "입력창에 남은 17선언: 바탕 규칙의 모양을 먼저 바꿔야 한다 — 입력창 면·그림자를 통째로 하나의 토큰으로, 흐림 값을 토큰으로, 페이드 정지점을 토큰 안으로(바탕 시트 PR)"
+ ],
+ "rebase": {
+  "measured_on_base": "37c01b5c6354653e60394138289b76dada262062",
+  "rebased_onto": "1e4e36d48a941d674a5cf2c507032060e30af79f",
+  "why": "측정 뒤 main 에 #8667(attachments.css 토큰)·#8670(sidebar-section-polish.css !important 제거)·#8672(padiem-surfaces.css 2차 토큰)가 머지됐다.",
+  "conflicts": [
+   "apps/padiem-chat/tests/test_261124_surfaces_palette_tokens_7811.py — 같은 단언 줄을 양쪽이 고쳐 두 뜻을 모두 남겼다"
+  ],
+  "product_files": "이 PR 의 padiem-themes.css·padiem-tokens.css 변경은 그대로다. 그 사이 main 이 바꾼 시트에는 입력창 규칙이나 이번에 테마 값을 준 토큰을 건드린 줄이 없다.",
+  "re_verified_on_rebased_head": {
+   "computed_forced_states": {
+    "measurements": 190,
+    "values_compared": 456000,
+    "diffs": 0
+   },
+   "tests": "관련 모듈 905 passed, 5 skipped(브라우저 계약 포함)"
+  },
+  "not_re_measured": "문서 전체 계산값 70측정·픽셀·변조는 다시 재지 않았다(위 base 에서 잰 값)."
+ }
+}

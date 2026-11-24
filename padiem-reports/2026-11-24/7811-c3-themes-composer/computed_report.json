@@ -1,0 +1,548 @@
+{
+ "themes": [
+  "light",
+  "dark",
+  "padiem-glass",
+  "cinematic",
+  "padiem-home"
+ ],
+ "viewports": [
+  "1440x950",
+  "390x844"
+ ],
+ "states": [
+  "home",
+  "home-focus",
+  "conversation",
+  "chat-state",
+  "chat-state-focus",
+  "claw",
+  "claw-blur"
+ ],
+ "measurements": 70,
+ "elements_compared": 119653,
+ "composer_and_root_standard_values_compared": 201600,
+ "standard_value_diffs": [],
+ "custom_property_diffs_unexpected": [],
+ "custom_property_diffs_expected": {
+  "cinematic --surface-fade-deep": {
+   "before": "rgba(6, 7, 9, .82)",
+   "after": "rgba(4,7,13,.86)",
+   "seen": 84
+  },
+  "cinematic --surface-fade-solid": {
+   "before": "#06080d",
+   "after": "#04070d",
+   "seen": 84
+  },
+  "dark --surface-fade-deep": {
+   "before": "rgba(6, 7, 9, .82)",
+   "after": "rgba(19,20,23,.92)",
+   "seen": 84
+  },
+  "dark --surface-fade-solid": {
+   "before": "#06080d",
+   "after": "#131417",
+   "seen": 84
+  },
+  "dark --rich-composer-fade": {
+   "before": "linear-gradient(to bottom, transparent, rgba(6, 7, 9, .88) 39%, #06080d 76%)",
+   "after": "linear-gradient(to bottom, transparent, rgba(19,20,23,.92) 34%, #131417 76%)",
+   "seen": 84
+  },
+  "light --rich-composer-note": {
+   "before": "rgba(255, 255, 255, .30)",
+   "after": "#6f7079",
+   "seen": 84
+  },
+  "light --surfaces-composer-text": {
+   "before": "#f8fafc",
+   "after": "#19191d",
+   "seen": 84
+  },
+  "light --rich-composer-border": {
+   "before": "rgba(255, 255, 255, .17)",
+   "after": "#e3e3e9",
+   "seen": 84
+  },
+  "light --rich-composer-fade": {
+   "before": "linear-gradient(to bottom, transparent, rgba(6, 7, 9, .88) 39%, #06080d 76%)",
+   "after": "linear-gradient(to bottom, transparent, #f8f8fb 28%, #f8f8fb)",
+   "seen": 84
+  },
+  "light --rich-composer-shadow": {
+   "before": "inset 0 1px 0 rgba(255, 255, 255, .07), 0 30px 90px rgba(0, 0, 0, .48)",
+   "after": "0 14px 36px rgba(30,28,54,.08)",
+   "seen": 84
+  },
+  "padiem-home --rich-composer-note": {
+   "before": "rgba(255, 255, 255, .30)",
+   "after": "#5a6578",
+   "seen": 84
+  },
+  "padiem-home --surfaces-composer-text": {
+   "before": "#f8fafc",
+   "after": "#1a2230",
+   "seen": 84
+  },
+  "padiem-home --rich-composer-border": {
+   "before": "rgba(255, 255, 255, .17)",
+   "after": "rgba(26,34,48,.10)",
+   "seen": 84
+  },
+  "padiem-home --rich-composer-fade": {
+   "before": "linear-gradient(to bottom, transparent, rgba(6, 7, 9, .88) 39%, #06080d 76%)",
+   "after": "linear-gradient(to bottom, transparent, rgba(230,233,238,.84) 32%, #e6e9ee 78%)",
+   "seen": 84
+  },
+  "padiem-home --rich-composer-shadow": {
+   "before": "inset 0 1px 0 rgba(255, 255, 255, .07), 0 30px 90px rgba(0, 0, 0, .48)",
+   "after": "0 14px 40px rgba(26,34,48,.09), inset 0 1px 0 rgba(255,255,255,.85)",
+   "seen": 84
+  }
+ },
+ "element_diffs_first_run": [
+  {
+   "measurement": "dark__1440x950__claw",
+   "count": 1,
+   "elements": [
+    "button#meetingStart"
+   ]
+  },
+  {
+   "measurement": "dark__1440x950__claw-blur",
+   "count": 1,
+   "elements": [
+    "button#meetingStart"
+   ]
+  }
+ ],
+ "element_diffs_remeasured": {
+  "dark__1440x950__claw": [],
+  "dark__1440x950__claw-blur": []
+ },
+ "note": "첫 측정에서 dark 1440 claw·claw-blur 의 숨은 요소 #meetingStart(0×0, 입력창과 무관) 1개가 흔들렸고, 같은 방법으로 dark 1440 7상태를 다시 재어 0을 확인했다.",
+ "state_mismatch": [],
+ "by_measurement": {
+  "cinematic__1440x950__chat-state": {
+   "state": "chat",
+   "focused": "",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "cinematic__1440x950__chat-state-focus": {
+   "state": "chat",
+   "focused": "messageInput",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "cinematic__1440x950__claw": {
+   "state": "claw",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "cinematic__1440x950__claw-blur": {
+   "state": "claw",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "cinematic__1440x950__conversation": {
+   "state": "home",
+   "focused": "",
+   "elements": 1717,
+   "changed_elements": 0
+  },
+  "cinematic__1440x950__home": {
+   "state": "home",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "cinematic__1440x950__home-focus": {
+   "state": "home",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "cinematic__390x844__chat-state": {
+   "state": "chat",
+   "focused": "",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "cinematic__390x844__chat-state-focus": {
+   "state": "chat",
+   "focused": "messageInput",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "cinematic__390x844__claw": {
+   "state": "claw",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "cinematic__390x844__claw-blur": {
+   "state": "claw",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "cinematic__390x844__conversation": {
+   "state": "home",
+   "focused": "",
+   "elements": 1717,
+   "changed_elements": 0
+  },
+  "cinematic__390x844__home": {
+   "state": "home",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "cinematic__390x844__home-focus": {
+   "state": "home",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "dark__1440x950__chat-state": {
+   "state": "chat",
+   "focused": "",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "dark__1440x950__chat-state-focus": {
+   "state": "chat",
+   "focused": "messageInput",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "dark__1440x950__claw": {
+   "state": "claw",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 1
+  },
+  "dark__1440x950__claw-blur": {
+   "state": "claw",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 1
+  },
+  "dark__1440x950__conversation": {
+   "state": "home",
+   "focused": "",
+   "elements": 1717,
+   "changed_elements": 0
+  },
+  "dark__1440x950__home": {
+   "state": "home",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "dark__1440x950__home-focus": {
+   "state": "home",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "dark__390x844__chat-state": {
+   "state": "chat",
+   "focused": "",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "dark__390x844__chat-state-focus": {
+   "state": "chat",
+   "focused": "messageInput",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "dark__390x844__claw": {
+   "state": "claw",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "dark__390x844__claw-blur": {
+   "state": "claw",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "dark__390x844__conversation": {
+   "state": "home",
+   "focused": "",
+   "elements": 1717,
+   "changed_elements": 0
+  },
+  "dark__390x844__home": {
+   "state": "home",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "dark__390x844__home-focus": {
+   "state": "home",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "light__1440x950__chat-state": {
+   "state": "chat",
+   "focused": "",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "light__1440x950__chat-state-focus": {
+   "state": "chat",
+   "focused": "messageInput",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "light__1440x950__claw": {
+   "state": "claw",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "light__1440x950__claw-blur": {
+   "state": "claw",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "light__1440x950__conversation": {
+   "state": "home",
+   "focused": "",
+   "elements": 1717,
+   "changed_elements": 0
+  },
+  "light__1440x950__home": {
+   "state": "home",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "light__1440x950__home-focus": {
+   "state": "home",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "light__390x844__chat-state": {
+   "state": "chat",
+   "focused": "",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "light__390x844__chat-state-focus": {
+   "state": "chat",
+   "focused": "messageInput",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "light__390x844__claw": {
+   "state": "claw",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "light__390x844__claw-blur": {
+   "state": "claw",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "light__390x844__conversation": {
+   "state": "home",
+   "focused": "",
+   "elements": 1717,
+   "changed_elements": 0
+  },
+  "light__390x844__home": {
+   "state": "home",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "light__390x844__home-focus": {
+   "state": "home",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "padiem-glass__1440x950__chat-state": {
+   "state": "chat",
+   "focused": "",
+   "elements": 1801,
+   "changed_elements": 0
+  },
+  "padiem-glass__1440x950__chat-state-focus": {
+   "state": "chat",
+   "focused": "messageInput",
+   "elements": 1801,
+   "changed_elements": 0
+  },
+  "padiem-glass__1440x950__claw": {
+   "state": "claw",
+   "focused": "messageInput",
+   "elements": 1767,
+   "changed_elements": 0
+  },
+  "padiem-glass__1440x950__claw-blur": {
+   "state": "claw",
+   "focused": "",
+   "elements": 1767,
+   "changed_elements": 0
+  },
+  "padiem-glass__1440x950__conversation": {
+   "state": "home",
+   "focused": "",
+   "elements": 1798,
+   "changed_elements": 0
+  },
+  "padiem-glass__1440x950__home": {
+   "state": "home",
+   "focused": "",
+   "elements": 1754,
+   "changed_elements": 0
+  },
+  "padiem-glass__1440x950__home-focus": {
+   "state": "home",
+   "focused": "messageInput",
+   "elements": 1754,
+   "changed_elements": 0
+  },
+  "padiem-glass__390x844__chat-state": {
+   "state": "chat",
+   "focused": "",
+   "elements": 1800,
+   "changed_elements": 0
+  },
+  "padiem-glass__390x844__chat-state-focus": {
+   "state": "chat",
+   "focused": "messageInput",
+   "elements": 1800,
+   "changed_elements": 0
+  },
+  "padiem-glass__390x844__claw": {
+   "state": "claw",
+   "focused": "messageInput",
+   "elements": 1766,
+   "changed_elements": 0
+  },
+  "padiem-glass__390x844__claw-blur": {
+   "state": "claw",
+   "focused": "",
+   "elements": 1766,
+   "changed_elements": 0
+  },
+  "padiem-glass__390x844__conversation": {
+   "state": "home",
+   "focused": "",
+   "elements": 1797,
+   "changed_elements": 0
+  },
+  "padiem-glass__390x844__home": {
+   "state": "home",
+   "focused": "",
+   "elements": 1753,
+   "changed_elements": 0
+  },
+  "padiem-glass__390x844__home-focus": {
+   "state": "home",
+   "focused": "messageInput",
+   "elements": 1753,
+   "changed_elements": 0
+  },
+  "padiem-home__1440x950__chat-state": {
+   "state": "chat",
+   "focused": "",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "padiem-home__1440x950__chat-state-focus": {
+   "state": "chat",
+   "focused": "messageInput",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "padiem-home__1440x950__claw": {
+   "state": "claw",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "padiem-home__1440x950__claw-blur": {
+   "state": "claw",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "padiem-home__1440x950__conversation": {
+   "state": "home",
+   "focused": "",
+   "elements": 1717,
+   "changed_elements": 0
+  },
+  "padiem-home__1440x950__home": {
+   "state": "home",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "padiem-home__1440x950__home-focus": {
+   "state": "home",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "padiem-home__390x844__chat-state": {
+   "state": "chat",
+   "focused": "",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "padiem-home__390x844__chat-state-focus": {
+   "state": "chat",
+   "focused": "messageInput",
+   "elements": 1719,
+   "changed_elements": 0
+  },
+  "padiem-home__390x844__claw": {
+   "state": "claw",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "padiem-home__390x844__claw-blur": {
+   "state": "claw",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "padiem-home__390x844__conversation": {
+   "state": "home",
+   "focused": "",
+   "elements": 1717,
+   "changed_elements": 0
+  },
+  "padiem-home__390x844__home": {
+   "state": "home",
+   "focused": "",
+   "elements": 1673,
+   "changed_elements": 0
+  },
+  "padiem-home__390x844__home-focus": {
+   "state": "home",
+   "focused": "messageInput",
+   "elements": 1673,
+   "changed_elements": 0
+  }
+ }
+}

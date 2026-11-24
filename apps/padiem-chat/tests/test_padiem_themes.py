@@ -172,9 +172,26 @@ def test_bright_theme_chat_state_regression():
     for theme in ["light", "padiem-home"]:
         prefix = f'html[data-theme="{theme}"] .app-shell[data-state="chat"]'
         for sel in [".message-bubble", ".assistant-avatar", ".assistant-meta",
-                    ".assistant-content", ".composer", ".composer-wrap", ".composer-note"]:
+                    ".assistant-content", ".composer"]:
             assert sheets.rules_with_selector("padiem-themes.css",
                                               f"{prefix} {sel}"), f"missing bright chat override {prefix} {sel}"
+    # #7811 C3: the bright chat-state fade behind the composer and the note
+    # colour are no longer override rules. The chat-state base rules in
+    # padiem-rich.css read tokens, and each bright theme gives those tokens its
+    # own value — so the same defect class is now caught on the token values.
+    bright_fade = {
+        "light": "linear-gradient(to bottom, transparent, var(--bg) 28%, var(--bg))",
+        "padiem-home": ("linear-gradient(to bottom, transparent, "
+                        "rgba(230,233,238,.84) 32%, var(--bg) 78%)"),
+    }
+    for theme, fade in bright_fade.items():
+        assert sheets.token_value(theme, "--rich-composer-fade") == fade, theme
+        assert sheets.token_value(theme, "--rich-composer-note") == "var(--muted)", theme
+    chat = '.app-shell[data-state="chat"]'
+    wrap = sheets.rules_with_selector("padiem-rich.css", f"{chat} .composer-wrap")
+    assert any(sheets.decl_map(rule).get("background") == "var(--rich-composer-fade)" for rule in wrap)
+    note = sheets.rules_with_selector("padiem-rich.css", f"{chat} .composer-note")
+    assert any(sheets.decl_map(rule).get("color") == "var(--rich-composer-note) !important" for rule in note)
     assert sheets.rules_with_selector(
         "padiem-themes.css",
         'html[data-theme="light"] .app-shell[data-state="chat"] .message-bubble')
@@ -185,11 +202,26 @@ def test_bright_theme_chat_state_regression():
     assert sheets.rules_with_selector(
         "padiem-themes.css",
         'html[data-theme="light"] .app-shell[data-state="chat"] .composer')
-    # Dark and cinematic are preserved (dark overrides still exist).
-    assert sheets.rules_with_selector("padiem-themes.css",
-                                      'html[data-theme="dark"] .composer-note')
-    assert sheets.rules_with_selector("padiem-themes.css",
-                                      'html[data-theme="cinematic"] .composer-note')
+    # Dark and cinematic are preserved. #7811 C3: the note colour those two
+    # themes paint never came from padiem-themes.css — a themed !important in a
+    # later sheet always outranked it (dark: padiem-dark-contrast.css,
+    # cinematic: accessibility-polish.css). The never-winning copies are gone
+    # and the contract reads the painting rule — its place and its value —
+    # instead of the dead one.
+    painting = {
+        "dark": ("padiem-dark-contrast.css", "#bdcdda !important"),
+        "cinematic": ("accessibility-polish.css", "rgba(255, 255, 255, .72) !important"),
+    }
+    for theme, (owner, colour) in painting.items():
+        owned = [
+            rule for rule in sheets.rules_with_selector(owner, ".composer-note")
+            if f'html[data-theme="{theme}"]' in rule.selector
+            and "color" in sheets.decl_map(rule)
+        ]
+        assert len(owned) == 1, theme
+        assert sheets.decl_map(owned[0])["color"] == colour, theme
+        assert not sheets.rules_with_selector(
+            "padiem-themes.css", f'html[data-theme="{theme}"] .composer-note'), theme
 
 
 def test_bright_theme_assistant_answer_subtree_contrast():
