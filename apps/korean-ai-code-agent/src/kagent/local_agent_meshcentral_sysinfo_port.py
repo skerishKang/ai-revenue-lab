@@ -240,7 +240,7 @@ def probe_sysinfo_absence(socket: Any, frame: Mapping[str, Any],
         if time.monotonic() >= deadline:
             return unresolved
         socket.send_text(json.dumps({
-            "action": "getnetworkinfo", "nodeid": resolved, "tag": tag,
+            "action": "getnetworkinfo", "nodeid": requested, "tag": tag,
         }, separators=(",", ":")))
         while time.monotonic() < deadline:
             message = socket.recv(deadline)

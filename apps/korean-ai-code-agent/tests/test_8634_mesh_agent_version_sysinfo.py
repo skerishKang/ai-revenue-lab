@@ -528,7 +528,7 @@ def test_noinfo_with_same_rights_gate_passed_means_no_stored_info(node):
     fake = opened[0][0]
     assert [json.loads(s) for s in fake.sent] == [
         sysinfo_frame(node, TAG),
-        {"action": "getnetworkinfo", "nodeid": resolved, "tag": probe_tag},
+        {"action": "getnetworkinfo", "nodeid": node, "tag": probe_tag},
     ]
     assert fake.closed
 
