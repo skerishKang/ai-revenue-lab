@@ -112,6 +112,14 @@ def answer_actions_source() -> str:
     return _sheet("answer-actions.css")
 
 
+def claw_workspace_rules():
+    return parse_rules(_sheet("claw-workspace.css"))
+
+
+def claw_workspace_source() -> str:
+    return _sheet("claw-workspace.css")
+
+
 def unthemed_literals(rules) -> list[str]:
     """Non-custom-property color literals outside html[data-theme] rules."""
     import re
@@ -175,3 +183,7 @@ def unthemed_pc_pairing_literals() -> list[str]:
 
 def unthemed_answer_actions_literals() -> list[str]:
     return unthemed_literals(answer_actions_rules())
+
+
+def unthemed_claw_workspace_literals() -> list[str]:
+    return unthemed_literals(claw_workspace_rules())

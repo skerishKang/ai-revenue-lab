@@ -691,6 +691,17 @@
   --answer-actions-pressed-bg: rgba(101, 87, 232, 0.16);
   --answer-actions-more-bg: rgba(255, 255, 255, 0.7);
 
+  /* #7811 C2 claw-workspace(261124): claw-workspace.css의 고정 리터럴. 값은
+     치환 전 그대로이고 :root에만 둔다 — 다섯 테마에서 같은 값으로 칠해져 온
+     색이라 테마 블록이 덮지 않는다. 값이 같은 기존 :root 토큰은 없었다. */
+  --workspace-canvas-generate-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+  --workspace-canvas-error-edge: rgba(220, 62, 62, 0.22);
+  --workspace-canvas-error-wash: rgba(220, 62, 62, 0.04);
+  --workspace-canvas-approved-error-wash: rgba(220, 62, 62, 0.07);
+  --workspace-canvas-approved-error-edge: rgba(220, 62, 62, 0.16);
+  --workspace-canvas-field-edge: rgba(15, 23, 42, 0.18);
+  --workspace-canvas-modal-dim: rgba(0, 0, 0, 0.72);
+
   /* #7811 C2 surfaces(261124): padiem-surfaces.css의 쓰임새 색. 값은 치환 전
      사용처 리터럴 그대로이고 :root에만 둔다 — 토큰 값이 모든 테마에서 같으니
      칠해지는 값도 테마마다 그대로다. 테마 블록이나 다른 시트가 덮지 않는다. */

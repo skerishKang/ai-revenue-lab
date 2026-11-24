@@ -218,6 +218,12 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--answer-actions-bg", "--answer-actions-text",
                 "--answer-actions-hover-edge", "--answer-actions-pressed-bg",
                 "--answer-actions-more-bg",
+                # #7811 C2 claw-workspace.css(261124): 고정 리터럴 7개.
+                # 값·소비 선언은 test_261124_claw_workspace_tokens_7811.py가 고정한다.
+                "--workspace-canvas-generate-shadow", "--workspace-canvas-error-edge",
+                "--workspace-canvas-error-wash", "--workspace-canvas-approved-error-wash",
+                "--workspace-canvas-approved-error-edge", "--workspace-canvas-field-edge",
+                "--workspace-canvas-modal-dim",
                 }
              | {"--ws-item-text", "--ws-current-wash", "--ws-current-glow",
                 "--ws-soft-wash", "--ws-control-hover-edge",
