@@ -658,6 +658,13 @@
   --surfaces-send-hover-bg: #fff;
   --surfaces-send-hover-shadow: rgba(0, 0, 0, .28);
   --surfaces-note-text: rgba(255, 255, 255, .38);
+  /* 2차(첨부·대화상자·스크롤바): 값이 같은 기존 토큰은 재사용하고, 테마가
+     덮는 토큰은 피했다. 아래 세 값만 쓸 만한 기존 쓰임새 토큰이 없어 새로
+     둔다. 역시 :root 전용이라 모든 테마에서 칠해지는 값이 같다. */
+  --surfaces-attachment-edge: rgba(255, 255, 255, .12);
+  --surfaces-project-shadow: rgba(0, 0, 0, .52);
+  --surfaces-form-edge: rgba(255, 255, 255, .13);
+  --surfaces-scrollbar-thumb: rgba(255, 255, 255, .18);
 
   /* #7811 C2 attachments(261124): attachments.css의 고정 밝은 팔레트. 값은
      치환 전 선언마다 박혀 있던 리터럴 그대로이고 :root에만 둔다 — 다섯
