@@ -249,11 +249,13 @@ def build_provider_http_timeout(model_id: str | None = None) -> httpx.Timeout:
     policy = get_timeout_policy()
     # #7156: a completed final attempt waits for its whole answer; a socket read
     # must not end that wait before the attempt budget does. Connect stays bound.
-    read_seconds = (
-        max(policy.stream_idle_seconds, policy.attempt_seconds)
-        if first_byte_bound_is_attempt_total()
-        else policy.stream_idle_seconds
-    )
+    # #5568: the socket read bound must not end the first-byte wait early. A
+    # completed answer sends no byte until it is fully generated, so a read
+    # bound of stream_idle (20 s) cut the scan lane's 60 s first-byte wait at
+    # 20 s and handed the page to the next candidate. The read bound is now at
+    # least the first-byte limit in force; the shared defaults (15 s < 20 s)
+    # and the final-attempt rule (#7156) come out unchanged.
+    read_seconds = max(policy.stream_idle_seconds, effective_first_byte_seconds(policy))
     return httpx.Timeout(
         None,
         connect=policy.first_byte_seconds,

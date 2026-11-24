@@ -380,3 +380,9 @@ def test_only_the_leading_provider_part_may_be_missing() -> None:
     assert served_model_matches("p/m", None) is False
     assert served_model_matches("p/m", "") is False
     assert served_model_matches("m", "x/m") is False
+
+
+def test_the_prompt_forbids_guessing_unclear_digits() -> None:
+    from app.pdfmd_scan_ocr import SCAN_OCR_PROMPT
+
+    assert "추측하지 말고 그 자리를 [?]로" in SCAN_OCR_PROMPT

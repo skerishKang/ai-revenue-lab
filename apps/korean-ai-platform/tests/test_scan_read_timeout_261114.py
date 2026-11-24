@@ -169,3 +169,14 @@ def test_the_router_exposes_exactly_the_scan_path() -> None:
     paths = [route.path for route in scan_read_routes.router.routes]
     assert paths == [scan_read_routes.SCAN_READ_PATH]
     assert scan_read_routes.SCAN_READ_PATH == "/v1/scan-pages/read"
+
+
+def test_the_scan_socket_read_bound_covers_its_first_byte_wait() -> None:
+    # A non-final scan attempt must be able to wait the scan first-byte limit
+    # (60 s) for a completed answer; the socket read bound used to cut it at 20 s.
+    with b14_timeout_policy.scan_read_timeout():
+        inside = b14_timeout_policy.build_provider_http_timeout("any/model")
+        assert inside.read == 60.0
+        assert inside.connect == 60.0
+    outside = b14_timeout_policy.build_provider_http_timeout("any/model")
+    assert (outside.connect, outside.read) == (15.0, 20.0)
