@@ -10,7 +10,6 @@ import asyncio
 import hashlib
 import json
 import logging
-import re
 import time
 from datetime import datetime, timedelta, timezone
 
@@ -31,29 +30,35 @@ from .platform_admin_authority import platform_authority_for
 from .connector_account_subject import maintenance_owner_context
 from .connector_account_shadow import mode_connector_read
 
-_CLOSED_CODE = re.compile(r"[a-z0-9_]{1,64}")
 logger = logging.getLogger(__name__)
 INTERVAL = 60
 TTL = 300
 VERIFY_SECONDS = 600
 ACTOR = "system:pc_maintenance"
-#: An expected refusal (an unowned PC, a consent that was never granted) is a
-#: normal state, not a new incident every minute. One value-free line per
-#: device and reason per hour; the audit/outbox remains deduplicated as before.
+#: An expected refusal (an owner who turned automatic updates off, a link that
+#: is no longer managed) is a normal state, not a new incident every minute.
+#: One value-free line per device and reason per hour; the audit/outbox
+#: remains deduplicated as before.
 DENIAL_LOG_INTERVAL = 3600
 _MAX_DENIAL_LOG_KEYS = 1024
 #: Every closed reason a maintenance owner-authority refusal can carry.
+#: 2026-11-24 decision (#8359): the owner's permission for a paired managed PC
+#: is the administrator's managed mark plus the link owner's own automatic
+#: update setting (#8204). No native connector enrollment consent is read, so
+#: no consent-directory code exists here any more.
 OWNER_DENIAL_CODES = frozenset({
-    "scope_missing", "consent_source_missing", "consent_reference_missing",
-    "consent_account_invalid", "consent_node_invalid", "consent_map_missing",
-    "consent_pin_ambiguous",
-    "consent_pin_invalid", "consent_read_error", "scope_subject",
-    "consent_key_invalid_request", "consent_key_record_missing",
-    "consent_key_scope_mismatch", "consent_key_unpinned",
-    "consent_key_ambiguous", "consent_key_invalid",
-    "consent_missing", "consent_subject", "consent_device", "consent_withdrawn",
-    "consent_id", "account_ref_mismatch", "workspace_ref_mismatch",
+    "scope_missing", "scope_subject",
+    "owner_managed_missing", "owner_auto_update_off",
+    "owner_setting_missing", "owner_setting_invalid",
 })
+#: The owner chose this on their own link: nothing runs automatically and the
+#: existing #8204 owner notice (auto off + a newer release) is the path that
+#: tells them. It is not an operator incident, so nothing is deferred or
+#: alerted for it.
+OWNER_AUTO_UPDATE_OFF = "owner_auto_update_off"
+#: Every other owner-authority refusal is an inconsistency the operator must
+#: see once per device and source, exactly as before this decision.
+OWNER_AUTHORITY_DENIED = "owner_authority_denied"
 
 
 def _now():
@@ -178,7 +183,8 @@ def _diagnostic():
     return dict.fromkeys(("managed", "owner_link", "manager_admin", "online",
                           "observation", "helper_status", "helper_digest",
                           "updater_source", "updater_digest", "updater_task", "watcher_task", "rollout",
-                          "maintenance_candidate", "owner_session", "outcome"),
+                          "maintenance_candidate", "owner_session", "owner_authority",
+                          "outcome"),
                          "not_checked")
 
 
@@ -300,90 +306,91 @@ async def _admission(request, env, device, now, report=None):
     return facts, uid, _engine_pc_files_target
 
 
-async def _authorized(request, env, facts, session, uid, resolver):
+def _managed_link(facts, device, uid):
+    """The one managed link these facts were resolved from, or ``None``.
+
+    The first of the two owner conditions: an administrator's managed mark on
+    this owner's own active, unpaused link to exactly this Mesh node. A
+    revoked or superseded link is never ``active`` and so never reaches here.
+    """
+    links = facts.get("managed_links")
+    link = links[0] if isinstance(links, (list, tuple)) and len(links) == 1 else None
+    if (not isinstance(link, dict) or link.get("user_id") != uid
+            or link.get("mesh_node_id") != device
+            or link.get("state") != "active" or link.get("paused_at") is not None
+            or not link.get("managed_at") or not link.get("managed_by")
+            or not isinstance(link.get("link_id"), str) or not link["link_id"]):
+        return None
+    return link
+
+
+async def _owner_auto_update_denial(state, uid, link):
+    """A closed code unless the link owner's #8204 setting is on.
+
+    The second owner condition. It is read through the owner-scoped list the
+    owner's own update screen uses, which answers only for this account's
+    active, unpaused links (newest hundred). The setting of another account
+    linked to the same PC can therefore never stand in, and a link the owner's
+    own list does not name exactly fails closed instead of defaulting to on.
+    """
+    rows = await state.pc_device_pairing_store.list_helper_update_preferences(user_id=uid)
+    if not isinstance(rows, list):
+        return "owner_setting_invalid"
+    own = [row for row in rows
+           if isinstance(row, dict) and row.get("link_id") == link["link_id"]]
+    if len(own) != 1 or own[0].get("mesh_node_id") != link["mesh_node_id"]:
+        return "owner_setting_missing"
+    setting = own[0].get("auto_helper_update")
+    if type(setting) is not int or setting not in (0, 1):
+        return "owner_setting_invalid"
+    return None if setting == 1 else "owner_auto_update_off"
+
+
+async def _authorized(request, env, facts, session, uid, resolver, report=None):
     state = request.app.state
     device = facts["device_id"]
     identity = state.control_plane_identity_authority
-    stage = None
+    report = report if report is not None else {}
+
+    def denied(code):
+        # One value-free line per device and code per hour (#8658).
+        _log_denial(state, device, code)
+        if code == "owner_auto_update_off":
+            report["owner_authority"] = "auto_update_off"
+            return None, None, OWNER_AUTO_UPDATE_OFF
+        report["owner_authority"] = "denied"
+        return None, None, OWNER_AUTHORITY_DENIED
+
+    # The account range is unchanged: the server-resolved owner session must
+    # read its own connector scope, and that scope must name the same subject.
     scope = await mode_connector_read(identity, "owner_scope", session_id=session.session_id)
-    # The consent directory is keyed by the connector's own enrollment device
-    # id, not by the Mesh node this link names. The server-owned pair comes
-    # from the dispatch record written for this owner and node, not from the
-    # deployment ownership map. Never reshape the Mesh string into a key and
-    # never loosen the consent server's own reference check.
-    scope_ready = (
-        isinstance(scope, dict) and bool(scope.get("account_ref"))
-        and bool(scope.get("workspace_ref"))
-    )
-    if not scope_ready:
-        # This refusal is *before* the consent read: no consent call is made
-        # and no consent error can be observed. Its closed code is distinct
-        # from every consent-directory failure below.
-        _log_denial(state, device, "scope_missing")
-        return None, None, "owner_consent_missing"
-    # #8359 E: the deployment ownership map is left alone for the file-read
-    # lane; it is stale in production and must not supply this path's key.
-    # A server-owned dispatch row pairs the consent key with the Mesh node
-    # under the owner and the exact account/workspace. No record is a closed
-    # failure, never a guess from the map or from reshaping the node string.
-    history = getattr(state, "history_store", None)
-    key_reader = getattr(history, "consent_key_for_owner_node", None)
-    if callable(key_reader):
-        consent_ref, ref_reason = await key_reader(
-            user_id=uid, node_ref=device,
-            account_ref=scope["account_ref"], workspace_ref=scope["workspace_ref"])
-    else:
-        consent_ref, ref_reason = None, "consent_source_missing"
-    if not isinstance(consent_ref, str) or not consent_ref:
-        # Every way of having no consent key is a pre-consent refusal. The
-        # server-owned record now says which one; none of them prints a value.
-        _log_denial(state, device, ref_reason)
-        return None, None, "owner_consent_missing"
-    try:
-        consent = await mode_connector_read(identity, "consent", session_id=session.session_id, device_id=consent_ref)
-    except Exception as exc:
-        consent = None
-        stage = "consent_read_error"
-        # Closed identity codes only (fixed strings such as
-        # connector_consent_not_found), never a value or message text.
-        code = getattr(exc, "code", None)
-        status = getattr(exc, "status_code", getattr(exc, "status", None))
-        closed_code = code if isinstance(code, str) and _CLOSED_CODE.fullmatch(code) else "-"
-        _log_once(state, device, "consent_read:" + closed_code,
-                  "pc_maintenance_consent_read outcome=error kind=%s status=%s code=%s",
-                  type(exc).__name__, status if isinstance(status, int) else "-", closed_code)
-    subject = session.subject.subject_id
-    if stage is None:
-        if not isinstance(scope, dict) or not scope.get("account_ref") or not scope.get("workspace_ref"):
-            stage = "scope_missing"
-        elif scope.get("owner_subject_id") != subject:
-            stage = "scope_subject"
-        elif not isinstance(consent, dict):
-            stage = "consent_missing"
-        elif consent.get("owner_subject_id") != subject:
-            stage = "consent_subject"
-        elif consent.get("device_id") != consent_ref:
-            stage = "consent_device"
-        elif consent.get("withdrawn_at") is not None:
-            stage = "consent_withdrawn"
-        elif not consent.get("consent_id"):
-            stage = "consent_id"
-        elif consent.get("account_ref") != scope.get("account_ref"):
-            stage = "account_ref_mismatch"
-        elif consent.get("workspace_ref") != scope.get("workspace_ref"):
-            stage = "workspace_ref_mismatch"
-    if stage is not None:
-        _log_denial(state, device, stage)
-        return None, None, "owner_consent_missing"
+    if (not isinstance(scope, dict) or not scope.get("account_ref")
+            or not scope.get("workspace_ref")):
+        return denied("scope_missing")
+    if scope.get("owner_subject_id") != session.subject.subject_id:
+        return denied("scope_subject")
+    # #8359 (2026-11-24 decision): a paired managed PC never has a native
+    # connector enrollment consent - the pairing install creates neither a
+    # connector device id nor a consent record. The owner's permission is the
+    # two server-owned facts on the link itself: the administrator's managed
+    # mark, and the link owner's automatic-update setting (#8204) being on.
+    link = _managed_link(facts, device, uid)
+    if link is None:
+        return denied("owner_managed_missing")
+    refusal_code = await _owner_auto_update_denial(state, uid, link)
+    if refusal_code is not None:
+        return denied(refusal_code)
     resolved, refusal = await resolver(request, session=session, selected_device_id=device, user_id=uid)
     target = resolved.get("target") if isinstance(resolved, dict) and resolved.get("authorized") is True else None
     if (refusal is not None or not isinstance(target, dict) or target.get("node_ref") != device
             or resolved.get("account_ref") != scope["account_ref"]
             or resolved.get("workspace_ref") != scope["workspace_ref"]):
+        report["owner_authority"] = "target_mismatch"
         return None, None, "target_mismatch"
     intent, reason = admit_maintenance(
-        env=env, **facts, owner_session=True, owner_consent=True,
+        env=env, **facts, owner_session=True, owner_auto_update=True,
         target_device_id=target.get("device_id"), target_link_id=target.get("link_id"))
+    report["owner_authority"] = "target_mismatch" if reason == "target_mismatch" else "passed"
     return intent, target, reason
 
 
@@ -424,10 +431,13 @@ async def consider_device(app, env, store, device, *, now=None, report=None):
         report["outcome"] = "resolve_owner_session"
         async with maintenance_owner_context(app, uid) as session:
             report.update(owner_session="yes", outcome="check_owner_authority")
-            intent, target, reason = await _authorized(request, env, facts, session, uid, resolver)
+            intent, target, reason = await _authorized(
+                request, env, facts, session, uid, resolver, report)
             if intent is None:
                 report["outcome"] = reason
-                if digest and reason == "owner_consent_missing":
+                # An owner who turned automatic updates off is told by the
+                # existing #8204 owner notice; nothing is deferred or alerted.
+                if digest and reason == OWNER_AUTHORITY_DENIED:
                     await _defer(state, store, device, digest, now, reason)
                 return
             report["outcome"] = "reserve_attempt"

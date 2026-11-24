@@ -39,7 +39,7 @@ INSTALL = {**UPDATE, "PADIEM_PC_HELPER_AUTO_INSTALL_ENABLED": "1"}
 
 def admit(**changes):
     args = dict(env=UPDATE, device_id=DEVICE, managed_links=[LINK], admin_now=True,
-                online=True, owner_session=True, owner_consent=True,
+                online=True, owner_session=True, owner_auto_update=True,
                 observation=OBS, manifest=MANIFEST, rollout=ROLLOUT, now=NOW,
                 target_device_id=DEVICE, target_link_id=LINK["link_id"])
     return admit_maintenance(**{**args, **changes})
@@ -65,7 +65,9 @@ def test_exact_fixed_bytes_and_shared_refresh_lock():
     ({"admin_now": False}, "manager_not_admin"),
     ({"online": False}, "offline"),
     ({"owner_session": False}, "owner_unresolved"),
-    ({"owner_consent": False}, "owner_consent_missing"),
+    ({"owner_auto_update": False}, "owner_auto_update_off"),
+    ({"owner_auto_update": None}, "owner_auto_update_off"),
+    ({"owner_auto_update": 1}, "owner_auto_update_off"),
     ({"device_id": "01234567-89ab-cdef-0123-456789abcdef"}, "device_unverified"),
     ({"target_device_id": "node//other"}, "target_mismatch"),
     ({"target_link_id": "pcl_other"}, "target_mismatch"),

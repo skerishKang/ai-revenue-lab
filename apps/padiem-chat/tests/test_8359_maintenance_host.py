@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -18,18 +19,16 @@ from app import pc_helper_maintenance_host as host
 from app import oracle_mesh_read_return_routes as routes
 from app.pc_helper_registration import SOURCE_SHA256, registration_command
 from app.pc_helper_install import install_command, install_script
-from canonical_connector_enrollment_durable import (
-    IdentityDurableConnectorEnrollmentRecords,
-)
-from padiem_control_plane.contracts import ControlPlaneContractError
-from padiem_control_plane.padiem_connector_enrollment import ConnectorEnrollmentConsent
+from app.pc_device_pairing_store import D1PcPairingStore
+from _support import pc_device_pairing as pairing_support
 
 NOW = datetime(2026, 11, 23, tzinfo=timezone.utc)
 DEVICE = "node//managed-fixture"
-#: The connector's own enrollment device id. It is a different string from
-#: the Mesh node a managed link names, and it is what a consent grant stores.
-CONNECTOR = "connector-device-fixture"
 UID = "usr_owner"
+OTHER_UID = "usr_other"
+ADMIN = "usr_admin"
+#: The real target resolver; the rig below replaces the module attribute.
+REAL_TARGET = routes._engine_pc_files_target
 SUB = "sub_" + "a" * 32
 TENANT = "tenant_" + "b" * 32
 RELEASE = {"version": "0.3.0-rc2", "sha256": "a" * 64,
@@ -40,55 +39,23 @@ LINK = {"mesh_node_id": DEVICE, "state": "active", "paused_at": None,
         "link_id": "pcl_fixture"}
 ENV = {"PADIEM_PC_HELPER_AUTO_UPDATE_ENABLED": "1"}
 SCOPE = {"owner_subject_id": SUB, "account_ref": "account-fixture", "workspace_ref": "workspace-fixture"}
-#: The deployment ownership map's one server-owned row for this PC: the
-#: connector device id and the Mesh node it addresses, side by side.
-MAP = [{"account_ref": SCOPE["account_ref"], "device_id": CONNECTOR, "node_ref": DEVICE,
-        "root_ref": "pcroot_fixture", "path_relative": "fixture.txt",
-        "file_path": "C:/fixture.txt", "command_exec": True}]
-
-
-class Cursor:
-    def __init__(self, rows):
-        self._rows = rows
-
-    def toArray(self):
-        return self._rows
-
-
-class Sql:
-    def __init__(self, db):
-        self._db = db
-
-    def exec(self, statement, *args):
-        cursor = self._db.execute(statement, args)
-        if cursor.description is not None:
-            fields = [col[0] for col in cursor.description]
-            return Cursor([dict(zip(fields, row, strict=True)) for row in cursor.fetchall()])
-        return Cursor([])
-
-
-class DurableStorage:
-    """The same SQLite storage shape the canonical Identity DO exposes."""
-
-    def __init__(self):
-        self.db = sqlite3.connect(":memory:", isolation_level=None)
-        self.sql = Sql(self.db)
-
-    def transactionSync(self, callback):
-        self.db.execute("BEGIN IMMEDIATE")
-        try:
-            result = callback()
-            self.db.execute("COMMIT")
-            return result
-        except Exception:
-            self.db.execute("ROLLBACK")
-            raise
+#: The deployment ownership map as production holds it: one stale file-lane
+#: placeholder that names neither this account nor this PC. The maintenance
+#: path must work without it and must never read a pair from it.
+MAP = [{"account_ref": "account-placeholder", "device_id": "placeholder-device",
+        "node_ref": "node//placeholder", "root_ref": "pcroot_placeholder",
+        "path_relative": "placeholder.txt", "file_path": "C:/placeholder.txt",
+        "command_exec": False}]
+#: The link owner's own #8204 setting row, as the owner-scoped list returns it.
+PREFERENCE = {"link_id": LINK["link_id"], "mesh_node_id": DEVICE, "label": "PC",
+              "auto_helper_update": 1, "helper_update_dismissed_version": None}
 
 
 class Queue:
     """No PC execution; only existing proxy-shaped methods."""
     def __init__(self):
         self.links = [LINK]
+        self.preferences = {UID: [dict(PREFERENCE)]}
         self.registration = {}
         self.state = {"helper_status_present": True, "helper_sha256": "b" * 64,
                       "helper_version": "0.3.0-rc1", "updater_source_present": True,
@@ -109,6 +76,10 @@ class Queue:
 
     async def managed_owner_for_device(self, **kw):
         return self.links
+
+    async def list_helper_update_preferences(self, *, user_id):
+        # Owner-scoped, like the real store: another account's rows never appear.
+        return [dict(row) for row in self.preferences.get(user_id, [])]
 
     async def load(self, **kw):
         return {"device_id": DEVICE, "connected": self.online, "received_at": self.now.isoformat()}
@@ -161,13 +132,6 @@ class History:
         return {"run_id": self.rows[-1]["run_id"], "state": "done" if self.done else "pending",
                 "exit_code": 0, "dispatch_id": "dispatch-fixture"}
 
-    async def consent_key_for_owner_node(self, *, user_id, node_ref, account_ref, workspace_ref):
-        # The server-owned dispatch record pairs the consent key with the
-        # Mesh node under this owner and connector scope.
-        if (user_id, node_ref, account_ref, workspace_ref) != (UID, DEVICE, SCOPE["account_ref"], SCOPE["workspace_ref"]):
-            return None, "consent_key_scope_mismatch"
-        return CONNECTOR, "observed"
-
 
 @pytest.fixture
 def rig(monkeypatch):
@@ -188,31 +152,24 @@ def rig(monkeypatch):
     app = SimpleNamespace(state=state)
     session = SimpleNamespace(session_id="session-fixture", tenant_id=TENANT,
                               subject=SimpleNamespace(subject_id=SUB))
-    flags = {"session": True, "consent": True, "admin": True, "precontact": False, "stage": "internal",
-             "target": DEVICE, "revoked_after_run": False}
+    flags = {"session": True, "scope": True, "admin": True, "precontact": False, "stage": "internal",
+             "target": DEVICE, "revoked_after_run": False, "owners": {UID}}
 
     @asynccontextmanager
     async def owner(app, uid):
-        assert uid == UID
+        assert uid in flags["owners"]
         if not flags["session"] or (flags["revoked_after_run"] and history.runs):
             raise ValueError("maintenance_owner_unresolved")
         yield session
 
-    flags["consent_refs"] = []
+    flags["reads"] = []
 
     async def read(identity, method, **kw):
-        if method == "owner_scope":
-            return SCOPE
-        # The consent server keys records by the connector's own enrollment
-        # device id, not by the Mesh node. A composed node/ value is refused
-        # by its reference grammar; a wrong bare value finds no record.
-        flags["consent_refs"].append(kw.get("device_id"))
-        if not flags["consent"]:
-            return None
-        if kw.get("device_id") != CONNECTOR:
-            raise ValueError("connector_enrollment_invalid_reference")
-        return {**SCOPE, "device_id": CONNECTOR, "withdrawn_at": None,
-                "consent_id": "consent-fixture"}
+        flags["reads"].append(method)
+        # 2026-11-24 decision: maintenance asks only for the owner scope. A
+        # native connector enrollment consent read would be a regression.
+        assert method == "owner_scope", "maintenance must not read enrollment consent"
+        return SCOPE if flags["scope"] else None
 
     async def route_read(*args, **kwargs):
         if flags["precontact"]:
@@ -259,9 +216,9 @@ def test_actual_dispatch_path_and_next_observation(rig, monkeypatch):
         assert len(history.rows) == 1
         row = history.rows[0]
         assert row["user_id"] == UID and row["device_id"] == row["node_ref"] == DEVICE
-        # ##8359: the consent lookup carries the map's connector device id
-        # unchanged - not the Mesh node and not a reshaped piece of it.
-        assert flags["consent_refs"] and set(flags["consent_refs"]) == {CONNECTOR}
+        # #8359 (2026-11-24): the owner authority is the managed mark plus the
+        # owner's automatic-update setting; no enrollment consent is read.
+        assert flags["reads"] and set(flags["reads"]) == {"owner_scope"}
         assert row["user_mode"] is False and row["kind"] == "command"
         assert row["command_text"] == registration_command()
         assert history.runs[row["run_id"]]["action"] == "pc_maintenance"
@@ -277,51 +234,6 @@ def test_actual_dispatch_path_and_next_observation(rig, monkeypatch):
         assert db.execute("SELECT count(*) FROM ops_alert_outbox").fetchone()[0] == 0
         assert db.execute("SELECT count(*) FROM ops_audit_log WHERE action='helper_auto_verified'").fetchone()[0] == 1
     asyncio.run(run())
-
-
-def test_consent_lookup_carries_the_map_pin_unchanged(rig):
-    """The accumulated wire calls carry the ownership map's pinned connector
-    device id; the Mesh node and any reshaping of it never reach the consent
-    server (server-side refusal is pinned in the control-plane durable tests)."""
-    app, queue, history, flags, store, db = rig
-    async def run():
-        await host.maintenance_round(app, ENV, store)
-    asyncio.run(run())
-    assert flags["consent_refs"] and set(flags["consent_refs"]) == {CONNECTOR}
-    assert CONNECTOR not in (DEVICE, DEVICE.rsplit("/", 1)[1])
-
-
-def test_no_server_owned_record_means_no_consent_lookup(rig):
-    """Without the server-owned pair there is no reference to look up, so the
-    candidate stops before the consent call and stages no run. A stale map
-    row must not be used as a fallback for this path."""
-    app, queue, history, flags, store, db = rig
-    app.state.oracle_mesh_return_source = routes.OracleMeshReturnSource(
-        [{**MAP[0], "node_ref": "node//another-pc"}], "s" * 32,
-        routes.EXECUTION_MODE_MESH)
-
-    async def no_record(**kw):
-        return None, "consent_key_record_missing"
-
-    history.consent_key_for_owner_node = no_record
-    async def run():
-        await host.maintenance_round(app, ENV, store)
-    asyncio.run(run())
-    assert flags["consent_refs"] == []
-    assert history.rows == []
-    assert db.execute("SELECT count(*) FROM pc_helper_maintenance_jobs").fetchone()[0] == 0
-
-
-def test_consent_device_grammar_still_refuses_the_mesh_forms(rig):
-    """The consent server's own reference check is not widened: neither the
-    composed node/ form nor a shortened node id is accepted as a device key."""
-    source = rig[0].state.oracle_mesh_return_source
-    assert source.consent_device_for_node(
-        account_ref=SCOPE["account_ref"], node_ref=DEVICE) == CONNECTOR
-    assert source.consent_device_for_node(
-        account_ref=SCOPE["account_ref"], node_ref="node//unknown") is None
-    assert source.consent_device_for_node(
-        account_ref="account-other", node_ref=DEVICE) is None
 
 
 @pytest.mark.parametrize(("denial", "expected"), [
@@ -397,9 +309,11 @@ def test_file_only_observation_can_select_refresh_but_not_verify_it(rig, monkeyp
 
     asyncio.run(run())
 
-@pytest.mark.parametrize("denial", ["switch", "unmanaged", "multi", "offline", "owner", "consent",
-                                    "admin", "stage", "target", "guid", "revoked_after_run"])
-def test_row_creation_denied(rig, denial):
+@pytest.mark.parametrize("denial", [
+    "switch", "unmanaged", "multi", "offline", "owner", "scope", "auto_off",
+    "setting_missing", "foreign_setting", "unmarked", "paused", "admin", "stage",
+    "target", "guid", "revoked_after_run"])
+def test_row_creation_denied(rig, denial, caplog):
     app, queue, history, flags, store, db = rig
     env = ENV
     if denial == "switch":
@@ -412,8 +326,20 @@ def test_row_creation_denied(rig, denial):
         queue.online = False
     elif denial == "owner":
         flags["session"] = False
-    elif denial == "consent":
-        flags["consent"] = False
+    elif denial == "scope":
+        flags["scope"] = False
+    elif denial == "auto_off":
+        queue.preferences[UID][0]["auto_helper_update"] = 0
+    elif denial == "setting_missing":
+        queue.preferences = {}
+    elif denial == "foreign_setting":
+        # Another account linked to the same PC keeps automatic updates on.
+        queue.preferences = {UID: [{**PREFERENCE, "auto_helper_update": 0}],
+                             OTHER_UID: [{**PREFERENCE, "link_id": "pcl_other"}]}
+    elif denial == "unmarked":
+        queue.links = [{**LINK, "managed_at": None, "managed_by": None}]
+    elif denial == "paused":
+        queue.links = [{**LINK, "paused_at": NOW.isoformat()}]
     elif denial == "admin":
         flags["admin"] = False
     elif denial == "stage":
@@ -431,10 +357,38 @@ def test_row_creation_denied(rig, denial):
         assert not history.rows
         if denial != "revoked_after_run":
             assert not history.runs
-        if denial in ("owner", "consent"):
-            assert db.execute("SELECT count(*) FROM ops_alert_outbox").fetchone()[0] == 1
-            assert db.execute("SELECT count(*) FROM ops_audit_log").fetchone()[0] == 1
+        alerts = db.execute("SELECT count(*) FROM ops_alert_outbox").fetchone()[0]
+        audits = db.execute("SELECT count(*) FROM ops_audit_log").fetchone()[0]
+        if denial in ("owner", "scope", "setting_missing", "paused"):
+            # An owner-authority inconsistency is deferred and alerted once.
+            assert (alerts, audits) == (1, 1)
+        if denial in ("auto_off", "foreign_setting"):
+            # The owner's own choice: nothing deferred, alerted or reserved.
+            assert (alerts, audits) == (0, 0)
+            assert db.execute("SELECT count(*) FROM pc_helper_auto_attempts").fetchone()[0] == 0
+            assert db.execute("SELECT count(*) FROM pc_helper_maintenance_jobs").fetchone()[0] == 0
     asyncio.run(run())
+    lines = [r.getMessage() for r in caplog.records
+             if r.getMessage().startswith("pc_maintenance_candidate ")
+             and "outcome=not_managed" not in r.getMessage()]
+    expected = {
+        "scope": ("owner_authority=denied", "outcome=owner_authority_denied"),
+        "setting_missing": ("owner_authority=denied", "outcome=owner_authority_denied"),
+        "paused": ("owner_authority=denied", "outcome=owner_authority_denied"),
+        "auto_off": ("owner_authority=auto_update_off", "outcome=owner_auto_update_off"),
+        "foreign_setting": ("owner_authority=auto_update_off", "outcome=owner_auto_update_off"),
+        "target": ("owner_authority=target_mismatch", "outcome=target_mismatch"),
+        "unmarked": ("owner_authority=not_checked", "outcome=owner_link_denied"),
+    }.get(denial)
+    if expected:
+        assert lines and all(field in line for line in lines for field in expected)
+    reasons = {"scope": "scope_missing", "setting_missing": "owner_setting_missing",
+               "paused": "owner_managed_missing", "auto_off": "owner_auto_update_off",
+               "foreign_setting": "owner_auto_update_off"}
+    if denial in reasons:
+        # Two rounds, one value-free line (#8658 hourly suppression).
+        assert caplog.text.count(
+            "pc_maintenance_owner_authority outcome=denied reason=" + reasons[denial]) == 1
 
 
 @pytest.mark.parametrize("precontact", [True, False])
@@ -719,59 +673,163 @@ def test_maintenance_reverse_lookup_reads_live_authority_not_process_cache(monke
     assert len(calls) == 2
 
 
-def test_granted_consent_is_found_by_the_maintenance_lookup(rig, monkeypatch):
-    """Round trip through the real durable store: the human grant stores the
-    connector device id, and maintenance reads that exact record through the
-    managed link's server-owned map pair. No Mesh string is reshaped."""
+def _real_pairing(rig, monkeypatch, *, managed=True, auto=True, extra=None):
+    """Swap in the real pairing store and the real target resolver.
+
+    The managed mark, the owner's #8204 setting, pause and revoke are written
+    by the store's own methods over the migrated schema, so the SQL that
+    answers the maintenance path is the production SQL.
+    """
+    app = rig[0]
+    conn = pairing_support.database()
+    real = D1PcPairingStore(SqliteD1(conn))
+
+    async def build():
+        link = await real.adopt_link(user_id=UID, mesh_node_id=DEVICE, root_paths=[],
+                                     now=NOW, drives=["C:"])
+        if managed:
+            await real.set_managed(link_id=link["link_id"], by_user_id=ADMIN,
+                                   managed=True, now=NOW)
+        if not auto:
+            assert await real.set_helper_update_preference(
+                user_id=UID, link_id=link["link_id"], auto=False)
+        if extra is not None:
+            await extra(real, link)
+        return link
+
+    link = asyncio.run(build())
+    app.state.pc_device_pairing_store = real
+    monkeypatch.setattr(routes, "_engine_pc_files_target", REAL_TARGET)
+    return real, link, conn
+
+
+def _journal(db):
+    return {name: db.execute("SELECT count(*) FROM " + name).fetchone()[0]
+            for name in ("pc_helper_maintenance_jobs", "pc_helper_auto_attempts",
+                         "ops_alert_outbox", "ops_audit_log")}
+
+
+def test_real_store_managed_link_with_automatic_updates_creates_the_job(rig, monkeypatch, caplog):
     app, queue, history, flags, store, db = rig
-    storage = DurableStorage()
-    records = IdentityDurableConnectorEnrollmentRecords(
-        storage=storage,
-        session_reader=SimpleNamespace(resolve_auth_session=lambda **kw: None),
-    )
-    records.install_schema()
-    records.persist_preverified_consent(
-        consent=ConnectorEnrollmentConsent(
-            consent_id="consent." + "a" * 32, owner_subject_id=SUB,
-            account_ref=SCOPE["account_ref"], workspace_ref=SCOPE["workspace_ref"],
-            device_id=CONNECTOR, granted_at=NOW,
-        ),
-        now=NOW,
-    )
-    stored = records.current_for_device(owner_subject_id=SUB, device_id=CONNECTOR, now=NOW)
-    assert stored is not None and stored.device_id == CONNECTOR
-    # The consent server's own grammar is unchanged: the composed Mesh value
-    # is refused as a reference, and a valid-but-different value finds nothing.
-    with pytest.raises(ControlPlaneContractError) as refusal:
-        records.current_for_device(owner_subject_id=SUB, device_id=DEVICE, now=NOW)
-    assert refusal.value.code == "connector_enrollment_invalid_reference"
-    assert records.current_for_device(
-        owner_subject_id=SUB, device_id=DEVICE.rsplit("/", 1)[1], now=NOW) is None
-
-    class DurableRefusal(Exception):
-        def __init__(self, code):
-            super().__init__(code)
-            self.code = code
-
-    async def durable_read(identity, method, **kw):
-        if method == "owner_scope":
-            return SCOPE
-        flags["consent_refs"].append(kw.get("device_id"))
-        try:
-            current = records.current_for_device(
-                owner_subject_id=SUB, device_id=kw.get("device_id"), now=NOW)
-        except ControlPlaneContractError as exc:
-            raise DurableRefusal(exc.code) from None
-        if (current is None or current.account_ref != SCOPE["account_ref"]
-                or current.workspace_ref != SCOPE["workspace_ref"]):
-            raise DurableRefusal("enrollment_consent_required")
-        return {"owner_subject_id": current.owner_subject_id,
-                "device_id": current.device_id, "withdrawn_at": None,
-                "consent_id": current.consent_id, "account_ref": current.account_ref,
-                "workspace_ref": current.workspace_ref}
-
-    monkeypatch.setattr(host, "mode_connector_read", durable_read)
-    asyncio.run(host.maintenance_round(app, ENV, store))
-    assert set(flags["consent_refs"]) == {CONNECTOR}
+    real, link, conn = _real_pairing(rig, monkeypatch)
+    try:
+        asyncio.run(host.maintenance_round(app, ENV, store))
+    finally:
+        conn.close()
     assert len(history.rows) == 1
-    assert history.rows[0]["node_ref"] == DEVICE
+    row = history.rows[0]
+    assert row["user_id"] == UID and row["device_id"] == row["node_ref"] == DEVICE
+    assert row["command_text"] == registration_command() and row["user_mode"] is False
+    assert set(flags["reads"]) == {"owner_scope"}
+    job = db.execute("SELECT owner_id,status,action FROM pc_helper_maintenance_jobs").fetchone()
+    assert tuple(job) == (UID, "queued", "refresh")
+    line = next(r.getMessage() for r in caplog.records
+                if r.getMessage().startswith("pc_maintenance_candidate ")
+                and "managed=yes" in r.getMessage())
+    assert "owner_session=yes" in line and "owner_authority=passed" in line
+    assert "outcome=dispatch_attempted" in line
+    assert "pc_maintenance_owner_authority" not in caplog.text
+    assert link["link_id"] not in caplog.text and UID not in caplog.text
+
+
+def test_real_store_automatic_updates_off_runs_nothing_and_owner_notice_takes_over(
+        rig, monkeypatch, caplog):
+    """자동 꺼짐: 자동 실행하지 않고, #8204의 주인 알림(같은 링크 설정이 켜는 표시)에 맡긴다."""
+    from app import pc_helper_update_routes as updates
+
+    app, queue, history, flags, store, db = rig
+    real, link, conn = _real_pairing(rig, monkeypatch, auto=False)
+
+    async def available(_state, *, device_id, now):
+        assert device_id == DEVICE
+        return {"helper_version": "0.3.0-rc1", "latest_version": RELEASE["version"],
+                "update_available": True, "update_required": False}
+
+    monkeypatch.setattr(updates, "current_user_id", lambda request: request.user)
+    monkeypatch.setattr(updates, "_now", lambda: queue.now)
+    monkeypatch.setattr(updates, "load_update_view", available)
+
+    async def run():
+        await host.maintenance_round(app, ENV, store)
+        await host.maintenance_round(app, ENV, store)
+        assert history.rows == [] and history.runs == {}
+        assert set(_journal(db).values()) == {0}
+        shown = await updates.list_updates(SimpleNamespace(app=app, user=UID))
+        device = json.loads(shown.body)["devices"][0]
+        assert device["link_id"] == link["link_id"]
+        assert device["auto_update"] is False and device["notice"] is True
+        # 주인이 다시 켜면 다음 회차에 자동 유지보수가 그대로 이어진다.
+        assert await real.set_helper_update_preference(
+            user_id=UID, link_id=link["link_id"], auto=True)
+        queue.now += timedelta(seconds=60)
+        await host.maintenance_round(app, ENV, store)
+        assert len(history.rows) == 1 and history.rows[0]["user_id"] == UID
+    try:
+        asyncio.run(run())
+    finally:
+        conn.close()
+    assert caplog.text.count(
+        "pc_maintenance_owner_authority outcome=denied reason=owner_auto_update_off") == 1
+    assert "owner_authority=auto_update_off outcome=owner_auto_update_off" in caplog.text
+
+
+@pytest.mark.parametrize("state", ["unmanaged", "unmarked_later", "paused", "revoked"])
+def test_real_store_unmanaged_paused_or_revoked_link_is_refused(rig, monkeypatch, caplog, state):
+    app, queue, history, flags, store, db = rig
+
+    async def change(real, link):
+        if state == "unmarked_later":
+            await real.set_managed(link_id=link["link_id"], by_user_id=ADMIN,
+                                   managed=False, now=NOW)
+        elif state == "paused":
+            await real.pause_link(user_id=UID, link_id=link["link_id"], now=NOW)
+        elif state == "revoked":
+            assert await real.revoke_link(user_id=UID, link_id=link["link_id"], now=NOW)
+
+    real, link, conn = _real_pairing(rig, monkeypatch, managed=state != "unmanaged", extra=change)
+    try:
+        asyncio.run(host.maintenance_round(app, ENV, store))
+    finally:
+        conn.close()
+    assert history.rows == [] and history.runs == {}
+    assert set(_journal(db).values()) == {0}
+    assert "owner_authority=passed" not in caplog.text
+    assert "outcome=dispatch_attempted" not in caplog.text
+
+
+def test_real_store_other_account_on_the_same_pc_never_lends_its_permission(
+        rig, monkeypatch, caplog):
+    """같은 PC에 다른 계정 링크(관리 표시 없음, 자동 켜짐)가 있어도 그 설정을 빌리지 않는다."""
+    app, queue, history, flags, store, db = rig
+
+    async def second_account(real, link):
+        other = await real.adopt_link(user_id=OTHER_UID, mesh_node_id=DEVICE, root_paths=[],
+                                      now=NOW, drives=["C:"])
+        rows = await real.list_helper_update_preferences(user_id=OTHER_UID)
+        assert [row["auto_helper_update"] for row in rows] == [1]
+        assert other["link_id"] != link["link_id"]
+
+    real, link, conn = _real_pairing(rig, monkeypatch, auto=False, extra=second_account)
+    try:
+        asyncio.run(host.maintenance_round(app, ENV, store))
+        assert history.rows == [] and history.runs == {}
+        assert set(_journal(db).values()) == {0}
+        assert "outcome=owner_auto_update_off" in caplog.text
+        # 관리 표시가 다른 계정의 링크에만 있으면 그 계정의 세션·범위·설정으로만 판정한다.
+        async def move_mark():
+            await real.set_managed(link_id=link["link_id"], by_user_id=ADMIN,
+                                   managed=False, now=NOW)
+            other = (await real.list_helper_update_preferences(user_id=OTHER_UID))[0]
+            await real.set_managed(link_id=other["link_id"], by_user_id=ADMIN,
+                                   managed=True, now=NOW)
+            return other
+        other = asyncio.run(move_mark())
+        flags["owners"] = {OTHER_UID}
+        queue.now += timedelta(seconds=60)
+        asyncio.run(host.maintenance_round(app, ENV, store))
+        assert len(history.rows) == 1
+        assert history.rows[0]["user_id"] == OTHER_UID
+        job = db.execute("SELECT owner_id FROM pc_helper_maintenance_jobs").fetchone()
+        assert job[0] == OTHER_UID and other["link_id"] != link["link_id"]
+    finally:
+        conn.close()

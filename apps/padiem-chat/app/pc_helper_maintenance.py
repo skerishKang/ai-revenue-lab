@@ -47,7 +47,7 @@ class MaintenanceIntent:
 
 
 def admit_maintenance(*, env, device_id, managed_links, admin_now, online,
-                      owner_session, owner_consent, observation, manifest, rollout,
+                      owner_session, owner_auto_update, observation, manifest, rollout,
                       now: datetime, target_device_id, target_link_id,
                       command=None, source_sha256=None):
     """Return a fixed intent or a bounded denial reason.
@@ -55,6 +55,12 @@ def admit_maintenance(*, env, device_id, managed_links, admin_now, online,
     All arguments except the expected command/digest are server-resolved
     authority facts, not request claims. The optional expected bytes/digest
     are for the dispatcher to recheck the previously selected intent.
+
+    The owner's permission for a paired managed PC is two server-owned facts
+    on the link itself (2026-11-24 decision): the administrator's managed mark
+    and the link owner's own automatic-update setting (#8204) being on. A
+    native connector enrollment consent record is not required; a pairing
+    install never creates one.
     """
     if not auto_update_enabled(env):
         return None, "switch_off"
@@ -75,8 +81,8 @@ def admit_maintenance(*, env, device_id, managed_links, admin_now, online,
         return None, "offline"
     if owner_session is not True:
         return None, "owner_unresolved"
-    if owner_consent is not True:
-        return None, "owner_consent_missing"
+    if owner_auto_update is not True:
+        return None, "owner_auto_update_off"
     if target_device_id != device_id or target_link_id != link["link_id"]:
         return None, "target_mismatch"
     fixed, reason = maintenance_candidate(env=env, device_id=device_id, observation=observation,
