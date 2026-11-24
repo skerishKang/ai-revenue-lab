@@ -1,0 +1,46 @@
+{
+ "sheet": "padiem-cinematic-workspace.css",
+ "method": "CSSOM !important 제거 후 계산값 비교(선언 1건씩) + 표적 재검증",
+ "combos": 40,
+ "research_matrix": {
+  "themes": [
+   "light",
+   "cinematic"
+  ],
+  "widths": [
+   1440,
+   1280,
+   1024,
+   921,
+   390
+  ],
+  "states": [
+   "general",
+   "hover",
+   "focus",
+   "collapsed"
+  ]
+ },
+ "declarations": 47,
+ "kept": 23,
+ "removed": 24,
+ "special_checks": [
+  {
+   "declaration": "border (banner)",
+   "themes": 3,
+   "widths": 3,
+   "diffs": 0
+  },
+  {
+   "declaration": "box-shadow (banner)",
+   "themes": 3,
+   "widths": 3,
+   "diffs": 0
+  }
+ ],
+ "pixel_caught": {
+  "declaration": "small-text color floor",
+  "reason": "계산 하네스는 차이 0으로 읽었으나 project-dialog 픽셀 8조합에서 차이 검출 → 캡 유지"
+ },
+ "report": "sweep_decisions.json"
+}

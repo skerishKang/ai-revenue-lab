@@ -1,0 +1,403 @@
+[
+ {
+  "combo": "light__1440x950__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "light__1440x950__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "light__390x844__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "light__390x844__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   2
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__1440x950__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__1440x950__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   1112266,
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__390x844__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__390x844__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__1440x950__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__1440x950__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__390x844__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__390x844__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__1440x950__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__1440x950__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__390x844__conversation",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__390x844__project-dialog",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ }
+]
