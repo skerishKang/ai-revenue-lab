@@ -11,7 +11,7 @@ The repository supports two reporting modes:
 The guard reports contract shape only. It never assigns a CTO verdict and never
 turns automatically-triggered unrelated CI into a required gate.
 
-Default is report-only. `PR_CONTRACT_GUARD_ENFORCE=1` may enforce the
+PR evidence-image additions are always limited to eight. Body shape alone is report-only. `PR_CONTRACT_GUARD_ENFORCE=1` may enforce the
 appropriate shape for the selected report mode.
 """
 
@@ -21,6 +21,7 @@ import json
 import os
 import re
 import sys
+import subprocess
 from pathlib import Path
 
 COMPACT_REQUIRED_SECTIONS = (
@@ -114,12 +115,83 @@ def audit(body: str | None) -> dict[str, object]:
     }
 
 
+EVIDENCE_IMAGE_LIMIT = 8
+EVIDENCE_IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp"}
+
+
+def added_evidence_images(root: Path, base: str, head: str) -> list[str]:
+    """Count newly tracked paths, not historical or modified images."""
+    raw = subprocess.check_output(
+        ["git", "diff", "--no-renames", "--diff-filter=A", "--name-only",
+         "-z", base, head, "--", "padiem-reports/"],
+        cwd=root,
+    )
+    return [
+        path for path in raw.decode("utf-8", errors="surrogateescape").split("\0")
+        if path.startswith("padiem-reports/")
+        and Path(path).suffix.lower() in EVIDENCE_IMAGE_SUFFIXES
+    ]
+
+
+def check_pr_evidence_images(root: Path, event: dict) -> int:
+    """Use the checkout merge's first parent as the exact PR base.
+
+    Actions checkout is shallow and sparse. Fetch the base tree only if it
+    is absent, without fetching image blobs or changing the working tree.
+    A missing base or unexpected checkout must fail, not waive the limit.
+    """
+    pr = event["pull_request"]
+    head = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=root, text=True
+    ).strip()
+    commit = subprocess.check_output(
+        ["git", "cat-file", "-p", head], cwd=root, text=True, encoding="utf-8"
+    )
+    parents = [
+        line.split()[1] for line in commit.split("\n\n", 1)[0].splitlines()
+        if line.startswith("parent ")
+    ]
+    if len(parents) != 2 or parents[1] != pr["head"]["sha"]:
+        raise ValueError("PR evidence check requires the exact PR merge checkout")
+    base = parents[0]
+    if not re.fullmatch(r"[0-9a-f]{40}", base):
+        raise ValueError("Invalid PR base commit")
+    present = subprocess.run(
+        ["git", "cat-file", "-e", base + "^{tree}"], cwd=root,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
+    if present.returncode:
+        subprocess.run(
+            ["git", "fetch", "--no-tags", "--depth=1", "--filter=blob:none",
+             "origin", base],
+            cwd=root, check=True, timeout=90,
+        )
+    images = added_evidence_images(root, base, head)
+    print(f"EVIDENCE_IMAGES_ADDED={len(images)} LIMIT={EVIDENCE_IMAGE_LIMIT}")
+    if len(images) > EVIDENCE_IMAGE_LIMIT:
+        print("EVIDENCE_IMAGE_LIMIT=FAIL: retain at most eight verified images; "
+              "record remaining comparisons in manifest/compare JSON.",
+              file=sys.stderr)
+        return 1
+    print("EVIDENCE_IMAGE_LIMIT=PASS")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     if argv:
         body = Path(argv[0]).read_text(encoding="utf-8")
     else:
         body = os.environ.get("PR_BODY") or ""
+
+    if os.environ.get("GITHUB_EVENT_NAME") == "pull_request":
+        try:
+            event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
+            if check_pr_evidence_images(Path.cwd(), event):
+                return 1
+        except (OSError, ValueError, KeyError, subprocess.SubprocessError) as exc:
+            print(f"EVIDENCE_IMAGE_LIMIT=FAIL: {type(exc).__name__}", file=sys.stderr)
+            return 1
 
     if not body.strip():
         report = {
