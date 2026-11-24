@@ -677,6 +677,20 @@
   --pc-pairing-revoked-bg: rgba(179, 38, 30, .08);
   --pc-pairing-menu-shadow: 0 8px 24px rgba(0, 0, 0, .16);
 
+  /* #7811 C2 answer-actions(261124): answer-actions.css의 고정 보라 팔레트.
+     값은 치환 전 리터럴 그대로이고 :root에만 둔다 — 다섯 테마에서 같은 값으로
+     칠해져 온 고정 색이라 테마 블록이 덮지 않는다. .9 흰 값은 값이 같은 기존
+     :root 토큰(--ws-input-text)을 재사용했다. */
+  --answer-actions-avatar-wash: rgba(101, 87, 232, 0.12);
+  --answer-actions-avatar-edge: rgba(101, 87, 232, 0.28);
+  --answer-actions-time-text: #7b8792;
+  --answer-actions-edge: rgba(101, 87, 232, 0.22);
+  --answer-actions-bg: rgba(255, 255, 255, 0.55);
+  --answer-actions-text: #4c3fd1;
+  --answer-actions-hover-edge: rgba(101, 87, 232, 0.45);
+  --answer-actions-pressed-bg: rgba(101, 87, 232, 0.16);
+  --answer-actions-more-bg: rgba(255, 255, 255, 0.7);
+
   /* #7811 C2 surfaces(261124): padiem-surfaces.css의 쓰임새 색. 값은 치환 전
      사용처 리터럴 그대로이고 :root에만 둔다 — 토큰 값이 모든 테마에서 같으니
      칠해지는 값도 테마마다 그대로다. 테마 블록이나 다른 시트가 덮지 않는다. */

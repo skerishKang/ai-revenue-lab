@@ -211,6 +211,13 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--pc-pairing-pending-edge", "--pc-pairing-pending-bg",
                 "--pc-pairing-revoked-edge", "--pc-pairing-revoked-bg",
                 "--pc-pairing-menu-shadow",
+                # #7811 C2 answer-actions.css(261124): 고정 보라 팔레트 9개.
+                # 값·소비 선언은 test_261124_answer_actions_tokens_7811.py가 고정한다.
+                "--answer-actions-avatar-wash", "--answer-actions-avatar-edge",
+                "--answer-actions-time-text", "--answer-actions-edge",
+                "--answer-actions-bg", "--answer-actions-text",
+                "--answer-actions-hover-edge", "--answer-actions-pressed-bg",
+                "--answer-actions-more-bg",
                 }
              | {"--ws-item-text", "--ws-current-wash", "--ws-current-glow",
                 "--ws-soft-wash", "--ws-control-hover-edge",
