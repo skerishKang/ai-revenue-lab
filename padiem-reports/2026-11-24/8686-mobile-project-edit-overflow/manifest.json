@@ -1,0 +1,46 @@
+{
+ "compare": {
+  "combos": 130,
+  "nonzero": 0,
+  "raw_pixel_nonzero": 0,
+  "state_failures": 0,
+  "report": "standard/compare_report.json"
+ },
+ "control": {
+  "combos": 130,
+  "nonzero": 0,
+  "raw_pixel_nonzero": 0,
+  "state_failures": 0,
+  "report": "control/control_report.json"
+ },
+ "captures": 8,
+ "base": "d3922afe914045d8a180968a922fd820e41cf863",
+ "branch": "fix/8686-mobile-project-edit-overflow",
+ "mobile_overflow_px": {
+  "before": {
+   "light": 36,
+   "dark": 28,
+   "padiem-glass": 28,
+   "cinematic": 28,
+   "padiem-home": 28
+  },
+  "after": {
+   "light": 0,
+   "dark": 0,
+   "padiem-glass": 0,
+   "cinematic": 0,
+   "padiem-home": 0
+  }
+ },
+ "mobile_file_delete_button_min_contrast": {
+  "light": 4.88,
+  "dark": 5.17,
+  "padiem-glass": 5.53,
+  "cinematic": 5.17,
+  "padiem-home": 5.73
+ },
+ "tests": {
+  "test_mobile_project_edit_no_horizontal_overflow": "1 passed",
+  "test_structure_ratchet.py": "13 passed"
+ }
+}
