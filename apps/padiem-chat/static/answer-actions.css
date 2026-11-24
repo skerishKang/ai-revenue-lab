@@ -99,21 +99,17 @@
   border: 1px solid rgba(101, 87, 232, 0.22);
   background: rgba(255, 255, 255, 0.7);
 }
+/* 수아 11-24: 메뉴 항목은 글자 라벨이다. 테마 규칙이 주는 정사각형 폭을 토큰으로
+   받아 라벨에 맞게 되돌린다. 아이콘 단추는 토큰 기본값(40px)을 그대로 쓴다. */
 .answer-more-menu .answer-action {
-  width: auto;
-  height: 28px;
+  --answer-action-width: auto;
+  width: var(--answer-action-width, auto);
+  min-width: 40px;
+  height: 40px;
   padding: 0 10px;
   border-radius: var(--radius-pill);
   font-size: 12px;
   font-weight: 700;
-}
-/* 수아 11-24: the "기타(···)" menu holds text labels, not glyphs. The Glass
- * turn-action rule pins every action to a 40px square, which wrapped the labels.
- * Only menu items grow to their text; the five icon buttons keep their squares. */
-html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-more-menu .answer-action {
-  width: auto;
-  min-width: 40px;
-  height: 40px;
   white-space: nowrap;
 }
 
