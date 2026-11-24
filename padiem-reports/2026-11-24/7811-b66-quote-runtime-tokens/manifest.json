@@ -1,0 +1,105 @@
+{
+  "sheet": "b66-quote-runtime.css",
+  "base": "e5ed2086b",
+  "audit": {
+    "css_color_literals": {
+      "before": 986,
+      "after": 973,
+      "delta": -13
+    },
+    "css_color_literals_unthemed": {
+      "before": 338,
+      "after": 325,
+      "delta": -13
+    },
+    "css_important": {
+      "before": 463,
+      "after": 463,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4367,
+      "after": 4367,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 777,
+      "after": 777,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": {
+      "--b66-quote-hairline": "rgba(127, 127, 127, 0.28)",
+      "--b66-quote-dialog-dim": "rgba(0, 0, 0, 0.55)",
+      "--b66-quote-edge": "rgba(127,127,127,.3)",
+      "--b66-quote-faint-edge": "rgba(127,127,127,.22)",
+      "--b66-quote-review-surface": "rgba(255, 255, 255, 0.7)"
+    },
+    "reused": [
+      "--surface-veil-faint",
+      "--surface-veil-panel",
+      "--pc-focus",
+      "--settings-input-bg"
+    ],
+    "definition": "padiem-tokens.css :root, b66-quote group after the documents group; no theme block redeclares any of the 9 names",
+    "review": "replacement_review.json — 13 removed literals match 9 token values exactly (normalised spelling), 0 theme overrides"
+  },
+  "verification": {
+    "computed": {
+      "targets": 13,
+      "measurements": 130,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "screen": "conversation + fixed quote dialog",
+      "combos": 10,
+      "nonzero": [],
+      "report": "compare_report.json"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json"
+    },
+    "contrast": {
+      "report": "contrast_report.json",
+      "note": "no text-color declarations in this sheet; no sub-4.5 item introduced"
+    },
+    "tamper": {
+      "token": "--b66-quote-hairline",
+      "mutation": "rgba(127, 127, 127, 0.28)->#ff00ff",
+      "screen": "conversation + fixed quote dialog",
+      "theme": "light",
+      "viewport": "1440x950",
+      "pixel": 8366,
+      "report": "tamper_report.json"
+    },
+    "tests": "b66 quote·7187·래칫 22 passed",
+    "ratchet": "base e5ed2086b 대비 head 실측. 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −13."
+  },
+  "notes": [
+    "값은 치환 전 var() fallback의 리터럴과 같은 색이라 최종 계산값·픽셀은 변하지 않는다.",
+    "재사용한 4개 토큰은 모두 :root 전용이고 테마 블록이 덮지 않는다. 테마가 덮는 --code-header-text 같은 값은 쓰지 않았다.",
+    "새 !important 없음. 새 색 리터럴은 토큰 정의에만 있다.",
+    "견적 대화상자는 런타임 생성이라 같은 도구의 고정 표식으로 대화상자·연결 카드를 채워 계산값·픽셀을 측정했다.",
+    "캡처 8장은 파일·상태 표식으로만 확인했고 이 모델이 이미지 입력을 받지 않아 화면 직접 보기는 못했다(못 봄)."
+  ]
+}

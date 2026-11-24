@@ -339,6 +339,11 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--documents-panel-edge", "--documents-muted-text",
                 "--documents-usage-text", "--documents-add-edge",
                 "--documents-selection-outline"}
+             # #7811 C2 b66-quote-runtime(261124): 견적 대화상자 고정 팔레트.
+             # 흰 표면(.05/.04)·초점·입력 판(.8)은 위 기존 토큰을 재사용한다.
+             | {"--b66-quote-hairline", "--b66-quote-dialog-dim",
+                "--b66-quote-edge", "--b66-quote-faint-edge",
+                "--b66-quote-review-surface"}
              # 대비 수리(261124): 연결 화면의 밝은 카드 판 위 잉크. 기본값은 테마
              # 글자색이고 dark·cinematic만 덮는다. 같은 시험 파일이 고정한다.
              | {"--connector-card-ink", "--connector-card-muted-ink"}
