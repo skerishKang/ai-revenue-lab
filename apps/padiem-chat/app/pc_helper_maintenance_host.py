@@ -21,7 +21,8 @@ from .pc_helper_maintenance import (
     AttemptClaim, MaintenanceAttemptStore, PrecontactProof, admit_maintenance, maintenance_candidate,
 )
 from .pc_helper_auto_update import auto_update_enabled
-from .pc_helper_registration import MAX_AGE, SOURCE_SHA256, parse_receipt
+from .pc_helper_registration import (MAX_AGE, SOURCE_SHA256, command_finished, parse_receipt,
+                                     parse_refresh_detail)
 from .pc_helper_install import parse_install_receipt
 from .pc_helper_rollout import load_plan
 from .pc_helper_version_routes import helper_manifest
@@ -580,7 +581,7 @@ async def reconcile(app, store, now):
                 continue
             if dispatched.get("state") in ("pending", "received"):
                 continue
-            if dispatched.get("state") != "done" or dispatched.get("exit_code") != 0:
+            if not command_finished(dispatched):
                 await store.finish(claim, "dispatch_failed", now=now)
                 continue
             run = await state.history_store.get_claw_run(job["owner_id"], job["run_id"])
@@ -589,6 +590,8 @@ async def reconcile(app, store, now):
                 continue
             receipt = (parse_install_receipt if job["action"] == "install" else parse_receipt)(original)
             if receipt["action"] not in ("installed", "updated", "skipped"):
+                logger.warning("pc_maintenance_receipt_failed action=%s reason=%s detail=%s",
+                               job["action"], receipt["reason"], parse_refresh_detail(original) or "-")
                 await store.finish(claim, receipt["reason"], now=now)
                 continue
             if job["receipt_at"] is None:

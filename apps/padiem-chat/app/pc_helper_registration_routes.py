@@ -12,7 +12,8 @@ from .mcp_gateway_execution import _pc_system_mode_allowed
 from .mcp_gateway_shell import _read_original
 from .pc_device_pairing_routes import _body, _now
 from .pc_file_exchange_routes import _dispatch_target, _stage_run
-from .pc_helper_registration import SOURCE_SHA256, parse_receipt, plan_registration, registration_command
+from .pc_helper_registration import (SOURCE_SHA256, command_finished, parse_receipt, plan_registration,
+                                     registration_command)
 from .oracle_mesh_read_return_routes import _dispatch_workspace_id, dispatch_oracle_mesh_command_intent
 
 PATH = "/api/admin/ops-pc-versions/refresh-updaters"
@@ -35,7 +36,7 @@ async def _receipt_view(request, receipt):
             raise ValueError("missing dispatch")
         if dispatch.get("state") in {"pending", "received"}:
             return {"action": "queued", "reason": "awaiting_receipt"}
-        if dispatch.get("state") != "done" or dispatch.get("exit_code") != 0:
+        if not command_finished(dispatch):
             return {"action": "failed", "reason": "dispatch_failed"}
         run = await history.get_claw_run(owner, dispatch["run_id"])
         text = await _read_original(request, uid=owner, dispatch=dispatch, run_row=run)
