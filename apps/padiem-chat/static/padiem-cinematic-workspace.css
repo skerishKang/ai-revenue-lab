@@ -57,14 +57,14 @@
   width: min(840px, calc(100% - 18px));
   margin-bottom: 9px;
   padding: 9px 11px;
-  border: 1px solid var(--ws-banner-edge) !important;
+  border: 1px solid var(--ws-banner-edge);
   border-left: 2px solid var(--ws-banner-accent) !important;
   border-radius: var(--radius-sm);
   background:
     linear-gradient(90deg, var(--ws-soft-wash), var(--ws-banner-wash-end)),
     var(--surface-panel-deep) !important;
   box-shadow:
-    inset 0 1px 0 var(--inset-veil-panel) !important,
+    inset 0 1px 0 var(--inset-veil-panel),
     0 14px 38px var(--ws-banner-shadow);
   backdrop-filter: blur(20px);
 }
@@ -101,9 +101,9 @@
 }
 
 .project-banner-actions button:hover {
-  border-color: var(--ws-control-hover-edge-strong) !important;
-  background: var(--ws-control-hover-wash) !important;
-  color: var(--ws-control-hover-text) !important;
+  border-color: var(--ws-control-hover-edge-strong);
+  background: var(--ws-control-hover-wash);
+  color: var(--ws-control-hover-text);
 }
 
 /* Shared modal geometry --------------------------------------------------- */
@@ -118,7 +118,7 @@
   padding: 24px;
   background:
     linear-gradient(145deg, var(--surface-veil-soft), var(--ws-form-wash)),
-    var(--surface-panel-solid) !important;
+    var(--surface-panel-solid);
 }
 
 .project-dialog-header,
@@ -131,7 +131,7 @@
 .project-dialog-header p,
 .saved-output-header p {
   margin-bottom: 6px;
-  color: var(--ws-dialog-kicker-text) !important;
+  color: var(--ws-dialog-kicker-text);
   font-family: var(--font-label);
   font-size: 9px;
   font-weight: 600;
@@ -158,8 +158,8 @@
 
 .project-dialog-close:hover,
 .saved-output-close:hover {
-  background: var(--ws-current-wash) !important;
-  color: var(--ws-control-hover-text) !important;
+  background: var(--ws-current-wash);
+  color: var(--ws-control-hover-text);
 }
 
 .project-form label,
@@ -190,20 +190,20 @@
 .project-form textarea:focus,
 .saved-output-title-input:focus {
   outline: none;
-  border-color: var(--ws-input-focus-edge) !important;
+  border-color: var(--ws-input-focus-edge);
   box-shadow: 0 0 0 3px var(--ws-input-focus-glow);
 }
 
 .project-form-note,
 .project-files-note,
 .saved-output-status {
-  color: var(--text-veil-mist) !important;
+  color: var(--text-veil-mist);
 }
 
 .project-form-error,
 .saved-output-status[data-state="error"],
 .composer-note[data-state="error"] {
-  color: var(--ws-danger-text) !important;
+  color: var(--ws-danger-text);
 }
 
 .project-secondary,
@@ -230,8 +230,8 @@
 
 .project-primary:hover,
 .saved-output-actions .saved-output-primary:hover {
-  border-color: var(--line-veil-mist) !important;
-  background: var(--ws-primary-hover-wash) !important;
+  border-color: var(--line-veil-mist);
+  background: var(--ws-primary-hover-wash);
 }
 
 .saved-output-actions .saved-output-danger {
@@ -269,9 +269,9 @@
 }
 
 .project-file-add:hover {
-  border-color: var(--ws-control-hover-edge-strong) !important;
-  background: var(--ws-control-hover-wash) !important;
-  color: var(--ws-control-hover-text) !important;
+  border-color: var(--ws-control-hover-edge-strong);
+  background: var(--ws-control-hover-wash);
+  color: var(--ws-control-hover-text);
 }
 
 .project-file-row {
@@ -296,8 +296,8 @@
 .document-attachment-icon {
   border: 1px solid var(--ws-attachment-edge);
   border-radius: 9px;
-  background: var(--ws-soft-wash) !important;
-  color: var(--ws-attachment-text) !important;
+  background: var(--ws-soft-wash);
+  color: var(--ws-attachment-text);
   font-family: var(--font-label);
   font-size: 9px;
   letter-spacing: .07em;
@@ -305,9 +305,9 @@
 
 /* Composer attachment ----------------------------------------------------- */
 .attachment-preview {
-  border-color: var(--ws-attachment-edge) !important;
+  border-color: var(--ws-attachment-edge);
   border-radius: var(--radius-sm);
-  background: var(--surface-veil-ghost) !important;
+  background: var(--surface-veil-ghost);
 }
 
 .attachment-preview img {
@@ -338,9 +338,9 @@
 /* Keep long AI answers as an editorial reading surface, not one giant card. */
 .assistant-content .rich-response {
   border-color: transparent;
-  background: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 /* Answer actions ---------------------------------------------------------- */

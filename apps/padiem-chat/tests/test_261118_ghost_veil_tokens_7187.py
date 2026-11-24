@@ -30,7 +30,9 @@ ROOT_TOKENS = {
 
 CHANGED = {
     "padiem-cinematic-workspace.css": {
-        ("background", "var(--surface-veil-ghost) !important"): 4,
+        # #8340: attachment-preview의 캡을 제거해 3건만 !important를 쓴다.
+        ("background", "var(--surface-veil-ghost) !important"): 3,
+        ("background", "var(--surface-veil-ghost)"): 1,
     },
     "padiem-editorial.css": {
         ("background", "var(--surface-veil-ghost)"): 1,

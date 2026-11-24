@@ -40,9 +40,9 @@ CHANGED = {
         ("background", "var(--surface-veil-mist)"): 6,
     },
     "padiem-cinematic-workspace.css": {
-        ("color", "var(--text-veil-mist) !important"): 1,
-        ("color", "var(--text-veil-mist)"): 1,
-        ("border-color", "var(--line-veil-mist) !important"): 1,
+        # #8340: 이 시트의 mist 캡을 제거했다(다른 시트 규칙이 이긴다).
+        ("color", "var(--text-veil-mist)"): 2,
+        ("border-color", "var(--line-veil-mist)"): 1,
     },
     "padiem-glass-brand-polish.css": {
         # #8008 16차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.

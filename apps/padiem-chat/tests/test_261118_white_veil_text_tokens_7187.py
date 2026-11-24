@@ -40,7 +40,7 @@ CHANGED = {
     "padiem-cinematic-workspace.css": [
         ("color", "rgba(255, 255, 255, .42)", "var(--text-veil-faint)"),
         ("color", "rgba(255, 255, 255, .42)", "var(--text-veil-faint)"),
-        ("color", "rgba(255, 255, 255, .34) !important", "var(--text-veil-mist) !important"),
+        ("color", "rgba(255, 255, 255, .34)", "var(--text-veil-mist)"),
         ("color", "rgba(255, 255, 255, .34)", "var(--text-veil-mist)"),
         ("color", "rgba(255, 255, 255, .92) !important", "var(--text-veil-strong) !important"),
     ],
