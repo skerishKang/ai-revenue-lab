@@ -199,9 +199,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -353,9 +363,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -527,9 +547,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -736,9 +766,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -865,9 +905,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -996,9 +1046,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -1125,9 +1185,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -1250,9 +1320,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -1377,9 +1457,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -1510,9 +1600,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -1637,9 +1737,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -1766,9 +1876,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -1893,9 +2013,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -2020,9 +2150,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -2147,9 +2287,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -2274,9 +2424,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
@@ -2399,9 +2559,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
+          # Ask Playwright itself for the pinned binary. A cache restore can
+          # leave an older revision behind, which must not satisfy this check.
+          browser=$(uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              print(pw.chromium.executable_path)
+          PY
+          )
+          if [ ! -x "$browser" ]; then
+            echo "Pinned headless shell missing: $browser" >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+          fi
+          test -x "$browser"
           missing=$(ldd "$browser" | grep 'not found' || true)
           if [ -n "$missing" ]; then
             printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
