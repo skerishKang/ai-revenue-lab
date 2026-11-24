@@ -659,6 +659,23 @@
   --surfaces-send-hover-shadow: rgba(0, 0, 0, .28);
   --surfaces-note-text: rgba(255, 255, 255, .38);
 
+  /* #7811 C2 attachments(261124): attachments.css의 고정 밝은 팔레트. 값은
+     치환 전 선언마다 박혀 있던 리터럴 그대로이고 :root에만 둔다 — 다섯
+     테마에서 같은 값으로 칠해져 온 고정 팔레트라 테마 블록이 덮지 않는다.
+     오류 문구(#a23434)는 이미 :root 전용인 --project-error-text를 재사용한다. */
+  --attachments-card-edge: rgba(18, 31, 51, 0.12);
+  --attachments-card-wash: rgba(248, 250, 252, 0.92);
+  --attachments-icon-bg: #eef1f5;
+  --attachments-preview-note-ink: #687386;
+  --attachments-remove-hover-wash: rgba(18, 31, 51, 0.08);
+  --attachments-chip-icon-ink: #2b3a52;
+  --attachments-chip-title-ink: #16233a;
+  --attachments-chip-meta-ink: #5b6b80;
+  --attachments-invalid-edge: rgba(178, 34, 34, 0.45);
+  --attachments-invalid-wash: rgba(255, 241, 241, 0.95);
+  --attachments-invalid-note-ink: #8c1d1d;
+  --attachments-chip-remove-ink: #42526e;
+
   /* #8020: Claw 요청 말풍선. 글자는 테마의 사용자 말풍선 글자 역할을 그대로
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
   --claw-request-bubble-text: var(--user-bubble-text);

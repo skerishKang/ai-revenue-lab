@@ -60,9 +60,9 @@
   gap: 10px;
   width: min(100%, 360px);
   padding: 8px;
-  border: 1px solid rgba(18, 31, 51, 0.12);
+  border: 1px solid var(--attachments-card-edge);
   border-radius: 14px;
-  background: rgba(248, 250, 252, 0.92);
+  background: var(--attachments-card-wash);
 }
 
 .attachment-preview img {
@@ -71,7 +71,7 @@
   flex: 0 0 44px;
   border-radius: var(--radius-sm);
   object-fit: cover;
-  background: #eef1f5;
+  background: var(--attachments-icon-bg);
 }
 
 .attachment-copy {
@@ -93,7 +93,7 @@
 }
 
 .attachment-copy small {
-  color: #687386;
+  color: var(--attachments-preview-note-ink);
   font-size: 11px;
 }
 
@@ -111,7 +111,7 @@
 
 .attachment-remove:hover,
 .attachment-remove:focus-visible {
-  background: rgba(18, 31, 51, 0.08);
+  background: var(--attachments-remove-hover-wash);
 }
 
 .message-attachment-meta {
@@ -128,7 +128,7 @@
 }
 
 .composer-note[data-state="error"] {
-  color: #a23434;
+  color: var(--project-error-text);
 }
 
 
@@ -148,9 +148,9 @@
   gap: 8px;
   max-width: min(100%, 320px);
   padding: 6px 8px;
-  border: 1px solid rgba(18, 31, 51, 0.12);
+  border: 1px solid var(--attachments-card-edge);
   border-radius: 12px;
-  background: rgba(248, 250, 252, 0.92);
+  background: var(--attachments-card-wash);
 }
 
 .attachment-chip-icon {
@@ -160,8 +160,8 @@
   letter-spacing: 0.04em;
   padding: 5px 6px;
   border-radius: var(--radius-xs);
-  background: #eef1f5;
-  color: #2b3a52;
+  background: var(--attachments-icon-bg);
+  color: var(--attachments-chip-icon-ink);
 }
 
 .attachment-chip-copy {
@@ -180,21 +180,21 @@
 .attachment-chip-copy strong {
   font-size: 13px;
   font-weight: 650;
-  color: #16233a;
+  color: var(--attachments-chip-title-ink);
 }
 
 .attachment-chip-copy small {
   font-size: 11px;
-  color: #5b6b80;
+  color: var(--attachments-chip-meta-ink);
 }
 
 .attachment-chip-invalid {
-  border-color: rgba(178, 34, 34, 0.45);
-  background: rgba(255, 241, 241, 0.95);
+  border-color: var(--attachments-invalid-edge);
+  background: var(--attachments-invalid-wash);
 }
 
 .attachment-chip-invalid .attachment-chip-copy small {
-  color: #8c1d1d;
+  color: var(--attachments-invalid-note-ink);
 }
 
 .attachment-chip .attachment-remove {
@@ -204,13 +204,13 @@
   border-radius: var(--radius-xs);
   border: none;
   background: transparent;
-  color: #42526e;
+  color: var(--attachments-chip-remove-ink);
   font-size: 15px;
   line-height: 1;
   cursor: pointer;
 }
 
 .attachment-chip .attachment-remove:hover:not(:disabled) {
-  background: rgba(18, 31, 51, 0.08);
+  background: var(--attachments-remove-hover-wash);
 }
 

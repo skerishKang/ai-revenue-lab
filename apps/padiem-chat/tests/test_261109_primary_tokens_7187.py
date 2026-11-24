@@ -306,6 +306,14 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--capability-nav-read-pending-ink",
                 "--capability-nav-read-activating-ink",
                 "--capability-nav-read-active-ink"}
+             # #7811 C2 attachments(261124): 첨부 미리보기·칩의 고정 팔레트.
+             # 오류 글자는 위 --project-error-text를 재사용한다.
+             | {"--attachments-card-edge", "--attachments-card-wash",
+                "--attachments-icon-bg", "--attachments-preview-note-ink",
+                "--attachments-remove-hover-wash", "--attachments-chip-icon-ink",
+                "--attachments-chip-title-ink", "--attachments-chip-meta-ink",
+                "--attachments-invalid-edge", "--attachments-invalid-wash",
+                "--attachments-invalid-note-ink", "--attachments-chip-remove-ink"}
              | {"--voice-mic-active-bg", "--voice-mic-active-edge",
                 "--voice-mic-active-ring", "--voice-mic-active-hover-bg",
                 "--voice-mic-active-hover-edge", "--composer-send-text",
