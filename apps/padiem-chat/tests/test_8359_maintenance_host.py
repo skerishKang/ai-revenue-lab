@@ -880,10 +880,10 @@ def test_failed_refresh_logs_its_bounded_cause(rig, monkeypatch, caplog):
 
     async def original(*args, **kw):
         return ("PADIEM_HELPER_REFRESH:failed:registration_failed\r\n"
-                "PADIEM_HELPER_REFRESH_DETAIL:unexpected_helper_task\r\n")
+                "PADIEM_HELPER_REFRESH_DETAIL:unexpected_helper_task_12_getitem\r\n")
 
     monkeypatch.setattr("app.mcp_gateway_shell._read_original", original)
     caplog.set_level("WARNING")
     _run_to_receipt(app, queue, history, store, exit_code=None, termination="no_exit_code")
     assert db.execute("SELECT outcome FROM pc_helper_maintenance_jobs").fetchone()[0] == "registration_failed"
-    assert "reason=registration_failed detail=unexpected_helper_task" in caplog.text
+    assert "reason=registration_failed detail=unexpected_helper_task_12_getitem" in caplog.text
