@@ -56,8 +56,20 @@ class TouchAutoCanaryContract(unittest.TestCase):
 
     def test_hosted_mobile_fallback_kept(self):
         self.assertRegex(self.hosted, r"(?m)^  mobile-touch-target-qa:$")
-        self.assertIn("runs-on: ubuntu-24.04", self.hosted)
-        self.assertIn("Verify 390x844 mobile touch targets", self.hosted)
+        # Same-repository PRs use the COM2 runner; every other event keeps the
+        # pinned hosted 24.04 image. The fallback must stay pinned and must not
+        # float to ubuntu-latest.
+        mobile = self.hosted.split("\n  mobile-touch-target-qa:\n", 1)[1].split(
+            "\n  project-delete-browser-qa:\n", 1
+        )[0]
+        self.assertIn(
+            "runs-on: ${{ github.event_name == 'pull_request' && "
+            "github.event.pull_request.head.repo.full_name == github.repository && "
+            "fromJSON('[\"self-hosted\",\"padiem-com2-ci\"]') || 'ubuntu-24.04' }}",
+            mobile,
+        )
+        self.assertNotIn("ubuntu-latest", mobile)
+        self.assertIn("Verify 390x844 mobile touch targets", mobile)
 
     def test_failed_touch_dispatch_is_scoped_and_does_not_hide_failure(self):
         self.assertIn('actions: write', self.auto)
