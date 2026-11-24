@@ -1,0 +1,295 @@
+{
+ "problems": [],
+ "rows": [
+  {
+   "combo": "light__1440x950",
+   "before": {
+    "history_open": false,
+    "panel_width": 872,
+    "preview_width": 394,
+    "original_pane_width": 191,
+    "markdown_pane_width": 191,
+    "markdown_client_width": 189,
+    "markdown_scroll_width": 189,
+    "table_client_width": 161,
+    "table_scroll_width": 554,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   },
+   "after": {
+    "history_open": true,
+    "panel_width": 872,
+    "preview_width": 872,
+    "original_pane_width": 430,
+    "markdown_pane_width": 430,
+    "markdown_client_width": 428,
+    "markdown_scroll_width": 568,
+    "table_client_width": 554,
+    "table_scroll_width": 554,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   }
+  },
+  {
+   "combo": "light__390x844",
+   "before": {
+    "history_open": false,
+    "panel_width": 354,
+    "preview_width": 320,
+    "original_pane_width": 320,
+    "markdown_pane_width": 320,
+    "markdown_client_width": 318,
+    "markdown_scroll_width": 318,
+    "table_client_width": 290,
+    "table_scroll_width": 554,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   },
+   "after": {
+    "history_open": true,
+    "panel_width": 354,
+    "preview_width": 354,
+    "original_pane_width": 354,
+    "markdown_pane_width": 354,
+    "markdown_client_width": 352,
+    "markdown_scroll_width": 568,
+    "table_client_width": 554,
+    "table_scroll_width": 554,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   }
+  },
+  {
+   "combo": "dark__1440x950",
+   "before": {
+    "history_open": false,
+    "panel_width": 872,
+    "preview_width": 394,
+    "original_pane_width": 191,
+    "markdown_pane_width": 191,
+    "markdown_client_width": 189,
+    "markdown_scroll_width": 189,
+    "table_client_width": 161,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   },
+   "after": {
+    "history_open": true,
+    "panel_width": 872,
+    "preview_width": 872,
+    "original_pane_width": 430,
+    "markdown_pane_width": 430,
+    "markdown_client_width": 428,
+    "markdown_scroll_width": 608,
+    "table_client_width": 594,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   }
+  },
+  {
+   "combo": "dark__390x844",
+   "before": {
+    "history_open": false,
+    "panel_width": 354,
+    "preview_width": 320,
+    "original_pane_width": 320,
+    "markdown_pane_width": 320,
+    "markdown_client_width": 318,
+    "markdown_scroll_width": 318,
+    "table_client_width": 290,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   },
+   "after": {
+    "history_open": true,
+    "panel_width": 354,
+    "preview_width": 354,
+    "original_pane_width": 354,
+    "markdown_pane_width": 354,
+    "markdown_client_width": 352,
+    "markdown_scroll_width": 608,
+    "table_client_width": 594,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   }
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "before": {
+    "history_open": false,
+    "panel_width": 541.59,
+    "preview_width": 228.8,
+    "original_pane_width": 108.39,
+    "markdown_pane_width": 108.41,
+    "markdown_client_width": 106,
+    "markdown_scroll_width": 106,
+    "table_client_width": 78,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   },
+   "after": {
+    "history_open": true,
+    "panel_width": 541.59,
+    "preview_width": 541.59,
+    "original_pane_width": 264.8,
+    "markdown_pane_width": 264.8,
+    "markdown_client_width": 263,
+    "markdown_scroll_width": 608,
+    "table_client_width": 594,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   }
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "before": {
+    "history_open": false,
+    "panel_width": 354,
+    "preview_width": 320,
+    "original_pane_width": 320,
+    "markdown_pane_width": 320,
+    "markdown_client_width": 318,
+    "markdown_scroll_width": 318,
+    "table_client_width": 290,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   },
+   "after": {
+    "history_open": true,
+    "panel_width": 354,
+    "preview_width": 354,
+    "original_pane_width": 354,
+    "markdown_pane_width": 354,
+    "markdown_client_width": 352,
+    "markdown_scroll_width": 608,
+    "table_client_width": 594,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   }
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "before": {
+    "history_open": false,
+    "panel_width": 872,
+    "preview_width": 394,
+    "original_pane_width": 191,
+    "markdown_pane_width": 191,
+    "markdown_client_width": 189,
+    "markdown_scroll_width": 189,
+    "table_client_width": 161,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   },
+   "after": {
+    "history_open": true,
+    "panel_width": 872,
+    "preview_width": 872,
+    "original_pane_width": 430,
+    "markdown_pane_width": 430,
+    "markdown_client_width": 428,
+    "markdown_scroll_width": 608,
+    "table_client_width": 594,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   }
+  },
+  {
+   "combo": "cinematic__390x844",
+   "before": {
+    "history_open": false,
+    "panel_width": 354,
+    "preview_width": 320,
+    "original_pane_width": 320,
+    "markdown_pane_width": 320,
+    "markdown_client_width": 318,
+    "markdown_scroll_width": 318,
+    "table_client_width": 290,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   },
+   "after": {
+    "history_open": true,
+    "panel_width": 354,
+    "preview_width": 354,
+    "original_pane_width": 354,
+    "markdown_pane_width": 354,
+    "markdown_client_width": 352,
+    "markdown_scroll_width": 608,
+    "table_client_width": 594,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   }
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "before": {
+    "history_open": false,
+    "panel_width": 872,
+    "preview_width": 394,
+    "original_pane_width": 191,
+    "markdown_pane_width": 191,
+    "markdown_client_width": 189,
+    "markdown_scroll_width": 189,
+    "table_client_width": 161,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   },
+   "after": {
+    "history_open": true,
+    "panel_width": 872,
+    "preview_width": 872,
+    "original_pane_width": 430,
+    "markdown_pane_width": 430,
+    "markdown_client_width": 428,
+    "markdown_scroll_width": 608,
+    "table_client_width": 594,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   }
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "before": {
+    "history_open": false,
+    "panel_width": 354,
+    "preview_width": 320,
+    "original_pane_width": 320,
+    "markdown_pane_width": 320,
+    "markdown_client_width": 318,
+    "markdown_scroll_width": 318,
+    "table_client_width": 290,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   },
+   "after": {
+    "history_open": true,
+    "panel_width": 354,
+    "preview_width": 354,
+    "original_pane_width": 354,
+    "markdown_pane_width": 354,
+    "markdown_client_width": 352,
+    "markdown_scroll_width": 608,
+    "table_client_width": 594,
+    "table_scroll_width": 594,
+    "table_cell_white_space": "nowrap",
+    "original_natural_width": 840
+   }
+  }
+ ]
+}
