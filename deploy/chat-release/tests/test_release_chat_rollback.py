@@ -66,7 +66,7 @@ def _run_ps(exe, body):
     tmp = Path(tempfile.mkdtemp(prefix="rollback-probe-"))
     try:
         probe_file = tmp / "probe.ps1"
-        probe_file.write_text(body, encoding="ascii")
+        probe_file.write_text(body, encoding="utf-8-sig")
         result = subprocess.run(
             [exe, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
              "-File", str(probe_file)],
