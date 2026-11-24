@@ -84,6 +84,10 @@ jobs:
           git config --local core.sparseCheckout false
           git restore --source=HEAD --staged --worktree --ignore-skip-worktree-bits -- .
           test -z "$(git ls-files --deleted)"
+      - uses: actions/setup-python@v5
+        if: runner.environment == 'self-hosted'
+        with:
+          python-version: '3.12'
       - name: Regression check for QA path ownership and scoped base visual behavior
         run: |
           python -m unittest discover -s .github/tests -p test_b62_browser_qa_unified.py -v
