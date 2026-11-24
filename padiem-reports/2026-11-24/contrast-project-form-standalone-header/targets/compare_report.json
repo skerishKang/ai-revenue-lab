@@ -1,0 +1,610 @@
+[
+ {
+  "combo": "light__1440x950__project-edit",
+  "pixel": 18625,
+  "noise": 18468,
+  "pairs": [
+   18468,
+   18468
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "light__1440x950__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "light__1440x950__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "light__390x844__project-edit",
+  "pixel": 14343,
+  "noise": 14171,
+  "pairs": [
+   14171,
+   14171
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "light__390x844__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "light__390x844__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__1440x950__project-edit",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__1440x950__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__1440x950__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__390x844__project-edit",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__390x844__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__390x844__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__project-edit",
+  "pixel": 19134,
+  "noise": 18515,
+  "pairs": [
+   18515,
+   18515
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__project-edit",
+  "pixel": 14668,
+  "noise": 14236,
+  "pairs": [
+   14236,
+   14236
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__1440x950__project-edit",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__1440x950__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__1440x950__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__390x844__project-edit",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__390x844__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__390x844__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__1440x950__project-edit",
+  "pixel": 18759,
+  "noise": 18526,
+  "pairs": [
+   18526,
+   18526
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__1440x950__connectors",
+  "pixel": 1946,
+  "noise": 1842,
+  "pairs": [
+   1842,
+   1842
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__1440x950__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__390x844__project-edit",
+  "pixel": 14434,
+  "noise": 14219,
+  "pairs": [
+   14219,
+   14219
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__390x844__connectors",
+  "pixel": 2164,
+  "noise": 2046,
+  "pairs": [
+   2046,
+   2046
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__390x844__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ }
+]

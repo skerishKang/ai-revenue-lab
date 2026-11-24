@@ -1,0 +1,30 @@
+[
+ {
+  "token": "--project-file-add-text",
+  "theme": "light",
+  "screen": "project-edit",
+  "mutation": "--project-file-add-text: var(--panel-text-strong); → --project-file-add-text: #ff00ff;",
+  "pixel": 416
+ },
+ {
+  "token": "--outputs-kicker-text",
+  "theme": "padiem-glass",
+  "screen": "project-edit",
+  "mutation": "--outputs-kicker-text: var(--panel-text-soft); → --outputs-kicker-text: #ff00ff;",
+  "pixel": 200
+ },
+ {
+  "token": "--standalone-kicker-text",
+  "theme": "padiem-home",
+  "screen": "connectors",
+  "mutation": "--standalone-kicker-text: var(--text); → --standalone-kicker-text: #ff00ff;",
+  "pixel": 742
+ },
+ {
+  "token": "--standalone-tagline-text",
+  "theme": "padiem-home",
+  "screen": "connectors",
+  "mutation": "--standalone-tagline-text: var(--hero-sub-color); → --standalone-tagline-text: #ff00ff;",
+  "pixel": 1226
+ }
+]
