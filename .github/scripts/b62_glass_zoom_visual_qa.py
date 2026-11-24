@@ -314,6 +314,17 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         """
     )
     await page.wait_for_timeout(350)
+    # A fixed sleep is not proof that the rAF-driven follow finished on a busy
+    # runner. Wait for the same end-of-scroll condition the assertion below
+    # checks, with a bounded budget; the assertion and its thresholds stay.
+    await page.wait_for_function(
+        """() => {
+          const conv = document.querySelector('.conversation');
+          if (!conv || conv.scrollHeight <= conv.clientHeight + 1) return true;
+          return conv.scrollHeight - conv.scrollTop - conv.clientHeight <= 4;
+        }""",
+        timeout=5_000,
+    )
 
     followed = await page.evaluate(
         """
