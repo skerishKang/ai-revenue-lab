@@ -263,17 +263,18 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     await page.locator("#messageInput").fill(QUESTION)
     await page.locator("#sendButton").click()
     await _wait_text(page, "#messageList", ANSWER)
-    # #4462 CTO follow-up: copy/download stay on completed answers; the
-    # per-answer save entry stays hidden (no retrieval path by design).
-    # Answer bar is five Glass icons: copy is direct, TXT download lives in
-    # the more (···) menu.
+    # #4462 CTO follow-up, 수아 11-24: copy stays direct; TXT download and the
+    # saved-answer entry both live in the more (···) menu. The save entry is
+    # shown only when the store is usable for this signed-in owner.
     await page.locator("#messageList .answer-copy").wait_for(state="visible")
     await page.locator("#messageList .answer-more").click()
-    for selector in (".answer-copy", ".answer-download"):
+    for selector in (".answer-copy", ".answer-download", ".answer-save"):
         await page.locator(f"#messageList {selector}").wait_for(state="visible")
     save = page.locator("#messageList .answer-save")
-    if await save.count() != 1 or await save.is_visible():
-        raise AssertionError("per-answer save entry must exist hidden, never visible")
+    if await save.count() != 1 or not await save.is_visible():
+        raise AssertionError("per-answer save entry must be visible in the more menu")
+    if "저장한 답변으로 저장" not in await save.inner_text():
+        raise AssertionError("per-answer save entry must be labelled for saved answers")
 
     await page.locator("#messageList .answer-copy").click()
     await page.wait_for_function("expected => window.__qaClipboardWrites?.at(-1) === expected", arg=ANSWER)
