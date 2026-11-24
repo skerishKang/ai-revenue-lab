@@ -1,0 +1,108 @@
+{
+  "sheet": "documents.css",
+  "base": "5be5e81d7",
+  "audit": {
+    "css_color_literals": {
+      "before": 1027,
+      "after": 1013,
+      "delta": -14
+    },
+    "css_color_literals_unthemed": {
+      "before": 366,
+      "after": 352,
+      "delta": -14
+    },
+    "css_important": {
+      "before": 475,
+      "after": 475,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 104,
+      "after": 104,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4385,
+      "after": 4385,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 795,
+      "after": 795,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": {
+      "--documents-icon-wash": "rgba(26, 29, 33, 0.07)",
+      "--documents-icon-ink": "#31343a",
+      "--documents-reference-note": "#72767d",
+      "--documents-banner-note": "#7a7d84",
+      "--documents-panel-edge": "rgba(25, 28, 32, 0.1)",
+      "--documents-muted-text": "#777b82",
+      "--documents-usage-text": "#a9adb4",
+      "--documents-add-edge": "rgba(25, 28, 32, 0.12)",
+      "--documents-selection-outline": "#7c74f0"
+    },
+    "reused": [
+      "--settings-choice-fallback",
+      "--project-solid-bg"
+    ],
+    "definition": "padiem-tokens.css :root, documents group after the attachments group; no theme block redeclares any of the 11 names",
+    "review": "replacement_review.json — 14 removed literals match 11 token values exactly, 0 theme overrides"
+  },
+  "verification": {
+    "computed": {
+      "targets": 14,
+      "measurements": 140,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "screen": "project-dialog + fixed project-file markers",
+      "combos": 10,
+      "nonzero": [],
+      "report": "compare_report.json"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json"
+    },
+    "contrast": {
+      "report": "contrast_report.json",
+      "note": "5 pre-existing sub-4.5 ratios preserved unchanged; no regression from this tokenization"
+    },
+    "tamper": {
+      "token": "--documents-selection-outline",
+      "mutation": "#7c74f0→#ff00ff",
+      "screen": "project-dialog",
+      "theme": "light",
+      "viewport": "1440x950",
+      "pixel": 3006,
+      "report": "tamper_report.json"
+    },
+    "tests": "documents·7187·래칫 22 passed",
+    "ratchet": "base 5be5e81d7 대비 head 실측. 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −14."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 최종 계산값·픽셀은 변하지 않는다.",
+    "재사용한 --settings-choice-fallback·--project-solid-bg는 :root 전용이다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 정의에만 있다.",
+    "프로젝트 파일 패널은 기본 캡처에서 hidden이라 같은 도구의 고정 표식으로 패널·행·문구를 채워 측정했다(사용자/기기 값 없음).",
+    "캡처 8장은 파일·상태 표식으로만 확인했고 이 모델이 이미지 입력을 받지 않아 화면 직접 보기는 못했다(못 봄).",
+    "패널 배경·경계 토큰은 대화상자 안 숨은 조상 때문에 칠해지지 않아, 실제로 칠하는 선택 윤곽 토큰으로 변조 검출을 했다."
+  ]
+}

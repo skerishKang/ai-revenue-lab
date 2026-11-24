@@ -5,8 +5,8 @@
   display: inline-grid;
   place-items: center;
   flex: 0 0 auto;
-  background: rgba(26, 29, 33, 0.07);
-  color: #31343a;
+  background: var(--documents-icon-wash);
+  color: var(--documents-icon-ink);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -15,23 +15,23 @@
 .reference-note {
   display: block;
   margin-top: 10px;
-  color: #72767d;
+  color: var(--documents-reference-note);
   font-size: 12px;
 }
 
 .project-banner-copy small {
   display: block;
   margin-top: 2px;
-  color: #7a7d84;
+  color: var(--documents-banner-note);
   font-size: 11px;
 }
 
 .project-files-panel {
   margin-top: 4px;
   padding: 14px;
-  border: 1px solid rgba(25, 28, 32, 0.1);
+  border: 1px solid var(--documents-panel-edge);
   border-radius: 14px;
-  background: #fafafa;
+  background: var(--settings-choice-fallback);
 }
 
 .project-files-heading {
@@ -55,7 +55,7 @@
 .project-files-empty,
 .project-files-status,
 .project-file-row small {
-  color: #777b82;
+  color: var(--documents-muted-text);
   font-size: 11px;
   line-height: 1.45;
 }
@@ -64,16 +64,16 @@
   display: block;
   margin-top: 3px;
   font-weight: 600;
-  color: #a9adb4;
+  color: var(--documents-usage-text);
 }
 
 .project-file-add {
   flex: 0 0 auto;
   min-height: 36px;
   padding: 8px 11px;
-  border: 1px solid rgba(25, 28, 32, 0.12);
+  border: 1px solid var(--documents-add-edge);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--project-solid-bg);
   cursor: pointer;
   font-size: 12px;
   font-weight: 700;
@@ -86,7 +86,7 @@
 }
 
 /* The row the sidebar's project opener just selected. */
-.project-file-row.quick-selected-file { outline: 3px solid #7c74f0; outline-offset: -3px; border-radius: var(--radius-xs); }
+.project-file-row.quick-selected-file { outline: 3px solid var(--documents-selection-outline); outline-offset: -3px; border-radius: var(--radius-xs); }
 .project-file-row {
   display: flex;
   align-items: center;
@@ -94,7 +94,7 @@
   gap: 10px;
   padding: 9px 10px;
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--project-solid-bg);
 }
 
 .project-file-row > div {
@@ -106,7 +106,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #31343a;
+  color: var(--documents-icon-ink);
   font-size: 12px;
 }
 
@@ -114,7 +114,7 @@
   flex: 0 0 auto;
   border: 0;
   background: transparent;
-  color: #777b82;
+  color: var(--documents-muted-text);
   cursor: pointer;
   min-height: 34px;
   padding: 6px 8px;
