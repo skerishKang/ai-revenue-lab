@@ -1,0 +1,58 @@
+[
+  {
+    "label": "icon ink",
+    "fg": "#31343a",
+    "bg": "#fafafa",
+    "ratio": 11.96,
+    "floor": 4.5,
+    "pass": true
+  },
+  {
+    "label": "reference note",
+    "fg": "#72767d",
+    "bg": "#fafafa",
+    "ratio": 4.37,
+    "floor": 4.5,
+    "pass": false
+  },
+  {
+    "label": "banner note",
+    "fg": "#7a7d84",
+    "bg": "#fafafa",
+    "ratio": 3.95,
+    "floor": 4.5,
+    "pass": false
+  },
+  {
+    "label": "muted text",
+    "fg": "#777b82",
+    "bg": "#fafafa",
+    "ratio": 4.07,
+    "floor": 4.5,
+    "pass": false
+  },
+  {
+    "label": "usage text",
+    "fg": "#a9adb4",
+    "bg": "#fafafa",
+    "ratio": 2.16,
+    "floor": 4.5,
+    "pass": false
+  },
+  {
+    "label": "row strong",
+    "fg": "#31343a",
+    "bg": "#fff",
+    "ratio": 12.48,
+    "floor": 4.5,
+    "pass": true
+  },
+  {
+    "label": "row button",
+    "fg": "#777b82",
+    "bg": "#fff",
+    "ratio": 4.25,
+    "floor": 4.5,
+    "pass": false
+  }
+]

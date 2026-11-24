@@ -64,6 +64,10 @@ def capability_nav_rules():
 
 def attachments_rules():
     return parse_rules(_sheet("attachments.css"))
+
+
+def documents_rules():
+    return parse_rules(_sheet("documents.css"))
 def surfaces_rules():
     return parse_rules(_sheet("padiem-surfaces.css"))
 
@@ -123,6 +127,10 @@ def unthemed_capability_nav_literals() -> list[str]:
 
 def unthemed_attachments_literals() -> list[str]:
     return unthemed_literals(attachments_rules())
+
+
+def unthemed_documents_literals() -> list[str]:
+    return unthemed_literals(documents_rules())
 
 
 def unthemed_standalone_literals() -> list[str]:

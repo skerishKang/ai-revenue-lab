@@ -332,6 +332,13 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--attachments-chip-title-ink", "--attachments-chip-meta-ink",
                 "--attachments-invalid-edge", "--attachments-invalid-wash",
                 "--attachments-invalid-note-ink", "--attachments-chip-remove-ink"}
+             # #7811 C2 documents(261124): 문서·프로젝트 파일 패널의 고정 팔레트.
+             # 흰 판/배경은 위 --settings-choice-fallback·--project-solid-bg 재사용.
+             | {"--documents-icon-wash", "--documents-icon-ink",
+                "--documents-reference-note", "--documents-banner-note",
+                "--documents-panel-edge", "--documents-muted-text",
+                "--documents-usage-text", "--documents-add-edge",
+                "--documents-selection-outline"}
              # 대비 수리(261124): 연결 화면의 밝은 카드 판 위 잉크. 기본값은 테마
              # 글자색이고 dark·cinematic만 덮는다. 같은 시험 파일이 고정한다.
              | {"--connector-card-ink", "--connector-card-muted-ink"}
