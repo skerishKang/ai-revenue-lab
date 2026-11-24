@@ -29,6 +29,14 @@ from urllib.request import Request, urlopen
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from b62_css_token_scope import (  # noqa: E402
+    CSS_RE,
+    is_css_token_evidence_change,
+    is_evidence_file,
+    is_token_test_file,
+)
+
 MANIFEST = ROOT / ".github" / "ci" / "b62_browser_qa_paths.json"
 MAX_PR_FILES = 3000
 B66_QUOTE_CSS = "apps/padiem-chat/static/b66-quote-runtime.css"
@@ -211,6 +219,7 @@ PLAN_FILES = frozenset(
     {
         ".github/workflows/b62-browser-qa-unified.yml",
         ".github/scripts/b62_browser_qa_path_plan.py",
+        ".github/scripts/b62_css_token_scope.py",
         # Schedule implementation/test updates must prove every affected lane.
         ".github/scripts/b62_browser_qa_tail_parallel.py",
         ".github/tests/test_3989_b62_browser_tail_parallel.py",
@@ -430,6 +439,22 @@ def choose_lanes(
         return {job: False for job in patterns_by_job}
     if changed_paths & PLAN_FILES:
         return {job: True for job in patterns_by_job}
+    # A CSS + token-test/evidence shape whose exact proof fails (non
+    # added/modified status, unknown or truncated count, mixed JS) keeps every
+    # lane. Never reduce on a partial path-only match.
+    if (
+        any(CSS_RE.fullmatch(p) for p in changed_paths)
+        and any(is_token_test_file(p) or is_evidence_file(p) for p in changed_paths)
+        and not is_css_token_evidence_change(
+            changed_paths, statuses, expected_files=expected_files
+        )
+    ):
+        return {job: True for job in patterns_by_job}
+    # A CSS + token-test + padiem-reports evidence change is proven runtime-
+    # invariant by b62_css_token_scope. The same proof drives the B62 Chat CI
+    # reduced lane, so the two cannot disagree about this change shape.
+    if is_css_token_evidence_change(changed_paths, statuses, expected_files=expected_files):
+        return {job: (job in UI_ONLY_CSS_SMOKE_LANES) for job in patterns_by_job}
     # #4459: proven CSS-only UI changes keep the presentation smoke set and
     # skip the flow-functional lanes whose logic CSS cannot change. Missing
     # statuses keep the historical path-only routing (fail-closed).

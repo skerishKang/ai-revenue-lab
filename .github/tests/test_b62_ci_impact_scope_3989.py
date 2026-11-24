@@ -1120,3 +1120,63 @@ class SourceReadScopeTests(unittest.TestCase):
             })
             self.assertIsNone(
                 module.source_read_tests([file("apps/padiem-chat/app/chat_routes.py")], Path(tmp)))
+
+    @staticmethod
+    def _css_token_files():
+        return [
+            file("apps/padiem-chat/static/padiem-tokens.css"),
+            file("apps/padiem-chat/tests/test_261109_primary_tokens_7187.py"),
+            file("padiem-reports/2026-11-24/7811-answer-actions-tokens/manifest.json", "added"),
+        ]
+
+    def test_css_token_evidence_scope_reduces_full_pytest_to_ui_modules(self):
+        files = self._css_token_files()
+        self.assertEqual(module.impact_scope(files), module.CSS_TOKEN_ONLY)
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "output.txt"
+            event = fake_event()
+            event["pull_request"]["changed_files"] = len(files)
+            with patch.dict(os.environ, {"GITHUB_OUTPUT": str(output)}, clear=False), \
+                    patch.object(module, "_load_event_files",
+                                 return_value=(event, "pull_request", files)), \
+                    patch.object(module, "REPO_ROOT", Path(tmp)), \
+                    patch.object(module, "ui_contract_tests",
+                                 return_value=("tests/test_ui.py",)):
+                module.main()
+            values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+        self.assertEqual(values["scope"], "css_token_only")
+        self.assertEqual(values["chat_source_changed"], "false")
+        self.assertEqual(values["static_changed"], "true")
+        self.assertEqual(values["ui_contract"], "tests/test_ui.py")
+        self.assertEqual(
+            values["ui_tests"],
+            "tests/test_261109_primary_tokens_7187.py tests/test_structure_ratchet.py",
+        )
+        self.assertEqual(values["source_read_tests"], "")
+
+    def test_css_token_shape_with_mixed_or_uncertain_evidence_stays_full(self):
+        base = self._css_token_files()
+        renamed = [dict(base[2], status="renamed")] + base[:2]
+        cases = (
+            base + [file("apps/padiem-chat/static/app.js")],
+            base + [file("apps/padiem-chat/app/chat_routes.py")],
+            renamed,
+            base + [file("padiem-reports/../secret.json")],
+        )
+        for files in cases:
+            with self.subTest(files=files):
+                self.assertEqual(module.impact_scope(files), module.FULL)
+        # A count mismatch is never proof, even with the exact file list.
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "output.txt"
+            event = fake_event()
+            event["pull_request"]["changed_files"] = len(base) + 1
+            with patch.dict(os.environ, {"GITHUB_OUTPUT": str(output)}, clear=False), \
+                    patch.object(module, "_load_event_files",
+                                 return_value=(event, "pull_request", base)), \
+                    patch.object(module, "REPO_ROOT", Path(tmp)), \
+                    patch.object(module, "ui_contract_tests",
+                                 return_value=("tests/test_ui.py",)):
+                module.main()
+            values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+        self.assertEqual(values["scope"], "full")

@@ -220,6 +220,20 @@ def test_b62_main_push_ci_coalescing_preserves_stable_required_gate() -> None:
     assert "b62-chat-pytest" in aggregate["needs"]
 
 
+def test_css_token_only_scope_keeps_reduced_lanes_and_skips_full_pytest() -> None:
+    """#8688 colour/token PRs must not pay for the four full pytest shards."""
+    jobs = _b62_chat_ci_document()["jobs"]
+    assert "css_token_only" in jobs["b62-static-ui"]["if"]
+    assert "css_token_only" in jobs["b62-ui-mixed-tests"]["if"]
+    for name in ("b62-chat-pytest", "b62-worker-suite", "b14-multimodal-test"):
+        assert "needs.registry-ci-plan.outputs.scope != 'css_token_only'" in jobs[name]["if"], name
+    aggregate = jobs["b62-test"]["steps"][0]["run"]
+    assert 'elif [ "$SCOPE" = css_token_only ]; then' in aggregate
+    assert "B62_CI_MODE=CSS_TOKEN_UI_ONLY" in aggregate
+    assert 'test "$FULL_RESULT" = skipped' in aggregate
+    assert 'test "$CHAT_RESULT" = skipped' in aggregate
+
+
 def test_b62_main_push_group_is_distinct_from_pr_and_manual_groups() -> None:
     # The above pinned event expression must yield precisely these outcomes:
     # - two B62-relevant main pushes share one group (supersede stale work)
