@@ -638,6 +638,24 @@
   --rich-response-code-bg: #15181d;
   --rich-response-code-text: #eef2f7;
 
+  /* #7811 C2 pc-pairing(261124): pc-pairing-card.css의 상태 색. 값은 치환 전
+     리터럴 그대로이고 :root에만 둔다 — 다섯 테마에서 같은 값으로 칠해져 온
+     고정 팔레트라 테마 블록이 덮지 않는다. 메뉴 hover의 .14는 값이 같은 기존
+     :root 토큰(--control-wash-strong)을 재사용했다. */
+  --pc-pairing-active-text: #11685f;
+  --pc-pairing-active-edge: rgba(17, 104, 95, .35);
+  --pc-pairing-active-bg: rgba(17, 104, 95, .08);
+  --pc-pairing-offline-edge: rgba(111, 112, 121, .35);
+  --pc-pairing-offline-bg: rgba(111, 112, 121, .08);
+  --pc-pairing-paused-text: #8a6d1a;
+  --pc-pairing-paused-edge: rgba(138, 109, 26, .35);
+  --pc-pairing-paused-bg: rgba(138, 109, 26, .08);
+  --pc-pairing-pending-edge: rgba(47, 111, 153, .35);
+  --pc-pairing-pending-bg: rgba(47, 111, 153, .08);
+  --pc-pairing-revoked-edge: rgba(179, 38, 30, .35);
+  --pc-pairing-revoked-bg: rgba(179, 38, 30, .08);
+  --pc-pairing-menu-shadow: 0 8px 24px rgba(0, 0, 0, .16);
+
   /* #7811 C2 surfaces(261124): padiem-surfaces.css의 쓰임새 색. 값은 치환 전
      사용처 리터럴 그대로이고 :root에만 둔다 — 토큰 값이 모든 테마에서 같으니
      칠해지는 값도 테마마다 그대로다. 테마 블록이나 다른 시트가 덮지 않는다. */
