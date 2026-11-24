@@ -357,3 +357,26 @@ def test_an_unreachable_lane_is_a_transport_failure_after_one_retry() -> None:
 
 def test_the_page_count_ceiling_is_the_product_default() -> None:
     assert DEFAULT_MAX_SCAN_PAGES == 20
+
+
+def test_a_served_model_without_the_provider_prefix_is_the_same_model(stub) -> None:
+    # The lane answers with the requested id minus its leading "provider/" part.
+    stub.responses.append((200, _chat_body(model=MODEL.split("/", 1)[1])))
+    result = _reader(stub).read_page(_image_jpeg())
+
+    assert result.status == READ_STATUS_OK
+    assert result.model_matches is True
+    assert result.error_code is None
+    assert result.markdown == "본문"
+
+
+def test_only_the_leading_provider_part_may_be_missing() -> None:
+    from app.pdfmd_scan_ocr import served_model_matches
+
+    assert served_model_matches("p/m", "p/m") is True
+    assert served_model_matches("p/m", "m") is True
+    assert served_model_matches("p/m", "other") is False
+    assert served_model_matches("p/m", "q/m") is False
+    assert served_model_matches("p/m", None) is False
+    assert served_model_matches("p/m", "") is False
+    assert served_model_matches("m", "x/m") is False
