@@ -1,0 +1,107 @@
+{
+  "sheet": "claw-workspace.css",
+  "round": "#7811 C2 claw-workspace.css 9선언",
+  "base": "d3922afe9",
+  "audit": {
+    "css_color_literals": {
+      "before": 938,
+      "after": 929,
+      "delta": -9
+    },
+    "css_color_literals_unthemed": {
+      "before": 300,
+      "after": 291,
+      "delta": -9
+    },
+    "css_important": {
+      "before": 463,
+      "after": 463,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4361,
+      "after": 4361,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 771,
+      "after": 771,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": [
+      "--workspace-canvas-generate-shadow",
+      "--workspace-canvas-error-edge",
+      "--workspace-canvas-error-wash",
+      "--workspace-canvas-approved-error-wash",
+      "--workspace-canvas-approved-error-edge",
+      "--workspace-canvas-field-edge",
+      "--workspace-canvas-modal-dim"
+    ],
+    "reused": [],
+    "definition": "padiem-tokens.css :root claw-workspace 묶음. 테마 블록이 덮지 않는다.",
+    "reuse_rule": "값이 같은 기존 :root 토큰이 없어 7개를 새로 두었다. 테마가 덮는 토큰은 재사용하지 않았다(계약 시험이 고정)."
+  },
+  "verification": {
+    "computed": {
+      "targets": 9,
+      "themes": 5,
+      "checked": 10,
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "combos": 10,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "screens": [
+        "workspace"
+      ],
+      "nonzero": [],
+      "report": "compare_report.json",
+      "captures": "captures/"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json",
+      "scope": "scope_report.json"
+    },
+    "tamper": {
+      "token": "--workspace-canvas-error-wash",
+      "mutation": "rgba(220, 62, 62, 0.04)->#ff00ff",
+      "theme": "light",
+      "screen": "workspace",
+      "viewport": "1440x950",
+      "pixel": 10747,
+      "report": "tamper_report.json",
+      "images": [
+        "captures/tamper_clean.png",
+        "captures/tamper_mutated.png"
+      ]
+    },
+    "tests": "신규 계약·기존 토큰 17개, 구조·래칫·대비 30개 통과",
+    "ratchet": "base 대비 head: 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −9."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 계산값·픽셀·대비는 변하지 않는다.",
+    "숨은 요소는 고정 표식 결과·오류·버튼·모달로 채운 화면에서 측정했다.",
+    "원래 대비 미달(저장한 답변 창·커넥터 카드 등)은 수리하지 않고 목록으로만 남긴다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 정의에만 있다."
+  ]
+}
