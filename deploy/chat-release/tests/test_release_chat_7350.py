@@ -8,8 +8,8 @@ point must stop before deploying; a dry-run only warns.
 (나) the audit-log number is picked by the script: the highest release_*.log
 number (.failed.log included) + 1, existing files are never overwritten, and
 an explicit -LogPath that already exists is refused.
-(다) a release log written in the last 10 minutes stops a real run unless
--Force; a dry-run only warns (CI runs two dry-runs back to back).
+(다) an unfinished release log written in the last 10 minutes stops a real run
+unless -Force; completed logs do not block; a dry-run only warns.
 """
 from pathlib import Path
 import re
@@ -31,7 +31,7 @@ def _powershell_exe():
 
 
 def _extract_functions():
-    """The three shipped log helpers, lifted verbatim out of the release
+    """The shipped log helpers, lifted verbatim out of the release
     script so the runtime tests exercise exactly what ships. The executable
     start block after them is excluded (it reads the caller's params), and
     the extraction starts at the first function — the marker's "(#7350)"
@@ -237,6 +237,88 @@ class ReleaseLogNumberRuntime(unittest.TestCase):
             rc, combined = _run_driver(code)
             self.assertEqual(rc, 0, combined)
             self.assertIn("COUNTS=2", combined)
+
+    @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
+    def test_recent_log_terminal_markers_and_guard(self):
+        """Exercise shipped helpers against mock transcripts only, never deploy."""
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            fixtures = {
+                "release_1.log": "STEP 2/6 deploy\nstill working\n",
+                "release_2.log": "STEP 1/6 pin\nSTEP1_FAIL: mock failure\n",
+                "release_3.failed.log": "STEP 2/6 deploy\nException: STEP2_FAIL: mock failure\n",
+                "release_4.log": "STEP 6/6 report\nRELEASE SUMMARY\n",
+                "release_5.log": "  release complete; the summary below is the deploy record\n",
+                "release_6.log": "Windows PowerShell transcript end\nEnd time: 20261124090000\n",
+                "release_7.log": "Windows PowerShell \uAE30\uB85D \uB05D\n**********************\n",
+                "release_8.log": "RELEASE_LOG_FAIL: mock failure\n",
+                "release_9.log": "STEP 2/6 deploy\nnot a STEP2_FAIL: marker\n",
+                "release_10.log": "STEP 6/6 report\nSTEP 1/6 pin\nstill working\n",
+                "release_11.dryrun.log": "STEP 1/6 pin\n",
+                "release_12.failed.log": "no terminal marker\n",
+                "release_13.log": 'PS>TerminatingError(): "STEP3_FAIL: mock failure"\n',
+                "release_14.log": "STEP 5/6 verify\n",
+                "release_15.log": 'PS>TerminatingError(): "STEP4_FAIL: fixture"\n  rolling the front back to fixture\n',
+                "release_16.log": 'PS>TerminatingError(): "STEP4_FAIL: fixture"\n  rolling the front back to fixture\nSTEP4_FAIL: fixture\n',
+            }
+            for name, content in fixtures.items():
+                (base / name).write_text(content, encoding="utf-8")
+            quoted = str(base).replace("'", "''")
+            code = (
+                f"$dir = '{quoted}'\n"
+                "(Get-Item (Join-Path $dir 'release_14.log')).LastWriteTime = (Get-Date).AddMinutes(-20)\n"
+                "$names = @(Get-RecentReleaseLogs $dir | ForEach-Object { $_.Name } | Sort-Object)\n"
+                "Write-Output ('BLOCK=' + ($names -join ','))\n"
+            )
+            rc, combined = _run_driver(code)
+            self.assertEqual(rc, 0, combined)
+            self.assertIn(
+                "BLOCK=release_1.log,release_10.log,release_12.failed.log,release_15.log,release_9.log",
+                combined.splitlines(),
+            )
+
+    @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
+    def test_real_guard_blocks_only_unfinished_and_keeps_force_and_dryrun(self):
+        """Run the exact guard block without the transcript or deployment steps."""
+        source = SCRIPT.read_text(encoding="utf-8")
+        guard = "$recentLogs = Get-RecentReleaseLogs" + source.split(
+            "$recentLogs = Get-RecentReleaseLogs", 1
+        )[1].split("$Script:ReleaseLogPath = ", 1)[0]
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            log = base / "release_1.log"
+            log.write_text("STEP 2/6 deploy\n", encoding="utf-8")
+            quoted = str(base).replace("'", "''")
+            code = (
+                f"$Script:LogDir = '{quoted}'\n"
+                "function Write-Info($Text) { if ($Text -like 'WARNING:*') { 'WARN' } else { 'FORCED' } }\n"
+                "function Check([bool]$DryRun, [bool]$Force) {\n"
+                "    try {\n" + guard + "\n        'ALLOW'\n"
+                "    } catch { if ($_.Exception.Message -like 'RELEASE_LOG_FAIL:*') { 'BLOCK' } else { throw } }\n"
+                "}\n"
+                "'active=' + ((Check $false $false) -join ',')\n"
+                "'force=' + ((Check $false $true) -join ',')\n"
+                "'dry=' + ((Check $true $false) -join ',')\n"
+                "Set-Content (Join-Path $Script:LogDir 'release_1.log') 'STEP2_FAIL: fixture' -Encoding UTF8\n"
+                "'failed=' + ((Check $false $false) -join ',')\n"
+                "Set-Content (Join-Path $Script:LogDir 'release_1.log') 'STEP 6/6 report' -Encoding UTF8\n"
+                "'success=' + ((Check $false $false) -join ',')\n"
+            )
+            rc, combined = _run_driver(code)
+            self.assertEqual(rc, 0, combined)
+            for expected in ("active=BLOCK", "force=FORCED,ALLOW", "dry=WARN,ALLOW",
+                             "failed=ALLOW", "success=ALLOW"):
+                self.assertIn(expected, combined)
+
+    @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
+    def test_log_read_failure_keeps_guard_closed(self):
+        code = (
+            "function Get-Content { throw 'mock read failure' }\n"
+            "Write-Output ('FINISHED=' + (Test-ReleaseLogFinished 'mock.log'))\n"
+        )
+        rc, combined = _run_driver(code)
+        self.assertEqual(rc, 0, combined)
+        self.assertIn("FINISHED=False", combined)
 
     @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
     def test_dryrun_number_follows_the_shared_sequence(self):

@@ -49,7 +49,8 @@
 # release_<n>.failed.log count there, so the standard “dry-run first, then
 # the real deploy” flow never needs -Force. -LogPath overrides and is
 # refused when the file already exists. A release log written in the last
-# 10 minutes stops a real run unless -Force (a dry-run only warns). The
+# 10 minutes without a terminal marker stops a real run unless -Force
+# (a dry-run only warns). Finished logs do not block a retry. The
 # Cloudflare account is resolved at start, before any wrangler
 # deployments-list call.
 #
@@ -68,7 +69,7 @@ param(
     # (.failed.log included) + 1; an existing file is never overwritten.
     # Given: refused when the file already exists.
     [string]$LogPath = "",
-    # Release anyway when a release log was written in the last 10 minutes
+    # Release anyway when a recent release log has no terminal marker
     # (another release may be in progress). A dry-run only warns.
     [switch]$Force
 )
@@ -476,14 +477,37 @@ function Resolve-ReleaseLogPath([string]$Given, [string]$Dir, [switch]$DryRun) {
     return $candidate
 }
 
+function Test-ReleaseLogFinished([string]$Path) {
+    # Inspect only the tail; do not print transcript contents. A missing or
+    # unreadable terminal marker must not release the concurrency guard.
+    try {
+        $tail = @(Get-Content -LiteralPath $Path -Encoding UTF8 -Tail 120 -ErrorAction Stop)
+    }
+    catch { return $false }
+
+    # A caught failure can be followed by a rollback that is still running.
+    # A later progress marker supersedes the earlier termination marker.
+    $finished = $false
+    foreach ($line in $tail) {
+        if ($line -match '^\s*(?:STEP [1-5]/6(?:\s|$)|rolling the front back to\s)') {
+            $finished = $false
+        }
+        elseif ($line -match '^\s*(?:STEP 6/6 report\s*$|release complete(?:;|$))' -or
+                $line -match '^\s*(?:Exception:\s*|PS>TerminatingError\([^)]*\):\s*"?|\+\s*throw\s+"?)?(?:STEP\d+_FAIL|RELEASE_LOG_FAIL):' -or
+                $line -match '^\s*(?:Windows )?PowerShell (?:transcript end|(?:\uB300\uD654 \uB0B4\uC6A9 )?\uAE30\uB85D \uB05D)\s*$') {
+            $finished = $true
+        }
+    }
+    return $finished
+}
+
 function Get-RecentReleaseLogs([string]$Dir) {
-    # Only real-run logs (.log) and failed real runs (.failed.log) count:
-    # a dry-run writes release_<n>.dryrun.log and must never block the real
-    # deploy that immediately follows it (#7350 follow-up — otherwise every
-    # lane learns to pass -Force and the guard is disarmed).
+    # Only recent real-run logs without a terminal marker can be in progress.
+    # A dry-run never blocks the real deploy that immediately follows it.
     $cutoff = (Get-Date).AddMinutes(-10)
     return @(Get-ChildItem -Path (Join-Path $Dir "release_*.log") -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.LastWriteTime -ge $cutoff -and $_.Name -match '^release_\d+(\.failed)?\.log$' })
+        Where-Object { $_.LastWriteTime -ge $cutoff -and $_.Name -match '^release_\d+(\.failed)?\.log$' -and
+            -not (Test-ReleaseLogFinished $_.FullName) })
 }
 
 function Invoke-Com2Capture([string]$RemoteCommand) {
@@ -577,13 +601,13 @@ $recentLogs = Get-RecentReleaseLogs $Script:LogDir
 if ($recentLogs.Count -gt 0) {
     $recentNames = ($recentLogs | ForEach-Object { $_.Name }) -join ', '
     if ($DryRun) {
-        Write-Info "WARNING: release log(s) written in the last 10 minutes ($recentNames) — another release may be in progress; a real run stops here unless -Force (a dry-run only warns)"
+        Write-Info "WARNING: unfinished release log(s) written in the last 10 minutes ($recentNames) — another release may be in progress; a real run stops here unless -Force (a dry-run only warns)"
     }
     elseif (-not $Force) {
-        throw "RELEASE_LOG_FAIL: release log(s) written in the last 10 minutes ($recentNames) — another release may be in progress. Pass -Force to release anyway."
+        throw "RELEASE_LOG_FAIL: unfinished release log(s) written in the last 10 minutes ($recentNames) — another release may be in progress. Pass -Force to release anyway."
     }
     else {
-        Write-Info "release log(s) written in the last 10 minutes ($recentNames) — continuing on -Force"
+        Write-Info "unfinished release log(s) written in the last 10 minutes ($recentNames) — continuing on -Force"
     }
 }
 $Script:ReleaseLogPath = Resolve-ReleaseLogPath $LogPath $Script:LogDir -DryRun:$DryRun
