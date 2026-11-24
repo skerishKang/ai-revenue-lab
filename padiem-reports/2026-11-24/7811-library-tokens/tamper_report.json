@@ -1,0 +1,8 @@
+{
+  "token": "--library-tab-active-edge",
+  "mutation": "rgba(47, 111, 153, 0.24)→#ff00ff",
+  "screen": "library",
+  "theme": "light",
+  "viewport": "1440x950",
+  "pixel": 280
+}

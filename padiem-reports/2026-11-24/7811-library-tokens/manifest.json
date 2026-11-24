@@ -1,0 +1,106 @@
+{
+  "sheet": "library.css",
+  "base": "9a206818b",
+  "audit": {
+    "css_color_literals": {
+      "before": 918,
+      "after": 910,
+      "delta": -8
+    },
+    "css_color_literals_unthemed": {
+      "before": 280,
+      "after": 272,
+      "delta": -8
+    },
+    "css_important": {
+      "before": 439,
+      "after": 439,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4361,
+      "after": 4361,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 771,
+      "after": 771,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": {
+      "--library-tab-active-edge": "rgba(47, 111, 153, 0.24)",
+      "--library-dialog-dim": "rgba(15, 19, 25, 0.46)"
+    },
+    "reused": [
+      "--pc-pairing-pending-bg",
+      "--b66-quote-faint-edge",
+      "--b66-quote-hairline",
+      "--control-wash-soft",
+      "--control-wash-hover",
+      "--standalone-nav-bg"
+    ],
+    "definition": "padiem-tokens.css :root, library group after the search-sources group; no theme block redeclares any of the 8 names",
+    "review": "replacement_review.json — 8 removed literals match 8 token values exactly (normalised spelling), 0 theme overrides"
+  },
+  "verification": {
+    "computed": {
+      "targets": 7,
+      "measurements": 70,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "diffs": 0,
+      "report": "computed_report.json",
+      "note": "hover pseudo is pinned by the contract table only"
+    },
+    "pixel": {
+      "screen": "library + fixed library markers",
+      "combos": 10,
+      "nonzero": [],
+      "report": "compare_report.json"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json"
+    },
+    "contrast": {
+      "report": "contrast_report.json",
+      "note": "no text-color declarations in this sheet; no sub-4.5 item introduced"
+    },
+    "tamper": {
+      "token": "--library-tab-active-edge",
+      "mutation": "rgba(47, 111, 153, 0.24)→#ff00ff",
+      "screen": "library",
+      "theme": "light",
+      "viewport": "1440x950",
+      "pixel": 280,
+      "report": "tamper_report.json"
+    },
+    "tests": "library·7187·래칫 22 passed",
+    "ratchet": "base 9a206818b 대비 head 실측. 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −8."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 최종 계산값·픽셀은 변하지 않는다.",
+    "재사용한 6개 토큰은 모두 :root 전용이고 테마 블록이 덮지 않는다.",
+    "새 !important 없음. 새 색 리터럴은 토큰 정의에만 있다.",
+    "자료실 요소는 상태에 따라 숨겨져 같은 도구의 고정 표식으로 탭·카드·대화상자를 채워 계산값·픽셀을 측정했다.",
+    "캡처 8장은 파일·상태 표식으로만 확인했고 이 모델이 이미지 입력을 받지 않아 화면 직접 보기는 못했다(못 봄).",
+    "#8691 축소 범위를 지키기 위해 공유 헬퍼 모듈은 수정하지 않고 시험 파일 안에서 파싱했다."
+  ]
+}

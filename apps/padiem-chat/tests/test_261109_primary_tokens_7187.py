@@ -373,6 +373,9 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--search-sources-answer-edge", "--search-sources-link-wash",
                 "--search-sources-link-hover-wash", "--search-sources-number-ink",
                 "--search-sources-copy-ink"}
+             # #7811 C2 library(261124): 자료실 탭·대화상자의 고정 팔레트.
+             # 여섯 값은 위 기존 토큰을 재사용한다.
+             | {"--library-tab-active-edge", "--library-dialog-dim"}
              # 대비 수리(261124): 연결 화면의 밝은 카드 판 위 잉크. 기본값은 테마
              # 글자색이고 dark·cinematic만 덮는다. 같은 시험 파일이 고정한다.
              | {"--connector-card-ink", "--connector-card-muted-ink"}
