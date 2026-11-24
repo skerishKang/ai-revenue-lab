@@ -20,6 +20,7 @@ import asyncio
 import logging
 from typing import Any
 
+from .lifespan_hooks import lifespan_hooks
 from .ops_notify_event import SITE_LINKS
 
 logger = logging.getLogger(__name__)
@@ -213,8 +214,9 @@ def install_daily_summary_timer(app: Any, *, process_lock: Any) -> None:
         await drain_alert_tasks(app.state)
         process_lock.release()
 
-    app.router.on_startup.append(start)
-    app.router.on_shutdown.insert(0, stop)
+    hooks = lifespan_hooks(app)
+    hooks.on_startup.append(start)
+    hooks.on_shutdown.insert(0, stop)
 
 
 def schedule_event_delivery(state: Any, *, alert_id: str) -> None:

@@ -24,7 +24,7 @@ def test_the_host_entry_uses_the_worker_env_builder():
     # The factory is loaded inside uvicorn's running loop; the builder must be
     # awaited from startup, never asyncio.run() at factory time.
     assert "await build_oracle_mesh_return_source_from_env(os.environ)" in source
-    assert "app.router.on_startup.append(_compose_oracle_mesh_return_source_on_startup)" in source
+    assert "lifespan_hooks(app).on_startup.append(_compose_oracle_mesh_return_source_on_startup)" in source
     assert "async def _compose_oracle_mesh_return_source_on_startup(app=app):" in source
     # The host cannot await the builder at factory time, but create_app gates the
     # internal Engine lanes on this argument, so the entry hands the mount-time

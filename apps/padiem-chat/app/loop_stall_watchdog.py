@@ -27,6 +27,8 @@ import sys
 import time
 from typing import Any, Callable, Mapping
 
+from .lifespan_hooks import lifespan_hooks
+
 __all__ = [
     "LAG_THRESHOLD_SECONDS",
     "LoopStallWatchdog",
@@ -168,6 +170,7 @@ def install(app: Any, *, env: Mapping[str, str] | None = None,
         if getattr(app.state, "loop_stall_watchdog_task", None) is task:
             app.state.loop_stall_watchdog_task = None
 
-    app.router.on_startup.append(_start)
-    app.router.on_shutdown.append(_stop)
+    hooks = lifespan_hooks(app)
+    hooks.on_startup.append(_start)
+    hooks.on_shutdown.append(_stop)
     return True

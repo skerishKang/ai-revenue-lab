@@ -22,6 +22,7 @@ from typing import Any
 import httpx
 
 from .feedback_store import FeedbackUnavailable
+from .lifespan_hooks import lifespan_hooks
 from .d1_rows import rows_from_result
 
 _SITE = "lovetree"
@@ -359,8 +360,9 @@ def install_retry_loop(app: Any, *, process_lock: Any = None) -> None:
         if process_lock is not None and getattr(process_lock, "held", False):
             process_lock.release()
 
-    app.router.on_startup.append(start)
-    app.router.on_shutdown.insert(0, stop)
+    hooks = lifespan_hooks(app)
+    hooks.on_startup.append(start)
+    hooks.on_shutdown.insert(0, stop)
 
 
 async def drain_tasks(state: Any) -> None:

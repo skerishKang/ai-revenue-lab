@@ -20,6 +20,7 @@ import asyncio
 import pytest
 
 from app import local_cpython
+from app.lifespan_hooks import lifespan_hooks
 from app.maintenance_mode import MaintenanceModeMiddleware
 
 # 운영 .env가 켜는 이름들, 값은 전부 합성값이다 (#7035 계열 시험과 같은 규칙).
@@ -100,7 +101,7 @@ def _run_lifespan(host):
     started = []
 
     async def scenario():
-        for handler in list(starlette_app.router.on_startup):
+        for handler in list(lifespan_hooks(starlette_app).on_startup):
             result = handler()
             if asyncio.iscoroutine(result):
                 await result
@@ -109,7 +110,7 @@ def _run_lifespan(host):
         # counter timer is armed and the WAL loop owns state.
         assert identity_cache_metrics._timer is not None
         assert getattr(starlette_app.state, "wal_checkpoint_task", None) is not None
-        for handler in list(starlette_app.router.on_shutdown):
+        for handler in list(lifespan_hooks(starlette_app).on_shutdown):
             result = handler()
             if asyncio.iscoroutine(result):
                 await result
