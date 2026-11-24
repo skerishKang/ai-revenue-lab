@@ -1,0 +1,109 @@
+{
+  "sheet": "pc-file-exchange.css",
+  "round": "#7811 C2 pc-file-exchange.css 9선언",
+  "base": "9a206818b",
+  "audit": {
+    "css_color_literals": {
+      "before": 918,
+      "after": 909,
+      "delta": -9
+    },
+    "css_color_literals_unthemed": {
+      "before": 280,
+      "after": 271,
+      "delta": -9
+    },
+    "css_important": {
+      "before": 439,
+      "after": 439,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4361,
+      "after": 4361,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 771,
+      "after": 771,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": [
+      "--pc-file-exchange-overlay-dim",
+      "--pc-file-exchange-shadow",
+      "--pc-file-exchange-muted-text",
+      "--pc-file-exchange-tint",
+      "--pc-file-exchange-dark-panel"
+    ],
+    "reused": [
+      "--project-panel-bg",
+      "--settings-input-bg",
+      "--calendar-paper"
+    ],
+    "definition": "padiem-tokens.css :root pc-exchange 묶음. 테마 블록이 덮지 않는다.",
+    "reuse_rule": "값이 같은 기존 :root 토큰 3개를 재사용했고 테마가 덮는 토큰은 재사용하지 않았다(계약 시험이 고정)."
+  },
+  "verification": {
+    "computed": {
+      "targets": 9,
+      "themes": 5,
+      "checked": 10,
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "combos": 10,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "screens": [
+        "exchange"
+      ],
+      "nonzero": [],
+      "report": "compare_report.json",
+      "captures": "captures/"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json",
+      "scope": "scope_report.json"
+    },
+    "tamper": {
+      "token": "--pc-file-exchange-overlay-dim",
+      "mutation": "rgba(16, 34, 48, 0.42)->#ff00ff",
+      "theme": "light",
+      "screen": "exchange",
+      "viewport": "1440x950",
+      "pixel": 1335533,
+      "report": "tamper_report.json",
+      "images": [
+        "captures/tamper_clean.png",
+        "captures/tamper_mutated.png"
+      ]
+    },
+    "tests": "신규 계약·7187 토큰 집합 12개, 구조·래칫 26개 통과",
+    "ratchet": "base 대비 head: 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −9."
+  },
+  "notes": [
+    "값은 치환 전 폴백 리터럴 그대로라 계산값·픽셀·대비는 변하지 않는다.",
+    "이 시트는 JS가 동적으로 붙이는 시트라 고정 표식 DOM에 시트 자체를 주입해 측정했다.",
+    "원래 대비 미달(저장한 답변 창·커넥터 카드 등)은 수리하지 않고 목록으로만 남긴다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 정의에만 있다."
+  ]
+}
