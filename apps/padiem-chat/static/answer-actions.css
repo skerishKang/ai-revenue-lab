@@ -107,6 +107,15 @@
   font-size: 12px;
   font-weight: 700;
 }
+/* 수아 11-24: the "기타(···)" menu holds text labels, not glyphs. The Glass
+ * turn-action rule pins every action to a 40px square, which wrapped the labels.
+ * Only menu items grow to their text; the five icon buttons keep their squares. */
+html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-more-menu .answer-action {
+  width: auto;
+  min-width: 40px;
+  height: 40px;
+  white-space: nowrap;
+}
 
 /* Plan 4 user-turn extras (chip + hover-reveal actions): hidden everywhere
  * by default so non-Glass themes render exactly as before. The Glass theme

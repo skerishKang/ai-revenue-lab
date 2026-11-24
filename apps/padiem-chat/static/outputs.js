@@ -92,13 +92,14 @@
   }
 
   function updateSaveButtons() {
-    // #4462: the saved-answers list surface is removed, so the per-answer
-    // save entry stays hidden — saving would be write-only with no retrieval
-    // path. Copy/download stay visible; saved data, the dialog and the
-    // /api/outputs contract are preserved untouched.
+    // 수아 11-24: the save entry lives in the answer's existing "기타(···)"
+    // menu. It appears only when the saved-answers store is usable for this
+    // signed-in owner; copy/download stay as they were.
     document.querySelectorAll(".answer-save").forEach((button) => {
-      button.hidden = true;
-      button.disabled = true;
+      const article = button.closest(".assistant-message");
+      const eligible = outputsReady && !!article && lifecycleApi().isCompleted(article);
+      button.hidden = !eligible;
+      button.disabled = !eligible || button.dataset.saved === "true";
     });
   }
 
@@ -523,12 +524,13 @@
     });
     actions.append(more, moreMenu);
 
+    const saveLabel = localeText("answer-save", "저장한 답변으로 저장");
     const save = document.createElement("button");
     save.type = "button";
     save.className = "answer-action answer-save";
-    save.textContent = "저장";
-    save.hidden = true;
-    save.disabled = true;
+    save.textContent = saveLabel;
+    save.hidden = !outputsReady;
+    save.disabled = !outputsReady;
     save.addEventListener("click", async () => {
       if (!lifecycleApi().isCompleted(article) || !outputsReady || save.dataset.saved === "true") return;
       save.disabled = true;
@@ -546,17 +548,19 @@
           throw new Error(message);
         }
         save.dataset.saved = "true";
-        save.textContent = "저장됨";
+        save.textContent = localeText("saved-state", "저장됨");
         save.disabled = true;
         await loadOutputs();
       } catch (_) {
         if (generation !== outputsGeneration) return;
         save.disabled = false;
-        feedbackButton(save, "저장 실패", "저장");
+        feedbackButton(save, localeText("save-failed", "저장 실패"), saveLabel);
       }
     });
 
-    actions.appendChild(save);
+    // 수아 11-24: the save entry belongs beside "TXT 다운로드" in the existing
+    // "기타(···)" menu instead of being a hidden row-level button.
+    moreMenu.appendChild(save);
     body.appendChild(actions);
     article.dataset.outputActions = "true";
   }

@@ -36,10 +36,12 @@ def test_answer_bar_has_exactly_five_icon_actions_and_no_rating() -> None:
     lowered = src.lower()
     for token in ("answer-like", "answer-dislike", "thumbs-up", "thumbs-down", "thumbup", "thumbdown"):
         assert token not in lowered, f"rating control leaked: {token}"
-    # TXT download stays inside the more menu; the save entry stays hidden.
+    # TXT download and the saved-answer entry both live in the "기타(···)"
+    # menu; the save entry appears only when the store is ready for this owner.
     assert src.count('"answer-action answer-download"') == 1
     assert "answer-txt-download" in src
-    assert "save.hidden = true" in src
+    assert "moreMenu.appendChild(save)" in src
+    assert "save.hidden = !outputsReady" in src
     # Icon buttons expose hover/keyboard descriptions, never bare glyphs.
     assert 'setAttribute("aria-label"' in src
     assert "button.title" in src
