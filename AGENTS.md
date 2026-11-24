@@ -227,6 +227,9 @@ Do not turn every available/automatically-triggered test into a required gate. D
 
 ## GitHub report handoff
 
+- PR 증거 캡처는 확인한 핵심 이미지 최대 8장만 저장소에 남긴다. 나머지 비교 이미지는 수치(manifest·compare 결과 JSON)로만 남긴다.
+
+
 Reporting depth is proportional to task risk.
 
 For bounded bug fixes/tiny glue with directly reviewable diff + focused tests/CI, default to:

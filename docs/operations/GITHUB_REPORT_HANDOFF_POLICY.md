@@ -121,6 +121,9 @@ Report claims remain subordinate to current GitHub truth. CENTRAL still independ
 
 ## 5. Large evidence
 
+- PR 증거 캡처는 확인한 핵심 이미지 최대 8장만 저장소에 남긴다. 나머지 비교 이미지는 수치(manifest·compare 결과 JSON)로만 남긴다.
+
+
 Prefer GitHub Actions artifacts for:
 
 - screenshots;

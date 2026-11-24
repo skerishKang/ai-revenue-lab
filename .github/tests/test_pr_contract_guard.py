@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import subprocess
 from pathlib import Path
 
 
@@ -180,6 +182,70 @@ def test_guard_never_assigns_a_review_verdict() -> None:
     result = guard.audit(COMPACT_BODY)
     assert "verdict" not in result
     assert result["guard_mode"] == "report"
+
+
+def _git(root, *args):
+    return subprocess.check_output(
+        ["git", *args], cwd=root, text=True, stderr=subprocess.DEVNULL
+    ).strip()
+
+
+def test_evidence_image_limit_real_diff(tmp_path, monkeypatch):
+    guard = _load_guard()
+    _git(tmp_path, "init", "-b", "main")
+    _git(tmp_path, "config", "user.name", "Test")
+    _git(tmp_path, "config", "user.email", "test@example.invalid")
+    reports = tmp_path / "padiem-reports"
+    reports.mkdir()
+    for n in range(20):
+        (reports / f"old-{n}.png").write_text("old")
+    _git(tmp_path, "add", ".")
+    _git(tmp_path, "commit", "-m", "base")
+    base = _git(tmp_path, "rev-parse", "HEAD")
+    _git(tmp_path, "checkout", "-b", "feature")
+    (reports / "old-0.png").write_text("modified")
+    (reports / "old-1.png").unlink()
+    (reports / "manifest.json").write_text("{}")
+    (tmp_path / "outside.png").write_text("outside")
+    for n, suffix in enumerate(["png", "JPG", "webp", "JPEG"] * 2):
+        (reports / f"new {n}.{suffix}").write_text("new")
+    _git(tmp_path, "add", "-A")
+    _git(tmp_path, "commit", "-m", "eight")
+    eight = _git(tmp_path, "rev-parse", "HEAD")
+    assert len(guard.added_evidence_images(tmp_path, base, eight)) == 8
+    (reports / "ninth.PNG").write_text("new")
+    _git(tmp_path, "add", "-A")
+    _git(tmp_path, "commit", "-m", "nine")
+    nine = _git(tmp_path, "rev-parse", "HEAD")
+    assert len(guard.added_evidence_images(tmp_path, base, nine)) == 9
+    _git(tmp_path, "checkout", "main")
+    _git(tmp_path, "merge", "--no-ff", eight, "-m", "merge eight")
+    assert guard.check_pr_evidence_images(tmp_path, {"pull_request": {"head": {"sha": eight}}}) == 0
+    # Mirror Actions' depth-one checkout: the merge parent is absent
+    # locally, and the guard must fetch the exact base before diffing.
+    shallow = tmp_path.parent / "shallow-checkout"
+    _git(tmp_path, "clone", "--depth=1", "--branch", "main",
+         tmp_path.as_uri(), str(shallow))
+    assert _git(shallow, "rev-parse", "--is-shallow-repository") == "true"
+    assert subprocess.run(
+        ["git", "cat-file", "-e", base + "^{tree}"], cwd=shallow,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    ).returncode != 0
+    assert guard.check_pr_evidence_images(shallow, {"pull_request": {"head": {"sha": eight}}}) == 0
+    _git(tmp_path, "reset", "--hard", base)
+    _git(tmp_path, "merge", "--no-ff", nine, "-m", "merge nine")
+    event = tmp_path / "event.json"
+    event.write_text(json.dumps({"pull_request": {"head": {"sha": nine}}}))
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "pull_request")
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event))
+    monkeypatch.setenv("PR_BODY", "EVIDENCE_IMAGES_OVER_LIMIT: reason")
+    monkeypatch.setenv("PR_CONTRACT_GUARD_ENFORCE", "0")
+    assert guard.main([]) == 1
+    monkeypatch.setenv("PR_BODY", "")
+    assert guard.main([]) == 1
+    event.write_text(json.dumps({"pull_request": {"head": {"sha": eight}}}))
+    assert guard.main([]) == 1
 
 
 def main() -> int:
