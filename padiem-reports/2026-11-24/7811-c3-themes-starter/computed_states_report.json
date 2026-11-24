@@ -1,0 +1,225 @@
+{
+ "themes": [
+  "light",
+  "dark",
+  "padiem-glass",
+  "cinematic",
+  "padiem-home"
+ ],
+ "viewports": [
+  "1440x950",
+  "390x844"
+ ],
+ "screens": [
+  "home-logout",
+  "home-login",
+  "claw"
+ ],
+ "state_labels": [
+  "active",
+  "active+disabled",
+  "active+empty-hidden",
+  "active+is-active",
+  "focus",
+  "focus+disabled",
+  "focus+empty-hidden",
+  "focus+is-active",
+  "hover",
+  "hover+disabled",
+  "hover+empty-hidden",
+  "hover+is-active",
+  "normal",
+  "normal+disabled",
+  "normal+empty-hidden",
+  "normal+is-active"
+ ],
+ "targets": "시작 카드 8개와 그 모든 자손, 각각의 ::before·::after",
+ "measurements": 30,
+ "states": 480,
+ "targets_compared": 90720,
+ "values_compared": 43545600,
+ "rendered_targets": 8840,
+ "diffs": [],
+ "by_measurement": {
+  "cinematic__1440x950__claw": {
+   "app_state": "claw",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "cinematic__1440x950__home-login": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "cinematic__1440x950__home-logout": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "cinematic__390x844__claw": {
+   "app_state": "claw",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "cinematic__390x844__home-login": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "cinematic__390x844__home-logout": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "dark__1440x950__claw": {
+   "app_state": "claw",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "dark__1440x950__home-login": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "dark__1440x950__home-logout": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "dark__390x844__claw": {
+   "app_state": "claw",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "dark__390x844__home-login": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "dark__390x844__home-logout": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "light__1440x950__claw": {
+   "app_state": "claw",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "light__1440x950__home-login": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "light__1440x950__home-logout": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "light__390x844__claw": {
+   "app_state": "claw",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "light__390x844__home-login": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "light__390x844__home-logout": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "padiem-glass__1440x950__claw": {
+   "app_state": "claw",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "padiem-glass__1440x950__home-login": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "padiem-glass__1440x950__home-logout": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "padiem-glass__390x844__claw": {
+   "app_state": "claw",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "padiem-glass__390x844__home-login": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "padiem-glass__390x844__home-logout": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "padiem-home__1440x950__claw": {
+   "app_state": "claw",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "padiem-home__1440x950__home-login": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "padiem-home__1440x950__home-logout": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "padiem-home__390x844__claw": {
+   "app_state": "claw",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "padiem-home__390x844__home-login": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  },
+  "padiem-home__390x844__home-logout": {
+   "app_state": "home",
+   "starters": 8,
+   "targets": 3024,
+   "changed": 0
+  }
+ }
+}
