@@ -1,0 +1,105 @@
+{
+ "summary": {
+  "phase": "before-after",
+  "combos": 4,
+  "nonzero": [
+   "padiem-home__1440x950__chat-state",
+   "padiem-home__1440x950__chat-state-focus",
+   "padiem-home__390x844__chat-state",
+   "padiem-home__390x844__chat-state-focus"
+  ],
+  "state_not_ok": [],
+  "seconds": 180.6
+ },
+ "results": [
+  {
+   "combo": "padiem-home__1440x950__chat-state",
+   "pixel": 78962,
+   "noise": 1347,
+   "pairs": [
+    1347,
+    1347,
+    1347
+   ],
+   "settles": [
+    4,
+    4
+   ],
+   "attempts": [
+    1,
+    1
+   ],
+   "state_ok": [
+    true,
+    true
+   ]
+  },
+  {
+   "combo": "padiem-home__1440x950__chat-state-focus",
+   "pixel": 77738,
+   "noise": 1328,
+   "pairs": [
+    1328,
+    1328,
+    1328
+   ],
+   "settles": [
+    4,
+    4
+   ],
+   "attempts": [
+    1,
+    1
+   ],
+   "state_ok": [
+    true,
+    true
+   ]
+  },
+  {
+   "combo": "padiem-home__390x844__chat-state",
+   "pixel": 34659,
+   "noise": 941,
+   "pairs": [
+    941,
+    941,
+    941
+   ],
+   "settles": [
+    4,
+    4
+   ],
+   "attempts": [
+    1,
+    1
+   ],
+   "state_ok": [
+    true,
+    true
+   ]
+  },
+  {
+   "combo": "padiem-home__390x844__chat-state-focus",
+   "pixel": 33678,
+   "noise": 817,
+   "pairs": [
+    817,
+    817,
+    817
+   ],
+   "settles": [
+    4,
+    4
+   ],
+   "attempts": [
+    1,
+    1
+   ],
+   "state_ok": [
+    true,
+    true
+   ]
+  }
+ ],
+ "rendering": "도구의 backdrop-filter:none 고정 사용"
+}

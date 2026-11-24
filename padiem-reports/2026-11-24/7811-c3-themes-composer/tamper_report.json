@@ -1,0 +1,297 @@
+{
+ "ok": true,
+ "cases": 15,
+ "all_detected": true,
+ "leak_check": {
+  "check": "cinematic 블록 변조가 dark 화면에 새지 않는다",
+  "pixel": 0
+ },
+ "seconds": 188.8,
+ "results": [
+  {
+   "theme": "cinematic",
+   "token": "--surface-fade-deep",
+   "from": "--surface-fade-deep: rgba(4,7,13,.86);",
+   "to": "#ff00ff",
+   "screen": "home-logout",
+   "viewport": "1440x950",
+   "pixel": 119564,
+   "noise": 118469,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "home",
+    "home"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "cinematic",
+   "token": "--surface-fade-solid",
+   "from": "--surface-fade-solid: #04070d;",
+   "to": "#ff00ff",
+   "screen": "home-logout",
+   "viewport": "1440x950",
+   "pixel": 104169,
+   "noise": 102752,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "home",
+    "home"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "dark",
+   "token": "--surface-fade-deep",
+   "from": "--surface-fade-deep: rgba(19,20,23,.92);",
+   "to": "#ff00ff",
+   "screen": "home-logout",
+   "viewport": "1440x950",
+   "pixel": 22984,
+   "noise": 22146,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "home",
+    "home"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "dark",
+   "token": "--surface-fade-solid",
+   "from": "--surface-fade-solid: #131417;",
+   "to": "#ff00ff",
+   "screen": "home-logout",
+   "viewport": "1440x950",
+   "pixel": 39844,
+   "noise": 39840,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "home",
+    "home"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "dark",
+   "token": "--rich-composer-fade",
+   "from": "--rich-composer-fade: linear-gradient(to bottom, transparent, rgba(19,20,23,.92) 34%, #131417 76%);",
+   "to": "linear-gradient(#ff00ff, #ff00ff)",
+   "screen": "chat-state",
+   "viewport": "1440x950",
+   "pixel": 67694,
+   "noise": 67691,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "chat",
+    "chat"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "light",
+   "token": "--surfaces-composer-text",
+   "from": "--surfaces-composer-text: var(--input-text);",
+   "to": "#ff00ff",
+   "screen": "chat-state",
+   "viewport": "1440x950",
+   "pixel": 607,
+   "noise": 605,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "chat",
+    "chat"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "light",
+   "token": "--rich-composer-fade",
+   "from": "--rich-composer-fade: linear-gradient(to bottom, transparent, var(--bg) 28%, var(--bg));",
+   "to": "linear-gradient(#ff00ff, #ff00ff)",
+   "screen": "chat-state",
+   "viewport": "1440x950",
+   "pixel": 67384,
+   "noise": 67375,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "chat",
+    "chat"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "light",
+   "token": "--rich-composer-border",
+   "from": "--rich-composer-border: var(--composer-border);",
+   "to": "#ff00ff",
+   "screen": "chat-state",
+   "viewport": "1440x950",
+   "pixel": 2006,
+   "noise": 2001,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "chat",
+    "chat"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "light",
+   "token": "--rich-composer-shadow",
+   "from": "--rich-composer-shadow: var(--composer-shadow);",
+   "to": "0 0 0 6px #ff00ff",
+   "screen": "chat-state",
+   "viewport": "1440x950",
+   "pixel": 57379,
+   "noise": 44651,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "chat",
+    "chat"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "light",
+   "token": "--rich-composer-note",
+   "from": "--rich-composer-note: var(--muted);",
+   "to": "#ff00ff",
+   "screen": "chat-state",
+   "viewport": "1440x950",
+   "pixel": 2323,
+   "noise": 2293,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "chat",
+    "chat"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "padiem-home",
+   "token": "--surfaces-composer-text",
+   "from": "--surfaces-composer-text: var(--text-deep-ink);",
+   "to": "#ff00ff",
+   "screen": "chat-state",
+   "viewport": "1440x950",
+   "pixel": 607,
+   "noise": 605,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "chat",
+    "chat"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "padiem-home",
+   "token": "--rich-composer-fade",
+   "from": "--rich-composer-fade: linear-gradient(to bottom, transparent, rgba(230,233,238,.84) 32%, var(--bg) 78%);",
+   "to": "linear-gradient(#ff00ff, #ff00ff)",
+   "screen": "chat-state",
+   "viewport": "1440x950",
+   "pixel": 160592,
+   "noise": 160503,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "chat",
+    "chat"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "padiem-home",
+   "token": "--rich-composer-border",
+   "from": "--rich-composer-border: rgba(26,34,48,.10);",
+   "to": "#ff00ff",
+   "screen": "chat-state",
+   "viewport": "1440x950",
+   "pixel": 71464,
+   "noise": 7936,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "chat",
+    "chat"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "padiem-home",
+   "token": "--rich-composer-shadow",
+   "from": "--rich-composer-shadow: 0 14px 40px rgba(26,34,48,.09), inset 0 1px 0 rgba(255,255,255,.85);",
+   "to": "0 0 0 6px #ff00ff",
+   "screen": "chat-state",
+   "viewport": "1440x950",
+   "pixel": 69984,
+   "noise": 53790,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "chat",
+    "chat"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "padiem-home",
+   "token": "--rich-composer-note",
+   "from": "--rich-composer-note: var(--muted);",
+   "to": "#ff00ff",
+   "screen": "chat-state",
+   "viewport": "1440x950",
+   "pixel": 2323,
+   "noise": 2293,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "chat",
+    "chat"
+   ],
+   "detected": true
+  }
+ ]
+}

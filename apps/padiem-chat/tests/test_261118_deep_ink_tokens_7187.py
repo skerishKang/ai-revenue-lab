@@ -33,8 +33,12 @@ ROOT_TOKENS = {
 
 CHANGED = {
     "padiem-themes.css": {
-        ("color", "var(--text-deep-ink)"): 8,
-        ("color", "var(--text-deep-ink) !important"): 2,
+        # #7811 C3: padiem-home 입력칸 글자색 두 줄이 이 시트를 떠났다. 대화 상태의
+        # !important 줄은 기본 규칙과 값이 같은 중복이라 걷어 냈고(2 → 1), 기본
+        # 규칙(.composer textarea)은 바탕 규칙이 읽는 --surfaces-composer-text의
+        # padiem-home 값(var(--text-deep-ink))으로 옮겼다(8 → 7).
+        ("color", "var(--text-deep-ink)"): 7,
+        ("color", "var(--text-deep-ink) !important"): 1,
     },
     "padiem-settings.css": {
         ("background", "var(--swatch-deep-ink)"): 1,
@@ -63,7 +67,7 @@ def test_no_theme_block_overrides_the_tokens() -> None:
                 assert name not in rule.declarations, (rule.selectors, name)
 
 
-def test_the_thirteen_declarations_consume_the_right_role() -> None:
+def test_the_declarations_consume_the_right_role() -> None:
     total = 0
     for sheet, expected in CHANGED.items():
         actual: Counter = Counter()
@@ -74,7 +78,8 @@ def test_the_thirteen_declarations_consume_the_right_role() -> None:
                     actual[(prop, normalized)] += 1
         assert actual == Counter(expected), sheet
         total += sum(actual.values())
-    assert total == 13
+    # 13선언으로 옮겼고(#7187 6차), #7811 C3에서 2선언이 이 시트들을 떠나 11선언이다.
+    assert total == 11
 
 
 def test_swapping_the_tokens_back_returns_the_original_literal() -> None:

@@ -1,0 +1,768 @@
+{
+ "method": "base 트리에서 선언을 하나씩 뺀 padiem-themes.css 를 같은 자리의 <style> 로 바꿔 넣고, 입력창 5대상의 계산값 전체를 4테마 × 2폭 × 16상태(data-state 7종 × 초점, 클로 접힘)에서 비교. 차이가 난 상태 목록이 live_states_when_removed_alone.",
+ "base": "37c01b5c6354653e60394138289b76dada262062",
+ "counts": {
+  "kept": 15,
+  "removed (dead)": 17,
+  "removed (moved to token)": 12,
+  "kept, !important dropped": 2
+ },
+ "declarations": [
+  {
+   "line": 82,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .composer",
+   "property": "background",
+   "value": "var(--composer-bg)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 82,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .composer",
+   "property": "border",
+   "value": "1px solid var(--composer-border)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 82,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .composer",
+   "property": "box-shadow",
+   "value": "var(--composer-shadow)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 83,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .composer-wrap",
+   "property": "background",
+   "value": "linear-gradient(to bottom, transparent, var(--bg) 28%, var(--bg))",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 84,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .composer-note",
+   "property": "color",
+   "value": "var(--muted)",
+   "important_before": false,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 92,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .app-shell[data-state=\"chat\"] .composer",
+   "property": "background",
+   "value": "var(--composer-bg)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "chat",
+    "chat+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 92,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .app-shell[data-state=\"chat\"] .composer",
+   "property": "border-color",
+   "value": "var(--composer-border)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "chat",
+    "chat+focus"
+   ],
+   "action": "removed (moved to token)"
+  },
+  {
+   "line": 92,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .app-shell[data-state=\"chat\"] .composer",
+   "property": "box-shadow",
+   "value": "var(--composer-shadow)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "chat",
+    "chat+focus"
+   ],
+   "action": "removed (moved to token)"
+  },
+  {
+   "line": 92,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .app-shell[data-state=\"chat\"] .composer",
+   "property": "backdrop-filter",
+   "value": "none",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "chat",
+    "chat+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 93,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .app-shell[data-state=\"chat\"] .composer-wrap",
+   "property": "background",
+   "value": "linear-gradient(to bottom, transparent, var(--bg) 28%, var(--bg))",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "chat",
+    "chat+focus"
+   ],
+   "action": "removed (moved to token)"
+  },
+  {
+   "line": 94,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .app-shell[data-state=\"chat\"] .composer textarea",
+   "property": "color",
+   "value": "var(--input-text)",
+   "important_before": false,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 95,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .app-shell[data-state=\"chat\"] .composer textarea::placeholder",
+   "property": "color",
+   "value": "var(--placeholder)",
+   "important_before": false,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 96,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .app-shell[data-state=\"chat\"] .composer-note",
+   "property": "color",
+   "value": "var(--muted) !important",
+   "important_before": true,
+   "live_states_when_removed_alone": [
+    "chat",
+    "chat+focus"
+   ],
+   "action": "removed (moved to token)"
+  },
+  {
+   "line": 105,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .composer textarea",
+   "property": "color",
+   "value": "var(--input-text)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "removed (moved to token)"
+  },
+  {
+   "line": 106,
+   "theme": "light",
+   "selector": "html[data-theme=\"light\"] .composer textarea::placeholder",
+   "property": "color",
+   "value": "var(--placeholder)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 195,
+   "theme": "dark",
+   "selector": "html[data-theme=\"dark\"] .composer",
+   "property": "background",
+   "value": "var(--composer-bg)",
+   "important_before": false,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 195,
+   "theme": "dark",
+   "selector": "html[data-theme=\"dark\"] .composer",
+   "property": "border-color",
+   "value": "var(--composer-border)",
+   "important_before": false,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 195,
+   "theme": "dark",
+   "selector": "html[data-theme=\"dark\"] .composer",
+   "property": "box-shadow",
+   "value": "0 2px 14px rgba(0,0,0,.24)",
+   "important_before": false,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 195,
+   "theme": "dark",
+   "selector": "html[data-theme=\"dark\"] .composer",
+   "property": "backdrop-filter",
+   "value": "none",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "chat",
+    "chat+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 200,
+   "theme": "dark",
+   "selector": "html[data-theme=\"dark\"] body .app-shell .composer-wrap",
+   "property": "background",
+   "value": "linear-gradient(to bottom, transparent, rgba(19,20,23,.92) 34%, #131417 76%)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "chat",
+    "chat+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "removed (moved to token)"
+  },
+  {
+   "line": 201,
+   "theme": "dark",
+   "selector": "html[data-theme=\"dark\"] .composer-note",
+   "property": "color",
+   "value": "rgba(255,255,255,.42)",
+   "important_before": false,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 202,
+   "theme": "dark",
+   "selector": "html[data-theme=\"dark\"] .composer textarea",
+   "property": "color",
+   "value": "#f2f3f4",
+   "important_before": false,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 203,
+   "theme": "dark",
+   "selector": "html[data-theme=\"dark\"] .composer textarea::placeholder",
+   "property": "color",
+   "value": "rgba(255,255,255,.40)",
+   "important_before": false,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 283,
+   "theme": "cinematic",
+   "selector": "html[data-theme=\"cinematic\"] .composer",
+   "property": "background",
+   "value": "linear-gradient(145deg, rgba(18,30,46,.8), rgba(8,11,17,.76))",
+   "important_before": false,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 283,
+   "theme": "cinematic",
+   "selector": "html[data-theme=\"cinematic\"] .composer",
+   "property": "border-color",
+   "value": "var(--composer-border)",
+   "important_before": false,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 283,
+   "theme": "cinematic",
+   "selector": "html[data-theme=\"cinematic\"] .composer",
+   "property": "backdrop-filter",
+   "value": "blur(16px)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "chat",
+    "chat+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 283,
+   "theme": "cinematic",
+   "selector": "html[data-theme=\"cinematic\"] .composer",
+   "property": "box-shadow",
+   "value": "0 0 40px var(--film-blue-glow), 0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08)",
+   "important_before": false,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 289,
+   "theme": "cinematic",
+   "selector": "html[data-theme=\"cinematic\"] .composer-wrap",
+   "property": "background",
+   "value": "linear-gradient(to bottom, transparent, rgba(4,7,13,.86) 34%, #04070d 76%)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "removed (moved to token)"
+  },
+  {
+   "line": 290,
+   "theme": "cinematic",
+   "selector": "html[data-theme=\"cinematic\"] .composer-note",
+   "property": "color",
+   "value": "rgba(255,255,255,.38) !important",
+   "important_before": true,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 383,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .composer",
+   "property": "background",
+   "value": "linear-gradient(180deg, rgba(255,255,255,.88), rgba(250,252,255,.78))",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 383,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .composer",
+   "property": "border-color",
+   "value": "rgba(26,34,48,.10)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 383,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .composer",
+   "property": "border-top",
+   "value": "1px solid rgba(255,255,255,.9)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 383,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .composer",
+   "property": "box-shadow",
+   "value": "0 14px 40px rgba(26,34,48,.09), inset 0 1px 0 rgba(255,255,255,.85)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 383,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .composer",
+   "property": "backdrop-filter",
+   "value": "blur(18px)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  },
+  {
+   "line": 384,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .composer-wrap",
+   "property": "background",
+   "value": "linear-gradient(to bottom, transparent, rgba(230,233,238,.84) 32%, var(--bg) 78%) !important",
+   "important_before": true,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept, !important dropped"
+  },
+  {
+   "line": 385,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .composer-note",
+   "property": "color",
+   "value": "var(--muted) !important",
+   "important_before": true,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 393,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .app-shell[data-state=\"chat\"] .composer",
+   "property": "background",
+   "value": "linear-gradient(180deg, rgba(255,255,255,.88), rgba(250,252,255,.78)) !important",
+   "important_before": true,
+   "live_states_when_removed_alone": [
+    "chat",
+    "chat+focus"
+   ],
+   "action": "kept, !important dropped"
+  },
+  {
+   "line": 393,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .app-shell[data-state=\"chat\"] .composer",
+   "property": "border-color",
+   "value": "rgba(26,34,48,.10) !important",
+   "important_before": true,
+   "live_states_when_removed_alone": [
+    "chat",
+    "chat+focus"
+   ],
+   "action": "removed (moved to token)"
+  },
+  {
+   "line": 393,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .app-shell[data-state=\"chat\"] .composer",
+   "property": "box-shadow",
+   "value": "0 14px 40px rgba(26,34,48,.09), inset 0 1px 0 rgba(255,255,255,.85) !important",
+   "important_before": true,
+   "live_states_when_removed_alone": [
+    "chat",
+    "chat+focus"
+   ],
+   "action": "removed (moved to token)"
+  },
+  {
+   "line": 393,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .app-shell[data-state=\"chat\"] .composer",
+   "property": "backdrop-filter",
+   "value": "blur(18px) !important",
+   "important_before": true,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 394,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .app-shell[data-state=\"chat\"] .composer-wrap",
+   "property": "background",
+   "value": "linear-gradient(to bottom, transparent, rgba(230,233,238,.84) 32%, var(--bg) 78%) !important",
+   "important_before": true,
+   "live_states_when_removed_alone": [],
+   "action": "removed (moved to token)"
+  },
+  {
+   "line": 395,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .app-shell[data-state=\"chat\"] .composer textarea",
+   "property": "color",
+   "value": "var(--text-deep-ink) !important",
+   "important_before": true,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 396,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .app-shell[data-state=\"chat\"] .composer textarea::placeholder",
+   "property": "color",
+   "value": "#7a869a !important",
+   "important_before": true,
+   "live_states_when_removed_alone": [],
+   "action": "removed (dead)"
+  },
+  {
+   "line": 397,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .app-shell[data-state=\"chat\"] .composer-note",
+   "property": "color",
+   "value": "var(--muted) !important",
+   "important_before": true,
+   "live_states_when_removed_alone": [
+    "chat",
+    "chat+focus"
+   ],
+   "action": "removed (moved to token)"
+  },
+  {
+   "line": 424,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .composer textarea",
+   "property": "color",
+   "value": "var(--text-deep-ink)",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "removed (moved to token)"
+  },
+  {
+   "line": 425,
+   "theme": "padiem-home",
+   "selector": "html[data-theme=\"padiem-home\"] .composer textarea::placeholder",
+   "property": "color",
+   "value": "#7a869a",
+   "important_before": false,
+   "live_states_when_removed_alone": [
+    "automation",
+    "automation+focus",
+    "calendar",
+    "calendar+focus",
+    "claw",
+    "claw+collapsed",
+    "claw+focus",
+    "claw+focus+collapsed",
+    "home",
+    "home+focus",
+    "library",
+    "library+focus",
+    "util",
+    "util+focus"
+   ],
+   "action": "kept"
+  }
+ ]
+}

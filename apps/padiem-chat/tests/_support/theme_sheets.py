@@ -36,6 +36,12 @@ def rules(sheet_name: str):
     return _parsed(sheet_name)
 
 
+def shipped_sheet_names() -> list[str]:
+    """Every shipped stylesheet's file name (#7811 C3: who reads a token)."""
+    static = Path(__file__).resolve().parents[2] / "static"
+    return sorted(path.name for path in static.glob("*.css"))
+
+
 def rules_with_selector(sheet_name: str, needle: str):
     """Parsed rules whose selector text contains ``needle`` as written."""
     return [rule for rule in rules(sheet_name) if needle in rule.selector]
