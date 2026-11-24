@@ -584,3 +584,17 @@ def test_classified_noinfo_preserves_binary_fallback_and_bounded_log(capsys, cod
     logs = capsys.readouterr().out
     assert f"helper_ready_agent_version read={'observed' if binary_has_date else code}" in logs
     assert NODE not in logs
+
+
+
+@pytest.mark.parametrize("field", ["netif", "netif2"])
+def test_stored_network_document_may_have_only_one_interface_field(field):
+    socket, _ = _socket([
+        {"action": "serverinfo"}, _upstream_noinfo(),
+        {"action": "getnetworkinfo", "nodeid": NODE, "updateTime": 1,
+         field: {"private": "discarded"}},
+    ])
+    with patch("kagent.local_agent_meshcentral_sysinfo_port.new_sysinfo_tag",
+               side_effect=[TAG, "padiem-sysinfo-probe"]):
+        assert MeshCentralSysInfoPort(send=socket.sysinfo).read_commit_date(NODE) == (
+            None, "info_not_stored")

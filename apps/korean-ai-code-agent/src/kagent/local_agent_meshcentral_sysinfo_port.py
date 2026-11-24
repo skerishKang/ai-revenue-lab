@@ -261,8 +261,13 @@ def probe_sysinfo_absence(socket: Any, frame: Mapping[str, Any],
             # Upstream successful getnetworkinfo does not echo tag. This is
             # the sole such request on the fresh socket; match the node and
             # response shape, and reject an explicit mismatching tag.
+            # A stored if document can have only netif or only netif2:
+            # meshagent.js stamps updateTime when saving either spelling.
+            both_fields = "netif" in reply and "netif2" in reply
+            stored_shape = (type(reply.get("updateTime")) is int
+                            and ("netif" in reply or "netif2" in reply))
             if ("tag" not in reply or reply["tag"] == tag) and (
-                    "netif" in reply and "netif2" in reply and "result" not in reply
+                    (both_fields or stored_shape) and "result" not in reply
                     and "noinfo" not in reply):
                 return "info_not_stored"
     except Exception:
