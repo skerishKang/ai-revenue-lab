@@ -6,7 +6,6 @@ PUBLIC_NAMES = {
     'append_local_task_result', 'append_step_result_message',
     'begin_chat_stream_turn', 'cancel_oracle_mesh_dispatches_for_run',
     'claim_claw_approval_handoff', 'claim_oracle_mesh_dispatch',
-    'consent_key_for_owner_node',
     'consume_claw_approval_handoff', 'consume_oracle_mesh_dispatch',
     'consume_pc_command_confirmation', 'consume_service_id',
     'create_oracle_mesh_dispatch', 'create_project',
