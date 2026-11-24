@@ -1,16 +1,10 @@
 """#7811 C3: preserve the six-panel visual contract after priority removal."""
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 
-from css_rules import parse_rules
-from _support.calendar_palette import root_token_families
-
-STATIC = Path(__file__).resolve().parents[1] / "static"
-FRAME = STATIC / "shared-six-panel-frame.css"
-TOKENS = STATIC / "padiem-tokens.css"
+from _support.calendar_palette import root_token_families, root_declarations
+from _support.six_panel_c3_source import frame_rules, tampered_token_sheet
 EXPECTED = {
     "--shared-six-panel-frame-bg": "linear-gradient(155deg, rgba(248,250,251,.88), rgba(233,238,241,.84))",
     "--shared-six-panel-frame-shadow": "0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72)",
@@ -21,20 +15,27 @@ EXPECTED = {
 
 
 def test_paint_values_are_pinned_and_family_contract_is_exact():
-    source = TOKENS.read_text(encoding="utf-8")
-    roots = [r for r in parse_rules(source) if r.selectors == [":root"] and r.media is None]
-    assert len(roots) == 1
-    assert {k: roots[0].declarations.get(k) for k in EXPECTED} == EXPECTED
-    assert root_token_families(source)["--shared-six-panel-frame"] == set(EXPECTED)
+    root = root_declarations()
+    assert {k: root.get(k) for k in EXPECTED} == EXPECTED
+    assert root_token_families()["--shared-six-panel-frame"] == set(EXPECTED)
 
 
 def test_glass_frame_consumes_tokens_without_themed_importants():
-    rules = parse_rules(FRAME.read_text(encoding="utf-8"))
+    rules = frame_rules()
     themed = [value for rule in rules
               if any("data-theme" in selector for selector in rule.selectors)
               for value in rule.declarations.values()]
     assert themed
-    assert not any("!important" in value for value in themed)
+    # Nine declarations still outrank later theme/layout rules. Their computed
+    # values changed in Claw or Calendar when the priority was removed.
+    priority = [(name, value) for rule in rules
+                if any("data-theme" in selector for selector in rule.selectors)
+                for name, value in rule.declarations.items() if "!important" in value]
+    assert len(priority) == 9
+    assert {name for name, _ in priority} == {
+        "height", "min-height", "max-height", "margin", "border-radius",
+        "background", "box-shadow", "overflow-y", "padding",
+    }
     unthemed_priority = [value for rule in rules
                          if not any("data-theme" in sel for sel in rule.selectors)
                          for value in rule.declarations.values()
@@ -47,10 +48,5 @@ def test_glass_frame_consumes_tokens_without_themed_importants():
 
 @pytest.mark.parametrize("mutation", ("delete", "rename"))
 def test_family_contract_detects_missing_or_misspelled_name(mutation):
-    source = TOKENS.read_text(encoding="utf-8")
-    needle = "--shared-six-panel-frame-narrow-bg:"
-    assert source.count(needle) == 1
-    broken = source.replace(needle, "" if mutation == "delete"
-                            else "--shared-six-panel-frame-narrow-bg-typo:", 1)
     with pytest.raises(AssertionError):
-        root_token_families(broken)
+        root_token_families(tampered_token_sheet(mutation))

@@ -95,7 +95,7 @@ def test_settings_plate_is_member_of_every_shared_frame_lane() -> None:
     padding = [
         rule for rule in lanes
         if declaration(rule, "padding") == (
-            "calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px"
+            "calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px !important"
         )
     ]
     assert padding, "the shared first-screen origin must name settings"

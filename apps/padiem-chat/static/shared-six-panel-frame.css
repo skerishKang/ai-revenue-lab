@@ -85,17 +85,17 @@ html[data-theme="padiem-glass"] body .app-shell {
     width: var(--padiem-six-panel-width);
     min-width: 0;
     max-width: none;
-    height: var(--padiem-six-panel-height);
-    min-height: 0;
-    max-height: var(--padiem-six-panel-height);
-    margin: 16px 0 16px var(--padiem-six-panel-left);
+    height: var(--padiem-six-panel-height) !important;
+    min-height: 0 !important;
+    max-height: var(--padiem-six-panel-height) !important;
+    margin: 16px 0 16px var(--padiem-six-panel-left) !important;
     border: 1px solid var(--shared-six-panel-frame-edge);
-    border-radius: 30px;
-    background: var(--shared-six-panel-frame-bg);
-    box-shadow: var(--shared-six-panel-frame-shadow);
+    border-radius: 30px !important;
+    background: var(--shared-six-panel-frame-bg) !important;
+    box-shadow: var(--shared-six-panel-frame-shadow) !important;
     backdrop-filter: blur(30px) saturate(106%);
     -webkit-backdrop-filter: blur(30px) saturate(106%);
-    overflow-y: auto;
+    overflow-y: auto !important;
     overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
   }
@@ -122,7 +122,7 @@ html[data-theme="padiem-glass"] body .app-shell {
     .calendar-view, .connectors-view, .library-view, .automation-view, .meeting-view, .util-view,
     .settings-advanced-view
   ) {
-    padding: calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px;
+    padding: calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px !important;
   }
   /* #7476 H2: the advanced-settings plate used to be a copy of this frame in
    * standalone-views.css; it joins the family here. Both it and the connectors

@@ -3,9 +3,9 @@
   "scope": "C3 shared-six-panel-frame.css",
   "base": "cb7a7659594f366c62bc2fafa795a36ea36864da",
   "themed_important_before": 18,
-  "themed_important_after": 0,
+  "themed_important_after": 9,
   "total_important_before": 20,
-  "total_important_after": 2,
+  "total_important_after": 11,
   "tokens_added": 5,
   "css_family_sha": "d398a01055424ee8063a868a5c4635d38232ae48041788d1a4fe243a1fe748ac",
   "pixel_compare": {
@@ -31,5 +31,9 @@
   "screenshots": [
     "glass-1440-conversation.png",
     "glass-390-conversation.png"
-  ]
+  ],
+  "priority_retained_why": {
+    "claw": "min-height, max-height and overflow-y changed without priority",
+    "calendar": "height, min-height, margin, padding, border-radius, background, box-shadow and overflow-y changed without priority"
+  }
 }
