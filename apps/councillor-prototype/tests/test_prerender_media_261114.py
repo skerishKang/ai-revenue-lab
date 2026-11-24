@@ -166,6 +166,23 @@ def test_media_lightbox_opens_and_returns_focus(browser, base_url):
         page.close()
 
 
+def test_photo_lightbox_links_to_article_and_names_source(browser, base_url):
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    try:
+        page.goto(base_url + "media.html", wait_until="load")
+        photo = page.locator(".media-tile").nth(1)
+        photo.click()
+        page.wait_for_selector("#mediaLightbox[open]")
+        assert "bbsSn=0000119170" in page.locator("#lightboxLink").get_attribute("href")
+        assert page.locator("#lightboxLink").inner_text() == "원문 보기 ↗"
+        assert page.locator("#lightboxSource").inner_text() == (
+            "사진: 광주광역시의회 사진자료실 · 다른 곳에 쓰실 때는 원문 안내를 확인하세요"
+        )
+        assert page.locator("#lightboxSource").is_visible()
+    finally:
+        page.close()
+
+
 def test_dist_content_is_visible_without_javascript(browser, base_url):
     page = browser.new_page(viewport={"width": 390, "height": 844}, java_script_enabled=False)
     try:
@@ -247,6 +264,29 @@ def test_prerender_only_links_http_or_relative():
     assert "토론회" in policy["policyForums"]
     assert "조례" in policy["policyBills"]
 
+def test_council_photos_link_to_their_articles():
+    data = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))
+    photos = [tile for tile in data["media"]["tiles"]
+              if tile.get("kind") == "포토" and str(tile.get("thumb", "")).startswith("./static/images/media-")]
+    expected = {
+        "media-01.jpg": "0000119170",
+        "media-02.jpg": "0000118981",
+        "media-03.jpg": "0000119335",
+        "media-04.jpg": "0000119386",
+        "media-05.jpg": "0000119116",
+        "media-06.jpg": "0000119101",
+        "media-07.jpg": "0000119145",
+        "media-08.jpg": "0000118995",
+    }
+    assert len(photos) == len(expected) == 8
+    for tile in photos:
+        name = tile["thumb"].rsplit("/", 1)[-1]
+        assert tile["url"] == "https://council.gwangju.go.kr/9imr/index.do?PID=014&bbsSn=" + expected[name]
+    generic = {"kind": "포토", "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014"}
+    assert prerender._media_source_label(generic) == "의회 사진자료실 보기"
+    assert prerender._media_source_label(photos[0]) == "원문 보기"
+
+
 ACTIVITY_ITEMS = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))["activity"]["items"]
 
 
@@ -327,6 +367,7 @@ def test_dist_activity_hydrates_and_filters_in_place(browser, base_url, width, h
         assert page.locator("#activityDetail").is_visible()
         assert page.locator("#detailTitle").inner_text() == ACTIVITY_ITEMS[0]["title"]
         assert page.locator("#detailTitle").evaluate("(el) => el === document.activeElement")
+        assert page.locator("#detailBody p").count() == len(ACTIVITY_ITEMS[0]["body"].split("\n\n"))
         assert page.locator("#detailBody").evaluate("(el) => getComputedStyle(el).fontSize") == "16px"
         assert page.locator("#activityBack").bounding_box()["height"] >= 44
         page.keyboard.press("Escape")
