@@ -20,7 +20,7 @@ import prerender
 APP_ROOT = Path(__file__).resolve().parents[1]
 CONFIG = APP_ROOT / "site.config.json"
 PLACEHOLDER = "__BASE_URL__"
-REQUIRED_HTML = ("index.html", "about.html", "activity.html", "policy.html", "media.html", "404.html")
+REQUIRED_HTML = ("index.html", "about.html", "activity.html", "policy.html", "media.html", "news.html", "404.html")
 ROOT_ASSETS = ("robots.txt", "sitemap.xml", "favicon.ico", "favicon-32.png", "favicon.svg", "apple-touch-icon.png")
 TEXT_SUFFIXES = {".html", ".xml", ".txt", ".json", ".js", ".css", ".svg"}
 # Cloudflare Pages redirects /about.html to /about. The source keeps .html so a plain
@@ -31,6 +31,7 @@ CLEAN_LINKS = {
     "activity.html": "./activity",
     "policy.html": "./policy",
     "media.html": "./media",
+    "news.html": "./news",
 }
 
 

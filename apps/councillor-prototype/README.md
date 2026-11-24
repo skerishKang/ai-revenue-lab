@@ -34,3 +34,7 @@ python -m pytest apps/councillor-prototype/tests -q
 
 ## 배포
 `python scripts/build-dist`로 `dist/`를 만든 뒤 `dist/`를 배포합니다.
+
+## 새 소식 유지 관리
+
+방문자에게 보이는 화면이 바뀌면 같은 PR에서 static/miraen.json의 news에 한 줄 더합니다. 날짜·제목·변경 내용 2~4줄을 기록합니다. 빌드에서 정적 HTML을 만듭니다.

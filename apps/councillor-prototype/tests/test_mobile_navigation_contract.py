@@ -33,7 +33,9 @@ PLACEHOLDER = "__BASE_URL__"
 BUILD_SCRIPT = APP_ROOT / "scripts" / "build-dist"
 
 PAGES = ["index.html", "about.html", "activity.html", "policy.html", "media.html"]
-SITE_PAGES = PAGES + ["404.html"]
+# The change history page shares the header, footer and tab bar but is not a tab.
+EXTRA_PAGES = ["news.html"]
+SITE_PAGES = PAGES + EXTRA_PAGES + ["404.html"]
 # The one menu order the whole site shares: header, footer and phone tab bar.
 MENU = ["index.html", "about.html", "activity.html", "policy.html", "media.html"]
 REQUIRED_HTML = tuple(SITE_PAGES)
@@ -286,9 +288,10 @@ def test_robots_and_sitemap_agree_with_the_pages():
     assert f"Sitemap: {PLACEHOLDER}/sitemap.xml" in robots
     sitemap = (APP_ROOT / "sitemap.xml").read_text(encoding="utf-8")
     locs = re.findall(r"<loc>([^<]+)</loc>", sitemap)
-    assert locs == [PLACEHOLDER + "/"] + [f"{PLACEHOLDER}/{name.removesuffix('.html')}" for name in PAGES if name != "index.html"], locs
+    assert locs == [PLACEHOLDER + "/"] + [f"{PLACEHOLDER}/{name.removesuffix('.html')}" for name in PAGES + EXTRA_PAGES if name != "index.html"], locs
     assert "404.html" not in sitemap, "a 404 page must not be indexed"
-    assert sitemap.count("<lastmod>2026-11-05</lastmod>") == len(locs)
+    lastmods = re.findall(r"<lastmod>([^<]+)</lastmod>", sitemap)
+    assert len(lastmods) == len(locs) and all(ISO_DATE.match(day) for day in lastmods), lastmods
 
 
 def test_the_deployment_origin_lives_only_in_site_config():
@@ -526,7 +529,7 @@ def test_the_dist_build_resolves_the_configured_base_url(built_dist):
     robots = read_text(built_dist / "robots.txt")
     assert f"Sitemap: {BASE_URL}/sitemap.xml" in robots
     locs = re.findall(r"<loc>([^<]+)</loc>", read_text(built_dist / "sitemap.xml"))
-    assert locs == [BASE_URL + "/"] + [f"{BASE_URL}/{name.removesuffix('.html')}" for name in PAGES if name != "index.html"], locs
+    assert locs == [BASE_URL + "/"] + [f"{BASE_URL}/{name.removesuffix('.html')}" for name in PAGES + EXTRA_PAGES if name != "index.html"], locs
     assert (built_dist / "static" / "miraen.json").is_file()
 
 
