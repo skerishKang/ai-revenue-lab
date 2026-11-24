@@ -1,0 +1,8 @@
+{
+ "sheet": "mobile-target-legibility.css",
+ "combos": 40,
+ "declarations": 38,
+ "removed": 33,
+ "diffs": 0,
+ "note": "14px 읽기 하한 4건·148px 상한 1건은 계약 시험/픽셀로 유지"
+}

@@ -742,6 +742,16 @@
   --workspace-canvas-field-edge: rgba(15, 23, 42, 0.18);
   --workspace-canvas-modal-dim: rgba(0, 0, 0, 0.72);
 
+  /* #7811 C2 pc-file-exchange(261124): 공유 PC 파일 대화상자의 고정 팔레트.
+     값은 치환 전 폴백 리터럴 그대로이고 :root에만 둔다 — 테마가 덮지 않는다.
+     .94·.8·#fff는 값이 같은 기존 :root 토큰을 재사용했다. */
+  /* #7811 token-family --pc-file-exchange sha256=23ccb2a58ae697bf297a97967c4c36bd10dcbbb1dc8d7c56ef488a333cf190e6 */
+  --pc-file-exchange-overlay-dim: rgba(16, 34, 48, 0.42);
+  --pc-file-exchange-shadow: 0 12px 40px rgba(20, 51, 73, 0.16);
+  --pc-file-exchange-muted-text: #5b7385;
+  --pc-file-exchange-tint: rgba(66, 106, 135, 0.07);
+  --pc-file-exchange-dark-panel: rgba(22, 33, 43, 0.96);
+
   /* #7811 C2 surfaces(261124): padiem-surfaces.css의 쓰임새 색. 값은 치환 전
      사용처 리터럴 그대로이고 :root에만 둔다 — 토큰 값이 모든 테마에서 같으니
      칠해지는 값도 테마마다 그대로다. 테마 블록이나 다른 시트가 덮지 않는다. */

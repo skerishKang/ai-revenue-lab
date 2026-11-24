@@ -1,0 +1,204 @@
+{
+ "sheet": "mobile-target-legibility.css",
+ "candidates": 38,
+ "combos": 40,
+ "removed": [
+  {
+   "srcline": 41,
+   "prop": "width",
+   "value": "44px"
+  },
+  {
+   "srcline": 42,
+   "prop": "height",
+   "value": "44px"
+  },
+  {
+   "srcline": 43,
+   "prop": "min-width",
+   "value": "44px"
+  },
+  {
+   "srcline": 44,
+   "prop": "min-height",
+   "value": "44px"
+  },
+  {
+   "srcline": 49,
+   "prop": "height",
+   "value": "44px"
+  },
+  {
+   "srcline": 50,
+   "prop": "min-height",
+   "value": "44px"
+  },
+  {
+   "srcline": 55,
+   "prop": "width",
+   "value": "44px"
+  },
+  {
+   "srcline": 56,
+   "prop": "height",
+   "value": "44px"
+  },
+  {
+   "srcline": 57,
+   "prop": "min-width",
+   "value": "44px"
+  },
+  {
+   "srcline": 58,
+   "prop": "min-height",
+   "value": "44px"
+  },
+  {
+   "srcline": 59,
+   "prop": "padding",
+   "value": "0"
+  },
+  {
+   "srcline": 95,
+   "prop": "min-height",
+   "value": "44px"
+  },
+  {
+   "srcline": 233,
+   "prop": "font-size",
+   "value": "14px"
+  },
+  {
+   "srcline": 244,
+   "prop": "width",
+   "value": "44px"
+  },
+  {
+   "srcline": 249,
+   "prop": "min-width",
+   "value": "44px"
+  },
+  {
+   "srcline": 250,
+   "prop": "font-size",
+   "value": "14px"
+  },
+  {
+   "srcline": 254,
+   "prop": "font-size",
+   "value": "14px"
+  },
+  {
+   "srcline": 261,
+   "prop": "width",
+   "value": "20px"
+  },
+  {
+   "srcline": 262,
+   "prop": "height",
+   "value": "20px"
+  },
+  {
+   "srcline": 263,
+   "prop": "padding",
+   "value": "12px"
+  },
+  {
+   "srcline": 264,
+   "prop": "box-sizing",
+   "value": "content-box"
+  },
+  {
+   "srcline": 265,
+   "prop": "background-clip",
+   "value": "content-box"
+  },
+  {
+   "srcline": 285,
+   "prop": "flex",
+   "value": "0 0 44px"
+  },
+  {
+   "srcline": 286,
+   "prop": "width",
+   "value": "44px"
+  },
+  {
+   "srcline": 287,
+   "prop": "min-width",
+   "value": "44px"
+  },
+  {
+   "srcline": 288,
+   "prop": "max-width",
+   "value": "44px"
+  },
+  {
+   "srcline": 289,
+   "prop": "height",
+   "value": "44px"
+  },
+  {
+   "srcline": 290,
+   "prop": "min-height",
+   "value": "44px"
+  },
+  {
+   "srcline": 303,
+   "prop": "font-size",
+   "value": "14px"
+  },
+  {
+   "srcline": 320,
+   "prop": "width",
+   "value": "auto"
+  },
+  {
+   "srcline": 321,
+   "prop": "min-width",
+   "value": "44px"
+  },
+  {
+   "srcline": 323,
+   "prop": "flex",
+   "value": "0 0 auto"
+  },
+  {
+   "srcline": 356,
+   "prop": "display",
+   "value": "none"
+  }
+ ],
+ "kept": [
+  {
+   "srcline": 218,
+   "prop": "font-size",
+   "value": "14px",
+   "sel": ".eyebrow, .chat-hero-eyebrow, .claw-hero-eyebrow, .standalone-view-kicker, .calendar-view-kicker, .claw-workspace-kicker, .library-kicker, .settings-header p, .settings-label, .glass-variant-label, .glass-speed-label, .glass-speed-value, .util-tool-desc, .util-tool-note, .util-tool-open, .util-submenu-item, .composer-pc-status-label, .connector-tile-status, .claw-card-status, .claw-connection-label, .claw-connection-toggle span, .capability-terminal, .capability-elapsed, .capability-stage-list span, .answer-action-time, .user-action-time, .user-profile-chip, .user-avatar, .demo-label, .claw-disclosure-caret, .document-formats-toggle, .document-formats-panel, .language-option, .theme-option, .rich-code-copy, .rich-table-download, .history-actions-menu button, .project-files-heading small, .project-form-note, .standalone-view small, .standalone-view label, .standalone-view li, .standalone-view p, #messageList .model-pill span, #messageList code, #messageList pre, #messageList th, #messageList td, #messageList small, #projectForm :is(label, p, small), #settingsExcelGuide :is(li, p), #accountName, #loginButton, #historyTitle, #projectsTitle, #historyEmpty, #projectsEmpty, #libraryKicker, #libraryNote, #utilKicker, #attachmentKind, #attachmentName, #attachmentSize, #calendarError, #calendarRetry, #calendarRangeLabel, #calendarRangeToday, #calendarPreviousRange, #calendarNextRange, #connectorsError, #connectorsRetry, #clawAutomationError, #clawAutomationRetry, #clawAutomationCreateOpen, #clawDeviceGuidanceToggle, #clawPcConsentToggle, #clawManualEntryButton, #clawPcCardStatus, #automationAlertsButton, #mcpGatewayIssue, #mcpGatewayRefresh, #pcDelegationAdd, #pcDelegationRefresh, #pcDelegationFolderHelp, #settingsLogoutButton, #projectDialogCancel, #projectSaveButton, #padiem-shared-tooltip"
+  },
+  {
+   "srcline": 225,
+   "prop": "font-size",
+   "value": "14px",
+   "sel": "html[data-theme=\"padiem-glass\"] body .answer-actions .answer-action, html[data-theme=\"padiem-glass\"] body .app-shell:is([data-state=\"chat\"], [data-state=\"claw\"]) #messageList .user-message .user-action, html[data-theme=\"padiem-glass\"] body .answer-action-glyph"
+  },
+  {
+   "srcline": 275,
+   "prop": "font-size",
+   "value": "14px",
+   "sel": "#historyList .history-actions-menu button, .history-delete, .history-menu-delete, .starter :is(strong, small), #projectForm label span, html[data-theme=\"padiem-glass\"] body .app-shell:is([data-state=\"chat\"], [data-state=\"claw\"]) #messageList .user-message :is(.user-avatar, .user-profile-chip, .user-action-time, .user-action), html[data-theme=\"padiem-glass\"] body .app-shell:is([data-state=\"chat\"], [data-state=\"claw\"]) .assistant-message :is(.assistant-meta span, .answer-action-time, .answer-action, .answer-action-glyph)"
+  },
+  {
+   "srcline": 311,
+   "prop": "font-size",
+   "value": "14px",
+   "sel": ".app-shell[data-state=\"claw\"] .claw-workspace[data-view=\"general\"] ~ .conversation .claw-home-card .starter :is(strong, small)"
+  },
+  {
+   "srcline": 322,
+   "prop": "max-width",
+   "value": "148px",
+   "sel": "#composerForm .composer-tools .model-pill"
+  }
+ ]
+}
