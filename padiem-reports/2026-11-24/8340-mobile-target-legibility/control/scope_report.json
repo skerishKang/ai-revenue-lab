@@ -1,0 +1,15 @@
+{
+ "changed_sheets": [
+  "mobile-target-legibility.css"
+ ],
+ "screens": [
+  "conversation",
+  "claw",
+  "util",
+  "calendar",
+  "library",
+  "settings-dialog",
+  "project-dialog"
+ ],
+ "combos": 70
+}
