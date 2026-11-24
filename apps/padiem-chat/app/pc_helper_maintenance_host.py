@@ -11,6 +11,7 @@ import hashlib
 import json
 import logging
 import re
+import time
 from datetime import datetime, timedelta, timezone
 
 from starlette.requests import Request
@@ -35,6 +36,20 @@ INTERVAL = 60
 TTL = 300
 VERIFY_SECONDS = 600
 ACTOR = "system:pc_maintenance"
+#: An expected refusal (an unowned PC, a consent that was never granted) is a
+#: normal state, not a new incident every minute. One value-free line per
+#: device and reason per hour; the audit/outbox remains deduplicated as before.
+DENIAL_LOG_INTERVAL = 3600
+_MAX_DENIAL_LOG_KEYS = 1024
+#: Every closed reason a maintenance owner-authority refusal can carry.
+OWNER_DENIAL_CODES = frozenset({
+    "scope_missing", "consent_source_missing", "consent_reference_missing",
+    "consent_account_invalid", "consent_node_invalid", "consent_map_missing",
+    "consent_pin_ambiguous",
+    "consent_pin_invalid", "consent_read_error", "scope_subject",
+    "consent_missing", "consent_subject", "consent_device", "consent_withdrawn",
+    "consent_id", "account_ref_mismatch", "workspace_ref_mismatch",
+})
 
 
 def _now():
@@ -167,6 +182,37 @@ def _known_flag(value):
     return "yes" if value is True else "no" if value is False else "unknown"
 
 
+def _log_once(state, device, kind, message, *args):
+    """One value-free line per device and closed kind per interval.
+
+    The throttle lives on the app state, so a new app (each test, each host
+    process) starts clean. Its key is a hash of the device and the kind: no
+    device, account, workspace or session value is ever logged.
+    """
+    store = getattr(state, "maintenance_denial_log", None)
+    if store is None:
+        store = {}
+        state.maintenance_denial_log = store
+    key = _key(device, kind)
+    now = time.monotonic()
+    last = store.get(key)
+    if last is not None and now - last < DENIAL_LOG_INTERVAL:
+        return False
+    if len(store) >= _MAX_DENIAL_LOG_KEYS:
+        store.clear()
+    store[key] = now
+    logger.warning(message, *args)
+    return True
+
+
+def _log_denial(state, device, code):
+    """One owner-authority denial line per device and reason per interval."""
+    if code not in OWNER_DENIAL_CODES:
+        raise ValueError("an unknown owner denial code is not allowed")
+    return _log_once(state, device, "denial:" + code,
+                     "pc_maintenance_owner_authority outcome=denied reason=%s", code)
+
+
 def _observation_diagnostic(report, observation, device, now):
     if not isinstance(observation, dict):
         report["observation"] = "missing"
@@ -264,17 +310,28 @@ async def _authorized(request, env, facts, session, uid, resolver):
     # server's own reference check.
     source = getattr(state, "oracle_mesh_return_source", None)
     consent_of = getattr(source, "consent_device_for_node", None)
+    reason_for = getattr(source, "consent_device_reason_for_node", None)
     scope_ready = (
         isinstance(scope, dict) and bool(scope.get("account_ref"))
         and bool(scope.get("workspace_ref"))
     )
-    consent_ref = (
-        consent_of(account_ref=scope["account_ref"], node_ref=device)
-        if scope_ready and callable(consent_of) else None
-    )
+    if not scope_ready:
+        # This refusal is *before* the consent read: no consent call is made
+        # and no consent error can be observed. Its closed code is distinct
+        # from every consent-directory failure below.
+        _log_denial(state, device, "scope_missing")
+        return None, None, "owner_consent_missing"
+    if callable(reason_for):
+        consent_ref, ref_reason = reason_for(account_ref=scope["account_ref"], node_ref=device)
+    elif callable(consent_of):
+        consent_ref = consent_of(account_ref=scope["account_ref"], node_ref=device)
+        ref_reason = "consent_reference_missing" if not consent_ref else "observed"
+    else:
+        consent_ref, ref_reason = None, "consent_source_missing"
     if not isinstance(consent_ref, str) or not consent_ref:
-        logger.warning("pc_maintenance_owner_authority outcome=denied stage=%s",
-                       "consent_reference_missing" if scope_ready else "scope_missing")
+        # Every way of having no consent key is a pre-consent refusal. The
+        # ownership map now says which one; none of them prints a value.
+        _log_denial(state, device, ref_reason)
         return None, None, "owner_consent_missing"
     try:
         consent = await mode_connector_read(identity, "consent", session_id=session.session_id, device_id=consent_ref)
@@ -285,9 +342,10 @@ async def _authorized(request, env, facts, session, uid, resolver):
         # connector_consent_not_found), never a value or message text.
         code = getattr(exc, "code", None)
         status = getattr(exc, "status_code", getattr(exc, "status", None))
-        logger.warning("pc_maintenance_consent_read outcome=error kind=%s status=%s code=%s",
-                       type(exc).__name__, status if isinstance(status, int) else "-",
-                       code if isinstance(code, str) and _CLOSED_CODE.fullmatch(code) else "-")
+        closed_code = code if isinstance(code, str) and _CLOSED_CODE.fullmatch(code) else "-"
+        _log_once(state, device, "consent_read:" + closed_code,
+                  "pc_maintenance_consent_read outcome=error kind=%s status=%s code=%s",
+                  type(exc).__name__, status if isinstance(status, int) else "-", closed_code)
     subject = session.subject.subject_id
     if stage is None:
         if not isinstance(scope, dict) or not scope.get("account_ref") or not scope.get("workspace_ref"):
@@ -309,7 +367,7 @@ async def _authorized(request, env, facts, session, uid, resolver):
         elif consent.get("workspace_ref") != scope.get("workspace_ref"):
             stage = "workspace_ref_mismatch"
     if stage is not None:
-        logger.warning("pc_maintenance_owner_authority outcome=denied stage=%s", stage)
+        _log_denial(state, device, stage)
         return None, None, "owner_consent_missing"
     resolved, refusal = await resolver(request, session=session, selected_device_id=device, user_id=uid)
     target = resolved.get("target") if isinstance(resolved, dict) and resolved.get("authorized") is True else None

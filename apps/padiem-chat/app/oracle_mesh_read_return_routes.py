@@ -556,10 +556,10 @@ class OracleMeshReturnSource:
             return rows_for_path[0].get("device_id") or rows_for_path[0]["node_ref"]
         return selected_device_id or ""
 
-    def consent_device_for_node(
+    def consent_device_reason_for_node(
         self, *, account_ref: str, node_ref: str,
-    ) -> str | None:
-        """The connector device reference a consent record is keyed by.
+    ) -> tuple[str | None, str]:
+        """The consent key and a value-free reason when there is no key.
 
         A managed PC link names the Mesh node, while the enrollment consent
         directory stores the connector's own device id. The ownership map is
@@ -567,25 +567,35 @@ class OracleMeshReturnSource:
         node supplies the pinned device unchanged - the same rule
         ``device_hint_for`` follows for the file lane. The Mesh string is
         never reshaped into a consent key, and the consent server's own
-        reference check is not widened. No row, competing pins or a value the
-        canonical PC grammar refuses answer ``None`` so the caller refuses
-        instead of guessing.
+        reference check is not widened. Each way this can refuse has its own
+        closed code so operations can tell a missing pin from a bad reference
+        without printing a device, account or workspace value.
         """
-        if (
-            not isinstance(account_ref, str) or not account_ref
-            or not is_pc_device_id(node_ref)
-        ):
-            return None
-        devices = {
-            row.get("device_id") or row["node_ref"]
-            for row in self._rows
+        if not isinstance(account_ref, str) or not account_ref:
+            return None, "consent_account_invalid"
+        if not is_pc_device_id(node_ref):
+            return None, "consent_node_invalid"
+        matched = [
+            row for row in self._rows
             if row["account_ref"] == account_ref
             and (row.get("node_ref") == node_ref or row.get("device_id") == node_ref)
-        }
+        ]
+        if not matched:
+            return None, "consent_map_missing"
+        devices = {row.get("device_id") or row["node_ref"] for row in matched}
         if len(devices) != 1:
-            return None
+            return None, "consent_pin_ambiguous"
         device = next(iter(devices))
-        return device if is_pc_device_id(device) else None
+        if not is_pc_device_id(device):
+            return None, "consent_pin_invalid"
+        return device, "observed"
+
+    def consent_device_for_node(
+        self, *, account_ref: str, node_ref: str,
+    ) -> str | None:
+        """The connector device reference a consent record is keyed by."""
+        return self.consent_device_reason_for_node(
+            account_ref=account_ref, node_ref=node_ref)[0]
 
     def command_device_ids(self, *, account_ref: str) -> list[str]:
         """Enumerate only this server-verified owner's unambiguous command targets."""
