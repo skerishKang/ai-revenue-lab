@@ -1,0 +1,611 @@
+{
+ "method": "선언을 하나씩 빼고 시작 카드 8개 + strong·small·.starter-icon 의 계산값 전체를 비교했다. 4테마(light·dark·cinematic·padiem-home; padiem-glass 는 이 시트에 시작 카드 규칙이 없다) × 2폭 × 2화면(home-logout·claw) × 16상태((기본·호버·초점·누름) × (기본·비활성·is-active·빈 화면 숨김)). 호버·초점·누름은 CDP 로 강제했다. 값은 계산값이 달라진 상태 수(16 가운데).",
+ "sanity": true,
+ "page_loads": 16,
+ "removed_dead": [
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "background",
+   "value": "#fff",
+   "line_before": 70,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "같은 시트 뒤쪽의 같은 선택자 규칙(그라디언트 배경)이 이긴다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "box-shadow",
+   "value": "var(--card-shadow)",
+   "line_before": 70,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "같은 시트 뒤쪽의 같은 선택자 규칙(2겹 그림자)이 이긴다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter strong",
+   "prop": "color",
+   "value": "var(--text)",
+   "line_before": 77,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "바탕 규칙 padiem-surfaces.css .starter strong 이 읽는 --panel-text-max 의 light 값이 var(--text) — 같은 값을 되풀이하던 줄"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter small",
+   "prop": "color",
+   "value": "var(--muted)",
+   "line_before": 78,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "accessibility-polish.css 의 같은 선택자 규칙(#565e69 !important)이 이긴다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter-icon",
+   "prop": "background",
+   "value": "#f3f2f8",
+   "line_before": 79,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "같은 시트 뒤쪽의 같은 선택자 규칙(그라디언트 배경)이 이긴다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter-icon",
+   "prop": "border",
+   "value": "none",
+   "line_before": 79,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "같은 시트 뒤쪽의 같은 선택자 규칙(1px solid …)이 이긴다"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter",
+   "prop": "border-color",
+   "value": "var(--card-border)",
+   "line_before": 173,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "padiem-dark-contrast.css 의 html[data-theme=dark] body .app-shell :is(…,.starter,…) (0,3,2) 가 #435d72 로 이긴다"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter",
+   "prop": "color",
+   "value": "rgba(255,255,255,.88)",
+   "line_before": 173,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "padiem-dark-contrast.css 의 같은 묶음 규칙(0,3,2)이 #edf6fe 로 이긴다"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter",
+   "prop": "background",
+   "value": "linear-gradient(145deg, rgba(224,242,255,.10), rgba(255,255,255,.024)), rgba(7,11,18,.62)",
+   "line_before": 252,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "padiem-bright-readability.css 의 cinematic .starter 배경(!important)이 이긴다"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter",
+   "prop": "border-color",
+   "value": "var(--film-edge)",
+   "line_before": 252,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "padiem-bright-readability.css 의 cinematic .starter 테두리(!important)가 이긴다"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter",
+   "prop": "color",
+   "value": "rgba(248,250,253,.94)",
+   "line_before": 252,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "바탕 규칙이 읽는 --surfaces-starter-text 의 :root 값과 같은 값(rgba(248,250,253,.94))을 되풀이하던 줄"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter",
+   "prop": "box-shadow",
+   "value": "0 0 26px var(--film-blue-glow), inset 0 1px 0 rgba(255,255,255,.08)",
+   "line_before": 252,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "padiem-bright-readability.css 의 cinematic .starter 그림자(!important)가 이긴다"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter",
+   "prop": "backdrop-filter",
+   "value": "blur(18px)",
+   "line_before": 252,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "바탕 규칙의 blur(18px)와 같은 값을 되풀이하던 줄"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter:not(:disabled):hover",
+   "prop": "border-color",
+   "value": "rgba(239,201,132,.34)",
+   "line_before": 259,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "padiem-bright-readability.css 의 cinematic .starter 테두리(!important)가 호버에서도 이긴다"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter:not(:disabled):hover",
+   "prop": "background",
+   "value": "linear-gradient(145deg, rgba(255,240,214,.10), var(--surface-veil-panel)), rgba(11,14,22,.7)",
+   "line_before": 259,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "padiem-bright-readability.css 의 cinematic .starter 배경(!important)이 호버에서도 이긴다"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter:not(:disabled):hover",
+   "prop": "box-shadow",
+   "value": "0 0 30px var(--film-gold-glow), 0 18px 46px rgba(0,0,0,.3)",
+   "line_before": 259,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "padiem-bright-readability.css 의 cinematic .starter 그림자(!important)가 호버에서도 이긴다"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter strong",
+   "prop": "color",
+   "value": "var(--text-deep-ink)",
+   "line_before": 350,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "바탕 규칙이 읽는 --panel-text-max 의 padiem-home 값이 var(--text)=#1a2230 — var(--text-deep-ink)=#1a2230 과 같은 값"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter small",
+   "prop": "color",
+   "value": "#5a6578",
+   "line_before": 351,
+   "live_states_of_16": {
+    "1440x950|home-logout": 0,
+    "1440x950|claw": 0,
+    "390x844|home-logout": 0,
+    "390x844|claw": 0
+   },
+   "painted_by": "accessibility-polish.css 의 같은 선택자 규칙(#4e5968 !important)이 이긴다"
+  }
+ ],
+ "kept_live": [
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "border",
+   "value": "1px solid var(--line)",
+   "line_before": 70,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 16,
+    "390x844|home-logout": 16,
+    "390x844|claw": 0
+   },
+   "why_kept": "클로 홈 카드의 테두리 굵기·모양을 만든다(빼면 none·0px). 바탕 규칙에는 border-color 만 있어 토큰으로 표현 못 한다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "color",
+   "value": "var(--text)",
+   "line_before": 70,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 16,
+    "390x844|home-logout": 16,
+    "390x844|claw": 16
+   },
+   "why_kept": "바탕 규칙이 읽는 --surfaces-starter-text 를 .project-form·.saved-output-view 도 읽는다(공유 토큰). 테마 값으로 옮기면 그 부품도 달라진다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "backdrop-filter",
+   "value": "none",
+   "line_before": 70,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 16,
+    "390x844|home-logout": 16,
+    "390x844|claw": 16
+   },
+   "why_kept": "바탕 규칙의 흐림이 토큰이 아니라 숫자(blur(18px))다. 새 토큰 이름이 있어야 옮길 수 있다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter-icon",
+   "prop": "color",
+   "value": "#6b6b7a",
+   "line_before": 79,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 4,
+    "390x844|home-logout": 16,
+    "390x844|claw": 4
+   },
+   "why_kept": "바탕 규칙이 읽는 --panel-text-soft 는 9곳이 읽는 공유 토큰"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "background",
+   "value": "linear-gradient(180deg, #ffffff 0%, #fcfcfe 100%)",
+   "line_before": 94,
+   "live_states_of_16": {
+    "1440x950|home-logout": 10,
+    "1440x950|claw": 10,
+    "390x844|home-logout": 10,
+    "390x844|claw": 10
+   },
+   "why_kept": "바탕 규칙은 145deg 그라디언트 + 바탕색 2겹 구조. 각도와 겹 수가 달라 토큰 값만으로 같은 계산값을 낼 수 없다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "border-color",
+   "value": "#e6e6eb",
+   "line_before": 94,
+   "live_states_of_16": {
+    "1440x950|home-logout": 8,
+    "1440x950|claw": 8,
+    "390x844|home-logout": 8,
+    "390x844|claw": 8
+   },
+   "why_kept": "바탕 규칙이 읽는 --surfaces-starter-border 를 .project-form·.saved-output-view 도 읽는다(공유 토큰)"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "box-shadow",
+   "value": "0 2px 10px rgba(101,87,232,.05), 0 1px 3px rgba(30,28,54,.04)",
+   "line_before": 94,
+   "live_states_of_16": {
+    "1440x950|home-logout": 8,
+    "1440x950|claw": 8,
+    "390x844|home-logout": 8,
+    "390x844|claw": 8
+   },
+   "why_kept": "바탕 규칙은 inset 1겹(inset 0 1px 0 <토큰>) 구조. 그림자 겹 수·오프셋이 달라 토큰 값으로 표현 못 한다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter:hover",
+   "prop": "border-color",
+   "value": "rgba(101,87,232,.16)",
+   "line_before": 95,
+   "live_states_of_16": {
+    "1440x950|home-logout": 8,
+    "1440x950|claw": 8,
+    "390x844|home-logout": 8,
+    "390x844|claw": 8
+   },
+   "why_kept": "바탕 호버 규칙은 :not(:disabled) 인데 이 규칙은 비활성 카드 호버에도 적용된다(실측: hover+disabled 에서 살아 있음). 토큰으로 옮기면 비활성 호버가 달라진다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter:hover",
+   "prop": "box-shadow",
+   "value": "0 4px 16px rgba(101,87,232,.09)",
+   "line_before": 95,
+   "live_states_of_16": {
+    "1440x950|home-logout": 8,
+    "1440x950|claw": 8,
+    "390x844|home-logout": 8,
+    "390x844|claw": 8
+   },
+   "why_kept": "바탕 호버 그림자는 0 18px 46px <색 토큰> 구조라 오프셋이 다르고, 비활성 카드 호버에도 적용되는 점이 바탕 규칙과 다르다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter-icon",
+   "prop": "background",
+   "value": "linear-gradient(180deg, #f3f2f8, #eceaf6)",
+   "line_before": 96,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 4,
+    "390x844|home-logout": 16,
+    "390x844|claw": 4
+   },
+   "why_kept": "바탕 규칙이 읽는 --surfaces-starter-icon-bg 를 첨부 칩 아이콘·프로젝트 폼 입력칸·보조 버튼 3곳도 읽는다(공유 토큰)"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter-icon",
+   "prop": "border",
+   "value": "1px solid rgba(101,87,232,.10)",
+   "line_before": 96,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 4,
+    "390x844|home-logout": 16,
+    "390x844|claw": 4
+   },
+   "why_kept": "바탕 규칙의 둘째 선택자 .starter:nth-child(2n) .starter-icon (0,3,0) 이 이 테마 규칙(0,2,1)을 이긴다. 토큰 테마 값으로 옮기면 짝수 번째 카드 아이콘 테두리가 달라진다(실측: 480건 차이)"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter",
+   "prop": "background",
+   "value": "var(--card-bg)",
+   "line_before": 173,
+   "live_states_of_16": {
+    "1440x950|home-logout": 10,
+    "1440x950|claw": 10,
+    "390x844|home-logout": 10,
+    "390x844|claw": 10
+   },
+   "why_kept": "바탕 규칙은 145deg 그라디언트 + 바탕색 2겹 구조. 각도와 겹 수가 달라 토큰 값만으로 같은 계산값을 낼 수 없다"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter",
+   "prop": "box-shadow",
+   "value": "none",
+   "line_before": 173,
+   "live_states_of_16": {
+    "1440x950|home-logout": 10,
+    "1440x950|claw": 10,
+    "390x844|home-logout": 10,
+    "390x844|claw": 10
+   },
+   "why_kept": "바탕 규칙은 inset 1겹 구조. 토큰을 투명으로 바꿔도 계산값이 none 이 되지 않는다"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter",
+   "prop": "backdrop-filter",
+   "value": "none",
+   "line_before": 173,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 16,
+    "390x844|home-logout": 16,
+    "390x844|claw": 16
+   },
+   "why_kept": "바탕 규칙의 흐림이 토큰이 아니라 숫자(blur(18px))다. 새 토큰 이름이 있어야 옮길 수 있다"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter:not(:disabled):hover",
+   "prop": "border-color",
+   "value": "rgba(255,255,255,.18)",
+   "line_before": 180,
+   "live_states_of_16": {
+    "1440x950|home-logout": 6,
+    "1440x950|claw": 6,
+    "390x844|home-logout": 6,
+    "390x844|claw": 6
+   },
+   "why_kept": "토큰으로 옮기면 홀수 번째 카드에서 바탕 호버 규칙(0,3,0)이 padiem-dark-contrast.css 의 묶음 규칙(0,3,2)에 져서 호버 테두리가 사라진다. 이 규칙(0,4,1)이어야 이긴다"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter:not(:disabled):hover",
+   "prop": "box-shadow",
+   "value": "0 2px 8px rgba(0,0,0,.20)",
+   "line_before": 180,
+   "live_states_of_16": {
+    "1440x950|home-logout": 6,
+    "1440x950|claw": 6,
+    "390x844|home-logout": 6,
+    "390x844|claw": 6
+   },
+   "why_kept": "바탕 호버 그림자는 0 18px 46px <색 토큰> 구조라 오프셋(0 2px 8px)을 표현 못 한다"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter",
+   "prop": "background",
+   "value": "linear-gradient(180deg, rgba(255,255,255,.82), rgba(250,252,255,.68))",
+   "line_before": 342,
+   "live_states_of_16": {
+    "1440x950|home-logout": 10,
+    "1440x950|claw": 10,
+    "390x844|home-logout": 10,
+    "390x844|claw": 10
+   },
+   "why_kept": "바탕 규칙은 145deg 그라디언트 + 바탕색 2겹 구조. 각도와 겹 수가 달라 토큰 값만으로 같은 계산값을 낼 수 없다"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter",
+   "prop": "border",
+   "value": "1px solid rgba(26,34,48,.08)",
+   "line_before": 342,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 16,
+    "390x844|home-logout": 16,
+    "390x844|claw": 10
+   },
+   "why_kept": "클로 홈 카드의 테두리 굵기·모양을 만들고, 색은 공유 토큰(--surfaces-starter-border)이라 못 옮긴다"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter",
+   "prop": "border-top",
+   "value": "1px solid rgba(255,255,255,.85)",
+   "line_before": 342,
+   "live_states_of_16": {
+    "1440x950|home-logout": 10,
+    "1440x950|claw": 10,
+    "390x844|home-logout": 10,
+    "390x844|claw": 10
+   },
+   "why_kept": "바탕 규칙에 대응하는 선언이 없다(윗변만 다른 색)"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter",
+   "prop": "color",
+   "value": "var(--text-deep-ink)",
+   "line_before": 342,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 16,
+    "390x844|home-logout": 16,
+    "390x844|claw": 16
+   },
+   "why_kept": "바탕 규칙이 읽는 --surfaces-starter-text 를 .project-form·.saved-output-view 도 읽는다(공유 토큰). 테마 값으로 옮기면 그 부품도 달라진다"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter",
+   "prop": "box-shadow",
+   "value": "0 10px 28px rgba(26,34,48,.07), inset 0 1px 0 rgba(255,255,255,.8)",
+   "line_before": 342,
+   "live_states_of_16": {
+    "1440x950|home-logout": 10,
+    "1440x950|claw": 10,
+    "390x844|home-logout": 10,
+    "390x844|claw": 10
+   },
+   "why_kept": "바탕 규칙은 inset 1겹(inset 0 1px 0 <토큰>) 구조. 그림자 겹 수·오프셋이 달라 토큰 값으로 표현 못 한다"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter",
+   "prop": "backdrop-filter",
+   "value": "blur(16px)",
+   "line_before": 342,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 16,
+    "390x844|home-logout": 16,
+    "390x844|claw": 16
+   },
+   "why_kept": "바탕 규칙의 흐림이 숫자(blur(18px))이고 이 테마 값은 blur(16px)"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter-icon",
+   "prop": "background",
+   "value": "rgba(26,34,48,.06)",
+   "line_before": 352,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 4,
+    "390x844|home-logout": 16,
+    "390x844|claw": 4
+   },
+   "why_kept": "바탕 규칙이 읽는 --surfaces-starter-icon-bg 를 첨부 칩 아이콘·프로젝트 폼 입력칸·보조 버튼 3곳도 읽는다(공유 토큰)"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter-icon",
+   "prop": "border",
+   "value": "1px solid rgba(26,34,48,.08)",
+   "line_before": 352,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 4,
+    "390x844|home-logout": 16,
+    "390x844|claw": 4
+   },
+   "why_kept": "바탕 규칙의 둘째 선택자 .starter:nth-child(2n) .starter-icon (0,3,0) 이 이 테마 규칙(0,2,1)을 이긴다. 토큰 테마 값으로 옮기면 짝수 번째 카드 아이콘 테두리가 달라진다(실측: 480건 차이)"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter-icon",
+   "prop": "color",
+   "value": "#3a4a62",
+   "line_before": 352,
+   "live_states_of_16": {
+    "1440x950|home-logout": 16,
+    "1440x950|claw": 4,
+    "390x844|home-logout": 16,
+    "390x844|claw": 4
+   },
+   "why_kept": "바탕 규칙이 읽는 --panel-text-soft 는 9곳이 읽는 공유 토큰"
+  }
+ ]
+}

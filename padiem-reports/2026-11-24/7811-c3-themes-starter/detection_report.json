@@ -1,0 +1,109 @@
+{
+ "ok": true,
+ "cases": 6,
+ "seconds": 89.9,
+ "results": [
+  {
+   "theme": "light",
+   "removed": "html[data-theme=\"light\"] .starter { background: linear-gradient(180deg, #ffffff 0%, #fcfcfe 100%) }",
+   "screen": "home-logout",
+   "viewport": "1440x950",
+   "pixel": 77881,
+   "noise": 48183,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "home",
+    "home"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "light",
+   "removed": "html[data-theme=\"light\"] .starter { background: linear-gradient(180deg, #ffffff 0%, #fcfcfe 100%) }",
+   "screen": "claw",
+   "viewport": "1440x950",
+   "pixel": 91694,
+   "noise": 90515,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "claw",
+    "claw"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "dark",
+   "removed": "html[data-theme=\"dark\"] .starter { background: var(--card-bg) }",
+   "screen": "home-logout",
+   "viewport": "1440x950",
+   "pixel": 94601,
+   "noise": 94381,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "home",
+    "home"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "dark",
+   "removed": "html[data-theme=\"dark\"] .starter { background: var(--card-bg) }",
+   "screen": "claw",
+   "viewport": "1440x950",
+   "pixel": 94620,
+   "noise": 94482,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "claw",
+    "claw"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "padiem-home",
+   "removed": "html[data-theme=\"padiem-home\"] .starter { background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(250,252,255,.68)) }",
+   "screen": "home-logout",
+   "viewport": "1440x950",
+   "pixel": 93043,
+   "noise": 60499,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "home",
+    "home"
+   ],
+   "detected": true
+  },
+  {
+   "theme": "padiem-home",
+   "removed": "html[data-theme=\"padiem-home\"] .starter { background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(250,252,255,.68)) }",
+   "screen": "claw",
+   "viewport": "1440x950",
+   "pixel": 100609,
+   "noise": 100356,
+   "settled": [
+    true,
+    true
+   ],
+   "state": [
+    "claw",
+    "claw"
+   ],
+   "detected": true
+  }
+ ]
+}

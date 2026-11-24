@@ -36,8 +36,11 @@ CHANGED = {
         # #7811 C3: padiem-home 입력칸 글자색 두 줄이 이 시트를 떠났다. 대화 상태의
         # !important 줄은 기본 규칙과 값이 같은 중복이라 걷어 냈고(2 → 1), 기본
         # 규칙(.composer textarea)은 바탕 규칙이 읽는 --surfaces-composer-text의
-        # padiem-home 값(var(--text-deep-ink))으로 옮겼다(8 → 7).
-        ("color", "var(--text-deep-ink)"): 7,
+        # padiem-home 값(var(--text-deep-ink))으로 옮겼다(8 → 7). 이어서 시작 카드
+        # 제목(.starter strong) 한 줄이 떠났다(7 → 6): 바탕 규칙이 읽는
+        # --panel-text-max 의 padiem-home 값(var(--text) = #1a2230)과 같은 값을
+        # 되풀이하던 줄이다.
+        ("color", "var(--text-deep-ink)"): 6,
         ("color", "var(--text-deep-ink) !important"): 1,
     },
     "padiem-settings.css": {
@@ -78,8 +81,8 @@ def test_the_declarations_consume_the_right_role() -> None:
                     actual[(prop, normalized)] += 1
         assert actual == Counter(expected), sheet
         total += sum(actual.values())
-    # 13선언으로 옮겼고(#7187 6차), #7811 C3에서 2선언이 이 시트들을 떠나 11선언이다.
-    assert total == 11
+    # 13선언으로 옮겼고(#7187 6차), #7811 C3에서 3선언이 이 시트들을 떠나 10선언이다.
+    assert total == 10
 
 
 def test_swapping_the_tokens_back_returns_the_original_literal() -> None:

@@ -1,0 +1,455 @@
+{
+ "issue": 7811,
+ "stage": "C3 테마 덮어쓰기 시트 해체",
+ "sheet": "padiem-themes.css",
+ "component": "시작 카드 (.starter, .starter strong, .starter small, .starter-icon)",
+ "base": "main 9f03ea94630ee4cf988e9a62bb7092aef13f0620 (#8674 merged)",
+ "summary": {
+  "declarations_before": 43,
+  "declarations_after": 25,
+  "removed_dead": 18,
+  "moved_to_token": 0,
+  "kept": 25,
+  "important_before": 0,
+  "important_after": 0,
+  "new_tokens": 0,
+  "new_color_literals": 0,
+  "files_changed": "padiem-themes.css 와 시험 4개. padiem-tokens.css 는 손대지 않았다"
+ },
+ "removed_dead": [
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "background",
+   "value": "#fff",
+   "painted_by": "같은 시트 뒤쪽의 같은 선택자 규칙(그라디언트 배경)이 이긴다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "box-shadow",
+   "value": "var(--card-shadow)",
+   "painted_by": "같은 시트 뒤쪽의 같은 선택자 규칙(2겹 그림자)이 이긴다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter strong",
+   "prop": "color",
+   "value": "var(--text)",
+   "painted_by": "바탕 규칙 padiem-surfaces.css .starter strong 이 읽는 --panel-text-max 의 light 값이 var(--text) — 같은 값을 되풀이하던 줄"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter small",
+   "prop": "color",
+   "value": "var(--muted)",
+   "painted_by": "accessibility-polish.css 의 같은 선택자 규칙(#565e69 !important)이 이긴다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter-icon",
+   "prop": "background",
+   "value": "#f3f2f8",
+   "painted_by": "같은 시트 뒤쪽의 같은 선택자 규칙(그라디언트 배경)이 이긴다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter-icon",
+   "prop": "border",
+   "value": "none",
+   "painted_by": "같은 시트 뒤쪽의 같은 선택자 규칙(1px solid …)이 이긴다"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter",
+   "prop": "border-color",
+   "value": "var(--card-border)",
+   "painted_by": "padiem-dark-contrast.css 의 html[data-theme=dark] body .app-shell :is(…,.starter,…) (0,3,2) 가 #435d72 로 이긴다"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter",
+   "prop": "color",
+   "value": "rgba(255,255,255,.88)",
+   "painted_by": "padiem-dark-contrast.css 의 같은 묶음 규칙(0,3,2)이 #edf6fe 로 이긴다"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter",
+   "prop": "background",
+   "value": "linear-gradient(145deg, rgba(224,242,255,.10), rgba(255,255,255,.024)), rgba(7,11,18,.62)",
+   "painted_by": "padiem-bright-readability.css 의 cinematic .starter 배경(!important)이 이긴다"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter",
+   "prop": "border-color",
+   "value": "var(--film-edge)",
+   "painted_by": "padiem-bright-readability.css 의 cinematic .starter 테두리(!important)가 이긴다"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter",
+   "prop": "color",
+   "value": "rgba(248,250,253,.94)",
+   "painted_by": "바탕 규칙이 읽는 --surfaces-starter-text 의 :root 값과 같은 값(rgba(248,250,253,.94))을 되풀이하던 줄"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter",
+   "prop": "box-shadow",
+   "value": "0 0 26px var(--film-blue-glow), inset 0 1px 0 rgba(255,255,255,.08)",
+   "painted_by": "padiem-bright-readability.css 의 cinematic .starter 그림자(!important)가 이긴다"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter",
+   "prop": "backdrop-filter",
+   "value": "blur(18px)",
+   "painted_by": "바탕 규칙의 blur(18px)와 같은 값을 되풀이하던 줄"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter:not(:disabled):hover",
+   "prop": "border-color",
+   "value": "rgba(239,201,132,.34)",
+   "painted_by": "padiem-bright-readability.css 의 cinematic .starter 테두리(!important)가 호버에서도 이긴다"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter:not(:disabled):hover",
+   "prop": "background",
+   "value": "linear-gradient(145deg, rgba(255,240,214,.10), var(--surface-veil-panel)), rgba(11,14,22,.7)",
+   "painted_by": "padiem-bright-readability.css 의 cinematic .starter 배경(!important)이 호버에서도 이긴다"
+  },
+  {
+   "theme": "cinematic",
+   "selector": ".starter:not(:disabled):hover",
+   "prop": "box-shadow",
+   "value": "0 0 30px var(--film-gold-glow), 0 18px 46px rgba(0,0,0,.3)",
+   "painted_by": "padiem-bright-readability.css 의 cinematic .starter 그림자(!important)가 호버에서도 이긴다"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter strong",
+   "prop": "color",
+   "value": "var(--text-deep-ink)",
+   "painted_by": "바탕 규칙이 읽는 --panel-text-max 의 padiem-home 값이 var(--text)=#1a2230 — var(--text-deep-ink)=#1a2230 과 같은 값"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter small",
+   "prop": "color",
+   "value": "#5a6578",
+   "painted_by": "accessibility-polish.css 의 같은 선택자 규칙(#4e5968 !important)이 이긴다"
+  }
+ ],
+ "kept": [
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "border",
+   "value": "1px solid var(--line)",
+   "why_kept": "클로 홈 카드의 테두리 굵기·모양을 만든다(빼면 none·0px). 바탕 규칙에는 border-color 만 있어 토큰으로 표현 못 한다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "color",
+   "value": "var(--text)",
+   "why_kept": "바탕 규칙이 읽는 --surfaces-starter-text 를 .project-form·.saved-output-view 도 읽는다(공유 토큰). 테마 값으로 옮기면 그 부품도 달라진다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "backdrop-filter",
+   "value": "none",
+   "why_kept": "바탕 규칙의 흐림이 토큰이 아니라 숫자(blur(18px))다. 새 토큰 이름이 있어야 옮길 수 있다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter-icon",
+   "prop": "color",
+   "value": "#6b6b7a",
+   "why_kept": "바탕 규칙이 읽는 --panel-text-soft 는 9곳이 읽는 공유 토큰"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "background",
+   "value": "linear-gradient(180deg, #ffffff 0%, #fcfcfe 100%)",
+   "why_kept": "바탕 규칙은 145deg 그라디언트 + 바탕색 2겹 구조. 각도와 겹 수가 달라 토큰 값만으로 같은 계산값을 낼 수 없다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "border-color",
+   "value": "#e6e6eb",
+   "why_kept": "바탕 규칙이 읽는 --surfaces-starter-border 를 .project-form·.saved-output-view 도 읽는다(공유 토큰)"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter",
+   "prop": "box-shadow",
+   "value": "0 2px 10px rgba(101,87,232,.05), 0 1px 3px rgba(30,28,54,.04)",
+   "why_kept": "바탕 규칙은 inset 1겹(inset 0 1px 0 <토큰>) 구조. 그림자 겹 수·오프셋이 달라 토큰 값으로 표현 못 한다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter:hover",
+   "prop": "border-color",
+   "value": "rgba(101,87,232,.16)",
+   "why_kept": "바탕 호버 규칙은 :not(:disabled) 인데 이 규칙은 비활성 카드 호버에도 적용된다(실측: hover+disabled 에서 살아 있음). 토큰으로 옮기면 비활성 호버가 달라진다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter:hover",
+   "prop": "box-shadow",
+   "value": "0 4px 16px rgba(101,87,232,.09)",
+   "why_kept": "바탕 호버 그림자는 0 18px 46px <색 토큰> 구조라 오프셋이 다르고, 비활성 카드 호버에도 적용되는 점이 바탕 규칙과 다르다"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter-icon",
+   "prop": "background",
+   "value": "linear-gradient(180deg, #f3f2f8, #eceaf6)",
+   "why_kept": "바탕 규칙이 읽는 --surfaces-starter-icon-bg 를 첨부 칩 아이콘·프로젝트 폼 입력칸·보조 버튼 3곳도 읽는다(공유 토큰)"
+  },
+  {
+   "theme": "light",
+   "selector": ".starter-icon",
+   "prop": "border",
+   "value": "1px solid rgba(101,87,232,.10)",
+   "why_kept": "바탕 규칙의 둘째 선택자 .starter:nth-child(2n) .starter-icon (0,3,0) 이 이 테마 규칙(0,2,1)을 이긴다. 토큰 테마 값으로 옮기면 짝수 번째 카드 아이콘 테두리가 달라진다(실측: 480건 차이)"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter",
+   "prop": "background",
+   "value": "var(--card-bg)",
+   "why_kept": "바탕 규칙은 145deg 그라디언트 + 바탕색 2겹 구조. 각도와 겹 수가 달라 토큰 값만으로 같은 계산값을 낼 수 없다"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter",
+   "prop": "box-shadow",
+   "value": "none",
+   "why_kept": "바탕 규칙은 inset 1겹 구조. 토큰을 투명으로 바꿔도 계산값이 none 이 되지 않는다"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter",
+   "prop": "backdrop-filter",
+   "value": "none",
+   "why_kept": "바탕 규칙의 흐림이 토큰이 아니라 숫자(blur(18px))다. 새 토큰 이름이 있어야 옮길 수 있다"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter:not(:disabled):hover",
+   "prop": "border-color",
+   "value": "rgba(255,255,255,.18)",
+   "why_kept": "토큰으로 옮기면 홀수 번째 카드에서 바탕 호버 규칙(0,3,0)이 padiem-dark-contrast.css 의 묶음 규칙(0,3,2)에 져서 호버 테두리가 사라진다. 이 규칙(0,4,1)이어야 이긴다"
+  },
+  {
+   "theme": "dark",
+   "selector": ".starter:not(:disabled):hover",
+   "prop": "box-shadow",
+   "value": "0 2px 8px rgba(0,0,0,.20)",
+   "why_kept": "바탕 호버 그림자는 0 18px 46px <색 토큰> 구조라 오프셋(0 2px 8px)을 표현 못 한다"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter",
+   "prop": "background",
+   "value": "linear-gradient(180deg, rgba(255,255,255,.82), rgba(250,252,255,.68))",
+   "why_kept": "바탕 규칙은 145deg 그라디언트 + 바탕색 2겹 구조. 각도와 겹 수가 달라 토큰 값만으로 같은 계산값을 낼 수 없다"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter",
+   "prop": "border",
+   "value": "1px solid rgba(26,34,48,.08)",
+   "why_kept": "클로 홈 카드의 테두리 굵기·모양을 만들고, 색은 공유 토큰(--surfaces-starter-border)이라 못 옮긴다"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter",
+   "prop": "border-top",
+   "value": "1px solid rgba(255,255,255,.85)",
+   "why_kept": "바탕 규칙에 대응하는 선언이 없다(윗변만 다른 색)"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter",
+   "prop": "color",
+   "value": "var(--text-deep-ink)",
+   "why_kept": "바탕 규칙이 읽는 --surfaces-starter-text 를 .project-form·.saved-output-view 도 읽는다(공유 토큰). 테마 값으로 옮기면 그 부품도 달라진다"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter",
+   "prop": "box-shadow",
+   "value": "0 10px 28px rgba(26,34,48,.07), inset 0 1px 0 rgba(255,255,255,.8)",
+   "why_kept": "바탕 규칙은 inset 1겹(inset 0 1px 0 <토큰>) 구조. 그림자 겹 수·오프셋이 달라 토큰 값으로 표현 못 한다"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter",
+   "prop": "backdrop-filter",
+   "value": "blur(16px)",
+   "why_kept": "바탕 규칙의 흐림이 숫자(blur(18px))이고 이 테마 값은 blur(16px)"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter-icon",
+   "prop": "background",
+   "value": "rgba(26,34,48,.06)",
+   "why_kept": "바탕 규칙이 읽는 --surfaces-starter-icon-bg 를 첨부 칩 아이콘·프로젝트 폼 입력칸·보조 버튼 3곳도 읽는다(공유 토큰)"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter-icon",
+   "prop": "border",
+   "value": "1px solid rgba(26,34,48,.08)",
+   "why_kept": "바탕 규칙의 둘째 선택자 .starter:nth-child(2n) .starter-icon (0,3,0) 이 이 테마 규칙(0,2,1)을 이긴다. 토큰 테마 값으로 옮기면 짝수 번째 카드 아이콘 테두리가 달라진다(실측: 480건 차이)"
+  },
+  {
+   "theme": "padiem-home",
+   "selector": ".starter-icon",
+   "prop": "color",
+   "value": "#3a4a62",
+   "why_kept": "바탕 규칙이 읽는 --panel-text-soft 는 9곳이 읽는 공유 토큰"
+  }
+ ],
+ "token_move_rejected": {
+  "candidate": "light·padiem-home 의 .starter-icon { border } 2선언 → --surfaces-starter-icon-border 테마 값(바탕 규칙 한 선언만 읽는 토큰)",
+  "measured": "옮긴 상태로 같은 상태 스윕을 돌렸더니 30측정 480상태 46,080대상 가운데 480건이 달라졌다. 모두 light(240)·padiem-home(240)의 .starter-icon 테두리 색으로, 이전 rgba(255,255,255,.11) → 이후 테마 값",
+  "cause": "바탕 규칙의 둘째 선택자 .starter:nth-child(2n) .starter-icon (0,3,0) 이 테마 규칙(0,2,1)을 이겨, 짝수 번째 카드 아이콘은 지금 :root 값을 쓴다. 토큰에 테마 값을 주면 그 아이콘까지 바뀐다",
+  "decision": "옮기지 않고 두 선언을 남겼다(계산값 차이 0 유지)"
+ },
+ "audit": {
+  "css_rules": {
+   "before": 4367,
+   "after": 4361,
+   "delta": -6
+  },
+  "css_important": {
+   "before": 463,
+   "after": 463,
+   "delta": 0
+  },
+  "css_themed_rules": {
+   "before": 777,
+   "after": 771,
+   "delta": -6
+  },
+  "css_themed_important": {
+   "before": 92,
+   "after": 92,
+   "delta": 0
+  },
+  "css_color_literals": {
+   "before": 1000,
+   "after": 990,
+   "delta": -10
+  },
+  "css_color_literals_unthemed": {
+   "before": 352,
+   "after": 352,
+   "delta": 0
+  },
+  "padiem-themes.css rules": {
+   "before": 119,
+   "after": 113
+  },
+  "padiem-themes.css !important": {
+   "before": 13,
+   "after": 13
+  }
+ },
+ "verification": {
+  "computed_states": {
+   "report": "computed_states_report.json",
+   "measurements": 30,
+   "states": 480,
+   "targets_compared": 90720,
+   "values_compared": 43545600,
+   "diffs": 0,
+   "coverage": "지운 규칙의 선택자가 닿는 요소는 시작 카드와 그 자손뿐이고 상속도 자손으로만 흐른다. 그래서 대상을 시작 카드 8개 + 모든 자손 + ::before·::after 로 잡았다"
+  },
+  "per_declaration": {
+   "report": "liveness_report.json",
+   "page_loads": 16,
+   "removed_all_dead_in_every_state": true,
+   "kept_all_live_somewhere": true
+  },
+  "pixel_standard": {
+   "tool": "tools/chat_pixel_compare.py run_compare (고정 장치·안정화·정착 규칙 그대로)",
+   "before": "531c777",
+   "screens": [
+    "home-logout",
+    "home-login",
+    "claw"
+   ],
+   "combos": 30,
+   "nonzero": 0,
+   "max_pixel": 0,
+   "control": {
+    "combos": 30,
+    "nonzero": 0,
+    "max_pixel": 0
+   },
+   "stabilizer_note": "지운 선언에 !important 가 없어 도구의 흐림 고정과 부딪히는 경우가 없다(#8674 와 달리 고정 없는 재측정이 필요 없었다)"
+  },
+  "detection": {
+   "report": "detection_report.json",
+   "what": "토큰 값을 새로 정하지 않아 변조할 토큰이 없다. 대신 남긴 선언 하나(.starter 배경)를 빼면 같은 픽셀 계산이 잡는지 확인했다",
+   "cases": 6,
+   "all_detected": true,
+   "pixels": {
+    "light home-logout": 77881,
+    "light claw": 91694,
+    "dark home-logout": 94601,
+    "dark claw": 94620,
+    "padiem-home home-logout": 93043,
+    "padiem-home claw": 100609
+   }
+  },
+  "tests": {
+   "command": "pytest (테마·토큰·시작 카드 관련 119모듈)",
+   "modules": 119,
+   "passed": 1001,
+   "skipped": 5,
+   "failed": 0,
+   "new": "tests/test_261124_themes_starter_c3_7811.py (9개: 남은 25선언 고정, !important 없음, 아이콘 테두리 토큰에 테마 값 금지, 지운 선언마다 대신 칠하는 규칙 고정)",
+   "updated": [
+    "test_261118_deep_ink_tokens_7187.py (--text-deep-ink 소비 7 → 6, 합계 11 → 10)",
+    "test_261118_panel_veil_tokens_7187.py (--surface-veil-panel 소비 11 → 10)",
+    "test_261118_white_veil_tokens_7187.py (계약 89 → 88, panel 11 → 10)"
+   ],
+   "ratchet": "tests/test_structure_ratchet.py 통과 (늘어난 수치 없음)"
+  }
+ },
+ "captures": {
+  "light__1440x950__home-logout.png": "light 첫 화면 시작 카드 4장",
+  "dark__1440x950__claw.png": "dark 클로 홈 카드 4장",
+  "cinematic__1440x950__home-logout.png": "cinematic 첫 화면(테마 규칙 8선언을 모두 지운 테마)",
+  "cinematic__1440x950__claw.png": "cinematic 클로 홈 카드",
+  "padiem-home__1440x950__home-logout.png": "padiem-home 첫 화면",
+  "light__390x844__home-logout.png": "light 390폭 첫 화면"
+ },
+ "found_existing_issues_not_touched": [
+  "cinematic 시작 카드 호버 강조(금빛 테두리·광채)는 이 PR 이전에도 화면에 나오지 않았다. padiem-bright-readability.css 의 cinematic .starter 배경·테두리·그림자가 !important 라 호버 규칙이 이길 수 없다. 호버에서 달라지는 것은 바탕 규칙의 translateY(-3px)뿐이다",
+  "light·padiem-home 에서 짝수 번째 카드의 아이콘 테두리는 테마 값이 아니라 :root 값(rgba(255,255,255,.11))을 쓴다(바탕 규칙의 nth-child 선택자가 테마 규칙을 이김). 빈 화면에서는 chat-screen-polish.css, 클로 화면에서는 claw-focus-layout.css 가 덮어 표준 화면에서는 보이지 않는다"
+ ],
+ "next": [
+  "padiem-themes.css 말풍선(.message-bubble 계열, 26선언)",
+  "그다음 .brand-mark·.assistant-avatar 묶음(25선언)"
+ ],
+ "notes": [
+  "측정은 Chat index.html 기준이다. padiem-themes.css 를 함께 부르는 React 비교용 복제본(apps/padiem-chat-react)은 불러오는 시트 구성이 Chat 과 달라(padiem-surfaces.css·padiem-bright-readability.css·accessibility-polish.css 를 부르지 않는다) 시작 카드 값이 달라질 수 있다. 의원3종 앱에는 시작 카드가 없다",
+  "#8674 보고의 기존 대비 문제 3건은 이 PR 에서 건드리지 않았다(다른 작업이 맡는다)",
+  "줄 번호는 base 의 padiem-themes.css 기준이다",
+  "리베이스 후 재측정 대신, 바뀐 정적 파일의 starter 선택자 및 관련 토큰 변경이 없고 padiem-themes.css가 같음을 확인함(리베이스 전 측정: 계산값·픽셀 차이 0). 기존 connector-pages.css의 starter 관련 선택자 5건은 변경되지 않음."
+ ]
+}

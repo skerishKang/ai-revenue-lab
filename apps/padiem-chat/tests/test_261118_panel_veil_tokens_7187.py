@@ -49,7 +49,9 @@ CHANGED = {
     "padiem-themes.css": {
         ("background", "linear-gradient(145deg, rgba(210,235,255,.14), var(--surface-veil-panel)), rgba(8,12,20,.78)"): 1,
         ("background", "linear-gradient(145deg, rgba(200,230,255,.10), var(--surface-veil-panel)), rgba(8,12,20,.7)"): 1,
-        ("background", "linear-gradient(145deg, rgba(255,240,214,.10), var(--surface-veil-panel)), rgba(11,14,22,.7)"): 1,
+        # #7811 C3: cinematic 시작 카드 호버 배경 한 줄이 이 시트를 떠났다. 어느
+        # 상태에서도 칠하지 못하던 줄이다(padiem-bright-readability.css의
+        # cinematic .starter 배경이 !important로 이긴다).
     },
 }
 
@@ -71,7 +73,7 @@ def test_no_theme_block_overrides_the_tokens() -> None:
                 assert name not in rule.declarations, (rule.selectors, name)
 
 
-def test_the_eleven_declarations_consume_the_right_role() -> None:
+def test_the_declarations_consume_the_right_role() -> None:
     total = 0
     for sheet, expected in CHANGED.items():
         actual: Counter = Counter()
@@ -82,7 +84,8 @@ def test_the_eleven_declarations_consume_the_right_role() -> None:
                     actual[(prop, normalized)] += 1
         assert actual == Counter(expected), sheet
         total += sum(actual.values())
-    assert total == 11
+    # 11선언으로 옮겼고, #7811 C3에서 1선언이 테마 시트를 떠나 10선언이다.
+    assert total == 10
 
 
 def test_swapping_the_tokens_back_returns_the_original_literal() -> None:

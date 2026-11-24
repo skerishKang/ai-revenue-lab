@@ -230,9 +230,8 @@ CHANGED = {
         ("background",
          "linear-gradient(145deg, rgba(200,230,255,.10), rgba(255, 255, 255, .04)), rgba(8,12,20,.7)",
          "linear-gradient(145deg, rgba(200,230,255,.10), var(--surface-veil-panel)), rgba(8,12,20,.7)"),
-        ("background",
-         "linear-gradient(145deg, rgba(255,240,214,.10), rgba(255, 255, 255, .04)), rgba(11,14,22,.7)",
-         "linear-gradient(145deg, rgba(255,240,214,.10), var(--surface-veil-panel)), rgba(11,14,22,.7)"),
+        # #7811 C3: cinematic 시작 카드 호버 배경(.04 꼬리) 한 줄은 이 시트를 떠났다.
+        # 어느 상태에서도 칠하지 못하던 줄이라 계약에서 뺐다.
         ("background", "rgba(255, 255, 255, .78)", "var(--surface-veil-haze)"),
         ("background",
          "linear-gradient(180deg, rgba(255, 255, 255, .78), rgba(250,252,255,.58))",
@@ -364,8 +363,9 @@ def test_changed_sheets_are_only_consumed_by_pages_that_load_tokens() -> None:
 
 def test_this_round_replaced_exactly_44_declarations() -> None:
     """1차 44선언은 그대로이고, 3차 10·4차 11·5차 10·7차 11·8차 표면·테두리 4선언을 더했다.
-    (7차 1선언은 #8001에서 --card-bg 한 판 토큰으로 바뀌며 계약에서 빠졌다.)"""
-    assert sum(len(items) for items in CHANGED.values()) == 89
+    (7차 1선언은 #8001에서 --card-bg 한 판 토큰으로 바뀌며 계약에서 빠졌다.
+    4차 1선언은 #7811 C3에서 칠하지 못하던 줄로 지워지며 계약에서 빠졌다.)"""
+    assert sum(len(items) for items in CHANGED.values()) == 88
     ghost = sum(
         1
         for items in CHANGED.values()
@@ -379,7 +379,7 @@ def test_this_round_replaced_exactly_44_declarations() -> None:
         for _prop, _old, new in items
         if "veil-panel" in new
     )
-    assert panel == 11
+    assert panel == 10
     dim = sum(
         1
         for items in CHANGED.values()
