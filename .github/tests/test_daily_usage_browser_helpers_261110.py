@@ -172,6 +172,38 @@ class StampTest(unittest.TestCase):
         self.assertEqual(self.verdict(ancestor=False),
                          ("FAIL", "screen_stamp_not_on_main", self.OBSERVED))
 
+    def test_main_ahead_but_stamp_is_the_last_successful_deploy_passes(self):
+        # #8666: main HEAD가 배포보다 앞서도 화면이 마지막 성공 배포 커밋이면 정상.
+        self.assertEqual(
+            self.verdict(ancestor=False, deployed_sha=self.OBSERVED),
+            ("PASS", "last_successful_deploy", self.OBSERVED),
+        )
+
+    def test_missing_stamp_fails_even_with_a_deploy_record(self):
+        self.assertEqual(
+            checks.stamp_verdict("", self.HEAD, deployed_sha=self.OBSERVED),
+            ("FAIL", "screen_stamp_missing", ""),
+        )
+
+    def test_an_unrelated_commit_fails_even_with_a_deploy_record(self):
+        self.assertEqual(
+            self.verdict(ancestor=False, deployed_sha="ffffffff"),
+            ("FAIL", "screen_stamp_not_on_main", self.OBSERVED),
+        )
+
+    def test_deploy_record_picker_uses_only_latest_success(self):
+        deployments = [
+            {"id": "1", "sha": "a" * 40, "created_at": "2026-11-24T00:00:00Z"},
+            {"id": "2", "sha": "b" * 40, "created_at": "2026-11-24T01:00:00Z"},
+        ]
+        statuses = {
+            "1": [{"state": "success"}],
+            "2": [{"state": "failure"}, {"state": "in_progress"}],
+        }
+        self.assertEqual(checks.pick_successful_deploy_sha(deployments, statuses), "a" * 40)
+        statuses["2"] = [{"state": "success"}]
+        self.assertEqual(checks.pick_successful_deploy_sha(deployments, statuses), "b" * 40)
+
     def test_unreadable_history_is_not_a_pass(self):
         self.assertEqual(self.verdict(screen_changes=None)[:2],
                          ("FAIL", "screen_history_unavailable"))

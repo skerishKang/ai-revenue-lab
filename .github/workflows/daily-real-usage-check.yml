@@ -23,6 +23,8 @@ permissions:
   contents: read
   # 2차: 직전 7회 실행의 소요 ms 를 읽어 느려짐 경고를 낸다(읽기 전용).
   actions: read
+  # #8666: 마지막 성공 배포 커밋을 GitHub 배포 기록에서 읽는다(읽기 전용).
+  deployments: read
 
 concurrency:
   group: daily-real-usage-check
