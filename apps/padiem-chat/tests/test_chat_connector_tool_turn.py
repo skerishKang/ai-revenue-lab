@@ -497,10 +497,6 @@ def test_the_max_route_passes_the_native_tools_gate():
     #7088 후속). The row shape mirrors the normalized catalog view the gate
     reads, with capabilities taken verbatim from the canonical registry.
     """
-    import json as _json
-    import os as _os
-    from pathlib import Path as _Path
-
     from padiem_control_plane.product_tier_routes import ProductTierLabel
     from padiem_control_plane.product_tier_routes_private import (
         effective_active_route_for,
@@ -508,18 +504,18 @@ def test_the_max_route_passes_the_native_tools_gate():
 
     from app.chat_pc_drive import chat_pc_route_declares_tools  # noqa: F401 — gate under test
 
-    _raw = (_os.environ.get("PADIEM_MODELS_REGISTRY_OVERRIDE", "").strip()
-            or _os.environ.get("PADIEM_MODELS_REGISTRY", "").strip())
-    _registry_path = (_Path(_raw).expanduser() if _raw else
-                      (_Path(__file__).resolve().parents[3] / "apps" / "korean-ai-platform"
-                       / "app" / "pilot" / "b14_models.json"))
-    registry = _json.loads(_registry_path.read_text(encoding="utf-8"))
-    rows = registry if isinstance(registry, list) else registry.get("models", [])
+    from _support.connectors_tool_registry import registry_rows
+
+    rows = registry_rows()
+
     max_route = effective_active_route_for(ProductTierLabel.MAX)
     assert max_route is not None and max_route.model_id
     max_model_id = max_route.model_id
-    row = next(r for r in rows if r.get("id") == max_model_id or r.get("model_id") == max_model_id)
-    assert "tools" in row["capabilities"], "the Max route model lost its tools capability"
+    assert any(max_model_id in (r.get("id"), r.get("model_id"))
+               and "tools" in (r.get("capabilities") or ()) for r in rows), \
+        "the Max route model lost its tools capability"
+    row = next(r for r in rows
+               if max_model_id in (r.get("id"), r.get("model_id")))
 
     import asyncio
 
