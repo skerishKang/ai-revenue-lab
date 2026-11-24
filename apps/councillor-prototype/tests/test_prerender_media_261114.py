@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import http.server
 import importlib.util
+import json
 import os
 import subprocess
 import sys
@@ -38,6 +39,13 @@ CHROME = next(
 class StaticHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(BUILD_DIR), **kwargs)
+
+    def translate_path(self, path):
+        # Cloudflare Pages serves extensionless HTML URLs in the build.
+        local = super().translate_path(path)
+        if not Path(local).exists() and Path(local + ".html").is_file():
+            return local + ".html"
+        return local
 
     def guess_type(self, path):
         value = super().guess_type(path)
@@ -237,3 +245,112 @@ def test_prerender_only_links_http_or_relative():
     assert 'href="#"' not in policy["policyBills"]
     assert "토론회" in policy["policyForums"]
     assert "조례" in policy["policyBills"]
+
+ACTIVITY_ITEMS = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))["activity"]["items"]
+
+
+def test_dist_activity_without_javascript(browser, base_url):
+    page = browser.new_page(viewport={"width": 1440, "height": 900}, java_script_enabled=False)
+    try:
+        page.goto(base_url + "activity", wait_until="load")
+        rows = page.locator("#activityList .activity-item[id]")
+        assert rows.count() == len(ACTIVITY_ITEMS)
+        for i, item in enumerate(ACTIVITY_ITEMS):
+            row = rows.nth(i)
+            assert row.is_visible()
+            assert item["title"] in row.inner_text()
+            assert item.get("body", "") in row.inner_text()
+        print(f"NO_JS main_chars={len(page.locator('main').inner_text())} body_chars={len(page.locator('body').inner_text())} rows={rows.count()}")
+    finally:
+        page.close()
+
+
+@pytest.mark.parametrize("width,height", [(390, 844), (1440, 900)])
+@pytest.mark.parametrize("theme", ["light", "dark"])
+def test_dist_activity_hydrates_and_filters_in_place(browser, base_url, width, height, theme):
+    page = browser.new_page(viewport={"width": width, "height": height})
+    errors = []
+    page.on("pageerror", lambda err: errors.append(str(err)))
+    page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
+    try:
+        page.add_init_script("""
+          (() => {
+            localStorage.setItem('theme', '%s');
+            window.__cls = 0;
+            new PerformanceObserver(list => {
+              for (const entry of list.getEntries()) {
+                if (!entry.hadRecentInput) window.__cls += entry.value;
+              }
+            }).observe({type: 'layout-shift', buffered: true});
+            const observer = new MutationObserver(() => {
+              const row = document.querySelector('#activityList .activity-item[id]');
+              if (row) { window.__originalActivity = row; observer.disconnect(); }
+            });
+            observer.observe(document, {childList: true, subtree: true});
+          })();
+        """ % theme)
+        page.goto(base_url + "activity", wait_until="load")
+        page.wait_for_selector('#activityList[data-activity-ready="true"]')
+        page.wait_for_timeout(1500)
+        state = page.evaluate("""() => ({
+          cls: window.__cls,
+          overflow: document.documentElement.scrollWidth - innerWidth,
+          same: window.__originalActivity === document.querySelector('#activityList .activity-item[id]'),
+          body: getComputedStyle(document.querySelector('.item-title')).fontSize,
+          label: getComputedStyle(document.querySelector('.item-tag')).fontSize,
+          tap: document.querySelector('.activity-item').getBoundingClientRect().height,
+          theme: document.documentElement.dataset.theme
+        })""")
+        print(f"ACTIVITY {width} {theme} {state} errors={len(errors)}")
+        assert state["same"] and state["theme"] == theme
+        assert state["overflow"] <= 0 and state["cls"] < 0.1
+        assert state["body"] == "16px" and state["label"] == "14px" and state["tap"] >= 44
+        rows = page.locator("#activityList .activity-item[id^='a-']")
+        visible = page.locator("#activityList .activity-item[id^='a-']:visible")
+        assert rows.count() == visible.count() == len(ACTIVITY_ITEMS)
+        search = page.locator("#activitySearch")
+        search.fill("\ud1a0\ub860")
+        expected = [a["id"] for a in ACTIVITY_ITEMS if "\ud1a0\ub860" in a["title"] or "\ud1a0\ub860" in a.get("body", "")]
+        assert visible.evaluate_all("(rows) => rows.map(row => row.id)") == expected
+        search.fill("no-record-xyz-261124")
+        assert visible.count() == 0
+        assert page.locator("#activityEmpty").is_visible()
+        assert page.locator("#activityEmpty").inner_text() == "\uac80\uc0c9 \uacb0\uacfc\uac00 \uc5c6\uc2b5\ub2c8\ub2e4."
+        search.fill("")
+        tag = ACTIVITY_ITEMS[0]["tag"]
+        page.locator("#activityFilter").select_option(tag)
+        assert visible.count() == sum(a["tag"] == tag for a in ACTIVITY_ITEMS)
+        page.locator("#activityFilter").select_option("all")
+        assert page.evaluate("window.__originalActivity === document.querySelector('#activityList .activity-item[id]')")
+        visible.first.click()
+        assert page.locator("#activityDetail").is_visible()
+        assert page.locator("#detailTitle").inner_text() == ACTIVITY_ITEMS[0]["title"]
+        assert page.locator("#detailTitle").evaluate("(el) => el === document.activeElement")
+        assert page.locator("#detailBody").evaluate("(el) => getComputedStyle(el).fontSize") == "16px"
+        assert page.locator("#activityBack").bounding_box()["height"] >= 44
+        page.keyboard.press("Escape")
+        page.wait_for_selector("#activityList", state="visible")
+        assert page.locator("#activityDetail").is_hidden()
+        assert page.evaluate("location.hash") == ""
+        assert not errors
+    finally:
+        page.close()
+
+
+def test_dist_activity_clean_deep_link_and_home_card(browser, base_url):
+    page = browser.new_page(viewport={"width": 390, "height": 844})
+    try:
+        first = ACTIVITY_ITEMS[0]
+        page.goto(base_url + "activity#" + first["id"], wait_until="load")
+        page.wait_for_selector("#activityDetail", state="visible")
+        assert page.locator("#detailTitle").inner_text() == first["title"]
+        page.wait_for_function("document.activeElement.id === 'detailTitle'")
+        page.keyboard.press("Escape")
+        page.wait_for_selector("#activityList", state="visible")
+        page.goto(base_url + "index.html", wait_until="load")
+        page.locator(".key-activity-card").first.click()
+        page.wait_for_selector("#activityDetail", state="visible")
+        assert page.evaluate("location.pathname + location.hash") == "/activity#" + first["id"]
+        assert page.locator("#detailTitle").inner_text() == first["title"]
+    finally:
+        page.close()

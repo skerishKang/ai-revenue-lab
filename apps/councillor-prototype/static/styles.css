@@ -467,6 +467,10 @@ main { flex: 1 0 auto; }
   transition: background 0.15s;
 }
 .activity-item:hover { background: var(--bg-soft); }
+.activity-item > noscript { display: none; }
+@media (scripting: none) {
+  .activity-item > noscript { display: block; grid-column: 1 / -1; }
+}
 .activity-item .item-date { font-size: var(--fs-label); color: var(--accent-2); font-weight: 700; }
 .activity-item .item-tag {
   display: inline-block; margin-left: 8px; padding: 2px 8px;

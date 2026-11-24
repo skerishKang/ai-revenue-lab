@@ -1,0 +1,44 @@
+"""Activity build contracts that run without browser or image dependencies."""
+from __future__ import annotations
+
+import importlib.util
+import json
+import re
+import subprocess
+import sys
+from html import escape
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+ITEMS = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))["activity"]["items"]
+SPEC = importlib.util.spec_from_file_location("prerender", ROOT / "scripts" / "prerender.py")
+prerender = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(prerender)
+
+
+def test_dist_activity_contains_every_record_and_stable_id(tmp_path):
+    out = tmp_path / "dist"
+    subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "build-dist"), "--out", str(out)],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    )
+    html = (out / "activity.html").read_text(encoding="utf-8")
+    rows = re.findall(r'<li class="activity-item" id="([^"]+)">(.*?)</li>', html, re.S)
+    ids = [activity_id for activity_id, _ in rows]
+    assert ids == [item["id"] for item in ITEMS]
+    assert len(ids) == len(set(ids))
+    for item, (_, row) in zip(ITEMS, rows):
+        for field in ("date", "tag", "title", "body"):
+            assert escape(item.get(field, ""), quote=True) in row
+        assert '<noscript>' in row
+        assert 'class="detail-body"' in row
+
+
+def test_activity_prerender_only_links_allowed_sources():
+    for url in ("https://example.com", "http://example.com", "./about", "mailto:test@example.com", "#", "javascript:alert(1)", "//example.com"):
+        item = dict(ITEMS[0], url=url, title="<unsafe>")
+        markup = prerender.prerender_activity({"activity": {"items": [item]}})
+        assert "&lt;unsafe&gt;" in markup
+        assert ("href=" in markup) == url.startswith(("https://", "http://", "./"))
