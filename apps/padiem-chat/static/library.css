@@ -81,8 +81,7 @@
   margin: 4px 0 0;
   font-size: 12px;
   line-height: 1.5;
-  color: var(--muted);
-  opacity: 0.75;
+  color: var(--standalone-tagline-text);
 }
 
 /* The sidebar handles leaving the library, so the header carries no second

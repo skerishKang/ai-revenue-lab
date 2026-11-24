@@ -1,0 +1,7 @@
+{
+  "screen": "library",
+  "theme": "padiem-home",
+  "viewport": "390x844",
+  "pixel": 1446,
+  "mutation": "standalone-tagline-text -> bg"
+}
