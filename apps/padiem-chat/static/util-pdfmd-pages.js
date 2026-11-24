@@ -231,7 +231,7 @@
       const table = el("table", "pdfmd-page-table");
       // #8316: inline shape keeps the table inside one column instead of a
       // pipe string that wraps into scattered cells. No new CSS sheet rule.
-      table.style.cssText = "width:100%;border-collapse:collapse;margin:4px 0 10px;font:inherit;display:block;overflow-x:auto";
+      table.style.cssText = "width:max-content;min-width:100%;border-collapse:collapse;margin:4px 0 10px;font:inherit;display:block;overflow-x:auto";
       rows.forEach((row, r) => {
         const tr = el("tr", "pdfmd-page-table-row");
         tr.style.cssText = "border-bottom:1px solid var(--line)";

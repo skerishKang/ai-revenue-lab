@@ -284,7 +284,8 @@ def test_a_failed_card_in_the_browser_has_reason_and_delete_only(band_url):
                 body=BAND_HTML))
             page.goto(band_url, wait_until="domcontentloaded")
             page.wait_for_selector(".pdfmd-history-fold summary", state="visible", timeout=8000)
-            page.locator(".pdfmd-history-fold summary").click()
+            if not page.locator(".pdfmd-history-fold").evaluate("(el) => el.open"):
+                page.locator(".pdfmd-history-fold summary").click()
             page.locator(".pdfmd-history-item").first.click()
             page.wait_for_selector(".pdfmd-item", state="visible", timeout=8000)
             card = page.locator(".pdfmd-item").first
@@ -311,7 +312,8 @@ def test_history_rows_follow_the_time_they_show(band_url):
                     body=BAND_HTML))
                 page.goto(band_url, wait_until="domcontentloaded")
                 page.wait_for_selector(".pdfmd-history-fold summary", state="visible", timeout=8000)
-                page.locator(".pdfmd-history-fold summary").click()
+                if not page.locator(".pdfmd-history-fold").evaluate("(el) => el.open"):
+                    page.locator(".pdfmd-history-fold summary").click()
                 page.locator(".pdfmd-history-item").first.wait_for(state="visible", timeout=8000)
                 ids = [b.get_attribute("data-job-id")
                        for b in page.locator(".pdfmd-history-item").all()]
