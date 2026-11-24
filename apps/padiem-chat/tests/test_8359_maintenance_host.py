@@ -160,6 +160,13 @@ class History:
         return {"run_id": self.rows[-1]["run_id"], "state": "done" if self.done else "pending",
                 "exit_code": 0, "dispatch_id": "dispatch-fixture"}
 
+    async def consent_key_for_owner_node(self, *, user_id, node_ref, account_ref, workspace_ref):
+        # The server-owned dispatch record pairs the consent key with the
+        # Mesh node under this owner and connector scope.
+        if (user_id, node_ref, account_ref, workspace_ref) != (UID, DEVICE, SCOPE["account_ref"], SCOPE["workspace_ref"]):
+            return None, "consent_key_scope_mismatch"
+        return CONNECTOR, "observed"
+
 
 @pytest.fixture
 def rig(monkeypatch):
@@ -283,13 +290,19 @@ def test_consent_lookup_carries_the_map_pin_unchanged(rig):
     assert CONNECTOR not in (DEVICE, DEVICE.rsplit("/", 1)[1])
 
 
-def test_no_map_row_naming_the_pc_means_no_consent_lookup(rig):
+def test_no_server_owned_record_means_no_consent_lookup(rig):
     """Without the server-owned pair there is no reference to look up, so the
-    candidate stops before the consent call and stages no run."""
+    candidate stops before the consent call and stages no run. A stale map
+    row must not be used as a fallback for this path."""
     app, queue, history, flags, store, db = rig
     app.state.oracle_mesh_return_source = routes.OracleMeshReturnSource(
         [{**MAP[0], "node_ref": "node//another-pc"}], "s" * 32,
         routes.EXECUTION_MODE_MESH)
+
+    async def no_record(**kw):
+        return None, "consent_key_record_missing"
+
+    history.consent_key_for_owner_node = no_record
     async def run():
         await host.maintenance_round(app, ENV, store)
     asyncio.run(run())
