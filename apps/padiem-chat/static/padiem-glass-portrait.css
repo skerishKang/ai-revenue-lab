@@ -813,15 +813,16 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
-/* Answer action bar: drop the 40px chrome to 26px textless icons. The
- * accessibility-polish 40px min-* floor (0,1,0) and the portrait 38px rule
- * above both lose to this (1,5,2)+!important pair. */
+/* Answer action bar: chrome-free textless icons. The drawn glyph stays small;
+ * the press box is 40px (11-03 audit: Glass had pinned the five buttons to a
+ * bare 26px box). The phone floor of 44px in mobile-target-legibility.css is
+ * untouched. */
 html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-action {
-  min-width: 0;
-  min-height: 0;
+  min-width: 40px;
+  min-height: 40px;
   padding: 0;
-  width: 26px;
-  height: 26px;
+  width: 40px;
+  height: 40px;
   border: 0;
   border-radius: 6px;
   background: none;

@@ -191,8 +191,16 @@
     min-height: 84px !important;
     padding: 11px !important;
   }
+  /* The landing used to hide every card description on a phone, so a reader
+   * could not tell what a card does. It shows as up to two lines (#7827: one
+   * clipped line cut the copy short on every theme). */
   .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter small {
-    display: none;
+    display: -webkit-box;
+    min-width: 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
   /* #5014: the shared scroll padding above already carries the composer
    * clearance and the software keyboard inset. A second copy here would drop

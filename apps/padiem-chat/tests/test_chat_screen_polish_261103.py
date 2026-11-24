@@ -1,4 +1,4 @@
-"""11-03 chat screen polish (컴1로컬3): the nine audit items, each with one guard.
+"""11-03 chat screen polish: the nine audit items, each with one guard.
 
 Every assertion below is the measured defect from the 2026-11-03 UX audit
 captures, not a restatement of the report:
@@ -19,6 +19,13 @@ captures, not a restatement of the report:
 The phone press floor in mobile-target-legibility.css is deliberately NOT
 weakened: the polish sheet is linked before it, and the browser checks measure
 the resolved value on a phone.
+
+#7811 C4: the audit rules whose target already had a rule in its own sheet
+were merged into that rule (send button → attachments.css, card description →
+interaction-polish.css, Glass press box → padiem-glass-portrait.css, badge →
+voice-composer.css, PC cell → claw-composer-connection-status.css, search →
+sidebar-unified.css). The static guards below read the rule that now paints
+each value; the browser guards are unchanged.
 
 #8060 25차: the static guards read sheets through _support helpers
 (css_rules declarations, html_tags attribute maps, locale_bundle values) and
@@ -137,14 +144,22 @@ def _open(browser, url, width, height, mobile):
 
 
 def test_send_button_is_right_aligned_on_the_phone() -> None:
-    polish = rules_for_sheet("chat-screen-polish.css")
-    phone = [rule for rule in polish if rule.media == "(max-width: 620px)"]
-    send = find_rules_with_selector(phone, ".composer-actions .send-button")
+    # #7811 C4: the pin lives in the composer sheet's own phone rule for the
+    # send button. The polish sheet no longer repeats it.
+    reserved = rules_for_sheet("attachments.css")
+    phone = [rule for rule in reserved if rule.media == "(max-width: 620px)"]
+    send = find_rules_with_selector(phone, ".send-button")
     assert len(send) == 1
     assert declaration(send[0], "margin-left") == "auto"
+    assert declaration(send[0], "flex") == "0 0 44px"
+    assert not find_rules_with_selector(
+        rules_for_sheet("chat-screen-polish.css"), ".composer-actions .send-button")
+    # The missing-microphone reservation stays, and still out-specifies the pin.
+    missing_mic = find_rules_with_selector(
+        phone, ".composer-actions:not(:has(> #voiceMicButton)) #sendButton")
+    assert [declaration(rule, "margin-left") for rule in missing_mic] == ["calc(44px + 10px)"]
     # The first-screen reservations belong to attachments.css and are
     # untouched by this lane.
-    reserved = rules_for_sheet("attachments.css")
     assert any(declaration(rule, "width") == "116px" for rule in reserved)
     assert any(declaration(rule, "width") == "112px"
                and declaration(rule, "min-width") == "112px"
@@ -179,17 +194,27 @@ def test_send_button_sits_on_the_composer_right_edge_at_390(browser, server) -> 
 def test_phone_home_cards_keep_two_description_lines() -> None:
     # #7827: one clipped line cut the copy short on every theme, so the
     # description now shows up to two lines (line-clamp 2).
-    phone = [rule for rule in rules_for_sheet("chat-screen-polish.css")
-             if rule.media == "(max-width: 620px)"]
-    clamp = [rule for rule in phone
+    # #7811 C4: the phone rule that used to hide the description
+    # (interaction-polish.css) now carries the two-line clamp itself, so the
+    # description has one rule instead of a hide and a later un-hide.
+    landing = [rule for rule in rules_for_sheet("interaction-polish.css")
+               if rule.media == "(max-width: 620px)"]
+    clamp = [rule for rule in landing
              if any(".starter small" in selector for selector in rule.selectors)]
     assert len(clamp) == 1
+    assert declaration(clamp[0], "display") == "-webkit-box"
     assert declaration(clamp[0], "-webkit-line-clamp") == "2"
     assert declaration(clamp[0], "line-clamp") == "2"
     # 한 줄 절삭(ellipsis·nowrap)은 이 구역에 없다 — 두 줄 클램프가 유일한 형태다.
+    assert declaration(clamp[0], "text-overflow") is None
+    assert declaration(clamp[0], "white-space") is None
+    phone = [rule for rule in rules_for_sheet("chat-screen-polish.css")
+             if rule.media == "(max-width: 620px)"]
     assert all(declaration(rule, "text-overflow") is None
                and declaration(rule, "white-space") is None
                for rule in phone)
+    assert not [rule for rule in phone
+                if any(".starter small" in selector for selector in rule.selectors)]
     assert [rule for rule in phone
             if declaration(rule, "padding-top") == "60px !important"]
 
@@ -365,14 +390,17 @@ def test_a_shared_fragment_opens_the_screen_it_names(browser, server, fragment) 
 
 
 def test_answer_actions_get_a_40px_press_box() -> None:
-    polish = rules_for_sheet("chat-screen-polish.css")
-    glass = find_rules_with_selector(
-        polish,
-        'html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-action')
+    # #7811 C4: the Glass sheet's own answer-action rule carries the press box.
+    selector = ('html[data-theme="padiem-glass"] body .assistant-message '
+                '.answer-actions .answer-action')
+    glass = find_rules_with_selector(rules_for_sheet("padiem-glass-portrait.css"), selector)
     assert glass
     # #8008 13차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
     assert [declaration(rule, "width") for rule in glass] == ["40px"]
+    assert [declaration(rule, "height") for rule in glass] == ["40px"]
+    assert [declaration(rule, "min-width") for rule in glass] == ["40px"]
     assert [declaration(rule, "min-height") for rule in glass] == ["40px"]
+    assert not find_rules_with_selector(rules_for_sheet("chat-screen-polish.css"), selector)
     # The hints are locale keys, never literals in the builder.
     assert 'button.setAttribute("data-padiem-tooltip", label);' in claw_static.sheet("outputs.js")
     for key in ("answer-copy", "answer-regenerate"):
@@ -545,20 +573,53 @@ def test_desktop_greeting_renders_two_lines(browser, server) -> None:
 
 def test_small_control_floors_are_raised() -> None:
     polish = rules_for_sheet("chat-screen-polish.css")
-    add_button = find_rules_with_selector(polish, ".sidebar .section-add-button")
-    assert add_button
-    assert [declaration(rule, "width") for rule in add_button] == ["32px"]
-    assert find_rules_with_selector(polish, ".starter-grid .document-formats-toggle")
-    face = find_rules_with_selector(polish, ".composer-pc-status-face")
-    assert face
-    assert [declaration(rule, "height") for rule in face] == ["32px"]
-    search = find_rules_with_selector(
-        polish, ".sidebar .sidebar-actions-row.sidebar-unified-row > .sidebar-search-item:disabled")
+    # #7811 C4: each floor now lives in the rule of the sheet that owns the
+    # control, and the polish sheet no longer repeats it.
+    badge = [rule for rule in find_rules_with_selector(
+        rules_for_sheet("voice-composer.css"), ".starter-grid .document-formats-toggle")
+        if declaration(rule, "min-height") is not None]
+    assert [declaration(rule, "min-height") for rule in badge] == ["32px"]
+    assert not find_rules_with_selector(polish, ".starter-grid .document-formats-toggle")
+    face = find_rules_with_selector(
+        rules_for_sheet("claw-composer-connection-status.css"), ".composer-pc-status-face")
+    # One height for every width: the phone rule no longer lowers the cell.
+    assert [declaration(rule, "height") for rule in face
+            if declaration(rule, "height") is not None] == ["32px"]
+    assert [rule.media for rule in face if declaration(rule, "height") is not None] == [None]
+    assert not find_rules_with_selector(polish, ".composer-pc-status-face")
+    search_selector = (
+        ".sidebar .sidebar-actions-row.sidebar-unified-row > .sidebar-search-item:disabled")
+    search = find_rules_with_selector(rules_for_sheet("sidebar-unified.css"), search_selector)
     assert [declaration(rule, "opacity") for rule in search] == [".78"]
+    assert not find_rules_with_selector(polish, search_selector)
+    # The project "+" was never painted by the polish sheet's 32px rule: the
+    # sidebar's own id-scoped rule sizes the only `.section-add-button` in the
+    # document. The rule that paints is the one read here.
+    assert not find_rules_with_selector(polish, ".sidebar .section-add-button")
+    add_button = find_rules_with_selector(
+        rules_for_sheet("sidebar-section-polish.css"),
+        "html body .app-shell .sidebar #projectsSection #projectCreateButton")
+    assert [(declaration(rule, "width"), declaration(rule, "height"))
+            for rule in add_button if declaration(rule, "width") is not None] == [("28px", "28px")]
     files_base = [rule for rule in find_rules_with_selector(
         rules_for_sheet("library.css"), "#filesNavButton") if rule.media is None]
     assert len(files_base) == 1
     assert files_base[0].declarations == {"position": "relative", "min-height": "44px"}
+
+
+def test_polish_sheet_keeps_only_the_rules_that_cannot_move_yet() -> None:
+    # #7811 C4: every other audit rule was merged into the sheet that owns its
+    # target, or removed because it never painted. The four that stay are
+    # listed in the sheet header, each with what it is waiting for.
+    polish = rules_for_sheet("chat-screen-polish.css")
+    assert sorted(rule.media or "" for rule in polish) == [
+        "", "", "(max-width: 620px)", "(min-width: 621px)"]
+    assert sum(value.endswith("!important")
+               for rule in polish for value in rule.declarations.values()) == 1
+    # Removed as dead: Glass menu items sit inside the answer-action row, so the
+    # row rule (higher specificity, same 40px) always sized them.
+    assert not find_rules_with_selector(
+        polish, 'html[data-theme="padiem-glass"] .answer-more-menu .answer-action')
 
 
 @requires_browser

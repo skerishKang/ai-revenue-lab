@@ -40,7 +40,7 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  height: 26px;
+  height: 32px; /* 11-03 audit: the cell measured 26px; it rises to the 32px floor. */
   min-width: 104px;
   padding: 0 10px;
   border: 1px solid var(--pc-status-line);
@@ -178,7 +178,6 @@ html[data-theme="light"] .composer-pc-status:focus-visible {
   }
   .composer-pc-status-face {
     min-width: 34px;
-    height: 30px;
     padding: 0 8px;
   }
   .composer-pc-status-label {
