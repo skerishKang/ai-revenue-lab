@@ -47,6 +47,30 @@ def _img(path, cls: str, sizes: str, width: int, height: int, alt: str = "") -> 
     )
 
 
+def _media_card(item, cls, content):
+    url = _href(item.get("url"))
+    attrs = f' data-media-thumb="{_e(item["thumb"])}" data-media-title="{_e(item["title"])}" data-media-url="{_e(url)}"'
+    if url:
+        card = f'<a class="{cls}"{attrs} href="{_e(url)}" target="_blank" rel="noopener">{content}</a>'
+        source = f'<a class="media-source" href="{_e(url)}" target="_blank" rel="noopener" aria-label="{_e(item["title"])} 원문 보기 (새 탭)">↗</a>'
+    else:
+        card = f'<span class="{cls}"{attrs}>{content}</span>'
+        source = ""
+    return card + source
+
+
+def activity_legend(data):
+    return "".join(f'<span><b>{_e(term)}</b> {_e(text)}</span>'
+                   for term, text in data["activity"].get("glossary", {}).get("categories", {}).items())
+
+
+def activity_terms(data, item):
+    text = item["title"] + " " + item.get("body", "")
+    terms = data["activity"].get("glossary", {}).get("terms", {})
+    return "".join(f'<p><b>{_e(term)}</b> — {_e(meaning)}</p>'
+                   for term, meaning in terms.items() if term in text)
+
+
 def prerender_home(data: dict) -> dict:
     activities = data["activity"]["items"][:3]
     cards = []
@@ -72,14 +96,13 @@ def prerender_home(data: dict) -> dict:
     )
     media = [m for m in data["media"]["tiles"] if m.get("thumb")][1:4]
     media_html = "".join(
-        "<li>"
-        + _link(
-            m["url"],
+        '<li class="home-media-card">'
+        + _media_card(
+            m,
             "col-item",
             f'{_img(m["thumb"], "col-thumb", "(max-width: 900px) 120px, 60px", 120, 90)}'
             f'<div><p class="col-item-title">{_e(m["title"])}</p>'
             f'<p class="col-item-meta">{_e(m["kind"])}</p></div>',
-            external=True,
         )
         + "</li>"
         for m in media
@@ -134,7 +157,8 @@ def prerender_activity(data: dict) -> str:
             '<span class="item-more" aria-hidden="true">자세히 ›</span></div>'
             '<noscript>'
             f'<p class="detail-body">{_e(item.get("body", ""))}</p>'
-            + (_link(item.get("url"), "detail-link", "?? 자세히 ›?", external=True)
+            + (f'<div class="activity-terms">{activity_terms(data, item)}</div>' if activity_terms(data, item) else "")
+            + (_link(item.get("url"), "detail-link", "공식 페이지 보기", external=True)
                if _href(item.get("url")) else "")
             + '</noscript></li>'
         )
@@ -147,15 +171,14 @@ def prerender_media(data: dict) -> str:
     for m in tiles:
         notes = "".join(f"<li>{_e(note)}</li>" for note in (m.get("notes") or []))
         cards.append(
-            _link(
-                m["url"],
+            '<div class="media-card">' + _media_card(
+                m,
                 "media-tile",
                 f'{_img(m["thumb"], "tile-thumb", "(max-width: 760px) 50vw, 33vw", 640, 480, m.get("title", ""))}'
                 f'<div class="tile-kind">{_e(m["kind"])}</div>'
                 f'<div class="tile-title">{_e(m["title"])}</div>'
                 f'<ul class="tile-notes">{notes}</ul>',
-                external=True,
-            )
+            ) + '</div>'
         )
     return "".join(cards)
 
@@ -253,6 +276,10 @@ def inject(out_dir: Path, data: dict) -> None:
         html = html.replace(
             '<ul class="activity-list" id="activityList" aria-live="polite"></ul>',
             f'<ul class="activity-list" id="activityList" aria-live="polite">{prerender_activity(data)}</ul>',
+        )
+        html = html.replace(
+            '<p class="activity-legend" id="activityLegend" aria-label="분류 설명"></p>',
+            f'<p class="activity-legend" id="activityLegend" aria-label="분류 설명">{activity_legend(data)}</p>',
         )
         activity_path.write_text(html, encoding="utf-8")
 

@@ -42,3 +42,28 @@ def test_activity_prerender_only_links_allowed_sources():
         markup = prerender.prerender_activity({"activity": {"items": [item]}})
         assert "&lt;unsafe&gt;" in markup
         assert ("href=" in markup) == url.startswith(("https://", "http://", "./"))
+
+
+def test_activity_glossary_covers_all_categories_and_prerenders():
+    data = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))
+    glossary = data["activity"]["glossary"]
+    assert set(glossary["categories"]) == {a["tag"] for a in ITEMS}
+    legend = prerender.activity_legend(data)
+    assert legend.count("<span>") == 7
+    for term, meaning in glossary["categories"].items():
+        assert escape(term) in legend and escape(meaning) in legend
+    terms = prerender.activity_terms(data, ITEMS[0])
+    assert escape(glossary["terms"]["행정사무감사"]) in terms
+
+
+def test_home_search_and_shared_photo_dialog_contract():
+    home = (ROOT / "index.html").read_text(encoding="utf-8")
+    media = (ROOT / "media.html").read_text(encoding="utf-8")
+    form = re.search(r'<form class="home-search".*?</form>', home, re.S).group()
+    assert form.count("<button") == 1 and 'name="scope" value="all"' in form
+    assert 'id="mediaLightbox"' in home and 'id="mediaLightbox"' in media
+    data = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))
+    for html, count in ((prerender.prerender_home(data)["homeMedia"], 3),
+                        (prerender.prerender_media(data), sum(bool(m.get("thumb")) for m in data["media"]["tiles"]))):
+        assert html.count("data-media-thumb=") == count
+        assert html.count('class="media-source"') == count

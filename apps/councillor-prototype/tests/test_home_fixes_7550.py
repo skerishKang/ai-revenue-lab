@@ -152,12 +152,13 @@ def test_media_cards_carry_the_external_link_marker(browser, base_url):
         page.goto(base_url + "media.html", wait_until="load")
         page.wait_for_selector(".media-tile")
         tiles = page.evaluate(
-            """() => Array.from(document.querySelectorAll('.media-tile'))
+            """() => Array.from(document.querySelectorAll('.media-card .media-source'))
                 .map((a) => ({blank: a.target === '_blank',
                               mark: !!a.querySelector('.ext-mark') || a.textContent.includes('↗'),
                               label: a.getAttribute('aria-label') || ''}))"""
         )
         assert len(tiles) >= 3
+        assert page.locator(".media-tile[target=_blank]").count() == 0
         for row in tiles:
             assert row["blank"], "a media tile lost target=_blank"
             assert row["mark"], "a media tile is missing the ↗ marker"

@@ -97,7 +97,8 @@ def test_index_carries_the_notice_and_the_search_form():
     assert RECEIPT in html
     assert 'id="siteFeedbackAgain"' in html
     assert '<form class="home-search" action="./activity.html" method="get"' in html
-    assert 'name="q"' in html and 'formaction="./policy.html"' in html
+    assert 'name="q"' in html and 'name="scope" value="all"' in html
+    assert 'class="home-search-alt"' not in html
 
 
 def test_the_search_screens_read_the_forwarded_query():
@@ -166,13 +167,18 @@ def test_the_home_search_lands_in_the_existing_searches(browser, base_url):
         # The page's own search control carries the forwarded query and the
         # existing renderer ran it.
         assert page.evaluate("() => document.getElementById('activitySearch').value") == "주차"
-        assert page.evaluate("() => document.querySelectorAll('#activityList .activity-item').length") >= 1
+        assert page.locator("#activityList .activity-item:visible").count() >= 1
+        assert page.locator("#combinedPolicy").is_visible()
+        assert page.locator("#combinedActivityHeading").is_visible()
 
         page.goto(base_url + "index.html", wait_until="load")
         page.fill(".home-search-input", "조례")
-        page.click(".home-search-alt")
-        page.wait_for_url(lambda url: "policy.html" in url and "q=" in url)
-        assert page.evaluate("() => document.getElementById('billSearch').value") == "조례"
+        page.click(".home-search-go")
+        page.wait_for_url(lambda url: "activity.html" in url and "q=" in url)
+        page.wait_for_selector("#combinedPolicyList a")
+        assert "조례" in page.locator("#combinedPolicyList").inner_text()
+        page.goto(base_url + "policy.html?q=조례", wait_until="load")
+        page.wait_for_function("document.getElementById('billSearch').value === '조례'")
     finally:
         page.close()
 
@@ -189,8 +195,8 @@ def test_the_home_search_works_without_scripts(browser, base_url):
 
         page.goto(base_url + "index.html", wait_until="load")
         page.fill(".home-search-input", "조례")
-        page.click(".home-search-alt")
-        page.wait_for_url(lambda url: "policy.html" in url and "q=" in url)
+        page.click(".home-search-go")
+        page.wait_for_url(lambda url: "activity.html" in url and "q=" in url and "scope=all" in url)
         assert "조례" in unquote(page.url)
     finally:
         page.close()

@@ -36,6 +36,11 @@
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="preload" href="./static/fonts/maruburi/MaruBuri-Bold.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="./static/fonts/maruburi.css" />
+  <!-- Keep the tablet hero action widths stable before first paint. -->
+  <link rel="preload" as="font" type="font/woff2" href="./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.88.woff2" crossorigin media="(max-width: 900px)">
+  <link rel="preload" as="font" type="font/woff2" href="./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.89.woff2" crossorigin media="(max-width: 900px)">
+  <link rel="preload" as="font" type="font/woff2" href="./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.90.woff2" crossorigin media="(max-width: 900px)">
+  <link rel="preload" as="font" type="font/woff2" href="./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.91.woff2" crossorigin media="(max-width: 900px)">
   <link rel="stylesheet" href="./static/fonts/pretendard/pretendard-variable-dynamic-subset.css" />
   <link rel="stylesheet" href="./static/styles.css" />
 </head>
@@ -83,18 +88,16 @@
           </h1>
           <p class="hero-lead">남구에서 전남광주통합특별시까지. 의원이 걸어온 길과 최근 의정활동 기록을 한 곳에서 보실 수 있습니다.</p>
           <div class="hero-actions">
-            <a class="btn primary" href="tel:062-613-5133">의원실 연락·민원 <span class="btn-sub">062-613-5133</span></a>
+            <a class="btn primary" href="tel:062-613-5133">의원실 연락·민원 <span class="btn-sub office-number">062-613-5133</span></a>
             <a class="btn secondary" href="./activity.html">의정활동 보기 <span aria-hidden="true">→</span></a>
             <a class="btn secondary" href="mailto:miran2640@naver.com" data-contact-email>이메일 보내기 <span class="btn-sub">miran2640@naver.com</span></a>
             <a class="btn secondary" href="https://council.jeonnam-gwangju.go.kr/jngjassem/board/16" target="_blank" rel="noopener">의회에 의견 보내기 <span aria-hidden="true">↗</span></a>
           </div>
-          <!-- #7550 동훈 3회차: the first screen gets one search box. A plain GET
-               form reaches the existing search screens without scripts; the
-               second button only swaps the destination (formaction). -->
+          <!-- One search across both record collections. -->
           <form class="home-search" action="./activity.html" method="get" role="search" aria-label="의정활동·정책자료 검색">
             <input class="home-search-input" type="search" name="q" placeholder="활동·정책자료 검색" aria-label="활동·정책자료 검색" />
-            <button class="home-search-go" type="submit">활동 검색</button>
-            <button class="home-search-alt" type="submit" formaction="./policy.html">정책자료 검색</button>
+            <input type="hidden" name="scope" value="all" />
+            <button class="home-search-go" type="submit">검색</button>
           </form>
         </div>
       </div>
@@ -218,6 +221,18 @@
     <a href="./media.html">미디어</a>
   </nav>
 
+      <dialog class="lightbox" id="mediaLightbox" aria-labelledby="lightboxTitle">
+        <div class="lightbox-head">
+          <h2 id="lightboxTitle"></h2>
+          <button class="lightbox-close" id="lightboxClose" type="button" aria-label="크게 보기 닫기">×</button>
+        </div>
+        <div class="lightbox-body">
+          <button class="lightbox-nav lightbox-prev" id="lightboxPrev" type="button" aria-label="이전 사진">←</button>
+          <img id="lightboxImg" alt="" />
+          <button class="lightbox-nav lightbox-next" id="lightboxNext" type="button" aria-label="다음 사진">→</button>
+        </div>
+        <div class="lightbox-foot"><a id="lightboxLink" target="_blank" rel="noopener">원문 보기</a></div>
+      </dialog>
   <script src="./static/app.js"></script>
   <script src="./static/home.js"></script>
   <script src="./static/site-feedback.js"></script>

@@ -129,6 +129,7 @@ function showActivityList(status) {
   detail.hidden = true;
   list.hidden = false;
   showActivityStatus(status || "");
+  renderCombinedPolicy(document.getElementById("activitySearch")?.value || "");
 }
 
 function initActivityList(list) {
@@ -187,6 +188,7 @@ function renderActivities(filter = "all", query = "") {
   }
   if (empty) empty.hidden = count !== 0;
   showActivityStatus("");
+  renderCombinedPolicy(query);
 }
 
 function showDetail(a, options) {
@@ -203,6 +205,16 @@ function showDetail(a, options) {
   const body = document.getElementById("detailBody");
   body.textContent = a.body || "";
   body.hidden = !a.body;
+  const glossary = document.getElementById("detailTerms");
+  if (glossary) {
+    const text = a.title + " " + (a.body || "");
+    const terms = SITE?.activity?.glossary?.terms || {};
+    glossary.innerHTML = Object.entries(terms).filter(([term]) => text.includes(term))
+      .map(([term, meaning]) => '<p><b>' + escapeHtml(term) + '</b> — ' + escapeHtml(meaning) + '</p>').join("");
+    glossary.hidden = !glossary.innerHTML;
+  }
+  const policyResults = document.getElementById("combinedPolicy");
+  if (policyResults) policyResults.hidden = true;
   const link = document.getElementById("detailLink");
   const rawHref = String(a.url || "");
   const href = /^(https?:\/\/|\.\/)/.test(rawHref) ? safeHref(rawHref) : "";
@@ -256,30 +268,46 @@ function syncActivityFromLocation(initial) {
   }
 }
 
+function mediaCardMarkup(m, cls, content) {
+  const raw = String(m.url || "");
+  const url = /^(https?:\/\/|\.\/)/.test(raw) ? raw : "";
+  const attrs = ' data-media-thumb="' + escapeHtml(m.thumb) + '" data-media-title="' +
+    escapeHtml(m.title) + '" data-media-url="' + escapeHtml(url) + '"';
+  const card = url
+    ? '<a class="' + cls + '"' + attrs + ' href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' + content + '</a>'
+    : '<span class="' + cls + '"' + attrs + '>' + content + '</span>';
+  const source = url ? '<a class="media-source" href="' + escapeHtml(url) +
+    '" target="_blank" rel="noopener" aria-label="' + escapeHtml(m.title) + ' 원문 보기 (새 탭)">↗</a>' : "";
+  return card + source;
+}
+
+function enhanceMediaCards(root = document) {
+  root.querySelectorAll("[data-media-thumb]").forEach((card) => {
+    card.removeAttribute("target");
+    card.removeAttribute("href");
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("aria-haspopup", "dialog");
+    card.setAttribute("aria-label", card.dataset.mediaTitle + " 크게 보기");
+  });
+  markExternalLinks();
+}
+
 function renderMedia() {
   const grid = document.getElementById("mediaGrid");
   if (!grid) return;
-  grid.innerHTML = "";
-  MEDIA.filter((m) => m.thumb).forEach((m, index) => {
-    const tile = document.createElement("a");
-    tile.className = "media-tile";
-    tile.href = safeHref(m.url) || "#";
-    // The tile is an external source: same target/rel as the prerendered
-    // markup, so markExternalLinks() below marks it like every other link.
-    tile.target = "_blank";
-    tile.rel = "noopener";
-    tile.setAttribute("aria-haspopup", "dialog");
-    tile.setAttribute("tabindex", "0");
-    tile.addEventListener("click", (event) => { event.preventDefault(); openLightbox(index, tile); });
-    const thumb = `<img class="tile-thumb" src="${escapeHtml(safeHref(m.thumb))}" srcset="${escapeHtml(thumbSrcSet(m.thumb))}" sizes="(max-width: 760px) 50vw, 33vw" width="640" height="480" alt="${escapeHtml(m.title)}" loading="lazy" onerror="this.style.display='none'" />`;
-    const notes = (m.notes || []).map((n) => `<li>${escapeHtml(n)}</li>`).join("");
-    tile.innerHTML = thumb +
-      `<div class="tile-kind">${escapeHtml(m.kind)}</div>` +
-      `<div class="tile-title">${escapeHtml(m.title)}</div>` +
-      `<ul class="tile-notes">${notes}</ul>`;
-    grid.appendChild(tile);
-  });
-  markExternalLinks();
+  if (!grid.querySelector("[data-media-thumb]")) {
+    grid.innerHTML = MEDIA.filter((m) => m.thumb).map((m) => {
+      const thumb = '<img class="tile-thumb" src="' + escapeHtml(m.thumb) +
+        '" srcset="' + escapeHtml(thumbSrcSet(m.thumb)) + '" sizes="(max-width: 760px) 50vw, 33vw" width="640" height="480" alt="' +
+        escapeHtml(m.title) + '" loading="lazy" />';
+      const notes = (m.notes || []).map((n) => '<li>' + escapeHtml(n) + '</li>').join("");
+      return '<div class="media-card">' + mediaCardMarkup(m, "media-tile", thumb +
+        '<div class="tile-kind">' + escapeHtml(m.kind) + '</div>' +
+        '<div class="tile-title">' + escapeHtml(m.title) + '</div><ul class="tile-notes">' + notes + '</ul>') + '</div>';
+    }).join("");
+  }
+  enhanceMediaCards(grid);
 }
 
 function renderNews() {
@@ -455,7 +483,7 @@ function renderLightbox() {
   if (img) { img.src = safeHref(item.thumb) || ""; img.alt = item.title || ""; }
   if (title) title.textContent = item.title || "";
   if (link) {
-    const href = safeHref(item.url);
+    const href = item.url ? safeHref(item.url) : "";
     link.href = href || "#";
     link.hidden = !href;
   }
@@ -464,7 +492,9 @@ function renderLightbox() {
 function openLightbox(index, trigger) {
   const dialog = document.getElementById("mediaLightbox");
   if (!dialog) return;
-  lightboxItems = MEDIA.filter((m) => m.thumb);
+  lightboxItems = Array.from(document.querySelectorAll("[data-media-thumb]"), (card) => ({
+    thumb: card.dataset.mediaThumb, title: card.dataset.mediaTitle, url: card.dataset.mediaUrl
+  }));
   lightboxIndex = Math.max(0, Math.min(lightboxItems.length - 1, Number(index) || 0));
   lightboxTrigger = trigger || null;
   renderLightbox();
@@ -490,6 +520,19 @@ function stepLightbox(delta) {
 function initLightbox() {
   const dialog = document.getElementById("mediaLightbox");
   if (!dialog) return;
+  enhanceMediaCards();
+  const activate = (event) => {
+    const card = event.target.closest("[data-media-thumb]");
+    if (!card) return;
+    event.preventDefault();
+    openLightbox(Array.from(document.querySelectorAll("[data-media-thumb]")).indexOf(card), card);
+  };
+  document.addEventListener("click", activate);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      if (event.target.closest("[data-media-thumb]")) activate(event);
+    }
+  });
   document.getElementById("lightboxClose")?.addEventListener("click", closeLightbox);
   document.getElementById("lightboxPrev")?.addEventListener("click", () => stepLightbox(-1));
   document.getElementById("lightboxNext")?.addEventListener("click", () => stepLightbox(1));
@@ -505,7 +548,7 @@ function initLightbox() {
 
 function markExternalLinks() {
   document.querySelectorAll('a[target="_blank"]').forEach((a) => {
-    if (a.dataset.extMarked === "1") return;
+    if (a.dataset.extMarked === "1" || a.hasAttribute("data-media-thumb")) return;
     if (a.closest(".bill-row")) return;
     a.dataset.extMarked = "1";
     const text = (a.textContent || "").trim();
@@ -544,6 +587,33 @@ function initTheme() {
 
 // The home search box arrives as ?q=... on the search screens; each page feeds
 // the value into its own existing search control (no second engine).
+function renderActivityLegend(data) {
+  const legend = document.getElementById("activityLegend");
+  if (!legend || legend.children.length) return;
+  legend.innerHTML = Object.entries(data.activity.glossary?.categories || {})
+    .map(([term, meaning]) => '<span><b>' + escapeHtml(term) + '</b> ' + escapeHtml(meaning) + '</span>').join("");
+}
+
+function renderCombinedPolicy(query) {
+  const section = document.getElementById("combinedPolicy");
+  if (!section || !SITE || new URLSearchParams(location.search).get("scope") !== "all") return;
+  document.getElementById("combinedActivityHeading").hidden = false;
+  section.hidden = false;
+  const q = query.trim().toLowerCase();
+  const records = ["forums", "videos", "bills"].flatMap((key) => SITE.policy[key] || []);
+  const matches = records.filter((item) => !q || [item.title, item.summary, item.note, item.number, item.date, item.result]
+    .some((value) => String(value || "").toLowerCase().includes(q)));
+  const list = document.getElementById("combinedPolicyList");
+  list.innerHTML = matches.length ? matches.map((item) => {
+    const raw = String(item.url || "");
+    const url = /^(https?:\/\/|\.\/)/.test(raw) ? safeHref(raw) : "";
+    const title = escapeHtml(item.title);
+    return '<li class="combined-policy-row">' + (url ? '<a href="' + escapeHtml(url) +
+      '" target="_blank" rel="noopener">' + title + '</a>' : '<span>' + title + '</span>') + '</li>';
+  }).join("") : '<li class="combined-policy-row">검색 결과가 없습니다.</li>';
+  markExternalLinks();
+}
+
 function initialQueryParameter() {
   try {
     const value = new URLSearchParams(window.location.search || "").get("q");
@@ -559,6 +629,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.COUNCILLOR_DATA_READY.then((data) => {
     if (!data) return;
     renderContact(data);
+    renderActivityLegend(data);
     renderPolicy(data);
     renderIntroVideo(data);
     renderMediaMore();
