@@ -9,6 +9,7 @@ import subprocess
 import sys
 import threading
 from pathlib import Path
+import time
 
 import pytest
 
@@ -354,3 +355,89 @@ def test_dist_activity_clean_deep_link_and_home_card(browser, base_url):
         assert page.locator("#detailTitle").inner_text() == first["title"]
     finally:
         page.close()
+
+@pytest.mark.parametrize("width,height", [(390, 844), (820, 1180), (1440, 900)])
+@pytest.mark.parametrize("theme", ["light", "dark"])
+def test_senior_media_and_readability(browser, base_url, width, height, theme):
+    context = browser.new_context(viewport={"width": width, "height": height})
+    page = context.new_page()
+    errors = []
+    page.on("pageerror", lambda e: errors.append(str(e)))
+    page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+    page.add_init_script("""(() => {
+      localStorage.setItem('theme', '%s');
+      window.__cls = 0;
+      new PerformanceObserver(l => {for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value})
+        .observe({type:'layout-shift', buffered:true});
+    })()""" % theme)
+    evidence = os.environ.get("COUNCILLOR_QA_8673")
+    try:
+        for name, selector in (("index.html", "#homeMedia .col-item"), ("media.html", ".media-tile"), ("activity.html", "#activityList .activity-item"), ("about.html", ".profile-list")):
+            page.goto(base_url + name, wait_until="load")
+            page.wait_for_selector(selector)
+            page.wait_for_timeout(1100)
+            state = page.evaluate("() => ({cls: window.__cls, overflow: document.documentElement.scrollWidth-innerWidth})")
+            print("SENIOR", width, theme, name, state, "errors", len(errors), flush=True)
+            assert state["overflow"] <= 0 and state["cls"] < 0.1
+            assert not errors
+            if evidence:
+                Path(evidence).mkdir(parents=True, exist_ok=True)
+                page.screenshot(path=str(Path(evidence) / f"{width}-{theme}-{name}.png"), full_page=True)
+            if name in ("index.html", "media.html"):
+                card = page.locator(selector).first
+                source = card.locator("xpath=following-sibling::a[contains(@class, 'media-source')]")
+                assert source.bounding_box()["width"] >= 44 and source.bounding_box()["height"] >= 44
+                card.locator("img").click()
+                page.wait_for_selector("#mediaLightbox[open]")
+                assert len(context.pages) == 1
+                assert page.locator("#lightboxTitle").inner_text() == card.get_attribute("data-media-title")
+                original = page.locator("#lightboxImg").get_attribute("src")
+                page.locator("#lightboxNext").click()
+                assert page.locator("#lightboxImg").get_attribute("src") != original
+                page.locator("#lightboxPrev").click()
+                assert page.locator("#lightboxImg").get_attribute("src") == original
+                if evidence:
+                    page.screenshot(path=str(Path(evidence) / f"{width}-{theme}-{name}-lightbox.png"))
+                page.keyboard.press("Escape")
+                page.wait_for_selector("#mediaLightbox", state="hidden")
+                assert card.evaluate("(el) => el === document.activeElement")
+                card.click()
+                page.locator("#lightboxClose").click()
+                assert card.evaluate("(el) => el === document.activeElement")
+            if name == "index.html":
+                assert page.locator(".home-search button").count() == 1
+                phone = page.locator(".office-number")
+                assert phone.evaluate("(e) => parseFloat(getComputedStyle(e).fontSize)") >= 20
+                assert phone.locator("xpath=..").bounding_box()["height"] >= 44
+            if name == "about.html":
+                phone = page.locator('.profile-list a[href^="tel:"]')
+                assert phone.evaluate("(e) => parseFloat(getComputedStyle(e).fontSize)") >= 20
+                assert phone.bounding_box()["height"] >= 44
+            if name == "activity.html":
+                assert page.locator("#activityLegend > span").count() == 7
+                assert page.locator("#activityLegend").evaluate("(e) => getComputedStyle(e).fontSize") == "16px"
+                page.locator("#a-2026-11-04-01").click()
+                assert page.locator("#detailTerms").is_visible()
+                assert "행정사무감사" in page.locator("#detailTerms").inner_text()
+        assert not errors
+    finally:
+        context.close()
+
+
+def test_prerender_media_works_before_data_fetch(browser, base_url):
+    context = browser.new_context(viewport={"width": 820, "height": 1180})
+    page = context.new_page()
+    # Keep the fetch pending until the photo interaction has happened.
+    page.route("**/miraen.json", lambda route: None)
+    try:
+        for name, selector in (("index.html", "#homeMedia .col-item"), ("media.html", ".media-tile")):
+            page.goto(base_url + name, wait_until="domcontentloaded")
+            card = page.locator(selector).first
+            card.locator("img").click()
+            assert page.locator("#mediaLightbox").evaluate("(e) => e.open")
+            assert len(context.pages) == 1
+            page.keyboard.press("Escape")
+            page.wait_for_selector("#mediaLightbox", state="hidden")
+            assert card.evaluate("(e) => e === document.activeElement")
+    finally:
+        context.close()
