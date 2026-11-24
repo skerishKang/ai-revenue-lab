@@ -72,6 +72,10 @@ def documents_rules():
 
 def b66_quote_rules():
     return parse_rules(_sheet("b66-quote-runtime.css"))
+
+
+def search_sources_rules():
+    return parse_rules(_sheet("search-sources.css"))
 def surfaces_rules():
     return parse_rules(_sheet("padiem-surfaces.css"))
 
@@ -155,6 +159,10 @@ def unthemed_documents_literals() -> list[str]:
 
 def unthemed_b66_quote_literals() -> list[str]:
     return unthemed_literals(b66_quote_rules())
+
+
+def unthemed_search_sources_literals() -> list[str]:
+    return unthemed_literals(search_sources_rules())
 
 
 def unthemed_standalone_literals() -> list[str]:
