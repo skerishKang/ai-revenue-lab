@@ -110,6 +110,7 @@ class AccountMenuAndLegalContract(unittest.TestCase):
         page.goto(f"http://127.0.0.1:{self.port}", wait_until="domcontentloaded")
         page.wait_for_timeout(900)
         if width == 390:
+            page.wait_for_selector("#mobileMenu", state="visible", timeout=15_000)
             page.click("#mobileMenu", timeout=3000)
             page.wait_for_timeout(400)
         return ctx, page
@@ -149,6 +150,7 @@ class AccountMenuAndLegalContract(unittest.TestCase):
                         status=200, content_type="application/json", body=json.dumps(SIGNED_IN)))
                     page.goto(f"http://127.0.0.1:{self.port}", wait_until="domcontentloaded")
                     if width <= 920 and not collapsed:
+                        page.wait_for_selector("#mobileMenu", state="visible", timeout=15_000)
                         page.click("#mobileMenu", timeout=3000)
                     if collapsed and width > 920:
                         page.evaluate("() => document.querySelector('.app-shell').classList.add('sidebar-collapsed')")

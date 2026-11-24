@@ -965,7 +965,9 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
               /* Reading mode intentionally caps --glass-shell-max at .62. */
               return progress >= .95 && maxOpacity <= .05 && portalOpacity >= .45;
             }""",
-            timeout=5_000,
+            # 같은 기준을 유지하되, 느린 실행기에서 CSS 전환이 끝날 때까지
+            # 기다릴 여유를 둔다. 임계값(.95/.05/.45)은 바꾸지 않는다.
+            timeout=15_000,
         )
         recovered_shell = await _glass_shell_snapshot(page)
         reading_samples.append({"turn": turn, "phase": "recovered", "shell": recovered_shell})

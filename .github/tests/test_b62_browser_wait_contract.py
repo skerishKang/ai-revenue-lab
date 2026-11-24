@@ -9,7 +9,8 @@ import re
 import unittest
 from pathlib import Path
 
-SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
+ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS = ROOT / ".github" / "scripts"
 
 
 class BrowserWaitContract(unittest.TestCase):
@@ -38,6 +39,23 @@ class BrowserWaitContract(unittest.TestCase):
         self.assertIn('scrollHeight - conv.scrollTop - conv.clientHeight <= 4', block)
         self.assertIn('timeout=5_000', block)
         self.assertIn('latest-answer growth was not followed', text)
+
+    def test_mobile_menu_click_waits_for_visible_toggle(self):
+        text = (ROOT / "apps/padiem-chat/tests/browser_7961_account_menu_legal_contract.py").read_text(encoding="utf-8")
+        waits = re.findall(
+            r'wait_for_selector\("#mobileMenu", state="visible", timeout=15_000\)',
+            text,
+        )
+        self.assertEqual(len(waits), 2)
+        self.assertEqual(text.count('page.click("#mobileMenu", timeout=3000)'), 2)
+
+    def test_glass_shell_recovery_wait_keeps_thresholds_and_has_headroom(self):
+        text = (SCRIPTS / "b62_browser_visual_qa.py").read_text(encoding="utf-8")
+        block = text.split('return progress >= .95 && maxOpacity <= .05 && portalOpacity >= .45;', 1)[1]
+        self.assertIn('timeout=15_000', block.split(')', 2)[1][:200])
+        self.assertIn('progress >= .95', text)
+        self.assertIn('maxOpacity <= .05', text)
+        self.assertIn('portalOpacity >= .45', text)
 
     def test_no_wait_timeout_was_shortened(self):
         for name, forbidden in (
