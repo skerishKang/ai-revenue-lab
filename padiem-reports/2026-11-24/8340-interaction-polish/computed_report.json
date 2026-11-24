@@ -1,0 +1,11 @@
+{
+ "sheet": "interaction-polish.css",
+ "sweep_combos": 40,
+ "declarations": 42,
+ "removed": 35,
+ "computed_diffs": 0,
+ "pixel_caught": [
+  192,
+  265
+ ]
+}

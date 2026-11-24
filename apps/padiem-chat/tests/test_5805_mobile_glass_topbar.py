@@ -28,7 +28,7 @@ def _token_rule(selector):
 
 def test_the_phone_header_stays_in_flow_above_the_conversation() -> None:
     rule = _rule(TOPBAR)
-    assert declaration(rule, "position") == "sticky !important"
+    assert declaration(rule, "position") == "sticky"
     # #5804: fixed positioning left the menu under Edge's scroll offsets.
     assert declaration(rule, "position") != "fixed"
     assert declaration(rule, "min-height") == "56px"
@@ -47,23 +47,23 @@ def test_the_phone_header_keeps_the_safe_area_inset() -> None:
 
 def test_the_menu_control_is_a_44px_glass_circle() -> None:
     rule = _rule(MENU)
-    assert declaration(rule, "width") == "44px !important"
-    assert declaration(rule, "height") == "44px !important"
+    assert declaration(rule, "width") == "44px"
+    assert declaration(rule, "height") == "44px"
     assert declaration(rule, "min-height") == "44px"
-    assert declaration(rule, "border-radius") == "var(--radius-circle) !important"
+    assert declaration(rule, "border-radius") == "var(--radius-circle)"
     assert declaration(_token_rule(":root"), "--radius-circle") == "50%"
     for prop in ("backdrop-filter", "-webkit-backdrop-filter"):
         value = declaration(rule, prop)
         assert value is not None and "blur(14px)" in value.split()
-    assert declaration(rule, "background") == "var(--glass) !important"
-    assert declaration(rule, "border") == "1px solid var(--line) !important"
-    assert declaration(rule, "color") == "var(--text) !important"
+    assert declaration(rule, "background") == "var(--glass)"
+    assert declaration(rule, "border") == "1px solid var(--line)"
+    assert declaration(rule, "color") == "var(--text)"
 
 
 def test_the_glass_menu_stays_readable_on_the_dark_themes() -> None:
     rule = _rule(MENU)
-    assert declaration(rule, "background") == "var(--glass) !important"
-    assert declaration(rule, "color") == "var(--text) !important"
+    assert declaration(rule, "background") == "var(--glass)"
+    assert declaration(rule, "color") == "var(--text)"
     themes = rules_for_sheet("padiem-themes.css")
     glass = rules_for_sheet("padiem-glass.css")
     # The palette lives in the token sheet; component rules remain in each theme.

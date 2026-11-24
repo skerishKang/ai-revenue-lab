@@ -44,7 +44,7 @@ def test_multiline_composer_and_visual_viewport_contract_is_bounded() -> None:
     assert "window.visualViewport" in source
     assert "visualKeyboardInset" in source
     assert '"--padiem-visual-keyboard-inset"' in source
-    assert "bottom: var(--padiem-visual-keyboard-inset, 0px) !important" in css
+    assert "bottom: var(--padiem-visual-keyboard-inset, 0px);" in css
 
 
 def test_large_desktop_glass_lane_does_not_jump_on_first_message() -> None:
