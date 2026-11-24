@@ -81,7 +81,7 @@ html[data-theme="padiem-glass"] #automationNavButton[aria-current="page"] {
 }
 .standalone-view-tagline {
   margin: 0;
-  color: var(--muted);
+  color: var(--standalone-tagline-text);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -385,7 +385,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   font-size: 12px;
   font-weight: 800;
   letter-spacing: .13em;
-  color: var(--accent);
+  color: var(--standalone-kicker-text);
   opacity: 1;
 }
 /* Under padiem-glass the eyebrow above is an inline-flex brand mark. Left in a

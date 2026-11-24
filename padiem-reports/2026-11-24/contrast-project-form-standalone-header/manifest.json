@@ -1,0 +1,295 @@
+{
+  "topic": "프로젝트 창·독립 화면 공통 머리 글자 대비 수리(#8669 후속)",
+  "base": "0a80e77c1",
+  "sheets_changed": [
+    "projects.css",
+    "standalone-views.css",
+    "padiem-tokens.css"
+  ],
+  "audit": {
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4385,
+      "after": 4385,
+      "delta": 0
+    },
+    "css_important": {
+      "before": 475,
+      "after": 475,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 795,
+      "after": 795,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 104,
+      "after": 104,
+      "delta": 0
+    },
+    "css_color_literals": {
+      "before": 1013,
+      "after": 1013,
+      "delta": 0
+    },
+    "css_color_literals_unthemed": {
+      "before": 352,
+      "after": 352,
+      "delta": 0
+    },
+    "css_local_imports": {
+      "before": 0,
+      "after": 0,
+      "delta": 0
+    },
+    "rules_by_sheet": {
+      "projects.css": {
+        "before": 64,
+        "after": 64
+      },
+      "standalone-views.css": {
+        "before": 95,
+        "after": 95
+      },
+      "padiem-tokens.css": {
+        "before": 7,
+        "after": 7
+      }
+    },
+    "important_by_sheet": {
+      "projects.css": {
+        "before": 0,
+        "after": 0
+      },
+      "standalone-views.css": {
+        "before": 2,
+        "after": 2
+      },
+      "padiem-tokens.css": {
+        "before": 0,
+        "after": 0
+      }
+    }
+  },
+  "tokens": {
+    "new": {
+      "project_form": [
+        "--project-form-text",
+        "--project-file-add-text",
+        "--project-file-remove-text",
+        "--project-file-remove-hover-text",
+        "--project-file-row-edge"
+      ],
+      "standalone_header": [
+        "--standalone-kicker-text",
+        "--standalone-tagline-text"
+      ]
+    },
+    "reused": "프로젝트 창이 저장한 답변 창과 같이 쓰는 스킨 역할 13개는 #8669의 --outputs-* 를 그대로 읽는다.",
+    "definition": "padiem-tokens.css :root 기본값은 기존 토큰을 var()로 가리킨다(새 색 숫자 0). --project-* 5개는 light·padiem-home·padiem-glass 블록에서, --standalone-* 2개는 padiem-home 블록에서만 덮는다."
+  },
+  "verification": {
+    "contrast": {
+      "method": "계산된 글자색을 글자를 지운 화면의 실제 픽셀 위에 놓고 글자 상자 안 최악값(안정화 조건). 프로젝트 창은 창 상자 ∩ 판 안만 잰다.",
+      "limits": {
+        "text": 4.5,
+        "large_or_icon": 3.0
+      },
+      "measured_on": "5be5e81 대 리베이스 전 작업 트리. 그 뒤 main에 들어온 #8678은 rich-response.css와 그 토큰만 바꾼다. 픽셀 비교·제어쌍·변조·회귀 시험은 리베이스 뒤 다시 돌렸다.",
+      "measurements": 426,
+      "failing_before": 196,
+      "failing_after": 11,
+      "failing_after_rows": [
+        {
+          "screen": "project-edit",
+          "theme": "light",
+          "viewport": "390x844",
+          "element": "small \"TXT·Markdown·C\"",
+          "before": 1.0,
+          "after": 3.85
+        },
+        {
+          "screen": "project-edit",
+          "theme": "dark",
+          "viewport": "390x844",
+          "element": "button \"삭제\"",
+          "before": 4.06,
+          "after": 4.06
+        },
+        {
+          "screen": "project-edit",
+          "theme": "dark",
+          "viewport": "390x844",
+          "element": "button \"삭제\"",
+          "before": 4.09,
+          "after": 4.09
+        },
+        {
+          "screen": "project-edit",
+          "theme": "padiem-glass",
+          "viewport": "1440x950",
+          "element": "p \"프로젝트\"",
+          "before": 1.31,
+          "after": 4.15
+        },
+        {
+          "screen": "project-edit",
+          "theme": "padiem-glass",
+          "viewport": "1440x950",
+          "element": "button \"삭제\"",
+          "before": 1.05,
+          "after": 3.55
+        },
+        {
+          "screen": "project-edit",
+          "theme": "padiem-glass",
+          "viewport": "1440x950",
+          "element": "button#projectDialogCancel \"취소\"",
+          "before": 1.07,
+          "after": 3.55
+        },
+        {
+          "screen": "project-edit",
+          "theme": "padiem-glass",
+          "viewport": "390x844",
+          "element": "p \"프로젝트\"",
+          "before": 1.09,
+          "after": 4.03
+        },
+        {
+          "screen": "project-edit",
+          "theme": "cinematic",
+          "viewport": "390x844",
+          "element": "button \"삭제\"",
+          "before": 4.06,
+          "after": 4.06
+        },
+        {
+          "screen": "project-edit",
+          "theme": "cinematic",
+          "viewport": "390x844",
+          "element": "button \"삭제\"",
+          "before": 4.09,
+          "after": 4.09
+        },
+        {
+          "screen": "header-library",
+          "theme": "padiem-home",
+          "viewport": "1440x950",
+          "element": "설명 문구",
+          "before": 2.91,
+          "after": 3.28
+        },
+        {
+          "screen": "header-library",
+          "theme": "padiem-home",
+          "viewport": "390x844",
+          "element": "설명 문구",
+          "before": 2.61,
+          "after": 2.95
+        }
+      ],
+      "table": "contrast_table.md",
+      "report": "contrast_before_after.json"
+    },
+    "painted_matrix": {
+      "what": "회귀 시험(test_261124_project_form_standalone_header_contrast.py)의 브라우저 측정 — 뒤 흐림을 끄지 않은 실제 렌더",
+      "rows": 161,
+      "failing": 0,
+      "report": "painted_matrix.json"
+    },
+    "standard_screens": {
+      "what": "tools/chat_pixel_compare.py 기본 13화면 × 5테마 × 2폭, origin/main 대 작업 트리",
+      "combos": 130,
+      "changed": [
+        "light__1440x950__project-dialog",
+        "light__390x844__project-dialog",
+        "padiem-glass__1440x950__project-dialog",
+        "padiem-glass__390x844__project-dialog",
+        "padiem-home__1440x950__util",
+        "padiem-home__1440x950__calendar",
+        "padiem-home__1440x950__automation",
+        "padiem-home__1440x950__library",
+        "padiem-home__1440x950__project-dialog",
+        "padiem-home__390x844__util",
+        "padiem-home__390x844__calendar",
+        "padiem-home__390x844__automation",
+        "padiem-home__390x844__library",
+        "padiem-home__390x844__project-dialog"
+      ],
+      "unchanged": 116,
+      "raw_nonzero_outside_changed": [],
+      "report": "standard/compare_report.json"
+    },
+    "target_screens": {
+      "what": "같은 도구의 캡처 엔진으로 프로젝트 수정 창·연결 화면·저장한 답변 창(대조) 3화면 × 5테마 × 2폭",
+      "combos": 30,
+      "changed": [
+        "light__1440x950__project-edit",
+        "light__390x844__project-edit",
+        "padiem-glass__1440x950__project-edit",
+        "padiem-glass__390x844__project-edit",
+        "padiem-home__1440x950__project-edit",
+        "padiem-home__1440x950__connectors",
+        "padiem-home__390x844__project-edit",
+        "padiem-home__390x844__connectors"
+      ],
+      "unchanged": 22,
+      "report": "targets/compare_report.json"
+    },
+    "control": {
+      "what": "제어쌍 — 바뀐 조합 전부를 같은 대상으로 두 번 찍어 비교",
+      "combos": 22,
+      "nonzero": [],
+      "report": "control/control_report.json"
+    },
+    "tamper": [
+      {
+        "token": "--project-file-add-text",
+        "theme": "light",
+        "screen": "project-edit",
+        "mutation": "--project-file-add-text: var(--panel-text-strong); → --project-file-add-text: #ff00ff;",
+        "pixel": 416
+      },
+      {
+        "token": "--outputs-kicker-text",
+        "theme": "padiem-glass",
+        "screen": "project-edit",
+        "mutation": "--outputs-kicker-text: var(--panel-text-soft); → --outputs-kicker-text: #ff00ff;",
+        "pixel": 200
+      },
+      {
+        "token": "--standalone-kicker-text",
+        "theme": "padiem-home",
+        "screen": "connectors",
+        "mutation": "--standalone-kicker-text: var(--text); → --standalone-kicker-text: #ff00ff;",
+        "pixel": 742
+      },
+      {
+        "token": "--standalone-tagline-text",
+        "theme": "padiem-home",
+        "screen": "connectors",
+        "mutation": "--standalone-tagline-text: var(--hero-sub-color); → --standalone-tagline-text: #ff00ff;",
+        "pixel": 1226
+      }
+    ]
+  },
+  "captures": {
+    "note": "픽셀 도구의 안정화 조건(움직임·뒤 흐림 끔)으로 찍은 화면이다.",
+    "files": [
+      "connectors__padiem-home__1440x950__after.png",
+      "connectors__padiem-home__390x844__after.png",
+      "connectors__padiem-home__390x844__before.png",
+      "project-dialog__light__1440x950__after.png",
+      "project-dialog__light__1440x950__before.png",
+      "project-dialog__padiem-glass__390x844__after.png",
+      "project-edit__padiem-home__1440x950__after.png",
+      "project-edit__padiem-home__1440x950__before.png"
+    ]
+  }
+}

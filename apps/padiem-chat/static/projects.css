@@ -134,6 +134,29 @@
   padding: 22px;
   display: grid;
   gap: 10px;
+  /* 대비 수리(261124): 이 창의 글자·선은 창 스킨이 --ws-* 흰 베일로 칠하는데
+     판은 밝은 테마에서 밝아진다. 저장한 답변 창(outputs.css)과 같은 방법으로,
+     이 창 안에서만 그 이름들을 판을 따르는 잉크로 되가리킨다. 같은 스킨
+     역할은 --outputs-* 를 재사용하고 이 창에만 있는 역할은 --project-* 를
+     읽는다(값·테마 분기는 padiem-tokens.css). */
+  --ws-dialog-kicker-text: var(--outputs-kicker-text);
+  --ws-control-muted-text: var(--outputs-control-text);
+  --ws-control-hover-text: var(--outputs-control-hover-text);
+  --ws-input-text: var(--outputs-input-text);
+  --ws-secondary-text: var(--outputs-secondary-text);
+  --text-veil-strong: var(--outputs-primary-text);
+  --ws-danger-text: var(--outputs-danger-text);
+  --ws-dialog-edge: var(--outputs-rule-edge);
+  --line-veil-dim: var(--outputs-content-edge);
+  --ws-input-edge: var(--outputs-control-edge);
+  --ws-input-focus-edge: var(--outputs-control-focus-edge);
+  --ws-control-hover-edge-strong: var(--outputs-primary-edge);
+  --line-veil-mist: var(--outputs-primary-hover-edge);
+  --surfaces-starter-text: var(--project-form-text);
+  --ws-file-add-text: var(--project-file-add-text);
+  --ws-label-text: var(--project-file-remove-text);
+  --ws-danger-hover-text: var(--project-file-remove-hover-text);
+  --ws-file-row-edge: var(--project-file-row-edge);
 }
 
 .project-dialog-header {

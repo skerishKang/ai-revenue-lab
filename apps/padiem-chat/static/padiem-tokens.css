@@ -463,6 +463,19 @@
   --outputs-primary-edge: var(--ws-control-hover-edge-strong);
   --outputs-primary-hover-edge: var(--line-veil-mist);
 
+  /* 프로젝트 창 대비 수리(261124): 프로젝트 창도 저장한 답변 창과 같은 창 스킨
+     (--ws-* 흰 베일)으로 칠해져, 판이 밝은 light·padiem-home·padiem-glass에서
+     밝은 판 위 흰 글자가 됐다. 같은 스킨 역할은 위 --outputs-* 를 그대로
+     재사용하고(다섯 테마 값이 같다), 프로젝트 창에만 있는 역할만 여기 둔다.
+     기본값은 지금 칠하는 값을 그대로 가리켜 dark·cinematic 계산값을 바꾸지
+     않고, 밝은 판 세 테마 블록에서만 판을 따르는 테마 잉크로 덮는다.
+     projects.css가 .project-form 안에서만 스킨 이름을 되가리킨다. */
+  --project-form-text: var(--surfaces-starter-text);
+  --project-file-add-text: var(--ws-file-add-text);
+  --project-file-remove-text: var(--ws-label-text);
+  --project-file-remove-hover-text: var(--ws-danger-hover-text);
+  --project-file-row-edge: var(--ws-file-row-edge);
+
   /* #7811 C2: composer(마이크·보내기·스타터 카드)의 쓰임새 색. 마이크 기본·
      호버 값은 voice UI와 같은 역할이므로 기존 --voice-* 토큰을 재사용한다.
      나머지 값은 치환 전 리터럴 그대로이고 :root에만 둔다. */
@@ -593,6 +606,14 @@
   --standalone-panel-border: rgba(255, 255, 255, .48);
   --standalone-panel-bg: rgba(248, 250, 251, .28);
   --standalone-card-soft-bg: rgba(255, 255, 255, .76);
+
+  /* 독립 화면 공통 머리 대비 수리(261124): kicker는 테마 --accent, 설명 문구는
+     테마 --muted를 읽는다. padiem-home은 머리가 놓이는 바탕이 어두워(좁은
+     화면에서 더) kicker 2.6~3.2:1, 설명 문구 3.9:1이었다. 기본값은 지금 읽는
+     토큰 그대로라 나머지 테마의 계산값을 바꾸지 않고, padiem-home 블록에서만
+     더 짙은 기존 잉크로 덮는다. */
+  --standalone-kicker-text: var(--accent);
+  --standalone-tagline-text: var(--muted);
   /* #7811 C2 rich(261123): padiem-rich.css의 고정 어둡 표면·베일 색. 값은
      치환 전 사용처 리터럴 그대로이고 :root 하나로 충분하며 테마 블록에서
      덮지 않는다 — 코드 면(rgba(8,9,11,…))·흰 베일 선은 모든 테마에서 같은
@@ -1062,6 +1083,12 @@ html[data-theme="light"] {
   --outputs-control-focus-edge: var(--accent-strong);
   --outputs-primary-edge: var(--panel-text-max);
   --outputs-primary-hover-edge: var(--panel-text-max);
+  /* 프로젝트 창 대비 수리(261124): 프로젝트 창에만 있는 역할의 밝은 판 잉크. */
+  --project-form-text: var(--panel-text-max);
+  --project-file-add-text: var(--panel-text-strong);
+  --project-file-remove-text: var(--panel-text-soft);
+  --project-file-remove-hover-text: var(--danger);
+  --project-file-row-edge: var(--line);
   --line: #e3e3e9;
   --input-border-strong: #767e8a;
   --focus-ring: rgba(101, 87, 232, .24);
@@ -1274,6 +1301,12 @@ html[data-theme="padiem-home"] {
   --outputs-control-focus-edge: var(--accent-strong);
   --outputs-primary-edge: var(--panel-text-max);
   --outputs-primary-hover-edge: var(--panel-text-max);
+  /* 프로젝트 창 대비 수리(261124): 프로젝트 창에만 있는 역할의 밝은 판 잉크. */
+  --project-form-text: var(--panel-text-max);
+  --project-file-add-text: var(--panel-text-strong);
+  --project-file-remove-text: var(--panel-text-soft);
+  --project-file-remove-hover-text: var(--danger);
+  --project-file-row-edge: var(--line);
   --line: rgba(26,34,48,.12);
   --input-border-strong: #767e8a;
   --focus-ring: rgba(58,123,213,.28);
@@ -1293,6 +1326,9 @@ html[data-theme="padiem-home"] {
   --text: #1a2230;
   --muted: #5a6578;
   --hero-sub-color: #4c5a6b;
+  /* 독립 화면 공통 머리 대비 수리(261124): 이 테마의 기존 잉크를 재사용한다. */
+  --standalone-kicker-text: var(--text);
+  --standalone-tagline-text: var(--hero-sub-color);
   --code-header-text: rgba(255, 255, 255, .8);
   --code-header-button-text: rgba(255, 255, 255, .8);
   --gold: #c9a85c;
@@ -1362,6 +1398,12 @@ html[data-theme="padiem-glass"] {
   --outputs-control-focus-edge: var(--accent-strong);
   --outputs-primary-edge: var(--panel-text-max);
   --outputs-primary-hover-edge: var(--panel-text-max);
+  /* 프로젝트 창 대비 수리(261124): 프로젝트 창에만 있는 역할의 밝은 판 잉크. */
+  --project-form-text: var(--panel-text-max);
+  --project-file-add-text: var(--panel-text-strong);
+  --project-file-remove-text: var(--panel-text-soft);
+  --project-file-remove-hover-text: var(--danger);
+  --project-file-row-edge: var(--line);
   --connector-card-hairline: color-mix(in srgb, var(--text-deep-ink) 50%, transparent);
   /* #6100: 38% 백색 --line은 카드 헤어라인으로 남는다(연결 화면이 이 값을
      쓴다). 입력칸은 이 테마가 실제로 합성되는 채움에 대해 3:1 이상인

@@ -335,6 +335,14 @@ class TestPrimaryTokens(unittest.TestCase):
              # 대비 수리(261124): 연결 화면의 밝은 카드 판 위 잉크. 기본값은 테마
              # 글자색이고 dark·cinematic만 덮는다. 같은 시험 파일이 고정한다.
              | {"--connector-card-ink", "--connector-card-muted-ink"}
+             # 대비 수리 후속(261124): 프로젝트 창에만 있는 창 스킨 역할의 잉크와
+             # 독립 화면 공통 머리(kicker·설명 문구) 잉크. 기본값은 지금 읽는 토큰을
+             # 가리키고, 밝은 판 세 테마(프로젝트 창)와 padiem-home(머리)만 덮는다.
+             # test_261124_project_form_standalone_header_contrast.py 가 고정한다.
+             | {"--project-form-text", "--project-file-add-text",
+                "--project-file-remove-text", "--project-file-remove-hover-text",
+                "--project-file-row-edge",
+                "--standalone-kicker-text", "--standalone-tagline-text"}
              | {"--voice-mic-active-bg", "--voice-mic-active-edge",
                 "--voice-mic-active-ring", "--voice-mic-active-hover-bg",
                 "--voice-mic-active-hover-edge", "--composer-send-text",
