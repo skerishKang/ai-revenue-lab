@@ -1,0 +1,16 @@
+{
+  "sheet": "padiem-surfaces.css",
+  "declarations": 45,
+  "tokens": 50,
+  "themes": [
+    "light",
+    "dark",
+    "padiem-glass",
+    "cinematic",
+    "padiem-home"
+  ],
+  "checked": 150,
+  "diffs": [],
+  "method": "origin/main 대비 작업 트리, 5테마 × 45선언의 계산된 값 비교(같은 선택자·속성, 의사요소 포함)",
+  "note": "1차에서 별도 측정한 5테마×4화면 16,660측정 차이 0 결과와 함께, 토큰 값=치환 전 리터럴은 계약 시험이 고정한다."
+}

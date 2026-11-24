@@ -1,0 +1,8 @@
+{
+  "token": "--surfaces-hero-title-shadow",
+  "mutation": "rgba(0, 0, 0, .38)->#ff00ff",
+  "screen": "home-logout",
+  "theme": "padiem-glass",
+  "viewport": "1440x950",
+  "pixel": 87142
+}

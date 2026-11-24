@@ -1,0 +1,60 @@
+{
+  "sheet": "padiem-surfaces.css",
+  "base": "e6d7e7fa",
+  "round": "#7811 C2 1차 (첫 화면·대화·입력창 45선언). 2차 21선언은 범위 밖.",
+  "audit": {
+    "css_color_literals": {"before": 1180, "after": 1135, "delta": -45},
+    "css_color_literals_unthemed": {"before": 519, "after": 474, "delta": -45},
+    "css_important": {"before": 518, "after": 518, "delta": 0},
+    "css_themed_important": {"before": 106, "after": 106, "delta": 0},
+    "css_files": {"before": 92, "after": 92, "delta": 0},
+    "css_rules": {"before": 4385, "after": 4385, "delta": 0},
+    "css_themed_rules": {"before": 795, "after": 795, "delta": 0},
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": 50,
+    "reused": 0,
+    "definition": "padiem-tokens.css :root, surfaces 묶음. 테마 블록이나 다른 시트가 덮지 않는다.",
+    "values": "치환 전 사용처 리터럴 그대로 — 계약 시험 test_261124_surfaces_palette_tokens_7811.py가 45선언과 50값을 고정한다."
+  },
+  "verification": {
+    "computed": {
+      "targets": 45,
+      "themes": 5,
+      "checked": 150,
+      "diffs": 0,
+      "report": "computed_report.json",
+      "inherited_round1": "5테마×4화면 16,660측정 차이 0 (1차 인계 결과)"
+    },
+    "pixel": {
+      "combos": 60,
+      "themes": 5,
+      "viewports": ["1440x950", "390x844"],
+      "screens": ["conversation", "claw", "calendar", "automation", "library", "project-dialog"],
+      "nonzero": [],
+      "report": "compare_report.json",
+      "captures": "captures/"
+    },
+    "control": {"combos": 60, "nonzero": [], "report": "control_report.json", "scope": "scope_report.json"},
+    "tamper": {
+      "token": "--surfaces-hero-title-shadow",
+      "mutation": "rgba(0, 0, 0, .38)->#ff00ff",
+      "theme": "padiem-glass",
+      "screen": "home-logout",
+      "viewport": "1440x950",
+      "pixel": 87142,
+      "report": "tamper_report.json",
+      "images": ["captures/tamper_clean.png", "captures/tamper_mutated.png", "captures/tamper_diff.png"]
+    },
+    "tests": "로컬 11 passed(신규 계약·토큰 목록) + 래칫·구조·대비 32 passed",
+    "ratchet": "base e6d7e7fa 대비 head 실측. 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −45."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 최종 계산값·픽셀·대비는 변하지 않는다.",
+    "테마가 일부 선언을 덮어쓰는 토큰(예: send 계열)은 변조해도 픽셀이 변하지 않는다. 실제로 칠하는 --surfaces-hero-title-shadow를 골라 glass 테마에서 87,142픽셀 검출을 확인했다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 정의에만 있다.",
+    "light·dark·glass 캡처를 직접 열어 확인했다. light·glass의 첫 화면 보조 라벨(답변 준비 중)은 옅은 대비로 보이나 before/after 픽셀 0으로 이번 변경 전부터 같은 상태다.",
+    "토큰은 :root에만 두어 모든 테마에서 값이 같다. 테마별 덮어쓰기는 2차 범위에서 다룬다."
+  ]
+}
