@@ -195,13 +195,13 @@ html[data-theme="cinematic"] body {
   background: radial-gradient(circle at 76% 22%, rgba(108,190,255,.28), transparent 24%),
     radial-gradient(circle at 14% 78%, rgba(239,201,132,.20), transparent 27%),
     radial-gradient(circle at 58% 44%, rgba(225,241,255,.075), transparent 30%),
-    linear-gradient(135deg, #050810 0%, #0a101c 46%, #030509 100%) !important;
+    linear-gradient(135deg, #050810 0%, #0a101c 46%, #030509 100%);
 }
 html[data-theme="cinematic"] body::before {
   box-shadow: var(--film-vignette);
   background: linear-gradient(180deg, rgba(4,8,14,.10), rgba(0,0,0,.01) 42%, rgba(0,0,0,.44)),
     radial-gradient(circle at 80% 30%, rgba(136,201,255,.08), transparent 34%),
-    radial-gradient(circle at 18% 70%, rgba(239,201,132,.06), transparent 36%) !important;
+    radial-gradient(circle at 18% 70%, rgba(239,201,132,.06), transparent 36%);
 }
 html[data-theme="cinematic"] body::after { opacity: var(--film-grain); }
 html[data-theme="cinematic"] .app-shell::before {
