@@ -1,0 +1,303 @@
+{
+ "sheet": "interaction-polish.css",
+ "candidates": 42,
+ "combos": 40,
+ "removed": [
+  {
+   "line": 57,
+   "prop": "display",
+   "value": "none",
+   "sel": ".conversation-jump[hidden]",
+   "kept": false
+  },
+  {
+   "line": 71,
+   "prop": "animation",
+   "value": "none",
+   "sel": ".conversation-jump",
+   "kept": false
+  },
+  {
+   "line": 72,
+   "prop": "transition",
+   "value": "none",
+   "sel": ".conversation-jump",
+   "kept": false
+  },
+  {
+   "line": 77,
+   "prop": "display",
+   "value": "none",
+   "sel": ".assistant-message[data-terminal-actions-safe=\"false\"] .answer-actions",
+   "kept": false
+  },
+  {
+   "line": 104,
+   "prop": "padding-bottom",
+   "value": "calc(\n    var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px)\n  )",
+   "sel": ".app-shell:is([data-state=\"home\"], [data-state=\"chat\"], [data-state=\"claw\"]) .conversation",
+   "kept": false
+  },
+  {
+   "line": 122,
+   "prop": "bottom",
+   "value": "var(--padiem-visual-keyboard-inset, 0px)",
+   "sel": ".composer-wrap",
+   "kept": false
+  },
+  {
+   "line": 142,
+   "prop": "transition",
+   "value": "none",
+   "sel": ".composer[data-interaction-phase], .cancel-stream-button, .retry-button",
+   "kept": false
+  },
+  {
+   "line": 143,
+   "prop": "animation",
+   "value": "none",
+   "sel": ".composer[data-interaction-phase], .cancel-stream-button, .retry-button",
+   "kept": false
+  },
+  {
+   "line": 161,
+   "prop": "padding-top",
+   "value": "16px",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] .conversation:has(#emptyState:not([hidden]))",
+   "kept": false
+  },
+  {
+   "line": 166,
+   "prop": "min-height",
+   "value": "0",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] #emptyState:not([hidden])",
+   "kept": false
+  },
+  {
+   "line": 167,
+   "prop": "height",
+   "value": "auto",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] #emptyState:not([hidden])",
+   "kept": false
+  },
+  {
+   "line": 168,
+   "prop": "padding-block",
+   "value": "8px 16px",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] #emptyState:not([hidden])",
+   "kept": false
+  },
+  {
+   "line": 169,
+   "prop": "margin-block",
+   "value": "0",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] #emptyState:not([hidden])",
+   "kept": false
+  },
+  {
+   "line": 173,
+   "prop": "font-size",
+   "value": "clamp(25px, 7vw, 34px)",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] #emptyState:not([hidden]) h1",
+   "kept": false
+  },
+  {
+   "line": 174,
+   "prop": "line-height",
+   "value": "1.22",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] #emptyState:not([hidden]) h1",
+   "kept": false
+  },
+  {
+   "line": 177,
+   "prop": "margin-top",
+   "value": "8px",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] #emptyState:not([hidden]) .empty-copy",
+   "kept": false
+  },
+  {
+   "line": 183,
+   "prop": "font-size",
+   "value": "13px",
+   "sel": ".app-shell[data-state=\"chat\"] #emptyState:not([hidden]) .empty-copy",
+   "kept": false
+  },
+  {
+   "line": 186,
+   "prop": "margin-top",
+   "value": "16px",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] #emptyState:not([hidden]) .starter-grid",
+   "kept": false
+  },
+  {
+   "line": 187,
+   "prop": "gap",
+   "value": "8px",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] #emptyState:not([hidden]) .starter-grid",
+   "kept": false
+  },
+  {
+   "line": 188,
+   "prop": "grid-template-columns",
+   "value": "repeat(2, minmax(0, 1fr))",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] #emptyState:not([hidden]) .starter-grid",
+   "kept": false
+  },
+  {
+   "line": 241,
+   "prop": "position",
+   "value": "sticky",
+   "sel": ".app-shell .main-panel > .topbar",
+   "kept": false
+  },
+  {
+   "line": 243,
+   "prop": "inset",
+   "value": "auto",
+   "sel": ".app-shell .main-panel > .topbar",
+   "kept": false
+  },
+  {
+   "line": 244,
+   "prop": "top",
+   "value": "0",
+   "sel": ".app-shell .main-panel > .topbar",
+   "kept": false
+  },
+  {
+   "line": 259,
+   "prop": "backdrop-filter",
+   "value": "none",
+   "sel": ".app-shell .main-panel > .topbar",
+   "kept": false
+  },
+  {
+   "line": 260,
+   "prop": "-webkit-backdrop-filter",
+   "value": "none",
+   "sel": ".app-shell .main-panel > .topbar",
+   "kept": false
+  },
+  {
+   "line": 261,
+   "prop": "z-index",
+   "value": "100",
+   "sel": ".app-shell .main-panel > .topbar",
+   "kept": false
+  },
+  {
+   "line": 264,
+   "prop": "min-height",
+   "value": "0",
+   "sel": ".app-shell .main-panel .conversation",
+   "kept": false
+  },
+  {
+   "line": 269,
+   "prop": "display",
+   "value": "inline-grid",
+   "sel": ".app-shell .main-panel > .topbar #mobileMenu",
+   "kept": false
+  },
+  {
+   "line": 272,
+   "prop": "width",
+   "value": "44px",
+   "sel": ".app-shell .main-panel > .topbar #mobileMenu",
+   "kept": false
+  },
+  {
+   "line": 274,
+   "prop": "height",
+   "value": "44px",
+   "sel": ".app-shell .main-panel > .topbar #mobileMenu",
+   "kept": false
+  },
+  {
+   "line": 275,
+   "prop": "visibility",
+   "value": "visible",
+   "sel": ".app-shell .main-panel > .topbar #mobileMenu",
+   "kept": false
+  },
+  {
+   "line": 276,
+   "prop": "border",
+   "value": "1px solid var(--line)",
+   "sel": ".app-shell .main-panel > .topbar #mobileMenu",
+   "kept": false
+  },
+  {
+   "line": 277,
+   "prop": "border-radius",
+   "value": "var(--radius-circle)",
+   "sel": ".app-shell .main-panel > .topbar #mobileMenu",
+   "kept": false
+  },
+  {
+   "line": 278,
+   "prop": "background",
+   "value": "var(--glass)",
+   "sel": ".app-shell .main-panel > .topbar #mobileMenu",
+   "kept": false
+  },
+  {
+   "line": 279,
+   "prop": "color",
+   "value": "var(--text)",
+   "sel": ".app-shell .main-panel > .topbar #mobileMenu",
+   "kept": false
+  }
+ ],
+ "kept": [
+  {
+   "line": 160,
+   "prop": "min-height",
+   "value": "auto",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] .conversation:has(#emptyState:not([hidden]))",
+   "kept": true
+  },
+  {
+   "line": 191,
+   "prop": "min-height",
+   "value": "84px",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] #emptyState:not([hidden]) .starter",
+   "kept": true
+  },
+  {
+   "line": 192,
+   "prop": "padding",
+   "value": "11px",
+   "sel": ".app-shell[data-layout-variant=\"conversation\"] #emptyState:not([hidden]) .starter",
+   "kept": true
+  },
+  {
+   "line": 256,
+   "prop": "background",
+   "value": "transparent",
+   "sel": ".app-shell .main-panel > .topbar",
+   "kept": true
+  },
+  {
+   "line": 257,
+   "prop": "border",
+   "value": "0",
+   "sel": ".app-shell .main-panel > .topbar",
+   "kept": true
+  },
+  {
+   "line": 258,
+   "prop": "box-shadow",
+   "value": "none",
+   "sel": ".app-shell .main-panel > .topbar",
+   "kept": true
+  },
+  {
+   "line": 265,
+   "prop": "overflow-y",
+   "value": "auto",
+   "sel": ".app-shell .main-panel .conversation",
+   "kept": true
+  }
+ ]
+}

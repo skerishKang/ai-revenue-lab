@@ -54,7 +54,7 @@
 }
 
 .conversation-jump[hidden] {
-  display: none !important;
+  display: none;
 }
 
 .conversation-jump:hover {
@@ -68,13 +68,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .conversation-jump {
-    animation: none !important;
-    transition: none !important;
+    animation: none;
+    transition: none;
   }
 }
 
 .assistant-message[data-terminal-actions-safe="false"] .answer-actions {
-  display: none !important;
+  display: none;
 }
 
 .assistant-message[data-lifecycle="timed_out"] .error-box {
@@ -101,7 +101,7 @@
 .app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation {
   padding-bottom: calc(
     var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px)
-  ) !important;
+  );
   scroll-padding-bottom: calc(
     var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px) + 16px
   );
@@ -119,7 +119,7 @@
    * overlays the page on some mobile browsers. Keep the fixed composer above
    * that bounded inset; browsers that resize the layout viewport resolve 0px. */
   .composer-wrap {
-    bottom: var(--padiem-visual-keyboard-inset, 0px) !important;
+    bottom: var(--padiem-visual-keyboard-inset, 0px);
   }
 }
 
@@ -139,8 +139,8 @@
   .composer[data-interaction-phase],
   .cancel-stream-button,
   .retry-button {
-    transition: none !important;
-    animation: none !important;
+    transition: none;
+    animation: none;
   }
 }
 
@@ -158,34 +158,34 @@
 @media (max-width: 620px) {
   .app-shell[data-layout-variant="conversation"] .conversation:has(#emptyState:not([hidden])) {
     min-height: auto !important;
-    padding-top: 16px !important;
+    padding-top: 16px;
     /* #5014: the reserved bottom space and the scroll padding stay owned by
      * the shared rule above, so the software keyboard inset is included. */
   }
   .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) {
-    min-height: 0 !important;
-    height: auto !important;
-    padding-block: 8px 16px !important;
-    margin-block: 0 !important;
+    min-height: 0;
+    height: auto;
+    padding-block: 8px 16px;
+    margin-block: 0;
     align-content: start;
   }
   .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) h1 {
-    font-size: clamp(25px, 7vw, 34px) !important;
-    line-height: 1.22 !important;
+    font-size: clamp(25px, 7vw, 34px);
+    line-height: 1.22;
   }
   .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .empty-copy {
-    margin-top: 8px !important;
+    margin-top: 8px;
   }
   /* The explanatory copy of a live thread keeps its existing phone size. The
    * first screen keeps the accessible 15px floor, so the compact landing never
    * shrinks the sentence that explains the surface below 15px. */
   .app-shell[data-state="chat"] #emptyState:not([hidden]) .empty-copy {
-    font-size: 13px !important;
+    font-size: 13px;
   }
   .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter-grid {
-    margin-top: 16px !important;
-    gap: 8px !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    margin-top: 16px;
+    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter {
     min-height: 84px !important;
@@ -238,10 +238,10 @@
   /* Keep the header in flow: its real height reserves the conversation edge.
      Only the conversation scrolls, so the menu stays at viewport top. */
   .app-shell .main-panel > .topbar {
-    position: sticky !important;
+    position: sticky;
     flex-shrink: 0;
-    inset: auto !important;
-    top: 0 !important;
+    inset: auto;
+    top: 0;
     min-height: 56px;
     padding: 6px 10px;
     /* #5805: a phone browser's own chrome covers the top of the page, so the
@@ -256,27 +256,27 @@
     background: transparent !important;
     border: 0 !important;
     box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    z-index: 100 !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    z-index: 100;
   }
   .app-shell .main-panel .conversation {
-    min-height: 0 !important;
+    min-height: 0;
     overflow-y: auto !important;
     overscroll-behavior-y: contain;
   }
   .app-shell .main-panel > .topbar #mobileMenu {
-    display: inline-grid !important;
+    display: inline-grid;
     place-items: center;
     flex: 0 0 44px;
-    width: 44px !important;
+    width: 44px;
     min-height: 44px;
-    height: 44px !important;
-    visibility: visible !important;
-    border: 1px solid var(--line) !important;
-    border-radius: var(--radius-circle) !important;
-    background: var(--glass) !important;
-    color: var(--text) !important;
+    height: 44px;
+    visibility: visible;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-circle);
+    background: var(--glass);
+    color: var(--text);
     box-shadow: var(--card-shadow, var(--shadow));
     backdrop-filter: blur(14px) saturate(140%);
     -webkit-backdrop-filter: blur(14px) saturate(140%);

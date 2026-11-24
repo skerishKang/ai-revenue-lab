@@ -66,7 +66,7 @@ def test_the_row_collapses_by_height_and_stays_in_flow() -> None:
     assert all((declaration(rule, "position") or "").split()[:1] != ["fixed"]
                for rule in COLLAPSE)
     base = _rule(POLISH, TOPBAR, PHONE)
-    assert declaration(base, "position") == "sticky !important"
+    assert declaration(base, "position") == "sticky"
     assert declaration(base, "min-height") == "56px"
 
 
@@ -75,9 +75,9 @@ def test_the_44px_circle_never_moves_or_shrinks() -> None:
     assert declaration(button, "position") == "absolute"
     assert declaration(button, "top") == "calc(env(safe-area-inset-top, 0px) + 6px)"
     base = _rule(POLISH, MENU, PHONE)
-    assert declaration(base, "width") == "44px !important"
-    assert declaration(base, "height") == "44px !important"
-    assert declaration(base, "border-radius") == "var(--radius-circle) !important"
+    assert declaration(base, "width") == "44px"
+    assert declaration(base, "height") == "44px"
+    assert declaration(base, "border-radius") == "var(--radius-circle)"
     tokens = rules_for_sheet("padiem-tokens.css")
     assert declaration(_rule(tokens, ":root", None), "--radius-circle") == "50%"
 

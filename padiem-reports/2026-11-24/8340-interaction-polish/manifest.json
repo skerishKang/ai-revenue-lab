@@ -1,0 +1,36 @@
+{
+  "sheet": "interaction-polish.css",
+  "base": "895e96e41",
+  "claim": "https://github.com/skerishKang/ai-revenue-lab/issues/8340#issuecomment-7126916625",
+  "removed_count": 35,
+  "kept_count": 7,
+  "kept": [
+    {"line": 160, "property": "min-height", "value": "auto", "beats": "같은 시트 기본 규칙"},
+    {"line": 191, "property": "min-height", "value": "84px", "beats": "같은 시트 기본 규칙"},
+    {"line": 192, "property": "padding", "value": "11px", "beats": "390px claw 카드 픽셀 차이(68,778px)"},
+    {"line": 256, "property": "background", "value": "transparent", "beats": "모바일 톱바 기본 배경"},
+    {"line": 257, "property": "border", "value": "0", "beats": "모바일 톱바 기본 테두리"},
+    {"line": 258, "property": "box-shadow", "value": "none", "beats": "모바일 톱바 기본 그림자"},
+    {"line": 265, "property": "overflow-y", "value": "auto", "beats": "glass/cinematic/home 390px claw 스크롤 픽셀 차이(579px)"}
+  ],
+  "audit": {
+    "css_important": {"before": 463, "after": 428, "delta": -35},
+    "css_themed_important": {"before": 92, "after": 92, "delta": 0},
+    "interaction-polish.css": {"before": 42, "after": 7, "delta": -35},
+    "css_color_literals": {"before": 938, "after": 938, "delta": 0},
+    "css_rules": {"before": 4361, "after": 4361, "delta": 0},
+    "css_files": {"before": 92, "after": 92, "delta": 0}
+  },
+  "verification": {
+    "computed": {"report": "computed_report.json", "sweep": "sweep_decisions.json"},
+    "pixel": {"combos": 20, "themes": 5, "viewports": ["1440x950", "390x844"], "screens": ["conversation", "claw"], "nonzero": [], "report": "compare_report.json"},
+    "control": {"combos": 20, "nonzero": [], "report": "control/control_report.json"},
+    "tests": "관련 interaction·topbar·contrast·래칫 pytest 128 passed"
+  },
+  "notes": [
+    "계산 스위프에서 차이 0인 35건을 제거했다.",
+    "192번(padding)과 265번(overflow-y)은 계산값은 같았으나 390px claw 픽셀에서 차이가 나 유지했다.",
+    "캡처·이미지 합계 8장 이하(#8661).",
+    "새 !important·색 리터럴·규칙 수 증가 없음."
+  ]
+}
