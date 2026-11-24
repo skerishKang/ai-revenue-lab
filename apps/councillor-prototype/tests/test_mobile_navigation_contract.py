@@ -549,14 +549,12 @@ def test_every_local_asset_reference_resolves():
 
 
 # ── 9. footer, theme, motion ───────────────────────────────────────────────
-def test_the_footer_links_the_office_login_tool():
+def test_the_footer_never_links_the_office_login_tool():
     for name in SITE_PAGES:
         html = page(name)
-        m = re.search(r'<a class="footer-login" href="([^"]+)"[^>]*>(.*?)</a>', html)
-        assert m, f"{name}: no office login link"
-        assert m.group(1) == "https://chat.padiem.net/apps/council/"
-        assert "의원실 로그인" in m.group(2)
-        assert 'target="_blank"' in m.group(0) and 'rel="noopener"' in m.group(0)
+        assert "footer-login" not in html, f"{name}: office login link remains"
+        assert "https://chat.padiem.net/apps/council/" not in html, f"{name}: office login URL remains"
+    assert ".footer-login" not in STYLES
 
 
 def test_theme_is_applied_before_paint_and_storage_is_guarded():

@@ -30,10 +30,21 @@ def test_dist_activity_contains_every_record_and_stable_id(tmp_path):
     assert ids == [item["id"] for item in ITEMS]
     assert len(ids) == len(set(ids))
     for item, (_, row) in zip(ITEMS, rows):
-        for field in ("date", "tag", "title", "body"):
+        for field in ("date", "tag", "title"):
             assert escape(item.get(field, ""), quote=True) in row
+        paragraphs = [part for part in item.get("body", "").split("\n\n") if part]
+        for paragraph in paragraphs:
+            assert escape(paragraph, quote=True) in row
+        body_match = re.search(r'<div class="detail-body">(.*?)</div>', row, re.S)
+        if paragraphs:
+            assert body_match is not None
+            assert body_match.group(1).count("<p>") == len(paragraphs)
+        else:
+            assert body_match is None
+        sentences = re.split(r"(?<=[.!?])\s+", item.get("body", "").strip()) if paragraphs else []
+        if len(sentences) >= 3:
+            assert len(paragraphs) >= 2, item["id"]
         assert '<noscript>' in row
-        assert 'class="detail-body"' in row
 
 
 def test_activity_prerender_only_links_allowed_sources():

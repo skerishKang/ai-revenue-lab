@@ -105,7 +105,7 @@ def test_the_search_screens_read_the_forwarded_query():
     js = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
     assert "function initialQueryParameter()" in js
     assert "search.value = query" in js
-    assert "billSearch" in js and "search.oninput()" in js
+    assert "billSearch" in js and "search.oninput = applyFilter" in js and "applyFilter()" in js
 
 
 def test_a_201_receipt_replaces_the_form_and_is_announced(browser, base_url):
@@ -179,6 +179,33 @@ def test_the_home_search_lands_in_the_existing_searches(browser, base_url):
         assert "조례" in page.locator("#combinedPolicyList").inner_text()
         page.goto(base_url + "policy.html?q=조례", wait_until="load")
         page.wait_for_function("document.getElementById('billSearch').value === '조례'")
+    finally:
+        page.close()
+
+
+def test_bill_search_updates_group_counts_and_announces_results(browser, base_url):
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    try:
+        page.goto(base_url + "policy.html", wait_until="load")
+        page.wait_for_selector('#policyBills .bill-group[data-assembly="9"]')
+        nine = page.locator('#policyBills .bill-group[data-assembly="9"]')
+        eight = page.locator('#policyBills .bill-group[data-assembly="8"]')
+        assert nine.locator(".bill-count").inner_text() == "29건"
+        assert eight.locator(".bill-count").inner_text() == "32건"
+        page.fill("#billSearch", "관광")
+        assert nine.locator(".bill-count").inner_text() == "3건 / 전체 29건"
+        assert eight.locator(".bill-count").inner_text() == "검색 결과 없음"
+        assert page.locator("#policyBills .bill-row:visible").count() == 3
+        assert "검색 결과 총 3건 / 전체 61건" in page.locator("#billSearchStatus").inner_text()
+        page.fill("#billSearch", "no-record-xyz-261125")
+        assert nine.locator(".bill-count").inner_text() == "검색 결과 없음"
+        assert eight.locator(".bill-count").inner_text() == "검색 결과 없음"
+        assert page.locator("#policyBills .bill-row:visible").count() == 0
+        assert "검색 결과가 없습니다" in page.locator("#billSearchStatus").inner_text()
+        page.fill("#billSearch", "")
+        assert nine.locator(".bill-count").inner_text() == "29건"
+        assert eight.locator(".bill-count").inner_text() == "32건"
+        assert page.locator("#billSearchStatus").inner_text() == "전체 61건"
     finally:
         page.close()
 

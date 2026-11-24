@@ -112,7 +112,7 @@
         "tag": "위원회",
         "title": "보건복지위원회 행정사무감사 · 옛 자활근로대 부지 거주 주민 주거문제",
         "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/board/7/1/read/2258",
-        "body": "국가폭력의 역사에서 시작된 광주 운암동 옛 자활근로대 부지에 수십 년째 사는 주민들의 주거 문제를 행정이 해결해야 한다고 강조했습니다. 부지 일부가 병원 주차장으로 쓰이며 연 5,400만 원의 공유재산 사용료 수입이 나는 반면, 2025년 1월 기준 19세대 29명이 주민등록돼 있고 무허가건축물 12동이 남아 있습니다. 실태조사와 안전점검, 이주·정착 지원, 공유재산 관리방안을 포함한 종합 실행계획을 의회에 제출해 달라고 촉구했습니다.",
+        "body": "국가폭력의 역사에서 시작된 광주 운암동 옛 자활근로대 부지에 수십 년째 사는 주민들의 주거 문제를 행정이 해결해야 한다고 강조했습니다.\n\n부지 일부가 병원 주차장으로 쓰이며 연 5,400만 원의 공유재산 사용료 수입이 나는 반면, 2025년 1월 기준 19세대 29명이 주민등록돼 있고 무허가건축물 12동이 남아 있습니다.\n\n실태조사와 안전점검, 이주·정착 지원, 공유재산 관리방안을 포함한 종합 실행계획을 의회에 제출해 달라고 촉구했습니다.",
         "source": "전남광주통합특별시의회 보도자료 (2026-11-05 게시)",
         "featured": true,
         "id": "a-2026-11-04-01"
@@ -122,7 +122,7 @@
         "tag": "토론회",
         "title": "은둔형 외톨이 지원방안 마련 정책토론회 · 제2차 기본계획 수립 방향 논의",
         "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/board/7/1/read/2134",
-        "body": "광주특별시·특별시의회·광주사회서비스원이 공동으로 연 토론회에서 임미란 의원이 좌장을 맡아 제3차 은둔형 외톨이 실태조사 결과와 제2차(2027~2031) 기본계획 수립 방향을 논의했습니다. 당사자 404명과 가족 92명 조사에서 57.9%가 은둔생활에서 벗어나고 싶다고 답했지만 실제 시도는 30.4%에 그쳤습니다. 당사자 상황에 맞춘 지원과 신뢰할 수 있는 관계 형성, 지원기관 간 연계를 주요 과제로 정리했습니다.",
+        "body": "광주특별시·특별시의회·광주사회서비스원이 공동으로 연 토론회에서 임미란 의원이 좌장을 맡아 제3차 은둔형 외톨이 실태조사 결과와 제2차(2027~2031) 기본계획 수립 방향을 논의했습니다.\n\n당사자 404명과 가족 92명 조사에서 57.9%가 은둔생활에서 벗어나고 싶다고 답했지만 실제 시도는 30.4%에 그쳤습니다.\n\n당사자 상황에 맞춘 지원과 신뢰할 수 있는 관계 형성, 지원기관 간 연계를 주요 과제로 정리했습니다.",
         "source": "전남광주통합특별시의회 보도자료 (2026-11-02 게시)",
         "featured": true,
         "id": "a-2026-11-02-01"
@@ -132,7 +132,7 @@
         "tag": "토론회",
         "title": "장애인의 일할 권리 보장 정책토론회 · 지속가능한 직업재활 고용 지원 체계 모색",
         "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/board/7/1/read/2115",
-        "body": "광주광역시사회복지협의회와 공동으로 5·18민주화운동교육관에서 토론회를 열고 임미란 의원이 좌장을 맡았습니다. 광주지역 직업재활시설 29개소와 이용 장애인 893명의 현황을 바탕으로 훈련수당·보충급여·참여소득·장기근속수당을 잇는 ‘일-소득 사다리’ 구축 방안을 논의했습니다. 현장의 목소리가 조례 제·개정과 정책·예산 반영으로 이어지도록 하겠다고 밝혔습니다.",
+        "body": "광주광역시사회복지협의회와 공동으로 5·18민주화운동교육관에서 토론회를 열고 임미란 의원이 좌장을 맡았습니다.\n\n광주지역 직업재활시설 29개소와 이용 장애인 893명의 현황을 바탕으로 훈련수당·보충급여·참여소득·장기근속수당을 잇는 ‘일-소득 사다리’ 구축 방안을 논의했습니다.\n\n현장의 목소리가 조례 제·개정과 정책·예산 반영으로 이어지도록 하겠다고 밝혔습니다.",
         "source": "전남광주통합특별시의회 보도자료 (2026-11-02 게시)",
         "featured": true,
         "id": "a-2026-10-29-01"
@@ -744,6 +744,7 @@
   },
   "media": {
     "source": "본회의 발언과 사진은 의회가 공개한 공식 페이지에서 보실 수 있습니다.",
+    "photoSourceNotice": "사진: 광주광역시의회 사진자료실 · 다른 곳에 쓰실 때는 원문 안내를 확인하세요",
     "tiles": [
       {
         "kind": "프로필",
@@ -758,7 +759,7 @@
       {
         "kind": "포토",
         "title": "제1차 산업건설위원회",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014&bbsSn=0000119170",
         "thumb": "./static/images/media-01.jpg",
         "notes": [
           "제9대 광주광역시의회 공개 사진자료실",
@@ -768,7 +769,7 @@
       {
         "kind": "포토",
         "title": "제46주년 5·18민주화운동 기념 민주평화대행진",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014&bbsSn=0000118981",
         "thumb": "./static/images/media-02.jpg",
         "notes": [
           "제9대 광주광역시의회 공개 사진자료실",
@@ -778,7 +779,7 @@
       {
         "kind": "포토",
         "title": "제344회 임시회 제3차 본회의",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014&bbsSn=0000119335",
         "thumb": "./static/images/media-03.jpg",
         "notes": [
           "제9대 광주광역시의회 공개 사진자료실",
@@ -788,7 +789,7 @@
       {
         "kind": "포토",
         "title": "6·25전쟁 제76주년 기념식",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014&bbsSn=0000119386",
         "thumb": "./static/images/media-04.jpg",
         "notes": [
           "제9대 광주광역시의회 공개 사진자료실",
@@ -798,7 +799,7 @@
       {
         "kind": "포토",
         "title": "제344회 임시회 제1차 본회의(개회)",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014&bbsSn=0000119116",
         "thumb": "./static/images/media-05.jpg",
         "notes": [
           "제9대 광주광역시의회 공개 사진자료실",
@@ -808,7 +809,7 @@
       {
         "kind": "포토",
         "title": "제71회 현충일 추념식",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014&bbsSn=0000119101",
         "thumb": "./static/images/media-06.jpg",
         "notes": [
           "제9대 광주광역시의회 공개 사진자료실",
@@ -818,7 +819,7 @@
       {
         "kind": "포토",
         "title": "제1차 산업건설위원회 (2)",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014&bbsSn=0000119145",
         "thumb": "./static/images/media-07.jpg",
         "notes": [
           "제9대 광주광역시의회 공개 사진자료실",
@@ -828,7 +829,7 @@
       {
         "kind": "포토",
         "title": "제46주년 5·18민주화운동 전야제",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014&bbsSn=0000118995",
         "thumb": "./static/images/media-08.jpg",
         "notes": [
           "제9대 광주광역시의회 공개 사진자료실",
@@ -935,6 +936,15 @@
   },
   "sourceNotice": "자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-05 확인)",
   "news": [
+    {
+      "date": "2026-11-25",
+      "title": "자료를 더 빠르게 찾도록",
+      "changes": [
+        "의정활동 상세 글을 문단으로 나누고 필요 없는 의원실 도구 링크를 바닥글에서 정리했습니다.",
+        "대표발의 조례안 검색 결과 수를 실제 찾은 개수와 함께 보여줍니다.",
+        "사진 원문 보기를 해당 게시글로 연결하고 출처 안내를 추가했습니다."
+      ]
+    },
     {
       "date": "2026-11-24",
       "title": "사진과 의정활동을 더 편하게",

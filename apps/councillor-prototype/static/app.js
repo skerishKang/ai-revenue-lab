@@ -27,6 +27,26 @@ function safeHref(value) {
   }
 }
 
+function bodyParagraphs(value) {
+  return String(value || "").split(/\n{2,}/).map((part) => part.trim()).filter(Boolean);
+}
+
+function mediaSourceLabel(item) {
+  const explicit = String(item.source_label || "").trim();
+  if (explicit) return explicit;
+  const raw = String(item.url || "");
+  return item.kind === "포토" && raw.includes("PID=014") && !raw.includes("bbsSn=")
+    ? "의회 사진자료실 보기"
+    : "원문 보기";
+}
+
+function mediaSourceNotice(item) {
+  const raw = String(item.url || "");
+  return item.kind === "포토" && raw.includes("council.gwangju.go.kr/9imr/")
+    ? String(SITE?.media?.photoSourceNotice || "")
+    : "";
+}
+
 function thumbSrcSet(value) {
   const raw = String(value || "").split("?")[0];
   const name = raw.split("/").pop().replace(/\.[^.]+$/, "");
@@ -203,8 +223,13 @@ function showDetail(a, options) {
   document.getElementById("detailDate").textContent =
     a.date + " · " + a.tag + (a.source ? " · " + a.source : "");
   const body = document.getElementById("detailBody");
-  body.textContent = a.body || "";
-  body.hidden = !a.body;
+  const paragraphs = bodyParagraphs(a.body);
+  body.replaceChildren(...paragraphs.map((text) => {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = text;
+    return paragraph;
+  }));
+  body.hidden = paragraphs.length === 0;
   const glossary = document.getElementById("detailTerms");
   if (glossary) {
     const text = a.title + " " + (a.body || "");
@@ -272,12 +297,13 @@ function mediaCardMarkup(m, cls, content) {
   const raw = String(m.url || "");
   const url = /^(https?:\/\/|\.\/)/.test(raw) ? raw : "";
   const attrs = ' data-media-thumb="' + escapeHtml(m.thumb) + '" data-media-title="' +
-    escapeHtml(m.title) + '" data-media-url="' + escapeHtml(url) + '"';
+    escapeHtml(m.title) + '" data-media-url="' + escapeHtml(url) + '" data-media-kind="' + escapeHtml(m.kind) + '"';
   const card = url
     ? '<a class="' + cls + '"' + attrs + ' href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' + content + '</a>'
     : '<span class="' + cls + '"' + attrs + '>' + content + '</span>';
+  const sourceLabel = mediaSourceLabel(m);
   const source = url ? '<a class="media-source" href="' + escapeHtml(url) +
-    '" target="_blank" rel="noopener" aria-label="' + escapeHtml(m.title) + ' 원문 보기 (새 탭)">↗</a>' : "";
+    '" target="_blank" rel="noopener" aria-label="' + escapeHtml(m.title + " " + sourceLabel + " (새 탭)") + '">↗</a>' : "";
   return card + source;
 }
 
@@ -386,35 +412,57 @@ function renderBills(policy) {
     const label = "제" + assembly + "대 광주광역시의회" +
       '<span class="bill-count">' + group.length + "건</span>";
     if (assembly === 8) {
-      return '<details class="bill-group">' +
+      return '<details class="bill-group" data-assembly="' + assembly + '" data-total="' + group.length + '">' +
         '<summary class="bill-group-title" id="bills-' + assembly + '">' + label + "</summary>" +
         '<ul class="bill-list">' + rows + "</ul></details>";
     }
-    return '<section class="bill-group" aria-labelledby="bills-' + assembly + '">' +
+    return '<section class="bill-group" data-assembly="' + assembly + '" data-total="' + group.length + '" aria-labelledby="bills-' + assembly + '">' +
       '<h3 class="bill-group-title" id="bills-' + assembly + '">' + label + "</h3>" +
       '<ul class="bill-list">' + rows + "</ul></section>";
   }).join("");
   markExternalLinks();
   const search = document.getElementById("billSearch");
-  if (search) {
-    search.oninput = () => {
-      const q = search.value.trim().toLowerCase();
-      grid.querySelectorAll(".bill-group").forEach((group) => {
-        let visible = 0;
-        group.querySelectorAll(".bill-row").forEach((row) => {
-          const match = !q || row.textContent.toLowerCase().includes(q);
-          row.hidden = !match;
-          if (match) visible += 1;
-        });
-        group.hidden = visible === 0;
-        if (q && visible > 0 && group.tagName === "DETAILS") group.open = true;
+  if (!search) return;
+  const status = document.getElementById("billSearchStatus");
+  const applyFilter = () => {
+    const q = search.value.trim().toLowerCase();
+    let totalVisible = 0;
+    const summaries = [];
+    grid.querySelectorAll(".bill-group").forEach((group) => {
+      const total = Number(group.dataset.total) || 0;
+      const assembly = group.dataset.assembly;
+      let visible = 0;
+      group.querySelectorAll(".bill-row").forEach((row) => {
+        const match = !q || row.textContent.toLowerCase().includes(q);
+        row.hidden = !match;
+        if (match) visible += 1;
       });
-    };
-    // #7550 동훈 3회차: the home search box can land here with ?q; the existing
-    // bill filter runs it once on arrival.
-    const query = initialQueryParameter();
-    if (query) { search.value = query; search.oninput(); }
-  }
+      totalVisible += visible;
+      const count = group.querySelector(".bill-count");
+      if (count) {
+        count.textContent = !q ? total + "건" : visible > 0
+          ? visible + "건 / 전체 " + total + "건"
+          : "검색 결과 없음";
+      }
+      group.hidden = false;
+      group.classList.toggle("is-empty", Boolean(q) && visible === 0);
+      if (q && visible > 0 && group.tagName === "DETAILS") group.open = true;
+      summaries.push("제" + assembly + "대 " + (q && visible === 0
+        ? "검색 결과 없음 / 전체 " + total + "건"
+        : visible + "건 / 전체 " + total + "건"));
+    });
+    if (status) {
+      status.textContent = q
+        ? totalVisible > 0
+          ? "검색 결과 총 " + totalVisible + "건 / 전체 " + items.length + "건. " + summaries.join(", ")
+          : "검색 결과가 없습니다. 전체 " + items.length + "건."
+        : "전체 " + items.length + "건";
+    }
+  };
+  search.oninput = applyFilter;
+  applyFilter();
+  const query = initialQueryParameter();
+  if (query) { search.value = query; applyFilter(); }
 }
 
 function renderPolicy(data) {
@@ -480,12 +528,21 @@ function renderLightbox() {
   const img = document.getElementById("lightboxImg");
   const title = document.getElementById("lightboxTitle");
   const link = document.getElementById("lightboxLink");
+  const source = document.getElementById("lightboxSource");
   if (img) { img.src = safeHref(item.thumb) || ""; img.alt = item.title || ""; }
   if (title) title.textContent = item.title || "";
   if (link) {
     const href = item.url ? safeHref(item.url) : "";
+    const label = mediaSourceLabel(item);
     link.href = href || "#";
     link.hidden = !href;
+    link.textContent = label + " ↗";
+    link.setAttribute("aria-label", label + " (새 탭)");
+    link.dataset.extMarked = "1";
+  }
+  if (source) {
+    source.textContent = mediaSourceNotice(item);
+    source.hidden = !source.textContent;
   }
 }
 
@@ -493,7 +550,8 @@ function openLightbox(index, trigger) {
   const dialog = document.getElementById("mediaLightbox");
   if (!dialog) return;
   lightboxItems = Array.from(document.querySelectorAll("[data-media-thumb]"), (card) => ({
-    thumb: card.dataset.mediaThumb, title: card.dataset.mediaTitle, url: card.dataset.mediaUrl
+    thumb: card.dataset.mediaThumb, title: card.dataset.mediaTitle, url: card.dataset.mediaUrl,
+    kind: card.dataset.mediaKind || ""
   }));
   lightboxIndex = Math.max(0, Math.min(lightboxItems.length - 1, Number(index) || 0));
   lightboxTrigger = trigger || null;
