@@ -3,7 +3,7 @@
 The source keeps the .html containers empty so the plain local preview still runs
 the client-side renderer. The dist build injects the same content as static HTML
 so the first paint has the final height (CLS) and no-JS visitors still see the
-records. The client-side renderer replaces the prerender with the same markup.
+records. Activity rows are enhanced in place; other renderers keep their existing behavior.
 """
 from __future__ import annotations
 
@@ -120,6 +120,27 @@ def _policy_cards(items, label: str) -> str:
     return "".join(cards)
 
 
+def prerender_activity(data: dict) -> str:
+    rows = []
+    for index, item in enumerate(data["activity"]["items"], 1):
+        activity_id = item.get("id") or f'a-{item.get("date") or "unknown"}-{index:02d}'
+        # Keep the existing interactive row geometry. The summary and safe
+        # source link are also readable when JavaScript is unavailable.
+        rows.append(
+            f'<li class="activity-item" id="{_e(activity_id)}">'
+            f'<div class="item-date">{_e(item["date"])}'
+            f'<span class="item-tag">{_e(item["tag"])}</span></div>'
+            f'<div class="item-title">{_e(item["title"])}'
+            '<span class="item-more" aria-hidden="true">자세히 ›</span></div>'
+            '<noscript>'
+            f'<p class="detail-body">{_e(item.get("body", ""))}</p>'
+            + (_link(item.get("url"), "detail-link", "?? 자세히 ›?", external=True)
+               if _href(item.get("url")) else "")
+            + '</noscript></li>'
+        )
+    return "".join(rows)
+
+
 def prerender_media(data: dict) -> str:
     tiles = [m for m in data["media"]["tiles"] if m.get("thumb")]
     cards = []
@@ -225,6 +246,15 @@ def inject(out_dir: Path, data: dict) -> None:
             f'<div class="col-tile-grid" id="homeLinks">{home["homeLinks"]}</div>',
         )
         index.write_text(html, encoding="utf-8")
+
+    activity_path = out_dir / "activity.html"
+    if activity_path.is_file():
+        html = activity_path.read_text(encoding="utf-8")
+        html = html.replace(
+            '<ul class="activity-list" id="activityList" aria-live="polite"></ul>',
+            f'<ul class="activity-list" id="activityList" aria-live="polite">{prerender_activity(data)}</ul>',
+        )
+        activity_path.write_text(html, encoding="utf-8")
 
     policy = prerender_policy(data)
     policy_path = out_dir / "policy.html"

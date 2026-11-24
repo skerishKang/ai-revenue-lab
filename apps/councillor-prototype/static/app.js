@@ -76,7 +76,11 @@ function renderDataError() {
   const list = document.getElementById("activityList");
   if (list) {
     list.hidden = false;
-    list.innerHTML = '<li class="activity-item">자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</li>';
+    if (list.querySelector(".activity-item[id]")) {
+      showActivityStatus("자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+    } else {
+      list.innerHTML = '<li class="activity-item">자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</li>';
+    }
   }
   const grid = document.getElementById("mediaGrid");
   if (grid) {
@@ -127,42 +131,61 @@ function showActivityList(status) {
   showActivityStatus(status || "");
 }
 
+function initActivityList(list) {
+  if (list.dataset.activityReady === "true") return;
+  const rows = new Map(Array.from(list.querySelectorAll(".activity-item[id]"),
+    (row) => [row.id, row]));
+  ACTIVITIES.forEach((a) => {
+    const id = activityIdFor(a);
+    let li = rows.get(id);
+    // The source preview has no build-time markup.
+    if (!li) {
+      li = document.createElement("li");
+      li.className = "activity-item";
+      li.id = id;
+      li.innerHTML =
+        '<div class="item-date">' + escapeHtml(a.date) +
+          '<span class="item-tag">' + escapeHtml(a.tag) + "</span></div>" +
+        '<div class="item-title">' + escapeHtml(a.title) +
+          '<span class="item-more" aria-hidden="true">자세히 ›</span></div>';
+      list.appendChild(li);
+    }
+    li.setAttribute("tabindex", "0");
+    li.setAttribute("role", "button");
+    const open = () => showDetail(a);
+    li.addEventListener("click", open);
+    li.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
+    });
+  });
+  list.dataset.activityReady = "true";
+}
+
 function renderActivities(filter = "all", query = "") {
   const list = document.getElementById("activityList");
-  if (!list) return;
+  if (!list || !SITE) return;
+  initActivityList(list);
   const detail = document.getElementById("activityDetail");
   if (detail) detail.hidden = true;
   list.hidden = false;
-  list.innerHTML = "";
   const q = query.trim().toLowerCase();
-  const filtered = ACTIVITIES.filter((a) => {
-    if (filter !== "all" && a.tag !== filter) return false;
-    if (q && !a.title.toLowerCase().includes(q) && !(a.body || "").toLowerCase().includes(q)) return false;
-    return true;
+  let count = 0;
+  ACTIVITIES.forEach((a) => {
+    const row = document.getElementById(activityIdFor(a));
+    const matches = (filter === "all" || a.tag === filter) &&
+      (!q || a.title.toLowerCase().includes(q) || (a.body || "").toLowerCase().includes(q));
+    row.hidden = !matches;
+    if (matches) count++;
   });
-  if (filtered.length === 0) {
-    const li = document.createElement("li");
-    li.className = "activity-item";
-    li.textContent = "검색 결과가 없습니다.";
-    list.appendChild(li);
-    showActivityStatus("");
-    return;
+  let empty = document.getElementById("activityEmpty");
+  if (!count && !empty) {
+    empty = document.createElement("li");
+    empty.id = "activityEmpty";
+    empty.className = "activity-item";
+    empty.textContent = "검색 결과가 없습니다.";
+    list.appendChild(empty);
   }
-  filtered.forEach((a) => {
-    const li = document.createElement("li");
-    li.className = "activity-item";
-    li.setAttribute("tabindex", "0");
-    li.setAttribute("role", "button");
-    li.innerHTML =
-      '<div class="item-date">' + escapeHtml(a.date) +
-        '<span class="item-tag">' + escapeHtml(a.tag) + "</span></div>" +
-      '<div class="item-title">' + escapeHtml(a.title) +
-        '<span class="item-more" aria-hidden="true">자세히 ›</span></div>';
-    const open = () => showDetail(a);
-    li.addEventListener("click", open);
-    li.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
-    list.appendChild(li);
-  });
+  if (empty) empty.hidden = count !== 0;
   showActivityStatus("");
 }
 
@@ -181,7 +204,8 @@ function showDetail(a, options) {
   body.textContent = a.body || "";
   body.hidden = !a.body;
   const link = document.getElementById("detailLink");
-  const href = safeHref(a.url);
+  const rawHref = String(a.url || "");
+  const href = /^(https?:\/\/|\.\/)/.test(rawHref) ? safeHref(rawHref) : "";
   link.href = href || "#";
   link.hidden = !href;
   const id = activityIdFor(a);
@@ -213,6 +237,23 @@ function syncActivityFromLocation(initial) {
     } catch (error) { /* 주소 갱신을 못 해도 상세는 엽니다. */ }
   }
   showDetail(a, { push: false });
+  if (initial) {
+    // A prerendered fragment is also a native browser navigation target.
+    // Restore heading focus after that initial navigation has settled, without
+    // overriding any focus the visitor has already moved to another control.
+    const restoreFocus = () => requestAnimationFrame(() => requestAnimationFrame(() => {
+      const detail = document.getElementById("activityDetail");
+      const title = document.getElementById("detailTitle");
+      if (currentActivityHash() !== id || detail.hidden) return;
+      if (document.activeElement === document.body ||
+          document.activeElement === document.documentElement ||
+          document.activeElement === document.getElementById(id)) {
+        title.focus({ preventScroll: true });
+      }
+    }));
+    if (document.readyState === "complete") restoreFocus();
+    else window.addEventListener("load", restoreFocus, { once: true });
+  }
 }
 
 function renderMedia() {
@@ -533,10 +574,23 @@ document.addEventListener("DOMContentLoaded", () => {
   if (filter) filter.addEventListener("change", renderFromControls);
 
   const back = document.getElementById("activityBack");
-  if (back) back.addEventListener("click", () => {
-    if (window.history.length > 1) window.history.back();
-    else showActivityList("");
-  });
+  const closeActivity = () => {
+    if (window.history.state?.view === "detail" && window.history.length > 1) {
+      window.history.back();
+    } else {
+      clearActivityHash();
+      showActivityList("");
+    }
+  };
+  if (back) {
+    back.addEventListener("click", closeActivity);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !document.getElementById("activityDetail").hidden) {
+        event.preventDefault();
+        closeActivity();
+      }
+    });
+  }
 
   window.addEventListener("popstate", () => syncActivityFromLocation(false));
   window.addEventListener("hashchange", () => syncActivityFromLocation(false));
@@ -559,8 +613,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // search input and renderer run it, so the list opens already searched.
     const query = initialQueryParameter();
     if (query && search) search.value = query;
-    if (query) renderActivities(filter ? filter.value : "all", query);
-    else renderActivities();
+    renderActivities(filter ? filter.value : "all", search ? search.value : query);
     renderMedia();
     renderNews();
     syncActivityFromLocation(true);
