@@ -26,15 +26,23 @@ def test_glass_frame_consumes_tokens_without_themed_importants():
               if any("data-theme" in selector for selector in rule.selectors)
               for value in rule.declarations.values()]
     assert themed
-    # Nine declarations still outrank later theme/layout rules. Their computed
+    # Ten declarations still outrank later theme/layout rules. Their computed
     # values changed in Claw or Calendar when the priority was removed.
     priority = [(name, value) for rule in rules
                 if any("data-theme" in selector for selector in rule.selectors)
                 for name, value in rule.declarations.items() if "!important" in value]
-    assert len(priority) == 9
+    assert len(priority) == 10
+    # The later reading stylesheet lowers body::after opacity to .025.
+    # Keep this priority so the home atmospheric grid stays at .10.
+    noise = [r for r in rules if any(
+        'data-glass-mode="reading"' in selector and 'body::after' in selector
+        for selector in r.selectors
+    )]
+    assert len(noise) == 1
+    assert noise[0].declarations["opacity"] == ".10 !important"
     assert {name for name, _ in priority} == {
         "height", "min-height", "max-height", "margin", "border-radius",
-        "background", "box-shadow", "overflow-y", "padding",
+        "background", "box-shadow", "overflow-y", "padding", "opacity",
     }
     unthemed_priority = [value for rule in rules
                          if not any("data-theme" in sel for sel in rule.selectors)
