@@ -13,6 +13,10 @@
   min-height: 84px;
   padding: 14px 16px;
   cursor: pointer;
+  /* 대비 수리(261124): 타일은 다섯 테마 모두 밝은 카드 판 위에 놓이는데 글자색을
+     지정받지 못해 카드 이름이 테마 글자색을 상속했다(dark·cinematic에서 흰 판
+     위 밝은 글자). 판을 따르는 잉크를 타일에 정한다(값은 padiem-tokens.css). */
+  color: var(--connector-card-ink);
 }
 
 #connectorsGrid .capability-card.connector-tile:hover,
@@ -39,7 +43,9 @@
 .connector-tile-status {
   font-size: 13px;
   line-height: 1.4;
-  color: var(--muted);
+  /* 대비 수리(261124): 상태 줄도 같은 밝은 판 위다. 테마 --muted를 그대로
+     읽으면 dark·cinematic에서 흰 판 위 밝은 글자가 된다. */
+  color: var(--connector-card-muted-ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

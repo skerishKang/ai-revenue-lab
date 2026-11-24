@@ -1,0 +1,662 @@
+[
+ {
+  "combo": "light__1440x950__saved-output",
+  "pixel": 10390,
+  "noise": 10344,
+  "pairs": [
+   10344,
+   10344
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ],
+  "images": [
+   "before-after__light__1440x950__saved-output__before.png",
+   "before-after__light__1440x950__saved-output__after.png",
+   "before-after__light__1440x950__saved-output__diff.png"
+  ]
+ },
+ {
+  "combo": "light__1440x950__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "light__1440x950__connector-detail",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "light__390x844__saved-output",
+  "pixel": 8890,
+  "noise": 8845,
+  "pairs": [
+   8845,
+   8845
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ],
+  "images": [
+   "before-after__light__390x844__saved-output__before.png",
+   "before-after__light__390x844__saved-output__after.png",
+   "before-after__light__390x844__saved-output__diff.png"
+  ]
+ },
+ {
+  "combo": "light__390x844__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "light__390x844__connector-detail",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__1440x950__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__1440x950__connectors",
+  "pixel": 6458,
+  "noise": 6404,
+  "pairs": [
+   6404,
+   6404
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ],
+  "images": [
+   "before-after__dark__1440x950__connectors__before.png",
+   "before-after__dark__1440x950__connectors__after.png",
+   "before-after__dark__1440x950__connectors__diff.png"
+  ]
+ },
+ {
+  "combo": "dark__1440x950__connector-detail",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__390x844__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "dark__390x844__connectors",
+  "pixel": 4753,
+  "noise": 4725,
+  "pairs": [
+   4725,
+   4725
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ],
+  "images": [
+   "before-after__dark__390x844__connectors__before.png",
+   "before-after__dark__390x844__connectors__after.png",
+   "before-after__dark__390x844__connectors__diff.png"
+  ]
+ },
+ {
+  "combo": "dark__390x844__connector-detail",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__saved-output",
+  "pixel": 11048,
+  "noise": 10345,
+  "pairs": [
+   10345,
+   10345
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ],
+  "images": [
+   "before-after__padiem-glass__1440x950__saved-output__before.png",
+   "before-after__padiem-glass__1440x950__saved-output__after.png",
+   "before-after__padiem-glass__1440x950__saved-output__diff.png"
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__1440x950__connector-detail",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__saved-output",
+  "pixel": 9219,
+  "noise": 8841,
+  "pairs": [
+   8841,
+   8841
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ],
+  "images": [
+   "before-after__padiem-glass__390x844__saved-output__before.png",
+   "before-after__padiem-glass__390x844__saved-output__after.png",
+   "before-after__padiem-glass__390x844__saved-output__diff.png"
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-glass__390x844__connector-detail",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__1440x950__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__1440x950__connectors",
+  "pixel": 6458,
+  "noise": 6404,
+  "pairs": [
+   6404,
+   6404
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ],
+  "images": [
+   "before-after__cinematic__1440x950__connectors__before.png",
+   "before-after__cinematic__1440x950__connectors__after.png",
+   "before-after__cinematic__1440x950__connectors__diff.png"
+  ]
+ },
+ {
+  "combo": "cinematic__1440x950__connector-detail",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__390x844__saved-output",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "cinematic__390x844__connectors",
+  "pixel": 4753,
+  "noise": 4725,
+  "pairs": [
+   4725,
+   4725
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ],
+  "images": [
+   "before-after__cinematic__390x844__connectors__before.png",
+   "before-after__cinematic__390x844__connectors__after.png",
+   "before-after__cinematic__390x844__connectors__diff.png"
+  ]
+ },
+ {
+  "combo": "cinematic__390x844__connector-detail",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__1440x950__saved-output",
+  "pixel": 10649,
+  "noise": 10376,
+  "pairs": [
+   10376,
+   10376
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ],
+  "images": [
+   "before-after__padiem-home__1440x950__saved-output__before.png",
+   "before-after__padiem-home__1440x950__saved-output__after.png",
+   "before-after__padiem-home__1440x950__saved-output__diff.png"
+  ]
+ },
+ {
+  "combo": "padiem-home__1440x950__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__1440x950__connector-detail",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__390x844__saved-output",
+  "pixel": 9048,
+  "noise": 8873,
+  "pairs": [
+   8873,
+   8873
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ],
+  "images": [
+   "before-after__padiem-home__390x844__saved-output__before.png",
+   "before-after__padiem-home__390x844__saved-output__after.png",
+   "before-after__padiem-home__390x844__saved-output__diff.png"
+  ]
+ },
+ {
+  "combo": "padiem-home__390x844__connectors",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ },
+ {
+  "combo": "padiem-home__390x844__connector-detail",
+  "pixel": 0,
+  "noise": 0,
+  "pairs": [
+   0
+  ],
+  "settles": [
+   4,
+   4
+  ],
+  "attempts": [
+   1,
+   1
+  ],
+  "state_ok": [
+   true,
+   true
+  ]
+ }
+]

@@ -293,6 +293,17 @@ class TestPrimaryTokens(unittest.TestCase):
              # 값은 위 --project-* 토큰을 재사용하고, 새 값 둘만 여기서 소유한다.
              | {"--outputs-action-hover-wash", "--outputs-content-bg",
                 "--outputs-dialog-shadow"}
+             # 대비 수리(261124): 저장한 답변 창이 읽는 스킨 잉크·선의 판 추종
+             # 토큰. 기본값은 창 스킨의 --ws-* 값을 그대로 가리키고 밝은 판 세
+             # 테마만 덮는다. 값·테마 덮개·소비 선언·대비는
+             # test_261124_saved_output_connector_contrast.py가 고정한다.
+             | {"--outputs-kicker-text", "--outputs-control-text",
+                "--outputs-control-hover-text", "--outputs-input-text",
+                "--outputs-content-text", "--outputs-secondary-text",
+                "--outputs-primary-text", "--outputs-danger-text",
+                "--outputs-rule-edge", "--outputs-content-edge",
+                "--outputs-control-edge", "--outputs-control-focus-edge",
+                "--outputs-primary-edge", "--outputs-primary-hover-edge"}
              # #7811 C2 capability-nav(261124): 내비 칩·기능 대화상자·
              # Connectors 카드의 고정 팔레트. 재사용 토큰은 위 --settings-*·
              # --project-* 가 이미 고정한다.
@@ -314,6 +325,9 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--attachments-chip-title-ink", "--attachments-chip-meta-ink",
                 "--attachments-invalid-edge", "--attachments-invalid-wash",
                 "--attachments-invalid-note-ink", "--attachments-chip-remove-ink"}
+             # 대비 수리(261124): 연결 화면의 밝은 카드 판 위 잉크. 기본값은 테마
+             # 글자색이고 dark·cinematic만 덮는다. 같은 시험 파일이 고정한다.
+             | {"--connector-card-ink", "--connector-card-muted-ink"}
              | {"--voice-mic-active-bg", "--voice-mic-active-edge",
                 "--voice-mic-active-ring", "--voice-mic-active-hover-bg",
                 "--voice-mic-active-hover-edge", "--composer-send-text",
