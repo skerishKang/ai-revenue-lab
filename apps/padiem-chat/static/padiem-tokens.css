@@ -813,6 +813,21 @@
   --b66-quote-faint-edge: rgba(127,127,127,.22);
   --b66-quote-review-surface: rgba(255, 255, 255, 0.7);
 
+  /* #7811 C2 search-sources(261124): 검색 출처·요약 카드의 고정 남 잉크
+     팔레트. 값은 치환 전 선언마다 박혀 있던 리터럴 그대로이고 :root에만
+     둔다 — 다섯 테마에서 같은 값으로 칠해져 온 고정 팔레트라 테마 블록이
+     덮지 않는다. .1 헤어라인은 이미 :root 전용인
+     --rich-response-inner-edge를 재사용한다. */
+  --search-sources-active-edge: rgba(31, 41, 55, 0.42);
+  --search-sources-active-wash: rgba(31, 41, 55, 0.07);
+  --search-sources-summary-bg: rgba(31, 41, 55, 0.035);
+  --search-sources-summary-ink: rgba(31, 41, 55, 0.66);
+  --search-sources-answer-edge: rgba(31, 41, 55, 0.11);
+  --search-sources-link-wash: rgba(31, 41, 55, 0.025);
+  --search-sources-link-hover-wash: rgba(31, 41, 55, 0.055);
+  --search-sources-number-ink: rgba(31, 41, 55, 0.62);
+  --search-sources-copy-ink: rgba(31, 41, 55, 0.58);
+
   /* 연결 카드 대비 수리(261124): 연결 화면 카드는 다섯 테마 모두 밝은 판이다
      (standalone-views.css의 #connectorsViewBody .capability-card). 카드 이름은
      글자색을 지정받지 못해 테마 글자색을 상속했고, 상태 줄은 테마 --muted를

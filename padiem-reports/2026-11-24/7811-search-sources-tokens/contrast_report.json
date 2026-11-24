@@ -1,0 +1,29 @@
+[
+  {
+    "label": "research-summary text",
+    "alpha": 0.66,
+    "composite": "#6b727b",
+    "bg": "#ffffff",
+    "ratio": 4.86,
+    "floor": 4.5,
+    "pass": true
+  },
+  {
+    "label": "source number",
+    "alpha": 0.62,
+    "composite": "#747a83",
+    "bg": "#ffffff",
+    "ratio": 4.33,
+    "floor": 4.5,
+    "pass": false
+  },
+  {
+    "label": "source copy small",
+    "alpha": 0.58,
+    "composite": "#7d838b",
+    "bg": "#ffffff",
+    "ratio": 3.82,
+    "floor": 4.5,
+    "pass": false
+  }
+]

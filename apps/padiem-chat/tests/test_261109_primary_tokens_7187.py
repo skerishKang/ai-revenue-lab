@@ -366,6 +366,13 @@ class TestPrimaryTokens(unittest.TestCase):
              | {"--b66-quote-hairline", "--b66-quote-dialog-dim",
                 "--b66-quote-edge", "--b66-quote-faint-edge",
                 "--b66-quote-review-surface"}
+             # #7811 C2 search-sources(261124): 검색 출처 카드의 고정 남 잉크.
+             # .1 헤어라인은 위 --rich-response-inner-edge를 재사용한다.
+             | {"--search-sources-active-edge", "--search-sources-active-wash",
+                "--search-sources-summary-bg", "--search-sources-summary-ink",
+                "--search-sources-answer-edge", "--search-sources-link-wash",
+                "--search-sources-link-hover-wash", "--search-sources-number-ink",
+                "--search-sources-copy-ink"}
              # 대비 수리(261124): 연결 화면의 밝은 카드 판 위 잉크. 기본값은 테마
              # 글자색이고 dark·cinematic만 덮는다. 같은 시험 파일이 고정한다.
              | {"--connector-card-ink", "--connector-card-muted-ink"}
