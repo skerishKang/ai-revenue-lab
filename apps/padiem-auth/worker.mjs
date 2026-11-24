@@ -274,6 +274,18 @@ async function allowPasswordAttempt(stateFor, ip, now, limit = 10) {
 const LOGIN_FAILURE_DAILY = 50, SIGNUP_HOURLY = 5, RECOVERY_DAILY = 10;
 const TOO_MANY_ATTEMPTS = '로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.';
 
+// 대표 결정 2026-11-25: PADIEM_AUTH_TRUSTED_SOURCE_HASHES는 쉼표로 구분된
+// SHA-256 해시 목록(소문자 hex)만 받는다. 해시는 cf-connecting-ip 헤더 원문의
+// sha256이다. 실제 출발지 값은 코드·시험·로그에 쓰지 않는다.
+function trustedSourceSet(value) {
+  if (typeof value !== 'string' || !value.trim()) return new Set();
+  return new Set(value.split(',').map(hash => hash.trim().toLowerCase()).filter(hash => /^[0-9a-f]{64}$/.test(hash)));
+}
+async function isTrustedSource(source, hashes) {
+  if (!hashes.size || typeof source !== 'string' || !source) return false;
+  return hashes.has(await digestHex(source));
+}
+
 // Shared by the signed prepare endpoint and recovery inside the registry DO.
 // The caller owns the operation token; beginAccountDeletion returns a boolean.
 async function prepareAccountDeletion(registry, stateFor, { accountId, now, lockToken = crypto.randomUUID() }) {
@@ -333,7 +345,8 @@ const deletedGoogleAccountResponse = (request) => htmlPage(403, messagePage('탈
 const DELETED_ACCOUNT = Object.freeze({ state: 'deleted' });
 
 // An adapter is injected in tests; the deployed entry point below only uses DO bindings.
-export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch, emailRecoveryEnabled = false, passwordFindEnabled = false, emailConfirmationEnabled = false, accountCreatedAtClaims = false, emailAssertionKey = null, defer }) {
+export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch, emailRecoveryEnabled = false, passwordFindEnabled = false, emailConfirmationEnabled = false, accountCreatedAtClaims = false, emailAssertionKey = null, trustedSourceHashes = '', defer }) {
+  const trustedHashes = trustedSourceSet(trustedSourceHashes);
   const passwordRpcConfigured = typeof passwordRpcSecret === 'string' && passwordRpcSecret.length >= 32 &&
     typeof passwordRpcOrigin === 'string' && /^https:\/\/[^/]+\/?$/.test(passwordRpcOrigin);
   const passwordChoiceEnabled = (client) => client?.password_login === true && passwordRpcConfigured;
@@ -908,11 +921,16 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       // 'unknown' budget instead of bypassing the gates. A failed login only
       // charges the day budget of the address that made it; a refused
       // signup counts against the hourly budget of the same address.
-      const source = request.headers.get('cf-connecting-ip') || 'unknown';
+      const sourceHeader = request.headers.get('cf-connecting-ip');
+      const source = sourceHeader || 'unknown';
+      const trusted = await isTrustedSource(sourceHeader, trustedHashes);
+      console.log(JSON.stringify({ auth_stage: 'password_login_ip_budget', trusted_source: trusted ? 'yes' : 'no' }));
       const failureDay = Math.floor(current / 86400);
       const tooMany = () => htmlPage(429, messagePage(TOO_MANY_ATTEMPTS, lang));
       if (register && !await allowWindowAttempt(stateFor, 'signup-gate', source, current, 3600, SIGNUP_HOURLY)) return tooMany();
-      if (!register && await stateFor('password-login-gate').loginFailureBudget({ source, day: failureDay }) > LOGIN_FAILURE_DAILY) return tooMany();
+      // 대표 결정 2026-11-25: 신뢰 출발지는 IP 단위 실패 한도(카운트·거절)만
+      // 건너뛴다. 계정 단위 잠금(beginPasswordAttempt)과 속도 제한은 그대로다.
+      if (!register && !trusted && await stateFor('password-login-gate').loginFailureBudget({ source, day: failureDay }) > LOGIN_FAILURE_DAILY) return tooMany();
       if (!await allowPasswordAttempt(stateFor, source, current)) return tooMany();
       const attempt = await diagnosed('password_attempt_failed', async () =>
         stateFor(state[0]).beginPasswordAttempt({ stateDigest: await digest(state[1]), browserDigest: await digest(browser), now: current, maxAttempts: 5 }));
@@ -977,8 +995,9 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       }
       if (response.status !== 200) {
         if (response.status === 401 && !register) {
-          // #7789: only a refused credential charges the day budget.
-          await stateFor('password-login-gate').loginFailureBudget({ source, day: failureDay, charge: true });
+          // #7789: only a refused credential charges the day budget; a trusted
+          // source never charges it (its rejection is skipped above as well).
+          if (!trusted) await stateFor('password-login-gate').loginFailureBudget({ source, day: failureDay, charge: true });
           return errorPage('이메일 또는 비밀번호가 올바르지 않습니다.');
         }
         let code = '';
@@ -1418,7 +1437,7 @@ export default {
       const refreshKey = await crypto.subtle.importKey('raw', refreshBytes, 'AES-GCM', false, ['encrypt', 'decrypt']);
       if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.PADIEM_AUTH_SIGNING_KID || !env.AUTH_STATE || !env.IDENTITY_AUTHORITY) throw new Error('missing binding');
       const stateFor = stateBindingFor(env);
-      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor, emailRecoveryEnabled: env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED, passwordFindEnabled: env.PADIEM_AUTH_PASSWORD_FIND_ENABLED, emailConfirmationEnabled: env.PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED, accountCreatedAtClaims: env.PADIEM_AUTH_ACCOUNT_CREATED_AT_CLAIM_ENABLED, emailAssertionKey: env.PADIEM_AUTH_EMAIL_ASSERTION_KEY_LOVETREE, defer: typeof ctx?.waitUntil === 'function' ? work => ctx.waitUntil(work) : undefined }).fetch(request);
+      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor, emailRecoveryEnabled: env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED, passwordFindEnabled: env.PADIEM_AUTH_PASSWORD_FIND_ENABLED, emailConfirmationEnabled: env.PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED, accountCreatedAtClaims: env.PADIEM_AUTH_ACCOUNT_CREATED_AT_CLAIM_ENABLED, emailAssertionKey: env.PADIEM_AUTH_EMAIL_ASSERTION_KEY_LOVETREE, trustedSourceHashes: env.PADIEM_AUTH_TRUSTED_SOURCE_HASHES, defer: typeof ctx?.waitUntil === 'function' ? work => ctx.waitUntil(work) : undefined }).fetch(request);
     } catch { return json(503, { error: 'authentication_unavailable' }); }
   }
 };
