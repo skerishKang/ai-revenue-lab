@@ -1,0 +1,36 @@
+{
+  "css_rules": {
+    "base": 4353,
+    "head": 4351,
+    "delta": -2
+  },
+  "css_important": {
+    "base": 404,
+    "head": 404,
+    "delta": 0
+  },
+  "css_color_literals": {
+    "base": 918,
+    "head": 916,
+    "delta": -2
+  },
+  "css_color_literals_unthemed": {
+    "base": 280,
+    "head": 280,
+    "delta": 0
+  },
+  "css_themed_rules": {
+    "base": 769,
+    "head": 767,
+    "delta": -2
+  },
+  "css_themed_important": {
+    "base": 92,
+    "head": 92,
+    "delta": 0
+  },
+  "bright_rules": {
+    "base": 23,
+    "head": 21
+  }
+}

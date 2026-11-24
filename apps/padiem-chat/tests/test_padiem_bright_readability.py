@@ -1,4 +1,5 @@
 from _support.bright_readability_source import polish_css, index_html
+from _support import claw_static
 
 
 def test_theme_polish_layer_is_loaded_last_in_cinematic_stack():
@@ -55,9 +56,14 @@ def test_all_themes_keep_useful_microcopy_at_twelve_pixel_floor():
 
 
 def test_cinematic_has_bounded_atmospheric_distinction_from_neutral_dark():
-    assert 'html[data-theme="cinematic"] body {' in polish_css()
-    assert "rgba(108,190,255,.28)" in polish_css()
-    assert "rgba(239,201,132,.20)" in polish_css()
+    # #7811 C4: body and pseudo-element atmosphere is owned by the theme sheet.
+    themes_css = claw_static.sheet("padiem-themes.css")
+    assert 'html[data-theme="cinematic"] body {' not in polish_css()
+    assert 'html[data-theme="cinematic"] body::before {' not in polish_css()
+    assert 'html[data-theme="cinematic"] body {' in themes_css
+    assert 'html[data-theme="cinematic"] body::before {' in themes_css
+    assert "rgba(108,190,255,.28)" in themes_css
+    assert "rgba(239,201,132,.20)" in themes_css
     assert 'html[data-theme="cinematic"] .sidebar {' in polish_css()
     assert 'html[data-theme="cinematic"] .topbar {' in polish_css()
     assert 'html[data-theme="cinematic"] .starter {' in polish_css()

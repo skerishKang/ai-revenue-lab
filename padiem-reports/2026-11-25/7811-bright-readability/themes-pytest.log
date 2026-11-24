@@ -1,0 +1,7 @@
+...........................................                              [100%]
+============================ slowest 50 durations =============================
+0.74s call     tests/test_261124_themes_composer_c3_7811.py::test_each_token_is_read_by_exactly_one_base_declaration
+0.46s setup    tests/test_padiem_dark_cinematic_distinction.py::test_dark_and_cinematic_background_tokens_differ_meaningfully
+
+(48 durations < 0.2s hidden.)
+43 passed in 6.85s

@@ -1,0 +1,98 @@
+{
+  "issue": 7811,
+  "scope": "C4 next override: padiem-bright-readability.css",
+  "base": "631f10576a2a3ed6d1db39c7ad3df17e1b0c4146",
+  "measurements": {
+    "computed_5themes_2widths_4states_4pseudo": 160,
+    "pixel_5themes_2widths_13screens": 130,
+    "control_5themes_2widths_13screens": 130,
+    "intentional_mutation": 2
+  },
+  "results": {
+    "computed_diffs": 0,
+    "pixel_diffs": 0,
+    "control_diffs": 0,
+    "mutation_detected": 2
+  },
+  "audit": {
+    "css_rules": {
+      "base": 4353,
+      "head": 4351,
+      "delta": -2
+    },
+    "css_important": {
+      "base": 404,
+      "head": 404,
+      "delta": 0
+    },
+    "css_color_literals": {
+      "base": 918,
+      "head": 916,
+      "delta": -2
+    },
+    "css_color_literals_unthemed": {
+      "base": 280,
+      "head": 280,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "base": 769,
+      "head": 767,
+      "delta": -2
+    },
+    "css_themed_important": {
+      "base": 92,
+      "head": 92,
+      "delta": 0
+    },
+    "bright_rules": {
+      "base": 23,
+      "head": 21
+    }
+  },
+  "screenshots": [
+    {
+      "file": "light_before.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b20c63f1367dcf9d869ca6a5457301368ce0cada1e10480e0a47c63ca2cc72af"
+    },
+    {
+      "file": "light_after.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "b20c63f1367dcf9d869ca6a5457301368ce0cada1e10480e0a47c63ca2cc72af"
+    },
+    {
+      "file": "cinematic_before.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "6712e81cc358cd12b6ed30c052b844c9303b250b30f1c6b481dded49a7c8cbdf"
+    },
+    {
+      "file": "cinematic_after.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "6712e81cc358cd12b6ed30c052b844c9303b250b30f1c6b481dded49a7c8cbdf"
+    },
+    {
+      "file": "tamper_before.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "6712e81cc358cd12b6ed30c052b844c9303b250b30f1c6b481dded49a7c8cbdf"
+    },
+    {
+      "file": "tamper_after.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "3beae0481b9ddf6daf1ad741b6580ac2353c350534d70dd2f775fe2f07f34e35"
+    },
+    {
+      "file": "tamper_diff.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "10414310dbf3e090cc437c985eb0106e3d38a6bb6b5155de10d8dd86e8569785"
+    }
+  ],
+  "background_url_normalization": "Host/port only for CSS background URL; preserve relative path and filename"
+}
