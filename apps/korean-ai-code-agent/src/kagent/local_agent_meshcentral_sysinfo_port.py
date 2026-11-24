@@ -21,8 +21,10 @@ authentication confirmation for a server-document read. See
 """
 from __future__ import annotations
 
+import json
 import re
 import secrets
+import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, Mapping
 
@@ -50,7 +52,8 @@ _MONTHS = {name: number for number, name in enumerate(
 #: last-resort bucket for an exception no wire stage claims.
 SYSINFO_REASON_CODES = frozenset({
     "observed", "no_answer", "invalid_answer", "wrong_action", "wrong_tag",
-    "info_unavailable", "no_hardware", "no_agentvers", "no_commit_date",
+    "info_unavailable", "info_not_stored", "info_node_unavailable",
+    "no_hardware", "no_agentvers", "no_commit_date",
     "format_mismatch",
     "sysinfo_nodeid", "sysinfo_denied", "sysinfo_transport",
     "sysinfo_timeout", "sysinfo_no_reply", "sysinfo_shape", "sysinfo_error",
@@ -209,6 +212,67 @@ def agent_version_from_sysinfo(answer: Any, tag: str) -> tuple[str | None, str]:
     if value is None:
         return None, "format_mismatch"
     return value, "observed"
+
+
+def probe_sysinfo_absence(socket: Any, frame: Mapping[str, Any],
+                          answer: Mapping[str, Any], deadline: float) -> str:
+    """Disambiguate the upstream identical noinfo replies without a PC command.
+
+    meshuser.js serverCommandGetSysInfo returns Invalid device id both when
+    GetNodeWithRights/DEVICEDETAILS fails and when the si document is absent.
+    serverCommandGetNetworkInfo has the same rights gate but returns netif:null
+    even with no if document. Use that server-only read on this same session.
+    Discard all network data; only a bounded reason code leaves this function.
+    A failed probe is inconclusive, never evidence of missing information.
+    """
+    unresolved = "info_unavailable"
+    if answer.get("noinfo") is not True or answer.get("result") != "Invalid device id":
+        return unresolved
+    requested, resolved = frame.get("nodeid"), answer.get("nodeid")
+    if not is_pc_device_id(requested) or not is_pc_device_id(resolved):
+        return unresolved
+    if not resolved.startswith("node/"):
+        return unresolved
+    if requested != resolved and ("/" in requested or requested != resolved.rsplit("/", 1)[-1]):
+        return unresolved
+    tag = new_sysinfo_tag()
+    try:
+        if time.monotonic() >= deadline:
+            return unresolved
+        socket.send_text(json.dumps({
+            "action": "getnetworkinfo", "nodeid": requested, "tag": tag,
+        }, separators=(",", ":")))
+        while time.monotonic() < deadline:
+            message = socket.recv(deadline)
+            if message is None:
+                break
+            opcode, payload = message
+            if opcode != 0x1:
+                continue
+            reply = json.loads(payload.decode("utf-8"))
+            if not isinstance(reply, dict) or reply.get("action") != "getnetworkinfo":
+                continue
+            if reply.get("nodeid") != resolved:
+                continue
+            if reply.get("noinfo") is True:
+                if reply.get("tag") == tag and reply.get("result") == "Invalid device id":
+                    return "info_node_unavailable"
+                continue
+            # Upstream successful getnetworkinfo does not echo tag. This is
+            # the sole such request on the fresh socket; match the node and
+            # response shape, and reject an explicit mismatching tag.
+            # A stored if document can have only netif or only netif2:
+            # meshagent.js stamps updateTime when saving either spelling.
+            both_fields = "netif" in reply and "netif2" in reply
+            stored_shape = (type(reply.get("updateTime")) is int
+                            and ("netif" in reply or "netif2" in reply))
+            if ("tag" not in reply or reply["tag"] == tag) and (
+                    (both_fields or stored_shape) and "result" not in reply
+                    and "noinfo" not in reply):
+                return "info_not_stored"
+    except Exception:
+        pass
+    return unresolved
 
 
 def sysinfo_failure_code(exc: BaseException) -> str:

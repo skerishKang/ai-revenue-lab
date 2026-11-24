@@ -62,7 +62,7 @@ from .local_agent_meshcentral_sysinfo_port import (
     SYSINFO_SHAPE,
     SYSINFO_TIMEOUT,
     SYSINFO_TRANSPORT,
-    MeshCentralSysInfoReadFailure,
+    MeshCentralSysInfoReadFailure, probe_sysinfo_absence,
 )
 
 #: The only three verbs this lane may send. `pskill` is the one that changes anything on
@@ -501,6 +501,10 @@ class MeshCentralProcessSocket:
                 if answer.get("action") != GETSYSINFO_ACTION:
                     continue
                 if answer.get("tag") == expected:
+                    if answer.get("noinfo") is True:
+                        reason = probe_sysinfo_absence(socket, frame, answer, deadline)
+                        if reason != "info_unavailable":
+                            raise MeshCentralSysInfoReadFailure(reason)
                     return answer
             return None
         finally:
