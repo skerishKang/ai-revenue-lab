@@ -1,0 +1,58 @@
+[
+  {
+    "theme": "padiem-glass",
+    "size": "1440x950",
+    "mode": "answer",
+    "mutation": ".answer-actions .answer-action{background:magenta!important}",
+    "pixel": 7838
+  },
+  {
+    "theme": "padiem-glass",
+    "size": "390x844",
+    "mode": "answer",
+    "mutation": ".answer-actions .answer-action{background:magenta!important}",
+    "pixel": 9522
+  },
+  {
+    "theme": "light",
+    "size": "390x844",
+    "mode": "no-mic",
+    "mutation": "#composerForm #sendButton{outline:12px solid magenta!important;transform:scale(1.3)!important}",
+    "pixel": 5559
+  },
+  {
+    "theme": "dark",
+    "size": "390x844",
+    "mode": "no-mic",
+    "mutation": "#composerForm #sendButton{outline:12px solid magenta!important;transform:scale(1.3)!important}",
+    "pixel": 5560
+  },
+  {
+    "theme": "light",
+    "size": "1440x950",
+    "mode": "no-mic",
+    "mutation": ".starter-icon{background:magenta!important}",
+    "pixel": 3923
+  },
+  {
+    "theme": "dark",
+    "size": "1440x950",
+    "mode": "no-mic",
+    "mutation": ".starter-icon{background:magenta!important}",
+    "pixel": 3924
+  },
+  {
+    "theme": "cinematic",
+    "size": "390x844",
+    "mode": "no-mic",
+    "mutation": ".starter-icon{outline:10px solid magenta!important}",
+    "pixel": 6468
+  },
+  {
+    "theme": "padiem-home",
+    "size": "390x844",
+    "mode": "no-mic",
+    "mutation": ".document-formats-toggle{outline:10px solid magenta!important}",
+    "pixel": 2637
+  }
+]

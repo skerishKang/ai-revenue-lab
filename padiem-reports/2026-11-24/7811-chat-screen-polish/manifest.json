@@ -1,0 +1,104 @@
+{
+  "issue": 7811,
+  "work": "C4 chat-screen-polish.css absorption",
+  "source_commit": "00f95604e882c18ca4e9b8cc2b0fa6a8dd5a430a",
+  "baseline_commit": "5be5e81d7",
+  "comparison": {
+    "computed_glass": 80,
+    "pixel_4themes": 104,
+    "light_pixel_previous": 26,
+    "control_same_code": 130,
+    "special_answer_and_no_mic": 20,
+    "tamper_detected": 8
+  },
+  "validation": {
+    "computed_diffs": 0,
+    "pixel_diffs": 0,
+    "control_diffs": 0,
+    "special_diffs": 0,
+    "tamper_nonzero": 8
+  },
+  "background_url_normalization": "Only origin host and port for background-image URLs, preserving path/file",
+  "audit": {
+    "css_rules": {
+      "before": 4385,
+      "after": 4377,
+      "delta": -8
+    },
+    "css_themed_rules": {
+      "before": 795,
+      "after": 793,
+      "delta": -2
+    },
+    "css_important": {
+      "before": 475,
+      "after": 475,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 104,
+      "after": 104,
+      "delta": 0
+    },
+    "css_color_literals": {
+      "before": 1027,
+      "after": 1027,
+      "delta": 0
+    },
+    "css_color_literals_unthemed": {
+      "before": 366,
+      "after": 366,
+      "delta": 0
+    }
+  },
+  "screenshots": [
+    {
+      "file": "pixel__dark__390x844__home-logout__before.png",
+      "sha256": "17c535f78dd5c46dd15737873ae3cf631dc2a0d48d8a151d9a6f836d5b997992",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "pixel__dark__390x844__home-logout__after.png",
+      "sha256": "17c535f78dd5c46dd15737873ae3cf631dc2a0d48d8a151d9a6f836d5b997992",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "pixel__padiem-glass__390x844__home-logout__before.png",
+      "sha256": "617dbb3c0317b1400f96b5a2a236fb595b1d5b73d8efbef96db4cc86bf92d41b",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "pixel__padiem-glass__390x844__home-logout__after.png",
+      "sha256": "617dbb3c0317b1400f96b5a2a236fb595b1d5b73d8efbef96db4cc86bf92d41b",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "special_answer_before.png",
+      "sha256": "a0c0a2f8fac583d3fb21438cd098337ee8fe10e3fe636c3598bbc16b6e9020f3",
+      "width": 1440,
+      "height": 950
+    },
+    {
+      "file": "special_answer_after.png",
+      "sha256": "a0c0a2f8fac583d3fb21438cd098337ee8fe10e3fe636c3598bbc16b6e9020f3",
+      "width": 1440,
+      "height": 950
+    },
+    {
+      "file": "tamper_before.png",
+      "sha256": "a0c0a2f8fac583d3fb21438cd098337ee8fe10e3fe636c3598bbc16b6e9020f3",
+      "width": 1440,
+      "height": 950
+    },
+    {
+      "file": "tamper_after.png",
+      "sha256": "e40cc27bbb9025081f0f7fbfab893134330c09a5b06ea8f659484bbc065ed933",
+      "width": 1440,
+      "height": 950
+    }
+  ]
+}

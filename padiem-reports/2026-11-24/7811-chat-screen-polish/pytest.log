@@ -1,0 +1,22 @@
+.............................                                            [100%]
+============================ slowest 50 durations =============================
+14.94s call     tests/test_chat_screen_polish_261103.py::test_raised_controls_measure_their_floor
+8.84s call     tests/test_chat_screen_polish_261103.py::test_desktop_greeting_renders_two_lines
+8.06s call     tests/test_chat_screen_polish_261103.py::test_menu_selection_and_url_follow_the_screen
+7.10s call     tests/test_chat_screen_polish_261103.py::test_stored_conversation_hint_follows_the_language
+7.07s call     tests/test_chat_screen_polish_261103.py::test_send_button_sits_on_the_composer_right_edge_at_390
+6.67s call     tests/test_chat_screen_polish_261103.py::test_badge_does_not_cover_the_card_content_on_a_phone
+6.60s call     tests/test_chat_screen_polish_261103.py::test_a_shared_fragment_opens_the_screen_it_names[#padiem-library]
+6.42s setup    tests/test_chat_screen_polish_261103.py::test_send_button_sits_on_the_composer_right_edge_at_390
+6.39s call     tests/test_chat_screen_polish_261103.py::test_tier_chip_text_is_centered_without_spark_and_stays_in_reserved_slot[1440-900-False-116]
+4.74s call     tests/test_chat_screen_polish_261103.py::test_tier_chip_text_is_centered_without_spark_and_stays_in_reserved_slot[390-844-True-112]
+4.15s call     tests/test_chat_screen_polish_261103.py::test_answer_action_press_box_measures_the_floor[1440-900-40]
+3.49s call     tests/test_chat_screen_polish_261103.py::test_home_card_icons_have_uniform_boxes_and_3_to_1_contrast_in_all_themes
+3.21s teardown tests/test_chat_screen_polish_261103.py::test_stored_conversation_hint_follows_the_language
+3.14s call     tests/test_chat_screen_polish_261103.py::test_answer_action_press_box_measures_the_floor[390-844-44]
+2.60s call     tests/test_chat_screen_polish_261103.py::test_a_shared_fragment_opens_the_screen_it_names[#padiem-calendar]
+1.63s setup    tests/test_chat_screen_polish_261103.py::test_send_button_is_right_aligned_on_the_phone
+0.22s call     tests/test_chat_screen_polish_261103.py::test_home_card_icons_share_svg_stroke_and_theme_plates
+
+(33 durations < 0.2s hidden.)
+29 passed in 97.72s (0:01:37)

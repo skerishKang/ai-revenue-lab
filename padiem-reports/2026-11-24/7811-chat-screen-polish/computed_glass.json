@@ -1,0 +1,922 @@
+[
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "home",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "home",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "home",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "home",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "disabled",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "disabled",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "disabled",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "disabled",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "active",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "active",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "active",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "active",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "answer",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "answer",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "answer",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "variant": "answer",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "home",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "home",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "home",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "home",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "disabled",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "disabled",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "disabled",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "disabled",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "active",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "active",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "active",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "active",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "answer",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "answer",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "answer",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 620,
+    "height": 844,
+    "variant": "answer",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "home",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "home",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "home",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "home",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "disabled",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "disabled",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "disabled",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "disabled",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "active",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "active",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "active",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "active",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "answer",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "answer",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "answer",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 621,
+    "height": 900,
+    "variant": "answer",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "home",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "home",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "home",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "home",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "disabled",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "disabled",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "disabled",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "disabled",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "active",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "active",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "active",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "active",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "answer",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "answer",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "answer",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "variant": "answer",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "home",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "home",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "home",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "home",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "disabled",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "disabled",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "disabled",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "disabled",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "active",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "active",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "active",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "active",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "answer",
+    "pseudo": [],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "answer",
+    "pseudo": [
+      "hover"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "answer",
+    "pseudo": [
+      "focus"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  },
+  {
+    "width": 1440,
+    "height": 950,
+    "variant": "answer",
+    "pseudo": [
+      "active"
+    ],
+    "nodes": 1844,
+    "properties": 406,
+    "diff_count": 0,
+    "diffs": []
+  }
+]
