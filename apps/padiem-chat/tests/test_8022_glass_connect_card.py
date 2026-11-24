@@ -19,6 +19,10 @@ CAPABILITY_CSS = (STATIC / "capability-nav.css").read_bytes().decode("utf-8", er
 
 MIX = "color-mix(in srgb, var(--text-deep-ink) 50%, transparent)"
 HAIRLINE = "var(--connector-card-hairline, rgba(23, 33, 42, .14))"
+# #7811 C2: the dialog mirror's fallback literal moved into a :root token;
+# the view sheet keeps its own literal. Both resolve to the same .14 ink in
+# every non-glass theme (pinned by the capability-nav token contract).
+HAIRLINE_DIALOG = "var(--connector-card-hairline, var(--capability-nav-connectors-edge))"
 
 
 def _rules(css: str):
@@ -51,7 +55,7 @@ def test_glass_connector_dialog_mirror_matches_the_view() -> None:
         ("#connectorsDialog .connector-retry", "재시도 단추(다이얼로그)"),
     ]:
         rule = _glass_scoped(rules, suffix, label)
-        assert _mix(rule) == HAIRLINE, label
+        assert _mix(rule) == HAIRLINE_DIALOG, label
 
 
 def test_glass_theme_defines_the_hairline_variable() -> None:

@@ -1,0 +1,72 @@
+{
+  "sheet": "capability-nav.css",
+  "base": "377261aa3",
+  "audit": {
+    "css_color_literals": {"before": 1180, "after": 1161, "delta": -19},
+    "css_color_literals_unthemed": {"before": 519, "after": 500, "delta": -19},
+    "css_important": {"before": 530, "after": 530, "delta": 0},
+    "css_themed_important": {"before": 118, "after": 118, "delta": 0},
+    "css_files": {"before": 92, "after": 92, "delta": 0},
+    "css_rules": {"before": 4385, "after": 4385, "delta": 0},
+    "css_themed_rules": {"before": 795, "after": 795, "delta": 0},
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": {
+      "--capability-nav-claw-edge": "rgba(121, 188, 231, .28)",
+      "--capability-nav-claw-wash": "rgba(121, 188, 231, .10)",
+      "--capability-nav-claw-badge-bg": "rgba(47, 111, 153, .18)",
+      "--capability-nav-dialog-shadow": "rgba(0, 0, 0, 0.18)",
+      "--capability-nav-dialog-dim": "rgba(0, 0, 0, 0.58)",
+      "--capability-nav-connectors-dim": "rgba(9, 20, 30, .38)",
+      "--capability-nav-connectors-surface": "rgba(255, 255, 255, .92)",
+      "--capability-nav-connectors-edge": "rgba(23, 33, 42, .14)",
+      "--capability-nav-connectors-edge-strong": "rgba(23, 33, 42, .16)",
+      "--capability-nav-connectors-ink": "#3d4c59",
+      "--capability-nav-connectors-connected-ink": "#1f5f86",
+      "--capability-nav-read-pending-ink": "#8a5300",
+      "--capability-nav-read-activating-ink": "#175cd3",
+      "--capability-nav-read-active-ink": "#16794c"
+    },
+    "reused": ["--settings-choice-fallback", "--project-danger-text"],
+    "definition": "padiem-tokens.css :root, capability-nav group after the editorial group; no theme block redeclares any of the 16 names",
+    "review": "replacement_review.json — 19 removed literals match 16 token values exactly, 0 theme overrides"
+  },
+  "verification": {
+    "computed": {
+      "targets": 18,
+      "measurements": 180,
+      "themes": 5,
+      "viewports": ["1440x950", "390x844"],
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "scope": "standard 13 screens x 5 themes x 2 viewports",
+      "combos": 130,
+      "nonzero": [],
+      "report": "compare_report.json",
+      "captures": "captures/"
+    },
+    "control": {"combos": 130, "nonzero": [], "report": "control_report.json"},
+    "connectors_dialog_captures": "captures/*__connectors-dialog.png (light/dark/glass, 2 widths)",
+    "tamper": {
+      "token": "--capability-nav-claw-wash",
+      "mutation": "rgba(121, 188, 231, .10)→#ff00ff",
+      "screen": "conversation",
+      "theme": "light",
+      "viewport": "1440x950",
+      "pixel": 9121,
+      "report": "tamper_report.json"
+    },
+    "tests": "로컬 218 passed(7811·7187·connectors 계약), 32 passed(래칫·대비)",
+    "ratchet": "base 377261aa3 대비 head 실측. 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −19."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 최종 계산값·대비·픽셀은 변하지 않는다.",
+    "재사용한 --settings-choice-fallback·--project-danger-text는 :root 전용이다. 테마가 덮는 --accent-soft·--accent-strong·--connector-card-hairline·--dialog-dim은 쓰지 않았다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 파일 정의에만 있다.",
+    "공유 .capability-dialog::backdrop과 기본 .capability-card fallback은 현재 DOM에서 더 구체적인 규칙에 덮여 계산값 측정용 임시 요소로 같은 선언을 확인했다.",
+    "dark 캡처에서 커넥터 카드의 흰 면 위 연한 글자가 보인다. before/after 픽셀·계산값 차이 0으로 이번 변경 전 상태이며 토큰화 범위에서 고치지 않았다."
+  ]
+}

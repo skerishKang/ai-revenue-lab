@@ -64,8 +64,24 @@ def select_count(selector: str) -> int:
     return sum(1 for rule in _rules() if rule_selector_list_contains(rule, selector))
 
 
+def resolve_value(value: str | None) -> str | None:
+    """Resolve a single ``var(--token[, fallback])`` to its shipped value.
+
+    #7811 C2 capability-nav moved these literals into ``:root`` tokens. The
+    contract still measures the *shipped* color, so parsed declarations are
+    resolved through the token sheet before a number or contrast is read.
+    """
+    if value is None:
+        return None
+    match = re.fullmatch(r"var\(\s*(--[\w-]+)\s*(?:,\s*(.+?))?\s*\)", value.strip())
+    if match is None:
+        return value
+    resolved = token_value(match.group(1))
+    return resolved if resolved is not None else match.group(2)
+
+
 def rgba(declarations: dict[str, str] | None, prop: str) -> tuple[float, float, float, float] | None:
-    value = (declarations or {}).get(prop, "")
+    value = resolve_value((declarations or {}).get(prop, ""))
     match = re.search(
         r"rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)",
         value,
@@ -108,7 +124,7 @@ def reviewed_dialog_colors() -> dict[str, str]:
     """
     colors: dict[str, str] = {}
     for rule in _rules():
-        color = declaration(rule, "color")
+        color = resolve_value(declaration(rule, "color"))
         if not color or not color.startswith("#"):
             continue
         for selector in rule.selectors:

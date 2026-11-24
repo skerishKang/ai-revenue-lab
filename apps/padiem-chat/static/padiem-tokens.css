@@ -529,6 +529,28 @@
   --editorial-summary-text: rgba(255, 255, 255, .72);
   --editorial-note-text: rgba(255, 255, 255, .52);
 
+  /* #7811 C2 capability-nav(261124): Claw 내비 칩·기능 대화상자·Connectors
+     카드의 고정 팔레트. 값은 치환 전 선언마다 박혀 있던 리터럴 그대로이고
+     5테마에서 같은 값을 칠해 온 :root 전용이다 — glass 테마 블록이 덮는
+     --accent-soft·--accent-strong·--connector-card-hairline·--dialog-dim은
+     쓰임이 달라 재사용하지 않고 이 시트의 이름으로 새 값을 소유한다.
+     카드 fallback(#fafafa)은 --settings-choice-fallback, 실패 상태(#b3261e)는
+     --project-danger-text를 그대로 재사용한다(둘 다 :root 전용). */
+  --capability-nav-claw-edge: rgba(121, 188, 231, .28);
+  --capability-nav-claw-wash: rgba(121, 188, 231, .10);
+  --capability-nav-claw-badge-bg: rgba(47, 111, 153, .18);
+  --capability-nav-dialog-shadow: rgba(0, 0, 0, 0.18);
+  --capability-nav-dialog-dim: rgba(0, 0, 0, 0.58);
+  --capability-nav-connectors-dim: rgba(9, 20, 30, .38);
+  --capability-nav-connectors-surface: rgba(255, 255, 255, .92);
+  --capability-nav-connectors-edge: rgba(23, 33, 42, .14);
+  --capability-nav-connectors-edge-strong: rgba(23, 33, 42, .16);
+  --capability-nav-connectors-ink: #3d4c59;
+  --capability-nav-connectors-connected-ink: #1f5f86;
+  --capability-nav-read-pending-ink: #8a5300;
+  --capability-nav-read-activating-ink: #175cd3;
+  --capability-nav-read-active-ink: #16794c;
+
   /* #8020: Claw 요청 말풍선. 글자는 테마의 사용자 말풍선 글자 역할을 그대로
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
   --claw-request-bubble-text: var(--user-bubble-text);

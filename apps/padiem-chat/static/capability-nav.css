@@ -5,8 +5,8 @@
   position: relative;
   font-weight: 700;
   color: var(--accent-strong);
-  border: 1px solid rgba(121, 188, 231, .28);
-  background: rgba(121, 188, 231, .10);
+  border: 1px solid var(--capability-nav-claw-edge);
+  background: var(--capability-nav-claw-wash);
 }
 #clawNavButton::after {
   content: "업무";
@@ -15,7 +15,7 @@
   font-weight: 700;
   padding: 2px 7px;
   border-radius: var(--radius-pill);
-  background: rgba(47, 111, 153, .18);
+  background: var(--capability-nav-claw-badge-bg);
   color: var(--accent-strong);
 }
 
@@ -40,7 +40,7 @@ html[data-theme="padiem-glass"] #clawNavButton::after {
   overflow: auto;
   background: var(--panel);
   color: var(--text);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 32px var(--capability-nav-dialog-shadow);
 }
 
 #clawDialog {
@@ -50,7 +50,7 @@ html[data-theme="padiem-glass"] #clawNavButton::after {
 /* ── Issue C: Claw modal readability ──────────────────────────────────── */
 /* Deepen the backdrop — was rgba(0,0,0,0.35), now with blur */
 .capability-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.58);
+  background: var(--capability-nav-dialog-dim);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
@@ -126,7 +126,7 @@ html[data-theme="padiem-glass"] #clawDialog {
   padding: 14px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--card-bg, #fafafa);
+  background: var(--card-bg, var(--settings-choice-fallback));
   text-align: left;
   cursor: default;
   font: inherit;
@@ -351,29 +351,29 @@ html[data-theme="padiem-glass"] #connectorsDialog {
    behind a transparent panel. A lighter scrim plus blur keeps focus while the
    page stays legible behind the bright panel. */
 #connectorsDialog::backdrop {
-  background: rgba(9, 20, 30, .38);
+  background: var(--capability-nav-connectors-dim);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
 
 #connectorsDialog .capability-card {
-  background: rgba(255, 255, 255, .92);
-  border-color: rgba(23, 33, 42, .14);
+  background: var(--capability-nav-connectors-surface);
+  border-color: var(--capability-nav-connectors-edge);
 }
 
 /* #8022: glass에서도 연결 카드 경계를 뚜렷하게 — standalone-views.css의
    #connectorsViewBody 미러와 같은 잉크 헤어라인(기존 토큰 파생, 새 리터럴 없음). */
 #connectorsDialog .capability-card,
 #connectorsDialog .connector-retry {
-  border-color: var(--connector-card-hairline, rgba(23, 33, 42, .14));
+  border-color: var(--connector-card-hairline, var(--capability-nav-connectors-edge));
 }
 
 /* Connector action buttons reuse .connector-retry, whose var(--panel)
    background is translucent on glass. Give the dialog's buttons a solid
    bright surface so the label stays readable over the card. */
 #connectorsDialog .connector-retry {
-  background: rgba(255, 255, 255, .92);
-  border-color: rgba(23, 33, 42, .16);
+  background: var(--capability-nav-connectors-surface);
+  border-color: var(--capability-nav-connectors-edge-strong);
   color: var(--text-panel-ink);
 }
 
@@ -386,18 +386,18 @@ html[data-theme="padiem-glass"] #connectorsDialog {
 #connectorsDialog .capability-card small,
 #connectorsDialog .capability-soon {
   opacity: 1;
-  color: #3d4c59;
+  color: var(--capability-nav-connectors-ink);
 }
 
 #connectorsDialog .capability-workspace,
 /* The server-side check could not be trusted: a neutral fact, never a state
    claim — it must not read as "needs activation" nor as "active". */
 #connectorsDialog .capability-read-state[data-read-state="unavailable"]{
-  color: #3d4c59;
+  color: var(--capability-nav-connectors-ink);
 }
 
 #connectorsDialog .capability-card[data-connector-status="connected"] .capability-workspace {
-  color: #1f5f86;
+  color: var(--capability-nav-connectors-connected-ink);
 }
 
 /* ── Calendar READ activation state (separate axis from the OAuth link) ── */
@@ -406,17 +406,17 @@ html[data-theme="padiem-glass"] #connectorsDialog {
    WCAG AA at 11px/700 on the bright card surface. The span is [hidden] in
    markup and only shown while the OAuth/workspace axis is connected. */
 #connectorsDialog .capability-read-state[data-read-state="pending"] {
-  color: #8a5300;
+  color: var(--capability-nav-read-pending-ink);
 }
 
 #connectorsDialog .capability-read-state[data-read-state="activating"] {
-  color: #175cd3;
+  color: var(--capability-nav-read-activating-ink);
 }
 
 #connectorsDialog .capability-read-state[data-read-state="active"] {
-  color: #16794c;
+  color: var(--capability-nav-read-active-ink);
 }
 
 #connectorsDialog .capability-read-state[data-read-state="failed"] {
-  color: #b3261e;
+  color: var(--project-danger-text);
 }

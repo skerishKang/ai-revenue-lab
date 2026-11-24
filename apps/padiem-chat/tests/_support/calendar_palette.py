@@ -58,6 +58,10 @@ def outputs_rules():
     return parse_rules(_sheet("outputs.css"))
 
 
+def capability_nav_rules():
+    return parse_rules(_sheet("capability-nav.css"))
+
+
 def unthemed_literals(rules) -> list[str]:
     """Non-custom-property color literals outside html[data-theme] rules."""
     import re
@@ -85,3 +89,7 @@ def unthemed_editorial_literals() -> list[str]:
 
 def unthemed_outputs_literals() -> list[str]:
     return unthemed_literals(outputs_rules())
+
+
+def unthemed_capability_nav_literals() -> list[str]:
+    return unthemed_literals(capability_nav_rules())
