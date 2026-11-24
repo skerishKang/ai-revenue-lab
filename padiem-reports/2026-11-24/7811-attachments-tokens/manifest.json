@@ -1,0 +1,106 @@
+{
+  "sheet": "attachments.css",
+  "base": "37c01b5c6",
+  "audit": {
+    "css_color_literals": {
+      "before": 1065,
+      "after": 1048,
+      "delta": -17
+    },
+    "css_color_literals_unthemed": {
+      "before": 404,
+      "after": 387,
+      "delta": -17
+    },
+    "css_important": {
+      "before": 518,
+      "after": 518,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 106,
+      "after": 106,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4385,
+      "after": 4385,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 795,
+      "after": 795,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": {
+      "--attachments-card-edge": "rgba(18, 31, 51, 0.12)",
+      "--attachments-card-wash": "rgba(248, 250, 252, 0.92)",
+      "--attachments-icon-bg": "#eef1f5",
+      "--attachments-preview-note-ink": "#687386",
+      "--attachments-remove-hover-wash": "rgba(18, 31, 51, 0.08)",
+      "--attachments-chip-icon-ink": "#2b3a52",
+      "--attachments-chip-title-ink": "#16233a",
+      "--attachments-chip-meta-ink": "#5b6b80",
+      "--attachments-invalid-edge": "rgba(178, 34, 34, 0.45)",
+      "--attachments-invalid-wash": "rgba(255, 241, 241, 0.95)",
+      "--attachments-invalid-note-ink": "#8c1d1d",
+      "--attachments-chip-remove-ink": "#42526e"
+    },
+    "reused": [
+      "--project-error-text"
+    ],
+    "definition": "padiem-tokens.css :root, attachments group after the surfaces group; no theme block redeclares any of the 13 names",
+    "review": "replacement_review.json — 17 removed literals match 13 token values exactly, 0 theme overrides"
+  },
+  "verification": {
+    "computed": {
+      "targets": 12,
+      "measurements": 120,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "screen": "conversation + fixed attachment markers",
+      "combos": 10,
+      "nonzero": [],
+      "report": "compare_report.json"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json"
+    },
+    "tamper": {
+      "token": "--attachments-icon-bg",
+      "mutation": "#eef1f5→#ff00ff",
+      "screen": "conversation",
+      "theme": "light",
+      "viewport": "1440x950",
+      "pixel": 773,
+      "report": "tamper_report.json"
+    },
+    "tests": "attachments·첨부 계약 90 passed(간헐 1건 재실행 통과), 래칫 통과",
+    "ratchet": "base 37c01b5c6 대비 head 실측. 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −17."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 최종 계산값·대비·픽셀은 변하지 않는다.",
+    "재사용한 --project-error-text는 :root 전용이다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 파일 정의에만 있다.",
+    "첨부 트레이는 기본 캡처에서 hidden이라 같은 도구의 고정 표식으로 칩·미리보기·오류 문구를 채워 측정했다(사용자/기기 값 없음).",
+    "padiem-surfaces.css의 !important 카드 덮어쓰기(2차 레인)가 attachment-chip·preview 배경/경계와 composer-note 글자를 아직 가린다. 계산값은 승자 값을 재고, 변조는 실제로 칠하는 아이콘 배경 토큰으로 했다.",
+    "캡처 8장은 파일·상태 표식(ok/state_ok/app_init)으로만 확인했고, 이 모델이 이미지 입력을 받지 않아 화면을 직접 보지는 못했다(못 봄)."
+  ]
+}

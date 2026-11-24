@@ -1,0 +1,50 @@
+[
+  {
+    "label": "preview note",
+    "fg": "#687386",
+    "bg": "#f8fafc",
+    "ratio": 4.58,
+    "floor": 4.5,
+    "pass": true
+  },
+  {
+    "label": "chip title",
+    "fg": "#16233a",
+    "bg": "#f8fafc",
+    "ratio": 15.03,
+    "floor": 4.5,
+    "pass": true
+  },
+  {
+    "label": "chip meta",
+    "fg": "#5b6b80",
+    "bg": "#f8fafc",
+    "ratio": 5.2,
+    "floor": 4.5,
+    "pass": true
+  },
+  {
+    "label": "invalid meta",
+    "fg": "#8c1d1d",
+    "bg": "#fff1f1",
+    "ratio": 8.28,
+    "floor": 4.5,
+    "pass": true
+  },
+  {
+    "label": "chip remove",
+    "fg": "#42526e",
+    "bg": "#f8fafc",
+    "ratio": 7.54,
+    "floor": 4.5,
+    "pass": true
+  },
+  {
+    "label": "error note",
+    "fg": "#a23434",
+    "bg": "#f8fafc",
+    "ratio": 6.52,
+    "floor": 4.5,
+    "pass": true
+  }
+]
