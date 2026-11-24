@@ -15,7 +15,7 @@ from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .central_model_control_routes import _central_admin
 from .feedback_store import FeedbackDailyLimit, FeedbackUnavailable
-from .site_feedback_store import (BODY_CHARS, EXTERNAL_CATEGORIES, EXTERNAL_STATUSES,
+from .site_feedback_store import (ACCOUNT_NAME_CHARS, BODY_CHARS, EXTERNAL_CATEGORIES, EXTERNAL_STATUSES,
                                  INGEST_EVENTS, SITE_FEEDBACK_ID, SITE_KEYS, STATUSES)
 from .lovetree_ops_outbox import (CHAT_STATUS_TO_EXTERNAL, outbox_state,
                                   reply_config, schedule_dispatch)
@@ -244,7 +244,11 @@ def _ingest_text(value, limit, *, allow_empty=False):
 
 
 def _ingest_payload_valid(value):
-    if not isinstance(value, dict) or set(value) != _INGEST_FIELDS:
+    # accountName(보낸 사람 닉네임)은 선택 항목이다 — 이름을 아직 보내지 않는 러브트리 버전도 받는다.
+    if not isinstance(value, dict) or set(value) - {'accountName'} != _INGEST_FIELDS:
+        return False
+    name = value.get('accountName')
+    if name is not None and not _ingest_text(name, ACCOUNT_NAME_CHARS):
         return False
     event = value['event']
     if event not in INGEST_EVENTS:
@@ -337,7 +341,8 @@ async def site_feedback_ingest(request):
             external_feedback_id=value['feedbackId'], event=value['event'], body=value['body'],
             status=value['status'], append=value['append'], is_ai_customer=value['isAiCustomer'],
             account_subject_id=value['accountSubjectId'], category=value['category'],
-            title=value['title'], created_at=value['createdAt'], now=_now_iso())
+            title=value['title'], created_at=value['createdAt'], now=_now_iso(),
+            account_name=value.get('accountName'))
     except FeedbackUnavailable:
         _journal_rejected(site, 'feedback_unavailable')
         return _error('feedback_unavailable', 503)
