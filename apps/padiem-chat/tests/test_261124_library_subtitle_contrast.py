@@ -1,4 +1,4 @@
-﻿"""Library subtitle contrast regression (#8686 follow-up)."""
+"""Library subtitle contrast regression (#8686 follow-up)."""
 from _support import contrast_repair_source as source
 from test_261124_project_form_standalone_header_contrast import (
     FETCH_STUB, THEMES, VIEWPORTS, _painted_contrast, site, sync_playwright,
@@ -37,4 +37,3 @@ def test_library_subtitle_contrast(site):
             browser.close()
     assert len(observations) == 10
     assert all(ratio >= 4.5 for _, _, ratio in observations), observations
-
