@@ -139,6 +139,7 @@
 @media (max-width: 680px) {
   .project-files-heading {
     align-items: flex-start;
+    overflow-wrap: anywhere;
   }
   .project-file-add {
     min-height: 40px;

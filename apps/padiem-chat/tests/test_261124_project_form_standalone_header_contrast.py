@@ -435,3 +435,46 @@ def test_painted_contrast_matrix(site):
     print(json.dumps(observations), flush=True)
     failing = [row for row in observations if row[4] < row[3]]
     assert not failing, failing
+
+
+@pytest.mark.skipif(sync_playwright is None, reason="playwright not installed")
+def test_mobile_project_edit_no_horizontal_overflow(site):
+    """The edit dialog must fit at 390px even with files and Drive visible."""
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=True)
+        try:
+            for theme in THEMES:
+                page = browser.new_page(viewport={"width": 390, "height": 844},
+                                        reduced_motion="reduce")
+                try:
+                    page.route("**/*", lambda route: route.continue_()
+                               if "127.0.0.1" in route.request.url else route.abort())
+                    page.add_init_script(FETCH_STUB)
+                    page.goto(site + "?theme=" + theme, wait_until="load")
+                    page.wait_for_timeout(1600)
+                    assert page.evaluate("document.documentElement.dataset.theme") == theme
+                    assert page.evaluate(OPEN_PROJECT_DIALOG)
+                    page.evaluate(SHOW_FILES_PANEL)
+                    page.evaluate("""() => {
+                        document.getElementById('projectDrivePanel').hidden = false;
+                        const list = document.getElementById('projectFilesList');
+                        list.append(list.firstElementChild.cloneNode(true));
+                        document.getElementById('projectNameInput').focus();
+                    }""")
+                    page.wait_for_timeout(500)
+                    overflow = page.evaluate("""() => {
+                        const d = document.getElementById('projectDialog');
+                        const nodes = [d, ...d.querySelectorAll(
+                            'form, #projectFilesPanel, .project-files-heading, '
+                            + '.project-files-heading > div, .project-files-heading small, '
+                            + '#projectFilesList, .project-file-row')];
+                        return nodes.filter(e => e.getBoundingClientRect().width > 0
+                            && (e.scrollWidth > e.clientWidth || e.scrollLeft !== 0))
+                            .map(e => [e.id || e.className || e.tagName,
+                                       e.clientWidth, e.scrollWidth, e.scrollLeft]);
+                    }""")
+                    assert not overflow, (theme, overflow)
+                finally:
+                    page.close()
+        finally:
+            browser.close()
