@@ -118,8 +118,8 @@
 }
 
 .library-tab[aria-selected="true"] {
-  border-color: rgba(47, 111, 153, 0.24);
-  background: rgba(47, 111, 153, 0.08);
+  border-color: var(--library-tab-active-edge);
+  background: var(--pc-pairing-pending-bg);
   color: var(--accent-strong);
   font-weight: 700;
 }
@@ -167,7 +167,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="library"] .library-t
   box-sizing: border-box;
   min-width: 0;
   padding: 12px 14px;
-  border: 1px solid rgba(127, 127, 127, 0.22);
+  border: 1px solid var(--b66-quote-faint-edge);
   border-radius: 14px;
   background: var(--panel);
 }
@@ -210,9 +210,9 @@ html[data-theme="padiem-glass"] .library-item {
   flex: 0 0 auto;
   min-height: 44px;
   padding: 0 14px;
-  border: 1px solid rgba(127, 127, 127, 0.28);
+  border: 1px solid var(--b66-quote-hairline);
   border-radius: 12px;
-  background: rgba(127, 127, 127, 0.08);
+  background: var(--control-wash-soft);
   color: inherit;
   font: inherit;
   font-size: 13px;
@@ -221,7 +221,7 @@ html[data-theme="padiem-glass"] .library-item {
 }
 
 .library-item-action:hover {
-  background: rgba(127, 127, 127, 0.16);
+  background: var(--control-wash-hover);
 }
 
 /* ── Sidebar entry ───────────────────────────────────────────────────── */
@@ -233,7 +233,7 @@ html[data-theme="padiem-glass"] .library-item {
 
 #filesNavButton[aria-current="page"] {
   border-color: var(--accent-strong);
-  background: rgba(121, 188, 231, 0.22);
+  background: var(--standalone-nav-bg);
 }
 
 html[data-theme="padiem-glass"] #filesNavButton[aria-current="page"] {
@@ -303,7 +303,7 @@ html[data-theme="padiem-glass"] #filesNavButton[aria-current="page"] {
 
 .library-file-dialog::backdrop,
 .library-files-dialog::backdrop {
-  background: rgba(15, 19, 25, 0.46);
+  background: var(--library-dialog-dim);
 }
 
 .library-dialog-head {

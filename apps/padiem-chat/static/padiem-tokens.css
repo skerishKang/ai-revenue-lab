@@ -828,6 +828,15 @@
   --search-sources-number-ink: rgba(31, 41, 55, 0.62);
   --search-sources-copy-ink: rgba(31, 41, 55, 0.58);
 
+  /* #7811 C2 library(261124): 자료실 탭·카드·대화상자 딤의 고정 팔레트. 값은
+     치환 전 선언마다 박혀 있던 리터럴 그대로이고 :root에만 둔다 — 다섯 테마에서
+     같은 값으로 칠해져 온 고정 팔레트라 테마 블록이 덮지 않는다. 여섯 값은 이미
+     :root 전용인 --pc-pairing-pending-bg·--b66-quote-faint-edge·
+     --b66-quote-hairline·--control-wash-soft·--control-wash-hover·
+     --standalone-nav-bg를 재사용하고, 두 값만 이 묶음이 소유한다. */
+  --library-tab-active-edge: rgba(47, 111, 153, 0.24);
+  --library-dialog-dim: rgba(15, 19, 25, 0.46);
+
   /* 연결 카드 대비 수리(261124): 연결 화면 카드는 다섯 테마 모두 밝은 판이다
      (standalone-views.css의 #connectorsViewBody .capability-card). 카드 이름은
      글자색을 지정받지 못해 테마 글자색을 상속했고, 상태 줄은 테마 --muted를
