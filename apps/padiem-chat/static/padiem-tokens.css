@@ -789,6 +789,19 @@
   --documents-add-edge: rgba(25, 28, 32, 0.12);
   --documents-selection-outline: #7c74f0;
 
+  /* #7811 C2 b66-quote-runtime(261124): 견적 대화상자·연결 카드의 고정 팔레트.
+     값은 치환 전 var() fallback에 박혀 있던 리터럴 그대로이고 :root에만 둔다 —
+     다섯 테마에서 같은 값으로 칠해져 온 고정 팔레트라 테마 블록이 덮지 않는다.
+     흰_surface(.05/.04)·초점(#2a7db4)·입력 판(.8)은 이미 :root 전용인
+     --surface-veil-faint·--surface-veil-panel·--pc-focus·--settings-input-bg를
+     재사용하고, 나머지 다섯 값만 이 묶음이 소유한다. 테마가 덮는 토큰은 쓰지
+     않았다. */
+  --b66-quote-hairline: rgba(127, 127, 127, 0.28);
+  --b66-quote-dialog-dim: rgba(0, 0, 0, 0.55);
+  --b66-quote-edge: rgba(127,127,127,.3);
+  --b66-quote-faint-edge: rgba(127,127,127,.22);
+  --b66-quote-review-surface: rgba(255, 255, 255, 0.7);
+
   /* 연결 카드 대비 수리(261124): 연결 화면 카드는 다섯 테마 모두 밝은 판이다
      (standalone-views.css의 #connectorsViewBody .capability-card). 카드 이름은
      글자색을 지정받지 못해 테마 글자색을 상속했고, 상태 줄은 테마 --muted를

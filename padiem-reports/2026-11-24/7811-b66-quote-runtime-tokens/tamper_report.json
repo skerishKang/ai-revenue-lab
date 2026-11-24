@@ -1,0 +1,8 @@
+{
+  "token": "--b66-quote-hairline",
+  "mutation": "rgba(127, 127, 127, 0.28)→#ff00ff",
+  "screen": "conversation + fixed quote dialog",
+  "theme": "light",
+  "viewport": "1440x950",
+  "pixel": 8366
+}

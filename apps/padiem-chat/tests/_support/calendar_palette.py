@@ -68,6 +68,10 @@ def attachments_rules():
 
 def documents_rules():
     return parse_rules(_sheet("documents.css"))
+
+
+def b66_quote_rules():
+    return parse_rules(_sheet("b66-quote-runtime.css"))
 def surfaces_rules():
     return parse_rules(_sheet("padiem-surfaces.css"))
 
@@ -147,6 +151,10 @@ def unthemed_attachments_literals() -> list[str]:
 
 def unthemed_documents_literals() -> list[str]:
     return unthemed_literals(documents_rules())
+
+
+def unthemed_b66_quote_literals() -> list[str]:
+    return unthemed_literals(b66_quote_rules())
 
 
 def unthemed_standalone_literals() -> list[str]:

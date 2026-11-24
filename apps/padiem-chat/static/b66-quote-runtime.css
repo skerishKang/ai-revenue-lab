@@ -2,7 +2,7 @@
   width: min(960px, calc(100vw - 28px));
   max-height: calc(100vh - 28px);
   padding: 0;
-  border: 1px solid var(--border, rgba(127, 127, 127, 0.28));
+  border: 1px solid var(--border, var(--b66-quote-hairline));
   border-radius: 18px;
   background: var(--panel);
   /* The glass theme's --panel is 46% alpha for cards that sit on the app's
@@ -13,7 +13,7 @@
   color: inherit;
 }
 .b66-quote-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--b66-quote-dialog-dim);
 }
 .b66-quote-panel {
   display: grid;
@@ -62,7 +62,7 @@
      clear the 3:1 non-text floor where the shared --border hairline does not. */
   border: 1px solid var(--input-border-strong);
   border-radius: var(--radius-sm);
-  background: var(--surface, rgba(255, 255, 255, 0.05));
+  background: var(--surface, var(--surface-veil-faint));
   color: inherit;
   padding: 10px 12px;
   font: inherit;
@@ -120,7 +120,7 @@
 .b66-quote-frame {
   width: 100%;
   min-height: min(720px, 68vh);
-  border: 1px solid var(--border, rgba(127, 127, 127, 0.28));
+  border: 1px solid var(--border, var(--b66-quote-hairline));
   border-radius: 12px;
   background: white;
 }
@@ -141,14 +141,14 @@
 /* #4428: B66 uses the existing canonical device directory READ-ONLY.
    This is onboarding/status, not a PC pairing or task execution UI. */
 .b66-quote-connect {
-  border: 1px solid var(--border, rgba(127,127,127,.28));
+  border: 1px solid var(--border, var(--b66-quote-hairline));
   border-radius: 12px;
   padding: 10px 12px;
-  background: var(--surface, rgba(255,255,255,.04));
+  background: var(--surface, var(--surface-veil-panel));
 }
 .b66-quote-connect-toggle,
 .b66-quote-connect-refresh {
-  border: 1px solid var(--border, rgba(127,127,127,.3));
+  border: 1px solid var(--border, var(--b66-quote-edge));
   color: inherit;
   background: transparent;
   font: inherit;
@@ -180,7 +180,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px;
-  border: 1px solid var(--border, rgba(127,127,127,.22));
+  border: 1px solid var(--border, var(--b66-quote-faint-edge));
   border-radius: 9px;
   padding: 9px 11px;
 }
@@ -190,7 +190,7 @@
 /* #4434 follow-up: minimal TXT read request for the verified PC. */
 .b66-quote-connect-txt {
   margin-top: 10px;
-  border-top: 1px solid var(--border, rgba(127,127,127,.22));
+  border-top: 1px solid var(--border, var(--b66-quote-faint-edge));
   padding-top: 10px;
   display: grid;
   gap: 8px;
@@ -210,7 +210,7 @@
   max-width: 100%;
 }
 .b66-quote-connect-request {
-  border: 1px solid var(--border, rgba(127,127,127,.3));
+  border: 1px solid var(--border, var(--b66-quote-edge));
   color: inherit;
   background: transparent;
   font: inherit;
@@ -230,7 +230,7 @@
 }
 .b66-quote-connect-run-status[data-state="ready"] { color: var(--success); }
 .b66-quote-connect-run-status[data-state="error"] { color: var(--danger); }
-.b66-quote-connect :focus-visible { outline: 3px solid var(--focus, #2a7db4); outline-offset: 2px; }
+.b66-quote-connect :focus-visible { outline: 3px solid var(--focus, var(--pc-focus)); outline-offset: 2px; }
 @media (max-width: 640px) {
   .b66-quote-connect-item { align-items: flex-start; flex-direction: column; }
 }
@@ -254,7 +254,7 @@
   padding: 8px 14px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--line);
-  background: var(--surface, rgba(255, 255, 255, 0.8));
+  background: var(--surface, var(--settings-input-bg));
   color: inherit;
   cursor: pointer;
   align-self: flex-start;
@@ -276,7 +276,7 @@
   padding: 8px 10px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--surface, rgba(255, 255, 255, 0.7));
+  background: var(--surface, var(--b66-quote-review-surface));
 }
 
 .b66-quote-pcform-review-lead,
