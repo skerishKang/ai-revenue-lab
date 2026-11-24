@@ -1,10 +1,11 @@
 {
   "sheet": "padiem-surfaces.css",
-  "base": "e6d7e7fa",
+  "base": "2dea1a96",
+  "evidence_generated_at": "e6d7e7fa — 이후 main의 capability-nav·mesh 변경은 이 시트의 CSS에 닿지 않아 픽셀·계산값 결과는 그대로다.",
   "round": "#7811 C2 1차 (첫 화면·대화·입력창 45선언). 2차 21선언은 범위 밖.",
   "audit": {
-    "css_color_literals": {"before": 1180, "after": 1135, "delta": -45},
-    "css_color_literals_unthemed": {"before": 519, "after": 474, "delta": -45},
+    "css_color_literals": {"before": 1161, "after": 1116, "delta": -45},
+    "css_color_literals_unthemed": {"before": 500, "after": 455, "delta": -45},
     "css_important": {"before": 518, "after": 518, "delta": 0},
     "css_themed_important": {"before": 106, "after": 106, "delta": 0},
     "css_files": {"before": 92, "after": 92, "delta": 0},
@@ -48,7 +49,7 @@
       "images": ["captures/tamper_clean.png", "captures/tamper_mutated.png", "captures/tamper_diff.png"]
     },
     "tests": "로컬 11 passed(신규 계약·토큰 목록) + 래칫·구조·대비 32 passed",
-    "ratchet": "base e6d7e7fa 대비 head 실측. 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −45."
+    "ratchet": "base 2dea1a96 대비 head 실측. 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −45."
   },
   "notes": [
     "값은 치환 전 리터럴 그대로라 최종 계산값·픽셀·대비는 변하지 않는다.",
