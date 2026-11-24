@@ -503,3 +503,84 @@ def test_socket_reports_shape_for_an_unusable_reply_frame(payload):
         socket.sysinfo(sysinfo_frame(NODE, TAG))
     assert caught.value.code == SYSINFO_SHAPE
     assert payload.decode("utf-8", "replace") not in str(caught.value)
+
+
+
+# ---- identical upstream noinfo replies (#8634 follow-up) ---------------------
+def _upstream_noinfo(node=NODE, tag=TAG):
+    return {"action": "getsysinfo", "nodeid": node, "tag": tag,
+            "noinfo": True, "result": "Invalid device id"}
+
+
+@pytest.mark.parametrize("node", [NODE, "synthetic-pc-one", "node/domain/synthetic-pc-one"])
+def test_noinfo_with_same_rights_gate_passed_means_no_stored_info(node):
+    resolved = node if node.startswith("node/") else NODE
+    probe_tag = "padiem-sysinfo-probe"
+    socket, opened = _socket([
+        {"action": "serverinfo"}, _upstream_noinfo(resolved),
+        {"action": "getnetworkinfo", "nodeid": "node//other", "netif": None, "netif2": None},
+        {"action": "getnetworkinfo", "nodeid": resolved, "netif": None, "netif2": None},
+    ])
+    with patch("kagent.local_agent_meshcentral_sysinfo_port.new_sysinfo_tag",
+               side_effect=[TAG, probe_tag]):
+        port = MeshCentralSysInfoPort(send=socket.sysinfo)
+        assert port.read_commit_date(node) == (None, "info_not_stored")
+    fake = opened[0][0]
+    assert [json.loads(s) for s in fake.sent] == [
+        sysinfo_frame(node, TAG),
+        {"action": "getnetworkinfo", "nodeid": resolved, "tag": probe_tag},
+    ]
+    assert fake.closed
+
+
+def test_noinfo_with_same_rights_gate_denied_does_not_claim_missing_document():
+    probe_tag = "padiem-sysinfo-probe"
+    denied = {"action": "getnetworkinfo", "nodeid": NODE, "tag": probe_tag,
+              "noinfo": True, "result": "Invalid device id"}
+    socket, opened = _socket([{"action": "userinfo"}, _upstream_noinfo(),
+                              {**denied, "tag": "another-tag"}, denied])
+    with patch("kagent.local_agent_meshcentral_sysinfo_port.new_sysinfo_tag",
+               side_effect=[TAG, probe_tag]):
+        port = MeshCentralSysInfoPort(send=socket.sysinfo)
+        assert port.read_commit_date(NODE) == (None, "info_node_unavailable")
+    assert opened[0][0].closed
+
+
+@pytest.mark.parametrize("extra", [
+    [],
+    [{"action": "getnetworkinfo", "nodeid": "node//other", "netif": {}, "netif2": {}}],
+    [{"action": "getnetworkinfo", "nodeid": NODE, "tag": "wrong",
+      "netif": None, "netif2": None}],
+    [{"action": "getnetworkinfo", "nodeid": NODE, "netif": None}],
+])
+def test_unanswered_or_unmatched_probe_stays_inconclusive(extra):
+    socket, _ = _socket([{"action": "serverinfo"}, _upstream_noinfo(), *extra])
+    with patch("kagent.local_agent_meshcentral_sysinfo_port.new_sysinfo_tag",
+               side_effect=[TAG, "padiem-sysinfo-probe"]):
+        assert MeshCentralSysInfoPort(send=socket.sysinfo).read_commit_date(NODE) == (
+            None, "info_unavailable")
+
+
+def test_mismatched_sysinfo_node_never_triggers_probe():
+    socket, opened = _socket([{"action": "serverinfo"}, _upstream_noinfo("node//other")])
+    with patch("kagent.local_agent_meshcentral_sysinfo_port.new_sysinfo_tag", return_value=TAG):
+        assert MeshCentralSysInfoPort(send=socket.sysinfo).read_commit_date(NODE) == (
+            None, "info_unavailable")
+    assert len(opened[0][0].sent) == 1
+
+
+@pytest.mark.parametrize("code", ["info_not_stored", "info_node_unavailable"])
+@pytest.mark.parametrize("binary_has_date", [True, False])
+def test_classified_noinfo_preserves_binary_fallback_and_bounded_log(capsys, code, binary_has_date):
+    sysinfo = Mock(read_commit_date=Mock(return_value=(None, code)))
+    read = Mock(read_bytes=Mock(return_value=version_resource_exe() if binary_has_date else b""))
+    fallback = HelperStatusReadFallback(
+        post=Mock(return_value=(200, {"ok": True})), read_port=read, sysinfo_port=sysinfo,
+    )
+    state = dict(READY)
+    fallback._complete_mesh_agent_version(NODE, NODE, state)
+    assert read.read_bytes.call_count == (1 if binary_has_date else 2)
+    assert state.get("mesh_agent_version") == (VALID if binary_has_date else None)
+    logs = capsys.readouterr().out
+    assert f"helper_ready_agent_version read={'observed' if binary_has_date else code}" in logs
+    assert NODE not in logs
