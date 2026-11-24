@@ -100,6 +100,14 @@ def pc_pairing_source() -> str:
     return _sheet("pc-pairing-card.css")
 
 
+def answer_actions_rules():
+    return parse_rules(_sheet("answer-actions.css"))
+
+
+def answer_actions_source() -> str:
+    return _sheet("answer-actions.css")
+
+
 def unthemed_literals(rules) -> list[str]:
     """Non-custom-property color literals outside html[data-theme] rules."""
     import re
@@ -155,3 +163,7 @@ def unthemed_rich_response_literals() -> list[str]:
 
 def unthemed_pc_pairing_literals() -> list[str]:
     return unthemed_literals(pc_pairing_rules())
+
+
+def unthemed_answer_actions_literals() -> list[str]:
+    return unthemed_literals(answer_actions_rules())

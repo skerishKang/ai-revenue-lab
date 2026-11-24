@@ -1,0 +1,112 @@
+{
+  "sheet": "answer-actions.css",
+  "round": "#7811 C2 answer-actions.css 11선언",
+  "base": "322e4afd7",
+  "audit": {
+    "css_color_literals": {
+      "before": 972,
+      "after": 961,
+      "delta": -11
+    },
+    "css_color_literals_unthemed": {
+      "before": 324,
+      "after": 313,
+      "delta": -11
+    },
+    "css_important": {
+      "before": 463,
+      "after": 463,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4367,
+      "after": 4367,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 777,
+      "after": 777,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": [
+      "--answer-actions-avatar-wash",
+      "--answer-actions-avatar-edge",
+      "--answer-actions-time-text",
+      "--answer-actions-edge",
+      "--answer-actions-bg",
+      "--answer-actions-text",
+      "--answer-actions-hover-edge",
+      "--answer-actions-pressed-bg",
+      "--answer-actions-more-bg"
+    ],
+    "reused": [
+      "--ws-input-text"
+    ],
+    "definition": "padiem-tokens.css :root answer-actions 묶음. 테마 블록이 덮지 않는다.",
+    "reuse_rule": "값이 같은 기존 :root 토큰 1개를 재사용했고 테마가 덮는 토큰은 재사용하지 않았다(계약 시험이 고정)."
+  },
+  "verification": {
+    "computed": {
+      "targets": 11,
+      "themes": 5,
+      "checked": 10,
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "combos": 10,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "screens": [
+        "actions"
+      ],
+      "nonzero": [],
+      "report": "compare_report.json",
+      "captures": "captures/"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json",
+      "scope": "scope_report.json"
+    },
+    "tamper": {
+      "token": "--answer-actions-edge",
+      "mutation": "rgba(101, 87, 232, 0.22)->#ff00ff",
+      "theme": "light",
+      "screen": "actions",
+      "viewport": "1440x950",
+      "pixel": 1366,
+      "report": "tamper_report.json",
+      "images": [
+        "captures/tamper_clean.png",
+        "captures/tamper_mutated.png"
+      ]
+    },
+    "tests": "신규 계약·기존 토큰 18개, 구조·래칫·대비·접근성 37개 통과",
+    "ratchet": "base 대비 head: 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −11."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 계산값·픽셀·대비는 변하지 않는다.",
+    "일부 선언은 뒤 시트가 같은 값으로 덮는다. 실제로 칠하는 --answer-actions-edge(버전·메뉴 경계)로 변조 검출했다.",
+    "숨은 요소는 고정 표식 아바타·시간·버튼·메뉴로 채운 화면에서 측정했다.",
+    "원래 대비 미달(저장한 답변 창·커넥터 카드 등)은 이번 범위가 아니므로 수리하지 않고 목록으로만 남긴다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 정의에만 있다."
+  ]
+}
