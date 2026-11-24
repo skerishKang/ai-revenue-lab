@@ -5,7 +5,7 @@ import json
 import re
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from .d1_rows import rows_from_result
 from .feedback_store import FeedbackDailyLimit, FeedbackUnavailable
@@ -16,6 +16,7 @@ PAGE_SIZE = 100
 STATUSES = frozenset({'new', 'reviewing', 'fixed', 'deferred'})
 SITE_KEYS = frozenset({'miraen-home', 'lovetree', 'bookai'})
 SITE_FEEDBACK_ID = re.compile(r'sf_[0-9a-f]{32}\Z')
+MIRAEN_IMPORT_KEY = re.compile(r'miraen-home:[^:\s]{1,40}:[0-9]{6}(?:_2)?:[0-9]{1,3}\Z')
 RATE_HASH = re.compile(r'[0-9a-f]{64}\Z')
 _COLUMNS = ('id,site,body,screen_json,status,created_at,updated_at,ops_memo,'
             'external_feedback_id,external_title,external_category,'
@@ -267,3 +268,57 @@ class D1SiteFeedbackStore:
         if record is None:
             raise FeedbackUnavailable()
         return record, False, False
+
+    async def import_miraen(self, *, external_key, body, screen, status, created_at, memo,
+                            existing_id=None):
+        """#8677: operator-only import of AI honorary member feedback for the
+        councillor homepage. No public route, no daily quota. The external key
+        makes a rerun a no-op, and a rerun never overwrites a status that the
+        operations inbox has changed since."""
+        if (not isinstance(external_key, str)
+                or not MIRAEN_IMPORT_KEY.fullmatch(external_key)
+                or not _valid_text(body, BODY_CHARS) or not body.startswith('[AI ')
+                or status not in STATUSES or not _valid_memo(memo)
+                or not isinstance(screen, dict) or set(screen) != {'width', 'height'}
+                or any(type(v) is not int or not 1 <= v <= 10000 for v in screen.values())
+                or not isinstance(created_at, str)):
+            raise ValueError('feedback_invalid_request')
+        try:
+            stamp = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+        except ValueError:
+            raise ValueError('feedback_invalid_request') from None
+        if stamp.tzinfo is None or stamp.strftime('%y%m%d') != external_key.split(':')[2][:6]:
+            raise ValueError('feedback_invalid_request')
+        stored_at = stamp.astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        if existing_id is not None:
+            if not isinstance(existing_id, str) or not SITE_FEEDBACK_ID.fullmatch(existing_id):
+                raise ValueError('feedback_invalid_request')
+            record = await self.get_record(existing_id)
+            if (record is None or record.site != 'miraen-home'
+                    or record.external_feedback_id not in (None, external_key)):
+                raise ValueError('feedback_invalid_request')
+            if record.external_feedback_id == external_key:
+                return record, False
+            record = await self._record(
+                'UPDATE site_feedback SET external_feedback_id=?,external_is_ai_customer=1 '
+                'WHERE id=? AND site=? AND external_feedback_id IS NULL RETURNING ' + _COLUMNS,
+                external_key, existing_id, 'miraen-home')
+            if record is None:
+                raise FeedbackUnavailable()
+            return record, False
+        record = await self._record(
+            'INSERT INTO site_feedback (id,site,body,screen_json,status,created_day,created_at,'
+            'updated_at,ops_memo,external_feedback_id,external_is_ai_customer,external_created_at) '
+            'VALUES (?,?,?,?,?,?,?,?,?,?,1,?) ON CONFLICT(site,external_feedback_id) '
+            'WHERE external_feedback_id IS NOT NULL DO NOTHING RETURNING ' + _COLUMNS,
+            'sf_' + uuid.uuid4().hex, 'miraen-home', body,
+            json.dumps(screen, separators=(',', ':')), status, stored_at[:10], stored_at,
+            stored_at, memo, external_key, created_at)
+        if record is not None:
+            return record, True
+        record = await self._record(
+            'SELECT ' + _COLUMNS + ' FROM site_feedback WHERE site=? AND external_feedback_id=?',
+            'miraen-home', external_key)
+        if record is None:
+            raise FeedbackUnavailable()
+        return record, False
