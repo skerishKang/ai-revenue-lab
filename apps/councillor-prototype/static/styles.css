@@ -767,18 +767,20 @@ main { flex: 1 0 auto; }
 }
 .ext-mark { margin-left: 2px; font-size: .9em; }
 
-/* Media lightbox: photo enlarges in place; the original link stays inside. */
+/* Media lightbox: the photo enlarges above the fixed tab bar. #8723 — the
+   dialog owns the top layer and the tab bar stops painting while it is open;
+   the foot reserves one tab stop so the source line never sits under it. */
 .lightbox {
+  position: fixed; inset: 0; z-index: 200;
   width: 100vw; height: 100vh; max-width: none; max-height: none;
-  margin: 0; padding: 0; border: 0; background: transparent;
+  margin: 0; padding: 0; border: 0; background: rgba(4, 8, 14, .96);
 }
 .lightbox[open] { display: flex; flex-direction: column; }
-.lightbox::backdrop { background: rgba(10, 16, 24, .78); }
+.lightbox::backdrop { background: rgba(4, 8, 14, .96); }
 .lightbox-head {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
   padding: 10px 14px; color: #f5f1e8;
 }
-.lightbox-head h2 { margin: 0; font-family: var(--font-serif); font-size: 18px; font-weight: 700; }
 .lightbox-close, .lightbox-nav {
   min-width: 44px; min-height: 44px; border: 1px solid rgba(245, 241, 232, .35);
   border-radius: 8px; background: rgba(10, 16, 24, .55); color: #f5f1e8;
@@ -789,16 +791,23 @@ main { flex: 1 0 auto; }
   min-height: 0; padding: 0 10px;
 }
 .lightbox-body img {
-  max-width: min(92vw, 1100px); max-height: 76vh; object-fit: contain;
+  max-width: min(92vw, 1100px); max-height: 68vh; object-fit: contain;
   border-radius: 8px; background: #0a1018;
 }
-.lightbox-foot { padding: 10px 14px 16px; text-align: center; }
+.lightbox-foot {
+  padding: 10px 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center;
+}
+.lightbox-foot h2 { margin: 0 0 4px; font-family: var(--font-serif); font-size: 18px; font-weight: 700; color: #f5f1e8; }
 .lightbox-foot a { display: inline-flex; min-height: var(--tap); align-items: center; color: #f5f1e8; font-size: var(--fs-body); font-weight: 600; }
-.lightbox-source { max-width: 720px; margin: 6px auto 0; color: rgba(245, 241, 232, .78); font-size: var(--fs-label); line-height: 1.6; }
+.lightbox-source { max-width: 720px; margin: 4px auto 6px; color: rgba(245, 241, 232, .86); font-size: var(--fs-label); line-height: 1.6; }
+@media (max-width: 900px) {
+  body.lightbox-open .mobile-tabbar { visibility: hidden; }
+  .lightbox-foot { padding-bottom: calc(var(--tap) + 16px + env(safe-area-inset-bottom, 0px)); }
+}
 @media (max-width: 720px) {
-  .lightbox-head h2 { font-size: 16px; }
   .lightbox-body { gap: 4px; padding: 0 4px; }
-  .lightbox-body img { max-width: calc(100vw - 112px); max-height: 68vh; }
+  .lightbox-body img { max-width: calc(100vw - 112px); max-height: 60vh; }
+  .lightbox-foot h2 { font-size: 16px; }
 }
 
 /* Public site feedback (#7690): footer-local, anonymous, no account fields. */

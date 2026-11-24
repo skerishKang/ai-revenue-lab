@@ -64,7 +64,6 @@
       <div class="media-grid" id="mediaGrid"></div>
       <dialog class="lightbox" id="mediaLightbox" aria-labelledby="lightboxTitle">
         <div class="lightbox-head">
-          <h2 id="lightboxTitle"></h2>
           <button class="lightbox-close" id="lightboxClose" type="button" aria-label="크게 보기 닫기">×</button>
         </div>
         <div class="lightbox-body">
@@ -73,8 +72,9 @@
           <button class="lightbox-nav lightbox-next" id="lightboxNext" type="button" aria-label="다음 사진">→</button>
         </div>
         <div class="lightbox-foot">
-          <a id="lightboxLink" target="_blank" rel="noopener">원문 보기 ↗</a>
+          <h2 id="lightboxTitle"></h2>
           <p class="source-note lightbox-source" id="lightboxSource" hidden></p>
+          <a id="lightboxLink" target="_blank" rel="noopener">원문 보기 ↗</a>
         </div>
       </dialog>
       <p class="source-note">본회의 발언과 사진은 의회가 공개한 공식 페이지에서 보실 수 있습니다.</p>

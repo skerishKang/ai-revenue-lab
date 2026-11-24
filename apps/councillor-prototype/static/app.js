@@ -149,7 +149,9 @@ function showActivityList(status) {
   detail.hidden = true;
   list.hidden = false;
   showActivityStatus(status || "");
-  renderCombinedPolicy(document.getElementById("activitySearch")?.value || "");
+  const visible = Array.from(list.querySelectorAll(".activity-item[id]"))
+    .filter((row) => row.id !== "activityEmpty" && !row.hidden).length;
+  renderCombinedPolicy(document.getElementById("activitySearch")?.value || "", visible);
 }
 
 function initActivityList(list) {
@@ -182,6 +184,12 @@ function initActivityList(list) {
   list.dataset.activityReady = "true";
 }
 
+// #8723: the home search forwards scope=all; only non-empty result groups
+// should be visible there, with one shared empty line when both are empty.
+function combinedSearchActive() {
+  return new URLSearchParams(location.search).get("scope") === "all";
+}
+
 function renderActivities(filter = "all", query = "") {
   const list = document.getElementById("activityList");
   if (!list || !SITE) return;
@@ -206,9 +214,10 @@ function renderActivities(filter = "all", query = "") {
     empty.textContent = "검색 결과가 없습니다.";
     list.appendChild(empty);
   }
-  if (empty) empty.hidden = count !== 0;
+  // In the combined search the policy renderer owns the one empty line.
+  if (empty) empty.hidden = count !== 0 || combinedSearchActive();
   showActivityStatus("");
-  renderCombinedPolicy(query);
+  renderCombinedPolicy(query, count);
 }
 
 function showDetail(a, options) {
@@ -558,6 +567,7 @@ function openLightbox(index, trigger) {
   renderLightbox();
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
+  document.body.classList.add("lightbox-open");
   document.getElementById("lightboxClose")?.focus();
 }
 
@@ -566,6 +576,7 @@ function closeLightbox() {
   if (!dialog) return;
   if (typeof dialog.close === "function") dialog.close();
   else dialog.removeAttribute("open");
+  document.body.classList.remove("lightbox-open");
   if (lightboxTrigger && typeof lightboxTrigger.focus === "function") lightboxTrigger.focus();
 }
 
@@ -600,6 +611,7 @@ function initLightbox() {
     if (event.key === "ArrowRight") { event.preventDefault(); stepLightbox(1); }
   });
   dialog.addEventListener("close", () => {
+    document.body.classList.remove("lightbox-open");
     if (lightboxTrigger && typeof lightboxTrigger.focus === "function") lightboxTrigger.focus();
   });
 }
@@ -652,23 +664,26 @@ function renderActivityLegend(data) {
     .map(([term, meaning]) => '<span><b>' + escapeHtml(term) + '</b> ' + escapeHtml(meaning) + '</span>').join("");
 }
 
-function renderCombinedPolicy(query) {
+function renderCombinedPolicy(query, activityCount = 0) {
   const section = document.getElementById("combinedPolicy");
-  if (!section || !SITE || new URLSearchParams(location.search).get("scope") !== "all") return;
-  document.getElementById("combinedActivityHeading").hidden = false;
-  section.hidden = false;
+  if (!section || !SITE || !combinedSearchActive()) return;
+  const heading = document.getElementById("combinedActivityHeading");
   const q = query.trim().toLowerCase();
   const records = ["forums", "videos", "bills"].flatMap((key) => SITE.policy[key] || []);
   const matches = records.filter((item) => !q || [item.title, item.summary, item.note, item.number, item.date, item.result]
     .some((value) => String(value || "").toLowerCase().includes(q)));
   const list = document.getElementById("combinedPolicyList");
-  list.innerHTML = matches.length ? matches.map((item) => {
+  list.innerHTML = matches.map((item) => {
     const raw = String(item.url || "");
     const url = /^(https?:\/\/|\.\/)/.test(raw) ? safeHref(raw) : "";
     const title = escapeHtml(item.title);
     return '<li class="combined-policy-row">' + (url ? '<a href="' + escapeHtml(url) +
       '" target="_blank" rel="noopener">' + title + '</a>' : '<span>' + title + '</span>') + '</li>';
-  }).join("") : '<li class="combined-policy-row">검색 결과가 없습니다.</li>';
+  }).join("");
+  section.hidden = matches.length === 0;
+  if (heading) heading.hidden = activityCount === 0;
+  const empty = document.getElementById("activityEmpty");
+  if (empty) empty.hidden = !(activityCount === 0 && matches.length === 0);
   markExternalLinks();
 }
 
