@@ -22,6 +22,20 @@ def _href(url) -> str:
     return value if value.startswith(("http://", "https://", "./")) else ""
 
 
+def _body_paragraphs(value) -> list[str]:
+    return [part.strip() for part in str(value or "").split("\n\n") if part.strip()]
+
+
+def _media_source_label(item) -> str:
+    explicit = str(item.get("source_label") or "").strip()
+    if explicit:
+        return explicit
+    url = str(item.get("url") or "")
+    if item.get("kind") == "포토" and "PID=014" in url and "bbsSn=" not in url:
+        return "의회 사진자료실 보기"
+    return "원문 보기"
+
+
 def _link(url, class_name: str, label: str, external: bool = False) -> str:
     href = _href(url)
     if href:
@@ -49,10 +63,11 @@ def _img(path, cls: str, sizes: str, width: int, height: int, alt: str = "") -> 
 
 def _media_card(item, cls, content):
     url = _href(item.get("url"))
-    attrs = f' data-media-thumb="{_e(item["thumb"])}" data-media-title="{_e(item["title"])}" data-media-url="{_e(url)}"'
+    attrs = f' data-media-thumb="{_e(item["thumb"])}" data-media-title="{_e(item["title"])}" data-media-url="{_e(url)}" data-media-kind="{_e(item.get("kind", ""))}"'
     if url:
         card = f'<a class="{cls}"{attrs} href="{_e(url)}" target="_blank" rel="noopener">{content}</a>'
-        source = f'<a class="media-source" href="{_e(url)}" target="_blank" rel="noopener" aria-label="{_e(item["title"])} 원문 보기 (새 탭)">↗</a>'
+        label = _media_source_label(item)
+        source = f'<a class="media-source" href="{_e(url)}" target="_blank" rel="noopener" aria-label="{_e(item["title"] + " " + label + " (새 탭)")}">↗</a>'
     else:
         card = f'<span class="{cls}"{attrs}>{content}</span>'
         source = ""
@@ -149,6 +164,10 @@ def prerender_activity(data: dict) -> str:
         activity_id = item.get("id") or f'a-{item.get("date") or "unknown"}-{index:02d}'
         # Keep the existing interactive row geometry. The summary and safe
         # source link are also readable when JavaScript is unavailable.
+        paragraphs = _body_paragraphs(item.get("body", ""))
+        body_html = '<div class="detail-body">' + "".join(
+            f"<p>{_e(paragraph)}</p>" for paragraph in paragraphs
+        ) + "</div>" if paragraphs else ""
         rows.append(
             f'<li class="activity-item" id="{_e(activity_id)}">'
             f'<div class="item-date">{_e(item["date"])}'
@@ -156,7 +175,7 @@ def prerender_activity(data: dict) -> str:
             f'<div class="item-title">{_e(item["title"])}'
             '<span class="item-more" aria-hidden="true">자세히 ›</span></div>'
             '<noscript>'
-            f'<p class="detail-body">{_e(item.get("body", ""))}</p>'
+            + body_html
             + (f'<div class="activity-terms">{activity_terms(data, item)}</div>' if activity_terms(data, item) else "")
             + (_link(item.get("url"), "detail-link", "공식 페이지 보기", external=True)
                if _href(item.get("url")) else "")
@@ -207,12 +226,12 @@ def prerender_policy(data: dict) -> dict:
         label = f'제{assembly}대 광주광역시의회<span class="bill-count">{len(rows)}건</span>'
         if assembly == 8:
             groups.append(
-                f'<details class="bill-group"><summary class="bill-group-title" id="bills-{assembly}">'
+                f'<details class="bill-group" data-assembly="{assembly}" data-total="{len(rows)}"><summary class="bill-group-title" id="bills-{assembly}">'
                 f'{label}</summary><ul class="bill-list">{row_html}</ul></details>'
             )
         else:
             groups.append(
-                f'<section class="bill-group" aria-labelledby="bills-{assembly}">'
+                f'<section class="bill-group" data-assembly="{assembly}" data-total="{len(rows)}" aria-labelledby="bills-{assembly}">'
                 f'<h3 class="bill-group-title" id="bills-{assembly}">{label}</h3>'
                 f'<ul class="bill-list">{row_html}</ul></section>'
             )
