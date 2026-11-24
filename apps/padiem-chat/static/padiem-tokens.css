@@ -601,6 +601,63 @@
   --rich-composer-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 30px 90px rgba(0, 0, 0, .48);
   --rich-composer-note: rgba(255, 255, 255, .30);
 
+  /* #7811 C2 surfaces(261124): padiem-surfaces.css의 쓰임새 색. 값은 치환 전
+     사용처 리터럴 그대로이고 :root에만 둔다 — 토큰 값이 모든 테마에서 같으니
+     칠해지는 값도 테마마다 그대로다. 테마 블록이나 다른 시트가 덮지 않는다. */
+  /* 첫 화면(랜딩) */
+  --surfaces-eyebrow-glow: rgba(136, 201, 255, .56);
+  --surfaces-hero-title-shadow: rgba(0, 0, 0, .38);
+  /* 스타터 카드 */
+  --surfaces-starter-border: rgba(255, 255, 255, .14);
+  --surfaces-starter-wash-start: rgba(255, 255, 255, .075);
+  --surfaces-starter-wash-end: rgba(255, 255, 255, .028);
+  --surfaces-starter-text: rgba(248, 250, 253, .94);
+  --surfaces-starter-highlight: rgba(255, 255, 255, .05);
+  --surfaces-starter-hover-border: rgba(255, 255, 255, .28);
+  --surfaces-starter-hover-wash: rgba(255, 255, 255, .105);
+  --surfaces-starter-hover-shadow: rgba(0, 0, 0, .24);
+  --surfaces-starter-icon-border: rgba(255, 255, 255, .11);
+  --surfaces-starter-icon-bg: rgba(255, 255, 255, .055);
+  --surfaces-starter-icon-highlight: rgba(255, 255, 255, .05);
+  /* 대화 */
+  --surfaces-bubble-border: rgba(255, 255, 255, .14);
+  --surfaces-bubble-bg: rgba(255, 255, 255, .085);
+  --surfaces-demo-label-border: rgba(255, 255, 255, .08);
+  --surfaces-assistant-text: rgba(247, 249, 252, .90);
+  --surfaces-answer-link-text: #b9dcff;
+  --surfaces-card-border: rgba(255, 255, 255, .12);
+  --surfaces-card-bg: rgba(255, 255, 255, .045);
+  --surfaces-card-text: rgba(248, 250, 253, .90);
+  --surfaces-source-index-bg: rgba(255, 255, 255, .07);
+  --surfaces-card-muted-text: rgba(255, 255, 255, .48);
+  --surfaces-error-border: rgba(255, 157, 157, .22);
+  --surfaces-error-bg: rgba(100, 28, 28, .18);
+  --surfaces-error-text: #ffd7d7;
+  --surfaces-retry-border: rgba(255, 157, 157, .24);
+  --surfaces-retry-text: #ffb7b7;
+  /* 입력창 */
+  --surfaces-composer-border: rgba(255, 255, 255, .17);
+  --surfaces-composer-wash-start: rgba(255, 255, 255, .085);
+  --surfaces-composer-wash-end: rgba(255, 255, 255, .038);
+  --surfaces-composer-highlight: rgba(255, 255, 255, .07);
+  --surfaces-composer-shadow: rgba(0, 0, 0, .44);
+  --surfaces-composer-focus-border: rgba(255, 255, 255, .30);
+  --surfaces-composer-focus-highlight: rgba(255, 255, 255, .08);
+  --surfaces-composer-focus-shadow: rgba(0, 0, 0, .46);
+  --surfaces-composer-focus-glow: rgba(136, 201, 255, .055);
+  --surfaces-composer-text: #f8fafc;
+  --surfaces-tool-hover-bg: rgba(255, 255, 255, .065);
+  --surfaces-tool-pressed-border: rgba(255, 255, 255, .15);
+  --surfaces-tool-pressed-bg: rgba(255, 255, 255, .08);
+  --surfaces-send-border: rgba(255, 255, 255, .26);
+  --surfaces-send-text: #08090b;
+  --surfaces-send-bg: rgba(255, 255, 255, .92);
+  --surfaces-send-shadow: rgba(0, 0, 0, .22);
+  --surfaces-send-hover-border: rgba(255, 255, 255, .5);
+  --surfaces-send-hover-text: #06070a;
+  --surfaces-send-hover-bg: #fff;
+  --surfaces-send-hover-shadow: rgba(0, 0, 0, .28);
+  --surfaces-note-text: rgba(255, 255, 255, .38);
 
   /* #8020: Claw 요청 말풍선. 글자는 테마의 사용자 말풍선 글자 역할을 그대로
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */

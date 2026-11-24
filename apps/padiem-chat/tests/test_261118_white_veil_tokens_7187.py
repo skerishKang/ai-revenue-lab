@@ -74,6 +74,11 @@ ROOT_TOKENS = {
     "--ws-banner-shadow": "rgba(0, 0, 0, .12)",
 }
 
+#: #7811 C2 surfaces 1차가 이 시트에서 가져간 쓰임새 토큰 (되돌리기 검증용).
+SURFACES_TOKENS = {
+    "--surfaces-starter-hover-wash": "rgba(255, 255, 255, .105)",
+}
+
 #: 1차에서 토큰으로 바꾼 선언: (속성, 치환 전 값, 치환 후 값). 공백 정규화 비교.
 CHANGED = {
     "admin-models.css": [
@@ -208,7 +213,8 @@ CHANGED = {
         ("background", "rgba(255, 255, 255, .72)", "var(--surface-veil-strong)"),
         ("background",
          "linear-gradient(145deg, rgba(255, 255, 255, .105), rgba(255, 255, 255, .04)), rgba(13, 14, 16, .68)",
-         "linear-gradient(145deg, rgba(255, 255, 255, .105), var(--surface-veil-panel)), var(--surface-card-solid)"),
+         # #7811 C2 surfaces 1차: .105는 전용 쓰임새 토큰으로 옮겼다.
+         "linear-gradient(145deg, var(--surfaces-starter-hover-wash), var(--surface-veil-panel)), var(--surface-card-solid)"),
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04)", "inset 0 1px 0 var(--inset-veil-panel)"),
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04)", "inset 0 1px 0 var(--inset-veil-panel)"),
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04) !important", "inset 0 1px 0 var(--inset-veil-panel) !important"),
@@ -254,7 +260,7 @@ def test_root_tokens_hold_the_swept_values() -> None:
     """토큰의 :root 값은 바꾸기 전 리터럴과 문자 그대로 같다."""
     rules = parse_rules(tokens_css())
     root = next(r for r in rules if r.media is None and ":root" in r.selectors)
-    for name, literal in {**ROOT_TOKENS, **PANEL_TOKENS}.items():
+    for name, literal in {**ROOT_TOKENS, **PANEL_TOKENS, **SURFACES_TOKENS}.items():
         assert root.declarations.get(name) == literal, name
 
 
@@ -282,7 +288,7 @@ def test_changed_declarations_consume_the_tokens() -> None:
         assert actual == expected, f"{sheet}: {actual - expected} / missing {expected - actual}"
         for prop, old, new in set(items):
             swapped = new
-            for name, literal in {**ROOT_TOKENS, **PANEL_TOKENS}.items():
+            for name, literal in {**ROOT_TOKENS, **PANEL_TOKENS, **SURFACES_TOKENS}.items():
                 swapped = swapped.replace(f"var({name})", literal)
             assert swapped == old, (sheet, prop, new)
 

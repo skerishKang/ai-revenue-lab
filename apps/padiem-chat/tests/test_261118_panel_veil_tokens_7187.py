@@ -41,7 +41,8 @@ CHANGED = {
         ("background", "linear-gradient(145deg, var(--rich-composer-bg-wash), var(--surface-veil-panel)), var(--rich-composer-bg-end)"): 1,
     },
     "padiem-surfaces.css": {
-        ("background", "linear-gradient(145deg, rgba(255, 255, 255, .105), var(--surface-veil-panel)), var(--surface-card-solid)"): 1,
+        # #7811 C2 surfaces 1차: 이 한 줄의 .105는 전용 쓰임새 토큰을 쓴다.
+        ("background", "linear-gradient(145deg, var(--surfaces-starter-hover-wash), var(--surface-veil-panel)), var(--surface-card-solid)"): 1,
         ("box-shadow", "inset 0 1px 0 var(--inset-veil-panel)"): 2,
         ("box-shadow", "inset 0 1px 0 var(--inset-veil-panel) !important"): 1,
     },
