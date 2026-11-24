@@ -338,6 +338,23 @@ def _int_or_none(value: Any) -> int | None:
     return value
 
 
+def served_model_matches(requested: str, served: str | None) -> bool:
+    """Whether the lane's answer came from the model that was asked for.
+
+    The lane echoes the model without the leading ``provider/`` part that the
+    grade route id carries, so an exact string comparison threw away every
+    correct page as a mismatch. The id without that one leading segment is the
+    same model; any other name is still a different model and fails the page.
+    """
+
+    if not isinstance(served, str) or not served:
+        return False
+    if served == requested:
+        return True
+    head, sep, rest = requested.partition("/")
+    return bool(sep and head and rest) and served == rest
+
+
 class B14PageReader:
     """Send one page image to the B14 lane and return its closed result."""
 
@@ -496,7 +513,7 @@ class B14PageReader:
         reasoning_tokens = None
         if None not in (prompt_tokens, completion_tokens, total_tokens):
             reasoning_tokens = max(0, total_tokens - prompt_tokens - completion_tokens)
-        matches = served == self._model
+        matches = served_model_matches(self._model, served)
         if not matches:
             return PageReadResult(
                 status=READ_STATUS_FAILED,
