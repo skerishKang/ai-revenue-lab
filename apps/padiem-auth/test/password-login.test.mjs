@@ -13,6 +13,10 @@ const REDIRECT = 'https://lovetree.example/auth/callback';
 const b64 = x => Buffer.from(x).toString('base64url');
 const j64 = x => b64(JSON.stringify(x));
 const sum = async x => b64(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(x)));
+const hashOf = async x => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(x)))].map(v => v.toString(16).padStart(2, '0')).join('');
+// 시험용 출발지 식별자다. 실제 출발지 값은 코드·시험·로그에 쓰지 않는다.
+const TRUSTED_TEST_SOURCE = 'synthetic-trusted-source-8359';
+const UNLISTED_TEST_SOURCE = 'synthetic-unlisted-source-8359';
 const rand = () => b64(crypto.getRandomValues(new Uint8Array(32)));
 const PASSWORD_RPC_SECRET = 'synthetic-password-rpc-secret-32chars-min';
 const EMAIL = 'user@example.invalid';
@@ -25,7 +29,7 @@ function storage() {
     transactionSync(fn) { db.exec('BEGIN'); try { const out = fn(); db.exec('COMMIT'); return out; } catch (e) { db.exec('ROLLBACK'); throw e; } } };
 }
 
-async function setup({ profile = false } = {}) {
+async function setup({ profile = false, trustedSourceHashes = '' } = {}) {
   const signing = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
   const refreshKey = await crypto.subtle.importKey('raw', new Uint8Array(32).fill(8), 'AES-GCM', false, ['encrypt', 'decrypt']);
   const identityKey = await crypto.subtle.importKey('raw', new Uint8Array(32).fill(9), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
@@ -46,7 +50,7 @@ async function setup({ profile = false } = {}) {
     adminSecret: 'synthetic-admin-secret', accountDeleteRpcSecret: 'synthetic-account-delete-secret-32chars',
     passwordRpcSecret: PASSWORD_RPC_SECRET, passwordRpcOrigin: 'https://chat.padiem.net',
     signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] },
-    stateFor, now: () => clock,
+    stateFor, now: () => clock, trustedSourceHashes,
     async fetcher(address, options) {
       const path = new URL(address).pathname;
       if (path === '/internal/password-verify' || path === '/internal/password-register') {
@@ -309,6 +313,68 @@ test('an operator reset clears one address for the current day only', async () =
   // An IPv6 address is accepted and clears nothing when it has no count.
   const v6 = await reset(admin, JSON.stringify({ source: '2001:db8::1' }));
   assert.deepEqual(await v6.json(), { ok: true, previous: 0 });
+});
+
+// 대표 결정 2026-11-25: 신뢰 출발지는 IP 단위 실패 한도만 건너뛴다.
+async function wrongFailures(f, from, count) {
+  for (let i = 0; i < count; i++) {
+    f.setClock(1000 + i * 60);
+    const begun = await f.begin();
+    await f.postForm('/login/password', begun.formState, begun.cookie, { email: EMAIL, password: 'wrong-password' }, from);
+  }
+}
+const goodFrom = (f, begun, from) => f.postForm('/login/password', begun.formState, begun.cookie, { email: EMAIL, password: PASSWORD }, from);
+
+test('a trusted source survives 51 failures but the account state still locks', async () => {
+  const f = await setup({ trustedSourceHashes: await hashOf(TRUSTED_TEST_SOURCE) });
+  const from = { 'cf-connecting-ip': TRUSTED_TEST_SOURCE };
+  await wrongFailures(f, from, 51);
+  f.setClock(1000 + 52 * 60);
+  // 계정 단위 잠금은 그대로: 같은 state의 여섯 번째 시도는 거절된다.
+  const begun = await f.begin();
+  for (let i = 0; i < 5; i++) {
+    assert.equal((await f.postForm('/login/password', begun.formState, begun.cookie, { email: EMAIL, password: 'wrong-password' }, from)).status, 200);
+  }
+  assert.equal((await goodFrom(f, begun, from)).status, 429);
+  // IP 한도는 충전되지 않았다: 새 state의 올바른 로그인은 통과한다.
+  const fresh = await f.begin();
+  assert.equal((await goodFrom(f, fresh, from)).status, 302);
+});
+
+test('a source outside the trusted list is still refused by the daily limit', async () => {
+  const f = await setup({ trustedSourceHashes: await hashOf(TRUSTED_TEST_SOURCE) });
+  const from = { 'cf-connecting-ip': UNLISTED_TEST_SOURCE };
+  await wrongFailures(f, from, 51);
+  f.setClock(1000 + 52 * 60);
+  assert.equal((await goodFrom(f, await f.begin(), from)).status, 429);
+});
+
+test('an empty trusted-source secret keeps the original behavior', async () => {
+  for (const empty of ['', '   ', 'not-a-hash', await hashOf(TRUSTED_TEST_SOURCE).then(h => h.slice(0, 63))]) {
+    const f = await setup({ trustedSourceHashes: empty });
+    const from = { 'cf-connecting-ip': TRUSTED_TEST_SOURCE };
+    await wrongFailures(f, from, 51);
+    f.setClock(1000 + 52 * 60);
+    assert.equal((await goodFrom(f, await f.begin(), from)).status, 429);
+  }
+});
+
+test('the trusted-source decision logs yes or no without any digest', async () => {
+  const original = console.log, lines = [];
+  console.log = line => { lines.push(String(line)); };
+  try {
+    const hash = await hashOf(TRUSTED_TEST_SOURCE);
+    const f = await setup({ trustedSourceHashes: hash });
+    for (const source of [TRUSTED_TEST_SOURCE, UNLISTED_TEST_SOURCE]) {
+      const begun = await f.begin();
+      await f.postForm('/login/password', begun.formState, begun.cookie, { email: EMAIL, password: 'wrong-password' }, { 'cf-connecting-ip': source });
+    }
+    const decisions = lines.filter(line => line.includes('"auth_stage":"password_login_ip_budget"'));
+    assert.equal(decisions.length, 2);
+    assert.ok(decisions.some(line => line.includes('"trusted_source":"yes"')));
+    assert.ok(decisions.some(line => line.includes('"trusted_source":"no"')));
+    assert.ok(decisions.every(line => !line.includes(hash)));
+  } finally { console.log = original; }
 });
 
 test('signup attempts past five an hour from one address are refused until the next hour', async () => {
