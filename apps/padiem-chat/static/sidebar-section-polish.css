@@ -1,24 +1,24 @@
 /* #4890 follow-up. Exactly one shared visual cell for each project/history
  * action pair; separate native controls retain keyboard, click and menu roles. */
 html:not([data-glass-mode]) body .app-shell .sidebar :is(.project-row, .history-row) {
-  background: rgba(255, 255, 255, .10) !important;
-  border: 1px solid var(--line) !important;
+  background: rgba(255, 255, 255, .10);
+  border: 1px solid var(--line);
   border-radius: 11px;
   overflow: visible;
 }
 html:not([data-glass-mode]) body .app-shell .sidebar :is(.project-row, .history-row):is(:hover, :focus-within) {
-  background: rgba(255, 255, 255, .16) !important;
+  background: rgba(255, 255, 255, .16);
 }
 html:not([data-glass-mode]) body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]) {
-  background: rgba(255, 255, 255, .20) !important;
+  background: rgba(255, 255, 255, .20);
 }
 html body .app-shell .sidebar :is(.project-row, .history-row)
   > :is(.project-item, .history-item, .project-manage, .history-actions),
 html body .app-shell .sidebar .history-row .history-actions > .history-more {
-  background: transparent !important;
-  background-color: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
+  background: transparent;
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
 }
 html body .app-shell .sidebar .history-row .history-actions {
   position: relative;
@@ -84,7 +84,7 @@ html body .app-shell .sidebar #projectCreateButton {
  * collapse never interferes with existing list/empty/auth state handling. */
 .sidebar #projectsSection.is-collapsed :is(#projectsList, #projectsEmpty),
 .sidebar #historySection.is-collapsed :is(#historyList, #historyEmpty) {
-  display: none !important;
+  display: none;
 }
 @media (prefers-reduced-motion: reduce) {
   .sidebar .sidebar-section-toggle > span { transition: none; }
@@ -114,7 +114,7 @@ html body .app-shell .sidebar :is(.project-row, .history-row) {
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 0 !important;
+  gap: 0;
   min-height: 46px;
   padding: 0;
   background: rgba(255,255,255,.10);
@@ -126,19 +126,19 @@ html body .app-shell .sidebar :is(.project-row, .history-row)
 html body .app-shell .sidebar .history-row .history-actions > .history-more {
   box-sizing: border-box;
   align-self: center;
-  background: transparent !important;
-  background-color: transparent !important;
+  background: transparent;
+  background-color: transparent;
   border: 0 !important;
   outline-offset: -2px;
-  box-shadow: none !important;
-  transform: none !important;
-  margin: 0 !important;
+  box-shadow: none;
+  transform: none;
+  margin: 0;
 }
 html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item) {
   flex: 1 1 0;
   height: 44px;
   min-height: 44px;
-  padding: 0 10px !important;
+  padding: 0 10px;
 }
 html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-manage, .history-actions) {
   flex: 0 0 44px;
@@ -146,23 +146,23 @@ html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-man
   width: 44px;
   height: 44px;
   min-height: 44px;
-  padding: 0 !important;
-  border-radius: 0 10px 10px 0 !important;
+  padding: 0;
+  border-radius: 0 10px 10px 0;
 }
 html body .app-shell .sidebar .project-row > .project-manage {
   display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  line-height: 1 !important;
-  font-size: 0 !important;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-size: 0;
 }
 html body .app-shell .sidebar .project-row > .project-manage svg {
   display: block;
   flex: 0 0 19px;
   width: 19px;
   height: 19px;
-  margin: 0 !important;
-  transform: none !important;
+  margin: 0;
+  transform: none;
   vertical-align: middle;
 }
 html body .app-shell .sidebar .history-row .history-actions > .history-more {
@@ -172,44 +172,44 @@ html body .app-shell .sidebar .history-row .history-actions > .history-more {
   width: 44px;
   height: 44px;
   min-height: 44px;
-  padding: 0 !important;
+  padding: 0;
 }
 html body .app-shell .sidebar .history-row .history-more svg {
   display: block;
   width: 19px;
   height: 19px;
-  margin: 0 !important;
-  transform: none !important;
+  margin: 0;
+  transform: none;
 }
 html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-manage, .history-actions),
 html body .app-shell .sidebar .history-row .history-more {
-  color: inherit !important;
+  color: inherit;
 }
 html body .app-shell .sidebar :is(.project-row, .history-row)
   > :is(.project-item, .history-item, .project-manage, .history-actions):hover,
 html body .app-shell .sidebar .history-row .history-more:hover {
-  background: transparent !important;
+  background: transparent;
 }
 
 /* Project (+): inline action at the far right, without the raised tile. */
 html body .app-shell .sidebar #projectsSection #projectCreateButton {
-  display: grid !important;
-  place-items: center !important;
-  align-self: center !important;
-  flex: 0 0 28px !important;
-  margin: 0 0 0 auto !important;
-  padding: 0 !important;
-  width: 28px !important;
-  min-width: 28px !important;
-  max-width: 28px !important;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  flex: 0 0 28px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  width: 28px;
+  min-width: 28px;
+  max-width: 28px;
   height: 28px;
   min-height: 28px;
   border: 0 !important;
-  border-radius: 0 !important;
+  border-radius: 0;
   color: inherit !important;
   background: transparent !important;
-  box-shadow: none !important;
-  line-height: 1 !important;
+  box-shadow: none;
+  line-height: 1;
 }
 
 /* Expanded = minus (−), collapsed = right chevron (›). */
@@ -240,6 +240,6 @@ html body .app-shell .sidebar .recent-section.is-collapsed .sidebar-section-togg
  * Put any glass processing on the shared row, never only on one half. */
 html[data-theme="padiem-glass"] body .app-shell .sidebar
   :is(.project-row > .project-item, .history-row > .history-item) {
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
