@@ -99,13 +99,19 @@
   border: 1px solid var(--answer-actions-edge);
   background: var(--answer-actions-more-bg);
 }
-.answer-more-menu .answer-action {
+/* 수아 11-24: 메뉴 항목은 글자 라벨이다. 테마 규칙이 주는 정사각형 폭을 같은
+   규칙 안에서 이기도록 선택자만 묶는다(새 규칙·테마 규칙 없음, 토큰은 그대로).
+   아이콘 단추는 40×40으로 남는다. */
+.answer-more-menu .answer-action,
+:root .assistant-message .answer-actions .answer-more-menu .answer-action {
   width: auto;
-  height: 28px;
+  min-width: 40px;
+  height: 40px;
   padding: 0 10px;
   border-radius: var(--radius-pill);
   font-size: 12px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 /* Plan 4 user-turn extras (chip + hover-reveal actions): hidden everywhere

@@ -1,0 +1,64 @@
+{
+  "closed": {
+    "menuHidden": true,
+    "items": [
+      {
+        "text": "TXT 다운로드",
+        "hidden": false,
+        "disabled": false
+      },
+      {
+        "text": "저장한 답변으로 저장",
+        "hidden": false,
+        "disabled": false
+      }
+    ],
+    "icons": [
+      {
+        "cls": "answer-copy",
+        "w": 40,
+        "h": 40
+      },
+      {
+        "cls": "answer-regenerate",
+        "w": 40,
+        "h": 40
+      },
+      {
+        "cls": "answer-listen",
+        "w": 40,
+        "h": 40
+      },
+      {
+        "cls": "answer-share",
+        "w": 40,
+        "h": 40
+      },
+      {
+        "cls": "answer-more",
+        "w": 40,
+        "h": 40
+      }
+    ]
+  },
+  "opened": {
+    "menuHidden": false,
+    "items": [
+      {
+        "text": "TXT 다운로드",
+        "w": 90,
+        "h": 40,
+        "whiteSpace": "nowrap",
+        "lines": 3
+      },
+      {
+        "text": "저장한 답변으로 저장",
+        "w": 124,
+        "h": 40,
+        "whiteSpace": "nowrap",
+        "lines": 3
+      }
+    ],
+    "saveHit": true
+  }
+}

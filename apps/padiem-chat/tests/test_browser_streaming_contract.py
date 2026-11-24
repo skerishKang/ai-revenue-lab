@@ -306,10 +306,12 @@ def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -
     outputs = sheet("outputs.js")
     export = sheet("conversation-export.js")
     assert 'if (!lifecycleApi().isCompleted(article))' in outputs
-    # #4462 CTO follow-up: copy/download stay completed-only while the
-    # per-answer save entry stays hidden with the removed saved-answers list.
+    # #4462 CTO follow-up, 수아 11-24: copy/download stay completed-only; the
+    # saved-answer entry is discoverable inside the existing "기타(···)" menu
+    # and gated on a usable store instead of being hidden outright.
     assert 'button.hidden = !outputsReady || !eligible' not in outputs
-    assert 'save.hidden = true' in outputs
+    assert 'moreMenu.appendChild(save)' in outputs
+    assert 'save.hidden = !outputsReady' in outputs
     assert 'if (hasIncompleteAssistant()) return [];' in export
     assert 'messageList.addEventListener("padiem:message-lifecycle"' in outputs
     assert 'messageList.addEventListener("padiem:message-lifecycle"' in export
