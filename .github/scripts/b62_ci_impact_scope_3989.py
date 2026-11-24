@@ -23,6 +23,11 @@ import urllib.request
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ci_core_import_scope import core_focused_plan  # noqa: E402
+from b62_css_token_scope import (  # noqa: E402
+    css_token_proof,
+    is_css_token_evidence_change,
+    token_test_modules,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -31,6 +36,7 @@ FULL = "full"
 CHAT_ONLY = "chat_only"
 STATIC_ONLY = "static_only"
 UI_MIXED = "ui_mixed"
+CSS_TOKEN_ONLY = "css_token_only"
 TESTS_ONLY = "tests_only"
 B14_ONLY = "b14_only"
 B14_TESTS_ONLY = "b14_tests_only"
@@ -628,6 +634,9 @@ def impact_scope(files: object, repo_root: Path | None = None) -> str:
             path.startswith("apps/padiem-chat/")
             or path.startswith("apps/korean-ai-platform/")
             or path.startswith("packages/padiem-ai-core/")
+            # #8688: padiem-reports evidence is read-only CI output. The
+            # css_token proof below is the only branch allowed to accept it.
+            or path.startswith("padiem-reports/")
         ):
             return FULL
         # Do not accept malformed paths, explicit traversal or duplicates.
@@ -675,6 +684,14 @@ def impact_scope(files: object, repo_root: Path | None = None) -> str:
         for p in paths
     ):
         return B14_ONLY
+    # #8688: a stylesheet plus colour/token contract tests and padiem-reports
+    # evidence is runtime-invariant. The shared proof is the same one the
+    # browser QA planner uses to select only its smoke lanes.
+    proof = css_token_proof(files)
+    if proof is not None and is_css_token_evidence_change(
+        proof[0], proof[1], expected_files=proof[2]
+    ):
+        return CSS_TOKEN_ONLY
     if all(p.startswith("apps/padiem-chat/static/") for p in paths):
         return STATIC_ONLY
     if ui_mixed_test_modules(files):
@@ -851,6 +868,18 @@ def main() -> None:
         # An unprovable change set runs the full Chat suite (fail closed).
         chat_source = True if files is None else chat_source_changed(files)
         scope = impact_scope(files)
+        if scope == CSS_TOKEN_ONLY:
+            # Keep this reduced lane strictly PR-scoped and count-proven.
+            pr = event.get("pull_request") if isinstance(event, dict) else None
+            count = pr.get("changed_files") if isinstance(pr, dict) else None
+            proof = css_token_proof(files)
+            if event_name != "pull_request" or type(count) is not int or count != len(files) or proof is None:
+                scope = FULL
+            else:
+                # Changed token test modules, the structure ratchet and the
+                # static UI contract are the load-bearing checks here. Full
+                # Chat pytest shards stay skipped for this proven shape.
+                ui_tests = token_test_modules(proof[0]) + ("tests/test_structure_ratchet.py",)
         static_changed = _has_static_change(files)
         if static_changed:
             # #6783: a static-only PR used to run no pytest module that reads
@@ -873,7 +902,8 @@ def main() -> None:
             # broken tests to merge green (#7617, #7618). Full Chat pytest runs
             # in ~8m15s (<10m), so UI_MIXED always runs full Chat pytest.
             chat_source = True
-        ui_tests = ui_mixed_test_modules(files) if scope == UI_MIXED else ()
+        if scope == UI_MIXED:
+            ui_tests = ui_mixed_test_modules(files)
         if _is_tests_tree_change(files):
             # #6810: a tests-only PR used to run no pytest module at all; the
             # affected modules are now the load-bearing check.
@@ -896,7 +926,7 @@ def main() -> None:
         # #8212: a test can read a changed source as text without importing it.
         # Select those modules in their own lane; an incomplete discovery runs
         # the full Chat suite so an unchanged test can never merge green.
-        discovered = source_read_tests(files, REPO_ROOT)
+        discovered = () if scope == CSS_TOKEN_ONLY else source_read_tests(files, REPO_ROOT)
         if discovered is None:
             chat_source = True
         else:

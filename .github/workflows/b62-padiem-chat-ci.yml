@@ -147,7 +147,7 @@ jobs:
   b62-static-ui:
     name: B62 static UI fast checks
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && (needs.registry-ci-plan.outputs.scope == 'static_only' || needs.registry-ci-plan.outputs.scope == 'ui_mixed') }}
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && (needs.registry-ci-plan.outputs.scope == 'static_only' || needs.registry-ci-plan.outputs.scope == 'ui_mixed' || needs.registry-ci-plan.outputs.scope == 'css_token_only') }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     timeout-minutes: 5
     steps:
@@ -251,7 +251,7 @@ jobs:
   b62-ui-mixed-tests:
     name: B62 UI-mixed focused pytest
     needs: registry-ci-plan
-    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope == 'ui_mixed' }}
+    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && (needs.registry-ci-plan.outputs.scope == 'ui_mixed' || needs.registry-ci-plan.outputs.scope == 'css_token_only') }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -463,7 +463,7 @@ jobs:
   b62-chat-pytest:
     name: B62 Chat full pytest (app change) ${{ matrix.shard }}/4
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && needs.registry-ci-plan.outputs.chat_source_changed == 'true')) }}
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'css_token_only' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && needs.registry-ci-plan.outputs.chat_source_changed == 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -673,6 +673,20 @@ jobs:
             esac
             test "$QUICK_RESULT" = skipped
             echo 'B62_CI_MODE=TESTS_ONLY_TARGETED'
+          elif [ "$SCOPE" = css_token_only ]; then
+            # CSS + token contract tests + reports evidence is runtime-invariant.
+            # The changed pytest modules, the static UI contract and the
+            # structure ratchet are the load-bearing checks; full shards are not.
+            test "$UI_RESULT" = success
+            test "$MIXED_RESULT" = success
+            test "$CONTRACT_RESULT" = success
+            test "$FULL_RESULT" = skipped
+            test "$CHAT_RESULT" = skipped
+            test "$WORKER_RESULT" = skipped
+            test "$MM_RESULT" = skipped
+            test "$TESTS_RESULT" = skipped
+            test "$QUICK_RESULT" = skipped
+            echo 'B62_CI_MODE=CSS_TOKEN_UI_ONLY'
           else
             test "$UI_RESULT" = skipped
             test "$MIXED_RESULT" = skipped
@@ -868,7 +882,7 @@ jobs:
   b62-worker-suite:
     name: B62 Worker/Pyodide contract
     needs: registry-ci-plan
-    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}
+    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' && needs.registry-ci-plan.outputs.scope != 'css_token_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -933,7 +947,7 @@ jobs:
     needs: registry-ci-plan
     # Only the proven static-only B62 surface can omit the source-invariant B14 pilot runner.
     # All Python, shared-Core, B14, registry-mixed and uncertain changes keep B14 coverage.
-    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}
+    if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' && needs.registry-ci-plan.outputs.scope != 'css_token_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:

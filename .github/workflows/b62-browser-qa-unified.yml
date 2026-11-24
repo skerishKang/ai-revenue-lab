@@ -199,13 +199,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock Padiem Chat
@@ -353,13 +361,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock Padiem Chat
@@ -527,13 +543,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       # #4139 PC directory panel and guidance Chromium contracts. The B62 full
@@ -736,13 +760,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       # apps/padiem-chat/tests/browser_*.py 13개 전부 편입(10 pytest + 3 스크립트).
@@ -865,13 +897,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock Padiem Chat
@@ -996,13 +1036,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock Padiem Chat
@@ -1125,13 +1173,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start fail-closed mock Padiem Chat
@@ -1250,13 +1306,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock Padiem Chat
@@ -1377,13 +1441,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock Padiem Chat
@@ -1510,13 +1582,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock Padiem Chat
@@ -1637,13 +1717,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock Padiem Chat
@@ -1766,13 +1854,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock Padiem Chat
@@ -1893,13 +1989,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock Padiem Chat
@@ -2020,13 +2124,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock Padiem Chat
@@ -2147,13 +2259,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock Padiem Chat
@@ -2274,13 +2394,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start fail-closed mock Padiem Chat
@@ -2399,13 +2527,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          browser=$(find "$HOME/.cache/ms-playwright" -type f \
-            \( -name chrome-headless-shell -o -name headless_shell \) -print -quit)
-          test -n "$browser"
-          missing=$(ldd "$browser" | grep 'not found' || true)
-          if [ -n "$missing" ]; then
-            printf 'Chromium missing system libraries:\n%s\n' "$missing" >&2
-            exit 1
+          # Launch through Playwright itself: this proves the pinned headless
+          # shell and its system libraries are actually loadable. A stale
+          # cache entry with another revision must not satisfy the check.
+          launch_pinned_chromium() {
+            uv run --locked --no-sync python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as pw:
+              browser = pw.chromium.launch()
+              browser.close()
+          PY
+          }
+          if ! launch_pinned_chromium; then
+            echo 'Pinned headless shell unavailable; reinstalling' >&2
+            uv run --locked --no-sync python -m playwright install --only-shell chromium --force
+            launch_pinned_chromium
           fi
           echo 'B62_SELF_HOSTED_CHROMIUM_LIBS=PASS'
       - name: Start mock-web Padiem Chat

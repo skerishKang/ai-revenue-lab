@@ -53,7 +53,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$PLAN_RESULT" = success', self.aggregate)
 
     def test_parallel_jobs_preserve_pr_plan_with_nightly_host_override(self):
-        condition = "if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}"
+        condition = "if: ${{ github.event_name != 'push' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' && needs.registry-ci-plan.outputs.scope != 'css_token_only' }}"
         for block in [self.host, self.worker]:
             self.assertIn("needs: registry-ci-plan", block)
             self.assertIn("runs-on: ubuntu-latest", block)
