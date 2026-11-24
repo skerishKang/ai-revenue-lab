@@ -624,6 +624,20 @@
   --rich-composer-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 30px 90px rgba(0, 0, 0, .48);
   --rich-composer-note: rgba(255, 255, 255, .30);
 
+  /* #7811 C2 rich-response(261124): rich-response.css의 밝은 고정 팔레트.
+     값은 치환 전 리터럴 그대로이고 :root에만 둔다 — 다섯 테마에서 같은 값으로
+     칠해져 온 고정 색이라 테마 블록이 덮지 않는다. #f7f8fa·#fff는 값이 같은
+     기존 :root 토큰을 재사용하고, 테마가 덮는 토큰은 고르지 않았다. */
+  --rich-response-quote-edge: rgba(45, 55, 72, 0.28);
+  --rich-response-quote-bg: rgba(45, 55, 72, 0.045);
+  --rich-response-rule-edge: rgba(128, 138, 155, 0.5);
+  --rich-response-block-edge: rgba(31, 41, 55, 0.13);
+  --rich-response-inner-edge: rgba(31, 41, 55, 0.1);
+  --rich-response-control-edge: rgba(31, 41, 55, 0.16);
+  --rich-response-hover-bg: #f0f2f5;
+  --rich-response-code-bg: #15181d;
+  --rich-response-code-text: #eef2f7;
+
   /* #7811 C2 surfaces(261124): padiem-surfaces.css의 쓰임새 색. 값은 치환 전
      사용처 리터럴 그대로이고 :root에만 둔다 — 토큰 값이 모든 테마에서 같으니
      칠해지는 값도 테마마다 그대로다. 테마 블록이나 다른 시트가 덮지 않는다. */
