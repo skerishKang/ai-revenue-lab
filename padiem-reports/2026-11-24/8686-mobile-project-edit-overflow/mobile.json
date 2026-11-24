@@ -1,0 +1,472 @@
+{
+  "light": {
+    "geometry": [
+      {
+        "el": "projectForm",
+        "w": 352,
+        "client": 350,
+        "scroll": 350,
+        "x": 19
+      },
+      {
+        "el": "projectDrivePanel",
+        "w": 312,
+        "client": 310,
+        "scroll": 310,
+        "x": 39
+      },
+      {
+        "el": "projectFilesPanel",
+        "w": 312,
+        "client": 310,
+        "scroll": 310,
+        "x": 39
+      },
+      {
+        "el": "project-files-heading",
+        "w": 282,
+        "client": 282,
+        "scroll": 282,
+        "x": 54
+      },
+      {
+        "el": "DIV",
+        "w": 165.578125,
+        "client": 166,
+        "scroll": 166,
+        "x": 54
+      },
+      {
+        "el": "SMALL",
+        "w": 165.578125,
+        "client": 166,
+        "scroll": 166,
+        "x": 54
+      },
+      {
+        "el": "SMALL",
+        "w": 165.578125,
+        "client": 166,
+        "scroll": 166,
+        "x": 54
+      },
+      {
+        "el": "project-file-add",
+        "w": 104.421875,
+        "client": 102,
+        "scroll": 102,
+        "x": 231.578125
+      },
+      {
+        "el": "projectFilesList",
+        "w": 282,
+        "client": 282,
+        "scroll": 282,
+        "x": 54
+      },
+      {
+        "el": "project-file-row",
+        "w": 282,
+        "client": 280,
+        "scroll": 280,
+        "x": 54
+      },
+      {
+        "el": "project-file-row",
+        "w": 282,
+        "client": 280,
+        "scroll": 280,
+        "x": 54
+      },
+      {
+        "dialog": 352,
+        "scroll": 352,
+        "left": 0,
+        "width": 352
+      }
+    ],
+    "contrast": {
+      ".project-files-heading small": [
+        4.8767391540527605,
+        3.6211513029378493
+      ],
+      "#projectFilesList .project-file-row button": []
+    }
+  },
+  "dark": {
+    "geometry": [
+      {
+        "el": "projectForm",
+        "w": 352,
+        "client": 350,
+        "scroll": 350,
+        "x": 19
+      },
+      {
+        "el": "projectDrivePanel",
+        "w": 312,
+        "client": 310,
+        "scroll": 310,
+        "x": 39
+      },
+      {
+        "el": "projectFilesPanel",
+        "w": 312,
+        "client": 310,
+        "scroll": 310,
+        "x": 39
+      },
+      {
+        "el": "project-files-heading",
+        "w": 282,
+        "client": 282,
+        "scroll": 282,
+        "x": 54
+      },
+      {
+        "el": "DIV",
+        "w": 162.234375,
+        "client": 162,
+        "scroll": 162,
+        "x": 54
+      },
+      {
+        "el": "SMALL",
+        "w": 162.234375,
+        "client": 162,
+        "scroll": 162,
+        "x": 54
+      },
+      {
+        "el": "SMALL",
+        "w": 162.234375,
+        "client": 162,
+        "scroll": 162,
+        "x": 54
+      },
+      {
+        "el": "project-file-add",
+        "w": 107.765625,
+        "client": 106,
+        "scroll": 106,
+        "x": 228.234375
+      },
+      {
+        "el": "projectFilesList",
+        "w": 282,
+        "client": 282,
+        "scroll": 282,
+        "x": 54
+      },
+      {
+        "el": "project-file-row",
+        "w": 282,
+        "client": 280,
+        "scroll": 280,
+        "x": 54
+      },
+      {
+        "el": "project-file-row",
+        "w": 282,
+        "client": 280,
+        "scroll": 280,
+        "x": 54
+      },
+      {
+        "dialog": 352,
+        "scroll": 352,
+        "left": 0,
+        "width": 352
+      }
+    ],
+    "contrast": {
+      ".project-files-heading small": [
+        5.571332628550935,
+        5.590379259380836
+      ],
+      "#projectFilesList .project-file-row button": []
+    }
+  },
+  "padiem-glass": {
+    "geometry": [
+      {
+        "el": "projectForm",
+        "w": 352,
+        "client": 350,
+        "scroll": 350,
+        "x": 19
+      },
+      {
+        "el": "projectDrivePanel",
+        "w": 312,
+        "client": 310,
+        "scroll": 310,
+        "x": 39
+      },
+      {
+        "el": "projectFilesPanel",
+        "w": 312,
+        "client": 310,
+        "scroll": 310,
+        "x": 39
+      },
+      {
+        "el": "project-files-heading",
+        "w": 282,
+        "client": 282,
+        "scroll": 282,
+        "x": 54
+      },
+      {
+        "el": "DIV",
+        "w": 162.234375,
+        "client": 162,
+        "scroll": 162,
+        "x": 54
+      },
+      {
+        "el": "SMALL",
+        "w": 162.234375,
+        "client": 162,
+        "scroll": 162,
+        "x": 54
+      },
+      {
+        "el": "SMALL",
+        "w": 162.234375,
+        "client": 162,
+        "scroll": 162,
+        "x": 54
+      },
+      {
+        "el": "project-file-add",
+        "w": 107.765625,
+        "client": 106,
+        "scroll": 106,
+        "x": 228.234375
+      },
+      {
+        "el": "projectFilesList",
+        "w": 282,
+        "client": 282,
+        "scroll": 282,
+        "x": 54
+      },
+      {
+        "el": "project-file-row",
+        "w": 282,
+        "client": 280,
+        "scroll": 280,
+        "x": 54
+      },
+      {
+        "el": "project-file-row",
+        "w": 282,
+        "client": 280,
+        "scroll": 280,
+        "x": 54
+      },
+      {
+        "dialog": 352,
+        "scroll": 352,
+        "left": 0,
+        "width": 352
+      }
+    ],
+    "contrast": {
+      ".project-files-heading small": [
+        5.632281100434119,
+        3.75506254634144
+      ],
+      "#projectFilesList .project-file-row button": []
+    }
+  },
+  "cinematic": {
+    "geometry": [
+      {
+        "el": "projectForm",
+        "w": 352,
+        "client": 350,
+        "scroll": 350,
+        "x": 19
+      },
+      {
+        "el": "projectDrivePanel",
+        "w": 312,
+        "client": 310,
+        "scroll": 310,
+        "x": 39
+      },
+      {
+        "el": "projectFilesPanel",
+        "w": 312,
+        "client": 310,
+        "scroll": 310,
+        "x": 39
+      },
+      {
+        "el": "project-files-heading",
+        "w": 282,
+        "client": 282,
+        "scroll": 282,
+        "x": 54
+      },
+      {
+        "el": "DIV",
+        "w": 162.234375,
+        "client": 162,
+        "scroll": 162,
+        "x": 54
+      },
+      {
+        "el": "SMALL",
+        "w": 162.234375,
+        "client": 162,
+        "scroll": 162,
+        "x": 54
+      },
+      {
+        "el": "SMALL",
+        "w": 162.234375,
+        "client": 162,
+        "scroll": 162,
+        "x": 54
+      },
+      {
+        "el": "project-file-add",
+        "w": 107.765625,
+        "client": 106,
+        "scroll": 106,
+        "x": 228.234375
+      },
+      {
+        "el": "projectFilesList",
+        "w": 282,
+        "client": 282,
+        "scroll": 282,
+        "x": 54
+      },
+      {
+        "el": "project-file-row",
+        "w": 282,
+        "client": 280,
+        "scroll": 280,
+        "x": 54
+      },
+      {
+        "el": "project-file-row",
+        "w": 282,
+        "client": 280,
+        "scroll": 280,
+        "x": 54
+      },
+      {
+        "dialog": 352,
+        "scroll": 352,
+        "left": 0,
+        "width": 352
+      }
+    ],
+    "contrast": {
+      ".project-files-heading small": [
+        5.571332628550935,
+        5.590379259380836
+      ],
+      "#projectFilesList .project-file-row button": []
+    }
+  },
+  "padiem-home": {
+    "geometry": [
+      {
+        "el": "projectForm",
+        "w": 352,
+        "client": 350,
+        "scroll": 350,
+        "x": 19
+      },
+      {
+        "el": "projectDrivePanel",
+        "w": 312,
+        "client": 310,
+        "scroll": 310,
+        "x": 39
+      },
+      {
+        "el": "projectFilesPanel",
+        "w": 312,
+        "client": 310,
+        "scroll": 310,
+        "x": 39
+      },
+      {
+        "el": "project-files-heading",
+        "w": 282,
+        "client": 282,
+        "scroll": 282,
+        "x": 54
+      },
+      {
+        "el": "DIV",
+        "w": 162.234375,
+        "client": 162,
+        "scroll": 162,
+        "x": 54
+      },
+      {
+        "el": "SMALL",
+        "w": 162.234375,
+        "client": 162,
+        "scroll": 162,
+        "x": 54
+      },
+      {
+        "el": "SMALL",
+        "w": 162.234375,
+        "client": 162,
+        "scroll": 162,
+        "x": 54
+      },
+      {
+        "el": "project-file-add",
+        "w": 107.765625,
+        "client": 106,
+        "scroll": 106,
+        "x": 228.234375
+      },
+      {
+        "el": "projectFilesList",
+        "w": 282,
+        "client": 282,
+        "scroll": 282,
+        "x": 54
+      },
+      {
+        "el": "project-file-row",
+        "w": 282,
+        "client": 280,
+        "scroll": 280,
+        "x": 54
+      },
+      {
+        "el": "project-file-row",
+        "w": 282,
+        "client": 280,
+        "scroll": 280,
+        "x": 54
+      },
+      {
+        "dialog": 352,
+        "scroll": 352,
+        "left": 0,
+        "width": 352
+      }
+    ],
+    "contrast": {
+      ".project-files-heading small": [
+        5.741302296760001,
+        3.929692629476527
+      ],
+      "#projectFilesList .project-file-row button": []
+    }
+  }
+}

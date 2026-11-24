@@ -284,6 +284,7 @@
 
   .project-form {
     padding: 18px;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
