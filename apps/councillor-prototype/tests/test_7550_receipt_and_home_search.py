@@ -168,7 +168,8 @@ def test_the_home_search_lands_in_the_existing_searches(browser, base_url):
         # existing renderer ran it.
         assert page.evaluate("() => document.getElementById('activitySearch').value") == "주차"
         assert page.locator("#activityList .activity-item:visible").count() >= 1
-        assert page.locator("#combinedPolicy").is_visible()
+        # #8723: an empty policy group is no longer shown beside real activity hits.
+        assert page.locator("#combinedPolicy").is_hidden()
         assert page.locator("#combinedActivityHeading").is_visible()
 
         page.goto(base_url + "index.html", wait_until="load")

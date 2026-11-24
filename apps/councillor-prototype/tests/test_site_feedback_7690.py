@@ -8,8 +8,11 @@ def test_home_has_footer_site_feedback_form():
     html = (ROOT / "index.html").read_text(encoding="utf-8")
     assert 'id="siteFeedback"' in html and 'id="siteFeedbackOpen"' in html
     assert 'id="siteFeedbackForm"' in html and 'id="siteFeedbackBody"' in html
-    assert '사이트 의견 보내기' in html
-    assert '의원실 민원·제안은' in html
+    assert '이 사이트 오류·불편 알리기' in html
+    assert '의회 홈페이지에 의견' in html
+    assert '의원님께 드리는 민원·제안은' in html
+    assert '의회 홈페이지로' in html
+    assert 'https://council.jeonnam-gwangju.go.kr/jngjassem/board/16' in html
     assert '전화' in html and '이메일' in html
     assert 'href="tel:062-613-5133"' in html
     assert 'href="mailto:miran2640@naver.com"' in html

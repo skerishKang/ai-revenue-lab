@@ -91,7 +91,7 @@
             <a class="btn primary" href="tel:062-613-5133">의원실 연락·민원 <span class="btn-sub office-number">062-613-5133</span></a>
             <a class="btn secondary" href="./activity.html">의정활동 보기 <span aria-hidden="true">→</span></a>
             <a class="btn secondary" href="mailto:miran2640@naver.com" data-contact-email>이메일 보내기 <span class="btn-sub">miran2640@naver.com</span></a>
-            <a class="btn secondary" href="https://council.jeonnam-gwangju.go.kr/jngjassem/board/16" target="_blank" rel="noopener">의회에 의견 보내기 <span aria-hidden="true">↗</span></a>
+            <a class="btn secondary" href="https://council.jeonnam-gwangju.go.kr/jngjassem/board/16" target="_blank" rel="noopener">의회 홈페이지에 의견 <span aria-hidden="true">↗</span></a>
           </div>
           <!-- One search across both record collections. -->
           <form class="home-search" action="./activity.html" method="get" role="search" aria-label="의정활동·정책자료 검색">
@@ -191,9 +191,10 @@
       </nav>
       <p class="footer-note">자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-05 확인)<br />사진: 영산강 전경 — Saigen Jiro, Wikimedia Commons (CC0). 의정활동 사진 — 광주광역시의회 공개 사진자료실.</p>
       <div class="site-feedback" id="siteFeedback" hidden>
-        <button class="site-feedback-open" id="siteFeedbackOpen" type="button" hidden>사이트 의견 보내기</button>
+        <button class="site-feedback-open" id="siteFeedbackOpen" type="button" hidden>이 사이트 오류·불편 알리기</button>
         <form class="site-feedback-form" id="siteFeedbackForm" hidden>
-          <p class="site-feedback-office">의원실 민원·제안은 <a href="tel:062-613-5133">전화</a>·<a href="mailto:miran2640@naver.com">이메일</a>로 보내 주세요.</p>
+          <p class="site-feedback-office">의원님께 드리는 민원·제안은 <a href="https://council.jeonnam-gwangju.go.kr/jngjassem/board/16" target="_blank" rel="noopener">의회 홈페이지로</a> <span aria-hidden="true">↗</span></p>
+          <p class="site-feedback-office">의원실 연락은 <a href="tel:062-613-5133">전화</a>·<a href="mailto:miran2640@naver.com">이메일</a>로 하실 수 있습니다.</p>
           <label class="site-feedback-label" for="siteFeedbackBody">사이트 오류·불편</label>
           <textarea class="site-feedback-body" id="siteFeedbackBody" name="body" rows="4" maxlength="2000" required></textarea>
           <input class="site-feedback-trap" id="siteFeedbackTrap" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -223,7 +224,6 @@
 
       <dialog class="lightbox" id="mediaLightbox" aria-labelledby="lightboxTitle">
         <div class="lightbox-head">
-          <h2 id="lightboxTitle"></h2>
           <button class="lightbox-close" id="lightboxClose" type="button" aria-label="크게 보기 닫기">×</button>
         </div>
         <div class="lightbox-body">
@@ -232,8 +232,9 @@
           <button class="lightbox-nav lightbox-next" id="lightboxNext" type="button" aria-label="다음 사진">→</button>
         </div>
         <div class="lightbox-foot">
-          <a id="lightboxLink" target="_blank" rel="noopener">원문 보기 ↗</a>
+          <h2 id="lightboxTitle"></h2>
           <p class="source-note lightbox-source" id="lightboxSource" hidden></p>
+          <a id="lightboxLink" target="_blank" rel="noopener">원문 보기 ↗</a>
         </div>
       </dialog>
   <script src="./static/app.js"></script>
