@@ -286,6 +286,13 @@ jobs:
       READONLY_SCHEMA_STATE: ${{ needs.cloudflare-readonly.outputs.schema_state }}
       READONLY_DB_FINGERPRINT: ${{ needs.cloudflare-readonly.outputs.db_fingerprint }}
     steps:
+      - name: Chat D1 apply disabled - COM2 is canonical
+        if: always()
+        shell: bash
+        run: |
+          echo 'Chat 정본은 컴2, D1은 보관용입니다. D1 마이그레이션 apply는 비활성화되었습니다.' >&2
+          echo 'CHAT_D1_ARCHIVE_ONLY=REFUSED' >&2
+          exit 1
       - name: Require explicit migration authorization
         shell: bash
         run: |
