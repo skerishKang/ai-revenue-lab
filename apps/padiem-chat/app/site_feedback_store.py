@@ -22,9 +22,7 @@ _COLUMNS = ('id,site,body,screen_json,status,created_at,updated_at,ops_memo,'
             'external_feedback_id,external_title,external_category,'
             'external_account_subject_id,external_is_ai_customer,external_append,'
             'external_append_created_at,external_created_at,external_status,'
-            'external_status_created_at,external_account_name')
-# 러브트리 보낸 사람 표시 이름 길이 상한(닉네임). 이메일·소개는 받지 않는다.
-ACCOUNT_NAME_CHARS = 60
+            'external_status_created_at')
 # #7690: Lovetree 쪽 상태 어휘. 받은함 표시(STATUSES)에 맞게만 옮기고,
 # 원래 값은 external_status에 그대로 둔다.
 EXTERNAL_STATUSES = frozenset({'received', 'reviewing', 'fixed', 'later', 'closed'})
@@ -66,7 +64,6 @@ class SiteFeedbackRecord:
     external_created_at: str | None = None
     external_status: str | None = None
     external_status_created_at: str | None = None
-    external_account_name: str | None = None
 
     @classmethod
     def from_row(cls, row):
@@ -84,7 +81,6 @@ class SiteFeedbackRecord:
         values['external_created_at'] = row.get('external_created_at')
         values['external_status'] = row.get('external_status')
         values['external_status_created_at'] = row.get('external_status_created_at')
-        values['external_account_name'] = row.get('external_account_name')
         return cls(**values)
 
     def public(self, *, admin=False):
@@ -93,22 +89,10 @@ class SiteFeedbackRecord:
             'external_feedback_id', 'external_title', 'external_category',
             'external_account_subject_id', 'external_is_ai_customer', 'external_append',
             'external_append_created_at', 'external_created_at', 'external_status',
-            'external_status_created_at', 'external_account_name')}
+            'external_status_created_at')}
         if admin:
-            item['sender_label'] = self.sender_label()
+            item['sender_label'] = '익명'
         return item
-
-    def sender_label(self):
-        """운영센터 보낸 사람 표시. 러브트리 의견은 닉네임과 AI·사람 고객을 붙이고,
-        이름도 구분도 없는 공개 접수(로그아웃)만 '익명'으로 둔다."""
-        if self.external_is_ai_customer is None:
-            return self.external_account_name or '익명'
-        kind = 'AI 고객' if self.external_is_ai_customer else '사람 고객'
-        if self.external_account_name:
-            return f'{self.external_account_name} · {kind}'
-        if self.site == 'lovetree' and not self.external_account_subject_id:
-            return '익명'
-        return kind
 
 
 class D1SiteFeedbackStore:
@@ -224,7 +208,7 @@ class D1SiteFeedbackStore:
 
     async def ingest_lovetree(self, *, external_feedback_id, event, body, status, append,
                               is_ai_customer, account_subject_id, category, title,
-                              created_at, now=None, account_name=None):
+                              created_at, now=None):
         """#7690: Lovetree 서버-서버 수신. 같은 의견은 한 행으로 갱신한다.
 
         멱등 키: new는 (site, feedbackId), append는 거기에 createdAt,
@@ -251,24 +235,17 @@ class D1SiteFeedbackStore:
                 '(id,site,body,screen_json,created_day,created_at,updated_at,'
                 'external_feedback_id,external_title,external_category,'
                 'external_account_subject_id,external_is_ai_customer,external_append,'
-                'external_created_at,external_status,external_status_created_at,'
-                'external_account_name) '
-                'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING ' + _COLUMNS,
+                'external_created_at,external_status,external_status_created_at) '
+                'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING ' + _COLUMNS,
                 'sf_' + uuid.uuid4().hex, 'lovetree', body, None, created_day,
                 created_at, now, external_id, title or None, category or None,
                 account_subject_id, 1 if is_ai_customer else 0, append,
-                created_at, status, created_at, account_name or None)
+                created_at, status, created_at)
             if record is None:
                 raise FeedbackUnavailable()
             return record, True, False
         if existing is None:
             return None
-        if account_name and existing.external_account_name != account_name:
-            # 이름은 뒤 사건(덧붙임·상태)으로도 채운다 — 이름을 보내기 전에 들어온 의견, 닉네임 변경.
-            renamed = await self._record(
-                'UPDATE site_feedback SET external_account_name=? WHERE id=? RETURNING ' + _COLUMNS,
-                account_name, existing.id)
-            existing = renamed or existing
         if event == 'append':
             if existing.external_append_created_at == created_at:
                 return existing, False, True
