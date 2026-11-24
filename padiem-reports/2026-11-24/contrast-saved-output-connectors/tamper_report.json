@@ -1,0 +1,16 @@
+[
+ {
+  "token": "--outputs-kicker-text",
+  "theme": "light",
+  "screen": "saved-output",
+  "mutation": "--outputs-kicker-text: var(--panel-text-soft); → --outputs-kicker-text: #ff00ff;",
+  "pixel": 529
+ },
+ {
+  "token": "--connector-card-ink",
+  "theme": "dark",
+  "screen": "connectors",
+  "mutation": "--connector-card-ink: var(--text-panel-ink); → --connector-card-ink: #ff00ff;",
+  "pixel": 3452
+ }
+]

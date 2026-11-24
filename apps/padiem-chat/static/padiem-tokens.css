@@ -440,6 +440,29 @@
   --outputs-content-bg: rgba(24, 24, 27, 0.025);
   --outputs-dialog-shadow: rgba(24, 24, 27, 0.2);
 
+  /* 저장한 답변 창 대비 수리(261124): 이 창의 글자는 outputs.css가 아니라 창
+     스킨(padiem-cinematic-workspace.css)이 흰 베일 --ws-* 값으로 칠한다. 판
+     (--surface-panel-solid)은 #8024부터 밝은 테마를 따라 밝아지는데 그 잉크는
+     :root 값 그대로라, light·padiem-home·padiem-glass에서 밝은 판 위 흰
+     글자가 됐다. 기본값은 스킨 값을 그대로 가리켜 dark·cinematic의 계산값을
+     바꾸지 않고, 밝은 판 세 테마 블록에서만 판을 따르는 테마 잉크로 덮는다.
+     outputs.css가 이 창 안에서만 --ws-* 를 이 토큰으로 되가리킨다(같은
+     스킨을 쓰는 다른 화면에는 닿지 않는다). */
+  --outputs-kicker-text: var(--ws-dialog-kicker-text);
+  --outputs-control-text: var(--ws-control-muted-text);
+  --outputs-control-hover-text: var(--ws-control-hover-text);
+  --outputs-input-text: var(--ws-input-text);
+  --outputs-content-text: var(--ws-output-text);
+  --outputs-secondary-text: var(--ws-secondary-text);
+  --outputs-primary-text: var(--text-veil-strong);
+  --outputs-danger-text: var(--ws-danger-text);
+  --outputs-rule-edge: var(--ws-dialog-edge);
+  --outputs-content-edge: var(--line-veil-dim);
+  --outputs-control-edge: var(--ws-input-edge);
+  --outputs-control-focus-edge: var(--ws-input-focus-edge);
+  --outputs-primary-edge: var(--ws-control-hover-edge-strong);
+  --outputs-primary-hover-edge: var(--line-veil-mist);
+
   /* #7811 C2: composer(마이크·보내기·스타터 카드)의 쓰임새 색. 마이크 기본·
      호버 값은 voice UI와 같은 역할이므로 기존 --voice-* 토큰을 재사용한다.
      나머지 값은 치환 전 리터럴 그대로이고 :root에만 둔다. */
@@ -675,6 +698,16 @@
   --attachments-invalid-wash: rgba(255, 241, 241, 0.95);
   --attachments-invalid-note-ink: #8c1d1d;
   --attachments-chip-remove-ink: #42526e;
+
+  /* 연결 카드 대비 수리(261124): 연결 화면 카드는 다섯 테마 모두 밝은 판이다
+     (standalone-views.css의 #connectorsViewBody .capability-card). 카드 이름은
+     글자색을 지정받지 못해 테마 글자색을 상속했고, 상태 줄은 테마 --muted를
+     읽어, 글자가 밝은 dark·cinematic에서 흰 판 위 밝은 글자가 됐다. 기본값은
+     테마 글자색 그대로라 light·padiem-home·padiem-glass의 계산값을 바꾸지
+     않고, dark·cinematic 블록에서만 이 카드의 밝은 판용 잉크로 덮는다.
+     소비 선언은 connector-pages.css의 타일 규칙과 상태 줄 규칙 두 곳이다. */
+  --connector-card-ink: var(--text);
+  --connector-card-muted-ink: var(--muted);
 
   /* #8020: Claw 요청 말풍선. 글자는 테마의 사용자 말풍선 글자 역할을 그대로
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
@@ -992,6 +1025,22 @@ html[data-theme="light"] {
   --panel-text-soft: var(--muted);
   --panel-text-strong: var(--muted);
   --panel-text-max: var(--text);
+  /* 저장한 답변 창 대비 수리(261124): 밝은 판 위 잉크. 판을 따르는 기존
+     테마 토큰만 재사용한다(새 숫자 없음). */
+  --outputs-kicker-text: var(--panel-text-soft);
+  --outputs-control-text: var(--panel-text-soft);
+  --outputs-control-hover-text: var(--panel-text-max);
+  --outputs-input-text: var(--panel-text-max);
+  --outputs-content-text: var(--panel-text-max);
+  --outputs-secondary-text: var(--panel-text-strong);
+  --outputs-primary-text: var(--panel-text-max);
+  --outputs-danger-text: var(--danger);
+  --outputs-rule-edge: var(--line);
+  --outputs-content-edge: var(--line);
+  --outputs-control-edge: var(--input-border-strong);
+  --outputs-control-focus-edge: var(--accent-strong);
+  --outputs-primary-edge: var(--panel-text-max);
+  --outputs-primary-hover-edge: var(--panel-text-max);
   --line: #e3e3e9;
   --input-border-strong: #767e8a;
   --focus-ring: rgba(101, 87, 232, .24);
@@ -1062,6 +1111,9 @@ html[data-theme="dark"] {
   --accent-soft: rgba(159,192,221,.08);
   --accent-strong: #d1ebfb;
   --card-border: #455b70;
+  /* 연결 카드 대비 수리(261124): 밝은 카드 판 위 잉크(기존 토큰 재사용). */
+  --connector-card-ink: var(--text-panel-ink);
+  --connector-card-muted-ink: var(--capability-nav-connectors-ink);
   /* PC 연결 클러스터: dark에서는 이 화면들이 좁은 스코프에서 쓰던 실제 값. */
   --pc-device-veil: #202b3c;
   --pc-device-panel: #202b3c;
@@ -1128,6 +1180,9 @@ html[data-theme="cinematic"] {
   --accent-soft: rgba(136,201,255,.10);
   --accent-strong: #d7ebfa;
   --card-border: rgba(136,201,255,.16);
+  /* 연결 카드 대비 수리(261124): 밝은 카드 판 위 잉크(기존 토큰 재사용). */
+  --connector-card-ink: var(--text-panel-ink);
+  --connector-card-muted-ink: var(--capability-nav-connectors-ink);
   /* #7187 R3 5차: padiem-themes.css cinematic 블록의 값(그대로). */
   --bg: #04070d;
   --page-bg: #04070d;
@@ -1182,6 +1237,22 @@ html[data-theme="padiem-home"] {
   --panel-text-soft: var(--muted);
   --panel-text-strong: var(--muted);
   --panel-text-max: var(--text);
+  /* 저장한 답변 창 대비 수리(261124): 밝은 판 위 잉크. 판을 따르는 기존
+     테마 토큰만 재사용한다(새 숫자 없음). */
+  --outputs-kicker-text: var(--panel-text-soft);
+  --outputs-control-text: var(--panel-text-soft);
+  --outputs-control-hover-text: var(--panel-text-max);
+  --outputs-input-text: var(--panel-text-max);
+  --outputs-content-text: var(--panel-text-max);
+  --outputs-secondary-text: var(--panel-text-strong);
+  --outputs-primary-text: var(--panel-text-max);
+  --outputs-danger-text: var(--danger);
+  --outputs-rule-edge: var(--line);
+  --outputs-content-edge: var(--line);
+  --outputs-control-edge: var(--input-border-strong);
+  --outputs-control-focus-edge: var(--accent-strong);
+  --outputs-primary-edge: var(--panel-text-max);
+  --outputs-primary-hover-edge: var(--panel-text-max);
   --line: rgba(26,34,48,.12);
   --input-border-strong: #767e8a;
   --focus-ring: rgba(58,123,213,.28);
@@ -1254,6 +1325,22 @@ html[data-theme="padiem-glass"] {
   --panel-text-soft: var(--muted);
   --panel-text-strong: var(--muted);
   --panel-text-max: var(--text);
+  /* 저장한 답변 창 대비 수리(261124): 밝은 판 위 잉크. 판을 따르는 기존
+     테마 토큰만 재사용한다(새 숫자 없음). */
+  --outputs-kicker-text: var(--panel-text-soft);
+  --outputs-control-text: var(--panel-text-soft);
+  --outputs-control-hover-text: var(--panel-text-max);
+  --outputs-input-text: var(--panel-text-max);
+  --outputs-content-text: var(--panel-text-max);
+  --outputs-secondary-text: var(--panel-text-strong);
+  --outputs-primary-text: var(--panel-text-max);
+  --outputs-danger-text: var(--danger);
+  --outputs-rule-edge: var(--line);
+  --outputs-content-edge: var(--line);
+  --outputs-control-edge: var(--input-border-strong);
+  --outputs-control-focus-edge: var(--accent-strong);
+  --outputs-primary-edge: var(--panel-text-max);
+  --outputs-primary-hover-edge: var(--panel-text-max);
   --connector-card-hairline: color-mix(in srgb, var(--text-deep-ink) 50%, transparent);
   /* #6100: 38% 백색 --line은 카드 헤어라인으로 남는다(연결 화면이 이 값을
      쓴다). 입력칸은 이 테마가 실제로 합성되는 채움에 대해 3:1 이상인

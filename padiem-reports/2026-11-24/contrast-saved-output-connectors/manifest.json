@@ -1,0 +1,184 @@
+{
+  "topic": "저장한 답변 창·연결 카드 글자 대비 수리",
+  "base": "997f18547",
+  "sheets_changed": [
+    "outputs.css",
+    "connector-pages.css",
+    "padiem-tokens.css"
+  ],
+  "audit": {
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4385,
+      "after": 4385,
+      "delta": 0
+    },
+    "css_important": {
+      "before": 518,
+      "after": 518,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 795,
+      "after": 795,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 106,
+      "after": 106,
+      "delta": 0
+    },
+    "css_color_literals": {
+      "before": 1110,
+      "after": 1110,
+      "delta": 0
+    },
+    "css_color_literals_unthemed": {
+      "before": 449,
+      "after": 449,
+      "delta": 0
+    },
+    "css_local_imports": {
+      "before": 0,
+      "after": 0,
+      "delta": 0
+    },
+    "rules_by_sheet": {
+      "outputs.css": {
+        "before": 26,
+        "after": 26
+      },
+      "connector-pages.css": {
+        "before": 45,
+        "after": 45
+      },
+      "padiem-tokens.css": {
+        "before": 7,
+        "after": 7
+      }
+    },
+    "important_by_sheet": {
+      "outputs.css": {
+        "before": 0,
+        "after": 0
+      },
+      "connector-pages.css": {
+        "before": 13,
+        "after": 13
+      },
+      "padiem-tokens.css": {
+        "before": 0,
+        "after": 0
+      }
+    }
+  },
+  "tokens": {
+    "new": {
+      "saved_output_text": [
+        "--outputs-kicker-text",
+        "--outputs-control-text",
+        "--outputs-control-hover-text",
+        "--outputs-input-text",
+        "--outputs-content-text",
+        "--outputs-secondary-text",
+        "--outputs-primary-text",
+        "--outputs-danger-text"
+      ],
+      "saved_output_edges": [
+        "--outputs-rule-edge",
+        "--outputs-content-edge",
+        "--outputs-control-edge",
+        "--outputs-control-focus-edge",
+        "--outputs-primary-edge",
+        "--outputs-primary-hover-edge"
+      ],
+      "connector_card": [
+        "--connector-card-ink",
+        "--connector-card-muted-ink"
+      ]
+    },
+    "definition": "padiem-tokens.css :root 기본값은 기존 토큰을 var()로 가리킨다(새 색 숫자 0). --outputs-* 는 light·padiem-home·padiem-glass 블록에서, --connector-card-* 는 dark·cinematic 블록에서만 덮는다."
+  },
+  "verification": {
+    "contrast": {
+      "method": "계산된 글자색을 글자를 지운 화면의 실제 픽셀 위에 놓고 글자 상자 안 최악값(안정화 조건)",
+      "limits": {
+        "text": 4.5,
+        "large_or_icon": 3.0
+      },
+      "measurements": 210,
+      "failing_before": 96,
+      "failing_after": 0,
+      "table": "contrast_table.md",
+      "report": "contrast_before_after.json"
+    },
+    "painted_matrix": {
+      "what": "회귀 시험(test_261124_saved_output_connector_contrast.py)의 브라우저 측정 — 뒤 흐림을 끄지 않은 실제 렌더",
+      "rows": 140,
+      "failing": 0,
+      "report": "painted_matrix.json"
+    },
+    "standard_screens": {
+      "what": "tools/chat_pixel_compare.py 기본 13화면 × 5테마 × 2폭, origin/main 대 작업 트리",
+      "combos": 130,
+      "nonzero": [],
+      "raw_nonzero": [],
+      "report": "standard/compare_report.json"
+    },
+    "target_screens": {
+      "what": "같은 도구의 캡처 엔진으로 저장한 답변 창·연결 화면·연결 상세 3화면 × 5테마 × 2폭",
+      "combos": 30,
+      "changed": [
+        "cinematic__1440x950__connectors",
+        "cinematic__390x844__connectors",
+        "dark__1440x950__connectors",
+        "dark__390x844__connectors",
+        "light__1440x950__saved-output",
+        "light__390x844__saved-output",
+        "padiem-glass__1440x950__saved-output",
+        "padiem-glass__390x844__saved-output",
+        "padiem-home__1440x950__saved-output",
+        "padiem-home__390x844__saved-output"
+      ],
+      "unchanged": 20,
+      "report": "targets/compare_report.json"
+    },
+    "target_control": {
+      "what": "제어쌍 — 바뀐 두 화면 × 5테마 × 2폭",
+      "combos": 20,
+      "nonzero": [],
+      "report": "targets-control/control_report.json"
+    },
+    "tamper": [
+      {
+        "token": "--outputs-kicker-text",
+        "theme": "light",
+        "screen": "saved-output",
+        "mutation": "--outputs-kicker-text: var(--panel-text-soft); → --outputs-kicker-text: #ff00ff;",
+        "pixel": 529
+      },
+      {
+        "token": "--connector-card-ink",
+        "theme": "dark",
+        "screen": "connectors",
+        "mutation": "--connector-card-ink: var(--text-panel-ink); → --connector-card-ink: #ff00ff;",
+        "pixel": 3452
+      }
+    ]
+  },
+  "captures": {
+    "note": "before/after 쌍은 픽셀 도구의 안정화 조건(움직임·뒤 흐림 끔)으로 찍었다. padiem-glass 캡처만 뒤 흐림을 켠 실제 렌더다.",
+    "files": [
+      "connectors__cinematic__390x844__after.png",
+      "connectors__dark__1440x950__after.png",
+      "connectors__dark__1440x950__before.png",
+      "saved-output__light__1440x950__after.png",
+      "saved-output__light__1440x950__before.png",
+      "saved-output__padiem-glass__1440x950__after.png"
+    ]
+  }
+}

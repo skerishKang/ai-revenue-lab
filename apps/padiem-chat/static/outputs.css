@@ -50,6 +50,23 @@
   padding: 22px;
   display: grid;
   gap: 14px;
+  /* 대비 수리(261124): 이 창의 글자색은 창 스킨이 --ws-* 흰 베일로 칠하는데
+     판은 밝은 테마에서 밝아진다. 이 창 안에서만 그 이름들을 판을 따르는
+     --outputs-* 잉크로 되가리킨다(값·테마 분기는 padiem-tokens.css). */
+  --ws-dialog-kicker-text: var(--outputs-kicker-text);
+  --ws-control-muted-text: var(--outputs-control-text);
+  --ws-control-hover-text: var(--outputs-control-hover-text);
+  --ws-input-text: var(--outputs-input-text);
+  --ws-output-text: var(--outputs-content-text);
+  --ws-secondary-text: var(--outputs-secondary-text);
+  --text-veil-strong: var(--outputs-primary-text);
+  --ws-danger-text: var(--outputs-danger-text);
+  --ws-dialog-edge: var(--outputs-rule-edge);
+  --line-veil-dim: var(--outputs-content-edge);
+  --ws-input-edge: var(--outputs-control-edge);
+  --ws-input-focus-edge: var(--outputs-control-focus-edge);
+  --ws-control-hover-edge-strong: var(--outputs-primary-edge);
+  --line-veil-mist: var(--outputs-primary-hover-edge);
 }
 
 .saved-output-header {
