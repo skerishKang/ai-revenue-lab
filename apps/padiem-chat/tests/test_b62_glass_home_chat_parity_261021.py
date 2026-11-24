@@ -26,6 +26,7 @@ import pytest
 
 # #8060: 원문 read는 _support(glass_home_parity_source)가 담당하고,
 # 이 모듈은 파싱된 블록과 계산된 offender 목록으로 단언한다.
+from _support.calendar_palette import root_declarations
 from _support.glass_home_parity_source import (  # noqa: E402
     all_css_sheets, css_text, js_text, markup_text, tokens_text,
 )
@@ -353,12 +354,13 @@ def test_the_narrow_window_is_locked_to_the_first_screen() -> None:
     tablet = css.split("@media (max-width: 920px)", 1)[1].split("@media (max-width: 620px)", 1)[0]
     assert '.conversation.conversation' in tablet
     # #8008 11차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
-    assert "background: rgba(242, 245, 247, .90);" in tablet
+    assert "background: var(--shared-six-panel-frame-narrow-bg);" in tablet
+    assert root_declarations()["--shared-six-panel-frame-narrow-bg"] == "rgba(242, 245, 247, .90)"
     assert "blur(30px) saturate(106%);" in tablet
     assert ".main-panel::before" in tablet
-    assert "opacity: .22 !important;" in tablet
+    assert "opacity: .22;" in tablet
     phone = css.split("@media (max-width: 620px)", 1)[1].split("/* The surface tokens", 1)[0]
-    assert "opacity: .16 !important;" in phone
+    assert "opacity: .16;" in phone
 
 
 def test_the_chat_composer_row_spacing_stays_first_screen() -> None:
