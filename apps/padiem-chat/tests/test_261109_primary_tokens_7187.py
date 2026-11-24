@@ -202,6 +202,15 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--rich-response-inner-edge", "--rich-response-control-edge",
                 "--rich-response-hover-bg", "--rich-response-code-bg",
                 "--rich-response-code-text",
+                # #7811 C2 pc-pairing-card.css(261124): 상태 팔레트 13개.
+                # 값·소비 선언은 test_261124_pc_pairing_tokens_7811.py가 고정한다.
+                "--pc-pairing-active-text", "--pc-pairing-active-edge",
+                "--pc-pairing-active-bg", "--pc-pairing-offline-edge",
+                "--pc-pairing-offline-bg", "--pc-pairing-paused-text",
+                "--pc-pairing-paused-edge", "--pc-pairing-paused-bg",
+                "--pc-pairing-pending-edge", "--pc-pairing-pending-bg",
+                "--pc-pairing-revoked-edge", "--pc-pairing-revoked-bg",
+                "--pc-pairing-menu-shadow",
                 }
              | {"--ws-item-text", "--ws-current-wash", "--ws-current-glow",
                 "--ws-soft-wash", "--ws-control-hover-edge",

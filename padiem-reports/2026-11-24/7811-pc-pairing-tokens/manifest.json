@@ -1,0 +1,114 @@
+{
+  "sheet": "pc-pairing-card.css",
+  "round": "#7811 C2 pc-pairing-card.css 14선언",
+  "base": "0a80e77c1",
+  "audit": {
+    "css_color_literals": {
+      "before": 1013,
+      "after": 999,
+      "delta": -14
+    },
+    "css_color_literals_unthemed": {
+      "before": 352,
+      "after": 338,
+      "delta": -14
+    },
+    "css_important": {
+      "before": 475,
+      "after": 475,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 104,
+      "after": 104,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4385,
+      "after": 4385,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 795,
+      "after": 795,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": [
+      "--pc-pairing-active-text",
+      "--pc-pairing-active-edge",
+      "--pc-pairing-active-bg",
+      "--pc-pairing-offline-edge",
+      "--pc-pairing-offline-bg",
+      "--pc-pairing-paused-text",
+      "--pc-pairing-paused-edge",
+      "--pc-pairing-paused-bg",
+      "--pc-pairing-pending-edge",
+      "--pc-pairing-pending-bg",
+      "--pc-pairing-revoked-edge",
+      "--pc-pairing-revoked-bg",
+      "--pc-pairing-menu-shadow"
+    ],
+    "reused": [
+      "--control-wash-strong"
+    ],
+    "definition": "padiem-tokens.css :root pc-pairing 묶음. 테마 블록이 덮지 않는다.",
+    "reuse_rule": "값이 같은 기존 :root 토큰 1개를 재사용했고 테마가 덮는 토큰은 재사용하지 않았다(계약 시험이 고정)."
+  },
+  "verification": {
+    "computed": {
+      "targets": 14,
+      "themes": 5,
+      "checked": 10,
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "combos": 10,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "screens": [
+        "pairing"
+      ],
+      "nonzero": [],
+      "report": "compare_report.json",
+      "captures": "captures/"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json",
+      "scope": "scope_report.json"
+    },
+    "tamper": {
+      "token": "--pc-pairing-active-bg",
+      "mutation": "rgba(17, 104, 95, .08)->#ff00ff",
+      "theme": "light",
+      "screen": "pairing",
+      "viewport": "1440x950",
+      "pixel": 2087,
+      "report": "tamper_report.json",
+      "images": [
+        "captures/tamper_clean.png",
+        "captures/tamper_mutated.png"
+      ]
+    },
+    "tests": "신규 계약·기존 토큰 18개, 구조·래칫·대비·관련 83개 통과",
+    "ratchet": "base 대비 head: 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −14."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 계산값·픽셀·대비 하한은 변하지 않는다.",
+    "숨은 상태 칩과 메뉴 판을 고정 표식으로 채운 화면에서 측정했다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 정의에만 있다."
+  ]
+}

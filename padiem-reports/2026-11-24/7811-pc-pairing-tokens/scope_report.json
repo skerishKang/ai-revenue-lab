@@ -1,0 +1,10 @@
+{
+  "changed_sheets": [
+    "padiem-tokens.css",
+    "pc-pairing-card.css"
+  ],
+  "screens": [
+    "pairing"
+  ],
+  "combos": 10
+}

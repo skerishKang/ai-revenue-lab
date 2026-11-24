@@ -158,34 +158,34 @@
 
 /* One colour per server state, the same vocabulary the device manager uses. */
 .pc-pairing-state[data-state="active"] {
-  color: #11685f;
-  border-color: rgba(17, 104, 95, .35);
-  background: rgba(17, 104, 95, .08);
+  color: var(--pc-pairing-active-text);
+  border-color: var(--pc-pairing-active-edge);
+  background: var(--pc-pairing-active-bg);
 }
 
 /* An active link whose MeshCentral node is offline: a state, not a failure. */
 .pc-pairing-state[data-state="offline"] {
   color: var(--muted);
-  border-color: rgba(111, 112, 121, .35);
-  background: rgba(111, 112, 121, .08);
+  border-color: var(--pc-pairing-offline-edge);
+  background: var(--pc-pairing-offline-bg);
 }
 
 .pc-pairing-state[data-state="paused"] {
-  color: #8a6d1a;
-  border-color: rgba(138, 109, 26, .35);
-  background: rgba(138, 109, 26, .08);
+  color: var(--pc-pairing-paused-text);
+  border-color: var(--pc-pairing-paused-edge);
+  background: var(--pc-pairing-paused-bg);
 }
 
 .pc-pairing-state[data-state="pending_verification"] {
   color: var(--accent-strong);
-  border-color: rgba(47, 111, 153, .35);
-  background: rgba(47, 111, 153, .08);
+  border-color: var(--pc-pairing-pending-edge);
+  background: var(--pc-pairing-pending-bg);
 }
 
 .pc-pairing-state[data-state="revoked"] {
   color: var(--danger);
-  border-color: rgba(179, 38, 30, .35);
-  background: rgba(179, 38, 30, .08);
+  border-color: var(--pc-pairing-revoked-edge);
+  background: var(--pc-pairing-revoked-bg);
 }
 
 .pc-pairing-menu {
@@ -218,7 +218,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--panel);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .16);
+  box-shadow: var(--pc-pairing-menu-shadow);
 }
 
 .pc-pairing-menu-panel[hidden] {
@@ -239,7 +239,7 @@
 }
 
 .pc-pairing-menu-panel > button:hover {
-  background: rgba(127, 127, 127, .14);
+  background: var(--control-wash-strong);
 }
 
 .pc-pairing-menu-revoke {
