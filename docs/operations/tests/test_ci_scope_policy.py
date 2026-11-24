@@ -220,6 +220,20 @@ def test_b62_main_push_ci_coalescing_preserves_stable_required_gate() -> None:
     assert "b62-chat-pytest" in aggregate["needs"]
 
 
+def test_timing_sensitive_browser_qa_jobs_stay_hosted() -> None:
+    """#8718: one heavy browser job per physical runner host.
+
+    Glass timing samples, the 3s contract waits and first-screen contrast
+    measurements are sensitive to a second browser process on the same host.
+    They stay on GitHub runners; the other lanes keep the COM2/CGI label.
+    """
+    jobs = yaml.safe_load(
+        (WORKFLOWS / "b62-browser-qa-unified.yml").read_text(encoding="utf-8")
+    )["jobs"]
+    for name in ("accessibility-browser-qa", "browser-qa", "browser-contract-qa"):
+        assert jobs[name]["runs-on"] == "ubuntu-24.04", name
+
+
 def test_css_token_only_scope_keeps_reduced_lanes_and_skips_full_pytest() -> None:
     """#8688 colour/token PRs must not pay for the four full pytest shards."""
     jobs = _b62_chat_ci_document()["jobs"]
@@ -464,10 +478,7 @@ def test_workflow_and_script_changes_run_the_ci_contract_tests() -> None:
         ("operations-policy-guard.yml", "pr-contract", "ubuntu-latest"),
         ("ci-contract-tests.yml", "ci-contract-tests", "ubuntu-latest"),
         ("b62-browser-qa-unified.yml", "plan", "ubuntu-24.04"),
-        ("b62-browser-qa-unified.yml", "accessibility-browser-qa", "ubuntu-24.04"),
         ("b62-browser-qa-unified.yml", "auth-history-browser-qa", "ubuntu-24.04"),
-        ("b62-browser-qa-unified.yml", "browser-qa", "ubuntu-24.04"),
-        ("b62-browser-qa-unified.yml", "browser-contract-qa", "ubuntu-24.04"),
         ("b62-browser-qa-unified.yml", "conversation-delete-browser-qa", "ubuntu-24.04"),
         ("b62-browser-qa-unified.yml", "conversation-export-browser-qa", "ubuntu-24.04"),
         ("b62-browser-qa-unified.yml", "deep-research-browser-qa", "ubuntu-24.04"),
@@ -538,10 +549,7 @@ def test_hosted_only_jobs_keep_existing_runner(workflow, job_id, image):
     ("validate-b14-alpha.yml", "alpha-model-registry-contract"),
     ("ci-contract-tests.yml", "ci-contract-tests"),
     ("b62-browser-qa-unified.yml", "plan"),
-    ("b62-browser-qa-unified.yml", "accessibility-browser-qa"),
     ("b62-browser-qa-unified.yml", "auth-history-browser-qa"),
-    ("b62-browser-qa-unified.yml", "browser-qa"),
-    ("b62-browser-qa-unified.yml", "browser-contract-qa"),
     ("b62-browser-qa-unified.yml", "conversation-delete-browser-qa"),
     ("b62-browser-qa-unified.yml", "conversation-export-browser-qa"),
     ("b62-browser-qa-unified.yml", "deep-research-browser-qa"),

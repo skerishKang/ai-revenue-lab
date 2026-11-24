@@ -145,8 +145,24 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         await _assert_focus(page, "#newChatButton", "desktop new chat")
 
     # #7780: 설정은 프로필 메뉴 안에 있다. 서랍이 열린 뒤 계정 행을 드러내고 메뉴를 연다.
+    # Offline mock auth는 guest/expired 상태에서 프로필 단추를 CSS로 숨긴다.
+    # 상태 투영이 끝나 단추가 실제로 보이고 움직임이 멈출 때까지 기다린다.
     await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
-    await page.locator("#accountProfileButton").click()
+    await page.wait_for_function(
+        """() => {
+          const row = document.querySelector('#sidebar .sidebar-account');
+          const state = row?.dataset.accountState || '';
+          if (state === 'guest' || state === 'expired') return false;
+          const toggle = document.getElementById('accountProfileButton');
+          if (!toggle || toggle.offsetParent === null) return false;
+          const rect = toggle.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0;
+        }""",
+        timeout=15_000,
+    )
+    settings = page.locator("#accountProfileButton")
+    await settings.wait_for(state="visible", timeout=15_000)
+    await settings.click()
     await settings_row.wait_for(state="visible")
     if not await settings_row.is_visible():
         raise AssertionError("settings must be a visible first-class account menu entry")
