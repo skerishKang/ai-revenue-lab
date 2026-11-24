@@ -3,7 +3,7 @@
  "stage": "C3 테마 덮어쓰기 시트 해체",
  "sheet": "padiem-themes.css",
  "component": "시작 카드 (.starter, .starter strong, .starter small, .starter-icon)",
- "base": "531c777b9dc294fe03092aa49c6fd868f6a465d3 (#8674 head — 같은 시트의 입력창 해체 위에 쌓았다. depends on #8674)",
+ "base": "main 9f03ea94630ee4cf988e9a62bb7092aef13f0620 (#8674 merged)",
  "summary": {
   "declarations_before": 43,
   "declarations_after": 25,
@@ -349,13 +349,13 @@
    "delta": 0
   },
   "css_color_literals": {
-   "before": 1014,
-   "after": 1004,
+   "before": 1000,
+   "after": 990,
    "delta": -10
   },
   "css_color_literals_unthemed": {
-   "before": 366,
-   "after": 366,
+   "before": 352,
+   "after": 352,
    "delta": 0
   },
   "padiem-themes.css rules": {
@@ -449,6 +449,7 @@
  "notes": [
   "측정은 Chat index.html 기준이다. padiem-themes.css 를 함께 부르는 React 비교용 복제본(apps/padiem-chat-react)은 불러오는 시트 구성이 Chat 과 달라(padiem-surfaces.css·padiem-bright-readability.css·accessibility-polish.css 를 부르지 않는다) 시작 카드 값이 달라질 수 있다. 의원3종 앱에는 시작 카드가 없다",
   "#8674 보고의 기존 대비 문제 3건은 이 PR 에서 건드리지 않았다(다른 작업이 맡는다)",
-  "줄 번호는 base 의 padiem-themes.css 기준이다"
+  "줄 번호는 base 의 padiem-themes.css 기준이다",
+  "리베이스 후 재측정 대신, 바뀐 정적 파일의 starter 선택자 및 관련 토큰 변경이 없고 padiem-themes.css가 같음을 확인함(리베이스 전 측정: 계산값·픽셀 차이 0). 기존 connector-pages.css의 starter 관련 선택자 5건은 변경되지 않음."
  ]
 }
