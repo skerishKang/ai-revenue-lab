@@ -286,7 +286,6 @@ def stamp_verdict(
     stamp_sha: str = "",
     screen_changes: list[tuple[str, int]] | None = None,
     ancestor: bool = True,
-    deployed_sha: str = "",
     now_epoch: int | None = None,
 ) -> tuple[str, str, str]:
     """(판정, 코드, 기록할 커밋).
@@ -303,8 +302,8 @@ def stamp_verdict(
     - 있으면 그중 가장 이른 커밋의 커밋(머지) 시각부터 지난 시간으로,
       6시간 이하면 PASS deploy_lag, 넘으면 FAIL screen_deploy_missing.
       기록에는 그 커밋의 앞 8자리를 남긴다(어느 변경이 배포에서 빠졌는지).
-    - #8666: 화면 스탬프가 배포 기록의 마지막 성공 커밋이면 main이 앞서 있어도
-      PASS last_successful_deploy. 배포 커밋은 배포 기록에서 읽어 넘긴다.
+    - #8666: 조상 검사는 체크아웃 sha가 아니라 판정 직전에 받은 최신
+      origin/main을 기준으로 한다. 화면이 더 새 버전이면 통과한다.
     - 스탬프 커밋을 저장소에서 찾지 못하면 FAIL screen_stamp_unknown.
     - 스탬프 커밋이 main 조상이 아니면 FAIL screen_stamp_not_on_main.
     - 이력을 읽지 못했으면(None) FAIL screen_history_unavailable:
@@ -320,11 +319,6 @@ def stamp_verdict(
     if len(value) == 8 and head and value.lower() == head.lower():
         # 화면 스탬프가 main 그 자체다. 비교할 커밋이 없다.
         return "PASS", "up_to_date", value[:8]
-    deployed = (deployed_sha or "").strip()[:8]
-    if len(value) == 8 and deployed and value.lower() == deployed.lower():
-        # main이 배포보다 앞서도, 화면이 마지막 성공 배포 커밋을 서비스하고
-        # 있으면 정상이다. 배포 기록의 커밋과 정확히 같은 스탬프만 허용한다.
-        return "PASS", "last_successful_deploy", value[:8]
     stamp = (stamp_sha or "").strip()
     if not stamp:
         return "FAIL", "screen_stamp_unknown", value[:8]
@@ -408,15 +402,21 @@ def stamp_evidence(observed: str, head: str = "HEAD",
     stamp_sha = resolve_stamp_commit(observed, cwd)
     ancestor = False
     screen_changes: list[tuple[str, int]] | None = None
+    # #8666 정정: 체크아웃 sha는 검사 시작 시점의 main이다. 화면이 그 뒤에
+    # 병합된 커밋이면 조상이 아니지만 정상 배포다. 판정 직전에 최신 main을
+    # 받아 origin/main 기준으로 조상 여부를 다시 본다.
+    main_ref = "origin/main"
     if stamp_sha:
-        code, _ = _git(["merge-base", "--is-ancestor", stamp_sha, head], cwd)
-        if code != 0:
-            # 얕은 클론 경계는 조상 관계 증명을 막는다. 전체 이력으로 한 번 더.
-            _git(["fetch", "--unshallow", "origin"], cwd)
-            code, _ = _git(["merge-base", "--is-ancestor", stamp_sha, head], cwd)
-        ancestor = code == 0
-        if ancestor:
-            screen_changes = screen_commits_since(stamp_sha, head, cwd)
+        fetch_code, _ = _git(["fetch", "origin", "main"], cwd)
+        if fetch_code == 0:
+            code, _ = _git(["merge-base", "--is-ancestor", stamp_sha, main_ref], cwd)
+            if code != 0:
+                # 이력이 모자라면 필요한 만큼 더 받고 한 번 더 판정한다.
+                _git(["fetch", "--unshallow", "origin"], cwd)
+                code, _ = _git(["merge-base", "--is-ancestor", stamp_sha, main_ref], cwd)
+            ancestor = code == 0
+            if ancestor:
+                screen_changes = screen_commits_since(stamp_sha, main_ref, cwd)
     return {"stamp_sha": stamp_sha, "ancestor": ancestor,
             "screen_changes": screen_changes}
 
@@ -515,77 +515,6 @@ def fetch_recent_flow_durations(
     except (urllib.error.URLError, TimeoutError, OSError, ValueError, KeyError, zipfile.BadZipFile):
         return {name: values[-limit:] for name, values in collected.items()}
     return {name: values[-limit:] for name, values in collected.items()}
-
-
-# --------------------------------------------------------------- 배포 기록(#8666)
-def pick_successful_deploy_sha(deployments: object, statuses: dict[str, object]) -> str:
-    """배포 기록에서 가장 최근 state=success 배포의 커밋을 고른다.
-
-    실패·진행중 배포는 기준이 될 수 없다. 상태 목록을 읽을 수 없는 배포는
-    건너뛴다. 값은 커밋 SHA만 반환하고 배포 식별자·주소는 남기지 않는다.
-    """
-    if not isinstance(deployments, list):
-        return ""
-    candidates = []
-    for row in deployments:
-        if not isinstance(row, dict):
-            continue
-        deploy_id = str(row.get("id", ""))
-        sha = str(row.get("sha", "")).strip()
-        if not deploy_id or not re.fullmatch(r"[0-9a-fA-F]{7,40}", sha):
-            continue
-        state_rows = statuses.get(deploy_id)
-        if not isinstance(state_rows, list):
-            continue
-        states = [str(item.get("state", "")).lower() for item in state_rows
-                  if isinstance(item, dict)]
-        if "success" not in states:
-            continue
-        created = str(row.get("created_at", ""))
-        candidates.append((created, sha))
-    if not candidates:
-        return ""
-    return sorted(candidates)[-1][1]
-
-
-def last_successful_deploy_sha(repo: str, token: str = "", timeout: float = 20.0) -> str:
-    """GitHub 배포 기록(environment=production)에서 마지막 성공 커밋을 읽는다."""
-    token = token or os.environ.get("GITHUB_TOKEN", "")
-    repo = repo or os.environ.get("GITHUB_REPOSITORY", "")
-    if not token or not repo or not re.fullmatch(r"[\w.-]+/[\w.-]+", repo):
-        return ""
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "PADIEM-daily-usage-stamp/1.0",
-    }
-
-    def get_json(url: str) -> object:
-        request = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            return json.loads(response.read(1_000_000).decode("utf-8"))
-
-    try:
-        payload = get_json(
-            f"https://api.github.com/repos/{repo}/deployments"
-            "?environment=production&per_page=20"
-        )
-        deployments = payload.get("deployments") if isinstance(payload, dict) else None
-        if not isinstance(deployments, list):
-            deployments = payload if isinstance(payload, list) else []
-        statuses: dict[str, object] = {}
-        for row in deployments:
-            if isinstance(row, dict) and row.get("id"):
-                deploy_id = str(row["id"])
-                detail = get_json(
-                    f"https://api.github.com/repos/{repo}/deployments/{deploy_id}/statuses"
-                )
-                statuses[deploy_id] = detail if isinstance(detail, list) else []
-        return pick_successful_deploy_sha(deployments, statuses)
-    except (urllib.error.URLError, TimeoutError, OSError, ValueError, KeyError):
-        # 배포 기록을 읽지 못하면 모르는 값으로 통과시키지 않는다.
-        return ""
 
 
 # ------------------------------------------------------------------ 캡처 이름
@@ -1459,16 +1388,7 @@ def run_browser_flows(
                         break
                 _capture(page, out_path, stamp, 1, "app-version", username)
                 evidence = stamp_evidence(observed)
-                # #8666: main이 배포보다 앞서도 마지막 성공 배포 커밋과 같은
-                # 스탬프면 정상. 값은 배포 기록에서 읽는다.
-                deployed = (os.environ.get("PADIEM_LAST_SUCCESSFUL_DEPLOY_SHA", "").strip()
-                            or last_successful_deploy_sha(
-                                os.environ.get("GITHUB_REPOSITORY", ""),
-                                os.environ.get("GITHUB_TOKEN", ""),
-                            ))
-                verdict, code, blame = stamp_verdict(
-                    observed, head_version, deployed_sha=deployed, **evidence
-                )
+                verdict, code, blame = stamp_verdict(observed, head_version, **evidence)
                 # 스탬프는 배포 SHA 앞 8자리 조각이다. 쿠키·토큰이 아니므로
                 # 어느 커밋 화면인지(지목된 커밋) 진단에 남긴다. FAIL 에도
                 # 남는다(#7935 후속).
