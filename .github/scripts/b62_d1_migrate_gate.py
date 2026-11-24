@@ -230,6 +230,18 @@ def detail_tables(
     return sorted(table for table in wanted if table in live_tables)
 
 
+# Owner decision 2026-11-25: these rebuild migrations drop tables. Chat's
+# canonical store has been COM2 since 2026-11-08 and D1 is archive-only.
+# Never execute them through any D1 apply path, even with allow_table_drop.
+ARCHIVE_ONLY_DROP_MIGRATIONS = frozenset({
+    "081_claw_web_xlsx_selection_limit.sql",
+    "083_project_files_hwpx.sql",
+    "097_account_deletion_audit_hash_time_only.sql",
+    "113_account_deletion_shared_complete.sql",
+    "122_live_usage_conversion_bucket.sql",
+})
+
+
 def refuse(plan: dict[str, Any]) -> dict[str, Any]:
     """One place that decides a plan may not proceed."""
 
@@ -237,6 +249,9 @@ def refuse(plan: dict[str, Any]) -> dict[str, Any]:
         raise GateError("B62_D1_LEDGER_OBJECT_DRIFT")
     if plan["refused_drop_guard"]:
         raise GateError("B62_D1_DROP_GUARD_REFUSED")
+    archived = sorted(ARCHIVE_ONLY_DROP_MIGRATIONS & set(plan["apply"]))
+    if archived:
+        raise GateError("B62_D1_ARCHIVE_ONLY_DROP_REFUSED:" + ",".join(archived))
     return plan
 
 
@@ -739,6 +754,10 @@ def cmd_window(argv: argparse.Namespace) -> int:
     directory = Path(argv.dir)
     directory.mkdir(parents=True, exist_ok=True)
     pending = [name for name in plan["apply"] if name in plan["window"]]
+    archived = sorted(ARCHIVE_ONLY_DROP_MIGRATIONS & set(pending))
+    if archived:
+        print("B62_D1_ARCHIVE_ONLY_DROP_REFUSED=" + ",".join(archived))
+        raise GateError("B62_D1_ARCHIVE_ONLY_DROP_REFUSED")
     refused = [name for name in pending if by_name[name]["destructive"] and not argv.allow_table_drop]
     if refused:
         print("B62_D1_DROP_GUARD_REFUSED=" + ",".join(refused))

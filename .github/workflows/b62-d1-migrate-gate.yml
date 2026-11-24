@@ -159,6 +159,21 @@ jobs:
       - name: Run gate contract tests
         run: python -m pytest -q .github/tests/test_b62_d1_migrate_gate.py
 
+      - name: Surface the COM2 migration ledger check in the gate summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo '### Chat migration authority'
+            echo ''
+            echo 'Chat 정본은 컴2(2026-11-08 이동), D1은 보관용입니다. D1 apply는 비활성화되어 있습니다.'
+            echo '저장소 migrations 목록과 컴2 장부의 대조는 `deploy/host-com2/deploy_from_main.sh`가 이미 수행합니다.'
+            echo '해당 배포 요약의 `PENDING_MIGRATIONS` / `COM2_DEPLOY_CHAT_MIGRATION_APPLIED` 마커를 이 게이트 요약으로 참조합니다.'
+            echo 'COM2_LEDGER_CHECK_OWNER=deploy_from_main.sh'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo 'CHAT_D1_COM2_LEDGER_SUMMARY=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+
       - name: Inventory and replay every migration offline
         run: |
           set -euo pipefail
@@ -338,6 +353,13 @@ jobs:
       READONLY_DB_FINGERPRINT: ${{ needs.readonly.outputs.db_fingerprint }}
       READONLY_UP_TO: ${{ needs.readonly.outputs.plan_up_to }}
     steps:
+      - name: Chat D1 apply disabled - COM2 is canonical
+        if: always()
+        shell: bash
+        run: |
+          echo 'Chat 정본은 컴2, D1은 보관용입니다. D1 마이그레이션 apply는 비활성화되었습니다.' >&2
+          echo 'CHAT_D1_ARCHIVE_ONLY=REFUSED' >&2
+          exit 1
       - name: Require the explicit authorization phrase
         shell: bash
         run: |
