@@ -1,0 +1,113 @@
+{
+  "sheet": "rich-response.css",
+  "round": "#7811 C2 rich-response.css 14선언 (405line palette)",
+  "base": "5be5e81d7",
+  "audit": {
+    "css_color_literals": {
+      "before": 1027,
+      "after": 1013,
+      "delta": -14
+    },
+    "css_color_literals_unthemed": {
+      "before": 366,
+      "after": 352,
+      "delta": -14
+    },
+    "css_important": {
+      "before": 475,
+      "after": 475,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 104,
+      "after": 104,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4385,
+      "after": 4385,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 795,
+      "after": 795,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": [
+      "--rich-response-quote-edge",
+      "--rich-response-quote-bg",
+      "--rich-response-rule-edge",
+      "--rich-response-block-edge",
+      "--rich-response-inner-edge",
+      "--rich-response-control-edge",
+      "--rich-response-hover-bg",
+      "--rich-response-code-bg",
+      "--rich-response-code-text"
+    ],
+    "reused": [
+      "--pc-connect-surface",
+      "--surfaces-send-hover-bg",
+      "--calendar-paper"
+    ],
+    "definition": "padiem-tokens.css :root rich-response 묶음. 테마 블록이 덮지 않는다.",
+    "reuse_rule": "값이 같은 기존 :root 토큰 3개를 재사용했다. 테마가 덮어쓰는 토큰은 재사용하지 않았다(계약 시험이 고정)."
+  },
+  "verification": {
+    "computed": {
+      "targets": 14,
+      "themes": 5,
+      "checked": 10,
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "combos": 10,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "screens": [
+        "answer"
+      ],
+      "nonzero": [],
+      "report": "compare_report.json",
+      "captures": "captures/"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json",
+      "scope": "scope_report.json"
+    },
+    "tamper": {
+      "token": "--rich-response-rule-edge",
+      "mutation": "rgba(128, 138, 155, 0.5)->#ff00ff",
+      "theme": "light",
+      "screen": "answer",
+      "viewport": "1440x950",
+      "pixel": 860,
+      "report": "tamper_report.json",
+      "images": [
+        "captures/tamper_clean.png",
+        "captures/tamper_mutated.png"
+      ]
+    },
+    "tests": "rich-response 계약 6개 + 토큰/기 rich 9개, 구조·래칫 30개, 대비 14개 통과",
+    "ratchet": "base 대비 head: 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −14."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 계산값·픽셀·대비 하한은 변하지 않는다.",
+    "padiem-rich.css가 뒤에 로드되어 일부 선언을 같은 값으로 덮는다. 실제로 칠하는 --rich-response-rule-edge(구분선)로 변조 검출했다.",
+    "숨은 요소는 고정 표식 텍스트·코드·표로 채운 답변 화면에서 측정했다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 정의에만 있다."
+  ]
+}

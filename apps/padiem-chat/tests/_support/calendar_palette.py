@@ -80,6 +80,14 @@ def rich_rules():
     return parse_rules(_sheet("padiem-rich.css"))
 
 
+def rich_response_rules():
+    return parse_rules(_sheet("rich-response.css"))
+
+
+def rich_response_source() -> str:
+    return _sheet("rich-response.css")
+
+
 def unthemed_literals(rules) -> list[str]:
     """Non-custom-property color literals outside html[data-theme] rules."""
     import re
@@ -123,3 +131,7 @@ def unthemed_standalone_literals() -> list[str]:
 
 def unthemed_rich_literals() -> list[str]:
     return unthemed_literals(rich_rules())
+
+
+def unthemed_rich_response_literals() -> list[str]:
+    return unthemed_literals(rich_response_rules())

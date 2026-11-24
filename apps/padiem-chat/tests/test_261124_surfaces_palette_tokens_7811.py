@@ -230,7 +230,10 @@ def test_root_tokens_hold_the_pre_change_literals():
     found, overridden = token_values()
     for name, expected in ROOT_TOKENS.items():
         assert found.get(name) == expected, f"{name} = {found.get(name)}"
-    assert not (set(ROOT_TOKENS) & overridden), "a theme block repaints a surfaces token"
+    # #7811 C3: 입력칸 글자색 하나는 이제 테마 블록이 값을 준다(light·padiem-home —
+    # test_261124_themes_composer_c3_7811.py가 고정). 나머지는 계속 테마 불변이다.
+    assert set(ROOT_TOKENS) & overridden == {"--surfaces-composer-text"}, (
+        "a theme block repaints a surfaces token")
     assert not (REUSED_TOKENS & overridden), "round two reused a theme-overridden token"
     assert REUSED_TOKENS <= set(found), "round two reused an undefined token"
 

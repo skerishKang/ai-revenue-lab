@@ -258,8 +258,13 @@ class TestThemePaletteTokens(unittest.TestCase):
         glass = GLASS.read_text(encoding="utf-8")
         for theme in ("light", "dark", "cinematic", "padiem-home"):
             self.assertIn(f'html[data-theme="{theme}"] .sidebar', themes, theme)
-        self.assertIn('html[data-theme="dark"] .composer-note', themes)
-        self.assertIn('html[data-theme="cinematic"] .composer-note', themes)
+        # #7811 C3: dark·cinematic의 .composer-note 규칙은 한 번도 칠하지 못한
+        # 죽은 선언이라 걷어 냈다(실제 색은 뒤 시트의 !important — dark는
+        # padiem-dark-contrast.css, cinematic은 accessibility-polish.css. 그 계약은
+        # test_padiem_themes.py와 test_261124_themes_composer_c3_7811.py).
+        # 두 테마의 입력창 부품 규칙이 이 시트에 남아 있다는 뜻은 그대로 본다.
+        self.assertIn('html[data-theme="dark"] .composer {', themes)
+        self.assertIn('html[data-theme="cinematic"] .composer {', themes)
         self.assertIn('html[data-theme="padiem-glass"] .composer', glass)
         self.assertIn("background-color: #aeb6bf", glass)
         self.assertIn("--padiem-glass-background-image: none", glass)

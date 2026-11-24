@@ -1,0 +1,35 @@
+{
+ "measurements": 190,
+ "themes": 5,
+ "viewports": 2,
+ "state_labels": [
+  "automation",
+  "automation+focus",
+  "calendar",
+  "calendar+focus",
+  "chat",
+  "chat+focus",
+  "chat+note-error",
+  "claw",
+  "claw+collapsed",
+  "claw+focus",
+  "claw+focus+collapsed",
+  "claw+note-error",
+  "home",
+  "home+focus",
+  "home+note-error",
+  "library",
+  "library+focus",
+  "util",
+  "util+focus"
+ ],
+ "targets": [
+  "composer-wrap",
+  "composer",
+  "textarea",
+  "placeholder",
+  "composer-note"
+ ],
+ "values_compared": 456000,
+ "diffs": []
+}
