@@ -99,11 +99,12 @@
   border: 1px solid rgba(101, 87, 232, 0.22);
   background: rgba(255, 255, 255, 0.7);
 }
-/* 수아 11-24: 메뉴 항목은 글자 라벨이다. 테마 규칙이 주는 정사각형 폭을 토큰으로
-   받아 라벨에 맞게 되돌린다. 아이콘 단추는 토큰 기본값(40px)을 그대로 쓴다. */
-.answer-more-menu .answer-action {
-  --answer-action-width: auto;
-  width: var(--answer-action-width, auto);
+/* 수아 11-24: 메뉴 항목은 글자 라벨이다. 테마 규칙이 주는 정사각형 폭을 같은
+   규칙 안에서 이기도록 선택자만 묶는다(새 규칙·테마 규칙 없음, 토큰은 그대로).
+   아이콘 단추는 40×40으로 남는다. */
+.answer-more-menu .answer-action,
+:root .assistant-message .answer-actions .answer-more-menu .answer-action {
+  width: auto;
   min-width: 40px;
   height: 40px;
   padding: 0 10px;

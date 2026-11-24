@@ -46,14 +46,14 @@
     "items": [
       {
         "text": "TXT 다운로드",
-        "w": 76,
+        "w": 90,
         "h": 40,
         "whiteSpace": "nowrap",
         "lines": 3
       },
       {
         "text": "저장한 답변으로 저장",
-        "w": 112,
+        "w": 124,
         "h": 40,
         "whiteSpace": "nowrap",
         "lines": 3

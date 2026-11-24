@@ -53,7 +53,7 @@
  * the chrome-free look stay; only the press box grows. The phone floor of
  * 44px (mobile-target-legibility.css, loaded after this sheet) is untouched. */
 html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-action {
-  width: var(--answer-action-width, 40px);
+  width: 40px;
   height: 40px;
   min-width: 40px;
   min-height: 40px;
