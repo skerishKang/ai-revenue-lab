@@ -59,7 +59,7 @@ html[data-theme="padiem-glass"] .sidebar-bottom-divider {
 .sidebar-bottom .settings-button:hover,
 .sidebar-bottom .side-item:hover,
 .sidebar-bottom-tools .side-item:hover {
-  background: rgba(255,255,255,.82);
+  background: var(--editorial-typing-dot);
 }
 .sidebar-bottom .settings-button {
   cursor: pointer;
@@ -93,7 +93,7 @@ html[data-theme="padiem-glass"] .sidebar-bottom-divider {
   place-items: center;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: rgba(255,255,255,.62);
+  background: var(--calendar-visual-bg);
   color: var(--text);
   font-size: 11px;
   font-weight: 780;
@@ -599,12 +599,12 @@ a.side-item:focus-visible {
 /* The avatar face stays readable on the dark sidebar and on bright themes.
  * An opaque white face makes initials pass 4.5:1 in every supported theme. */
 .sidebar-account .account-avatar {
-  color: #17324a !important;
-  background-color: #ffffff !important;
-  border-color: #52677a !important;
+  color: var(--sidebar-utility-avatar-ink) !important;
+  background-color: var(--calendar-paper) !important;
+  border-color: var(--sidebar-utility-avatar-edge) !important;
 }
 .sidebar-account[data-account-state="expired"] .account-avatar {
-  color: #7f1d1d !important;
+  color: var(--sidebar-utility-expired-ink) !important;
 }
 html body .app-shell .sidebar .sidebar-bottom {
   position: sticky;

@@ -1,0 +1,107 @@
+{
+  "sheet": "sidebar-utility.css",
+  "round": "#7811 C2 sidebar-utility.css 6선언",
+  "base": "f51446431",
+  "measurement": "COM2(ssh comp2)에서 실행한 Playwright 하네스",
+  "audit": {
+    "css_color_literals": {
+      "before": 901,
+      "after": 895,
+      "delta": -6
+    },
+    "css_color_literals_unthemed": {
+      "before": 263,
+      "after": 257,
+      "delta": -6
+    },
+    "css_important": {
+      "before": 371,
+      "after": 371,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 86,
+      "after": 86,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4353,
+      "after": 4353,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 769,
+      "after": 769,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": [
+      "--sidebar-utility-avatar-ink",
+      "--sidebar-utility-avatar-edge",
+      "--sidebar-utility-expired-ink"
+    ],
+    "reused": [
+      "--editorial-typing-dot",
+      "--calendar-visual-bg",
+      "--calendar-paper"
+    ],
+    "definition": "padiem-tokens.css :root sidebar-utility 묶음 + token-family sha256=9842aeb7b9faa4f0acade8a83a5f20be5a10f13cde01b25a1305bc51aef08c11",
+    "reuse_rule": "값이 같은 기존 :root 토큰 3개를 재사용했고 테마가 덮는 토큰은 재사용하지 않았다(계약 시험이 고정)."
+  },
+  "verification": {
+    "computed": {
+      "targets": 6,
+      "themes": 5,
+      "checked": 10,
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "combos": 10,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "screens": [
+        "sidebar"
+      ],
+      "nonzero": [],
+      "report": "compare_report.json",
+      "captures": "captures/"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json"
+    },
+    "tamper": {
+      "token": "--sidebar-utility-avatar-ink",
+      "mutation": "#17324a->#ff00ff",
+      "theme": "light",
+      "screen": "sidebar",
+      "viewport": "1440x950",
+      "pixel": 178,
+      "report": "tamper_report.json",
+      "images": [
+        "captures/tamper_clean.png",
+        "captures/tamper_mutated.png"
+      ]
+    },
+    "tests": "신규 시트 시험 6개 + 구조 래칫 13개 통과(로컬)",
+    "ratchet": "base 대비 head: 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −6."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 계산값·픽셀·대비는 변하지 않는다.",
+    "숨은 요소는 고정 표식 계정 행·아바타·메뉴 버튼으로 채운 화면에서 측정했다.",
+    "원래 대비 미달은 고치지 않고 목록으로만 남긴다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 정의에만 있다."
+  ]
+}
