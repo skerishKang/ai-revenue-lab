@@ -1,4 +1,4 @@
-﻿"""Library subtitle painted contrast regression (#8686 follow-up)."""
+"""Library subtitle painted contrast regression (#8686 follow-up)."""
 from __future__ import annotations
 import io
 import math
@@ -115,4 +115,3 @@ def test_library_subtitle_contrast(site):
             browser.close()
     assert len(observations) == 10
     assert all(ratio >= 4.5 for _, _, ratio in observations), observations
-
