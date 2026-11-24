@@ -130,7 +130,8 @@ class History:
 
     async def get_oracle_mesh_dispatch_for_owner(self, **kw):
         return {"run_id": self.rows[-1]["run_id"], "state": "done" if self.done else "pending",
-                "exit_code": 0, "dispatch_id": "dispatch-fixture"}
+                "exit_code": getattr(self, "exit_code", 0), "termination": getattr(self, "termination", "exited"),
+                "dispatch_id": "dispatch-fixture"}
 
 
 @pytest.fixture
@@ -833,3 +834,56 @@ def test_real_store_other_account_on_the_same_pc_never_lends_its_permission(
         assert job[0] == OTHER_UID and other["link_id"] != link["link_id"]
     finally:
         conn.close()
+
+
+def _run_to_receipt(app, queue, history, store, *, exit_code, termination):
+    async def run():
+        await host.maintenance_round(app, ENV, store)
+        assert len(history.rows) == 1
+        history.done, history.exit_code, history.termination = True, exit_code, termination
+        queue.now += timedelta(seconds=60)
+        await host.maintenance_round(app, ENV, store)
+        queue.now += timedelta(seconds=60)
+        queue.state["updater_source_sha256"] = SOURCE_SHA256
+        await host.maintenance_round(app, ENV, store)
+        await host.maintenance_round(app, ENV, store)
+    asyncio.run(run())
+
+
+def test_system_command_without_exit_code_is_judged_by_receipt_and_observation(rig, monkeypatch):
+    """#8359 (2026-11-24): the SYSTEM lane often ends ``no_exit_code`` even when
+    the script finished; the fixed marker and the later observation decide."""
+    app, queue, history, _flags, store, db = rig
+
+    async def original(*args, **kw):
+        return "PADIEM_HELPER_REFRESH:updated:registered\r\n"
+
+    monkeypatch.setattr("app.mcp_gateway_shell._read_original", original)
+    _run_to_receipt(app, queue, history, store, exit_code=None, termination="no_exit_code")
+    assert db.execute("SELECT outcome FROM pc_helper_maintenance_jobs").fetchone()[0] == "verified"
+
+
+@pytest.mark.parametrize(("exit_code", "termination"), [(None, "timed_out"), (None, "no_reply"), (1, "exited")])
+def test_command_that_did_not_finish_stays_dispatch_failed(rig, monkeypatch, exit_code, termination):
+    app, queue, history, _flags, store, db = rig
+
+    async def original(*args, **kw):
+        return "PADIEM_HELPER_REFRESH:updated:registered"
+
+    monkeypatch.setattr("app.mcp_gateway_shell._read_original", original)
+    _run_to_receipt(app, queue, history, store, exit_code=exit_code, termination=termination)
+    assert db.execute("SELECT outcome FROM pc_helper_maintenance_jobs").fetchone()[0] == "dispatch_failed"
+
+
+def test_failed_refresh_logs_its_bounded_cause(rig, monkeypatch, caplog):
+    app, queue, history, _flags, store, db = rig
+
+    async def original(*args, **kw):
+        return ("PADIEM_HELPER_REFRESH:failed:registration_failed\r\n"
+                "PADIEM_HELPER_REFRESH_DETAIL:unexpected_helper_task\r\n")
+
+    monkeypatch.setattr("app.mcp_gateway_shell._read_original", original)
+    caplog.set_level("WARNING")
+    _run_to_receipt(app, queue, history, store, exit_code=None, termination="no_exit_code")
+    assert db.execute("SELECT outcome FROM pc_helper_maintenance_jobs").fetchone()[0] == "registration_failed"
+    assert "reason=registration_failed detail=unexpected_helper_task" in caplog.text

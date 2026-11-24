@@ -18,6 +18,8 @@ from .pc_helper_update import helper_update_script, render_helper_updater_comman
 
 MAX_AGE = timedelta(seconds=180)
 SOURCE_SHA256 = hashlib.sha256(helper_update_script().encode("utf-8")).hexdigest()
+_DETAIL_PREFIX = "PADIEM_HELPER_REFRESH_DETAIL:"
+_DETAIL = re.compile(r"^PADIEM_HELPER_REFRESH_DETAIL:([a-z_]{1,60})$")
 _MARKER = re.compile(r"^PADIEM_HELPER_REFRESH:(updated|skipped|reinstall_required|failed):([a-z_]+)$")
 _REASONS = {"updated": {"registered", "watcher_python_missing"}, "skipped": {"already_current"},
             "reinstall_required": {"status_missing", "system_denied"},
@@ -98,7 +100,14 @@ def registration_command():
         "Write-Output 'PADIEM_HELPER_REFRESH:failed:watcher_unregistered';return}};"
         "if($py){Write-Output 'PADIEM_HELPER_REFRESH:updated:registered'}"
         "else{Write-Output 'PADIEM_HELPER_REFRESH:updated:watcher_python_missing'}"
-        "}catch{Write-Output 'PADIEM_HELPER_REFRESH:failed:registration_failed'}}"
+        "}catch{Write-Output 'PADIEM_HELPER_REFRESH:failed:registration_failed';"
+        # One bounded cause token so a failed refresh says where it stopped:
+        # the updater's own throw codes are already [a-z_]; anything else is
+        # reduced to its exception type name. Never the message text itself.
+        "$d=[string]$_.Exception.Message;"
+        "if($d -cnotmatch '^[a-z_]{1,60}$'){$d='unexpected_'+(([string]$_.Exception.GetType().Name) -replace '[^A-Za-z]','').ToLower()};"
+        "if($d.Length -gt 60){$d=$d.Substring(0,60)};"
+        "Write-Output ('" + _DETAIL_PREFIX + "'+$d)}}"
     )
 
 
@@ -123,3 +132,22 @@ def parse_receipt(text):
     if len(matches) != 1 or matches[0][1] not in _REASONS[matches[0][0]]:
         return {"action": "failed", "reason": "receipt_unverified"}
     return {"action": matches[0][0], "reason": matches[0][1]}
+
+
+def parse_refresh_detail(text):
+    """The single bounded cause token a failed refresh prints, else None."""
+    found = [m.group(1) for line in (text or "").splitlines() if (m := _DETAIL.fullmatch(line.strip()))]
+    return found[0] if len(found) == 1 else None
+
+
+def command_finished(dispatch):
+    """A SYSTEM command that ran to completion.
+
+    The SYSTEM lane often ends without an exit code (``termination`` is
+    ``no_exit_code``) even when the script finished; the fixed marker it
+    prints, and the later observation, decide the outcome, not that code.
+    """
+    if not isinstance(dispatch, dict) or dispatch.get("state") != "done":
+        return False
+    code = dispatch.get("exit_code")
+    return code == 0 or (code is None and dispatch.get("termination") == "no_exit_code")
