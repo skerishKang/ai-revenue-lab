@@ -443,6 +443,10 @@ def test_workflow_and_script_changes_run_the_ci_contract_tests() -> None:
         ("validate-b14-alpha.yml", "alpha", "ubuntu-latest"),
         ("b62-static-audits.yml", "static-origin-audit", "ubuntu-latest"),
         ("b62-static-audits.yml", "browser-persistence-audit", "ubuntu-24.04"),
+        # 2차 실행기 이전: 이 두 잡은 비밀값·배포 권한이 없고 고정 포트도 없다.
+        # 같은 저장소 PR만 COM2/CGI 실행기에서 돌리고 나머지는 원래 호스티드 이미지를 유지한다.
+        ("b62-static-audits.yml", "dom-sink-audit", "ubuntu-latest"),
+        ("padiem-chat-contract-tests.yml", "chat-contract-tests", "ubuntu-latest"),
         ("operations-policy-guard.yml", "pr-contract", "ubuntu-latest"),
         ("ci-contract-tests.yml", "ci-contract-tests", "ubuntu-latest"),
         ("b62-browser-qa-unified.yml", "plan", "ubuntu-24.04"),
@@ -486,11 +490,14 @@ def test_light_pr_jobs_route_only_same_repository_to_self_hosted(
 
 @pytest.mark.parametrize("workflow,job_id,image", [
     ("b62-padiem-chat-ci.yml", "b62-date-golden-contract", "ubuntu-latest"),
-    ("b62-static-audits.yml", "dom-sink-audit", "ubuntu-latest"),
-    ("padiem-chat-contract-tests.yml", "chat-contract-tests", "ubuntu-latest"),
     ("b62-padiem-chat-react-ci.yml", "react-clone", "ubuntu-24.04"),
     ("b62-cloudflare-worker-deploy.yml", "preflight", "ubuntu-24.04"),
     ("b62-cloudflare-worker-deploy.yml", "deploy-mock", "ubuntu-24.04"),
+    # deploy-bundle-boot-test는 실행기 이전 대상에서 제외한다. 세 잡 모두 sudo/env로
+    # 권한을 올려 비특권 사용자를 기동하고, 스크립트에 고정 포트(8790/8798/8811)와
+    # /opt/padiem/{chat-com2,p01}/data 경로가 박혀 있다. COM2 실행기의 sudo는
+    # root 소유 padiem-ci-b62-*-check 명령으로만 허용되므로 배포 권한이 필요한
+    # 이 잡을 우리 실행기로 옮기면 프로덕션 경로에 접근하게 된다. 호스티드 유지.
     ("deploy-bundle-boot-test.yml", "b14-bundle-boot", "ubuntu-latest"),
     ("deploy-bundle-boot-test.yml", "chat-bundle-boot", "ubuntu-latest"),
     ("deploy-bundle-boot-test.yml", "p01-bundle-boot", "ubuntu-latest"),
@@ -511,6 +518,8 @@ def test_hosted_only_jobs_keep_existing_runner(workflow, job_id, image):
     ("b62-padiem-chat-ci.yml", "grade-live-smoke"),
     ("b62-static-audits.yml", "static-origin-audit"),
     ("b62-static-audits.yml", "browser-persistence-audit"),
+    ("b62-static-audits.yml", "dom-sink-audit"),
+    ("padiem-chat-contract-tests.yml", "chat-contract-tests"),
     ("validate-b14-alpha.yml", "registry-ci-plan"),
     ("validate-b14-alpha.yml", "alpha-model-registry-contract"),
     ("ci-contract-tests.yml", "ci-contract-tests"),

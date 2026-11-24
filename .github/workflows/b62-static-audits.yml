@@ -43,9 +43,21 @@ concurrency:
 
 jobs:
   dom-sink-audit:
-    runs-on: ubuntu-latest
+    # 같은 저장소 PR만 COM2/CGI 실행기로 보낸다. 포크 PR과 main push는 기존 호스티드 이미지 유지.
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || (github.event_name == 'pull_request' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: ${{ runner.environment != 'self-hosted' }}
+      - name: Materialize complete self-hosted checkout
+        if: runner.environment == 'self-hosted'
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config --local core.sparseCheckout false
+          git restore --source=HEAD --staged --worktree --ignore-skip-worktree-bits -- .
+          test -z "$(git ls-files --deleted)"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
