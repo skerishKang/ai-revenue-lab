@@ -48,6 +48,9 @@ OWNER_DENIAL_CODES = frozenset({
     "consent_account_invalid", "consent_node_invalid", "consent_map_missing",
     "consent_pin_ambiguous",
     "consent_pin_invalid", "consent_read_error", "scope_subject",
+    "consent_key_invalid_request", "consent_key_record_missing",
+    "consent_key_scope_mismatch", "consent_key_unpinned",
+    "consent_key_ambiguous", "consent_key_invalid",
     "consent_missing", "consent_subject", "consent_device", "consent_withdrawn",
     "consent_id", "account_ref_mismatch", "workspace_ref_mismatch",
 })
@@ -304,14 +307,10 @@ async def _authorized(request, env, facts, session, uid, resolver):
     stage = None
     scope = await mode_connector_read(identity, "owner_scope", session_id=session.session_id)
     # The consent directory is keyed by the connector's own enrollment device
-    # id, not by the Mesh node this link names. The deployment ownership map
-    # is the server-owned pair of both strings, so its pinned device for this
-    # node is the exact value a human consent screen names. Use it unchanged:
-    # never reshape the Mesh string into a key and never loosen the consent
-    # server's own reference check.
-    source = getattr(state, "oracle_mesh_return_source", None)
-    consent_of = getattr(source, "consent_device_for_node", None)
-    reason_for = getattr(source, "consent_device_reason_for_node", None)
+    # id, not by the Mesh node this link names. The server-owned pair comes
+    # from the dispatch record written for this owner and node, not from the
+    # deployment ownership map. Never reshape the Mesh string into a key and
+    # never loosen the consent server's own reference check.
     scope_ready = (
         isinstance(scope, dict) and bool(scope.get("account_ref"))
         and bool(scope.get("workspace_ref"))
@@ -322,16 +321,22 @@ async def _authorized(request, env, facts, session, uid, resolver):
         # from every consent-directory failure below.
         _log_denial(state, device, "scope_missing")
         return None, None, "owner_consent_missing"
-    if callable(reason_for):
-        consent_ref, ref_reason = reason_for(account_ref=scope["account_ref"], node_ref=device)
-    elif callable(consent_of):
-        consent_ref = consent_of(account_ref=scope["account_ref"], node_ref=device)
-        ref_reason = "consent_reference_missing" if not consent_ref else "observed"
+    # #8359 E: the deployment ownership map is left alone for the file-read
+    # lane; it is stale in production and must not supply this path's key.
+    # A server-owned dispatch row pairs the consent key with the Mesh node
+    # under the owner and the exact account/workspace. No record is a closed
+    # failure, never a guess from the map or from reshaping the node string.
+    history = getattr(state, "history_store", None)
+    key_reader = getattr(history, "consent_key_for_owner_node", None)
+    if callable(key_reader):
+        consent_ref, ref_reason = await key_reader(
+            user_id=uid, node_ref=device,
+            account_ref=scope["account_ref"], workspace_ref=scope["workspace_ref"])
     else:
         consent_ref, ref_reason = None, "consent_source_missing"
     if not isinstance(consent_ref, str) or not consent_ref:
         # Every way of having no consent key is a pre-consent refusal. The
-        # ownership map now says which one; none of them prints a value.
+        # server-owned record now says which one; none of them prints a value.
         _log_denial(state, device, ref_reason)
         return None, None, "owner_consent_missing"
     try:

@@ -19,6 +19,7 @@ from .history_mesh_original import MAX_MESH_PATH_CHARS, MAX_MESH_REFERENCE_CHARS
 from .history_rows import _changed_rows, _tagged
 from .history_text import _iso, _lane_count_age, _lane_node, _now_iso
 from .history_store_core import StoreCore
+from padiem_ai_core.pc_device_identity import is_pc_device_id
 
 
 class MeshDispatchStore(StoreCore):
@@ -938,4 +939,52 @@ class MeshDispatchStore(StoreCore):
         if row is None:
             return None
         return _tagged(row)
+
+    async def consent_key_for_owner_node(
+        self, *, user_id: str, node_ref: str,
+        account_ref: str, workspace_ref: str,
+    ) -> tuple[str | None, str]:
+        """The consent key the server recorded for one owner and Mesh node.
+
+        #8359 E: the deployment ownership map is the file-read lane's record,
+        and production's copy is stale. A server-owned dispatch row instead
+        pairs the consent key (``device_id``, the value the human consent
+        screen read) with the Mesh ``node_ref`` at dispatch time, under the
+        owner and the exact connector account/workspace. Only this pair may
+        supply a maintenance consent key. A missing row, a different account,
+        competing keys or a value the canonical grammar refuses all fail
+        closed with a value-free code - no device or account value is returned.
+        """
+        if (not isinstance(user_id, str) or not user_id
+                or not isinstance(account_ref, str) or not account_ref
+                or not isinstance(workspace_ref, str) or not workspace_ref
+                or not is_pc_device_id(node_ref)):
+            return None, "consent_key_invalid_request"
+        rows = await self._all(
+            "SELECT device_id, account_ref, workspace_ref FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND node_ref=? ORDER BY created_at DESC LIMIT 8",
+            user_id, node_ref,
+        )
+        if not rows:
+            return None, "consent_key_record_missing"
+        scoped = [
+            row for row in rows
+            if isinstance(row, dict)
+            and row.get("account_ref") == account_ref
+            and row.get("workspace_ref") == workspace_ref
+        ]
+        if not scoped:
+            return None, "consent_key_scope_mismatch"
+        # A row whose device_id is the Mesh node itself records that no
+        # connector key was ever paired; it cannot supply a consent key.
+        keyed = [row for row in scoped if row.get("device_id") != node_ref]
+        if not keyed:
+            return None, "consent_key_unpinned"
+        keys = {row.get("device_id") for row in keyed}
+        if len(keys) != 1:
+            return None, "consent_key_ambiguous"
+        key = next(iter(keys))
+        if not is_pc_device_id(key):
+            return None, "consent_key_invalid"
+        return key, "observed"
 

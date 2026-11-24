@@ -143,7 +143,7 @@ def test_no_duplicate_method_definitions_across_areas() -> None:
 def test_dependency_table() -> None:
     own = {name for name in vars(mesh_module.MeshDispatchStore) if not name.startswith("__")}
     assert H71_METHODS <= own  # H7-2에서 같은 모듈에 나머지 10개가 합쳐졌다
-    assert len(own) == 19  # 18개 메서드 + LANE_STATUS_NODE_LIMIT
+    assert len(own) == 20  # 19개 메서드 + LANE_STATUS_NODE_LIMIT (#8359 E 키 조회 추가)
     store = _store()
     for name in ("_first", "_run", "_all", "_dispatch", "db"):
         assert hasattr(store, name), name
