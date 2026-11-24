@@ -302,6 +302,8 @@ def stamp_verdict(
     - 있으면 그중 가장 이른 커밋의 커밋(머지) 시각부터 지난 시간으로,
       6시간 이하면 PASS deploy_lag, 넘으면 FAIL screen_deploy_missing.
       기록에는 그 커밋의 앞 8자리를 남긴다(어느 변경이 배포에서 빠졌는지).
+    - #8666: 조상 검사는 체크아웃 sha가 아니라 판정 직전에 받은 최신
+      origin/main을 기준으로 한다. 화면이 더 새 버전이면 통과한다.
     - 스탬프 커밋을 저장소에서 찾지 못하면 FAIL screen_stamp_unknown.
     - 스탬프 커밋이 main 조상이 아니면 FAIL screen_stamp_not_on_main.
     - 이력을 읽지 못했으면(None) FAIL screen_history_unavailable:
@@ -400,15 +402,21 @@ def stamp_evidence(observed: str, head: str = "HEAD",
     stamp_sha = resolve_stamp_commit(observed, cwd)
     ancestor = False
     screen_changes: list[tuple[str, int]] | None = None
+    # #8666 정정: 체크아웃 sha는 검사 시작 시점의 main이다. 화면이 그 뒤에
+    # 병합된 커밋이면 조상이 아니지만 정상 배포다. 판정 직전에 최신 main을
+    # 받아 origin/main 기준으로 조상 여부를 다시 본다.
+    main_ref = "origin/main"
     if stamp_sha:
-        code, _ = _git(["merge-base", "--is-ancestor", stamp_sha, head], cwd)
-        if code != 0:
-            # 얕은 클론 경계는 조상 관계 증명을 막는다. 전체 이력으로 한 번 더.
-            _git(["fetch", "--unshallow", "origin"], cwd)
-            code, _ = _git(["merge-base", "--is-ancestor", stamp_sha, head], cwd)
-        ancestor = code == 0
-        if ancestor:
-            screen_changes = screen_commits_since(stamp_sha, head, cwd)
+        fetch_code, _ = _git(["fetch", "origin", "main"], cwd)
+        if fetch_code == 0:
+            code, _ = _git(["merge-base", "--is-ancestor", stamp_sha, main_ref], cwd)
+            if code != 0:
+                # 이력이 모자라면 필요한 만큼 더 받고 한 번 더 판정한다.
+                _git(["fetch", "--unshallow", "origin"], cwd)
+                code, _ = _git(["merge-base", "--is-ancestor", stamp_sha, main_ref], cwd)
+            ancestor = code == 0
+            if ancestor:
+                screen_changes = screen_commits_since(stamp_sha, main_ref, cwd)
     return {"stamp_sha": stamp_sha, "ancestor": ancestor,
             "screen_changes": screen_changes}
 
