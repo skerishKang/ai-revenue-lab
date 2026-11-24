@@ -1,71 +1,41 @@
-/* Chat screen polish — 2026-11-03 UX audit lane (컴1로컬3).
+/* Chat screen polish — 2026-11-03 UX audit.
  *
- * Every rule here answers one measured finding from the audit captures in
- * docs/operations and the 11-03 Tabbit screenshots. The sheet is loaded AFTER
- * the theme and interaction sheets but BEFORE mobile-target-legibility.css, so
- * the phone press floor (44px) still wins over the desktop sizes set here.
- * Nothing below changes which control exists or what it does; only geometry,
- * contrast, and which nav row reads as selected.
+ * #7811 C4: the audit rules whose target already had a rule in its own sheet
+ * were merged there, and the two that never painted were removed:
+ *   1. phone send button            → attachments.css
+ *   2. phone card description       → interaction-polish.css (same selector)
+ *   4. Glass answer-action press box → padiem-glass-portrait.css
+ *   7. "지원 형식" badge floor        → voice-composer.css
+ *      PC status cell floor          → claw-composer-connection-status.css
+ *      dim search entry              → sidebar-unified.css
+ * What is left are the four rules that cannot move yet. Each one says what it
+ * is waiting for. The sheet is loaded AFTER the theme and interaction sheets
+ * but BEFORE mobile-target-legibility.css, so the phone press floor (44px)
+ * still wins over the sizes set here.
  */
 
-/* ── 1. Phone composer: the send button keeps the input's right edge ──────
- * At 390px the action row is 344px wide and the tools row plus the two voice
- * controls plus send need 394px, so send wrapped to the second line and was
- * painted at the LEFT edge. The reservations in attachments.css stay
- * exactly as they are (the first-screen contract depends on them); the row is
- * allowed to wrap, and send is pinned to the right end of whichever line it
- * lands on. #sendButton's margin-left reservation for a missing mic is not
- * needed once the button is right-aligned, so it is released here. */
+/* ── 2. Phone home file card: badge clear of the content ──────────────────
+ * With the card description back, the "지원 형식" badge shared the card's top
+ * band with the title, so the file card reserves that band for the badge: the
+ * badge keeps its place at the top right and the icon, title and description
+ * sit below it inside the same 145px card.
+ * Waiting for: interaction-polish.css pins the phone card padding with an
+ * id-scoped !important. The reserved badge band has to out-specify it or the
+ * content stays under the badge, so this rule moves when that pin is resolved. */
 @media (max-width: 620px) {
-  .composer-actions .send-button {
-    margin-left: auto;
-  }
-}
-
-/* ── 2. Phone home cards: one description line, badge clear of the content ─
- * The landing hid every card description on a phone, so a reader could not
- * tell what a card does. The description returns as up to two lines
- * (#7827: one clipped line cut the copy short on every theme).
- * With it back, the "지원 형식" badge shared the card's top band with the
- * title, so the file card now reserves that band for the badge: the badge
- * keeps its place at the top right and the icon, title and description sit
- * below it inside the same 145px card. */
-@media (max-width: 620px) {
-  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter small {
-    display: -webkit-box;
-    min-width: 0;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-  }
   .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter-grid .document-starter-shell > .starter {
     align-items: flex-start;
-    /* interaction-polish.css pins the phone card padding with an id-scoped
-     * !important; the reserved badge band has to out-specify it or the content
-     * stays under the badge. */
     padding-top: 60px !important;
   }
-}
-
-/* ── 4. Answer actions: a 40px hit area on the desktop Glass theme ────────
- * Glass drew the five answer buttons as bare 26px icons. The drawn glyph and
- * the chrome-free look stay; only the press box grows. The phone floor of
- * 44px (mobile-target-legibility.css, loaded after this sheet) is untouched. */
-html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-action {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  min-height: 40px;
-}
-html[data-theme="padiem-glass"] .answer-more-menu .answer-action {
-  min-height: 40px;
 }
 
 /* ── 5. Home starter icons: consistent SVG marks and accessible plates ───────
  * The nth-child icon rule in padiem-surfaces.css has higher specificity than
  * the light/home theme colors and paints alternating icons white on white.
- * Use the same opaque plate and foreground for every Chat home-card icon. */
+ * Use the same opaque plate and foreground for every Chat home-card icon.
+ * Waiting for: the starter-card theme rules in padiem-themes.css and
+ * padiem-glass.css (#7811 C3). Until they read tokens, token values alone
+ * cannot give every icon this plate. */
 html:is([data-theme="light"], [data-theme="padiem-home"], [data-theme="padiem-glass"])
 body .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden])
 .starter-grid .starter:not(.claw-workspace-starter) .starter-icon {
@@ -85,28 +55,13 @@ html[data-theme="dark"] body .app-shell[data-layout-variant="conversation"]
  * "무엇을 도와드릴까요?" broke after "무엇을" and the greeting pushed the
  * cards and the composer down. 4.1vw keeps the phrase on one line across the
  * desktop band (measured: 462px of text in 542px at 1440, 323px in 351px at
- * 1024) while staying display type. */
+ * 1024) while staying display type.
+ * Waiting for: the hero size is set by `.empty-state h1` in four base sheets
+ * across their width bands, and those rules also size the hidden hero of the
+ * panel screens. No rule with this scope exists to merge into; the base chain
+ * has to be collapsed first. */
 @media (min-width: 621px) {
   .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) h1 {
     font-size: clamp(36px, 4.1vw, 60px);
   }
-}
-
-/* ── 7. Small controls: the 32px floor and the dim search icon ────────────
- * The audit measured the project "+" at 28px, the "지원 형식" badge at 24px
- * and the PC status cell at 26px. They rise to the 32px floor. The disabled
- * search icon sat at .5 opacity next to a bright "새 채팅" and read as
- * broken; its contrast goes up without enabling the control. */
-.sidebar .section-add-button {
-  width: 32px;
-  height: 32px;
-}
-.starter-grid .document-formats-toggle {
-  min-height: 32px;
-}
-.composer-pc-status-face {
-  height: 32px;
-}
-.sidebar .sidebar-actions-row.sidebar-unified-row > .sidebar-search-item:disabled {
-  opacity: .78;
 }

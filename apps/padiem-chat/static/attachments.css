@@ -2,7 +2,12 @@
 @media (max-width: 620px) {
   .composer-actions { align-items: flex-end; min-width: 0; }
   .composer-tools { flex: 1 1 0; min-width: 0; flex-wrap: wrap; }
-  .send-button { flex: 0 0 44px; align-self: flex-end; }
+  /* 11-03 audit: at 390px the action row is 344px wide and the tools row plus
+   * the two voice controls plus send need 394px, so send wrapped to the second
+   * line and was painted at the LEFT edge. The row is allowed to wrap and send
+   * is pinned to the right end of whichever line it lands on. The missing-mic
+   * reservation below still wins while the microphone is not mounted. */
+  .send-button { flex: 0 0 44px; align-self: flex-end; margin-left: auto; }
 }
 
 /* B62 #5297 first screen: keep the tier pill's reserved slot so installing its

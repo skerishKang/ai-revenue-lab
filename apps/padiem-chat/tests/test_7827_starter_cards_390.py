@@ -6,6 +6,10 @@
 clamp로 고친다. 칩(`.document-formats-toggle`) 자리는 손대지 않는다:
 이미 확보된 위쪽 띠(`padding-top: 60px`)가 겹침을 막고 있다.
 
+#7811 C4: 그 두 줄 clamp 규칙은 같은 선택자·같은 폭 조건의
+`interaction-polish.css` 규칙(예전에는 설명을 숨기던 규칙)에 합쳐졌다.
+위쪽 띠 규칙은 `chat-screen-polish.css`에 그대로 있다.
+
 이 시험은 CSS 선언을 잠근다. 실제 겹침·잘림 숫자는 브라우저 QA
 (`.github/scripts/b62_first_screen_cards_qa.py`, accessibility-browser-qa
 단계 옆)가 잰다. 규칙: 새 `!important`·새 `[data-theme]` 덮어쓰기·새 polish
@@ -27,6 +31,10 @@ from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 POLISH = chat_screen_polish_css()
+# #7811 C4: the description rule was merged into the landing sheet's own phone
+# rule for the same selector; the badge band stays in the polish sheet.
+LANDING = read("interaction-polish.css")
+BAND_SELECTOR = ".starter-grid .document-starter-shell > .starter"
 VOICE = voice_composer_css()
 FIRST_USE = first_use_css()
 SIDEBAR_POLISH = sidebar_section_polish_css()
@@ -70,11 +78,14 @@ def _rule_block(scope: str, selector: str) -> str:
 
 
 def _narrow_desc_block() -> str:
-    return _rule_block(_media_block(POLISH, NARROW_MEDIA, DESC_SELECTOR), DESC_SELECTOR)
+    return _rule_block(_media_block(LANDING, NARROW_MEDIA, DESC_SELECTOR), DESC_SELECTOR)
 
 
 def test_narrow_description_clamps_two_lines_without_ellipsis() -> None:
     block = _narrow_desc_block()
+    # The rule that used to hide the description now shows two lines.
+    assert "display: -webkit-box;" in block
+    assert "display: none" not in block
     assert "-webkit-line-clamp: 2;" in block
     assert "line-clamp: 2;" in block
     # #7827: 잘림을 만들던 선언은 같은 규칙에서 나간다.
@@ -86,7 +97,7 @@ def test_narrow_description_clamps_two_lines_without_ellipsis() -> None:
 
 
 def test_chip_band_and_card_height_are_untouched() -> None:
-    narrow = _media_block(POLISH, NARROW_MEDIA, DESC_SELECTOR)
+    narrow = _media_block(POLISH, NARROW_MEDIA, BAND_SELECTOR)
     assert "padding-top: 60px !important;" in narrow
     shell_rule = _rule_block(VOICE, ".starter-grid .document-formats-toggle")
     assert "position: absolute;" in shell_rule
@@ -99,9 +110,12 @@ def test_chip_band_and_card_height_are_untouched() -> None:
 
 
 def test_wide_layout_has_no_clamp_or_ellipsis_rule() -> None:
-    outside = POLISH.replace(_media_block(POLISH, NARROW_MEDIA, DESC_SELECTOR), "")
+    outside = LANDING.replace(_media_block(LANDING, NARROW_MEDIA, DESC_SELECTOR), "")
     assert "line-clamp" not in outside
     assert ".starter small" not in outside
+    # The polish sheet no longer carries a second copy of the description rule.
+    assert "line-clamp" not in POLISH
+    assert ".starter small" not in POLISH
     # 1440은 4열 그대로다.
     assert "grid-template-columns: repeat(4, minmax(0, 1fr));" in FIRST_USE
 

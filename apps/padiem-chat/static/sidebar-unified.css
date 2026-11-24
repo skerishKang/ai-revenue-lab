@@ -49,9 +49,11 @@
   background: rgba(127,127,127,.14) !important;
 }
 /* Original search module owns button availability; don't enable a guest
- * or an unavailable server-side history capability through CSS. */
+ * or an unavailable server-side history capability through CSS. 11-03 audit:
+ * at .5 next to a bright "새 채팅" the icon read as broken, so its contrast
+ * goes up without enabling the control. */
 .sidebar .sidebar-actions-row.sidebar-unified-row > .sidebar-search-item:disabled {
-  opacity: .5;
+  opacity: .78;
 }
 .sidebar .visually-hidden {
   position: absolute !important;

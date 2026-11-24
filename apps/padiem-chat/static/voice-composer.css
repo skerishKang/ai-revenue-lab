@@ -232,7 +232,7 @@
 }
 .starter-grid .document-formats-toggle {
   position: absolute;
-  min-height: 24px; /* Maintain the 145px card; meet the browser touch-target check. */
+  min-height: 32px; /* 11-03 audit: the badge measured 24px; it rises to the 32px floor inside the 145px card. */
   z-index: 2;
   right: 11px;
   top: 10px;
