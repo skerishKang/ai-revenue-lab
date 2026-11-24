@@ -1,0 +1,102 @@
+{
+  "sheet": "sidebar-section-polish.css",
+  "base": "37c01b5c",
+  "claim": "https://github.com/skerishKang/ai-revenue-lab/issues/8340#issuecomment-7118900390",
+  "removed_count": 43,
+  "kept_count": 5,
+  "removed": [
+    {"line": 4, "property": "background", "value": "rgba(255, 255, 255, .10)"},
+    {"line": 5, "property": "border", "value": "1px solid var(--line)"},
+    {"line": 10, "property": "background", "value": "rgba(255, 255, 255, .16)"},
+    {"line": 13, "property": "background", "value": "rgba(255, 255, 255, .20)"},
+    {"line": 18, "property": "background", "value": "transparent"},
+    {"line": 19, "property": "background-color", "value": "transparent"},
+    {"line": 20, "property": "border-color", "value": "transparent"},
+    {"line": 21, "property": "box-shadow", "value": "none"},
+    {"line": 87, "property": "display", "value": "none"},
+    {"line": 117, "property": "gap", "value": "0"},
+    {"line": 129, "property": "background", "value": "transparent"},
+    {"line": 130, "property": "background-color", "value": "transparent"},
+    {"line": 133, "property": "box-shadow", "value": "none"},
+    {"line": 134, "property": "transform", "value": "none"},
+    {"line": 135, "property": "margin", "value": "0"},
+    {"line": 141, "property": "padding", "value": "0 10px"},
+    {"line": 149, "property": "padding", "value": "0"},
+    {"line": 150, "property": "border-radius", "value": "0 10px 10px 0"},
+    {"line": 154, "property": "align-items", "value": "center"},
+    {"line": 155, "property": "justify-content", "value": "center"},
+    {"line": 156, "property": "line-height", "value": "1"},
+    {"line": 157, "property": "font-size", "value": "0"},
+    {"line": 164, "property": "margin", "value": "0"},
+    {"line": 165, "property": "transform", "value": "none"},
+    {"line": 175, "property": "padding", "value": "0"},
+    {"line": 181, "property": "margin", "value": "0"},
+    {"line": 182, "property": "transform", "value": "none"},
+    {"line": 186, "property": "color", "value": "inherit"},
+    {"line": 191, "property": "background", "value": "transparent"},
+    {"line": 196, "property": "display", "value": "grid"},
+    {"line": 197, "property": "place-items", "value": "center"},
+    {"line": 198, "property": "align-self", "value": "center"},
+    {"line": 199, "property": "flex", "value": "0 0 28px"},
+    {"line": 200, "property": "margin", "value": "0 0 0 auto"},
+    {"line": 201, "property": "padding", "value": "0"},
+    {"line": 202, "property": "width", "value": "28px"},
+    {"line": 203, "property": "min-width", "value": "28px"},
+    {"line": 204, "property": "max-width", "value": "28px"},
+    {"line": 208, "property": "border-radius", "value": "0"},
+    {"line": 211, "property": "box-shadow", "value": "none"},
+    {"line": 212, "property": "line-height", "value": "1"},
+    {"line": 243, "property": "-webkit-backdrop-filter", "value": "none"},
+    {"line": 244, "property": "backdrop-filter", "value": "none"}
+  ],
+  "kept": [
+    {"line": 131, "property": "border", "beats": "sidebar-unified.css:133 border:0 !important / border-color:initial !important; same sheet:20 border-color:transparent !important"},
+    {"line": 153, "property": "display", "beats": "sidebar-unified.css:122 display:grid !important"},
+    {"line": 207, "property": "border", "beats": "padiem-cinematic-workspace.css:42 .section-add-button border:1px solid transparent"},
+    {"line": 209, "property": "color", "beats": "padiem-surfaces.css:342 .section-add-button color:rgba(255,255,255,.72) !important"},
+    {"line": 210, "property": "background", "beats": "padiem-surfaces.css:342 .section-add-button background:rgba(255,255,255,.055) !important"}
+  ],
+  "audit": {
+    "css_important": {"before": 518, "after": 475, "delta": -43},
+    "css_themed_important": {"before": 106, "after": 104, "delta": -2},
+    "sidebar-section-polish.css": {"before": 48, "after": 5, "delta": -43},
+    "css_color_literals": {"before": 1065, "after": 1065, "delta": 0},
+    "css_color_literals_unthemed": {"before": 404, "after": 404, "delta": 0},
+    "css_rules": {"before": 4385, "after": 4385, "delta": 0},
+    "css_themed_rules": {"before": 795, "after": 795, "delta": 0},
+    "css_files": {"before": 92, "after": 92, "delta": 0}
+  },
+  "verification": {
+    "sweep": {
+      "method": "CSSOM priority removal one declaration at a time, computed comparison",
+      "combos": 40,
+      "report": "sweep_decisions.json"
+    },
+    "computed": {
+      "themes": ["light", "dark", "padiem-glass", "cinematic", "padiem-home"],
+      "widths": [1440, 1280, 1024, 921, 390],
+      "states": ["general", "collapsed", "hover", "home"],
+      "combos": 100,
+      "measurements": 33000,
+      "diffs": 0,
+      "report": "computed_raw.json"
+    },
+    "pixel": {
+      "combos": 10,
+      "themes": 5,
+      "viewports": ["1440x950", "390x844"],
+      "screens": ["project-dialog"],
+      "nonzero": [],
+      "report": "compare_report.json",
+      "captures": "captures/"
+    },
+    "control": {"combos": 10, "nonzero": [], "report": "control/control_report.json"},
+    "tests": "관련 사이드바·래칫·구조 pytest 56 passed"
+  },
+  "notes": [
+    "모든 제거는 100조합 계산값과 10조합 픽셀에서 차이 0입니다.",
+    "남긴 5건은 다른 시트의 !important 또는 같은 시트 기본 규칙을 이기는 데 필요합니다.",
+    "새 !important·새 색상 리터럴·규칙 수 변화는 없습니다.",
+    "픽셀 범위는 바뀐 시트가 닿는 화면(project-dialog) 5테마 × 2폭입니다. 사이드바 행 자체는 계산값 하네스에서 모의 행을 넣어 5테마 × 5폭 × 4상태로 확인했습니다."
+  ]
+}

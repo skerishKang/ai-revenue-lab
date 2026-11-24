@@ -43,7 +43,8 @@ def test_collapse_does_not_modify_auth_or_project_conversation_api_routes():
 
 
 def test_both_action_pairs_share_background_and_transparent_child_controls():
-    assert 'background: rgba(255, 255, 255, .10) !important;' in CSS
+    # #8340: the row wash no longer needs !important (no later rule sets it).
+    assert 'background: rgba(255, 255, 255, .10);' in CSS
     assert '.project-row, .history-row' in CSS
     assert 'background: transparent !important;' in CSS
     assert '.history-actions > .history-more' in CSS
@@ -66,14 +67,14 @@ def test_owner_seamless_sidebar_cells_and_centered_secondary_controls():
     """One visible row surface; gear/menu controls share its paint & center axis."""
     assert "Owner UI: New Chat is the single-cell reference" in CSS
     assert "background: transparent !important;" in CSS
-    assert "align-items: center !important;" in CSS
+    assert "align-items: center;" in CSS
     assert ".project-row > .project-manage svg" in CSS
     assert ".history-row .history-more svg" in CSS
-    assert "transform: none !important;" in CSS
+    assert "transform: none;" in CSS
     assert "#projectsSection #projectCreateButton" in CSS
-    assert "place-items: center !important;" in CSS
-    assert "width: 28px !important;" in CSS
-    assert "min-width: 28px !important;" in CSS
+    assert "place-items: center;" in CSS
+    assert "width: 28px;" in CSS
+    assert "min-width: 28px;" in CSS
     assert "flex: 0 0 44px;" in CSS  # minimum touch target
     assert "min-width: 44px;" in CSS
     assert "min-height: 44px;" in CSS
@@ -98,6 +99,7 @@ def test_project_and_history_title_do_not_blur_half_of_single_cell():
     # A transparent title button still creates a separate backdrop-blur region.
     # Disable the effect on the two titles, not on the entire sidebar.
     assert ":is(.project-row > .project-item, .history-row > .history-item)" in CSS
-    assert "-webkit-backdrop-filter: none !important;" in CSS
-    assert "backdrop-filter: none !important;" in CSS
+    # #8340: no other glass rule sets these on the title buttons, so !important is gone.
+    assert "-webkit-backdrop-filter: none;" in CSS
+    assert "backdrop-filter: none;" in CSS
     assert "backdrop-filter: none" not in JS

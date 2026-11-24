@@ -1,0 +1,3848 @@
+{
+ "sheet": "sidebar-section-polish.css",
+ "candidates": 48,
+ "combos": 40,
+ "diff_count": 200,
+ "diffs": [
+  {
+   "combo": "light/1440/general",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/general",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/general",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/general",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/general",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/collapsed",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/collapsed",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/collapsed",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/collapsed",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/collapsed",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/hover",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/hover",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/hover",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/hover",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/hover",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/home",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/home",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/home",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/home",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1440/home",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/general",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/general",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/general",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/general",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/general",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/collapsed",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/collapsed",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/collapsed",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/collapsed",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/collapsed",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/hover",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/hover",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/hover",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/hover",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/hover",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/home",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/home",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/home",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/home",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1280/home",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/general",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/general",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/general",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/general",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/general",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/collapsed",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/collapsed",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/collapsed",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/collapsed",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/collapsed",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/hover",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/hover",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/hover",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/hover",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/hover",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/home",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/home",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/home",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/home",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/1024/home",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/general",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/general",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/general",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/general",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/general",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/collapsed",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/collapsed",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/collapsed",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/collapsed",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/collapsed",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/hover",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/hover",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/hover",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/hover",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/hover",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/home",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/home",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/home",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/home",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/921/home",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/general",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/general",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/general",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/general",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/general",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/collapsed",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/collapsed",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/collapsed",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/collapsed",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/collapsed",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/hover",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/hover",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/hover",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/hover",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/hover",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/home",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/home",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/home",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/home",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgb(25, 25, 29)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgb(25, 25, 29)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "light/390/home",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/general",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/general",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/general",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/general",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/general",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/collapsed",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/collapsed",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/collapsed",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/collapsed",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/collapsed",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/hover",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/hover",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/hover",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/hover",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/hover",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/home",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/home",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/home",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/home",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1440/home",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/general",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/general",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/general",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/general",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/general",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/collapsed",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/collapsed",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/collapsed",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/collapsed",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/collapsed",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/hover",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/hover",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/hover",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/hover",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/hover",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/home",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/home",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/home",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/home",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1280/home",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/general",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/general",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/general",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/general",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/general",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/collapsed",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/collapsed",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/collapsed",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/collapsed",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/collapsed",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/hover",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/hover",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/hover",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/hover",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/hover",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/home",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/home",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/home",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/home",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/1024/home",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/general",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/general",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/general",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/general",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/general",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/collapsed",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/collapsed",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/collapsed",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/collapsed",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/collapsed",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/hover",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/hover",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/hover",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/hover",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/hover",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/home",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/home",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/home",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/home",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/921/home",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/general",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/general",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/general",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/general",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/general",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/collapsed",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/collapsed",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/collapsed",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/collapsed",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/collapsed",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/hover",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/hover",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/hover",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/hover",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/hover",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/home",
+   "line": 127,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item, .project-manage, .history-actions), html body .app-shell .sidebar .history-row .history-actions > .history-more",
+   "changed": {
+    "more|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(0, 0, 0, 0)"
+    ],
+    "more|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ],
+    "more|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(0, 0, 0, 0)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/home",
+   "line": 151,
+   "prop": "display",
+   "selector": "html body .app-shell .sidebar .project-row > .project-manage",
+   "changed": {
+    "manage|display": [
+     "flex / flex",
+     "grid / grid"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/home",
+   "line": 203,
+   "prop": "border",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.12)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.12)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/home",
+   "line": 205,
+   "prop": "color",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|border": [
+     "0px none rgba(255, 255, 255, 0.68)",
+     "0px none rgba(255, 255, 255, 0.72)"
+    ],
+    "create|border-color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|borderColor": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ],
+    "create|color": [
+     "rgba(255, 255, 255, 0.68)",
+     "rgba(255, 255, 255, 0.72)"
+    ]
+   }
+  },
+  {
+   "combo": "padiem-glass/390/home",
+   "line": 206,
+   "prop": "background",
+   "selector": "html body .app-shell .sidebar #projectsSection #projectCreateButton",
+   "changed": {
+    "create|background": [
+     "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+     "rgba(255, 255, 255, 0.055) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "create|background-color": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ],
+    "create|backgroundColor": [
+     "rgba(0, 0, 0, 0)",
+     "rgba(255, 255, 255, 0.055)"
+    ]
+   }
+  }
+ ]
+}

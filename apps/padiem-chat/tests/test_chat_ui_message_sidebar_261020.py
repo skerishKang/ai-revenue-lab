@@ -45,7 +45,7 @@ def test_sidebar_single_cell_sheet_is_linked_and_cascades_last():
     # The sheet still carries the title-only-blur reset that keeps one cell.
     assert re.search(
         r"project-row > \.project-item, \.history-row > \.history-item\) \{[^}]*"
-        r"backdrop-filter: none !important",
+        r"backdrop-filter: none;",
         sheets.sheet("sidebar-section-polish.css"),
         re.S,
     )
