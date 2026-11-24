@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: rgba(16, 34, 48, 0.42);
+  background: var(--pc-file-exchange-overlay-dim);
 }
 
 .pc-exchange-dialog {
@@ -23,8 +23,8 @@
   padding: 18px;
   border-radius: var(--radius-md);
   border: 1px solid var(--line);
-  background: var(--surface, rgba(255, 255, 255, 0.94));
-  box-shadow: 0 12px 40px rgba(20, 51, 73, 0.16);
+  background: var(--surface, var(--project-panel-bg));
+  box-shadow: var(--pc-file-exchange-shadow);
   color: var(--text);
 }
 
@@ -40,7 +40,7 @@
 .pc-exchange-scope {
   margin: 0 0 6px;
   font-size: 0.86rem;
-  color: var(--text-muted, #5b7385);
+  color: var(--text-muted, var(--pc-file-exchange-muted-text));
 }
 
 .pc-exchange-heading {
@@ -70,7 +70,7 @@
   padding: 8px 16px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--line);
-  background: var(--surface, rgba(255, 255, 255, 0.8));
+  background: var(--surface, var(--settings-input-bg));
   cursor: pointer;
 }
 
@@ -95,7 +95,7 @@
   padding: 8px 14px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--line);
-  background: var(--surface, rgba(255, 255, 255, 0.8));
+  background: var(--surface, var(--settings-input-bg));
   cursor: pointer;
 }
 
@@ -147,7 +147,7 @@
   /* #6100: these are inputs too — the input-only border token, not the card
      hairline the glass theme draws at 38% white. */
   border: 1px solid var(--input-border-strong);
-  background: var(--field, #fff);
+  background: var(--field, var(--calendar-paper));
   color: inherit;
 }
 
@@ -199,7 +199,7 @@
 .pc-exchange-entry:hover,
 .pc-exchange-entry:focus-visible {
   border-color: var(--line);
-  background: var(--tint, rgba(66, 106, 135, 0.07));
+  background: var(--tint, var(--pc-file-exchange-tint));
 }
 
 .pc-exchange-name {
@@ -238,6 +238,6 @@
 
 @media (prefers-color-scheme: dark) {
   .pc-exchange-dialog {
-    background: var(--surface, rgba(22, 33, 43, 0.96));
+    background: var(--surface, var(--pc-file-exchange-dark-panel));
   }
 }
