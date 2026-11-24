@@ -251,7 +251,24 @@ def make_thumbs(data: dict, out_dir: Path) -> int:
     return count
 
 
+def prerender_news(data: dict) -> str:
+    return "".join(
+        '<article class="info-card site-change">'
+        f'<time datetime="{_e(item["date"])}">{_e(item["date"])}</time>'
+        f'<h2>{_e(item["title"])}</h2><ul>'
+        + "".join(f'<li>{_e(change)}</li>' for change in item["changes"])
+        + '</ul></article>'
+        for item in sorted(data.get("news", []), key=lambda item: item["date"], reverse=True)
+    )
+
+
 def inject(out_dir: Path, data: dict) -> None:
+    news_path = out_dir / "news.html"
+    if news_path.is_file():
+        html = news_path.read_text(encoding="utf-8")
+        html = html.replace('<div id="siteChangeList" class="site-change-list"></div>',
+                            '<div id="siteChangeList" class="site-change-list">' + prerender_news(data) + "</div>")
+        news_path.write_text(html, encoding="utf-8")
     home = prerender_home(data)
     index = out_dir / "index.html"
     if index.is_file():

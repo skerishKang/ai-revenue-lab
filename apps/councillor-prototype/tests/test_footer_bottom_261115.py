@@ -140,10 +140,11 @@ def _bottom_checks(m, *, short):
 
 
 def test_short_page_keeps_the_footer_at_the_bottom(browser, base_url):
-    # The empty activity search result is the shortest real page of the site.
+    # The 404 page is the shortest real page of the site; the empty activity search
+    # grew past one phone screen once its seven-term legend landed (#8673).
     page = browser.new_page(viewport={"width": 390, "height": 844})
     try:
-        page.goto(base_url + "activity.html?q=zzzzqqq9999", wait_until="load")
+        page.goto(base_url + "404.html", wait_until="load")
         page.wait_for_selector(".site-footer")
         page.wait_for_timeout(300)
         for width, height in ((390, 844), (820, 1180), (1440, 900)):
@@ -175,7 +176,7 @@ def test_long_page_keeps_the_footer_last(browser, base_url):
 def test_tab_bar_stays_clear_of_the_footer_in_dark_mode(browser, base_url):
     page = browser.new_page(viewport={"width": 390, "height": 844})
     try:
-        page.goto(base_url + "activity.html?q=zzzzqqq9999", wait_until="load")
+        page.goto(base_url + "404.html", wait_until="load")
         page.wait_for_selector(".site-footer")
         page.click("#themeToggle")
         page.wait_for_timeout(150)
