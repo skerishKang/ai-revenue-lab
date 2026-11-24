@@ -19,7 +19,9 @@ from .pc_helper_update import helper_update_script, render_helper_updater_comman
 MAX_AGE = timedelta(seconds=180)
 SOURCE_SHA256 = hashlib.sha256(helper_update_script().encode("utf-8")).hexdigest()
 _DETAIL_PREFIX = "PADIEM_HELPER_REFRESH_DETAIL:"
-_DETAIL = re.compile(r"^PADIEM_HELPER_REFRESH_DETAIL:([a-z_]{1,60})$")
+# 원인 토큰 + 스크립트 줄번호 + 명령이름. 전체가 [a-z0-9_]{1,80} 안에 들어와야
+# 한다(메시지 원문·경로는 절대 포함하지 않는다).
+_DETAIL = re.compile(r"^PADIEM_HELPER_REFRESH_DETAIL:(?=.{1,80}$)([a-z0-9_]*_[0-9]+_[a-z0-9_]*)$")
 _MARKER = re.compile(r"^PADIEM_HELPER_REFRESH:(updated|skipped|reinstall_required|failed):([a-z_]+)$")
 _REASONS = {"updated": {"registered", "watcher_python_missing"}, "skipped": {"already_current"},
             "reinstall_required": {"status_missing", "system_denied"},
@@ -101,12 +103,17 @@ def registration_command():
         "if($py){Write-Output 'PADIEM_HELPER_REFRESH:updated:registered'}"
         "else{Write-Output 'PADIEM_HELPER_REFRESH:updated:watcher_python_missing'}"
         "}catch{Write-Output 'PADIEM_HELPER_REFRESH:failed:registration_failed';"
-        # One bounded cause token so a failed refresh says where it stopped:
-        # the updater's own throw codes are already [a-z_]; anything else is
-        # reduced to its exception type name. Never the message text itself.
+        # #8359 후속2: 원인 토큰 뒤에 던진 위치를 붙인다. 원인은 업데이트 스크립트의
+        # [a-z_] 코드 또는 예외 형식 이름, 줄번호는 ScriptLineNumber, 명령이름은
+        # MyCommand.Name에서 영문 소문자·숫자·밑줄만 남긴다. 메시지·경로는 넣지 않는다.
         "$d=[string]$_.Exception.Message;"
         "if($d -cnotmatch '^[a-z_]{1,60}$'){$d='unexpected_'+(([string]$_.Exception.GetType().Name) -replace '[^A-Za-z]','').ToLower()};"
         "if($d.Length -gt 60){$d=$d.Substring(0,60)};"
+        "$ln=[string]$_.InvocationInfo.ScriptLineNumber;"
+        "if($ln -cnotmatch '^[0-9]+$'){$ln='0'};"
+        "$cm=(([string]$_.InvocationInfo.MyCommand.Name) -replace '[^A-Za-z0-9_]','').ToLower();"
+        "$d=($d+'_'+$ln+'_'+$cm);"
+        "if($d.Length -gt 80){$d=$d.Substring(0,80)};"
         "Write-Output ('" + _DETAIL_PREFIX + "'+$d)}}"
     )
 
@@ -135,7 +142,12 @@ def parse_receipt(text):
 
 
 def parse_refresh_detail(text):
-    """The single bounded cause token a failed refresh prints, else None."""
+    """The one bounded cause+location token a failed refresh prints, else None.
+
+    The token is ``cause_line_command``: a lowercase cause, the script line
+    number and the filtered cmdlet name. Only a single line that matches the
+    whole compact format is accepted.
+    """
     found = [m.group(1) for line in (text or "").splitlines() if (m := _DETAIL.fullmatch(line.strip()))]
     return found[0] if len(found) == 1 else None
 

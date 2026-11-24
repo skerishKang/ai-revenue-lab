@@ -1,0 +1,34 @@
+{
+  "sheet": "mobile-target-legibility.css",
+  "base": "2415db7a5",
+  "claim": "https://github.com/skerishKang/ai-revenue-lab/issues/8340#issuecomment-7135863513",
+  "removed_count": 33,
+  "kept_count": 5,
+  "kept": [
+    {"line": 218, "property": "font-size", "value": "14px", "beats": "테마의 10px 규칙 (document-formats-toggle)"},
+    {"line": 225, "property": "font-size", "value": "14px", "beats": "glass 테마 14px 캡"},
+    {"line": 275, "property": "font-size", "value": "14px", "beats": "테마 글자 크기 규칙"},
+    {"line": 311, "property": "font-size", "value": "14px", "beats": "claw-focus-layout.css:1134 starter strong 12px !important"},
+    {"line": 322, "property": "max-width", "value": "148px", "beats": "테마 버튼 폭 규칙"}
+  ],
+  "audit": {
+    "css_important": {"before": 404, "after": 371, "delta": -33},
+    "css_themed_important": {"before": 92, "after": 86, "delta": -6},
+    "mobile-target-legibility.css": {"before": 38, "after": 5, "delta": -33},
+    "css_color_literals": {"before": 910, "after": 910, "delta": 0},
+    "css_color_literals_unthemed": {"before": 272, "after": 272, "delta": 0},
+    "css_rules": {"before": 4353, "after": 4353, "delta": 0},
+    "css_files": {"before": 92, "after": 92, "delta": 0}
+  },
+  "verification": {
+    "computed": {"report": "computed_report.json", "sweep": "sweep_decisions.json"},
+    "pixel": {"combos": 70, "themes": 5, "viewports": ["1440x950", "390x844"], "screens": ["home", "conversation", "calendar", "claw", "library", "settings-dialog", "project-dialog"], "nonzero": [], "report": "compare_report.json"},
+    "control": {"combos": 70, "nonzero": [], "report": "control/control_report.json"},
+    "tests": "관련 모바일 타깃·대비·래칫 pytest 63 passed"
+  },
+  "notes": [
+    "계산 스위프 40조합에서 차이 0인 35건을 제거했다. 14px 읽기 하한과 claw 카드 12px override는 계약 시험이 잡아 유지했다.",
+    "캡처·diff 이미지 합계 8장(#8661).",
+    "새 !important·색 리터럴·규칙 수 증가 없음."
+  ]
+}

@@ -14,6 +14,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
@@ -171,6 +172,43 @@ class StampTest(unittest.TestCase):
     def test_a_stamp_outside_main_history_fails(self):
         self.assertEqual(self.verdict(ancestor=False),
                          ("FAIL", "screen_stamp_not_on_main", self.OBSERVED))
+
+    def test_a_stamp_newer_than_checkout_but_on_latest_main_passes(self):
+        # #8666 정정: 체크아웃 sha(997f...)보다 새 커밋(37c...)이라도
+        # 최신 origin/main의 조상이면 정상 화면이다.
+        self.assertNotEqual(self.HEAD[:8], self.OBSERVED)
+        self.assertEqual(self.verdict(ancestor=True),
+                         ("PASS", "up_to_date", self.OBSERVED))
+
+    def test_a_commit_absent_from_latest_main_still_fails(self):
+        self.assertEqual(self.verdict(ancestor=False),
+                         ("FAIL", "screen_stamp_not_on_main", self.OBSERVED))
+
+    def test_a_missing_stamp_still_fails(self):
+        self.assertEqual(checks.stamp_verdict("", self.HEAD),
+                         ("FAIL", "screen_stamp_missing", ""))
+
+    def test_evidence_fetches_latest_main_and_checks_ancestry_against_it(self):
+        calls: list[list[str]] = []
+
+        def fake_git(args, cwd=None):
+            calls.append(list(args))
+            if args[0] == "rev-parse":
+                return 0, self.STAMP + "\n"
+            if args[:2] == ["fetch", "origin"]:
+                return 0, ""
+            if args[:2] == ["merge-base", "--is-ancestor"]:
+                self.assertEqual(args[3], "origin/main")
+                return 0, ""
+            if args[0] == "log":
+                self.assertIn("origin/main", args[3])
+                return 0, ""
+            return 0, ""
+
+        with patch.object(checks, "_git", side_effect=fake_git):
+            evidence = checks.stamp_evidence(self.OBSERVED, self.HEAD)
+        self.assertTrue(evidence["ancestor"])
+        self.assertTrue(any(call[:2] == ["fetch", "origin"] for call in calls))
 
     def test_unreadable_history_is_not_a_pass(self):
         self.assertEqual(self.verdict(screen_changes=None)[:2],
