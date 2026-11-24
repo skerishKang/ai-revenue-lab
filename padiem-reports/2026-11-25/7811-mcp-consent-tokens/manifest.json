@@ -1,0 +1,105 @@
+{
+  "sheet": "mcp-oauth-consent.css",
+  "base": "2e9873572",
+  "audit": {
+    "css_color_literals": {
+      "before": 910,
+      "after": 903,
+      "delta": -7
+    },
+    "css_color_literals_unthemed": {
+      "before": 272,
+      "after": 265,
+      "delta": -7
+    },
+    "css_important": {
+      "before": 404,
+      "after": 404,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4353,
+      "after": 4353,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 769,
+      "after": 769,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": {
+      "--mcp-consent-gold-wash": "rgba(212, 173, 104, 0.16)",
+      "--mcp-consent-card-shadow": "rgba(38, 35, 31, 0.10)",
+      "--mcp-consent-capability-wash": "rgba(47, 93, 80, 0.07)",
+      "--mcp-consent-scope-edge": "#d8d8e0"
+    },
+    "reused": [
+      "--answer-actions-bg",
+      "--project-solid-bg",
+      "--project-on-ink-text"
+    ],
+    "definition": "padiem-tokens.css :root, mcp-consent group after the library group; no theme block redeclares any of the 7 names",
+    "review": "replacement_review.json — 7 removed literals match 7 token values exactly, 0 theme overrides"
+  },
+  "verification": {
+    "computed": {
+      "targets": 7,
+      "measurements": 70,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "screen": "mcp-oauth-consent.html",
+      "combos": 10,
+      "nonzero": [],
+      "report": "compare_report.json"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json"
+    },
+    "contrast": {
+      "report": "contrast_report.json",
+      "below_4_5_original": [],
+      "note": "primary button ink 7.49:1; no sub-4.5 item"
+    },
+    "tamper": {
+      "token": "--mcp-consent-gold-wash",
+      "mutation": "rgba(212, 173, 104, 0.16)→#ff00ff",
+      "screen": "mcp-oauth-consent.html",
+      "theme": "light",
+      "viewport": "1440x950",
+      "pixel": 393800,
+      "report": "tamper_report.json"
+    },
+    "tests": "mcp consent·7187·래칫 22 passed",
+    "ratchet": "base 2e9873572 대비 head 실측. 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −7."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 최종 계산값·픽셀은 변하지 않는다.",
+    "재사용한 3개 토큰은 모두 :root 전용이고 테마 블록이 덮지 않는다.",
+    "새 !important 없음. 새 색 리터럴은 토큰 정의에만 있다(시트의 :root --mcp-oauth-* 정의는 기존 그대로).",
+    "동의 화면은 독립 문서라 전용 HTML로 계산값·픽셀·캡처를 측정했다.",
+    "캡처 8장은 파일·상태 표식으로만 확인했고 이 모델이 이미지 입력을 받지 않아 화면 직접 보기는 못했다(못 봄).",
+    "#8691 축소 범위를 지키기 위해 공유 헬퍼 모듈은 수정하지 않고 시험 파일 안에서 파싱했다."
+  ]
+}

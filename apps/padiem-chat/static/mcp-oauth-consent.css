@@ -17,7 +17,7 @@ body.mcp-oauth-body {
   place-items: center;
   padding: 24px;
   background:
-    radial-gradient(circle at 15% 10%, rgba(212, 173, 104, 0.16), transparent 34rem),
+    radial-gradient(circle at 15% 10%, var(--mcp-consent-gold-wash), transparent 34rem),
     var(--mcp-oauth-bg);
   color: var(--mcp-oauth-ink);
   font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans KR", sans-serif;
@@ -29,7 +29,7 @@ body.mcp-oauth-body {
   border: 1px solid var(--mcp-oauth-line);
   border-radius: 18px;
   background: var(--mcp-oauth-card);
-  box-shadow: 0 18px 50px rgba(38, 35, 31, 0.10);
+  box-shadow: 0 18px 50px var(--mcp-consent-card-shadow);
 }
 
 h1 {
@@ -56,7 +56,7 @@ h1 {
   padding: 14px 16px;
   border: 1px solid var(--mcp-oauth-line);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--answer-actions-bg);
 }
 
 .mcp-oauth-facts div + div { margin-top: 10px; }
@@ -67,7 +67,7 @@ h1 {
   margin: 0 0 18px;
   padding: 14px 16px;
   border-left: 3px solid var(--mcp-oauth-accent);
-  background: rgba(47, 93, 80, 0.07);
+  background: var(--mcp-consent-capability-wash);
   font-size: 15px;
   line-height: 1.6;
 }
@@ -80,7 +80,7 @@ h1 {
   padding: 8px 12px;
   border: 1px solid var(--mcp-oauth-line);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--project-solid-bg);
   color: var(--mcp-oauth-ink);
   font: inherit;
 }
@@ -100,7 +100,7 @@ h1 {
 .mcp-oauth-primary {
   border: 1px solid transparent;
   background: var(--mcp-oauth-accent);
-  color: #fff;
+  color: var(--project-on-ink-text);
 }
 
 .mcp-oauth-secondary {
@@ -128,7 +128,7 @@ h1 {
 
 /* 2026-11-04: device scope choice on the consent card. */
 .mcp-oauth-scope {
-  border: 1px solid var(--border, #d8d8e0);
+  border: 1px solid var(--border, var(--mcp-consent-scope-edge));
   border-radius: var(--radius-xs);
   margin: 0 0 12px;
   padding: 8px 12px 10px;
