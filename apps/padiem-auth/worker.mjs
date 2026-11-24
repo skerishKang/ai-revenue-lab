@@ -22,6 +22,15 @@ const un64 = (s) => Uint8Array.from(atob(s.replaceAll('-', '+').replaceAll('_', 
 const random = () => b64(crypto.getRandomValues(new Uint8Array(32)));
 const digest = async (s) => b64(new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(s))));
 const digestHex = async (s) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(s)))].map(x => x.toString(16).padStart(2, '0')).join('');
+// The address text exactly as cf-connecting-ip carries it: dotted IPv4 or
+// a colon-hex IPv6. Anything else is refused before it reaches storage.
+export function isAddressText(value) {
+  if (typeof value !== 'string' || value.length < 2 || value.length > 45) return false;
+  const v4 = value.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (v4) return v4.slice(1).every(part => (part === '0' || !part.startsWith('0')) && Number(part) <= 255);
+  return value.includes(':') && /^[0-9a-f:]+$/.test(value) && !value.includes(':::') && (value.match(/::/g) || []).length <= 1 &&
+    value.split(':').every(group => group.length <= 4);
+}
 export async function identityFingerprint(key, subject) {
   if (!key || key.algorithm?.name !== 'HMAC') throw new Error('identity key unavailable');
   return b64(new Uint8Array(await crypto.subtle.sign('HMAC', key, encoder.encode(`padiem-auth:google:v1\0${subject}`))));
@@ -796,6 +805,29 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       }
       return json(200, { ok: true });
     }
+    // Owner decision 2026-11-24: an operator can clear today's failed-login
+    // count for one address (our own office address tripped the #7789 limit
+    // while developing). Same admin bearer as account-block; the limit itself
+    // is unchanged and only that address's current UTC day is cleared.
+    if (url.pathname === '/internal/login-failure-budget/reset' && request.method === 'POST') {
+      if (!adminSecret) return json(404, { error: 'not_found' });
+      const presented = request.headers.get('authorization') || '';
+      const expected = `Bearer ${adminSecret}`;
+      if (presented.length !== expected.length) return json(401, { error: 'unauthorized' });
+      let mismatch = 0;
+      for (let i = 0; i < expected.length; i++) mismatch |= presented.charCodeAt(i) ^ expected.charCodeAt(i);
+      if (mismatch) return json(401, { error: 'unauthorized' });
+      let body;
+      try { body = await request.json(); } catch { return json(400, { error: 'invalid_request' }); }
+      const source = body && typeof body === 'object' && !Array.isArray(body) && Object.keys(body).length === 1 ? body.source : null;
+      if (typeof source !== 'string' || !isAddressText(source)) return json(400, { error: 'invalid_request' });
+      const day = Math.floor(current / 86400);
+      const previous = await stateFor('password-login-gate').resetLoginFailureBudget({ source, day });
+      if (!Number.isSafeInteger(previous)) return json(503, { error: 'reset_unavailable' });
+      const sourceHash = (await digestHex(`padiem-auth:login-budget-reset:v1\0${source}`)).slice(0, 12);
+      console.log(JSON.stringify({ auth_stage: 'login_failure_budget_reset', source_hash: sourceHash, day, previous }));
+      return json(200, { ok: true, previous });
+    }
     if (url.pathname === '/.well-known/jwks.json' && request.method === 'GET') {
       const keys = (jwks?.keys || []).map(({ kty, crv, x, y, kid, use, alg }) => ({ kty, crv, x, y, kid, use, alg }));
       return json(200, { keys });
@@ -1095,7 +1127,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'ageConfirmedAt', 'putAccount', 'createAgeConfirmation', 'readAgeConfirmation', 'consumeAgeConfirmation', 'claimAgeConfirmation', 'recordAgeConfirmationResult', 'readAgeConfirmationResult', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
+const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'resetLoginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'ageConfirmedAt', 'putAccount', 'createAgeConfirmation', 'readAgeConfirmation', 'consumeAgeConfirmation', 'claimAgeConfirmation', 'recordAgeConfirmationResult', 'readAgeConfirmationResult', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
 export class AuthStateObject extends AuthState {
   constructor(state, env, { recoveryFetcher = fetch, recoveryStateFor = stateBindingFor(env) } = {}) {
     super(state); this.state = state; this.env = env;

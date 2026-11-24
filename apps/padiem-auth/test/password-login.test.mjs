@@ -233,8 +233,8 @@ test('attempts from one address are frequency limited per minute', async () => {
 });
 
 // #7789: the day budget counts refused credentials only, so the fifty-first
-// failure is the one that tips the address over, and the day boundary — not
-// an operator — unlocks it.
+// failure is the one that tips the address over, and the day boundary (or an
+// operator reset, below) unlocks it.
 test('failed logins past fifty a day block the address until the next day', async () => {
   const f = await setup();
   const ip = { 'cf-connecting-ip': '203.0.113.9' };
@@ -265,6 +265,50 @@ test('failed logins past fifty a day block the address until the next day', asyn
   // The next day the same address starts over.
   f.setClock(86400 + 1000);
   assert.equal((await wrong()).status, 200);
+});
+
+// Owner decision 2026-11-24: an operator may clear one address's day count
+// before the day boundary. Only that address and day are cleared, only with
+// the admin bearer, and the limit itself still applies afterwards.
+test('an operator reset clears one address for the current day only', async () => {
+  const f = await setup();
+  const ip = { 'cf-connecting-ip': '203.0.113.9' };
+  const other = { 'cf-connecting-ip': '198.51.100.7' };
+  const wrong = async (from) => {
+    const begun = await f.begin();
+    return f.postForm('/login/password', begun.formState, begun.cookie, { email: EMAIL, password: 'wrong-password' }, from);
+  };
+  for (let i = 0; i < 51; i++) { f.setClock(1000 + i * 60); await wrong(ip); await wrong(other); }
+  f.setClock(1000 + 52 * 60);
+  assert.equal((await wrong(ip)).status, 429);
+  assert.equal((await wrong(other)).status, 429);
+  const reset = (headers, body) => f.app.fetch(new Request(`${url}/internal/login-failure-budget/reset`, {
+    method: 'POST', headers: { 'content-type': 'application/json', ...headers }, body,
+  }));
+  const admin = { authorization: 'Bearer synthetic-admin-secret' };
+  // No bearer, a wrong bearer, a malformed address or an extra field are refused.
+  assert.equal((await reset({}, JSON.stringify({ source: '203.0.113.9' }))).status, 401);
+  assert.equal((await reset({ authorization: 'Bearer synthetic-admin-secreX' }, JSON.stringify({ source: '203.0.113.9' }))).status, 401);
+  for (const bad of ['203.0.113', '203.0.113.256', '203.0.113.09', 'unknown', '1.2.3.4; drop', '2001:db8:::1']) {
+    assert.equal((await reset(admin, JSON.stringify({ source: bad }))).status, 400, bad);
+  }
+  assert.equal((await reset(admin, JSON.stringify({ source: '203.0.113.9', day: 0 }))).status, 400);
+  assert.equal((await reset(admin, 'not json')).status, 400);
+  const done = await reset(admin, JSON.stringify({ source: '203.0.113.9' }));
+  assert.equal(done.status, 200);
+  assert.deepEqual(await done.json(), { ok: true, previous: 51 });
+  // The cleared address logs in again; the other address is still refused.
+  assert.equal((await wrong(ip)).status, 200);
+  assert.equal((await wrong(other)).status, 429);
+  const begun = await f.begin();
+  const good = await f.postForm('/login/password', begun.formState, begun.cookie, { email: EMAIL, password: PASSWORD }, ip);
+  assert.equal(good.status, 302);
+  // The limit itself is unchanged: fifty more failures block the address again.
+  for (let i = 0; i < 50; i++) await wrong(ip);
+  assert.equal((await wrong(ip)).status, 429);
+  // An IPv6 address is accepted and clears nothing when it has no count.
+  const v6 = await reset(admin, JSON.stringify({ source: '2001:db8::1' }));
+  assert.deepEqual(await v6.json(), { ok: true, previous: 0 });
 });
 
 test('signup attempts past five an hour from one address are refused until the next hour', async () => {

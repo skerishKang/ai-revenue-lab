@@ -311,6 +311,20 @@ export class AuthState {
     });
   }
 
+  // Operator reset of one address's day count (owner decision 2026-11-24):
+  // our own office address can trip the limit while we develop, and waiting
+  // for the next UTC day blocks real logins from that address. Only the given
+  // address and day are cleared; the limit itself is unchanged. Returns the
+  // count that was cleared.
+  resetLoginFailureBudget({ source, day }) {
+    if (typeof source !== 'string' || !source.length || !Number.isSafeInteger(day)) return null;
+    return this.storage.transactionSync(() => {
+      const previous = this.sql.exec('SELECT used FROM login_failure_budget WHERE source=? AND day=?', source, day).toArray()[0]?.used ?? 0;
+      this.sql.exec('DELETE FROM login_failure_budget WHERE source=? AND day=?', source, day);
+      return previous;
+    });
+  }
+
   createLogin({ stateDigest, browserDigest, client, redirect, serviceState, serviceChallenge, googleNonce, googleVerifier, expires, ltTheme = null }) {
     this.sql.exec('INSERT INTO login_requests(state_digest,browser_digest,client,redirect,service_state,service_challenge,google_nonce,google_verifier,lt_theme,expires) VALUES(?,?,?,?,?,?,?,?,?,?)', stateDigest, browserDigest, client, redirect, serviceState, serviceChallenge, googleNonce, googleVerifier, ltTheme, expires);
   }
