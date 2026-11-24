@@ -1,36 +1,52 @@
 {
   "css_rules": {
-    "base": 4353,
-    "head": 4351,
+    "before": 4353,
+    "after": 4351,
+    "delta": -2
+  },
+  "css_themed_rules": {
+    "before": 769,
+    "after": 767,
     "delta": -2
   },
   "css_important": {
-    "base": 404,
-    "head": 404,
-    "delta": 0
-  },
-  "css_color_literals": {
-    "base": 918,
-    "head": 916,
-    "delta": -2
-  },
-  "css_color_literals_unthemed": {
-    "base": 280,
-    "head": 280,
-    "delta": 0
-  },
-  "css_themed_rules": {
-    "base": 769,
-    "head": 767,
+    "before": 371,
+    "after": 369,
     "delta": -2
   },
   "css_themed_important": {
-    "base": 92,
-    "head": 92,
+    "before": 86,
+    "after": 84,
+    "delta": -2
+  },
+  "css_color_literals": {
+    "before": 910,
+    "after": 908,
+    "delta": -2
+  },
+  "css_color_literals_unthemed": {
+    "before": 272,
+    "after": 272,
     "delta": 0
   },
-  "bright_rules": {
-    "base": 23,
-    "head": 21
+  "css_rules_by_file/padiem-themes.css": {
+    "before": 113,
+    "after": 113,
+    "delta": 0
+  },
+  "css_important_by_file/padiem-themes.css": {
+    "before": 13,
+    "after": 13,
+    "delta": 0
+  },
+  "css_rules_by_file/padiem-bright-readability.css": {
+    "before": 23,
+    "after": 21,
+    "delta": -2
+  },
+  "css_important_by_file/padiem-bright-readability.css": {
+    "before": 13,
+    "after": 11,
+    "delta": -2
   }
 }

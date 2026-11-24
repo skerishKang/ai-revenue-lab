@@ -1,21 +1,39 @@
-.............................                                            [100%]
-============================ slowest 50 durations =============================
-8.90s call     tests/test_chat_screen_polish_261103.py::test_stored_conversation_hint_follows_the_language
-8.77s call     tests/test_chat_screen_polish_261103.py::test_a_shared_fragment_opens_the_screen_it_names[#padiem-calendar]
-8.55s call     tests/test_chat_screen_polish_261103.py::test_answer_action_press_box_measures_the_floor[1440-900-40]
-8.05s call     tests/test_chat_screen_polish_261103.py::test_menu_selection_and_url_follow_the_screen
-7.77s call     tests/test_chat_screen_polish_261103.py::test_a_shared_fragment_opens_the_screen_it_names[#padiem-library]
-7.48s call     tests/test_chat_screen_polish_261103.py::test_home_card_icons_have_uniform_boxes_and_3_to_1_contrast_in_all_themes
-6.67s call     tests/test_chat_screen_polish_261103.py::test_send_button_sits_on_the_composer_right_edge_at_390
-6.29s call     tests/test_chat_screen_polish_261103.py::test_desktop_greeting_renders_two_lines
-5.87s call     tests/test_chat_screen_polish_261103.py::test_raised_controls_measure_their_floor
-5.60s call     tests/test_chat_screen_polish_261103.py::test_badge_does_not_cover_the_card_content_on_a_phone
-4.57s call     tests/test_chat_screen_polish_261103.py::test_answer_action_press_box_measures_the_floor[390-844-44]
-4.49s call     tests/test_chat_screen_polish_261103.py::test_tier_chip_text_is_centered_without_spark_and_stays_in_reserved_slot[390-844-True-112]
-4.15s setup    tests/test_chat_screen_polish_261103.py::test_send_button_sits_on_the_composer_right_edge_at_390
-4.08s call     tests/test_chat_screen_polish_261103.py::test_tier_chip_text_is_centered_without_spark_and_stays_in_reserved_slot[1440-900-False-116]
-2.30s teardown tests/test_chat_screen_polish_261103.py::test_stored_conversation_hint_follows_the_language
-1.90s setup    tests/test_chat_screen_polish_261103.py::test_send_button_is_right_aligned_on_the_phone
+............................                                             [100%]
+============================== warnings summary ===============================
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+  <unknown>:326: DeprecationWarning: invalid escape sequence '\d'
 
-(34 durations < 0.2s hidden.)
-29 passed in 99.50s (0:01:39)
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+  <unknown>:287: DeprecationWarning: invalid escape sequence '\W'
+
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+  <unknown>:166: DeprecationWarning: invalid escape sequence '\w'
+
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+  <unknown>:325: DeprecationWarning: invalid escape sequence '\g'
+
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+  <unknown>:355: DeprecationWarning: invalid escape sequence '\W'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================ slowest 50 durations =============================
+39.19s call     tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+0.29s setup    tests/test_structure_ratchet.py::test_tool_and_head_tree_are_present
+
+(48 durations < 0.2s hidden.)
+28 passed, 20 warnings in 40.84s
