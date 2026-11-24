@@ -6,10 +6,68 @@ directly.
 """
 from __future__ import annotations
 
+import hashlib
+import re
+from pathlib import Path
+
 from css_rules import find_rules_with_selector, parse_rules
 from _support.claw_static import sheet as _sheet
 
 THEMES = ("light", "dark", "padiem-glass", "cinematic", "padiem-home")
+
+
+# A family contract lives next to its own declarations in padiem-tokens.css.
+# This keeps independent C2 lanes out of the shared test-name roster.
+_FAMILY_MARKER = re.compile(
+    r"/\*\s*#7811 token-family (--[A-Za-z0-9_-]+) "
+    r"sha256=([a-f0-9]{64})\s*\*/"
+)
+
+
+def root_token_families(css: str | None = None) -> dict[str, set[str]]:
+    """Return the exact declared :root token groups, checking CSS-local rosters.
+
+    The SHA-256 markers are pinned independently of declarations. Removing
+    a declaration or renaming a token is rejected even if a consumer later
+    stops referencing it. A new sheet extends only its own CSS-local marker.
+    """
+    css = _sheet("padiem-tokens.css") if css is None else css
+    roots = [r for r in find_rules_with_selector(parse_rules(css), ":root")
+             if r.media is None]
+    assert len(roots) == 1, "exactly one root token block"
+    names = {key for key in roots[0].declarations if key.startswith("--")}
+    # The longest real sheet-name prefix wins (rich-response versus rich).
+    # Names without a matching sheet retain their first role prefix.
+    static = Path(__file__).resolve().parents[2] / "static"
+    sheet_prefixes = sorted({
+        "--" + sheet.stem.removeprefix("padiem-") + "-"
+        for sheet in static.glob("*.css") if sheet.name != "padiem-tokens.css"
+    }, key=len, reverse=True)
+    groups: dict[str, set[str]] = {}
+    for name in names:
+        family = next(
+            (prefix[:-1] for prefix in sheet_prefixes if name.startswith(prefix)),
+            "--" + name[2:].split("-", 1)[0],
+        )
+        groups.setdefault(family, set()).add(name)
+
+    # Read only markers physically within :root, not theme blocks or prose.
+    root_start = css.index(":root {")
+    root_end = css.index("\n}", root_start)
+    markers = _FAMILY_MARKER.findall(css[root_start:root_end])
+    markers_by_family = dict(markers)
+    assert len(markers_by_family) == len(markers), "duplicate family marker"
+    assert set(markers_by_family) == set(groups), (
+        "family missing/extra", set(markers_by_family) ^ set(groups)
+    )
+    for family, members in groups.items():
+        digest = hashlib.sha256(
+            "\n".join(sorted(members)).encode("utf-8")
+        ).hexdigest()
+        assert markers_by_family[family] == digest, (
+            "token family changed", family, sorted(members)
+        )
+    return groups
 
 
 def _blocks():

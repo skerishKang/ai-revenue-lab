@@ -56,11 +56,13 @@
  */
 :root {
   /* #8210: 왼쪽 메뉴의 칸 규격 — 여백·모서리·높이를 한 곳에서 정한다. */
+  /* #7811 token-family --sidebar sha256=065efae7ca7a5c1b9a70dd285a484bab255864f98b4dd865334bb2bc6dde848c */
   --sidebar-control-inset: 12px;
   --sidebar-control-radius: 12px;
   --sidebar-control-height: 44px;
 
   /* #8024: theme-agnostic panel skins. Bright themes override with existing tokens. */
+  /* #7811 token-family --surface sha256=dd91619e2bf78d7d5da19b7ac56dcf1d2d2160f2d936fa5a155f95e8068ea56f */
   --surface-panel-deep: rgba(8, 9, 11, .82);
   --surface-panel-solid: rgba(8, 9, 11, .97);
   --surface-panel-dim: rgba(8, 9, 11, .96);
@@ -74,17 +76,21 @@
      흐림 대표값은 .48 — 어두운 판(rgba(8,9,11,.97)) 위 글자 대비 4.9:1로
      4.5 이상(구간 .31~.48의 가장 밝은 값을 대표로). 소·진함·최대도 같은
      판에서 4.5 이상이다. */
+  /* #7811 token-family --panel sha256=738f01dd41f64d8ef6eeea2eceb0cac4678dceb94fa2424121b14277adaaf822 */
   --panel-text-faint: rgba(255, 255, 255, .48);
   --panel-text-soft: rgba(255, 255, 255, .67);
   --panel-text-strong: rgba(255, 255, 255, .86);
   --panel-text-max: #fff;
 
   /* #7817: 첫 화면 제목의 둘째 줄 색. 테마마다 값만 다르고 규칙은 하나다. */
+  /* #7811 token-family --hero sha256=45975d72190e93093cbb26a6d5fb598d5e29fe80c64175e3c3611ec89d414c93 */
   --hero-sub-color: rgba(255, 255, 255, .56);
   /* #7829: 코드 블록 머리(언어 이름·복사 단추) 색. 테마마다 값만 다르고 규칙은 하나다. */
+  /* #7811 token-family --code sha256=286bc90cd6452a86811337eecbeb47cde74e82718f98a75979753882cabf4f2a */
   --code-header-text: rgba(255, 255, 255, .46);
   --code-header-button-text: rgba(255, 255, 255, .66);
   /* 주요 버튼 면 */
+  /* #7811 token-family --primary sha256=6fa3349e82262be3aa0824cb8c8ca9e8a831798e1d8769d03e96eccd0ae28bce */
   --primary-bg: #355977;
   --primary-border: #294b64;
   --primary-hover-bg: #2e4d67;
@@ -93,13 +99,16 @@
   --primary-focus: #6a9abc;
 
   /* 구분선·헤어라인(밝은 기본값) */
+  /* #7811 token-family --line sha256=aae230231bae8c9c935150b1c009f83789617dbc328dde67f7909d4eab0fdf53 */
   --line: #e3e3e9;
   /* #6100: 입력칸 테두리는 자체 최소 대비를 가진다. 공용 --line은 카드
      헤어라인으로도 쓰이므로 값을 그대로 두고, 입력칸은 테마별로 정의한
      --input-border-strong을 쓴다(3:1 비텍스트 최소 대비, 측정값은
      padiem-reports/2026-10-29). */
+  /* #7811 token-family --input sha256=d0fcd24f26cef4fe69a74068e95c02708f2296d3ac390aad5e9e9565f9b25e1e */
   --input-border-strong: #767e8a;
   /* 포커스 링(밝은 기본값) */
+  /* #7811 token-family --focus sha256=723db22ce133b703d279d9b83ed87a2664cee9d56e36f8f5d4a1f630e9c5ccda */
   --focus-ring: rgba(101, 87, 232, .24);
   /* 설정 화면 입력칸·카드 테두리(mcp-gateway-settings·pc-delegation-settings).
      var(--border, #ccd2d8)의 --border는 어디에도 정의되지 않은 이름이라
@@ -110,10 +119,12 @@
   /* accent 계열·카드 테두리(3차, light 기본값 = styles.css :root와 같은 값).
      --accent-contrast는 styles.css :root에 없는 이름이라 여기가 유일한
      기본 정의다. --card-border는 원래 padiem-themes.css light 블록의 값. */
+  /* #7811 token-family --accent sha256=7ec7d63d43c5016d42aced59e0a4fabcf4778b0552e7b63aea85b256680d4da9 */
   --accent: #6557e8;
   --accent-contrast: #ffffff;
   --accent-soft: #efedff;
   --accent-strong: #5546d6;
+  /* #7811 token-family --card sha256=271957d3280c59cd1bbd89cabf715f3fcf85bc8df21eaf788f48f62e2e8ba7b4 */
   --card-border: #e3e3e9;
 
   /* 반경 스케일(#7187, 261115): border-radius의 공통 값. styles.css가 바이트
@@ -126,6 +137,7 @@
      시트(admin·admin-models·admin-model-ext·credential-slots·
      mcp-oauth-consent·padiem-home)와 help.css·padiem-glass-portrait.css도
      원시 값을 유지한다. */
+  /* #7811 token-family --radius sha256=3fc79960e8e7d188c8ec6a203d4d7bca8bdc851502a29196d56731a35c9f5fde */
   --radius-xs: 8px;
   --radius-sm: 10px;
   --radius-lg: 20px;
@@ -149,9 +161,11 @@
   --line-veil-strong: rgba(255, 255, 255, .54);
   /* 반투명 백색 텍스트(2단계): 각 강도에서 가장 많이 쓰인 표기 그대로.
      값과 정확히 일치하는 color 선언만 치환하고, 다른 농도와 fallback은 둔다. */
+  /* #7811 token-family --text sha256=3652fc2bb420f1d520fe2861c89ffe872bb26eaf414d48dfc8673f38751a8247 */
   --text-veil-faint: rgba(255, 255, 255, .42);
   --text-veil-strong: rgba(255, 255, 255, .92);
   --surface-veil-ghost: rgba(255, 255, 255, .035);
+  /* #7811 token-family --inset sha256=484fdd68ca3f56ec279f21374394a6a05ad23c79200a80592ee8533e9f967ecd */
   --inset-veil-ghost: rgba(255, 255, 255, .035);
   --surface-veil-panel: rgba(255, 255, 255, .04);
   --inset-veil-panel: rgba(255, 255, 255, .04);
@@ -159,6 +173,7 @@
   --surface-veil-dim: rgba(255, 255, 255, .09);
   --inset-veil-dim: rgba(255, 255, 255, .09);
   --text-deep-ink: #1a2230;
+  /* #7811 token-family --swatch sha256=ba08a051ceebfc107768801ae658535b2197112753ce04be6257b70c48693057 */
   --swatch-deep-ink: #1a2230;
   --surface-veil-mist: rgba(255, 255, 255, .34);
   --text-veil-mist: rgba(255, 255, 255, .34);
@@ -181,6 +196,7 @@
      한 곳으로 모은다(화면 값은 그대로). 이 가족은 padiem-themes.css 같은
      전역 팔레트가 아니라 그 화면들의 구성 요소 지역 결정이므로, dark에서
      실제로 달라지던 값만 아래 dark 블록에서 덮어쓴다. */
+  /* #7811 token-family --pc sha256=0922342626f47b84b1506097f5a781f9529560da3de6704baf4b9004f3ada66b */
   --pc-focus: #2a7db4;
   --pc-warning: #8a5a00;
   --pc-ack-surface: rgba(238,243,247,.6);
@@ -195,6 +211,7 @@
   --pc-text-dim-soft: #607a89;
   --pc-text-dim-muted: #536e80;
   --pc-consent-text-dim: #506a7b;
+  /* #7811 token-family --claw sha256=880879b217beefa4202ea47e09b42f28aa46f1109e864e10e7a74f32469f4975 */
   --claw-local-focus: #2563eb;
   --claw-local-surface: rgba(255,255,255,.72);
   --claw-local-surface-ghost: transparent;
@@ -221,15 +238,19 @@
      dark·glass는 시스템 설정과 무관하게 자기 값을 유지하고
      light·cinematic·padiem-home만 시스템 다크 값을 받는다. 흰색 베일
      (hover·skeleton)은 #7187 베일 라운드 소재다(PR 본문 참조). */
+  /* #7811 token-family --dialog sha256=b8b6e960184effb83fd6020c321760280fbae0118cca378b217ea8cea9b14d66 */
   --dialog-dim: rgba(18, 24, 31, 0.38);
+  /* #7811 token-family --control sha256=91ac95cd0767e5de6cb905ef5909ef1ca0d18b7080382fd9494d52411a693343 */
   --control-wash-faint: rgba(127, 127, 127, 0.06);
   --control-wash-soft: rgba(127, 127, 127, 0.08);
   --control-wash-strong: rgba(127, 127, 127, .14);
   --control-wash-hover: rgba(127, 127, 127, .16);
+  /* #7811 token-family --danger sha256=a42091b167751f22698151340355602266d259b303db9ff76c5621c67ae72b50 */
   --danger-wash-soft: rgba(179, 38, 30, .14);
   --danger-wash-strong: rgba(179, 38, 30, .16);
 
   /* #7811 C2b: 로그인 창 색. 기본값은 history.css가 쓰던 값 그대로다. */
+  /* #7811 token-family --auth sha256=8d726d368a68ae093c34798969de3715c80f1b30d1e185cdc9cb7fdb732c8a9d */
   --auth-panel-bg: var(--panel);
   --auth-panel-text: var(--text);
   --auth-panel-border: rgba(127, 127, 127, 0.24);
@@ -237,6 +258,7 @@
   --auth-primary-text: #fff;
 
   /* #7811 C2: 첫 화면(home) 입력창 그림자. 모든 테마에서 같은 값이다. */
+  /* #7811 token-family --composer sha256=bd0ae355acabda5e12dac699fdd94b833bc47d5ae79a5cffc831e241bcc29d9c */
   --composer-home-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 22px 64px rgba(0, 0, 0, .22), 0 0 0 1px rgba(136, 201, 255, .035);
 
   /* #7811 C2 calendar(261122): calendar.css의 고정 팔레트 색. 캘린더 화면은
@@ -244,6 +266,7 @@
      전수 동일) :root 하나로 충분하고 테마 블록에서 덮지 않는다 —
      --dialog-dim처럼 예외만 두는 것과 같은 취지다. 값은 치환 전 사용처
      리터럴 그대로다. */
+  /* #7811 token-family --calendar sha256=7bd1f8962c8345ebb08d6fd8966a5fb37fb15835b171eddf7e0cd17c63aace33 */
   --calendar-paper: #fff;
   --calendar-error-border: rgba(214, 108, 108, .38);
   --calendar-error-bg: rgba(214, 108, 108, .08);
@@ -293,13 +316,16 @@
      :root 값은 치환 전 foundation 리터럴 그대로이고, 테마 블록은 5테마
      --computed 실측값을 적는다. foundation 선언이 뒤 시트에 덮이는 테마도
      C3에서 그 덮어쓰기를 걷어낼 때 토큰이 이어받도록 최종값을 둔다. */
+  /* #7811 token-family --app sha256=79b6ded5fabadd0036a69b544afa9544166918897712bccfee2f742334d30819 */
   --app-root-bg: #06080d;
   --app-grid-line: rgba(255, 255, 255, .025);
   --app-grid-fade: linear-gradient(to bottom, rgba(0, 0, 0, .72), transparent 76%);
   --app-selection-text: #fff;
   --app-selection-bg: rgba(136, 201, 255, .28);
   --app-focus-outline: rgba(136, 201, 255, .7);
+  /* #7811 token-family --brand sha256=97a869fc82cb3f350b225dbf52abd348781c2d4f6e3042f4154da53de774c260 */
   --brand-mark-glow: rgba(136, 201, 255, .68);
+  /* #7811 token-family --side sha256=db631500e63e220b47024fa92b9689db8149a7a1f930d6391fe65595ad9e9108 */
   --side-icon-text: rgba(255, 255, 255, .68);
   --sidebar-footer-border: rgba(255, 255, 255, .08);
 
@@ -307,6 +333,7 @@
      색. 값은 치환 전 사용처 리터럴 그대로다. 다섯 테마에서 같은 값을 쓰므로
      :root 하나에 두고 테마 블록에서는 덮지 않는다. 뒤 시트가 덮어쓰는 값도
      이 토큰이 이어받아 덮개를 걷어낼 때 화면이 유지된다. */
+  /* #7811 token-family --ws sha256=5b0314a200a2b91ef5676f42aaeb00fb0ef87c75a4a2b6a89bffe9e76d69c307 */
   --ws-item-text: rgba(244, 247, 251, .66);
   --ws-current-wash: rgba(255, 255, 255, .075);
   --ws-current-glow: rgba(136, 201, 255, .32);
@@ -344,6 +371,7 @@
 
   /* #7811 C2: voice UI(파형 단추·모드 메뉴·통화 판)의 쓰임새 색. 값은 치환 전
      사용처 리터럴 그대로이고 다섯 테마에서 같은 값이므로 :root에만 둔다. */
+  /* #7811 token-family --voice sha256=3b25b2f44ddf9357e59ee157ccd942c0585634504a1e62c8124a0daab5c2a60a */
   --voice-control-border: #bed0dd;
   --voice-accent: #587c97;
   --voice-btn-idle-bg: #eaf2f7;
@@ -372,6 +400,7 @@
   /* #7811 C2: foundation 바탕·크롬의 남은 리터럴을 쓰임새 토큰으로 옮긴다.
      :root 팔레트 정의(--bg·--panel·--accent 등)는 그대로 두고, 실제로 칠하는
      선언만 토큰을 읽는다. 값은 치환 전 리터럴 그대로다. */
+  /* #7811 token-family --foundation sha256=0aa1bdaf07b382688d189d8e140e4997bae536dc2a2fcf3ae55f9eb0b1315704 */
   --foundation-subtle-wash: rgba(255, 255, 255, .045);
   --foundation-body-stop-1: #08090b;
   --foundation-body-stop-2: #0b0c0e;
@@ -411,6 +440,7 @@
 
   /* #7811 C2: projects.css의 쓰임새 색. 값은 치환 전 리터럴 그대로이고 다섯
      테마에서 같은 값이므로 :root에만 둔다. */
+  /* #7811 token-family --project sha256=153a9f94791a20b10b8f20ef9d8e22f8d640fd7edac5d2556a2d31bee4429efd */
   --project-muted-text: #5f6368;
   --project-subtle-wash: rgba(24, 24, 27, 0.06);
   --project-error-text: #a23434;
@@ -436,6 +466,7 @@
      칠해 왔다. 값이 같은 --project-* 토큰을 재사용하고(테마 블록에서 덮지 않는
      :root 전용), 그 팔레트에 없던 두 알파와 이 시트가 직접 소유할 그림자
      하나만 쓰임새 이름으로 새로 만든다. */
+  /* #7811 token-family --outputs sha256=3047701717c4aa6c42d19b63099befb675f42f44a12b80847ab208676e48b120 */
   --outputs-action-hover-wash: rgba(24, 24, 27, 0.05);
   --outputs-content-bg: rgba(24, 24, 27, 0.025);
   --outputs-dialog-shadow: rgba(24, 24, 27, 0.2);
@@ -492,6 +523,7 @@
   --voice-interim-text: #6b6c75;
   --voice-notice-text: #a04139;
   --voice-inline-hint-text: #bd4a40;
+  /* #7811 token-family --starter sha256=27cac40d35f8e32b7734dfb23c318368db6354353efdaac9bb1172b0c7bfdefa */
   --starter-toggle-edge: #d9e1e8;
   --starter-toggle-bg: rgba(247,250,253,.94);
   --starter-toggle-text: #596c7b;
@@ -504,6 +536,7 @@
   /* #7811 C2: settings의 테마 밖 선언에 쓰는 색. 값은 치환 전 리터럴 그대로다.
      --dialog-dim·--auth-panel-border와 값이 같아도 그 토큰들은 테마별 덮개가
      있어 그대로 쓰면 칠해지는 값이 달라지므로 여기서는 덮지 않는다. */
+  /* #7811 token-family --settings sha256=f1f404d81bdb19425e5d79bd07fdb4edc9fa3a5d8c2fbe6703de809742f1456b */
   --settings-selected-text: #fff;
   --settings-selected-shadow: rgba(0,0,0,.12);
   --settings-dialog-dim: rgba(18, 24, 31, .38);
@@ -538,6 +571,7 @@
      어둡 표면을 칠해 온 고정 팔레트라(calendar·standalone 묶음과 같은
      취지). 베일 스케일과 값이 겹치는 곳(.72·.54·.52)은 그 토큰을 그대로
      재사용하고, 알파가 다른 곳은 쓰임새 이름으로 새로 만들었다. */
+  /* #7811 token-family --editorial sha256=253211e31f474a7b5b48e920c39f3dedefee22ec5e14b6f07b3960f5e5aa905b */
   --editorial-glow-top: rgba(255, 255, 255, .055);
   --editorial-glow-bottom: rgba(255, 255, 255, .025);
   --editorial-copy-text: rgba(247, 249, 252, .76);
@@ -572,6 +606,7 @@
      쓰임이 달라 재사용하지 않고 이 시트의 이름으로 새 값을 소유한다.
      카드 fallback(#fafafa)은 --settings-choice-fallback, 실패 상태(#b3261e)는
      --project-danger-text를 그대로 재사용한다(둘 다 :root 전용). */
+  /* #7811 token-family --capability-nav sha256=651250b04fd801f2554ab778307a978a4182f8684488b7dccb6912e0ab11dbd1 */
   --capability-nav-claw-edge: rgba(121, 188, 231, .28);
   --capability-nav-claw-wash: rgba(121, 188, 231, .10);
   --capability-nav-claw-badge-bg: rgba(47, 111, 153, .18);
@@ -591,6 +626,7 @@
      않는다 — 흰 카드 판(.92)·잉크 선(.14/.16)·상태 글자 다섯 색·스크롤바
      회청은 모든 테마에서 같은 값으로 칠해져 온 고정 팔레트라(calendar·
      rich 묶음과 같은 취지). */
+  /* #7811 token-family --standalone sha256=0f5893fbe7c62ef1ee7e72f12894b97cf0cd1f689d05a41ade7068d0669ea9cc */
   --standalone-nav-bg: rgba(121, 188, 231, 0.22);
   --standalone-card-bg: rgba(255, 255, 255, 0.92);
   --standalone-card-hairline: rgba(23, 33, 42, 0.14);
@@ -620,6 +656,7 @@
      값으로 칠해져 온 고정 팔레트라(calendar 묶음과 같은 취지). 베일
      스케일(--surface-veil-*, --line-veil-*)의 알파와 달라 그대로 재사용
      하지 않고 쓰임새 이름으로 새로 만들었다. */
+  /* #7811 token-family --rich sha256=7b273671cffb616e1b338b917f45c08cb75326bdb4884a73a43603c967278dd1 */
   --rich-text: rgba(247, 249, 252, .91);
   --rich-heading-text: #fff;
   --rich-quote-border: rgba(239, 201, 132, .38);
@@ -649,6 +686,7 @@
      값은 치환 전 리터럴 그대로이고 :root에만 둔다 — 다섯 테마에서 같은 값으로
      칠해져 온 고정 색이라 테마 블록이 덮지 않는다. #f7f8fa·#fff는 값이 같은
      기존 :root 토큰을 재사용하고, 테마가 덮는 토큰은 고르지 않았다. */
+  /* #7811 token-family --rich-response sha256=2a952b3e8b1cc24e12fcc366d50ad13c828c76fb9e29c436764fe8026b01ab68 */
   --rich-response-quote-edge: rgba(45, 55, 72, 0.28);
   --rich-response-quote-bg: rgba(45, 55, 72, 0.045);
   --rich-response-rule-edge: rgba(128, 138, 155, 0.5);
@@ -681,6 +719,7 @@
      값은 치환 전 리터럴 그대로이고 :root에만 둔다 — 다섯 테마에서 같은 값으로
      칠해져 온 고정 색이라 테마 블록이 덮지 않는다. .9 흰 값은 값이 같은 기존
      :root 토큰(--ws-input-text)을 재사용했다. */
+  /* #7811 token-family --answer-actions sha256=8004b07891fa2319012bfd64e8b1145df434080f2f41c617cfc6b9aa6e30e43f */
   --answer-actions-avatar-wash: rgba(101, 87, 232, 0.12);
   --answer-actions-avatar-edge: rgba(101, 87, 232, 0.28);
   --answer-actions-time-text: #7b8792;
@@ -694,6 +733,7 @@
   /* #7811 C2 claw-workspace(261124): claw-workspace.css의 고정 리터럴. 값은
      치환 전 그대로이고 :root에만 둔다 — 다섯 테마에서 같은 값으로 칠해져 온
      색이라 테마 블록이 덮지 않는다. 값이 같은 기존 :root 토큰은 없었다. */
+  /* #7811 token-family --workspace sha256=c5f5258a729ff8830c0867402a6f6a7f7bca4bd9510c9a8ae7e6435110802b94 */
   --workspace-canvas-generate-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
   --workspace-canvas-error-edge: rgba(220, 62, 62, 0.22);
   --workspace-canvas-error-wash: rgba(220, 62, 62, 0.04);
@@ -706,6 +746,7 @@
      사용처 리터럴 그대로이고 :root에만 둔다 — 토큰 값이 모든 테마에서 같으니
      칠해지는 값도 테마마다 그대로다. 테마 블록이나 다른 시트가 덮지 않는다. */
   /* 첫 화면(랜딩) */
+  /* #7811 token-family --surfaces sha256=34b361cb38da587e9a04fbdf17cbefb6c5d029e7165001d72105d95e952c4d2b */
   --surfaces-eyebrow-glow: rgba(136, 201, 255, .56);
   --surfaces-hero-title-shadow: rgba(0, 0, 0, .38);
   /* 스타터 카드 */
@@ -771,6 +812,7 @@
      치환 전 선언마다 박혀 있던 리터럴 그대로이고 :root에만 둔다 — 다섯
      테마에서 같은 값으로 칠해져 온 고정 팔레트라 테마 블록이 덮지 않는다.
      오류 문구(#a23434)는 이미 :root 전용인 --project-error-text를 재사용한다. */
+  /* #7811 token-family --attachments sha256=cd5799b10d6ebeaf34947d7f27794c42634b51d0e0f66b2a77f2f6535b052fcd */
   --attachments-card-edge: rgba(18, 31, 51, 0.12);
   --attachments-card-wash: rgba(248, 250, 252, 0.92);
   --attachments-icon-bg: #eef1f5;
@@ -790,6 +832,7 @@
      흰 배경(#fff)은 이미 :root 전용인 --settings-choice-fallback·
      --project-solid-bg를 재사용한다. reference-note 글자는 라이트·home의
      테마 규칙이 !important로 덮지만, 토큰 자체는 테마 블록에 없다. */
+  /* #7811 token-family --documents sha256=b941b6e42c20aa5e52497882d8e18f401a80327f398fa560744a1007b4a3d811 */
   --documents-icon-wash: rgba(26, 29, 33, 0.07);
   --documents-icon-ink: #31343a;
   --documents-reference-note: #72767d;
@@ -807,6 +850,7 @@
      --surface-veil-faint·--surface-veil-panel·--pc-focus·--settings-input-bg를
      재사용하고, 나머지 다섯 값만 이 묶음이 소유한다. 테마가 덮는 토큰은 쓰지
      않았다. */
+  /* #7811 token-family --b66 sha256=e4c3763ca977a1e4e75b1be603b6305f9723d7d34d68e7ff73f32a092fb56a4c */
   --b66-quote-hairline: rgba(127, 127, 127, 0.28);
   --b66-quote-dialog-dim: rgba(0, 0, 0, 0.55);
   --b66-quote-edge: rgba(127,127,127,.3);
@@ -818,6 +862,7 @@
      둔다 — 다섯 테마에서 같은 값으로 칠해져 온 고정 팔레트라 테마 블록이
      덮지 않는다. .1 헤어라인은 이미 :root 전용인
      --rich-response-inner-edge를 재사용한다. */
+  /* #7811 token-family --search-sources sha256=f6d8d15c2d6626e951c67ead7e36ffc3a558ff63fef0b2d726c04622f060ae58 */
   --search-sources-active-edge: rgba(31, 41, 55, 0.42);
   --search-sources-active-wash: rgba(31, 41, 55, 0.07);
   --search-sources-summary-bg: rgba(31, 41, 55, 0.035);
@@ -834,6 +879,7 @@
      :root 전용인 --pc-pairing-pending-bg·--b66-quote-faint-edge·
      --b66-quote-hairline·--control-wash-soft·--control-wash-hover·
      --standalone-nav-bg를 재사용하고, 두 값만 이 묶음이 소유한다. */
+  /* #7811 token-family --library sha256=549dc84be58393c5914a7b02129befedeb34110cb8c85a16f1fe9e46733ef149 */
   --library-tab-active-edge: rgba(47, 111, 153, 0.24);
   --library-dialog-dim: rgba(15, 19, 25, 0.46);
 
@@ -844,6 +890,7 @@
      테마 글자색 그대로라 light·padiem-home·padiem-glass의 계산값을 바꾸지
      않고, dark·cinematic 블록에서만 이 카드의 밝은 판용 잉크로 덮는다.
      소비 선언은 connector-pages.css의 타일 규칙과 상태 줄 규칙 두 곳이다. */
+  /* #7811 token-family --connector sha256=2dfc9e7979e1cb2a2891a0f2783c00116fa62d6ecc49ac3731ecc084fe4612d1 */
   --connector-card-ink: var(--text);
   --connector-card-muted-ink: var(--muted);
 
@@ -851,6 +898,7 @@
      쓴다. light·glass는 판을 바꾸지 않고 글자만 밝게 해 대비를 올린다. */
   --claw-request-bubble-text: var(--user-bubble-text);
   --claw-request-bubble-bg: var(--user-bubble-bg);
+  /* #7811 token-family --styles sha256=14ffab917969e864c54acd7378f0edfa61a916287d9654b7e987ef8a5516c503 */
   --styles-button-focus: 3px solid rgba(101, 87, 232, .24);
   --styles-brand-mark-text: #fff;
   --styles-brand-mark-bg: linear-gradient(135deg, #7768ee, #4f40ce);
@@ -891,6 +939,7 @@
   --styles-sidebar-scrim-bg: rgba(16,16,24,.28);
   --styles-sidebar-shadow: 18px 0 40px rgba(20,20,30,.12);
   --styles-topbar-bg-2: rgba(248,248,251,.94);
+  /* #7811 token-family --admin-models sha256=cd95f1204d7182cfee4620a9bc440d343caf90eb73f1b8aadedf8586114eb642 */
   --admin-models--focus: 3px solid #77a7ff;
   --admin-models-side-bg: #fff;
   --admin-models-brand-symbol-bg: linear-gradient(145deg,#3f79e2,#244caa);
