@@ -18,9 +18,9 @@ STANDALONE_CSS = (STATIC / "standalone-views.css").read_bytes().decode("utf-8", 
 CAPABILITY_CSS = (STATIC / "capability-nav.css").read_bytes().decode("utf-8", errors="replace")
 
 MIX = "color-mix(in srgb, var(--text-deep-ink) 50%, transparent)"
-HAIRLINE = "var(--connector-card-hairline, rgba(23, 33, 42, .14))"
+HAIRLINE = "var(--connector-card-hairline, var(--standalone-card-hairline))"
 # #7811 C2: the dialog mirror's fallback literal moved into a :root token;
-# the view sheet keeps its own literal. Both resolve to the same .14 ink in
+# the view sheet points at its own standalone token. Both resolve to the same .14 ink in
 # every non-glass theme (pinned by the capability-nav token contract).
 HAIRLINE_DIALOG = "var(--connector-card-hairline, var(--capability-nav-connectors-edge))"
 
@@ -70,7 +70,7 @@ def test_other_themes_keep_the_original_hairline() -> None:
             if rule.media is None
             and rule.selectors == ["#connectorsViewBody .capability-card"]]
     assert len(card) == 1
-    assert declaration(card[0], "border-color") == "rgba(23, 33, 42, 0.14)"
+    assert declaration(card[0], "border-color") == "var(--standalone-card-hairline)"
 
 
 def _mix(rule):

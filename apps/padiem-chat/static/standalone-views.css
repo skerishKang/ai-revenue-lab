@@ -49,7 +49,7 @@
 #connectorsNavButton[aria-current="page"],
 #automationNavButton[aria-current="page"] {
   border-color: var(--accent-strong);
-  background: rgba(121, 188, 231, 0.22);
+  background: var(--standalone-nav-bg);
 }
 
 html[data-theme="padiem-glass"] #connectorsNavButton[aria-current="page"],
@@ -144,45 +144,45 @@ html[data-theme="padiem-glass"] body .app-shell:is(
  * page. These rules are additive mirrors of the #connectorsDialog scoped
  * rules in capability-nav.css, which stay untouched. */
 #connectorsViewBody .capability-card {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: rgba(23, 33, 42, 0.14);
+  background: var(--standalone-card-bg);
+  border-color: var(--standalone-card-hairline);
 }
 /* #8022: glass 연결 화면의 카드 경계는 잉크 헤어라인을 뚜렷하게 — 기존
    .14는 흰 판 위에서 사실상 보이지 않았다(감사 261119). 새 리터럴 없이
    기존 잉크 토큰에서 파생한다. */
 #connectorsViewBody .capability-card,
 #connectorsViewBody .connector-retry {
-  border-color: var(--connector-card-hairline, rgba(23, 33, 42, .14));
+  border-color: var(--connector-card-hairline, var(--standalone-card-hairline));
 }
 #connectorsViewBody .connector-retry {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: rgba(23, 33, 42, 0.16);
+  background: var(--standalone-card-bg);
+  border-color: var(--standalone-retry-border);
   color: var(--text-panel-ink);
 }
 #connectorsViewBody .capability-status,
 #connectorsViewBody .capability-card small,
 #connectorsViewBody .capability-soon {
   opacity: 1;
-  color: #3d4c59;
+  color: var(--standalone-subtle-text);
 }
 #connectorsViewBody .capability-workspace,
 #connectorsViewBody .capability-read-state[data-read-state="unavailable"]{
-  color: #3d4c59;
+  color: var(--standalone-subtle-text);
 }
 #connectorsViewBody .capability-card[data-connector-status="connected"] .capability-workspace {
-  color: #1f5f86;
+  color: var(--standalone-connected-text);
 }
 #connectorsViewBody .capability-read-state[data-read-state="pending"] {
-  color: #8a5300;
+  color: var(--standalone-state-pending);
 }
 #connectorsViewBody .capability-read-state[data-read-state="activating"] {
-  color: #175cd3;
+  color: var(--standalone-state-activating);
 }
 #connectorsViewBody .capability-read-state[data-read-state="active"] {
-  color: #16794c;
+  color: var(--standalone-state-active);
 }
 #connectorsViewBody .capability-read-state[data-read-state="failed"] {
-  color: #b3261e;
+  color: var(--standalone-state-failed);
 }
 
 /* Automation rules keep their Claw touch targets and Glass form styling on
@@ -249,17 +249,17 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   overflow-y: auto;
   scrollbar-gutter: stable;
   scrollbar-width: auto;
-  scrollbar-color: rgba(72, 91, 108, .72) rgba(120, 136, 148, .14);
+  scrollbar-color: var(--standalone-scrollbar-thumb) var(--standalone-scrollbar-track);
 }
 .app-shell[data-state="connectors"] .connectors-view::-webkit-scrollbar {
   width: 10px;
 }
 .app-shell[data-state="connectors"] .connectors-view::-webkit-scrollbar-track {
-  background: rgba(120, 136, 148, .14);
+  background: var(--standalone-scrollbar-track);
   border-radius: 99px;
 }
 .app-shell[data-state="connectors"] .connectors-view::-webkit-scrollbar-thumb {
-  background: rgba(72, 91, 108, .72);
+  background: var(--standalone-scrollbar-thumb);
   border: 2px solid transparent;
   background-clip: padding-box;
   border-radius: 99px;
@@ -293,20 +293,20 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   overflow-y: auto;
   scrollbar-gutter: stable;
   scrollbar-width: auto;
-  scrollbar-color: rgba(72,91,108,.72) rgba(120,136,148,.14);
+  scrollbar-color: var(--standalone-scrollbar-thumb) var(--standalone-scrollbar-track);
 }
 .app-shell[data-state="automation"] .automation-view::-webkit-scrollbar { width: 10px; }
 .app-shell[data-state="automation"] .automation-view::-webkit-scrollbar-thumb {
-  background: rgba(72,91,108,.72);
+  background: var(--standalone-scrollbar-thumb);
   border-radius: 99px;
 }
 .app-shell[data-state="automation"] .automation-view .standalone-view-body { gap: 0; }
 .app-shell[data-state="automation"] #clawAutomation {
   margin: 0;
   padding: 14px 18px;
-  border: 1px solid rgba(255,255,255,.48);
+  border: 1px solid var(--standalone-panel-border);
   border-radius: 18px;
-  background: rgba(248,250,251,.28);
+  background: var(--standalone-panel-bg);
 }
 .app-shell[data-state="automation"] #clawAutomation .claw-inbox-header > .claw-inbox-heading {
   display: none;
@@ -403,7 +403,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 }
 .library-item {
   border-color: var(--line);
-  background: var(--card-bg, #fafafa);
+  background: var(--card-bg);
 }
 .app-shell:is([data-state="calendar"],[data-state="connectors"]) :is(.calendar-item,.calendar-record,.capability-card) {
   border-radius: 14px;
@@ -445,14 +445,14 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   padding: 8px 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--card-bg, #fafafa);
+  background: var(--card-bg);
   color: var(--text);
   box-shadow: none;
   font-size: 13px;
   font-weight: 650;
 }
 .app-shell[data-state="settings"] #advancedSettingsBack:hover {
-  background: var(--card-bg, #fafafa);
+  background: var(--card-bg);
   border-color: var(--accent-strong);
 }
 /* #4488: the five-view body gap must actually win over the older per-view
@@ -526,7 +526,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   cursor: pointer;
 }
 .app-shell[data-state="automation"] #clawAutomation .claw-inbox-secondary:hover {
-  background: var(--surface, rgba(255, 255, 255, .76));
+  background: var(--standalone-card-soft-bg);
 }
 .app-shell[data-state="automation"] #clawAutomation .claw-inbox-secondary:focus-visible {
   outline: 3px solid var(--focus-ring);
