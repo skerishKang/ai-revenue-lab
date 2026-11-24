@@ -270,16 +270,16 @@
 .attachment-chip,
 .attachment-preview,
 .project-banner {
-  border-color: rgba(255, 255, 255, .12) !important;
-  background: rgba(255, 255, 255, .045) !important;
-  color: rgba(248, 250, 253, .90) !important;
+  border-color: var(--surfaces-attachment-edge) !important;
+  background: var(--surfaces-card-bg) !important;
+  color: var(--surfaces-card-text) !important;
   box-shadow: inset 0 1px 0 var(--inset-veil-panel) !important;
 }
 
 .attachment-chip .file-icon,
 .document-attachment-icon {
-  color: rgba(255, 255, 255, .74) !important;
-  background: rgba(255, 255, 255, .055) !important;
+  color: var(--ws-attachment-text) !important;
+  background: var(--surfaces-starter-icon-bg) !important;
 }
 
 /* Dialogs / project surfaces ---------------------------------------------- */
@@ -298,18 +298,18 @@
 
 .project-form,
 .saved-output-view {
-  border: 1px solid rgba(255, 255, 255, .14);
+  border: 1px solid var(--surfaces-starter-border);
   background:
-    linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)),
+    linear-gradient(145deg, var(--surface-veil-soft), var(--ws-form-wash)),
     var(--surface-panel-solid) !important;
-  color: rgba(248, 250, 253, .94);
-  box-shadow: 0 34px 110px rgba(0, 0, 0, .52);
+  color: var(--surfaces-starter-text);
+  box-shadow: 0 34px 110px var(--surfaces-project-shadow);
   backdrop-filter: blur(30px);
 }
 
 .project-dialog-header p,
 .saved-output-header p {
-  color: rgba(255, 255, 255, .62) !important;
+  color: var(--ws-dialog-kicker-text) !important;
   font-family: var(--font-label);
   letter-spacing: .15em;
 }
@@ -317,9 +317,9 @@
 .project-form input,
 .project-form textarea,
 .saved-output-title-input {
-  border-color: rgba(255, 255, 255, .13) !important;
-  background: rgba(255, 255, 255, .055) !important;
-  color: #fff !important;
+  border-color: var(--surfaces-form-edge) !important;
+  background: var(--surfaces-starter-icon-bg) !important;
+  color: var(--foundation-strong-text) !important;
 }
 
 .project-form input::placeholder,
@@ -330,9 +330,9 @@
 
 .project-primary,
 .saved-output-primary {
-  border-color: rgba(255, 255, 255, .20) !important;
+  border-color: var(--ws-control-hover-edge-strong) !important;
   background: var(--surface-veil-dim) !important;
-  color: rgba(255, 255, 255, .92) !important;
+  color: var(--text-veil-strong) !important;
 }
 
 .project-secondary,
@@ -342,19 +342,19 @@
 .section-add-button,
 .project-file-add,
 .project-banner-actions button {
-  border-color: rgba(255, 255, 255, .12) !important;
-  background: rgba(255, 255, 255, .055) !important;
-  color: rgba(255, 255, 255, .72) !important;
+  border-color: var(--surfaces-card-border) !important;
+  background: var(--surfaces-starter-icon-bg) !important;
+  color: var(--editorial-summary-text) !important;
 }
 
 .saved-output-danger {
-  color: #ffb7b7 !important;
+  color: var(--surfaces-retry-text) !important;
 }
 
 /* Scrollbars --------------------------------------------------------------- */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, .20) transparent;
+  scrollbar-color: var(--ws-control-hover-edge-strong) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -369,7 +369,7 @@
 *::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, .18);
+  background: var(--surfaces-scrollbar-thumb);
   background-clip: padding-box;
 }
 

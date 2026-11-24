@@ -1,12 +1,12 @@
-"""#7811 C2 surfaces round 1 — first-screen, conversation and composer palette tokens.
+"""#7811 C2 surfaces — first-screen/conversation (round 1) and attachment/dialog/scrollbar (round 2).
 
-``padiem-surfaces.css`` paints these 45 declarations with a fixed light palette
-in all five themes. The 50 new tokens live only in ``:root`` of
-``padiem-tokens.css``; every theme keeps the same computed value. This pins
-each declared value and the exact token the sheet must read, so a later
-theme override or a stray literal cannot silently repaint these surfaces.
-
-Attachments, dialogs and the scrollbar are round 2 and stay literal here.
+``padiem-surfaces.css`` paints these 66 declarations with a fixed light palette
+in all five themes. The 54 new tokens live only in ``:root`` of
+``padiem-tokens.css``; every theme keeps the same computed value. Round two
+reuses 14 existing root-only tokens and adds four new ones for values with no
+matching usage token. This pins each declared value and the exact token the
+sheet must read, so a later theme override or a stray literal cannot silently
+repaint these surfaces.
 """
 
 from __future__ import annotations
@@ -66,7 +66,22 @@ ROOT_TOKENS = {
     "--surfaces-send-hover-bg": "#fff",
     "--surfaces-send-hover-shadow": "rgba(0, 0, 0, .28)",
     "--surfaces-note-text": "rgba(255, 255, 255, .38)",
+    # 2차 — values with no existing usage token of their own.
+    "--surfaces-attachment-edge": "rgba(255, 255, 255, .12)",
+    "--surfaces-project-shadow": "rgba(0, 0, 0, .52)",
+    "--surfaces-form-edge": "rgba(255, 255, 255, .13)",
+    "--surfaces-scrollbar-thumb": "rgba(255, 255, 255, .18)",
 }
+
+#: 2차 재사용 — all already defined in :root and not repainted by any theme.
+REUSED_TOKENS = frozenset({
+    "--surfaces-card-border", "--surfaces-card-bg", "--surfaces-card-text",
+    "--ws-attachment-text", "--surfaces-starter-icon-bg",
+    "--surfaces-starter-border", "--ws-form-wash", "--surfaces-starter-text",
+    "--ws-dialog-kicker-text", "--foundation-strong-text",
+    "--ws-control-hover-edge-strong", "--text-veil-strong",
+    "--editorial-summary-text", "--surfaces-retry-text",
+})
 
 DECLARATIONS = (
     (".eyebrow::before", "box-shadow",
@@ -159,6 +174,52 @@ DECLARATIONS = (
      "0 10px 30px var(--surfaces-send-hover-shadow)", "0 10px 30px rgba(0, 0, 0, .28)"),
     (".composer-note", "color",
      "var(--surfaces-note-text) !important", "rgba(255, 255, 255, .38) !important"),
+    # 2차 — attachment chips and file icons.
+    (".attachment-chip", "border-color",
+     "var(--surfaces-attachment-edge) !important", "rgba(255, 255, 255, .12) !important"),
+    (".attachment-chip", "background",
+     "var(--surfaces-card-bg) !important", "rgba(255, 255, 255, .045) !important"),
+    (".attachment-chip", "color",
+     "var(--surfaces-card-text) !important", "rgba(248, 250, 253, .90) !important"),
+    (".attachment-chip .file-icon", "color",
+     "var(--ws-attachment-text) !important", "rgba(255, 255, 255, .74) !important"),
+    (".attachment-chip .file-icon", "background",
+     "var(--surfaces-starter-icon-bg) !important", "rgba(255, 255, 255, .055) !important"),
+    # 2차 — project/saved-output dialogs.
+    (".project-form", "border",
+     "1px solid var(--surfaces-starter-border)", "1px solid rgba(255, 255, 255, .14)"),
+    (".project-form", "background",
+     "linear-gradient(145deg, var(--surface-veil-soft), var(--ws-form-wash)), var(--surface-panel-solid) !important",
+     "linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)), var(--surface-panel-solid) !important"),
+    (".project-form", "color",
+     "var(--surfaces-starter-text)", "rgba(248, 250, 253, .94)"),
+    (".project-form", "box-shadow",
+     "0 34px 110px var(--surfaces-project-shadow)", "0 34px 110px rgba(0, 0, 0, .52)"),
+    (".project-dialog-header p", "color",
+     "var(--ws-dialog-kicker-text) !important", "rgba(255, 255, 255, .62) !important"),
+    (".project-form input", "border-color",
+     "var(--surfaces-form-edge) !important", "rgba(255, 255, 255, .13) !important"),
+    (".project-form input", "background",
+     "var(--surfaces-starter-icon-bg) !important", "rgba(255, 255, 255, .055) !important"),
+    (".project-form input", "color",
+     "var(--foundation-strong-text) !important", "#fff !important"),
+    (".project-primary", "border-color",
+     "var(--ws-control-hover-edge-strong) !important", "rgba(255, 255, 255, .20) !important"),
+    (".project-primary", "color",
+     "var(--text-veil-strong) !important", "rgba(255, 255, 255, .92) !important"),
+    (".project-secondary", "border-color",
+     "var(--surfaces-card-border) !important", "rgba(255, 255, 255, .12) !important"),
+    (".project-secondary", "background",
+     "var(--surfaces-starter-icon-bg) !important", "rgba(255, 255, 255, .055) !important"),
+    (".project-secondary", "color",
+     "var(--editorial-summary-text) !important", "rgba(255, 255, 255, .72) !important"),
+    (".saved-output-danger", "color",
+     "var(--surfaces-retry-text) !important", "#ffb7b7 !important"),
+    # 2차 — scrollbars.
+    ("*", "scrollbar-color",
+     "var(--ws-control-hover-edge-strong) transparent", "rgba(255, 255, 255, .20) transparent"),
+    ("*::-webkit-scrollbar-thumb", "background",
+     "var(--surfaces-scrollbar-thumb)", "rgba(255, 255, 255, .18)"),
 )
 
 COLOR_RX = re.compile(r"#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(", re.I)
@@ -169,7 +230,9 @@ def test_root_tokens_hold_the_pre_change_literals():
     found, overridden = token_values()
     for name, expected in ROOT_TOKENS.items():
         assert found.get(name) == expected, f"{name} = {found.get(name)}"
-    assert not (set(ROOT_TOKENS) & overridden), "a theme block repaints a round-one token"
+    assert not (set(ROOT_TOKENS) & overridden), "a theme block repaints a surfaces token"
+    assert not (REUSED_TOKENS & overridden), "round two reused a theme-overridden token"
+    assert REUSED_TOKENS <= set(found), "round two reused an undefined token"
 
 
 def test_every_declaration_reads_the_expected_token_value():
@@ -182,7 +245,7 @@ def test_every_declaration_reads_the_expected_token_value():
         assert before not in values, (selector, prop, values)
 
 
-def test_round_one_declarations_carry_no_color_literals():
+def test_all_declarations_carry_no_color_literals():
     for _selector, _prop, after, _before in DECLARATIONS:
         assert not COLOR_RX.search(after), after
 

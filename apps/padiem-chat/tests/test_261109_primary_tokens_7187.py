@@ -582,8 +582,9 @@ class TestPrimaryTokens(unittest.TestCase):
                 "--settings-input-edge", "--settings-input-bg",
                 "--settings-action-hover-bg", "--settings-action-hover-edge",
                 "--settings-guide-bg"}
-              # #7811 C2 surfaces(261124) 1차: 첫 화면·대화·입력창 색 토큰 50개.
-              # 값·소비 선언은 test_261124_surfaces_palette_tokens_7811.py가 고정한다.
+              # #7811 C2 surfaces(261124): 1차 50개 + 2차 신규 3개. 재사용 14개는
+              # 기존 가족에 이미 들어 있다. 값·소비 선언은
+              # test_261124_surfaces_palette_tokens_7811.py가 고정한다.
               | {
                  "--surfaces-eyebrow-glow",
                  "--surfaces-hero-title-shadow",
@@ -635,6 +636,10 @@ class TestPrimaryTokens(unittest.TestCase):
                  "--surfaces-send-hover-bg",
                  "--surfaces-send-hover-shadow",
                  "--surfaces-note-text",
+                 "--surfaces-attachment-edge",
+                 "--surfaces-project-shadow",
+                 "--surfaces-form-edge",
+                 "--surfaces-scrollbar-thumb",
                  },
             "no stray token: the file holds the documented families only")
         # #7187 반경 스케일(261115): the border-radius scale joined the token

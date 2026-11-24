@@ -1,0 +1,121 @@
+{
+  "sheet": "padiem-surfaces.css",
+  "round": "#7811 C2 2차 — 첨부·대화상자·스크롤바 21선언",
+  "base": "37c01b5c6",
+  "audit": {
+    "css_color_literals": {
+      "before": 1065,
+      "after": 1044,
+      "delta": -21
+    },
+    "css_color_literals_unthemed": {
+      "before": 404,
+      "after": 383,
+      "delta": -21
+    },
+    "css_important": {
+      "before": 518,
+      "after": 518,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 106,
+      "after": 106,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4385,
+      "after": 4385,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 795,
+      "after": 795,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": [
+      "--surfaces-attachment-edge",
+      "--surfaces-project-shadow",
+      "--surfaces-form-edge",
+      "--surfaces-scrollbar-thumb"
+    ],
+    "reused": [
+      "--surfaces-card-border",
+      "--surfaces-card-bg",
+      "--surfaces-card-text",
+      "--ws-attachment-text",
+      "--surfaces-starter-icon-bg",
+      "--surfaces-starter-border",
+      "--ws-form-wash",
+      "--surfaces-starter-text",
+      "--ws-dialog-kicker-text",
+      "--foundation-strong-text",
+      "--ws-control-hover-edge-strong",
+      "--text-veil-strong",
+      "--surface-veil-strong",
+      "--surfaces-retry-text"
+    ],
+    "definition": "padiem-tokens.css :root surfaces 묶음. 새 토큰 4개 모두 테마 블록이 덮지 않는다.",
+    "reuse_rule": "값이 같은 기존 :root 토큰을 먼저 재사용했다. 테마가 덮는 토큰은 재사용하지 않았다(계약 시험이 재사용 목록의 :root 전용을 고정)."
+  },
+  "verification": {
+    "computed": {
+      "targets": 21,
+      "themes": 5,
+      "checked": 105,
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "combos": 30,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "screens": [
+        "attachment",
+        "dialog",
+        "scrollbar"
+      ],
+      "nonzero": [],
+      "report": "compare_report.json",
+      "captures": "captures/"
+    },
+    "control": {
+      "combos": 30,
+      "nonzero": [],
+      "report": "control_report.json",
+      "scope": "scope_report.json"
+    },
+    "tamper": {
+      "token": "--surfaces-attachment-edge",
+      "mutation": "rgba(255, 255, 255, .12)->#ff00ff",
+      "theme": "padiem-glass",
+      "screen": "attachment",
+      "viewport": "1440x950",
+      "pixel": 434,
+      "report": "tamper_report.json",
+      "images": [
+        "captures/tamper_clean.png",
+        "captures/tamper_mutated.png"
+      ]
+    },
+    "tests": "신규 계약·토큰 목록 11 passed, 래칫·구조·대비·관련 계약 103 passed",
+    "ratchet": "base 대비 head: 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −21."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 최종 계산값·픽셀·대비는 변하지 않는다.",
+    "대화상자의 일부 선언은 padiem-cinematic-workspace.css가 뒤에서 같은 값/토큰으로 덮어써 칠해지지 않는다. 변조 검출은 실제로 칠하는 --surfaces-attachment-edge(첨부 카드 경계)로 했다.",
+    "새 !important 없음. 새 색상 리터럴은 토큰 정의에만 있다.",
+    "light·dark·glass 렌더 기하(첨부 카드 143x44, 대화상자 520x529)와 핵심 계산 색을 수치로 확인했다."
+  ]
+}

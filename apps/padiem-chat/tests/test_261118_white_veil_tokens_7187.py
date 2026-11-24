@@ -77,6 +77,8 @@ ROOT_TOKENS = {
 #: #7811 C2 surfaces 1차가 이 시트에서 가져간 쓰임새 토큰 (되돌리기 검증용).
 SURFACES_TOKENS = {
     "--surfaces-starter-hover-wash": "rgba(255, 255, 255, .105)",
+    # 2차: 베일 그라디언트의 .018 꼬리도 전용 쓰임새 토큰이 소유한다.
+    "--ws-form-wash": "rgba(255, 255, 255, .018)",
 }
 
 #: 1차에서 토큰으로 바꾼 선언: (속성, 치환 전 값, 치환 후 값). 공백 정규화 비교.
@@ -207,7 +209,8 @@ CHANGED = {
     "padiem-surfaces.css": [
         ("background",
          "linear-gradient(145deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .018)), rgba(8, 9, 11, .97) !important",
-         "linear-gradient(145deg, var(--surface-veil-soft), rgba(255, 255, 255, .018)), var(--surface-panel-solid) !important"),
+         # #7811 C2 surfaces 2차: .018 꼬리는 전용 쓰임새 토큰으로 옮겼다.
+         "linear-gradient(145deg, var(--surface-veil-soft), var(--ws-form-wash)), var(--surface-panel-solid) !important"),
         ("background", "rgba(255, 255, 255, .05)", "var(--surface-veil-faint)"),
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
         ("background", "rgba(255, 255, 255, .72)", "var(--surface-veil-strong)"),
