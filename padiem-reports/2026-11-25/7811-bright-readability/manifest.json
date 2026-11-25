@@ -1,0 +1,119 @@
+{
+  "issue": 7811,
+  "scope": "C4 bright-readability.css cleanup",
+  "base_commit": "c328cfaf3ba1cf4b75c2d8712c04de7f9dc204f4",
+  "head_commit": "8446c9bd3eddf7ce1c5fbbfaa4174d82955cbe48",
+  "measurement_host": "COM2 via ssh comp2, headless Chromium, local HTTP with proxy bypass",
+  "measurements": {
+    "latest_main_computed_5themes_2widths": 10,
+    "latest_main_pixel_5themes_2widths": 10,
+    "latest_main_control_5themes_2widths": 10,
+    "latest_main_mutations": 2,
+    "supplemental_pre_cleanup_computed": 160,
+    "supplemental_pre_cleanup_pixel": 130,
+    "supplemental_pre_cleanup_control": 130
+  },
+  "results": {
+    "computed_diffs": 0,
+    "pixel_diffs": 0,
+    "control_diffs": 0,
+    "mutation_detected": 2
+  },
+  "audit": {
+    "css_rules": {
+      "before": 4353,
+      "after": 4351,
+      "delta": -2
+    },
+    "css_themed_rules": {
+      "before": 769,
+      "after": 767,
+      "delta": -2
+    },
+    "css_important": {
+      "before": 371,
+      "after": 369,
+      "delta": -2
+    },
+    "css_themed_important": {
+      "before": 86,
+      "after": 84,
+      "delta": -2
+    },
+    "css_color_literals": {
+      "before": 910,
+      "after": 908,
+      "delta": -2
+    },
+    "css_color_literals_unthemed": {
+      "before": 272,
+      "after": 272,
+      "delta": 0
+    },
+    "css_rules_by_file/padiem-themes.css": {
+      "before": 113,
+      "after": 113,
+      "delta": 0
+    },
+    "css_important_by_file/padiem-themes.css": {
+      "before": 13,
+      "after": 13,
+      "delta": 0
+    },
+    "css_rules_by_file/padiem-bright-readability.css": {
+      "before": 23,
+      "after": 21,
+      "delta": -2
+    },
+    "css_important_by_file/padiem-bright-readability.css": {
+      "before": 13,
+      "after": 11,
+      "delta": -2
+    }
+  },
+  "screenshots": [
+    {
+      "file": "cinematic_after.png",
+      "sha256": "f81d9c5ff5c990487e9909f00adfe98ad59e4192f8a5160a125898f805557466",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "cinematic_before.png",
+      "sha256": "f81d9c5ff5c990487e9909f00adfe98ad59e4192f8a5160a125898f805557466",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "light_after.png",
+      "sha256": "38da597bf32b663e5d5e857ed15e1e053cf5d6159e7a586fdcb74060185ed7a3",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "light_before.png",
+      "sha256": "38da597bf32b663e5d5e857ed15e1e053cf5d6159e7a586fdcb74060185ed7a3",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "tamper_after.png",
+      "sha256": "2851df346b4ecf748a4cc9edff9bfe70b1099aaf2da9911da6565d6606941508",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "tamper_before.png",
+      "sha256": "f81d9c5ff5c990487e9909f00adfe98ad59e4192f8a5160a125898f805557466",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "tamper_diff.png",
+      "sha256": "10414310dbf3e090cc437c985eb0106e3d38a6bb6b5155de10d8dd86e8569785",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "background_url_normalization": "Only background image origin host/port; path and file preserved"
+}

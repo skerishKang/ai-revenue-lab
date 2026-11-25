@@ -80,26 +80,15 @@ html[data-theme="cinematic"] .sidebar .section-heading-row h2 {
   letter-spacing: .10em;
 }
 
-/* Cinematic distinction ----------------------------------------------------
+/* Cinematic distinction: base backgrounds moved into padiem-themes.css. ----
  * DARK is a flat neutral-charcoal utility mode (see padiem-themes.css).
  * CINEMATIC owns the filmic layer: an unmistakable cool-blue / warm-gold
  * atmospheric split, deeper blue-black canvas, vignette and glass depth —
  * while preserving the same DOM, layout and dark-surface readability
  * contract. (#1273) */
-html[data-theme="cinematic"] body {
-  background:
-    radial-gradient(circle at 76% 22%, rgba(108,190,255,.28), transparent 24%),
-    radial-gradient(circle at 14% 78%, rgba(239,201,132,.20), transparent 27%),
-    radial-gradient(circle at 58% 44%, rgba(225,241,255,.075), transparent 30%),
-    linear-gradient(135deg, #050810 0%, #0a101c 46%, #030509 100%) !important;
-}
 
-html[data-theme="cinematic"] body::before {
-  background:
-    linear-gradient(180deg, rgba(4,8,14,.10), rgba(0,0,0,.01) 42%, rgba(0,0,0,.44)),
-    radial-gradient(circle at 80% 30%, rgba(136,201,255,.08), transparent 34%),
-    radial-gradient(circle at 18% 70%, rgba(239,201,132,.06), transparent 36%) !important;
-}
+
+
 
 html[data-theme="cinematic"] .sidebar {
   background:
