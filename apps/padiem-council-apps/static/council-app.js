@@ -394,17 +394,21 @@
       options.pid, options.name, options.text, "text/plain", options.kind,
     );
     if (first.failure) return first;
-    if (!first.conflict) return { file: first.file };
+    if (!first.conflict) { markSaved(); return { file: first.file }; }
     const files = await listProjectFiles(options.pid);
     const suggested = nextFreeName(options.name, files.map((f) => f.name));
     const choice = await askSaveChoice(options.anchor, options.name, suggested);
     if (choice === "overwrite") {
       const replaced = await overwriteProjectFile(options.pid, first.conflict.id, options.text, options.kind);
-      return replaced.failure ? replaced : { file: replaced.file };
+      if (replaced.failure) return replaced;
+      markSaved();
+      return { file: replaced.file };
     }
     if (choice === "new") {
       const second = await saveProjectFile(options.pid, suggested, options.text, "text/plain", options.kind);
-      return second.failure ? second : { file: second.file };
+      if (second.failure) return second;
+      markSaved();
+      return { file: second.file };
     }
     return { none: true };
   }
@@ -3286,18 +3290,18 @@
     if (session.bound) return;
     document.querySelectorAll(".council-card").forEach((card) => {
       card.addEventListener("click", (event) => {
+        const tool = card.dataset.tool || (card.id || "").replace(/^council-/, "");
+        if (TOOLS.indexOf(tool) < 0 || session.selected === tool) return;
         let node = event && event.target;
         const tags = ["BUTTON", "A", "INPUT", "TEXTAREA", "SELECT", "LABEL"];
-        let interactive = false;
         while (node && node !== card) {
-          if (tags.indexOf(String(node.tagName || "").toUpperCase()) >= 0) { interactive = true; break; }
+          const cls = typeof node.className === "string" ? node.className : "";
+          if (cls.indexOf("council-card-body") >= 0) return;
+          if (tags.indexOf(String(node.tagName || "").toUpperCase()) >= 0) return;
           node = node.parentElement;
         }
-        if (interactive) return;
-        const tool = card.dataset.tool || (card.id || "").replace(/^council-/, "");
-        if (TOOLS.indexOf(tool) < 0) return;
         if (!session.signedIn) { openLoginHere(tool); return; }
-        applySelection(session.selected === tool ? null : tool, true);
+        applySelection(tool, true);
       });
     });
     cardButtons().forEach((button) => {
@@ -3670,9 +3674,8 @@
   }
 
   async function init() {
-    if (!session.unloadBound) {
+    if (!session.unloadBound && typeof window.addEventListener === "function") {
       session.unloadBound = true;
-      if (typeof window.addEventListener !== "function") return;
       window.addEventListener("beforeunload", (event) => {
         if (!councilUnsaved) return undefined;
         const message = "저장하지 않은 결과가 있습니다. 페이지를 떠나시겠습니까?";

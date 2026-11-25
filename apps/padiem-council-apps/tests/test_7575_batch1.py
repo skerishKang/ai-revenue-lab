@@ -46,12 +46,17 @@ def test_23_markdown_export_uses_document_styles():
     assert "###" not in section and "**" not in section and "* 신호등" not in section
     assert 'charPrIDRef="2"' in section, "제목/소제목 스타일이 쓰여야 한다"
     assert 'charPrIDRef="3"' in section, "굵게가 남아야 한다"
+    list_paras = [p for p in section.split("<hp:p ") if "신호등 설치 건" in p]
+    assert list_paras and 'charPrIDRef="2"' not in list_paras[0], "목록은 제목 스타일이 아니다"
+    assert "• " in list_paras[0], list_paras[0][:200]
     ET.fromstring(section)
     header = hwpx.read("Contents/header.xml").decode("utf-8")
     assert header.count("<hh:charPr ") == 4, "본문·제목·소제목·굵은 글자 네 가지"
     docx = _zip(seen["markdown"]["docx"]).read("word/document.xml").decode("utf-8")
     assert "###" not in docx and "**" not in docx
     assert "Heading2" in docx and "ListParagraph" in docx
+    list_paras = [p for p in docx.split("<w:p>") if "신호등 설치 건" in p]
+    assert list_paras and 'w:val="28"' not in list_paras[0], list_paras[0][:200]
 
 
 def test_23_every_export_rides_the_same_converter():
@@ -146,3 +151,28 @@ def test_27_activity_rows_show_meeting_name_and_date():
 def test_4_copy_feedback_still_exists():
     assert "function wireCopy(" in JS
     assert "복사됨" in JS
+
+
+def test_review_1_open_tool_body_click_keeps_the_tool_open():
+    seen = run("card_click_fix")
+    assert seen["opened"] == "speech", seen
+    assert seen["afterBodyClick"] == "speech", seen
+    assert seen["afterClose"] is None, seen
+    assert seen["afterHeadingClick"] == "meeting", seen
+
+
+def test_review_2_beforeunload_only_before_a_save():
+    seen = run("unsaved_fix")
+    for tool in ("speech", "meeting", "book"):
+        assert seen[tool + "Generated"] is True, (tool, seen)
+        assert seen[tool + "Saved"] is False, (tool, seen)
+
+
+def test_review_4_init_continues_without_a_window_hook():
+    assert 'if (!session.unloadBound && typeof window.addEventListener === "function")' in JS
+    assert "if (typeof window.addEventListener !== \"function\") return;" not in JS
+
+
+def test_review_5_export_comment_uses_the_current_issue():
+    assert "#8740" not in EXPORT_JS
+

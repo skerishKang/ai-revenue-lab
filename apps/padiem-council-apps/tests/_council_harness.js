@@ -453,6 +453,12 @@ class FakeFileReader {
 }
 
 function spawnSession(windowState = {}) {
+  if (typeof windowState.addEventListener !== "function") {
+    windowState._listeners = windowState._listeners || {};
+    windowState.addEventListener = (type, fn) => {
+      (windowState._listeners[type] = windowState._listeners[type] || []).push(fn);
+    };
+  }
   const root = new N("html");
   const byId = {};
   const mk = (tag, id, cls) => {
@@ -549,6 +555,9 @@ function spawnSession(windowState = {}) {
   ["speech", "sns", "meeting"].forEach((tool) => {
     const section = mk("section", "council-" + tool, "council-card");
     section.dataset.tool = tool;
+    const heading = mk("h2");
+    heading.textContent = tool;
+    section.append(heading);
     const button = mk("button", null, "council-card-select");
     button.type = "button";
     button.dataset.tool = tool;
@@ -2449,6 +2458,78 @@ const SCENARIOS = {
     return out;
   },
 
+  async card_click_fix() {
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const session = spawnSession();
+    const api = session.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(20);
+    const cardFor = (tool) => session.root.querySelectorAll(".council-card")
+      .find((c) => (c.dataset.tool || "") === tool || c.id === "council-" + tool);
+    const selectFor = (tool) => session.root.querySelectorAll(".council-card-select")
+      .find((b) => b.dataset.tool === tool);
+    await selectFor("speech").dispatch("click");
+    await sleep(20);
+    const opened = api.state().selected;
+    const body = find(session, "councilSpeechBody");
+    await body.dispatch("click");
+    await sleep(20);
+    const afterBodyClick = api.state().selected;
+    await selectFor("speech").dispatch("click");
+    await sleep(20);
+    const afterClose = api.state().selected;
+    const heading = cardFor("meeting").querySelectorAll("h2")[0];
+    await heading.dispatch("click");
+    await sleep(20);
+    return { opened, afterBodyClick, afterClose, afterHeadingClick: api.state().selected, pageErrors };
+  },
+  async unsaved_fix() {
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    stored("회의 일시: 2026-11-01T10:00\n안건 확인");
+    const blocked = (session) => {
+      const fns = (session.ctx.window._listeners && session.ctx.window._listeners.beforeunload) || [];
+      const evt = { returnValue: "", preventDefault() { evt.blocked = true; } };
+      fns.forEach((fn) => fn(evt));
+      return evt.blocked === true || evt.returnValue !== "";
+    };
+    const out = {};
+    let s = spawnSession();
+    await s.ctx.window.PadiemCouncilApps.init();
+    await sleep(20);
+    find(s, "councilSpeechForm").querySelector("[name=event]").value = "저장 확인 행사";
+    await find(s, "councilSpeechForm").dispatch("submit");
+    await sleep(20);
+    out.speechGenerated = blocked(s);
+    await find(s, "councilSpeechSave").dispatch("click");
+    await sleep(30);
+    out.speechSaved = blocked(s);
+
+    s = spawnSession();
+    await s.ctx.window.PadiemCouncilApps.init();
+    await sleep(20);
+    const meetingForm = find(s, "councilMeetingForm");
+    meetingForm.querySelector("[name=title]").value = "저장 확인 회의";
+    meetingForm.querySelector("[name=content]").value = "안건 확인";
+    await meetingForm.dispatch("submit");
+    await sleep(20);
+    out.meetingGenerated = blocked(s);
+    await find(s, "councilMeetingSave").dispatch("click");
+    await sleep(30);
+    out.meetingSaved = blocked(s);
+
+    s = spawnSession();
+    await s.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    const bookCheck = find(s, "councilMeetingArchive").querySelectorAll(".council-book-check")[0];
+    bookCheck.checked = true;
+    await find(s, "councilBookGenerate").dispatch("click");
+    await sleep(20);
+    out.bookGenerated = blocked(s);
+    await find(s, "councilBookSave").dispatch("click");
+    await sleep(30);
+    out.bookSaved = blocked(s);
+    return { ...out, alerts, pageErrors };
+  },
   async pc_import() {
     // 2026-11-02: 축사·SNS 참고 글의 "내 PC에서 가져오기"가 문서까지 잡는다.
     // 텍스트(.txt·.md)는 기존 /api/pc/reference 읽기, 문서(.hwpx·.docx·.pdf)는

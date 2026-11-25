@@ -129,7 +129,7 @@
         if (blocks.length && blocks[blocks.length - 1].kind !== "blank") blocks.push({ kind: "blank" });
         return;
       }
-      // #8740: markdown separators are layout, not text. `---` is a blank line.
+      // #7575: markdown separators are layout, not text. `---` is a blank line.
       if (/^\s*(?:---+|___+|\*\*\*+)\s*$/.test(line)) {
         if (blocks.length && blocks[blocks.length - 1].kind !== "blank") blocks.push({ kind: "blank" });
         first = false;
@@ -143,10 +143,12 @@
         first = false;
         return;
       }
-      const mdList = line.match(/^\s*(?:[*+-]|\d+[.)])\s+(.*)$/);
+      const mdList = line.match(/^\s*([*+-]|\d+[.])\s+(.*)$/);
       if (mdList && !(first && opts.firstLineTitle)) {
-        const runs = inlineRuns(mdList[1].trim());
-        blocks.push({ kind: "list", text: runs.text, bold: runs.bold });
+        const runs = inlineRuns(mdList[2].trim());
+        const marker = /^\d+[.]$/.test(mdList[1]) ? mdList[1] + " " : "• ";
+        const shifted = runs.bold.map(([a, b]) => [a + marker.length, b + marker.length]);
+        blocks.push({ kind: "list", text: marker + runs.text, bold: shifted });
         frontMatter = false;
         first = false;
         return;
@@ -284,7 +286,7 @@
         titleCarried = true;
         return;
       }
-      const kind = block.kind === "list" ? "heading" : block.kind;
+      const kind = block.kind;
       const runs = block.bold && block.bold.length
         ? runsXml(block.text || "", block.bold) : [{ char: "0", text: block.text || "" }];
       const runXml = runs.map((r) => '<hp:run charPrIDRef="' + r.char + '"><hp:t>' + escapeXml(r.text) + '</hp:t></hp:run>').join("");
@@ -348,9 +350,12 @@
     if (block.kind === "title") {
       return '<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="36"/></w:rPr><w:t>' + escapeXml(block.text || "") + '</w:t></w:r></w:p>';
     }
-    if (block.kind === "heading" || block.kind === "list") {
+    if (block.kind === "list") {
+      return '<w:p><w:pPr><w:pStyle w:val="ListParagraph"/></w:pPr>' + body + '</w:p>';
+    }
+    if (block.kind === "heading") {
       const styled = runs.map((r) => '<w:r><w:rPr><w:b/><w:sz w:val="28"/></w:rPr><w:t>' + escapeXml(r.text) + '</w:t></w:r>').join("");
-      return '<w:p><w:pPr><w:pStyle w:val="' + (block.kind === "list" ? "ListParagraph" : "Heading2") + '"/></w:pPr>' + styled + '</w:p>';
+      return '<w:p><w:pPr><w:pStyle w:val="Heading2"/></w:pPr>' + styled + '</w:p>';
     }
     if (block.kind === "period") {
       return '<w:p><w:r><w:rPr><w:i/><w:color w:val="555555"/></w:rPr><w:t>' + escapeXml(block.text || "") + '</w:t></w:r></w:p>';
