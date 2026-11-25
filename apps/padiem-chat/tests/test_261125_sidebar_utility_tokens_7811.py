@@ -31,13 +31,13 @@ DECLARATIONS = (
     (".account-avatar", "background",
      "var(--calendar-visual-bg)", "rgba(255,255,255,.62)"),
     (".sidebar-account .account-avatar", "color",
-     "var(--sidebar-utility-avatar-ink) !important", "#17324a !important"),
+     "var(--sidebar-utility-avatar-ink)", "#17324a"),
     (".sidebar-account .account-avatar", "background-color",
-     "var(--calendar-paper) !important", "#ffffff !important"),
+     "var(--calendar-paper)", "#ffffff"),
     (".sidebar-account .account-avatar", "border-color",
-     "var(--sidebar-utility-avatar-edge) !important", "#52677a !important"),
+     "var(--sidebar-utility-avatar-edge)", "#52677a"),
     ('.sidebar-account[data-account-state="expired"] .account-avatar', "color",
-     "var(--sidebar-utility-expired-ink) !important", "#7f1d1d !important"),
+     "var(--sidebar-utility-expired-ink)", "#7f1d1d"),
 )
 
 COLOR_RX = re.compile(r"#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(", re.I)
