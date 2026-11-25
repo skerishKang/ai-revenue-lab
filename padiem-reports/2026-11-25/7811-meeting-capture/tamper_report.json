@@ -1,0 +1,8 @@
+{
+  "phase": "tamper",
+  "token": "--meeting-capture-panel-edge",
+  "mutation": "rgba(128,128,128,.28)→rgba(255,0,0,1)",
+  "screen": "meeting-capture",
+  "pixel": 2938,
+  "seconds": 14.8
+}
