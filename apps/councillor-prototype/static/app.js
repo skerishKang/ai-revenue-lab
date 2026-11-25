@@ -468,6 +468,48 @@ function stepLightbox(delta) {
   renderLightbox();
 }
 
+// #8732: share the canonical activity URL — without the search query.
+function initActivityShare() {
+  const button = document.getElementById("activityShare");
+  const status = document.getElementById("shareStatus");
+  if (!button) return;
+  button.hidden = false;
+  button.addEventListener("click", async () => {
+    const item = activityById(currentActivityHash());
+    if (!item) return;
+    const meta = document.querySelector('meta[name="site-base"]');
+    const base = meta && meta.content && !meta.content.includes("__")
+      ? meta.content.replace(/\/$/, "") : window.location.origin;
+    const url = base + "/activity#" + activityIdFor(item);
+    const title = item.title;
+    const text = title + " — 임미란 의원 의정활동";
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title: title, text: text, url: url });
+        return;
+      } catch (error) {
+        if (error && error.name === "AbortError") return;
+      }
+    }
+    try {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const field = document.createElement("textarea");
+        field.value = url;
+        field.setAttribute("readonly", "");
+        document.body.appendChild(field);
+        field.select();
+        document.execCommand("copy");
+        field.remove();
+      }
+      if (status) { status.textContent = "주소를 복사했습니다"; status.hidden = false; }
+    } catch (error) {
+      if (status) { status.textContent = "주소를 복사하지 못했습니다. 주소창에서 직접 복사해 주세요."; status.hidden = false; }
+    }
+  });
+}
+
 function initLightbox() {
   const dialog = document.getElementById("mediaLightbox");
   if (!dialog) return;
@@ -573,6 +615,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   markExternalLinks();
   initLightbox();
+  initActivityShare();
   const homeMedia = document.getElementById("homeMedia");
   if (homeMedia) enhanceMediaCards(homeMedia);
 
