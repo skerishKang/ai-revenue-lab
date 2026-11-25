@@ -11,6 +11,7 @@ import gzip
 import re
 import shutil
 import subprocess
+import sys
 import unittest
 
 from kagent.pc_self_heal_task import (
@@ -130,7 +131,8 @@ class InstallerPayloadTests(unittest.TestCase):
 _SHELL = shutil.which("powershell") or shutil.which("pwsh")
 
 
-@unittest.skipUnless(_SHELL, "PowerShell not available")
+@unittest.skipUnless(sys.platform == "win32" and _SHELL,
+                     "New-ScheduledTaskTrigger is a Windows-only cmdlet")
 class RealPowerShellTriggerTests(unittest.TestCase):
     """#8359 후속3: 등록 없이 트리거 생성만 실제 PowerShell에서 확인한다."""
 

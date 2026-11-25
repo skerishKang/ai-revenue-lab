@@ -9,13 +9,16 @@ from __future__ import annotations
 import hashlib
 import shutil
 import subprocess
+import sys
 
 import pytest
 
 from app.pc_helper_update import _UPDATE_SCRIPT
 
 _SHELL = shutil.which("powershell") or shutil.which("pwsh")
-pytestmark = pytest.mark.skipif(not _SHELL, reason="PowerShell not available")
+pytestmark = pytest.mark.skipif(
+    sys.platform != "win32" or not _SHELL,
+    reason="Windows ACL and Move-Item semantics require Windows PowerShell")
 
 
 def _functions() -> str:
