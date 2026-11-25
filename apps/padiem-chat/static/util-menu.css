@@ -44,7 +44,7 @@
   padding: 18px;
   border: 1px solid var(--card-border);
   border-radius: var(--radius-md);
-  background: var(--card-bg, rgba(239, 243, 246, .48));
+  background: var(--card-bg, var(--util-menu-pdfmd-shell-wash));
   box-shadow: var(--shadow);
   color: var(--text);
   backdrop-filter: blur(24px) saturate(108%);
@@ -156,7 +156,7 @@
 .pdfmd-status-chip[data-status="failed"],
 .pdfmd-item-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .pdfmd-agreement { margin-top: 8px; color: var(--success); font-size: 12px; font-weight: 650; }
-.pdfmd-warn { margin-top: 4px; color: #8a4b0f; font-size: 12px; line-height: 1.5; }
+.pdfmd-warn { margin-top: 4px; color: var(--util-menu-pdfmd-warn-ink); font-size: 12px; line-height: 1.5; }
 html[data-theme="dark"] .pdfmd-warn,
 html[data-theme="cinematic"] .pdfmd-warn,
 html[data-theme="dark"] .pdfmd-page-review-badge,
@@ -171,7 +171,7 @@ html[data-theme="cinematic"] .pdfmd-page-review-flag[data-review="true"] { color
 .pdfmd-original-page {
   display: block; width: 100%; height: clamp(480px, 62vh, 760px);
   border: 1px solid var(--line); border-radius: var(--radius-sm);
-  background: #ffffff; object-fit: contain;
+  background: var(--voice-panel-bg); object-fit: contain;
 }
 .pdfmd-md {
   height: clamp(480px, 62vh, 760px); margin: 0; padding: 14px;
@@ -194,10 +194,10 @@ html[data-theme="cinematic"] .pdfmd-page-review-flag[data-review="true"] { color
 .pdfmd-page-controls label { display: inline-flex; align-items: center; gap: 7px; color: var(--text); }
 .pdfmd-page-input { width: 70px; min-height: 40px; padding: 0 8px; border: 1px solid var(--line); border-radius: var(--radius-xs); background: var(--panel); color: var(--text); font: inherit; }
 .pdfmd-page-total { color: var(--muted); white-space: nowrap; }
-.pdfmd-page-review-flag[data-review="true"] { color: #8a4b0f; font-size: 12px; font-weight: 750; }
+.pdfmd-page-review-flag[data-review="true"] { color: var(--util-menu-pdfmd-warn-ink); font-size: 12px; font-weight: 750; }
 .pdfmd-page { padding: 0 0 12px; margin: 0 0 12px; border-bottom: 1px solid var(--line); scroll-margin-top: 8px; }
 .pdfmd-page-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: var(--muted); font-size: 12px; font-weight: 750; }
-.pdfmd-page-review-badge { color: #8a4b0f; }
+.pdfmd-page-review-badge { color: var(--util-menu-pdfmd-warn-ink); }
 .pdfmd-page-text { margin: 0; padding: 0; border: 0; background: transparent; color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
 .pdfmd-history-tools { margin: 0 0 10px; }
 .pdfmd-history-search {
