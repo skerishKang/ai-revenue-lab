@@ -34,10 +34,11 @@ class SharedEnvContract(unittest.TestCase):
             steps = job['steps']
             names = [step.get('name', '') for step in steps]
             self.assertIn('Prove repository packages come from this checkout', names, name)
-            for step_name in ('Resolve B62', 'Install pinned Playwright'):
-                step = next(s for s in steps if s.get('name') == step_name)
-                self.assertNotIn('if', step, f'{name}/{step_name}')
+            uv_step = next(s for s in steps if s.get('name') == 'Prepare isolated B62 uv environment')
+            self.assertNotIn('if', uv_step, name)
+            self.assertEqual(uv_step['uses'], './.github/actions/b62-uv')
             proof = next(s for s in steps if s.get('name') == 'Prove repository packages come from this checkout')
+            self.assertIn("runner.environment == 'self-hosted'", proof['if'])
             self.assertIn('padiem_ai_core', proof['run'])
             self.assertIn('padiem_control_plane', proof['run'])
             self.assertIn('GITHUB_WORKSPACE', proof['run'])

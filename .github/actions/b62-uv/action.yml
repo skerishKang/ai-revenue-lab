@@ -1,0 +1,43 @@
+name: Prepare isolated B62 uv environment
+description: Install locked B62 dependencies with a job-local venv and immutable cache snapshot
+runs:
+  using: composite
+  steps:
+    - name: Prepare isolated uv directories
+      shell: bash
+      run: |
+        set -euo pipefail
+        work="$RUNNER_TEMP/b62-uv-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+        mkdir -p "$work/cache" "$work/venv"
+        {
+          echo "UV_CACHE_DIR=$work/cache"
+          echo "UV_PROJECT_ENVIRONMENT=$work/venv"
+          echo "UV_LINK_MODE=copy"
+        } >> "$GITHUB_ENV"
+    - name: Install uv
+      uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+      with:
+        version: '0.13.5'
+        enable-cache: false
+    - name: Restore job-local uv cache
+      id: uv-cache
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ env.UV_CACHE_DIR }}
+        key: b62-uv-v2-${{ runner.os }}-${{ runner.arch }}-py312-uv0.13.5-${{ hashFiles('apps/padiem-chat/uv.lock', 'apps/padiem-chat/pyproject.toml') }}
+        restore-keys: |
+          b62-uv-v2-${{ runner.os }}-${{ runner.arch }}-py312-uv0.13.5-
+    - name: Resolve locked B62 dependencies
+      working-directory: apps/padiem-chat
+      shell: bash
+      run: |
+        set -euo pipefail
+        uv sync --locked --extra dev
+        uv pip install --python "$UV_PROJECT_ENVIRONMENT/bin/python" 'playwright==1.55.0'
+        echo "UV_NO_SYNC=1" >> "$GITHUB_ENV"
+    - name: Save job-local uv cache
+      if: steps.uv-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ env.UV_CACHE_DIR }}
+        key: ${{ steps.uv-cache.outputs.cache-primary-key }}

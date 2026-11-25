@@ -5,6 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 MASTER = ROOT / ".github/workflows/b62-browser-qa-unified.yml"
+UV_ACTION = ROOT / ".github/actions/b62-uv/action.yml"
 MANIFEST = ROOT / ".github/ci/b62_browser_qa_paths.json"
 
 
@@ -23,8 +24,11 @@ class B62BrowserCacheContractTests(unittest.TestCase):
             with self.subTest(job=job):
                 self.assertIsNotNone(match)
                 block = match.group(1)
-                self.assertIn("enable-cache: true", block)
-                self.assertIn("cache-dependency-glob: apps/padiem-chat/uv.lock", block)
+                self.assertIn("uses: ./.github/actions/b62-uv", block)
+                self.assertNotIn("enable-cache: true", block)
+                self.assertNotIn("cache-dependency-glob:", block)
+                self.assertNotIn("uv sync --extra dev", block)
+                self.assertNotIn("uv pip install 'playwright==1.55.0'", block)
                 self.assertEqual(block.count("Cache pinned Playwright Chromium"), 1)
                 self.assertEqual(block.count("actions/cache@v4"), 1)
                 self.assertIn("id: playwright-browser-cache", block)
@@ -54,6 +58,24 @@ class B62BrowserCacheContractTests(unittest.TestCase):
         self.assertRegex(text, r"(?m)^  workflow_dispatch:")
         self.assertRegex(text, r"(?m)^concurrency:")
         self.assertRegex(text, r"(?m)^  cancel-in-progress: true$")
+
+    def test_uv_action_isolates_mutable_state_and_caches_only_job_local_cache(self):
+        text = UV_ACTION.read_text(encoding="utf-8")
+        self.assertIn("UV_CACHE_DIR=$work/cache", text)
+        self.assertIn("UV_PROJECT_ENVIRONMENT=$work/venv", text)
+        self.assertIn("UV_LINK_MODE=copy", text)
+        self.assertIn("enable-cache: false", text)
+        self.assertIn("uv sync --locked --extra dev", text)
+        self.assertIn(
+            "uv pip install --python \"$UV_PROJECT_ENVIRONMENT/bin/python\" 'playwright==1.55.0'",
+            text,
+        )
+        self.assertIn("UV_NO_SYNC=1", text)
+        self.assertIn("actions/cache/restore@v4", text)
+        self.assertIn("actions/cache/save@v4", text)
+        self.assertIn("key: b62-uv-v2-", text)
+        self.assertEqual(text.count("path: ${{ env.UV_CACHE_DIR }}"), 2)
+        self.assertNotIn("path: ${{ env.UV_PROJECT_ENVIRONMENT }}", text)
 
 
 if __name__ == "__main__":

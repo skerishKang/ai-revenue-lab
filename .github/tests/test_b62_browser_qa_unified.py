@@ -113,6 +113,10 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
         self.assertTrue(chosen["browser-qa"])
         self.assertTrue(chosen["accessibility-browser-qa"])
 
+    def test_shared_uv_action_change_selects_every_lane(self):
+        chosen = planner.choose_lanes({".github/actions/b62-uv/action.yml"}, self.paths)
+        self.assertTrue(all(chosen.values()))
+
     def test_css_touch_target_selects_all_seventeen(self):
         chosen = planner.choose_lanes({"apps/padiem-chat/static/padiem-first-use.css"}, self.paths)
         self.assertEqual(sum(chosen.values()), 17)

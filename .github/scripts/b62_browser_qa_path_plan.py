@@ -218,6 +218,7 @@ def require_glass_visual_tail(
 PLAN_FILES = frozenset(
     {
         ".github/workflows/b62-browser-qa-unified.yml",
+        ".github/actions/b62-uv/action.yml",
         ".github/scripts/b62_browser_qa_path_plan.py",
         ".github/scripts/b62_css_token_scope.py",
         # Schedule implementation/test updates must prove every affected lane.

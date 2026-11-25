@@ -95,6 +95,7 @@ jobs:
           python -m unittest discover -s .github/tests -p test_3989_b62_visual_leaf_smoke.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_owner_leaf_browser_base.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_headless_shell_install.py -v
+          python -m unittest discover -s .github/tests -p test_b62_browser_ci_cache_contract.py -v
           python -m unittest discover -s .github/tests -p test_3989_b66_quote_css_scope.py -v
           python -m unittest discover -s .github/tests -p test_3989_claw_manual_css_scope.py -v
           python -m unittest discover -s .github/tests -p test_3989_claw_quote_css_scope.py -v
@@ -159,18 +160,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
-        with:
-          version: '0.13.5'
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
-      - name: Resolve B62
-        run: uv sync --extra dev
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       # Full B62 unit regression already runs in b62-padiem-chat-ci.yml for
       # every apps/padiem-chat/** PR change. Keep this lane browser-specific.
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Cache pinned Playwright Chromium
@@ -321,22 +314,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
       - name: Run auth/history and account-session contract tests
         run: uv run pytest -q tests/test_auth_history.py tests/test_b62_1816_account_session_presentation.py
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -524,16 +509,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
-      - name: Resolve B62
-        run: uv sync --extra dev
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Cache pinned Playwright Chromium
@@ -741,16 +718,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: '0.13.5'
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
-      - name: Resolve B62
-        run: uv sync --extra dev
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Cache pinned Playwright Chromium
@@ -876,22 +845,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
       - name: Run auth/history deletion contracts
         run: uv run pytest -q tests/test_auth_history.py
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -1032,24 +993,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
       - name: Compile conversation export QA
         run: uv run python -m py_compile ../../.github/scripts/b62_conversation_export_browser_qa.py
       - name: Run existing Saved Outputs contracts
         run: uv run pytest -q tests/test_saved_outputs.py
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -1190,22 +1143,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
       - name: Deep Research and source contract regression
         run: uv run pytest -q tests/test_deep_research.py tests/test_search_sources_ui.py
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -1344,20 +1289,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -1496,22 +1433,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
       - name: Run existing browser streaming contract tests
         run: uv run pytest -q tests/test_browser_streaming_contract.py
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -1658,20 +1587,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -1810,22 +1731,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
-        with:
-          version: '0.13.5'
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
       - name: Compile touch-target QA
         run: uv run python -m py_compile ../../.github/scripts/b62_mobile_touch_target_qa.py
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -1964,24 +1877,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
       - name: Run Projects contract tests
         run: uv run pytest -q tests/test_projects.py
       - name: Compile browser QA
         run: uv run python -m py_compile ../../.github/scripts/b62_project_delete_browser_qa.py
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -2120,22 +2025,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
       - name: Run existing document and Project Files contract tests
         run: uv run pytest -q tests/test_documents.py
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -2274,22 +2171,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
       - name: Run existing Projects contract tests
         run: uv run pytest -q tests/test_projects.py
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -2428,22 +2317,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
       - name: Run existing Saved Outputs contract tests
         run: uv run pytest -q tests/test_saved_outputs.py
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -2582,22 +2463,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
       - name: Structured answer regression
         run: uv run pytest -q tests/test_rich_responses.py tests/test_browser_streaming_rich_integration.py
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout
@@ -2736,20 +2609,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: "0.13.5"
-          enable-cache: true
-          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Prepare isolated B62 uv environment
+        uses: ./.github/actions/b62-uv
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
-      - name: Resolve B62
-        run: uv sync --extra dev
-      - name: Install pinned Playwright
-        run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Prove repository packages come from this checkout

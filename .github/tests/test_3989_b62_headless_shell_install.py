@@ -53,7 +53,7 @@ class B62HeadlessShellContract(unittest.TestCase):
                 self.assertEqual(job.count(browser), 1)
                 self.assertEqual(job.count(mirror), 1)
                 self.assertEqual(job.count(cache_key), 1)
-                self.assertIn("uv pip install 'playwright==1.55.0'", job)
+                self.assertIn("uses: ./.github/actions/b62-uv", job)
                 self.assertIn("path: ~/.cache/ms-playwright", job)
                 self.assertIn("id: playwright-browser-cache", job)
                 hosted = "runs-on: ubuntu-24.04\n" in job
@@ -71,6 +71,12 @@ class B62HeadlessShellContract(unittest.TestCase):
         workflow = WORKFLOW.read_text(encoding="utf-8")
         self.assertEqual(workflow.count(deps), 17)
         self.assertEqual(workflow.count(browser), 17)
+        action = (ROOT / ".github/actions/b62-uv/action.yml").read_text(encoding="utf-8")
+        self.assertIn("uv sync --locked --extra dev", action)
+        self.assertIn(
+            "uv pip install --python \"$UV_PROJECT_ENVIRONMENT/bin/python\" 'playwright==1.55.0'",
+            action,
+        )
 
     def test_all_chromium_call_sites_launch_only_default_headless_shell(self):
         inspected = []
