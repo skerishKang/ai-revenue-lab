@@ -90,21 +90,19 @@ html[data-theme="cinematic"] .sidebar .section-heading-row h2 {
 
 
 
-html[data-theme="cinematic"] .sidebar {
+/* Former flagged edge/glow values. Specificity (body .app-shell) beats the
+ * same-level cinematic rules in padiem-themes.css and .app-shell[data-state]
+ * rules in later sheets without any override flag, so each box stays in one
+ * rule and no per-file rule count grows. (#7811 C3) */
+html[data-theme="cinematic"] body .app-shell .sidebar {
   background:
     linear-gradient(180deg, rgba(7,11,19,.93), rgba(5,8,14,.86)),
     rgba(4,7,12,.9);
+  border-right-color: rgba(136,201,255,.20);
   box-shadow:
     22px 0 70px rgba(0,0,0,.28),
     inset -1px 0 0 rgba(136,201,255,.14),
     10px 0 48px rgba(91,166,230,.08);
-}
-
-/* Former flagged edge/glow values. Specificity (body .app-shell) beats the
- * same-level cinematic rules in padiem-themes.css and .app-shell[data-state]
- * rules in later sheets without any override flag. (#7811 C3) */
-html[data-theme="cinematic"] body .app-shell .sidebar {
-  border-right-color: rgba(136,201,255,.20);
 }
 
 html[data-theme="cinematic"] body .app-shell .topbar {
@@ -125,12 +123,9 @@ html[data-theme="cinematic"] body .app-shell .starter {
     inset 0 1px 0 rgba(255,255,255,.08);
 }
 
-html[data-theme="cinematic"] .composer {
+html[data-theme="cinematic"] body .app-shell .composer {
   background:
     linear-gradient(145deg, rgba(18,30,46,.8), rgba(8,11,17,.76));
-}
-
-html[data-theme="cinematic"] body .app-shell .composer {
   border-color: rgba(136,201,255,.26);
   box-shadow:
     0 0 40px rgba(93,178,246,.14),

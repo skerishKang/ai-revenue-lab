@@ -64,10 +64,9 @@ def test_cinematic_has_bounded_atmospheric_distinction_from_neutral_dark():
     assert 'html[data-theme="cinematic"] body::before {' in themes_css
     assert "rgba(108,190,255,.28)" in themes_css
     assert "rgba(239,201,132,.20)" in themes_css
-    assert 'html[data-theme="cinematic"] .sidebar {' in polish_css()
-    assert 'html[data-theme="cinematic"] .composer {' in polish_css()
-    # #7811 C3: the flagged edge/glow values moved to the higher-specificity
-    # body .app-shell selectors so they win without !important.
+    # #7811 C3: each cinematic box is one rule on the higher-specificity
+    # body .app-shell selector so it wins without !important.
+    assert 'html[data-theme="cinematic"] body .app-shell .sidebar {' in polish_css()
     assert 'html[data-theme="cinematic"] body .app-shell .topbar {' in polish_css()
     assert 'html[data-theme="cinematic"] body .app-shell .starter {' in polish_css()
     assert 'html[data-theme="cinematic"] body .app-shell .composer {' in polish_css()
