@@ -77,7 +77,7 @@ def test_generation_is_streamed_from_the_stream_route() -> None:
     intermediate = [n for n in obs["lengths"] if 0 < n < len(obs["expected"])]
     assert intermediate, obs["lengths"]
     assert obs["final"] == obs["expected"]
-    assert obs["notice"] == ""
+    assert obs["notice"] == "초안이 준비됐습니다"
     assert obs["pageErrors"] == []
 
 
@@ -96,7 +96,7 @@ def test_a_failed_generation_offers_retry_and_it_really_runs_again() -> None:
     assert obs["retryPresent"] is True
     assert obs["retried"]["calls"] == 1
     assert obs["retried"]["output"].startswith("생성된 초안 본문입니다.")
-    assert obs["retried"]["notice"] == ""
+    assert obs["retried"]["notice"] == "초안이 준비됐습니다"
 
 
 def test_the_shared_dialog_speaks_korean_in_this_app() -> None:

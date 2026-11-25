@@ -2393,3 +2393,32 @@ html.council-in-workspace .council-workspace-bar::after {
   font-weight: 700;
   letter-spacing: -0.02em;
 }
+
+/* ── #7575 1차 수리 ─────────────────────────────────────────────────────── */
+.council-auth-signup { margin: 0; font-size: 14px; }
+.council-auth-signup a { color: var(--council-accent); font-weight: 700; text-underline-offset: 3px; }
+/* 로그인 창은 페이지 맨 아래가 아니라 화면 가운데에 뜬다. */
+.council-auth:not([hidden]) {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(calc(100% - 40px), 720px);
+  max-height: calc(100svh - 40px);
+  overflow: auto;
+  box-shadow: 0 0 0 100vmax color-mix(in srgb, var(--bg) 55%, transparent);
+}
+.council-tool-nav { display: none; gap: 8px; padding: 8px 14px; overflow-x: auto; }
+.council-tool-nav button { min-height: 44px; min-width: 44px; padding: 8px 14px; border: 1px solid var(--council-border); border-radius: 999px; background: var(--council-surface); color: var(--council-text); font: inherit; white-space: nowrap; }
+.council-tool-nav button[aria-current="page"] { border-color: var(--council-accent); background: var(--council-accent-soft); color: var(--council-accent); font-weight: 700; }
+.council-nav-item[aria-current="page"] { border-bottom-color: var(--council-accent); color: var(--council-text); font-weight: 700; }
+/* 참고로 선택은 연한 금색 바탕에 연한 금색 글씨가 아니라 읽히는 글자색을 쓴다. */
+.council-saved-item .council-speech-use-ref { color: var(--council-text); background: var(--council-surface); }
+.council-pc-save-hint { margin-left: 8px; color: var(--council-text); font-size: 14px; }
+.council-fact-check { margin: 0 0 10px; padding: 8px 10px; border-left: 3px solid var(--council-accent); background: var(--council-accent-soft); color: var(--council-text); font-size: 14px; word-break: keep-all; }
+html.council-in-workspace .council-tier { color: var(--text); }
+@media (max-width: 768px) {
+  .council-tool-nav { display: flex; }
+}
