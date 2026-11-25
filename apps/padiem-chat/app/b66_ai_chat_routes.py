@@ -275,6 +275,233 @@ async def _stored_model_messages(
     return projected, None
 
 
+async def _dispatch_b66_ai_chat(
+    request: Request,
+    *,
+    uid: str,
+    custom: Any,
+    model_id: str,
+    requested_tier: str | None,
+    replay_origin: str,
+    conversation_id: str | None,
+    turn_token: str | None,
+    model_messages: list[dict[str, str]],
+    parameters: dict[str, Any] | None,
+    user_text: str,
+    store: Any,
+    attempt_store: Any,
+) -> JSONResponse | tuple[str, str, Any]:
+    response_model_id = model_id
+    if custom is not None:
+        # PADIEM Custom: the owner's explicit provider key is called
+        # directly. No B14 resolver, registry, default/fallback policy,
+        # platform secret store or platform usage reservation is involved.
+        # Preflight before the durable claim so an unsupported selection or
+        # missing key cannot burn a retry identity that never dispatched.
+        try:
+            await resolve_owner_custom_credential(
+                request.app.state, uid=uid, selection=custom,
+            )
+        except CustomProviderSelectionError as exc:
+            return _error(422, "custom_provider_unsupported", str(exc))
+        except CustomProviderError as exc:
+            return _error(exc.status_code, exc.code, exc.user_message)
+
+        # Same D1 owned paid-call gate as the managed lane.
+        if attempt_store is not None:
+            try:
+                digest = attempt_request_digest(
+                    model_id=model_id,
+                    conversation_id=conversation_id,
+                    messages=model_messages,
+                    model_parameters=parameters,
+                )
+                decision = await attempt_store.claim(
+                    uid, turn_token, model_id, digest,
+                )
+            except Exception:
+                return _error(
+                    503, "dialogue_attempt_unavailable",
+                    "중복 요청 확인을 할 수 없습니다. 잠시 후 이전 대화를 확인해 주세요.",
+                )
+            if decision["status"] == "conflict":
+                return _error(
+                    409, "dialogue_attempt_mismatch",
+                    "이미 사용된 대화 요청 참조입니다.",
+                )
+            if decision["status"] == "completed":
+                saved_conversation_id = decision["conversation_id"]
+                recorded, refusal = await _stored_model_messages(
+                    store, uid, saved_conversation_id,
+                )
+                tail = _completed_tail(recorded or [])
+                if refusal is None and tail is not None and tail[0] == user_text:
+                    return _replay_response(
+                        conversation_id=saved_conversation_id,
+                        model_id=model_id,
+                        answer=tail[1],
+                        model_origin=replay_origin,
+                    )
+                return _turn_in_progress()
+            if decision["status"] != "claimed":
+                return _turn_in_progress()
+
+        outcome = await plan_b66_search(
+            getattr(request.app.state, "auto_grounding", None),
+            user_text,
+            allow_provider=getattr(
+                request.app.state, "b66_public_fact_search_authorized", False
+            ) is True,
+        )
+        try:
+            result = await complete_owner_custom(
+                request.app.state,
+                uid=uid,
+                selection=custom,
+                messages=model_messages,
+                system_context=_envelope(outcome),
+            )
+        except CustomProviderSelectionError as exc:
+            return _error(422, "custom_provider_unsupported", str(exc))
+        except CustomProviderError as exc:
+            return _error(exc.status_code, exc.code, exc.user_message)
+        except Exception:
+            return _error(502, "ai_chat_execution_failed", "AI 응답을 생성하지 못했습니다.")
+        answer = result.get("answer") if isinstance(result, dict) else None
+        if not isinstance(answer, str) or not answer.strip():
+            return _error(502, "ai_chat_invalid_answer", "AI 응답을 확인할 수 없습니다.")
+    else:
+        resolver = getattr(request.app.state, "b66_quote_model_resolver", None)
+        resolve = getattr(resolver, "resolve_quote_model", None)
+        client = getattr(request.app.state, "b14_client", None)
+        complete = getattr(client, "complete_registered_b66_chat_model", None)
+        if not callable(resolve) or not callable(complete):
+            return _error(503, "ai_chat_unavailable", "AI 대화 실행 경로가 준비되지 않았습니다.")
+        denied = await _authorize_quote_usage(request, uid)
+        if denied is not None:
+            return denied
+        requirements = B66QuoteTaskRequirements(selected_model_id=model_id)
+        try:
+            ready = getattr(client, "ensure_registered_quote_runtime_available", None)
+            if not callable(ready):
+                await _refund_active_reservation()
+                return _error(503, "ai_chat_unavailable", "AI 대화 실행 경로가 준비되지 않았습니다.")
+            ready()
+            route = validate_authorized_route(await resolve(requirements), requirements)
+        except B66ModelRouteError as exc:
+            await _refund_active_reservation()
+            return _model_route_error_response(exc)
+        except Exception:
+            await _refund_active_reservation()
+            return _error(503, "ai_chat_unavailable", "AI 모델을 사용할 수 없습니다.")
+
+        # The in-isolate set above only avoids duplicate work *inside* a Worker.
+        # The D1 unique row is the authoritative cross-isolate paid-call gate.
+        # Never delete/reclaim a claimed row automatically: after an uncertain
+        # upstream timeout the provider may already have charged the attempt.
+        if attempt_store is not None:
+            try:
+                digest = attempt_request_digest(
+                    model_id=route.model_id,
+                    conversation_id=conversation_id,
+                    messages=model_messages,
+                    model_parameters=parameters,
+                )
+                decision = await attempt_store.claim(
+                    uid, turn_token, route.model_id, digest,
+                )
+            except Exception:
+                await _refund_active_reservation()
+                return _error(
+                    503, "dialogue_attempt_unavailable",
+                    "중복 요청 확인을 할 수 없습니다. 잠시 후 이전 대화를 확인해 주세요.",
+                )
+            if decision["status"] == "conflict":
+                await _refund_active_reservation()
+                return _error(
+                    409, "dialogue_attempt_mismatch",
+                    "이미 사용된 대화 요청 참조입니다.",
+                )
+            if decision["status"] == "completed":
+                await _refund_active_reservation()
+                saved_conversation_id = decision["conversation_id"]
+                recorded, refusal = await _stored_model_messages(
+                    store, uid, saved_conversation_id,
+                )
+                tail = _completed_tail(recorded or [])
+                if refusal is None and tail is not None and tail[0] == user_text:
+                    return _replay_response(
+                        conversation_id=saved_conversation_id,
+                        model_id=route.model_id,
+                        answer=tail[1],
+                    )
+                return _turn_in_progress()
+            if decision["status"] != "claimed":
+                await _refund_active_reservation()
+                return _turn_in_progress()
+
+        outcome = await plan_b66_search(
+            getattr(request.app.state, "auto_grounding", None),
+            user_text,
+            # Server state only; a browser field can never authorize paid retrieval.
+            # No production bootstrap sets this flag until the #4465 fact-search
+            # approval and privacy review have been recorded.
+            allow_provider=getattr(request.app.state, "b66_public_fact_search_authorized", False) is True,
+        )
+        # Server-owned B66 membership, never a browser-supplied paid tier.
+        product_tier = requested_tier
+        if product_tier is not None and product_tier not in ("free", "plus", "pro", "max"):
+            return _error(403, "invalid_membership_tier", "이용 등급을 확인해 주세요.")
+        # #4483: re-check live model authority at the final B66 dispatch. The
+        # guard is per-request and stays off until a b66 policy rule exists.
+        guarded_client = apply_guard_to_client(
+            client,
+            await create_guard_from_request(
+                request,
+                route.model_id,
+                getattr(request.app.state, "central_model_policy_store", None),
+                getattr(request.app.state, "b14_catalog_source", None),
+                product_id=B66_PRODUCT_ID,
+                requested_tier=(
+                    product_tier
+                    if product_tier in ("free", "plus", "pro", "max")
+                    else None
+                ),
+            ),
+        )
+        complete = getattr(guarded_client, "complete_registered_b66_chat_model", None)
+        if not callable(complete):
+            await _refund_active_reservation()
+            return _error(503, "ai_chat_unavailable", "AI 대화 실행 경로가 준비되지 않았습니다.")
+        try:
+            result = await complete(
+                model_messages,
+                model=route.model_id,
+                **({"product_tier": product_tier} if product_tier is not None else {}),
+                verified_identity_tier=current_verified_member_grade(),
+                additional_system_context=_envelope(outcome),
+                model_parameters=parameters,
+            )
+        except ChatRuntimeError as exc:
+            return _error(exc.status_code, exc.code, exc.user_message)
+        except Exception:
+            return _error(502, "ai_chat_execution_failed", "AI 응답을 생성하지 못했습니다.")
+        finally:
+            await _refund_active_reservation()
+        if (
+            not isinstance(result, dict)
+            or not isinstance(result.get("answer"), str)
+            or not result["answer"].strip()
+            or not isinstance(result.get("route"), dict)
+            or result["route"].get("model") != route.model_id
+            or result["route"].get("mode") != "manual"
+        ):
+            return _error(502, "ai_chat_invalid_answer", "AI 응답을 확인할 수 없습니다.")
+        answer = result["answer"]
+        response_model_id = route.model_id
+    return answer, response_model_id, outcome
+
+
 async def b66_ai_chat(request: Request) -> JSONResponse:
     """Single authorized dialogue dispatch (managed B14 or owner-key custom).
 
@@ -470,215 +697,25 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
                         )
             model_messages = [dict(m) for m in messages]
 
-        response_model_id = model_id
         model_origin = replay_origin
-        if custom is not None:
-            # PADIEM Custom: the owner's explicit provider key is called
-            # directly. No B14 resolver, registry, default/fallback policy,
-            # platform secret store or platform usage reservation is involved.
-            # Preflight before the durable claim so an unsupported selection or
-            # missing key cannot burn a retry identity that never dispatched.
-            try:
-                await resolve_owner_custom_credential(
-                    request.app.state, uid=uid, selection=custom,
-                )
-            except CustomProviderSelectionError as exc:
-                return _error(422, "custom_provider_unsupported", str(exc))
-            except CustomProviderError as exc:
-                return _error(exc.status_code, exc.code, exc.user_message)
-
-            # Same D1 owned paid-call gate as the managed lane.
-            if attempt_store is not None:
-                try:
-                    digest = attempt_request_digest(
-                        model_id=model_id,
-                        conversation_id=conversation_id,
-                        messages=model_messages,
-                        model_parameters=parameters,
-                    )
-                    decision = await attempt_store.claim(
-                        uid, turn_token, model_id, digest,
-                    )
-                except Exception:
-                    return _error(
-                        503, "dialogue_attempt_unavailable",
-                        "중복 요청 확인을 할 수 없습니다. 잠시 후 이전 대화를 확인해 주세요.",
-                    )
-                if decision["status"] == "conflict":
-                    return _error(
-                        409, "dialogue_attempt_mismatch",
-                        "이미 사용된 대화 요청 참조입니다.",
-                    )
-                if decision["status"] == "completed":
-                    saved_conversation_id = decision["conversation_id"]
-                    recorded, refusal = await _stored_model_messages(
-                        store, uid, saved_conversation_id,
-                    )
-                    tail = _completed_tail(recorded or [])
-                    if refusal is None and tail is not None and tail[0] == user_text:
-                        return _replay_response(
-                            conversation_id=saved_conversation_id,
-                            model_id=model_id,
-                            answer=tail[1],
-                            model_origin=replay_origin,
-                        )
-                    return _turn_in_progress()
-                if decision["status"] != "claimed":
-                    return _turn_in_progress()
-
-            outcome = await plan_b66_search(
-                getattr(request.app.state, "auto_grounding", None),
-                user_text,
-                allow_provider=getattr(
-                    request.app.state, "b66_public_fact_search_authorized", False
-                ) is True,
-            )
-            try:
-                result = await complete_owner_custom(
-                    request.app.state,
-                    uid=uid,
-                    selection=custom,
-                    messages=model_messages,
-                    system_context=_envelope(outcome),
-                )
-            except CustomProviderSelectionError as exc:
-                return _error(422, "custom_provider_unsupported", str(exc))
-            except CustomProviderError as exc:
-                return _error(exc.status_code, exc.code, exc.user_message)
-            except Exception:
-                return _error(502, "ai_chat_execution_failed", "AI 응답을 생성하지 못했습니다.")
-            answer = result.get("answer") if isinstance(result, dict) else None
-            if not isinstance(answer, str) or not answer.strip():
-                return _error(502, "ai_chat_invalid_answer", "AI 응답을 확인할 수 없습니다.")
-        else:
-            resolver = getattr(request.app.state, "b66_quote_model_resolver", None)
-            resolve = getattr(resolver, "resolve_quote_model", None)
-            client = getattr(request.app.state, "b14_client", None)
-            complete = getattr(client, "complete_registered_b66_chat_model", None)
-            if not callable(resolve) or not callable(complete):
-                return _error(503, "ai_chat_unavailable", "AI 대화 실행 경로가 준비되지 않았습니다.")
-            denied = await _authorize_quote_usage(request, uid)
-            if denied is not None:
-                return denied
-            requirements = B66QuoteTaskRequirements(selected_model_id=model_id)
-            try:
-                ready = getattr(client, "ensure_registered_quote_runtime_available", None)
-                if not callable(ready):
-                    await _refund_active_reservation()
-                    return _error(503, "ai_chat_unavailable", "AI 대화 실행 경로가 준비되지 않았습니다.")
-                ready()
-                route = validate_authorized_route(await resolve(requirements), requirements)
-            except B66ModelRouteError as exc:
-                await _refund_active_reservation()
-                return _model_route_error_response(exc)
-            except Exception:
-                await _refund_active_reservation()
-                return _error(503, "ai_chat_unavailable", "AI 모델을 사용할 수 없습니다.")
-
-            # The in-isolate set above only avoids duplicate work *inside* a Worker.
-            # The D1 unique row is the authoritative cross-isolate paid-call gate.
-            # Never delete/reclaim a claimed row automatically: after an uncertain
-            # upstream timeout the provider may already have charged the attempt.
-            if attempt_store is not None:
-                try:
-                    digest = attempt_request_digest(
-                        model_id=route.model_id,
-                        conversation_id=conversation_id,
-                        messages=model_messages,
-                        model_parameters=parameters,
-                    )
-                    decision = await attempt_store.claim(
-                        uid, turn_token, route.model_id, digest,
-                    )
-                except Exception:
-                    await _refund_active_reservation()
-                    return _error(
-                        503, "dialogue_attempt_unavailable",
-                        "중복 요청 확인을 할 수 없습니다. 잠시 후 이전 대화를 확인해 주세요.",
-                    )
-                if decision["status"] == "conflict":
-                    await _refund_active_reservation()
-                    return _error(
-                        409, "dialogue_attempt_mismatch",
-                        "이미 사용된 대화 요청 참조입니다.",
-                    )
-                if decision["status"] == "completed":
-                    await _refund_active_reservation()
-                    saved_conversation_id = decision["conversation_id"]
-                    recorded, refusal = await _stored_model_messages(
-                        store, uid, saved_conversation_id,
-                    )
-                    tail = _completed_tail(recorded or [])
-                    if refusal is None and tail is not None and tail[0] == user_text:
-                        return _replay_response(
-                            conversation_id=saved_conversation_id,
-                            model_id=route.model_id,
-                            answer=tail[1],
-                        )
-                    return _turn_in_progress()
-                if decision["status"] != "claimed":
-                    await _refund_active_reservation()
-                    return _turn_in_progress()
-
-            outcome = await plan_b66_search(
-                getattr(request.app.state, "auto_grounding", None),
-                user_text,
-                # Server state only; a browser field can never authorize paid retrieval.
-                # No production bootstrap sets this flag until the #4465 fact-search
-                # approval and privacy review have been recorded.
-                allow_provider=getattr(request.app.state, "b66_public_fact_search_authorized", False) is True,
-            )
-            # Server-owned B66 membership, never a browser-supplied paid tier.
-            product_tier = requested_tier
-            if product_tier is not None and product_tier not in ("free", "plus", "pro", "max"):
-                return _error(403, "invalid_membership_tier", "이용 등급을 확인해 주세요.")
-            # #4483: re-check live model authority at the final B66 dispatch. The
-            # guard is per-request and stays off until a b66 policy rule exists.
-            guarded_client = apply_guard_to_client(
-                client,
-                await create_guard_from_request(
-                    request,
-                    route.model_id,
-                    getattr(request.app.state, "central_model_policy_store", None),
-                    getattr(request.app.state, "b14_catalog_source", None),
-                    product_id=B66_PRODUCT_ID,
-                    requested_tier=(
-                        product_tier
-                        if product_tier in ("free", "plus", "pro", "max")
-                        else None
-                    ),
-                ),
-            )
-            complete = getattr(guarded_client, "complete_registered_b66_chat_model", None)
-            if not callable(complete):
-                await _refund_active_reservation()
-                return _error(503, "ai_chat_unavailable", "AI 대화 실행 경로가 준비되지 않았습니다.")
-            try:
-                result = await complete(
-                    model_messages,
-                    model=route.model_id,
-                    **({"product_tier": product_tier} if product_tier is not None else {}),
-                    verified_identity_tier=current_verified_member_grade(),
-                    additional_system_context=_envelope(outcome),
-                    model_parameters=parameters,
-                )
-            except ChatRuntimeError as exc:
-                return _error(exc.status_code, exc.code, exc.user_message)
-            except Exception:
-                return _error(502, "ai_chat_execution_failed", "AI 응답을 생성하지 못했습니다.")
-            finally:
-                await _refund_active_reservation()
-            if (
-                not isinstance(result, dict)
-                or not isinstance(result.get("answer"), str)
-                or not result["answer"].strip()
-                or not isinstance(result.get("route"), dict)
-                or result["route"].get("model") != route.model_id
-                or result["route"].get("mode") != "manual"
-            ):
-                return _error(502, "ai_chat_invalid_answer", "AI 응답을 확인할 수 없습니다.")
-            answer = result["answer"]
-            response_model_id = route.model_id
+        dispatched = await _dispatch_b66_ai_chat(
+            request,
+            uid=uid,
+            custom=custom,
+            model_id=model_id,
+            requested_tier=requested_tier,
+            replay_origin=replay_origin,
+            conversation_id=conversation_id,
+            turn_token=turn_token,
+            model_messages=model_messages,
+            parameters=parameters,
+            user_text=user_text,
+            store=store,
+            attempt_store=attempt_store,
+        )
+        if isinstance(dispatched, JSONResponse):
+            return dispatched
+        answer, response_model_id, outcome = dispatched
 
         if conversation_id is not None:
             # A duplicate that landed while the model ran wins: the turn is
