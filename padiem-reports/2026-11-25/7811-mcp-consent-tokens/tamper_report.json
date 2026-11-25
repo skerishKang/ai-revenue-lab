@@ -1,0 +1,8 @@
+{
+  "token": "--mcp-consent-gold-wash",
+  "mutation": "rgba(212, 173, 104, 0.16)→#ff00ff",
+  "screen": "mcp-oauth-consent.html",
+  "theme": "light",
+  "viewport": "1440x950",
+  "pixel": 393800
+}
