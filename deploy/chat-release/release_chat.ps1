@@ -86,8 +86,9 @@ $Script:FrontWorker = "padiem-chat-front"
 $Script:PagesProject = "padiem-chat"
 $Script:PagesHost = "https://padiem-chat.pages.dev"
 $Script:PublicHost = "https://chat.padiem.net"
-$Script:PollMaxRounds = 60
+$Script:PollMaxRounds = 240  # 60 minutes at PollSeconds; a slow COM2 copy must not end STEP2 early
 $Script:PollSeconds = 15
+$Script:PollInactiveGraceRounds = 8
 # Production-alias re-checks: the outgoing pages deployment can answer for a
 # short window after `wrangler pages deploy` returns (measured 15-80 s on the
 # platform). Six attempts 5 s apart cover most of it; anything longer stays a
@@ -178,6 +179,13 @@ function Invoke-Com2([string]$RemoteCommand) {
 function Get-Com2Journal([string]$UnitName) {
     $out = & ssh -i $Script:Com2SshKey -o BatchMode=yes -o LogLevel=ERROR -o ConnectTimeout=10 $Script:Com2SshTarget "wsl journalctl -u $UnitName -o cat -n 400" 2>$null
     return ($out -join "`n")
+}
+
+function Get-Com2UnitState([string]$UnitName) {
+    # Read-only; a finished unit can answer inactive with a nonzero exit, so
+    # never use Invoke-Com2 here. The journal is still read after it finishes.
+    $out = & ssh -i $Script:Com2SshKey -o BatchMode=yes -o LogLevel=ERROR -o ConnectTimeout=10 $Script:Com2SshTarget "wsl systemctl is-active $UnitName" 2>$null
+    return (($out -join "`n").Trim())
 }
 
 function Get-Com2OriginMain {
@@ -736,16 +744,29 @@ else {
     Invoke-Com2 "bash $remoteShPath"
     Write-Info "systemd unit $unitName started; polling the journal (max $($Script:PollMaxRounds)x$($Script:PollSeconds)s)"
     $summaryLine = $null
+    $inactiveRounds = 0
     for ($round = 0; $round -lt $Script:PollMaxRounds; $round++) {
         Start-Sleep -Seconds $Script:PollSeconds
         $journal = Get-Com2Journal $unitName
         $match = [regex]::Match($journal, "COM2_DEPLOY_SUMMARY=(.+)")
         if ($match.Success) { $summaryLine = $match.Groups[1].Value.Trim(); break }
+        # The unit may still be copying a large worktree when the old 15-minute
+        # window expired. Keep waiting while it is active; once it has ended
+        # and the journal still has no summary, a few rounds are enough to
+        # flush the last lines before failing.
+        try {
+            $unitState = Get-Com2UnitState $unitName
+        } catch {
+            $unitState = "unknown"
+        }
+        if ($unitState -eq "active") { $inactiveRounds = 0 }
+        else { $inactiveRounds++ }
+        if ($inactiveRounds -ge $Script:PollInactiveGraceRounds) { break }
     }
     if (-not $summaryLine) {
         try { $tail = Get-Com2Journal $unitName } catch { $tail = "" }
         Write-Host $tail
-        throw "STEP2_FAIL: no COM2_DEPLOY_SUMMARY within the polling window"
+        throw "STEP2_FAIL: no COM2_DEPLOY_SUMMARY after unit $unitName ended (state=$unitState)"
     }
     Write-Info "COM2_DEPLOY_SUMMARY=$summaryLine"
     Add-Summary "COM2_DEPLOY_SUMMARY=$summaryLine"
