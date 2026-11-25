@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import base64
 import gzip
+import re
 import sys
 from dataclasses import dataclass
 from typing import Any
@@ -65,6 +66,13 @@ def _ps_literal(value: str) -> str:
     return "'" + "".join(
         ch + ch if ch in "'\u2018\u2019\u201a\u201b" else ch for ch in str(value)
     ) + "'"
+
+
+def _interval_minutes(value: str) -> int:
+    """The data model keeps ISO strings; the cmdlet needs a TimeSpan."""
+
+    match = re.fullmatch(r"PT(\d+)M", str(value))
+    return int(match.group(1)) if match else INTERVAL_MINUTES
 
 
 def build_launch(*, python_executable: str,
@@ -136,8 +144,11 @@ def register_script(definition: dict[str, Any]) -> str:
         "$action = New-ScheduledTaskAction -Execute " + literal(action["Execute"])
         + " -Argument " + literal(action["Argument"])
         + " -WorkingDirectory " + literal(action["WorkingDirectory"]),
+        # #8359 후속3: -RepetitionInterval은 TimeSpan이어야 한다. ISO 문자열을
+        # 그대로 넘기면 인자 변환에 실패한다.
         "$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval "
-        + literal(trigger["Interval"]) + " -RepetitionDuration (New-TimeSpan -Days 3650)",
+        + "(New-TimeSpan -Minutes %d)" % _interval_minutes(trigger["Interval"])
+        + " -RepetitionDuration (New-TimeSpan -Days 3650)",
         "$principal = New-ScheduledTaskPrincipal -UserId " + literal(principal["UserId"])
         + " -LogonType " + literal(principal["LogonType"])
         + " -RunLevel " + literal(principal["RunLevel"]),
@@ -193,8 +204,11 @@ def watcher_script() -> str:
     lines += [
         "$action = New-ScheduledTaskAction -Execute $PythonExecutable -Argument "
         + _ps_literal("-m " + MODULE),
+        # #8359 후속3: ISO 문자열('PT5M')은 TimeSpan으로 변환되지 않아 등록이
+        # 실패한다. 설치 프로그램과 유지보수가 같은 페이로드를 쓰므로 여기서
+        # 함께 고친다.
         "$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval "
-        + _ps_literal("PT%dM" % INTERVAL_MINUTES)
+        + "(New-TimeSpan -Minutes %d)" % INTERVAL_MINUTES
         + " -RepetitionDuration (New-TimeSpan -Days 3650)",
         "$principal = New-ScheduledTaskPrincipal -UserId " + _ps_literal("SYSTEM")
         + " -LogonType " + _ps_literal(LOGON_TYPE_SERVICE)

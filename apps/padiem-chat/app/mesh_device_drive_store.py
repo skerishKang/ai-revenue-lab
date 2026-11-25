@@ -117,6 +117,21 @@ class D1MeshDeviceDriveStore:
             "VALUES(?,?,?,?,?) ON CONFLICT(device_id,source_sha256) DO NOTHING"
         ).bind(_device(device_id), sha256, actor, attempt_id, _stamp(now)).run()
         row = await self.load_updater_registration(device_id=device_id, sha256=sha256)
+        if not row:
+            return False
+        if row["attempt_id"] == attempt_id:
+            return True
+        # #8359 후속3: 이 행은 관측된 updater 해시가 키라서 새 원본이 배포돼도
+        # 같은 행에 남는다. 이전 시도가 끝난(terminal) 행이면 새 시도가 이어받는다.
+        # 진행 중인 시도(reason 없음)는 중복 실행을 막기 위해 그대로 거절한다.
+        if row["reason"] is None:
+            return False
+        await self.db.prepare(
+            "UPDATE pc_helper_registration SET actor_user_id=?, attempt_id=?, requested_at=?, "
+            "dispatch_id=NULL, reason=NULL WHERE device_id=? AND source_sha256=? "
+            "AND attempt_id=? AND reason IS NOT NULL"
+        ).bind(actor, attempt_id, _stamp(now), _device(device_id), sha256, row["attempt_id"]).run()
+        row = await self.load_updater_registration(device_id=device_id, sha256=sha256)
         return bool(row and row["attempt_id"] == attempt_id)
 
     async def record_updater_registration(self, *, device_id: str, sha256: str, attempt_id: str,
