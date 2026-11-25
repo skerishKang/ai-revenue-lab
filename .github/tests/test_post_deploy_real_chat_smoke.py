@@ -331,3 +331,61 @@ def test_non_json_response_reports_stage_and_still_fails(monkeypatch, capsys, fa
     assert "REAL_CHAT=FAIL lane=engine code=unexpected_http_json_shape" in captured.out
     assert "synthetic non-json response" not in captured.out
     assert "synthetic-password" not in captured.out
+
+
+@pytest.mark.parametrize(
+    ("shared_code", "expected"),
+    [
+        ("shared_login_refused_http_429", "stage=password http_status=429 server_error_code=none"),
+        ("shared_login_refused_http_503.exchange.exchange_failed",
+         "stage=code_exchange http_status=503 server_error_code=exchange_failed"),
+        ("shared_login_refused_http_401", "stage=password http_status=401 server_error_code=none"),
+        ("shared_login_refused_http_503.issue_session.issue_session_failed",
+         "stage=session http_status=503 server_error_code=issue_session_failed"),
+        ("shared_login_form_missing",
+         "stage=login_start http_status=unknown server_error_code=shared_login_form_missing"),
+    ],
+)
+def test_shared_login_failure_prints_only_closed_diagnostic(
+    monkeypatch, capsys, shared_code, expected,
+) -> None:
+    """The 409 common-login path preserves the FAIL verdict and exposes no secrets."""
+    secret = "synthetic-private-password-never-output"
+    _install(monkeypatch, {
+        ("POST", smoke.LOGIN): (409, {
+            "error": {"code": "email_login_moved"}, "detail": secret,
+        }),
+    })
+    monkeypatch.setenv(smoke.QA_USERNAME_ENV, "synthetic-private-qa-identifier")
+    monkeypatch.setenv(smoke.QA_PASSWORD_ENV, secret)
+
+    def refuse(_origin, _username, _password):
+        raise smoke.SharedLoginError(shared_code)
+
+    monkeypatch.setattr(smoke, "login_session_cookie", refuse)
+    assert smoke.run("engine") == 1
+    out = capsys.readouterr().out
+    diagnostics = [line for line in out.splitlines() if line.startswith("QA_LOGIN_DIAGNOSTIC ")]
+    assert diagnostics == ["QA_LOGIN_DIAGNOSTIC " + expected]
+    assert "REAL_CHAT=FAIL lane=engine code=qa_login_refused" in out
+    assert secret not in out
+    assert "synthetic-private-qa-identifier" not in out
+    assert "email_login_moved" not in "\n".join(diagnostics)
+
+
+def test_shared_login_missing_session_and_unknown_code_are_sanitized(monkeypatch, capsys) -> None:
+    _install(monkeypatch, {("POST", smoke.LOGIN): (409, {"error": {"code": "email_login_moved"}})})
+    monkeypatch.setenv(smoke.QA_USERNAME_ENV, "synthetic-private-identifier")
+    monkeypatch.setenv(smoke.QA_PASSWORD_ENV, "synthetic-private-password")
+    monkeypatch.setattr(smoke, "login_session_cookie", lambda *args: None)
+    assert smoke.run("chat") == 1
+    out = capsys.readouterr().out
+    assert "QA_LOGIN_DIAGNOSTIC stage=session http_status=unknown server_error_code=shared_login_session_missing" in out
+    assert out.count("QA_LOGIN_DIAGNOSTIC ") == 1
+    assert "REAL_CHAT=FAIL lane=chat code=qa_login_refused" in out
+    assert smoke._shared_login_diagnostic("shared_login_refused_http_429.suspect.secret") == (
+        "password", "429", "none"
+    )
+    assert smoke._shared_login_diagnostic("untrusted-code token=private") == (
+        "login_start", "unknown", "unknown"
+    )
