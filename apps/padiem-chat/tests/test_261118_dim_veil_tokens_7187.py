@@ -45,7 +45,8 @@ CHANGED = {
         ("background", "var(--surface-veil-dim)"): 1,
     },
     "padiem-surfaces.css": {
-        ("background", "var(--surface-veil-dim) !important"): 1,
+        # #8340: 캡 제거로 !important 없이 토큰만 소비한다.
+        ("background", "var(--surface-veil-dim)"): 1,
     },
 }
 
