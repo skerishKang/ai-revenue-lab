@@ -57,6 +57,10 @@
 :root {
   /* #8210: 왼쪽 메뉴의 칸 규격 — 여백·모서리·높이를 한 곳에서 정한다. */
   /* #7811 token-family --sidebar sha256=065efae7ca7a5c1b9a70dd285a484bab255864f98b4dd865334bb2bc6dde848c */
+  /* #7811 token-family --sidebar-utility sha256=9842aeb7b9faa4f0acade8a83a5f20be5a10f13cde01b25a1305bc51aef08c11 */
+  --sidebar-utility-avatar-ink: #17324a;
+  --sidebar-utility-avatar-edge: #52677a;
+  --sidebar-utility-expired-ink: #7f1d1d;
   --sidebar-control-inset: 12px;
   --sidebar-control-radius: 12px;
   --sidebar-control-height: 44px;
