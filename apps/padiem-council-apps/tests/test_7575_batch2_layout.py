@@ -235,3 +235,78 @@ def test_small_required_marker_and_phone_cta_gutter(url):
         finally:
             page.close()
         browser.close()
+
+
+# ── #8770 CTO 검토 재수리: 숫자로 재는 배너·필수 표시 ───────────────────────
+_LUM = r"""const lum = (s) => {
+  let parts;
+  const m = s.match(/color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)/);
+  if (m) parts = m.slice(1, 4).map(Number).map(v => v * 255);
+  else parts = s.match(/[\d.]+/g).slice(0, 3).map(Number);
+  const [r, g, b] = parts.map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); });
+  return .2126 * r + .7152 * g + .0722 * b;
+};"""
+
+
+def test_review_1_mobile_banner_keeps_the_tool_name(url):
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        page = browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            _ready(page, url, 390, 844)
+            for tool, name in (("speech", "축사·인사말"), ("meeting", "회의정리·활동집")):
+                _open(page, tool)
+                m = page.evaluate("""() => {
+                  const bar = document.querySelector('.council-workspace-bar');
+                  const title = bar.querySelector('.council-workspace-title');
+                  const back = bar.querySelector('.council-back');
+                  const ink = document.createRange(); ink.selectNodeContents(title);
+                  const t = ink.getBoundingClientRect(), box = bar.getBoundingClientRect();
+                  return {text: title.textContent.trim(), display: getComputedStyle(title).display,
+                          textW: Math.round(t.width), textH: Math.round(t.height),
+                          onScreen: t.left >= 0 && t.right <= innerWidth
+                                    && t.left >= box.left && t.right <= box.right,
+                          backW: Math.round(back.getBoundingClientRect().width), vw: innerWidth};
+                }""")
+                assert m["display"] != "none" and m["text"] == name, m
+                assert m["textW"] > 0 and m["textH"] > 0 and m["onScreen"], m
+                assert m["backW"] <= m["vw"] * 0.6, m
+                page.click("#councilBack")
+                page.wait_for_timeout(120)
+        finally:
+            page.close()
+        browser.close()
+
+
+def test_review_2_required_marker_is_inline_and_legible(url):
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        for width, height in ((1440, 900), (390, 844)):
+            page = browser.new_page(viewport={"width": width, "height": height})
+            try:
+                _ready(page, url, width, height)
+                _open(page, "speech")
+                m = page.evaluate(r"""() => {
+                  %s
+                  const label = [...document.querySelectorAll('#councilSpeechForm label')]
+                    .find(l => l.querySelector('[required]'));
+                  const marker = label.querySelector('.council-required');
+                  const wrap = marker.parentElement;
+                  const node = [...wrap.childNodes].find(n => n.nodeType === 3 && n.textContent.trim());
+                  const rg = document.createRange(); rg.selectNode(node);
+                  const a = rg.getBoundingClientRect(), b = marker.getBoundingClientRect();
+                  const bgOf = (n) => { while (n) { const c = getComputedStyle(n).backgroundColor;
+                    if (c && !/rgba\(0, 0, 0, 0\)|transparent/.test(c)) return c; n = n.parentElement; }
+                    return 'rgb(255, 255, 255)'; };
+                  const ink = getComputedStyle(marker).color, bg = bgOf(marker);
+                  const x = lum(ink), y = lum(bg);
+                  return {text: marker.textContent.trim(),
+                          dy: Math.round(Math.abs((a.top + a.bottom) / 2 - (b.top + b.bottom) / 2)),
+                          inputTop: Math.round(label.querySelector('input').getBoundingClientRect().top),
+                          ink, bg, contrast: Math.round((Math.max(x, y) + .05) / (Math.min(x, y) + .05) * 100) / 100};
+                }""" % _LUM)
+                assert m["text"] == "(필수)" and m["dy"] <= 4, m
+                assert m["contrast"] >= 4.5, m
+            finally:
+                page.close()
+        browser.close()

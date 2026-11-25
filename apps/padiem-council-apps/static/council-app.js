@@ -655,9 +655,21 @@
 
   function markRequiredFields() {
     document.querySelectorAll(".council-form label").forEach((label) => {
-      if (!label.querySelector || !label.querySelector("[required]")) return;
-      if (label.textContent.indexOf("(필수)") >= 0) return;
-      label.appendChild(el("span", "council-required", " (필수)"));
+      const input = label.querySelector("input[required], textarea[required], select[required]");
+      if (!input) return;
+      const old = label.querySelector(".council-required");
+      if (old) old.remove();
+      // The label is a grid: a bare text node, the input and the marker would each
+      // become their own row. Wrap the label text and the marker in one inline item
+      // so "(필수)" sits on the same line as the label, above the input.
+      const textNodes = Array.from(label.childNodes)
+        .filter((node) => node.nodeType === 3 && node.textContent.trim());
+      const words = textNodes.map((node) => node.textContent.trim()).join(" ");
+      if (!words) return;
+      textNodes.forEach((node) => node.remove());
+      const wrap = el("span", "council-label-text", words + " ");
+      wrap.appendChild(el("span", "council-required", "(필수)"));
+      label.insertBefore(wrap, input);
     });
   }
 

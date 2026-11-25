@@ -2511,7 +2511,19 @@ html[data-style="minimal"] .council-workspace-bar {
 }
 .council-record-moves { display: inline-flex; gap: 8px; margin-left: auto; }
 .council-record-moves .council-record-move { min-width: 44px; min-height: 44px; }
-.council-required { color: var(--council-accent); font-weight: 700; }
+.council-label-text { white-space: nowrap; }
+.council-required { color: var(--text); font-weight: 700; }
+/* #7575 2차 CTO 검토: 좁은 화면에서도 띠에 도구 이름을 남기고, '처음으로'는
+   내용 폭만큼만 차지하게 한다(390에서 전체 폭 350px → 내용 폭). */
+@media (max-width: 767px) {
+  html.council-in-workspace .council-workspace-bar .council-workspace-title { display: block; }
+}
+@media (max-width: 390px) {
+  html.council-in-workspace .council-workspace-bar .council-back {
+    width: auto;
+    justify-content: flex-start;
+  }
+}
 @media (max-width: 390px) {
   .council-hero-actions { margin-inline: 16px; }
 }
