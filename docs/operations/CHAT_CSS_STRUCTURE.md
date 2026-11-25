@@ -144,6 +144,7 @@
 
 영구 허용:
 
+- `padiem-glass-panel-layout.css` — Glass의 921px 이상 패널 높이·모서리·스크롤과 페이지 안쪽 여백. `shared-six-panel-frame.css` 바로 앞에 로드한다.
 - `styles.css` — 바이트 고정 참조 미러. 이 파일의 색 숫자는 옮기지 않는다.
 - `padiem-foundation.css`의 외부 글꼴 `@import` 3줄 — 색이 아니다.
 - `padiem-foundation.css` `body::after`의 SVG 노이즈 data URI — 색이 아닌 텍스처 페이로드다. 격자선 색은 토큰이다.

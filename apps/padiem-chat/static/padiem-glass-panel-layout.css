@@ -1,0 +1,39 @@
+/* Glass desktop frames fit between the 78px top bar and their two 16px margins. */
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"] body .app-shell {
+    --padiem-six-panel-height: calc(100dvh - 110px);
+    --padiem-six-panel-min-height: 0;
+    --padiem-six-panel-radius: 30px;
+    --padiem-six-panel-overflow-y: auto;
+    --padiem-six-panel-background: var(--shared-six-panel-frame-bg);
+    --padiem-six-panel-shadow: var(--shared-six-panel-frame-shadow);
+    --padiem-six-panel-page-padding: calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px;
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell :is(
+    .conversation, .calendar-view, .connectors-view,
+    .library-view, .automation-view, .meeting-view, .util-view,
+    .settings-advanced-view
+  ) {
+    height: var(--padiem-six-panel-height);
+    min-height: var(--padiem-six-panel-min-height);
+    max-height: var(--padiem-six-panel-height);
+    border-radius: var(--padiem-six-panel-radius);
+    overflow-y: var(--padiem-six-panel-overflow-y);
+  }
+
+  /* Align the first line of the page header with the Chat and Claw eyebrow. */
+  html[data-theme="padiem-glass"] body .app-shell :is(
+    .calendar-view, .connectors-view, .library-view, .automation-view, .meeting-view, .util-view,
+    .settings-advanced-view
+  ) {
+    padding: var(--padiem-six-panel-page-padding);
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell[data-state="settings"] .settings-advanced-view,
+  html[data-theme="padiem-glass"] body .app-shell[data-state="connectors"] .connectors-view {
+    height: var(--padiem-six-panel-height, auto);
+    min-height: var(--padiem-six-panel-min-height);
+    max-height: var(--padiem-six-panel-height);
+  }
+}
