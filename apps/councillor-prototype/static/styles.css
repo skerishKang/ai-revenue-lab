@@ -51,6 +51,11 @@
   --muted: #546078;
   --border: rgba(11, 26, 46, 0.12);
 }
+/* #8740: one place changes every reading size; the base sizes stay untouched. */
+html[data-text-size="large"] {
+  --fs-body: 20px;
+  --fs-label: 17px;
+}
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
@@ -116,6 +121,9 @@ main { flex: 1 0 auto; }
   font: inherit; font-size: var(--fs-label); letter-spacing: 0.02em;
 }
 .ghost:hover { border-color: var(--accent-2); color: var(--accent-2); }
+.text-size-label-large { display: none; }
+html[data-text-size="large"] .text-size-label-normal { display: none; }
+html[data-text-size="large"] .text-size-label-large { display: inline; }
 .top-cta {
   display: inline-flex; align-items: center; gap: 8px; min-height: var(--tap);
   background: var(--accent); color: var(--paper); text-decoration: none;
@@ -715,7 +723,7 @@ main { flex: 1 0 auto; }
 }
 .lightbox-foot h2 { margin: 0 0 4px; font-family: var(--font-serif); font-size: 18px; font-weight: 700; color: var(--ivory); }
 .lightbox-foot a { display: inline-flex; min-height: var(--tap); align-items: center; color: var(--ivory); font-size: var(--fs-body); font-weight: 600; }
-.lightbox-source { max-width: 720px; margin: 4px auto 6px; color: rgba(245, 241, 232, .86); font-size: var(--fs-label); line-height: 1.6; }
+.lightbox-source { max-width: 720px; margin: 4px auto 6px; color: rgba(245, 241, 232, .86); font-size: var(--fs-body); line-height: 1.6; }
 @media (max-width: 900px) {
 body.lightbox-open .mobile-tabbar { visibility: hidden; }
 .lightbox-foot { padding-bottom: calc(var(--tap) + 16px + env(safe-area-inset-bottom, 0px)); }
@@ -856,6 +864,6 @@ body.lightbox-open .mobile-tabbar { visibility: hidden; }
 .combined-policy-row a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--text); }
 /* Public change history uses the existing card palette. */.site-change-list { display: grid; gap: 16px; margin-top: 24px; }
 .site-change h2 { font-size: 20px; margin: 8px 0; }
-.site-change time { color: var(--muted); font-size: 16px; }
+.site-change time { color: var(--muted); font-size: var(--fs-body); }
 .site-change ul { padding-inline-start: 24px; line-height: 1.8; }
 
