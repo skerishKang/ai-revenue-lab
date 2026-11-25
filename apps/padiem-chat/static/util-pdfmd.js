@@ -538,10 +538,11 @@
     previewGrid.appendChild(origPane);
     previewGrid.appendChild(mdPane);
     previewWrap.appendChild(previewGrid);
-    resultCol.appendChild(previewWrap);
+    panel.appendChild(previewWrap);
 
     /* 지난 변환(#7865 바꿀 모양 5): 접힌 한 줄, 펼치면 날짜·파일 이름·배지 목록. */
     const histFold = el("details", "pdfmd-history-fold");
+    histFold.open = true;
     const histSummary = el("summary", "pdfmd-history-summary", "지난 변환");
     histSummary.setAttribute("aria-label", "지난 변환 펼치기");
     histFold.appendChild(histSummary);
@@ -607,7 +608,7 @@
       original.show(previewItem, page);
       if (scrollMarkdown) {
         const block = mdView.querySelector('[data-page="' + page + '"]');
-        if (block) block.scrollIntoView({ block: "start", behavior: "smooth" });
+        if (block) block.scrollIntoView({ block: "start", behavior: "auto" });
       }
     }
 

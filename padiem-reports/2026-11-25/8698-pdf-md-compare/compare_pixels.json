@@ -1,0 +1,86 @@
+{
+ "rows": [
+  {
+   "combo": "light__1440x950",
+   "pixels": 544368
+  },
+  {
+   "combo": "light__390x844",
+   "pixels": 50933
+  },
+  {
+   "combo": "dark__1440x950",
+   "pixels": 552186
+  },
+  {
+   "combo": "dark__390x844",
+   "pixels": 65049
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "pixels": 402312
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "pixels": 264723
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "pixels": 947574
+  },
+  {
+   "combo": "cinematic__390x844",
+   "pixels": 214745
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "pixels": 1226179
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "pixels": 215022
+  }
+ ],
+ "nonzero": [
+  {
+   "combo": "light__1440x950",
+   "pixels": 544368
+  },
+  {
+   "combo": "light__390x844",
+   "pixels": 50933
+  },
+  {
+   "combo": "dark__1440x950",
+   "pixels": 552186
+  },
+  {
+   "combo": "dark__390x844",
+   "pixels": 65049
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "pixels": 402312
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "pixels": 264723
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "pixels": 947574
+  },
+  {
+   "combo": "cinematic__390x844",
+   "pixels": 214745
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "pixels": 1226179
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "pixels": 215022
+  }
+ ]
+}

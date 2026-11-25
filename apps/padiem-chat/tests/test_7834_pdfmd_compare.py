@@ -32,6 +32,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
+from css_rules import rules_for_sheet
 from _support.document_convert_routes import (
     build_client,
     open_job,
@@ -159,6 +160,7 @@ def test_a_control_choice_outranks_the_scroll_position() -> None:
     assert "document.activeElement === pageInput" in js["early_returns"]
     # Enter commits the typed page; `change` alone waits for a blur.
     assert 'event.key !== "Enter"' in js["early_returns"]
+    assert ("block.scrollIntoView", '{ block: "start", behavior: "auto" }') in js["call_args"]
 
 
 def test_the_original_pane_shows_a_rendered_page_image() -> None:
@@ -182,6 +184,30 @@ def test_the_original_pane_shows_a_rendered_page_image() -> None:
     assert ".pdfmd-original-page" in css["selectors"]
     assert ("object-fit", "contain") in css["declarations"]
     assert ".pdfmd-iframe" not in css["selectors"]
+
+
+def test_compare_preview_spans_the_full_tool_panel() -> None:
+    module = js_view("util-pdfmd.js")
+    assert ("panel.appendChild", "previewWrap") in module["call_args"]
+    assert ("resultCol.appendChild", "previewWrap") not in module["call_args"]
+    preview_rules = [rule for rule in rules_for_sheet("util-menu.css")
+                     if ".pdfmd-preview" in rule.selectors]
+    assert len(preview_rules) == 1
+    assert preview_rules[0].declarations["grid-column"] == "1 / -1"
+
+
+def test_markdown_tables_keep_their_shape_with_horizontal_scroll() -> None:
+    pages = js_view("util-pdfmd-pages.js")
+    table_styles = [value for value in pages["string_literals"]
+                    if "width:max-content" in value and "overflow-x:auto" in value]
+    assert len(table_styles) == 1
+    assert "min-width:100%" in table_styles[0]
+    assert any("white-space:nowrap" in value for value in pages["string_literals"])
+
+
+def test_recent_conversions_start_expanded() -> None:
+    module = js_view("util-pdfmd.js")
+    assert module["assignments_full"].get("histFold.open") == "true"
 
 
 def test_a_failed_item_never_claims_completion() -> None:
