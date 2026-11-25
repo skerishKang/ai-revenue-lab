@@ -1,0 +1,30 @@
+{
+  "sheet": "sidebar-unified.css",
+  "base": "c2d6b8703",
+  "claim": "https://github.com/skerishKang/ai-revenue-lab/issues/8340#issuecomment-7153957147",
+  "removed_count": 32,
+  "kept_count": 2,
+  "kept": [
+    {"line": 24, "property": "box-shadow", "beats": "스위프 10조합에서 제거 시 계산값 차이"},
+    {"line": 120, "property": "background", "beats": "계약 시험 test_sidebar_single_cell_261016이 transparent 캡 요구"}
+  ],
+  "audit": {
+    "css_important": {"before": 327, "after": 295, "delta": -32},
+    "css_themed_important": {"before": 83, "after": 83, "delta": 0},
+    "sidebar-unified.css": {"before": 34, "after": 2, "delta": -32},
+    "css_color_literals": {"before": 880, "after": 880, "delta": 0},
+    "css_rules": {"before": 4356, "after": 4356, "delta": 0},
+    "css_files": {"before": 93, "after": 93, "delta": 0}
+  },
+  "verification": {
+    "computed": {"combos": 10, "declarations": 34, "removed": 32, "diffs": 0, "report": "computed_report.json", "sweep": "sweep_decisions.json"},
+    "pixel": {"host": "comp2", "combos": 10, "themes": 5, "viewports": ["1440x950", "390x844"], "screens": ["project-dialog"], "nonzero": [], "report": "compare_report.json"},
+    "control": {"host": "comp2", "combos": 10, "nonzero": [], "report": "control_report.json"},
+    "tests": "관련 사이드바 계약 pytest 68 passed"
+  },
+  "notes": [
+    "측정은 컴2(ssh comp2)에서 수행했고 컴1에서는 변경 시험과 구조 래칫만 실행했다.",
+    "캡처·diff 이미지 합계 8장(#8661). 새 !important·색 리터럴·규칙 수 증가 없음.",
+    "#7811 토큰 시험의 !important 개수 기대값을 의도된 제거분만큼 갱신했다."
+  ]
+}

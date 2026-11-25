@@ -82,4 +82,5 @@ def test_existing_important_count_is_unchanged_in_the_color_declarations():
         1 for rule in rules for prop, value in rule.declarations.items()
         if not prop.startswith("--") and "!important" in value
     )
-    assert important == 34, important
+    # #8340: 픽셀·계약 검증에서 차이가 나는 캡 2건만 남겼다.
+    assert important == 2, important
