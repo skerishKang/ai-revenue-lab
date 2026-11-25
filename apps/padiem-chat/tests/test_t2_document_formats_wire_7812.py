@@ -1,26 +1,20 @@
 """T2: the document formats listeners stay in the conversation module."""
 from __future__ import annotations
 
-import json
 import shutil
 import subprocess
-from pathlib import Path
 
-import pytest
+from _support.conversation_module_source import static_path
 
-STATIC = Path(__file__).resolve().parents[1] / "static"
-MODULE = STATIC / "chat-conversation-module.js"
-APP = STATIC / "app.js"
 
 
 def test_document_formats_listener_contract() -> None:
     node = shutil.which("node")
     assert node, "Node.js is required"
-    source = json.dumps(MODULE.read_text(encoding="utf-8"))
     harness = """
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
-const source = SOURCE;
+const source = require('node:fs').readFileSync(process.argv[1], 'utf8');
 const listeners = [];
 const toggle = {
   attrs: {},
@@ -57,18 +51,22 @@ assert.equal(panel.hidden, false, 'inside click must retain open panel');
 listeners[0][2]();
 assert.equal(panel.hidden, true);
 console.log('PASS');
-""".replace("SOURCE", source)
+"""
     result = subprocess.run(
-        [node, "-e", harness], capture_output=True, text=True, timeout=20
+        [node, "-e", harness, static_path("chat-conversation-module.js")], capture_output=True, text=True, timeout=20
     )
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "PASS"
 
 
 def test_wire_is_relocated_not_duplicated() -> None:
-    app = APP.read_text(encoding="utf-8")
-    module = MODULE.read_text(encoding="utf-8")
-    assert app.count("conversationModule().wireDocumentFormats();") == 1
-    assert "document.getElementById(\"documentFormatsToggle\")" not in app
-    assert module.count("document.getElementById(\"documentFormatsToggle\")") == 1
-    assert module.count("document.getElementById(\"documentFormatsPanel\")") == 1
+    # Use the existing parsed-source contract helpers for ownership checks.
+    from _support.conversation_module_source import _source, function_counts
+    app = "app.js"
+    module = "chat-conversation-module.js"
+    assert _source(app).count("conversationModule().wireDocumentFormats();") == 1
+    assert function_counts(module).get("wireDocumentFormats") == 1
+    for name in ("documentFormatsToggle", "documentFormatsPanel"):
+        lookup = f'document.getElementById("{name}")'
+        assert _source(app).count(lookup) == 0
+        assert _source(module).count(lookup) == 1
