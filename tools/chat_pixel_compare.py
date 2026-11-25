@@ -7,7 +7,7 @@ CSS를 바꾼 PR이 "화면이 그대로"임을 보이는 유일한 증거(#7809
 센다. 실제 서버·로그인·고객 계정을 쓰지 않고, 외부 요청은 전부 abort 한다.
 
 조합: 테마 5(light·dark·padiem-glass·cinematic·padiem-home) × 폭 2
-(1440×950, 390×844) × 화면 13.
+(1440×950, 390×844) × 화면 14.
 
 안정화 규칙(#7187 반경 하네스 r41의 조사를 정리한 것):
 - 움직임을 멈추는 CSS는 <style> 요소로 넣는다(스크립트 문자열 주입은 매 페이지
@@ -78,6 +78,7 @@ SCREENS = (
     ("conversation", "index.html", "", None, "messages", "guest"),
     ("claw", "index.html", "#padiem-claw", None, "claw", "guest"),
     ("util", "index.html", "#util", None, None, "guest"),
+    ("meeting-capture", "index.html", "#util/meeting", None, "nav:meetingNavButton", "signed_in"),
     ("calendar", "index.html", "", ("calendar", "calendarView"), "nav:calendarNavButton", "signed_in"),
     ("automation", "index.html", "", ("automation", "automationView"), "nav:automationNavButton", "guest"),
     ("library", "index.html", "", ("library", "libraryView"), "nav:filesNavButton", "signed_in"),
@@ -87,6 +88,12 @@ SCREENS = (
     ("project-dialog", "index.html", "", None, "dialog:projectDialog", "guest"),
     ("auth-dialog", "index.html", "", None, "open:guestLoginEntryButton", "guest"),
 )
+
+# 변조 시험 대상 토큰: 토큰 이름 → (원래 값, 바꾼 값). 기본값은 --radius-pill(claw 화면).
+TAMPER_MUTATIONS = {
+    "--radius-pill": ("999px", "0px"),
+    "--meeting-capture-panel-edge": ("rgba(128,128,128,.28)", "rgba(255,0,0,1)"),
+}
 
 # 캘린더 모의 항목의 날짜: Date.now 고정 값(1762900000000)의 서울 날짜.
 FROZEN_DATE = "2026-11-12"  # FROZEN 시각(2026-11-12 09:00 KST)의 날짜
@@ -583,6 +590,7 @@ class Compare:
             "automation": "() => ({visible: !!document.querySelector('.app-shell[data-state=\\'automation\\'] #automationView')})",
             "library": "() => ({visible: !!document.querySelector('.app-shell[data-state=\\'library\\'] #libraryView')})",
             "util": "() => ({visible: !!document.querySelector('.app-shell[data-state=\\'util\\']')})",
+            "meeting-capture": "() => ({visible: !!document.querySelector('.app-shell[data-state=\\'meeting\\'] #meetingView:not([hidden])')})",
         }
         if name in checks:
             return page.evaluate(checks[name])
@@ -594,6 +602,7 @@ class Compare:
             "claw": lambda m: m.get("claw", {}).get("hero") is True
                 and m.get("claw", {}).get("cards", 0) >= 3,
             "conversation": lambda m: m.get("messages", 0) >= 4,
+            "meeting-capture": lambda m: m.get("visible") is True,
             "settings-dialog": lambda m: m.get("open") is True,
             "profile-menu": lambda m: m.get("open") is True,
             "feedback-dialog": lambda m: m.get("open") is True,
@@ -712,6 +721,10 @@ def main() -> None:
     parser.add_argument("--after", default=None, help="비교 대상 리비전. 없으면 작업 트리")
     parser.add_argument("--control", action="store_true", help="제어쌍: 같은 대상 두 번 찍어 비교")
     parser.add_argument("--tamper", action="store_true", help="변조 시험: 토큰 하나를 바꿔 차이 검출")
+    parser.add_argument("--tamper-token", default="--radius-pill", choices=sorted(TAMPER_MUTATIONS),
+                        help="변조할 토큰(기본 --radius-pill)")
+    parser.add_argument("--tamper-surface", default="claw", choices=[s[0] for s in SCREENS],
+                        help="변조 차이를 찍을 화면(기본 claw)")
     parser.add_argument("--only", nargs="*", default=[], help="--only theme=<이름> screen=<이름> viewport=<1440x950|390x844>")
     parser.add_argument("--computed", nargs=2, metavar=("선택자", "속성"), help="다섯 테마에서 계산 값 출력")
     parser.add_argument("--limit", type=int, default=0, help="조합 수 제한(연결 확인용)")
@@ -795,12 +808,13 @@ def main() -> None:
         # (r41 관찰 — 이번 실측에서도 0). 999px→40px 는 높이 80px 이하 요소에서
         # 클램프로 무차이므로 쓰지 않는다.
         tokens = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
-        token_name, old, new = "--radius-pill", "999px", "0px"
+        token_name = args.tamper_token
+        old, new = TAMPER_MUTATIONS[token_name]
         if f"{token_name}: {old};" not in tokens:
             print(f"변조 대상 토큰을 찾지 못했다: {token_name}: {old};")
             sys.exit(3)
         mutated = tokens.replace(f"{token_name}: {old};", f"{token_name}: {new};", 1)
-        screen = next(s for s in SCREENS if s[0] == "claw")
+        screen = next(s for s in SCREENS if s[0] == args.tamper_surface)
         server, port = start_server(STATIC)
         runner = Browser().start()
         clean_side = Compare(port, runner)
@@ -811,7 +825,7 @@ def main() -> None:
             mutated_shot = tampered_side.capture_validated(theme, size_name, screen)
             pixels = diff_pixels(clean[0], mutated_shot[0])
             report = {"phase": "tamper", "token": token_name, "mutation": f"{old}→{new}",
-                      "screen": "claw", "pixel": pixels,
+                      "screen": screen[0], "pixel": pixels,
                       "seconds": round(time.time() - started, 1)}
             print(json.dumps(report, ensure_ascii=False, indent=2))
             (out_dir / "tamper_report.json").write_text(
