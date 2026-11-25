@@ -330,7 +330,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -873,7 +873,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -1017,7 +1017,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -1163,7 +1163,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -1305,7 +1305,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -1445,7 +1445,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -1595,7 +1595,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -1735,7 +1735,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -1877,7 +1877,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -2021,7 +2021,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -2163,7 +2163,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -2305,7 +2305,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -2447,7 +2447,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
@@ -2589,7 +2589,7 @@ jobs:
       - name: Prepare reusable QA environment (self-hosted)
         if: runner.environment == 'self-hosted'
         shell: bash
-        run: bash .github/scripts/b62_qa_prepare.sh
+        run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
         if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
