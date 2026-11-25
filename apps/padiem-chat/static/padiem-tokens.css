@@ -920,6 +920,15 @@
   --sidebar-unified-hover-wash: rgba(127,127,127,.18);
   --sidebar-unified-action-hover-wash: rgba(127,127,127,.15);
 
+  /* #7811 token-family --util-menu sha256=3f9c7a84406be51e1249a2c664987e0e2f53c559d647f5c071fa945fc370bc3e */
+  /* #7811 C2 util-menu(261125): PDFMD 보기 화면의 고정 팔레트. 값은 치환 전
+     선언마다 박혀 있던 리터럴 그대로이고 :root에만 둔다 — 다섯 테마에서 같은
+     값으로 칠해져 온 고정 팔레트라 테마 블록이 덮지 않는다. 흰 판(#ffffff)은
+     이미 :root 전용인 --voice-panel-bg를 재사용한다(테마가 덮는
+     --user-bubble-text는 쓰지 않음). */
+  --util-menu-pdfmd-shell-wash: rgba(239, 243, 246, .48);
+  --util-menu-pdfmd-warn-ink: #8a4b0f;
+
   /* 연결 카드 대비 수리(261124): 연결 화면 카드는 다섯 테마 모두 밝은 판이다
      (standalone-views.css의 #connectorsViewBody .capability-card). 카드 이름은
      글자색을 지정받지 못해 테마 글자색을 상속했고, 상태 줄은 테마 --muted를
