@@ -416,7 +416,11 @@ jobs:
             done
           done
 
-          xargs -r -P 4 -n 3 bash -c '
+          # Cold-start contention: the first four parallel Chromium processes
+          # all hit the mock server before its import/cache warm-up finished,
+          # and the 10s goto budget expired (exit 123 from xargs). Keep every
+          # assertion and timeout unchanged; only halve the parallel cold start.
+          xargs -r -P 2 -n 3 bash -c '
             set -euo pipefail
             theme="$1"
             viewport="$2"
