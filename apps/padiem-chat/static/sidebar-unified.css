@@ -10,7 +10,7 @@
   min-width: 0;
   border: 1px solid var(--line);
   border-radius: 11px;
-  background: rgba(255,255,255,.10);
+  background: var(--editorial-chip-edge);
   overflow: hidden;
 }
 .sidebar .sidebar-actions-row.sidebar-unified-row > :is(.new-chat, .sidebar-search-item) {
@@ -46,7 +46,7 @@
 }
 .sidebar .sidebar-actions-row.sidebar-unified-row > :is(.new-chat, .sidebar-search-item):not(:disabled):hover,
 .sidebar .sidebar-actions-row.sidebar-unified-row > :is(.new-chat, .sidebar-search-item).is-active {
-  background: rgba(127,127,127,.14) !important;
+  background: var(--control-wash-strong) !important;
 }
 /* Original search module owns button availability; don't enable a guest
  * or an unavailable server-side history capability through CSS. 11-03 audit:
@@ -77,15 +77,15 @@ html body .app-shell .sidebar :is(.project-row, .history-row) {
   min-height: 44px;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
-  background: rgba(127,127,127,.09);
+  background: var(--sidebar-unified-row-wash);
   position: relative;
 }
 html body .app-shell .sidebar :is(.project-row, .history-row):hover,
 html body .app-shell .sidebar :is(.project-row, .history-row):focus-within {
-  background: rgba(127,127,127,.18);
+  background: var(--sidebar-unified-hover-wash);
 }
 html body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]) {
-  background: rgba(127,127,127,.22);
+  background: var(--b66-quote-faint-edge);
 }
 html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item) {
   flex: 1 1 0;
@@ -146,7 +146,7 @@ html body .app-shell .sidebar .history-actions > .history-more {
   cursor: pointer;
 }
 html body .app-shell .sidebar :is(.project-manage, .history-more):is(:hover, :focus-visible) {
-  background: rgba(127,127,127,.15) !important;
+  background: var(--sidebar-unified-action-hover-wash) !important;
 }
 html body .app-shell .sidebar .history-actions[open] { z-index: 10; }
 /* Original delete popup remains a distinct temporary menu, not a second
