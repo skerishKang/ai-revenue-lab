@@ -5,7 +5,7 @@
   const API = "/api/account/pc-delegations";
   const PAIRINGS = "/api/pc/pairings";
   const ACTIONS = ["write", "move", "delete"];
-  const state = { rules: [], links: [], ready: false, busy: false, epoch: 0, status: "pc-delegation-empty" };
+  const state = { rules: [], links: [], ready: false, linksKnown: false, busy: false, epoch: 0, status: "pc-delegation-empty" };
   let nodes;
 
   function copy(key) { return root.__padiemLocale?.text(key) || key; }
@@ -37,6 +37,7 @@
     const enabled = state.ready && !state.busy;
     const canAdd = enabled && activeLinks().length > 0;
     for (const name of ["device", "folder", "actions", "mode", "add"]) nodes[name].disabled = !canAdd;
+    nodes.guide.hidden = !(state.ready && state.linksKnown && state.links.length === 0);
     nodes.refresh.disabled = state.busy;
     nodes.status.textContent = copy(state.status);
     nodes.section.setAttribute("aria-busy", String(state.busy));
@@ -86,6 +87,7 @@
     const epoch = ++state.epoch;
     state.busy = true;
     state.ready = false;
+    state.linksKnown = false;
     state.status = "pc-delegation-loading";
     paintControls();
     try {
@@ -93,12 +95,14 @@
       if (epoch !== state.epoch) return;
       state.rules = [];
       state.links = [];
+      state.linksKnown = false;
       if (settings.status === 401) state.status = "pc-delegation-login";
       else if (settings.status !== 200 || !validRules(settings.body)) state.status = "pc-delegation-load-error";
       else {
         state.ready = true;
         state.rules = settings.body.rules;
         const links = pairings?.status === 200 && pairings.body?.ok === true && Array.isArray(pairings.body.links) ? pairings.body.links : [];
+        state.linksKnown = pairings?.status === 200 && pairings.body?.ok === true && Array.isArray(pairings.body.links);
         state.links = links.filter((link) => link && typeof link.mesh_node_id === "string" && link.mesh_node_id);
         state.status = activeLinks().length ? "pc-delegation-ready" : "pc-delegation-no-pc-help";
       }
@@ -106,6 +110,7 @@
       if (epoch !== state.epoch) return;
       state.rules = [];
       state.links = [];
+      state.linksKnown = false;
       state.status = "pc-delegation-load-error";
     } finally {
       if (epoch === state.epoch) { state.busy = false; paint(); }
@@ -158,7 +163,13 @@
       device: byId("pcDelegationDevice"), folder: byId("pcDelegationFolder"), actions: byId("pcDelegationActions"),
       mode: byId("pcDelegationMode"), add: byId("pcDelegationAdd"), refresh: byId("pcDelegationRefresh"),
       list: byId("pcDelegationList"), editor: byId("pcDelegationEditor"),
+      guide: byId("pcDelegationEmptyGuide"), connect: byId("pcDelegationConnect"),
       write: byId("pcDelegationWrite"), move: byId("pcDelegationMove"), delete: byId("pcDelegationDelete") };
+    nodes.connect.addEventListener("click", () => {
+      // Reuse the existing PC connection destination and its install flow.
+      root.document.getElementById("advancedSettingsBack")?.click();
+      root.document.getElementById("pcConnectStarter")?.click();
+    });
     nodes.add.addEventListener("click", () => { void addRule(); });
     nodes.refresh.addEventListener("click", () => { void load(); });
     nodes.editor.addEventListener("keydown", (event) => {
@@ -171,6 +182,7 @@
       state.ready = false;
       state.rules = [];
       state.links = [];
+      state.linksKnown = false;
       state.busy = false;
       state.status = "pc-delegation-login";
       paint();

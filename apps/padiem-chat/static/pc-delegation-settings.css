@@ -33,3 +33,22 @@
 .pc-delegation-editor > small { line-height: 1.5; color: var(--text-secondary, var(--text)); }
 .pc-delegation-settings button { min-height: 40px; }
 .pc-delegation-settings :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.pc-delegation-empty-guide {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 16px;
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  color: var(--text);
+}
+.pc-delegation-empty-guide[hidden] { display: none; }
+.pc-delegation-empty-guide > strong { color: var(--text); }
+.pc-delegation-empty-guide > p { margin: 0; line-height: 1.6; }
+.settings-advanced-view .pc-delegation-empty-guide > button.settings-action {
+  justify-self: start;
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}

@@ -25,11 +25,19 @@ const settle = async () => { for (let i = 0; i < 8; ++i) await new Promise((reso
 function setup({ rules = [], links = [LINK], status = 200 } = {}) {
   const ids = {};
   for (const name of ["Settings", "Status", "Folder", "Actions", "Add", "Refresh", "List", "Editor", "Write", "Move", "Delete"]) ids["pcDelegation" + name] = new Element(name === "Folder" ? "input" : "div");
+  ids.pcDelegationEmptyGuide = new Element("div");
+  ids.pcDelegationEmptyGuide.hidden = true;
+  ids.pcDelegationConnect = new Element("button");
+  ids.advancedSettingsBack = new Element("button");
+  ids.pcConnectStarter = new Element("button");
   ids.pcDelegationDevice = new Element("select");
   ids.pcDelegationMode = new Element("select");
   ids.pcDelegationMode.value = "allow";
   ids.settingsDialog = new Element("dialog");
   ids.settingsDialog.open = false;
+  const navigation = [];
+  ids.advancedSettingsBack.addEventListener("click", () => navigation.push("back"));
+  ids.pcConnectStarter.addEventListener("click", () => navigation.push("pc-connect"));
   const events = {}, observers = [], calls = [];
   const server = { rules: clone(rules), links, status, writeStatus: 200, pending: null };
   let locale = "ko", sequence = 0;
@@ -53,7 +61,7 @@ function setup({ rules = [], links = [LINK], status = 200 } = {}) {
   };
   vm.runInNewContext(source, { window, console });
   return {
-    ids, calls, server,
+    ids, calls, server, navigation,
     async open() { ids.settingsDialog.open = true; (events["padiem:advanced-settings-open"] || []).forEach((callback) => callback()); await settle(); },
     async event(name) { for (const callback of events[name] || []) callback(); await settle(); },
     language(value) { locale = value; },
@@ -74,6 +82,50 @@ async function main() {
     assert.equal(app.ids.pcDelegationWrite.checked, false);
     assert.ok(app.calls.every((call) => call.credentials === "same-origin" && call.cache === "no-store"));
     assert.ok(!/localStorage|sessionStorage|innerHTML/.test(source));
+  });
+  await check("empty PC copy remains exact and uses existing theme tokens", async () => {
+    const dir = require("node:path").resolve(__dirname, "../static");
+    const html = fs.readFileSync(require("node:path").join(dir, "index.html"), "utf8");
+    const locale = fs.readFileSync(require("node:path").join(dir, "locale-pc-connect.js"), "utf8");
+    const css = fs.readFileSync(require("node:path").join(dir, "pc-delegation-settings.css"), "utf8");
+    for (const copy of [
+      "연결된 PC가 없어요.",
+      "PC를 연결하면 Claw가 그 PC의 파일을 읽고 정리하거나, 프로그램을 대신 실행할 수 있어요.",
+      "PC 연결하기",
+      "PC 연결 없이도 대화와 유틸은 그대로 쓸 수 있어요.",
+    ]) {
+      assert.ok(html.includes(copy));
+      assert.ok(locale.includes(copy));
+    }
+    assert.match(css, /background: var\(--text\)/);
+    assert.match(css, /color: var\(--text\)/);
+    assert.ok(!/!important/.test(css.slice(css.indexOf(".pc-delegation-empty-guide {"))));
+  });
+  await check("zero linked PCs show guidance and the existing PC connection destination", async () => {
+    const app = setup({ links: [] });
+    await app.open();
+    assert.equal(app.ids.pcDelegationEmptyGuide.hidden, false);
+    assert.equal(app.ids.pcDelegationAdd.disabled, true);
+    assert.equal(app.ids.pcDelegationFolder.disabled, true);
+    app.ids.pcDelegationConnect.click();
+    assert.deepEqual(app.navigation, ["back", "pc-connect"]);
+    assert.equal(app.calls.length, 2);
+    app.server.links = [LINK];
+    app.ids.pcDelegationRefresh.click(); await settle();
+    assert.equal(app.ids.pcDelegationEmptyGuide.hidden, true);
+    assert.equal(app.ids.pcDelegationAdd.disabled, false);
+  });
+  await check("one or more PCs never display the guidance, including paused PCs", async () => {
+    for (const links of [[LINK], [LINK, {...LINK, mesh_node_id: "node/two"}],
+                         [{...LINK, state: "paused"}]]) {
+      const app = setup({ links }); await app.open();
+      assert.equal(app.ids.pcDelegationEmptyGuide.hidden, true);
+      assert.deepEqual(app.navigation, []);
+    }
+  });
+  await check("signed-out and failed loading never claim that zero PCs are connected", async () => {
+    const app = setup({ links: [], status: 401 }); await app.open();
+    assert.equal(app.ids.pcDelegationEmptyGuide.hidden, true);
   });
   await check("add saves exact folder/action/device scope without SEND", async () => {
     const app = setup(); await app.open();
