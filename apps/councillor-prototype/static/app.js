@@ -77,7 +77,7 @@ function loadSiteData() {
     });
 }
 
-// app.js loads before home.js, so the home renderer waits on the same promise.
+// One script owns data loading and every page hook, including the home media column.
 window.COUNCILLOR_DATA_READY = loadSiteData();
 
 function prefersReducedMotion() {
@@ -156,23 +156,10 @@ function showActivityList(status) {
 
 function initActivityList(list) {
   if (list.dataset.activityReady === "true") return;
-  const rows = new Map(Array.from(list.querySelectorAll(".activity-item[id]"),
-    (row) => [row.id, row]));
-  ACTIVITIES.forEach((a) => {
-    const id = activityIdFor(a);
-    let li = rows.get(id);
-    // The source preview has no build-time markup.
-    if (!li) {
-      li = document.createElement("li");
-      li.className = "activity-item";
-      li.id = id;
-      li.innerHTML =
-        '<div class="item-date">' + escapeHtml(a.date) +
-          '<span class="item-tag">' + escapeHtml(a.tag) + "</span></div>" +
-        '<div class="item-title">' + escapeHtml(a.title) +
-          '<span class="item-more" aria-hidden="true">자세히 ›</span></div>';
-      list.appendChild(li);
-    }
+  // prerender.py owns the row markup; here we only make the existing rows usable.
+  list.querySelectorAll(".activity-item[id]").forEach((li) => {
+    const a = activityById(li.id);
+    if (!a) return;
     li.setAttribute("tabindex", "0");
     li.setAttribute("role", "button");
     const open = () => showDetail(a);
@@ -302,20 +289,6 @@ function syncActivityFromLocation(initial) {
   }
 }
 
-function mediaCardMarkup(m, cls, content) {
-  const raw = String(m.url || "");
-  const url = /^(https?:\/\/|\.\/)/.test(raw) ? raw : "";
-  const attrs = ' data-media-thumb="' + escapeHtml(m.thumb) + '" data-media-title="' +
-    escapeHtml(m.title) + '" data-media-url="' + escapeHtml(url) + '" data-media-kind="' + escapeHtml(m.kind) + '"';
-  const card = url
-    ? '<a class="' + cls + '"' + attrs + ' href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' + content + '</a>'
-    : '<span class="' + cls + '"' + attrs + '>' + content + '</span>';
-  const sourceLabel = mediaSourceLabel(m);
-  const source = url ? '<a class="media-source" href="' + escapeHtml(url) +
-    '" target="_blank" rel="noopener" aria-label="' + escapeHtml(m.title + " " + sourceLabel + " (새 탭)") + '">↗</a>' : "";
-  return card + source;
-}
-
 function enhanceMediaCards(root = document) {
   root.querySelectorAll("[data-media-thumb]").forEach((card) => {
     card.removeAttribute("target");
@@ -330,54 +303,7 @@ function enhanceMediaCards(root = document) {
 
 function renderMedia() {
   const grid = document.getElementById("mediaGrid");
-  if (!grid) return;
-  if (!grid.querySelector("[data-media-thumb]")) {
-    grid.innerHTML = MEDIA.filter((m) => m.thumb).map((m) => {
-      const thumb = '<img class="tile-thumb" src="' + escapeHtml(m.thumb) +
-        '" srcset="' + escapeHtml(thumbSrcSet(m.thumb)) + '" sizes="(max-width: 760px) 50vw, 33vw" width="640" height="480" alt="' +
-        escapeHtml(m.title) + '" loading="lazy" />';
-      const notes = (m.notes || []).map((n) => '<li>' + escapeHtml(n) + '</li>').join("");
-      return '<div class="media-card">' + mediaCardMarkup(m, "media-tile", thumb +
-        '<div class="tile-kind">' + escapeHtml(m.kind) + '</div>' +
-        '<div class="tile-title">' + escapeHtml(m.title) + '</div><ul class="tile-notes">' + notes + '</ul>') + '</div>';
-    }).join("");
-  }
-  enhanceMediaCards(grid);
-}
-
-function renderNews() {
-  const list = document.getElementById("newsList");
-  if (!list) return;
-  list.innerHTML = "";
-  NEWS.forEach((n) => {
-    const li = document.createElement("li");
-    li.className = "news-item";
-    const href = safeHref(n.url);
-    const title = href
-      ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(n.title)}</a>`
-      : escapeHtml(n.title);
-    li.innerHTML =
-      `<div class="news-date">${escapeHtml(n.date)}${n.source ? " · " + escapeHtml(n.source) : ""}</div>` +
-      `<h3 class="news-title">${title}</h3>` +
-      `<p class="news-body">${escapeHtml(n.body || "")}</p>`;
-    list.appendChild(li);
-  });
-  markExternalLinks();
-}
-
-// Tiles without a picture of their own move to a compact link list under the gallery
-// instead of holding an empty 4:3 box.
-function renderMediaMore() {
-  const list = document.getElementById("mediaMore");
-  if (!list) return;
-  const rest = MEDIA.filter((m) => !m.thumb);
-  list.innerHTML = rest.map((m) =>
-    '<li><a href="' + escapeHtml(safeHref(m.url) || "#") + '" target="_blank" rel="noopener">' +
-      '<span class="link-title">' + escapeHtml(m.title) + "</span>" +
-      '<span class="link-kind">' + escapeHtml(m.kind) + "</span>" +
-    "</a></li>"
-  ).join("");
-  markExternalLinks();
+  if (grid) enhanceMediaCards(grid);
 }
 
 // The email lives once in miraen.json. The markup carries the same value for a visitor
@@ -403,33 +329,7 @@ function renderBills(policy) {
     return;
   }
   if (block) block.hidden = false;
-  const assemblies = Array.from(new Set(items.map((item) => Number(item.assembly))))
-    .filter((n) => Number.isFinite(n))
-    .sort((a, b) => b - a);
-  grid.innerHTML = assemblies.map((assembly) => {
-    const group = items.filter((item) => Number(item.assembly) === assembly);
-    if (group.length === 0) return "";
-    const rows = group.map((item) => {
-      const href = safeHref(item.url);
-      return '<li class="bill-row"><a href="' + escapeHtml(href || "#") + '" target="_blank" rel="noopener">' +
-        '<span class="bill-number">' + escapeHtml(item.number) + "</span>" +
-        '<span class="bill-title">' + escapeHtml(item.title) + "</span>" +
-        '<span class="bill-date">' + escapeHtml(item.date) + "</span>" +
-        '<span class="bill-result">' + escapeHtml(item.result) + "</span>" +
-      "</a></li>";
-    }).join("");
-    const label = "제" + assembly + "대 광주광역시의회" +
-      '<span class="bill-count">' + group.length + "건</span>";
-    if (assembly === 8) {
-      return '<details class="bill-group" data-assembly="' + assembly + '" data-total="' + group.length + '">' +
-        '<summary class="bill-group-title" id="bills-' + assembly + '">' + label + "</summary>" +
-        '<ul class="bill-list">' + rows + "</ul></details>";
-    }
-    return '<section class="bill-group" data-assembly="' + assembly + '" data-total="' + group.length + '" aria-labelledby="bills-' + assembly + '">' +
-      '<h3 class="bill-group-title" id="bills-' + assembly + '">' + label + "</h3>" +
-      '<ul class="bill-list">' + rows + "</ul></section>";
-  }).join("");
-  markExternalLinks();
+  // The bill groups and rows are prerendered; only the search is wired here.
   const search = document.getElementById("billSearch");
   if (!search) return;
   const status = document.getElementById("billSearchStatus");
@@ -477,31 +377,13 @@ function renderBills(policy) {
 function renderPolicy(data) {
   const policy = data && data.policy;
   if (!policy) return;
-  const groups = [
-    ["policyForums", policy.forums, "원문 보기"],
-    ["policyVideos", policy.videos, "영상 보기"]
-  ];
-  groups.forEach(([id, items, label]) => {
-    const grid = document.getElementById(id);
-    if (!grid) return;
-    const list = Array.isArray(items) ? items : [];
-    const block = grid.closest(".policy-block");
-    if (list.length === 0) {
-      if (block) block.hidden = true;
-      return;
-    }
-    grid.innerHTML = list.map((item, index) => {
-      const meta = [item.date, item.note].filter(Boolean).join(" · ");
-      const href = safeHref(item.url);
-      return '<article class="info-card">' +
-        '<div class="card-num">' + String(index + 1).padStart(2, "0") + "</div>" +
-        "<h3>" + escapeHtml(item.title) + "</h3>" +
-        (meta ? '<p class="policy-meta">' + escapeHtml(meta) + "</p>" : "") +
-        (item.summary ? "<p>" + escapeHtml(item.summary) + "</p>" : "") +
-        (href ? '<a class="card-link" href="' + escapeHtml(href) + '" target="_blank" rel="noopener">' + label + "</a>" : "") +
-        "</article>";
-    }).join("");
-  });
+  // Policy cards and bill groups are prerendered; only their search is wired here.
+  [["policyForums", policy.forums], ["policyVideos", policy.videos], ["policyBills", policy.bills]]
+    .forEach(([id, items]) => {
+      const grid = document.getElementById(id);
+      const block = grid && grid.closest(".policy-block");
+      if (block) block.hidden = !Array.isArray(items) || items.length === 0;
+    });
   renderBills(policy);
   const source = document.getElementById("policySource");
   if (source && policy.source) source.textContent = policy.source;
@@ -586,6 +468,48 @@ function stepLightbox(delta) {
   renderLightbox();
 }
 
+// #8732: share the canonical activity URL — without the search query.
+function initActivityShare() {
+  const button = document.getElementById("activityShare");
+  const status = document.getElementById("shareStatus");
+  if (!button) return;
+  button.hidden = false;
+  button.addEventListener("click", async () => {
+    const item = activityById(currentActivityHash());
+    if (!item) return;
+    const meta = document.querySelector('meta[name="site-base"]');
+    const base = meta && meta.content && !meta.content.includes("__")
+      ? meta.content.replace(/\/$/, "") : window.location.origin;
+    const url = base + "/activity#" + activityIdFor(item);
+    const title = item.title;
+    const text = title + " — 임미란 의원 의정활동";
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title: title, text: text, url: url });
+        return;
+      } catch (error) {
+        if (error && error.name === "AbortError") return;
+      }
+    }
+    try {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const field = document.createElement("textarea");
+        field.value = url;
+        field.setAttribute("readonly", "");
+        document.body.appendChild(field);
+        field.select();
+        document.execCommand("copy");
+        field.remove();
+      }
+      if (status) { status.textContent = "주소를 복사했습니다"; status.hidden = false; }
+    } catch (error) {
+      if (status) { status.textContent = "주소를 복사하지 못했습니다. 주소창에서 직접 복사해 주세요."; status.hidden = false; }
+    }
+  });
+}
+
 function initLightbox() {
   const dialog = document.getElementById("mediaLightbox");
   if (!dialog) return;
@@ -657,13 +581,6 @@ function initTheme() {
 
 // The home search box arrives as ?q=... on the search screens; each page feeds
 // the value into its own existing search control (no second engine).
-function renderActivityLegend(data) {
-  const legend = document.getElementById("activityLegend");
-  if (!legend || legend.children.length) return;
-  legend.innerHTML = Object.entries(data.activity.glossary?.categories || {})
-    .map(([term, meaning]) => '<span><b>' + escapeHtml(term) + '</b> ' + escapeHtml(meaning) + '</span>').join("");
-}
-
 function renderCombinedPolicy(query, activityCount = 0) {
   const section = document.getElementById("combinedPolicy");
   if (!section || !SITE || !combinedSearchActive()) return;
@@ -698,14 +615,15 @@ document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   markExternalLinks();
   initLightbox();
+  initActivityShare();
+  const homeMedia = document.getElementById("homeMedia");
+  if (homeMedia) enhanceMediaCards(homeMedia);
 
   window.COUNCILLOR_DATA_READY.then((data) => {
     if (!data) return;
     renderContact(data);
-    renderActivityLegend(data);
     renderPolicy(data);
     renderIntroVideo(data);
-    renderMediaMore();
   });
 
   const search = document.getElementById("activitySearch");
@@ -759,7 +677,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (query && search) search.value = query;
     renderActivities(filter ? filter.value : "all", search ? search.value : query);
     renderMedia();
-    renderNews();
     syncActivityFromLocation(true);
   });
 });

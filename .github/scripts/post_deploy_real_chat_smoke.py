@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import sys
 from http.cookiejar import CookieJar
 from pathlib import Path
@@ -53,6 +54,7 @@ from b62_live_long_context_canary import _ID as CONVERSATION_ID  # noqa: E402
 from shared_login_client import (  # noqa: E402  (sibling script import)
     SESSION_COOKIE,
     SharedLoginError,
+    _LOGIN_CODE_CODES,
     login_session_cookie,
 )
 
@@ -114,11 +116,67 @@ def _attach_session_cookie(opener, cookie: str) -> None:
     opener.addheaders.append(("Cookie", f"{SESSION_COOKIE}={cookie}"))
 
 
+
+# Only closed names parsed by shared_login_client may enter the diagnostics.
+# The HTTP response body, cookies, credentials, URLs and exception text stay out.
+_SHARED_HTTP = re.compile(
+    r"^shared_login_refused_http_([1-5][0-9]{2})"
+    r"(?:\.([a-z][a-z0-9_]{0,40})\.([a-z][a-z0-9_]{0,80})|_noheader|_unknownheader)?$"
+)
+_DIRECT_HTTP = re.compile(r"^login_refused_http_([1-5][0-9]{2})_([a-z][a-z0-9_]{0,80})$")
+_AGE_HTTP = re.compile(
+    r"^shared_login_age_confirm_refused_http_([1-5][0-9]{2})"
+    r"(?:\.[a-z][a-z0-9_]{0,40}\.([a-z][a-z0-9_]{0,80})|_noheader|_unknownheader)?$"
+)
+_SHARED_STAGE = {
+    "validate_flow": "login_start",
+    "client_assertion": "code_exchange",
+    "exchange": "code_exchange",
+    "resolve_account": "code_exchange",
+    "provision_profile": "session",
+    "issue_session": "session",
+}
+
+
+def _shared_login_diagnostic(public_code: str) -> tuple[str, str, str]:
+    """Derive closed diagnostic fields without exposing exception text."""
+    match = _SHARED_HTTP.fullmatch(public_code)
+    if match:
+        http_status, stage_name, code = match.groups()
+        if stage_name in _SHARED_STAGE and code in _LOGIN_CODE_CODES:
+            return _SHARED_STAGE[stage_name], http_status, code
+        return "password", http_status, "none"
+
+    match = _AGE_HTTP.fullmatch(public_code)
+    if match:
+        http_status, code = match.groups()
+        return "password", http_status, code if code in _LOGIN_CODE_CODES else "none"
+
+    match = _DIRECT_HTTP.fullmatch(public_code)
+    if match:
+        return "login_start", match.group(1), match.group(2)
+
+    if public_code in {"shared_login_session_missing", "shared_login_age_confirm_loop"}:
+        return "session", "unknown", public_code
+    if public_code in {"shared_login_form_missing", "shared_login_unreachable",
+                       "login_transport_unavailable", "shared_login_response_too_large"}:
+        return "login_start", "unknown", public_code
+    return "login_start", "unknown", "unknown"
+
+
+def _print_shared_login_diagnostic(public_code: str) -> None:
+    stage, http_status, server_code = _shared_login_diagnostic(public_code)
+    print(
+        f"QA_LOGIN_DIAGNOSTIC stage={stage} http_status={http_status} "
+        f"server_error_code={server_code}"
+    )
+
 def _sign_in_shared(opener, origin: str, username: str, password: str) -> None:
     """The common login form is the only email entrance since the migration."""
     try:
         cookie = login_session_cookie(origin, username, password)
     except SharedLoginError as exc:
+        _print_shared_login_diagnostic(exc.public_code)
         # #7853 follow-up: the shared helper answers the one-time age screen for
         # its own QA account. A screen that returns after that answer is not a
         # refused credential, so it keeps its own code instead of collapsing
@@ -127,6 +185,7 @@ def _sign_in_shared(opener, origin: str, username: str, password: str) -> None:
             raise CanaryError("qa_age_confirm_loop") from None
         raise CanaryError("qa_login_refused") from None
     if not cookie:
+        _print_shared_login_diagnostic("shared_login_session_missing")
         raise CanaryError("qa_login_refused")
     _attach_session_cookie(opener, cookie)
 

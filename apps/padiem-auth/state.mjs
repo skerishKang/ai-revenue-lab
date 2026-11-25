@@ -1,9 +1,14 @@
 // Storage primitive only. Callers must authenticate the client and hash tokens first.
 // One Durable Object per session serializes code consumption and refresh rotation.
 export class AuthState {
-  constructor(state) {
+  constructor(state, { lazySchema = false } = {}) {
     this.storage = state.storage;
     this.sql = this.storage.sql;
+    this._schemaGroups = new Set();
+    if (!lazySchema) this._initializeFullSchema();
+  }
+
+  _initializeFullSchema() {
     this.sql.exec('CREATE TABLE IF NOT EXISTS blocked_accounts (account_id TEXT PRIMARY KEY)');
     this.sql.exec(`CREATE TABLE IF NOT EXISTS google_accounts (
       fingerprint TEXT PRIMARY KEY, account_id TEXT NOT NULL UNIQUE,
@@ -93,6 +98,45 @@ export class AuthState {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS login_failure_budget (
       source TEXT NOT NULL, day INTEGER NOT NULL, used INTEGER NOT NULL, PRIMARY KEY(source, day)
     )`);
+    this._schemaGroups.add("full");
+  }
+
+  // A fresh short-lived login Durable Object does not need the entire account
+  // registry, recovery and gate schema. Preserve existing persisted table shapes.
+  _ensureSchemaFor(action) {
+    if (this._schemaGroups.has('full')) return;
+    const login = new Set(['createLogin','consumeLogin','beginPasswordAttempt',
+      'createCode','exchangeCode','inspectRefresh','rotate','revoke','forceRevokeForAccountDeletion']);
+    const age = new Set(['createAgeConfirmation','readAgeConfirmation','claimAgeConfirmation',
+      'recordAgeConfirmationResult','readAgeConfirmationResult','consumeAgeConfirmation']);
+    let group = 'full';
+    if (login.has(action)) group = 'login';
+    else if (action === 'claimAssertion') group = 'assertions';
+    else if (action === 'loginFailureBudget' || action === 'resetLoginFailureBudget') group = 'failureBudget';
+    else if (age.has(action)) group = 'age';
+    if (this._schemaGroups.has(group)) return;
+    if (group === 'full') {
+      this._initializeFullSchema();
+    } else if (group === 'login') {
+      this.sql.exec('CREATE TABLE IF NOT EXISTS login_requests (state_digest TEXT PRIMARY KEY, browser_digest TEXT NOT NULL, client TEXT NOT NULL, redirect TEXT NOT NULL, service_state TEXT NOT NULL, service_challenge TEXT NOT NULL, google_nonce TEXT NOT NULL, google_verifier TEXT NOT NULL, expires INTEGER NOT NULL, consumed INTEGER NOT NULL DEFAULT 0)');
+      try { this.sql.exec('ALTER TABLE login_requests ADD COLUMN lt_theme TEXT'); } catch { /* already migrated */ }
+      this.sql.exec('CREATE TABLE IF NOT EXISTS password_attempts (state_digest TEXT PRIMARY KEY, attempts INTEGER NOT NULL, expires INTEGER NOT NULL)');
+      this.sql.exec('CREATE TABLE IF NOT EXISTS codes (digest TEXT PRIMARY KEY, client TEXT NOT NULL, redirect TEXT NOT NULL, challenge TEXT NOT NULL, subject TEXT NOT NULL, account_id TEXT NOT NULL, expires INTEGER NOT NULL, consumed INTEGER NOT NULL DEFAULT 0, amr TEXT)');
+      this.sql.exec('CREATE TABLE IF NOT EXISTS code_profiles (digest TEXT PRIMARY KEY, ciphertext TEXT NOT NULL, expires INTEGER NOT NULL)');
+      this.sql.exec('CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, client TEXT NOT NULL, subject TEXT NOT NULL, account_id TEXT NOT NULL, expires INTEGER NOT NULL, revoked INTEGER NOT NULL DEFAULT 0, amr TEXT)');
+      this.sql.exec('CREATE TABLE IF NOT EXISTS refresh_tokens (digest TEXT PRIMARY KEY, session_id TEXT NOT NULL, used INTEGER NOT NULL DEFAULT 0, grace_until INTEGER, grace_result TEXT, successor TEXT)');
+      try { this.sql.exec('ALTER TABLE codes ADD COLUMN amr TEXT'); } catch { /* already migrated */ }
+      try { this.sql.exec('ALTER TABLE sessions ADD COLUMN amr TEXT'); } catch { /* already migrated */ }
+    } else if (group === 'assertions') {
+      this.sql.exec('CREATE TABLE IF NOT EXISTS client_assertions (jti TEXT PRIMARY KEY, expires INTEGER NOT NULL)');
+    } else if (group === 'failureBudget') {
+      this.sql.exec('CREATE TABLE IF NOT EXISTS login_failure_budget (source TEXT NOT NULL, day INTEGER NOT NULL, used INTEGER NOT NULL, PRIMARY KEY(source, day))');
+    } else if (group === 'age') {
+      this.sql.exec('CREATE TABLE IF NOT EXISTS age_confirmations (handle_digest TEXT PRIMARY KEY, browser_digest TEXT NOT NULL, payload TEXT NOT NULL, expires INTEGER NOT NULL)');
+      try { this.sql.exec('ALTER TABLE age_confirmations ADD COLUMN claimed INTEGER NOT NULL DEFAULT 0'); } catch { /* already migrated */ }
+      try { this.sql.exec('ALTER TABLE age_confirmations ADD COLUMN result TEXT'); } catch { /* already migrated */ }
+    }
+    this._schemaGroups.add(group);
   }
 
   // Whether the address of this password account was confirmed by its mail

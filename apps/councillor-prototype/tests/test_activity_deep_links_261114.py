@@ -6,6 +6,8 @@ import http.server
 import json
 import os
 import re
+import subprocess
+import sys
 import threading
 from pathlib import Path
 
@@ -34,13 +36,21 @@ CHROME = next(
 DATA = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))
 ITEMS = DATA["activity"]["items"]
 APP_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
-HOME_JS = (ROOT / "static" / "home.js").read_text(encoding="utf-8")
-ACTIVITY_HTML = (ROOT / "activity.html").read_text(encoding="utf-8")
+HOME_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+import sys  # noqa: E402
+
+sys.path.insert(0, str(ROOT / "scripts"))
+import assemble  # noqa: E402
+
+ACTIVITY_HTML = assemble.render("activity.html")
+
+
+BUILD_DIR = None
 
 
 class StaticHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(ROOT), **kwargs)
+        super().__init__(*args, directory=str(BUILD_DIR), **kwargs)
 
     def guess_type(self, path):
         value = super().guess_type(path)
@@ -56,7 +66,19 @@ class StaticServer(http.server.ThreadingHTTPServer):
 
 
 @pytest.fixture(scope="module")
-def base_url():
+def build_dir(tmp_path_factory):
+    global BUILD_DIR
+    out = tmp_path_factory.mktemp("councillor-8724a-dist")
+    result = subprocess.run(
+        [sys.executable, "scripts/build-dist", "--out", str(out)],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8")
+    assert result.returncode == 0, result.stderr
+    BUILD_DIR = out
+    return out
+
+
+@pytest.fixture(scope="module")
+def base_url(build_dir):
     server = StaticServer(("127.0.0.1", 0), StaticHandler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
@@ -94,8 +116,9 @@ def test_every_activity_has_a_stable_unique_id():
 
 
 def test_home_cards_link_to_activity_detail():
-    assert 'card.href = "./activity.html#" + activityId(a);' in HOME_JS
-    assert "const activityId = (a) => a.id ||" in HOME_JS
+    prerender = (ROOT / "scripts" / "prerender.py").read_text(encoding="utf-8")
+    assert 'f\'<a class="key-activity-card" href="./activity#{_e(item["id"])}">\'' in prerender
+    assert "item.get(\"id\") or f'a-" in prerender
 
 
 def test_activity_detail_opens_from_url_and_focuses_title(browser, base_url):

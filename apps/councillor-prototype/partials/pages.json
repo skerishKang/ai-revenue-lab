@@ -1,0 +1,131 @@
+{
+  "index.html": {
+    "title": "임미란 의원 — 의정활동 정보",
+    "description": "남구 제1선거구 임미란 의원(전남광주통합특별시의회)의 의정활동 기록과 소식, 사진·영상 자료, 의원실 연락처를 한 곳에서 확인하세요.",
+    "canonical": "  <link rel=\"canonical\" href=\"__BASE_URL__/\" />\n",
+    "robots": "",
+    "ogTitle": "임미란 의원 — 의정활동 정보",
+    "ogDescription": "남구 제1선거구 임미란 의원(전남광주통합특별시의회)의 의정활동 기록과 소식, 사진·영상 자료, 의원실 연락처를 한 곳에서 확인하세요.",
+    "ogUrl": "  <meta property=\"og:url\" content=\"__BASE_URL__/\" />\n",
+    "themeScript": "<script>\n    (function () {\n      try {\n        var saved = localStorage.getItem(\"theme\");\n        if (saved === \"light\" || saved === \"dark\") {\n          document.documentElement.setAttribute(\"data-theme\", saved);\n        } else if (window.matchMedia && window.matchMedia(\"(prefers-color-scheme: dark)\").matches) {\n          document.documentElement.setAttribute(\"data-theme\", \"dark\");\n        }\n      } catch (error) { /* 저장소를 쓸 수 없으면 밝은 테마 기본값을 유지합니다. */ }\n    })();\n  </script>",
+    "boldPreload": "  <link rel=\"preload\" href=\"./static/fonts/maruburi/MaruBuri-Bold.woff2\" as=\"font\" type=\"font/woff2\" crossorigin />\n",
+    "subsetPreloads": "  <!-- Keep the tablet hero action widths stable before first paint. -->\n  <link rel=\"preload\" as=\"font\" type=\"font/woff2\" href=\"./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.88.woff2\" crossorigin media=\"(max-width: 900px)\">\n  <link rel=\"preload\" as=\"font\" type=\"font/woff2\" href=\"./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.89.woff2\" crossorigin media=\"(max-width: 900px)\">\n  <link rel=\"preload\" as=\"font\" type=\"font/woff2\" href=\"./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.90.woff2\" crossorigin media=\"(max-width: 900px)\">\n  <link rel=\"preload\" as=\"font\" type=\"font/woff2\" href=\"./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.91.woff2\" crossorigin media=\"(max-width: 900px)\">\n"
+  },
+  "about.html": {
+    "title": "의원 소개 — 임미란 의원",
+    "description": "임미란 의원의 프로필과 학력, 경력, 당선 기록. 전남광주통합특별시의회 제1대 의원, 보건복지위원회·예산결산특별위원회 활동.",
+    "canonical": "  <link rel=\"canonical\" href=\"__BASE_URL__/about\" />\n",
+    "robots": "",
+    "ogTitle": "의원 소개 — 임미란 의원",
+    "ogDescription": "임미란 의원의 프로필과 학력, 경력, 당선 기록. 전남광주통합특별시의회 제1대 의원, 보건복지위원회·예산결산특별위원회 활동.",
+    "ogUrl": "  <meta property=\"og:url\" content=\"__BASE_URL__/about\" />\n",
+    "themeScript": "<script>\n    (function () {\n      try {\n        var saved = localStorage.getItem(\"theme\");\n        if (saved === \"light\" || saved === \"dark\") {\n          document.documentElement.setAttribute(\"data-theme\", saved);\n        }\n      } catch (error) { /* 저장소를 쓸 수 없으면 밝은 테마 기본값을 유지합니다. */ }\n    })();\n  </script>",
+    "boldPreload": "  <link rel=\"preload\" href=\"./static/fonts/maruburi/MaruBuri-Bold.woff2\" as=\"font\" type=\"font/woff2\" crossorigin />\n",
+    "subsetPreloads": ""
+  },
+  "activity.html": {
+    "title": "의정활동 — 임미란 의원",
+    "description": "임미란 의원의 본회의·위원회 참석과 당선 기록 등 의회 공개 자료로 확인한 의정활동 목록입니다.",
+    "canonical": "  <link rel=\"canonical\" href=\"__BASE_URL__/activity\" />\n",
+    "robots": "",
+    "ogTitle": "의정활동 — 임미란 의원",
+    "ogDescription": "임미란 의원의 본회의·위원회 참석과 당선 기록 등 의회 공개 자료로 확인한 의정활동 목록입니다.",
+    "ogUrl": "  <meta property=\"og:url\" content=\"__BASE_URL__/activity\" />\n",
+    "themeScript": "<script>\n    (function () {\n      try {\n        var saved = localStorage.getItem(\"theme\");\n        if (saved === \"light\" || saved === \"dark\") {\n          document.documentElement.setAttribute(\"data-theme\", saved);\n        }\n      } catch (error) { /* 저장소를 쓸 수 없으면 밝은 테마 기본값을 유지합니다. */ }\n    })();\n  </script>",
+    "boldPreload": "  <link rel=\"preload\" href=\"./static/fonts/maruburi/MaruBuri-Bold.woff2\" as=\"font\" type=\"font/woff2\" crossorigin />\n",
+    "subsetPreloads": "  <!-- Preload the existing mobile legend glyphs before first paint to avoid a row-wrap shift. -->\n  <link rel=\"preload\" as=\"font\" type=\"font/woff2\" href=\"./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.88.woff2\" crossorigin media=\"(max-width: 900px)\">\n  <link rel=\"preload\" as=\"font\" type=\"font/woff2\" href=\"./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.89.woff2\" crossorigin media=\"(max-width: 900px)\">\n  <link rel=\"preload\" as=\"font\" type=\"font/woff2\" href=\"./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.90.woff2\" crossorigin media=\"(max-width: 900px)\">\n  <link rel=\"preload\" as=\"font\" type=\"font/woff2\" href=\"./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.91.woff2\" crossorigin media=\"(max-width: 900px)\">\n"
+  },
+  "policy.html": {
+    "title": "정책자료 — 임미란 의원",
+    "description": "임미란 의원의 정책토론회·발언 영상과 제8·9대 대표발의 조례안 모음입니다.",
+    "canonical": "  <link rel=\"canonical\" href=\"__BASE_URL__/policy\" />\n",
+    "robots": "",
+    "ogTitle": "정책자료 — 임미란 의원",
+    "ogDescription": "임미란 의원의 정책토론회·발언 영상과 제8·9대 대표발의 조례안 모음입니다.",
+    "ogUrl": "  <meta property=\"og:url\" content=\"__BASE_URL__/policy\" />\n",
+    "themeScript": "<script>\n    (function () {\n      try {\n        var saved = localStorage.getItem(\"theme\");\n        if (saved === \"light\" || saved === \"dark\") {\n          document.documentElement.setAttribute(\"data-theme\", saved);\n        }\n      } catch (error) { /* 저장소를 쓸 수 없으면 밝은 테마 기본값을 유지합니다. */ }\n    })();\n  </script>",
+    "boldPreload": "  <link rel=\"preload\" href=\"./static/fonts/maruburi/MaruBuri-Bold.woff2\" as=\"font\" type=\"font/woff2\" crossorigin />\n",
+    "subsetPreloads": ""
+  },
+  "media.html": {
+    "title": "미디어 — 임미란 의원",
+    "description": "전남광주통합특별시의회와 광주광역시의회가 공개한 임미란 의원 사진·영상 자료입니다.",
+    "canonical": "  <link rel=\"canonical\" href=\"__BASE_URL__/media\" />\n",
+    "robots": "",
+    "ogTitle": "미디어 — 임미란 의원",
+    "ogDescription": "전남광주통합특별시의회와 광주광역시의회가 공개한 임미란 의원 사진·영상 자료입니다.",
+    "ogUrl": "  <meta property=\"og:url\" content=\"__BASE_URL__/media\" />\n",
+    "themeScript": "<script>\n    (function () {\n      try {\n        var saved = localStorage.getItem(\"theme\");\n        if (saved === \"light\" || saved === \"dark\") {\n          document.documentElement.setAttribute(\"data-theme\", saved);\n        }\n      } catch (error) { /* 저장소를 쓸 수 없으면 밝은 테마 기본값을 유지합니다. */ }\n    })();\n  </script>",
+    "boldPreload": "  <link rel=\"preload\" href=\"./static/fonts/maruburi/MaruBuri-Bold.woff2\" as=\"font\" type=\"font/woff2\" crossorigin />\n",
+    "subsetPreloads": ""
+  },
+  "news.html": {
+    "title": "새 소식 — 임미란 의원",
+    "description": "홈페이지의 새로운 기능과 개선 사항을 알려드립니다.",
+    "canonical": "  <link rel=\"canonical\" href=\"__BASE_URL__/news\" />\n",
+    "robots": "",
+    "ogTitle": "새 소식 — 임미란 의원",
+    "ogDescription": "홈페이지의 새로운 기능과 개선 사항을 알려드립니다.",
+    "ogUrl": "  <meta property=\"og:url\" content=\"__BASE_URL__/news\" />\n",
+    "themeScript": "<script>\n    (function () {\n      try {\n        var saved = localStorage.getItem(\"theme\");\n        if (saved === \"light\" || saved === \"dark\") {\n          document.documentElement.setAttribute(\"data-theme\", saved);\n        }\n      } catch (error) { /* 저장소를 쓸 수 없으면 밝은 테마 기본값을 유지합니다. */ }\n    })();\n  </script>",
+    "boldPreload": "  <link rel=\"preload\" href=\"./static/fonts/maruburi/MaruBuri-Bold.woff2\" as=\"font\" type=\"font/woff2\" crossorigin />\n",
+    "subsetPreloads": ""
+  },
+  "404.html": {
+    "title": "페이지를 찾을 수 없습니다 — 임미란 의원",
+    "description": "요청하신 페이지를 찾을 수 없습니다. 임미란 의원 홈페이지의 주요 메뉴로 이동해 주세요.",
+    "canonical": "",
+    "robots": "  <meta name=\"robots\" content=\"noindex\" />\n",
+    "ogTitle": "페이지를 찾을 수 없습니다 — 임미란 의원",
+    "ogDescription": "요청하신 페이지를 찾을 수 없습니다. 임미란 의원 홈페이지의 주요 메뉴로 이동해 주세요.",
+    "ogUrl": "",
+    "themeScript": "<script>\n    (function () {\n      try {\n        var saved = localStorage.getItem(\"theme\");\n        if (saved === \"light\" || saved === \"dark\") {\n          document.documentElement.setAttribute(\"data-theme\", saved);\n        }\n      } catch (error) { /* 저장소를 쓸 수 없으면 밝은 테마 기본값을 유지합니다. */ }\n    })();\n  </script>",
+    "boldPreload": "",
+    "subsetPreloads": ""
+  },
+  "_actions": {
+    "index.html": "<div class=\"top-actions\">\n      <button class=\"ghost\" id=\"themeToggle\" type=\"button\" aria-pressed=\"false\" aria-label=\"어두운 화면으로 보기\">어둡게 보기</button>\n      <a class=\"top-cta\" href=\"./activity.html\">의정활동 보기 <span aria-hidden=\"true\">→</span></a>\n    </div>",
+    "about.html": "<div class=\"top-actions\"><button class=\"ghost\" id=\"themeToggle\" type=\"button\" aria-pressed=\"false\" aria-label=\"어두운 화면으로 보기\">어둡게 보기</button></div>",
+    "activity.html": "<div class=\"top-actions\"><button class=\"ghost\" id=\"themeToggle\" type=\"button\" aria-pressed=\"false\" aria-label=\"어두운 화면으로 보기\">어둡게 보기</button></div>",
+    "policy.html": "<div class=\"top-actions\"><button class=\"ghost\" id=\"themeToggle\" type=\"button\" aria-pressed=\"false\" aria-label=\"어두운 화면으로 보기\">어둡게 보기</button></div>",
+    "media.html": "<div class=\"top-actions\"><button class=\"ghost\" id=\"themeToggle\" type=\"button\" aria-pressed=\"false\" aria-label=\"어두운 화면으로 보기\">어둡게 보기</button></div>",
+    "news.html": "<div class=\"top-actions\"><button class=\"ghost\" id=\"themeToggle\" type=\"button\" aria-pressed=\"false\" aria-label=\"어두운 화면으로 보기\">어둡게 보기</button></div>",
+    "404.html": "<div class=\"top-actions\"><button class=\"ghost\" id=\"themeToggle\" type=\"button\" aria-pressed=\"false\">다크</button></div>"
+  },
+  "_footerTails": {
+    "index.html": "      <p class=\"footer-note\">자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-05 확인)<br />사진: 영산강 전경 — Saigen Jiro, Wikimedia Commons (CC0). 의정활동 사진 — 광주광역시의회 공개 사진자료실.</p>\n      <div class=\"site-feedback\" id=\"siteFeedback\" hidden>\n        <button class=\"site-feedback-open\" id=\"siteFeedbackOpen\" type=\"button\" hidden>이 사이트 오류·불편 알리기</button>\n        <form class=\"site-feedback-form\" id=\"siteFeedbackForm\" hidden>\n          <p class=\"site-feedback-office\">의원님께 드리는 민원·제안은 <a href=\"https://council.jeonnam-gwangju.go.kr/jngjassem/board/16\" target=\"_blank\" rel=\"noopener\">의회 홈페이지로</a> <span aria-hidden=\"true\">↗</span></p>\n          <p class=\"site-feedback-office\">의원실 연락은 <a href=\"tel:062-613-5133\">전화</a>·<a href=\"mailto:miran2640@naver.com\">이메일</a>로 하실 수 있습니다.</p>\n          <label class=\"site-feedback-label\" for=\"siteFeedbackBody\">사이트 오류·불편</label>\n          <textarea class=\"site-feedback-body\" id=\"siteFeedbackBody\" name=\"body\" rows=\"4\" maxlength=\"2000\" required></textarea>\n          <input class=\"site-feedback-trap\" id=\"siteFeedbackTrap\" type=\"text\" tabindex=\"-1\" autocomplete=\"off\" aria-hidden=\"true\">\n          <div class=\"site-feedback-actions\">\n            <span class=\"site-feedback-count\" id=\"siteFeedbackCount\">0 / 2000</span>\n            <button class=\"site-feedback-send\" type=\"submit\">보내기</button>\n          </div>\n          <p class=\"site-feedback-status\" id=\"siteFeedbackStatus\" role=\"status\"></p>\n        </form>\n        <!-- #7550 동훈 3회차: a 201 receipt replaces the form with an announced\n             notice; the form comes back through the button below. -->\n        <div class=\"site-feedback-done\" id=\"siteFeedbackDone\" role=\"status\" aria-live=\"polite\" hidden>\n          <p class=\"site-feedback-done-text\">보내 주셔서 고맙습니다. 사이트 오류·불편 의견은 확인 뒤 고치는 데 씁니다. 답장은 드리지 않습니다.</p>\n          <button class=\"site-feedback-again\" id=\"siteFeedbackAgain\" type=\"button\">의견 다시 보내기</button>\n        </div>\n      </div>\n",
+    "about.html": "      <p class=\"footer-note\">자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-05 확인)</p>\n",
+    "activity.html": "      <p class=\"footer-note\">자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-05 확인)</p>\n",
+    "policy.html": "      <p class=\"footer-note\">자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-05 확인)</p>\n",
+    "media.html": "      <p class=\"footer-note\">자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-05 확인)</p>\n",
+    "news.html": "      <p class=\"footer-note\">자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-05 확인)</p>\n",
+    "404.html": "      <p class=\"footer-note\">자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-05 확인)</p>\n"
+  },
+  "_headerLead": {
+    "index.html": "\n\n  ",
+    "about.html": "\n  ",
+    "activity.html": "\n  ",
+    "policy.html": "\n  ",
+    "media.html": "\n  ",
+    "news.html": "\n  ",
+    "404.html": "\n  "
+  },
+  "_tabLead": {
+    "index.html": "\n\n  ",
+    "about.html": "\n  ",
+    "activity.html": "\n  ",
+    "policy.html": "\n  ",
+    "media.html": "\n  ",
+    "news.html": "\n  ",
+    "404.html": "\n  "
+  },
+  "_scripts": {
+    "index.html": "  <script src=\"./static/app.js\"></script>\n  <script src=\"./static/site-feedback.js\"></script>\n",
+    "about.html": "  <script src=\"./static/app.js\"></script>\n",
+    "activity.html": "  <script src=\"./static/app.js\"></script>\n",
+    "policy.html": "  <script src=\"./static/app.js\"></script>\n",
+    "media.html": "  <script src=\"./static/app.js\"></script>\n",
+    "news.html": "  <script src=\"./static/app.js\"></script>\n",
+    "404.html": "  <script src=\"./static/app.js\"></script>\n"
+  }
+}

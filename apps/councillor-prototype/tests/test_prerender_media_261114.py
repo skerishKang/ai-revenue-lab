@@ -125,8 +125,8 @@ def test_dist_prerenders_home_and_policy(build_dir):
 
     thumbs = list((build_dir / "static" / "images" / "thumbs").glob("*.webp"))
     assert len(thumbs) >= 20
-    home_js = (build_dir / "static" / "home.js").read_text(encoding="utf-8")
-    assert "./activity#" in home_js
+    home_html = (build_dir / "index.html").read_text(encoding="utf-8")
+    assert "./activity#" in home_html
 
 
 def test_media_lightbox_opens_and_returns_focus(browser, base_url):

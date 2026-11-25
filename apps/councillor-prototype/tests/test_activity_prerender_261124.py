@@ -68,8 +68,10 @@ def test_activity_glossary_covers_all_categories_and_prerenders():
 
 
 def test_home_search_and_shared_photo_dialog_contract():
-    home = (ROOT / "index.html").read_text(encoding="utf-8")
-    media = (ROOT / "media.html").read_text(encoding="utf-8")
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import assemble
+    home = assemble.render("index.html")
+    media = assemble.render("media.html")
     form = re.search(r'<form class="home-search".*?</form>', home, re.S).group()
     assert form.count("<button") == 1 and 'name="scope" value="all"' in form
     assert 'id="mediaLightbox"' in home and 'id="mediaLightbox"' in media

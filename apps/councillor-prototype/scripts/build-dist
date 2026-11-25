@@ -15,6 +15,7 @@ import shutil
 import sys
 from pathlib import Path
 
+import assemble
 import prerender
 
 APP_ROOT = Path(__file__).resolve().parents[1]
@@ -57,7 +58,9 @@ def build(out_dir: Path, base_url: str) -> None:
     if missing:
         raise SystemExit(f"missing required pages: {', '.join(missing)}")
     for src in html_files:
-        shutil.copy2(src, out_dir / src.name)
+        # The seven source pages hold only their body; the shared head, header,
+        # footer and tab bar come from partials/pages.json.
+        (out_dir / src.name).write_text(assemble.render(src.name), encoding="utf-8")
     for name in ROOT_ASSETS:
         src = APP_ROOT / name
         if not src.is_file():
@@ -94,9 +97,9 @@ def build(out_dir: Path, base_url: str) -> None:
         with path.open("w", encoding="utf-8", newline="") as handle:
             handle.write(html)
 
-    # home.js builds the home activity cards and the menu link from ./activity.html.
+    # The single app.js still carries clean-URL strings for in-page navigation.
     # The HTML pass above cannot see inside JavaScript, so rewrite the same clean
-    # address there too; source keeps .html for the plain local preview.
+    # addresses there too; source keeps .html for the plain local preview.
     for path in out_dir.rglob("*.js"):
         with path.open("r", encoding="utf-8", newline="") as handle:
             js = handle.read()

@@ -92,7 +92,9 @@ def browser():
 
 
 def test_index_carries_the_notice_and_the_search_form():
-    html = (ROOT / "index.html").read_text(encoding="utf-8")
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import assemble
+    html = assemble.render("index.html")
     assert 'id="siteFeedbackDone"' in html and 'role="status"' in html and 'aria-live="polite"' in html
     assert RECEIPT in html
     assert 'id="siteFeedbackAgain"' in html

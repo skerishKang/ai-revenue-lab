@@ -163,7 +163,7 @@ html[data-theme="dark"] .pdfmd-page-review-badge,
 html[data-theme="cinematic"] .pdfmd-page-review-badge,
 html[data-theme="dark"] .pdfmd-page-review-flag[data-review="true"],
 html[data-theme="cinematic"] .pdfmd-page-review-flag[data-review="true"] { color: #f0c48a; }
-.pdfmd-preview { margin-top: 18px; }
+.pdfmd-preview { margin-top: 18px; grid-column: 1 / -1; }
 .pdfmd-preview h4 { margin: 0 0 10px; color: var(--text); font-size: 14px; }
 .pdfmd-preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .pdfmd-pane { display: flex; flex-direction: column; gap: 6px; min-width: 0; }

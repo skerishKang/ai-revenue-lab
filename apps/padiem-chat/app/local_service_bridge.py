@@ -389,7 +389,7 @@ class HttpRpcBinding:
         client = self._shared_client()
         response = None
         attempts = RPC_MAX_ATTEMPTS if self._sign_request_id else 1
-        for _ in range(attempts):
+        for attempt in range(1, attempts + 1):
             # The identity lookup after OAuth exchange crosses Cloudflare
             # too. Keep the same product agent as the token call (#6528),
             # rather than the library default rejected by integrity checks.
@@ -413,7 +413,7 @@ class HttpRpcBinding:
                 method, response.status_code,
                 int((time.perf_counter() - started) * 1000.0),
                 reused, _colo_of(response),
-                1 if attempts == 1 else attempts,
+                attempt,
             )
             if response.status_code != RPC_REPLAY_STATUS:
                 break

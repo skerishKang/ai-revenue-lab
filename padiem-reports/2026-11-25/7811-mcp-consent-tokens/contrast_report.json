@@ -1,0 +1,10 @@
+[
+  {
+    "label": "primary button ink on accent",
+    "fg": "#fff",
+    "bg": "#2f5d50",
+    "ratio": 7.49,
+    "floor": 4.5,
+    "pass": true
+  }
+]

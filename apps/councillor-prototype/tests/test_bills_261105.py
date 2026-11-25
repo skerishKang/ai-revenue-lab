@@ -9,11 +9,14 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))
 BILLS = DATA["policy"]["bills"]
+sys.path.insert(0, str(ROOT / "scripts"))
+import assemble  # noqa: E402
 
 
 def test_only_accepted_representative_bills_are_published() -> None:
@@ -51,7 +54,7 @@ def test_pending_and_withdrawn_bills_are_not_published() -> None:
 
 
 def test_policy_page_explains_the_scope_and_groups_the_list() -> None:
-    html = (ROOT / "policy.html").read_text(encoding="utf-8")
+    html = assemble.render("policy.html")
     assert "제8대·제9대 광주광역시의회 대표발의" in html
     assert 'id="policyBills"' in html
     assert 'class="card-grid" id="policyBills"' not in html, "the bills need their own grouped list"
@@ -62,19 +65,20 @@ def test_policy_page_explains_the_scope_and_groups_the_list() -> None:
 
 
 def test_renderer_groups_and_links_every_bill() -> None:
-    app_js = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+    # #8724: prerender.py is the only place that draws the rows; app.js only filters.
+    prerender = (ROOT / "scripts" / "prerender.py").read_text(encoding="utf-8")
     for token in (
-        "renderBills", "policy.bills", "bill-group", "bill-list", "bill-row",
+        "prerender_policy", "bill-group", "bill-list", "bill-row",
         "bill-number", "bill-title", "bill-date", "bill-result",
     ):
-        assert token in app_js, token
+        assert token in prerender, token
+    app_js = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
     assert "renderBills(policy)" in app_js
     assert "policyBills" in app_js
 
 
 def test_the_home_shortcut_reaches_the_policy_page() -> None:
-    index = (ROOT / "index.html").read_text(encoding="utf-8")
+    index = assemble.render("index.html")
     assert index.count('href="./policy.html"') >= 2
-    home_js = (ROOT / "static" / "home.js").read_text(encoding="utf-8")
-    assert 'label: "정책자료"' in home_js
-    assert 'href: "./policy.html"' in home_js
+    prerender = (ROOT / "scripts" / "prerender.py").read_text(encoding="utf-8")
+    assert '"정책자료"' in prerender and '"./policy"' in prerender

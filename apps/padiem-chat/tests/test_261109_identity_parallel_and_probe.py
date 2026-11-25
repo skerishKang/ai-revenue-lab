@@ -223,3 +223,40 @@ def test_the_rpc_line_reaches_stderr_with_every_field(capsys):
     assert line.startswith("identity_rpc_client method=resolve_current_auth_session")
     for field in ("status=200", "ttfb_ms=412", "reused=true", "colo=ICN", "attempt=1"):
         assert field in line, line
+
+
+def test_identity_rpc_attempt_log_reports_actual_retry_index(monkeypatch):
+    import httpx
+
+    async def exercise(statuses):
+        sequence = list(statuses)
+        seen = []
+
+        def respond(request):
+            seen.append(request)
+            return httpx.Response(sequence[len(seen) - 1], json={"ok": True}, request=request)
+
+        client = httpx.AsyncClient(transport=httpx.MockTransport(respond))
+        binding = bridge.HttpRpcBinding(
+            "https://identity.example.test", "synthetic-rpc-secret-0123456789abcdef",
+            client=client,
+        )
+        logged = []
+        monkeypatch.setattr(
+            bridge._IDENTITY_RPC_LOG, "info",
+            lambda template, *args: logged.append(template % args),
+        )
+        try:
+            response = await binding._post_rpc("resolve_current_auth_session", b"{}")
+            return response.status_code, len(seen), [
+                int(line.rsplit("attempt=", 1)[1]) for line in logged
+            ]
+        finally:
+            await client.aclose()
+
+    status, calls, attempts = asyncio.run(exercise([200]))
+    assert (status, calls, attempts) == (200, 1, [1])
+    status, calls, attempts = asyncio.run(exercise([409, 200]))
+    assert (status, calls, attempts) == (200, 2, [1, 2])
+    status, calls, attempts = asyncio.run(exercise([409, 409, 200]))
+    assert (status, calls, attempts) == (200, 3, [1, 2, 3])

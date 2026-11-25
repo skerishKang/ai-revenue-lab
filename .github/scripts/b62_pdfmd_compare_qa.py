@@ -203,6 +203,14 @@ async def _read(page) -> dict:
           });
           return first;
         })(),
+        visible_pages: (() => {
+          if (!pane) return [];
+          const bounds = pane.getBoundingClientRect();
+          return [...pane.querySelectorAll('.pdfmd-page')].filter((block) => {
+            const box = block.getBoundingClientRect();
+            return box.bottom - bounds.top > 4 && box.top - bounds.top < bounds.height - 4;
+          }).map((block) => Number(block.dataset.page));
+        })(),
         status_lines: Array.from(document.querySelectorAll('.pdfmd-item .pdfmd-stage')).map((n) => n.textContent),
         chips: Array.from(document.querySelectorAll('.pdfmd-item .pdfmd-status-chip')).map((n) => n.textContent),
         item_text: Array.from(document.querySelectorAll('.pdfmd-item')).map((n) => n.textContent).join(' | '),
@@ -233,7 +241,7 @@ async def _paging(page, problems: list[str], report: dict) -> None:
         _check(problems, f"next to {expected} image",
                (state["image_src"] or "").endswith(f"/original/{expected}.jpeg")
                and (state["image_natural_width"] or 0) > 0, state)
-        _check(problems, f"next to {expected} pane", state["first_visible_page"] in (expected, expected - 1), state)
+        _check(problems, f"next to {expected} pane", expected in state["visible_pages"], state)
     _check(problems, "last page keeps its number", seen[-1]["input"] == "5", seen[-1]["input"])
 
     await page.fill(".pdfmd-page-input", "7")
@@ -249,7 +257,7 @@ async def _paging(page, problems: list[str], report: dict) -> None:
     state = await _read(page)
     seen.append(state)
     _check(problems, "typed 2 number", state["input"] == "2", state["input"])
-    _check(problems, "typed 2 pane", state["first_visible_page"] == 2, state)
+    _check(problems, "typed 2 pane", state["first_visible_page"] == 2 and 2 in state["visible_pages"], state)
     _check(problems, "typed 2 image",
            (state["image_src"] or "").endswith("/original/2.jpeg")
            and (state["image_natural_width"] or 0) > 0, state)

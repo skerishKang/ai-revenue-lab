@@ -57,6 +57,10 @@
 :root {
   /* #8210: 왼쪽 메뉴의 칸 규격 — 여백·모서리·높이를 한 곳에서 정한다. */
   /* #7811 token-family --sidebar sha256=065efae7ca7a5c1b9a70dd285a484bab255864f98b4dd865334bb2bc6dde848c */
+  /* #7811 token-family --sidebar-utility sha256=9842aeb7b9faa4f0acade8a83a5f20be5a10f13cde01b25a1305bc51aef08c11 */
+  --sidebar-utility-avatar-ink: #17324a;
+  --sidebar-utility-avatar-edge: #52677a;
+  --sidebar-utility-expired-ink: #7f1d1d;
   --sidebar-control-inset: 12px;
   --sidebar-control-radius: 12px;
   --sidebar-control-height: 44px;
@@ -892,6 +896,17 @@
   /* #7811 token-family --library sha256=549dc84be58393c5914a7b02129befedeb34110cb8c85a16f1fe9e46733ef149 */
   --library-tab-active-edge: rgba(47, 111, 153, 0.24);
   --library-dialog-dim: rgba(15, 19, 25, 0.46);
+
+  /* #7811 token-family --mcp sha256=714f691043668ee06d2e6ef4878af112be0f7f4b32d1b4ac9b43b0c5e2686f65 */
+  /* #7811 C2 mcp-oauth-consent(261125): 동의 화면의 고정 팔레트. 값은 치환 전
+     선언마다 박혀 있던 리터럴 그대로이고 :root에만 둔다 — 동의 화면은 테마가
+     덮지 않는 독립 문서라 다섯 테마에서 같은 값으로 칠해져 온 고정 팔레트다.
+     흰 카드(.55)·흰 선택 배경·주 단추 글자는 이미 :root 전용인
+     --answer-actions-bg·--project-solid-bg·--project-on-ink-text를 재사용한다. */
+  --mcp-consent-gold-wash: rgba(212, 173, 104, 0.16);
+  --mcp-consent-card-shadow: rgba(38, 35, 31, 0.10);
+  --mcp-consent-capability-wash: rgba(47, 93, 80, 0.07);
+  --mcp-consent-scope-edge: #d8d8e0;
 
   /* 연결 카드 대비 수리(261124): 연결 화면 카드는 다섯 테마 모두 밝은 판이다
      (standalone-views.css의 #connectorsViewBody .capability-card). 카드 이름은
