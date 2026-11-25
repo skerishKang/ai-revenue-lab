@@ -32,9 +32,16 @@ class B62BrowserCacheContractTests(unittest.TestCase):
                 self.assertIn("key: b62-playwright-headless-shell-1.55.0-", block)
                 self.assertIn("runner.os", block)
                 self.assertIn("runner.arch", block)
-                self.assertIn(
-                    "if: steps.playwright-browser-cache.outputs.cache-hit != 'true'", block
+                hosted = "runs-on: ubuntu-24.04\n" in block
+                browser_if = (
+                    "if: steps.playwright-browser-cache.outputs.cache-hit != 'true'"
+                    if hosted else
+                    "if: runner.environment != 'self-hosted' && steps.playwright-browser-cache.outputs.cache-hit != 'true'"
                 )
+                self.assertIn(browser_if, block)
+                if not hosted:
+                    self.assertIn("Prepare reusable QA environment (self-hosted)", block)
+                    self.assertIn("b62_qa_prepare.sh", block)
                 self.assertLess(
                     block.index("Cache pinned Playwright Chromium"),
                     block.index("name: Install Chromium system libraries"),

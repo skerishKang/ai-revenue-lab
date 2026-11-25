@@ -400,6 +400,63 @@ def claw_quote_css_is_isolated(source: str | None = None) -> bool:
     return rules > 0 and not stack and not cleaned[position:].strip()
 
 
+# #8729: narrow the common "one Python file" PR. Only paths whose owning
+# browser flow is explicit may reduce the lane set. Anything unrecognized,
+# mixed with a shared/static entrypoint, or unknown keeps the full fail-closed
+# set. Push and nightly runs never reach this classifier path.
+FLOW_ONLY_PROJECT = frozenset({
+    "projects-browser-qa", "project-delete-browser-qa", "project-files-browser-qa",
+})
+FLOW_ONLY_CONVERSATION = frozenset({
+    "conversation-delete-browser-qa", "conversation-export-browser-qa",
+    "saved-outputs-browser-qa", "error-retry-browser-qa",
+})
+FLOW_ONLY_SEARCH = frozenset({"deep-research-browser-qa", "web-search-browser-qa"})
+FLOW_PATH_RULES = (
+    # PC helper maintenance has no browser QA flow of its own.
+    (re.compile(r"apps/padiem-chat/app/pc_helper[^/]*\.py\Z"), frozenset()),
+    (re.compile(r"apps/padiem-chat/app/project[^/]*\.py\Z"), FLOW_ONLY_PROJECT),
+    (re.compile(r"apps/padiem-chat/static/project[^/]*\.js\Z"), FLOW_ONLY_PROJECT),
+    (re.compile(r"apps/padiem-chat/app/conversation[^/]*\.py\Z"), FLOW_ONLY_CONVERSATION),
+    (re.compile(r"apps/padiem-chat/static/conversation[^/]*\.js\Z"), FLOW_ONLY_CONVERSATION),
+    (re.compile(r"apps/padiem-chat/app/document[^/]*\.py\Z"),
+     frozenset({"document-browser-qa", "image-browser-qa"})),
+    (re.compile(r"apps/padiem-chat/app/(?:web_search|search_sources|deep_research)[^/]*\.py\Z"),
+     FLOW_ONLY_SEARCH),
+    (re.compile(r"apps/padiem-chat/app/(?:auth|session|account)[^/]*\.py\Z"),
+     frozenset({"auth-history-browser-qa"})),
+    (re.compile(r"apps/padiem-chat/app/usage_gate\.py\Z"),
+     FLOW_ONLY_CONVERSATION | FLOW_ONLY_SEARCH),
+)
+
+
+def flow_only_lanes(
+    changed_paths: set[str], statuses: dict[str, str] | None,
+    *, expected_files: int | None = None,
+) -> frozenset[str] | None:
+    """Return the exact lane set for recognized single-flow paths, else None."""
+    if statuses is None or type(expected_files) is not int \
+       or expected_files != len(changed_paths) or set(statuses) != changed_paths:
+        return None
+    if any(statuses[p] not in {"added", "modified"} for p in changed_paths):
+        return None
+    paths = {p for p in changed_paths if not p.startswith(
+        ("apps/padiem-chat/tests/", ".github/tests/", "padiem-reports/"))}
+    if not paths:
+        return frozenset()
+    # Existing reviewed leaf-ownership contracts keep their own exact lane
+    # sets; do not override them with the new coarse flow rule.
+    if paths & GLASS_TAIL_UNCHANGED_LEAVES:
+        return None
+    owners: frozenset[str] | None = None
+    for path in paths:
+        match = next((rule[1] for rule in FLOW_PATH_RULES if rule[0].fullmatch(path)), None)
+        if match is None:
+            return None
+        owners = match if owners is None else owners & match
+    return owners if owners is not None else None
+
+
 def choose_lanes(
     changed_paths: set[str] | None, patterns_by_job: dict[str, list[str]],
     *, statuses: dict[str, str] | None = None,
@@ -439,6 +496,9 @@ def choose_lanes(
         return {job: False for job in patterns_by_job}
     if changed_paths & PLAN_FILES:
         return {job: True for job in patterns_by_job}
+    flow = flow_only_lanes(changed_paths, statuses, expected_files=expected_files)
+    if flow is not None:
+        return {job: (job in flow) for job in patterns_by_job}
     # A CSS + token-test/evidence shape whose exact proof fails (non
     # added/modified status, unknown or truncated count, mixed JS) keeps every
     # lane. Never reduce on a partial path-only match.
