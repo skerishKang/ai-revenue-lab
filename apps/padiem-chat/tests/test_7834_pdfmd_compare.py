@@ -160,6 +160,7 @@ def test_a_control_choice_outranks_the_scroll_position() -> None:
     assert "document.activeElement === pageInput" in js["early_returns"]
     # Enter commits the typed page; `change` alone waits for a blur.
     assert 'event.key !== "Enter"' in js["early_returns"]
+    assert ("block.scrollIntoView", '{ block: "start", behavior: "auto" }') in js["call_args"]
 
 
 def test_the_original_pane_shows_a_rendered_page_image() -> None:

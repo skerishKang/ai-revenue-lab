@@ -608,7 +608,7 @@
       original.show(previewItem, page);
       if (scrollMarkdown) {
         const block = mdView.querySelector('[data-page="' + page + '"]');
-        if (block) block.scrollIntoView({ block: "start", behavior: "smooth" });
+        if (block) block.scrollIntoView({ block: "start", behavior: "auto" });
       }
     }
 
