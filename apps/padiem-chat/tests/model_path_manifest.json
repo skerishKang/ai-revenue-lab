@@ -42,7 +42,6 @@
     "test_7814_api_chat_stream_table.py": "MOCK",
     "test_7814_api_chat_stream_2of3_table.py": "MOCK",
     "test_7814_api_chat_stream_3of3_table.py": "MOCK",
-    "test_7814_b66_conversation_turn_table.py": "MOCK",
     "test_admin_model_select_261018.py": "B14_MANAGED",
     "test_attachments.py": "B14_MANAGED",
     "test_auto_grounding.py": "B14_MANAGED",
