@@ -653,6 +653,25 @@
     }
   }
 
+  function markRequiredFields() {
+    document.querySelectorAll(".council-form label").forEach((label) => {
+      if (!label.querySelector || !label.querySelector("[required]")) return;
+      if (label.textContent.indexOf("(필수)") >= 0) return;
+      label.appendChild(el("span", "council-required", " (필수)"));
+    });
+  }
+
+  function autoGrowResult(field) {
+    if (!field || typeof field.style === "undefined") return;
+    const grow = () => {
+      field.style.height = "auto";
+      field.style.height = Math.max(160, field.scrollHeight || 0) + "px";
+    };
+    field.addEventListener("input", grow);
+    grow();
+    return grow;
+  }
+
   function setNotice(line, text, tone) {
     if (!line) return;
     line.textContent = text || "";
@@ -671,6 +690,7 @@
     output.id = options.outputId;
     output.rows = options.rows || 12;
     result.appendChild(output);
+    autoGrowResult(output);
     // The SNS preview sits between the draft and its action row.
     if (options.afterOutput) result.appendChild(options.afterOutput);
     const actions = el("div", "council-actions");
@@ -2095,9 +2115,23 @@
       const previewBox = el("div", "council-sns-preview");
       previewBox.id = "councilSnsPreview";
       previewBox.hidden = true;
+      const editBtn = el("button", "council-sns-edit", "고치기");
+      editBtn.type = "button";
+      editBtn.id = "councilSnsEdit";
+      const snsView = el("div", "council-sns-view");
+      snsView.append(editBtn, previewBox);
+      let snsEditing = false;
+      const showSnsView = (editing) => {
+        snsEditing = !!editing;
+        output.hidden = !!editing === false;
+        previewBox.hidden = !!editing;
+        editBtn.textContent = editing ? "미리보기로" : "고치기";
+        if (!editing) renderPreview();
+      };
+      editBtn.addEventListener("click", () => showSnsView(!snsEditing));
       const panel = resultPanel({
         id: "councilSnsResult", outputId: "councilSnsOutput", rows: 12,
-        titleNode: title, afterOutput: previewBox, copyId: "councilSnsCopy",
+        titleNode: title, afterOutput: snsView, copyId: "councilSnsCopy",
         saveId: "councilSnsSave", downloadId: "councilSnsDownload",
         downloadHwpxId: "councilSnsDownloadHwpx", downloadDocxId: "councilSnsDownloadDocx",
         pcSaveId: "councilSnsPcSave",
@@ -2191,7 +2225,7 @@
             }
             result.hidden = false;
             output.value = savedDraft.text;
-            previewBox.hidden = false;
+            showSnsView(false);
             failed = false;
             refreshSave();
             if (savedDraft.platform && savedDraft.platform !== platform) {
@@ -2200,7 +2234,7 @@
               else { platform = savedDraft.platform; title.textContent = ({ blog: "블로그", facebook: "페이스북", instagram: "인스타그램" })[savedDraft.platform] + " 게시글"; }
             }
           }
-          if (savedDraft) renderPreview();
+          if (savedDraft) showSnsView(false);
           // Only the photos the roster names come back. A stale image file the
           // owner removed from the composition never resurrects itself just
           // because it is still stored in the project.
@@ -2239,22 +2273,20 @@
             (partial) => {
               output.value = partial;
               result.hidden = false;
-              previewBox.hidden = false;
-              renderPreview();
+              showSnsView(false);
             },
           );
           output.value = answer;
           result.hidden = false;
-          previewBox.hidden = false;
+          showSnsView(false);
           failed = false;
           finishGeneration(notice, result);
-          renderPreview();
         } catch (err) {
           failed = true;
           setNoticeWithRetry(notice, generationFailureText(err), runGeneration);
           if (!String(output.value || "").trim()) {
             result.hidden = true;
-            previewBox.hidden = true;
+            showSnsView(true);
           }
         } finally {
           busy = false;
@@ -2716,7 +2748,9 @@
               const next = li.nextElementSibling;
               if (next) ul.insertBefore(next, li);
             });
-            li.append(moveUp, moveDown);
+            const moves = el("span", "council-record-moves");
+            moves.append(moveUp, moveDown);
+            li.appendChild(moves);
             ul.appendChild(li);
           });
           arc.appendChild(ul);
@@ -3726,6 +3760,7 @@
     applyTheme(selectedCountry(), theme.style);
     await loadTierSelection(auth.memberGrade);
     buildToolPanels();
+    markRequiredFields();
     const tool = toolFromUrl() || rememberedTool();
     applySelection(TOOLS.indexOf(tool) >= 0 ? tool : null, false);
     return {
