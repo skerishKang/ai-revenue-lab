@@ -468,6 +468,22 @@ function stepLightbox(delta) {
   renderLightbox();
 }
 
+// #8740: one text-size toggle, remembered like the theme, applied before paint.
+function initTextSize() {
+  const button = document.getElementById("textSizeToggle");
+  if (!button) return;
+  const large = () => document.documentElement.getAttribute("data-text-size") === "large";
+  button.setAttribute("aria-pressed", String(large()));
+  button.addEventListener("click", () => {
+    const next = !large();
+    if (next) document.documentElement.setAttribute("data-text-size", "large");
+    else document.documentElement.removeAttribute("data-text-size");
+    button.setAttribute("aria-pressed", String(next));
+    try { localStorage.setItem("textSize", next ? "large" : "normal"); }
+    catch (error) { /* 저장소를 못 써도 지금 화면은 바뀝니다. */ }
+  });
+}
+
 // #8732: share the canonical activity URL — without the search query.
 function initActivityShare() {
   const button = document.getElementById("activityShare");
@@ -613,6 +629,7 @@ function initialQueryParameter() {
 
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
+  initTextSize();
   markExternalLinks();
   initLightbox();
   initActivityShare();

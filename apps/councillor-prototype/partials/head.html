@@ -4,6 +4,15 @@
   <meta name="color-scheme" content="light dark" />
   <meta name="site-base" content="__BASE_URL__" />
   {{THEME_SCRIPT}}
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("textSize") === "large") {
+          document.documentElement.setAttribute("data-text-size", "large");
+        }
+      } catch (error) { /* 저장소를 쓸 수 없으면 보통 글씨로 둡니다. */ }
+    })();
+  </script>
   <title>{{TITLE}}</title>
   <meta name="description" content="{{DESCRIPTION}}" />
 {{ROBOTS}}{{CANONICAL}}  <meta property="og:type" content="website" />
