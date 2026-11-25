@@ -289,9 +289,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.auth_history_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-heavy-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:
@@ -835,9 +832,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.conversation_delete_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-heavy-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:
@@ -982,9 +976,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.conversation_export_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-heavy-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:
@@ -1131,9 +1122,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.deep_research_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-heavy-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:
@@ -1276,9 +1264,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.document_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-heavy-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:
@@ -1419,9 +1404,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.error_retry_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-heavy-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:
@@ -1572,9 +1554,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.image_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-heavy-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:
@@ -1715,9 +1694,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.mobile_touch_target_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-light-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     env:
       B62_QA_TMP_TAG: b62-mobile-touch-target-qa-${{ github.run_id }}-${{ github.run_attempt }}
@@ -1860,9 +1836,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.project_delete_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-light-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:
@@ -2007,9 +1980,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.project_files_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-heavy-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:
@@ -2152,9 +2122,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.projects_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-heavy-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:
@@ -2297,9 +2264,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.saved_outputs_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-light-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:
@@ -2442,9 +2406,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.structured_answer_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-heavy-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:
@@ -2587,9 +2548,6 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.web_search_browser_qa == 'true' }}
     runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
-    concurrency:
-      group: b62-browser-qa-heavy-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
     timeout-minutes: 15
     defaults:
       run:

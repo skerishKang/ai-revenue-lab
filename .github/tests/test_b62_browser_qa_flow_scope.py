@@ -67,22 +67,5 @@ class FlowScopeTests(unittest.TestCase):
         self.assertTrue(all(planner.choose_lanes(None, planner.load_paths()).values()))
 
 
-class ConcurrencyContract(unittest.TestCase):
-    def test_self_hosted_browser_jobs_share_two_serial_slots(self):
-        import yaml
-        doc = yaml.safe_load((ROOT / '.github/workflows/b62-browser-qa-unified.yml').read_text(encoding='utf-8'))
-        light = {'mobile-touch-target-qa', 'project-delete-browser-qa', 'saved-outputs-browser-qa'}
-        for name, job in doc['jobs'].items():
-            if name == 'plan':
-                continue
-            if 'fromJSON(\'["self-hosted","padiem-com2-ci"]\')' not in str(job.get('runs-on')):
-                self.assertNotIn('concurrency', job, name)
-                continue
-            group = job['concurrency']['group']
-            expected = 'light' if name in light else 'heavy'
-            self.assertIn(f'b62-browser-qa-{expected}-', group, name)
-            self.assertIs(job['concurrency']['cancel-in-progress'], False)
-
-
 if __name__ == '__main__':
     unittest.main()
