@@ -120,7 +120,7 @@
     "404.html": "\n  "
   },
   "_scripts": {
-    "index.html": "  <script src=\"./static/app.js\"></script>\n  <script src=\"./static/home.js\"></script>\n  <script src=\"./static/site-feedback.js\"></script>\n",
+    "index.html": "  <script src=\"./static/app.js\"></script>\n  <script src=\"./static/site-feedback.js\"></script>\n",
     "about.html": "  <script src=\"./static/app.js\"></script>\n",
     "activity.html": "  <script src=\"./static/app.js\"></script>\n",
     "policy.html": "  <script src=\"./static/app.js\"></script>\n",

@@ -77,7 +77,7 @@ function loadSiteData() {
     });
 }
 
-// app.js loads before home.js, so the home renderer waits on the same promise.
+// One script owns data loading and every page hook, including the home media column.
 window.COUNCILLOR_DATA_READY = loadSiteData();
 
 function prefersReducedMotion() {
@@ -573,6 +573,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   markExternalLinks();
   initLightbox();
+  const homeMedia = document.getElementById("homeMedia");
+  if (homeMedia) enhanceMediaCards(homeMedia);
 
   window.COUNCILLOR_DATA_READY.then((data) => {
     if (!data) return;
