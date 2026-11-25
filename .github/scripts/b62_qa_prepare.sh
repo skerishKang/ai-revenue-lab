@@ -35,6 +35,9 @@ fi
 
 {
   echo "UV_PROJECT_ENVIRONMENT=${venv}"
+  # The shared environment is already locked and installed; concurrent jobs
+  # must not re-sync it while another job is using it.
+  echo "UV_NO_SYNC=1"
   echo "PLAYWRIGHT_BROWSERS_PATH=${browsers}"
   echo "B62_QA_ENV_HASH=${hash}"
 } >> "${GITHUB_ENV}"
