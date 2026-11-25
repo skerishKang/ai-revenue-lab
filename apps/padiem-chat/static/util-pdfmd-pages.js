@@ -231,21 +231,25 @@
       const table = el("table", "pdfmd-page-table");
       // #8316: inline shape keeps the table inside one column instead of a
       // pipe string that wraps into scattered cells. No new CSS sheet rule.
-      // #8760: the table takes the pane's width and its cells wrap, so a wide
-      // page-1 table is read in the pane instead of scrolling sideways.
-      table.style.cssText = "width:100%;border-collapse:collapse;margin:4px 0 10px;font:inherit;font-size:12px";
+      // #8760: a column never breaks a word (keep-all); a table wider than the
+      // pane scrolls sideways inside its own focusable box, not the whole pane.
+      table.style.cssText = "min-width:100%;border-collapse:collapse;font:inherit";
       rows.forEach((row, r) => {
         const tr = el("tr", "pdfmd-page-table-row");
         tr.style.cssText = "border-bottom:1px solid var(--line)";
         row.forEach((value) => {
           const cell = el(r === 0 ? "th" : "td", "pdfmd-page-table-cell", value);
-          cell.style.cssText = "padding:4px 5px;text-align:left;vertical-align:top;white-space:normal;overflow-wrap:anywhere"
+          cell.style.cssText = "padding:4px 6px;text-align:left;vertical-align:top;white-space:normal;word-break:keep-all"
             + (r === 0 ? ";color:var(--muted);font-weight:750" : "");
           tr.appendChild(cell);
         });
         table.appendChild(tr);
       });
-      out.push(table);
+      const scroll = el("div", "pdfmd-table-scroll");
+      scroll.style.cssText = "overflow-x:scroll;max-width:100%;margin:4px 0 10px";
+      scroll.tabIndex = 0;
+      scroll.appendChild(table);
+      out.push(scroll);
     }
     flush();
     return out;

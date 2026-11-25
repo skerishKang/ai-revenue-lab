@@ -1,16 +1,22 @@
-"""#8760: a page-1 table in the PDF→MD compare view must fit the Markdown pane.
+"""#8760: a page-1 table in the PDF->MD compare view stays readable in the pane.
 
-The Markdown pane (변환본) is about 343px wide at 1440. The page-1 table was
-drawn at its natural 1,289px width with ``white-space: nowrap`` cells, so the
-reader had to scroll sideways inside the pane to read it. The table now has
-the pane's width and its cells wrap, so no horizontal overflow is left in the
-pane at 1440 or 1280 in any of the three checked themes.
+The Markdown pane (변환본) is about 343px wide at 1440 and narrower with the
+sidebar open. The page-1 table was drawn at its natural 1,289px width with
+``white-space: nowrap`` cells, so the reader had to scroll sideways inside the
+whole pane. Squeezing it into the pane width (a previous attempt) broke words
+into single characters instead, which is also unreadable.
 
-Browser-level because the failure is a layout fact: the pane's content width
-against the table's painted width. The page is served from ``static/`` and
-every ``/api`` call is answered by the test, so no account, document or
-database is involved. Set ``PADIEM_8760_BASE_URL`` to measure a server that is
-already running (for example a static server on port 4427).
+The table now (a) keeps word units with ``word-break: keep-all`` so no column
+breaks a word, (b) is at least the pane width, and (c) when wider than the
+pane scrolls sideways inside its own focusable box with a scrollbar that is
+always shown, not the whole pane.
+At 1440 and 1280 in all three checked themes: no word is broken across lines,
+every column is at least 30px wide, and the pane itself never scrolls sideways.
+
+Browser-level because the failure is a layout fact. The page is served from
+``static/`` and every ``/api`` call is answered by the test, so no account,
+document or database is involved. Set ``PADIEM_8760_BASE_URL`` to measure a
+server that is already running (for example a static server on port 4427).
 """
 from __future__ import annotations
 
@@ -154,27 +160,44 @@ def _open_compare(page: Page, base_url: str, theme: str) -> None:
     page.wait_for_timeout(600)
 
 
-# Pane content width (inside the padding), the table's painted width, and the
-# overflow the reader would have to scroll through.
-_MEASURE = """() => {
+# Pane scroll, the table's own scroll box, column widths, and whether any
+# cell is narrower than its longest word (a word broken across lines).
+_MEASURE = r"""() => {
   const pane = document.querySelector('.pdfmd-md');
   const table = pane.querySelector('.pdfmd-page-table');
-  const cs = getComputedStyle(pane);
-  const inner = pane.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const scroll = pane.querySelector('.pdfmd-table-scroll');
+  const firstRow = table.querySelector('tr');
+  const cols = firstRow ? [...firstRow.children].map(c => c.getBoundingClientRect().width) : [];
+  const probe = document.createElement('span');
+  probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;';
+  document.body.appendChild(probe);
+  let broken = null;
+  for (const cell of table.querySelectorAll('th, td')) {
+    const st = getComputedStyle(cell);
+    probe.style.font = st.font;
+    let widest = 0;
+    for (const word of cell.textContent.trim().split(/\s+/)) {
+      probe.textContent = word;
+      widest = Math.max(widest, probe.getBoundingClientRect().width);
+    }
+    const avail = cell.clientWidth - parseFloat(st.paddingLeft) - parseFloat(st.paddingRight);
+    if (avail + 0.5 < widest) { broken = {text: cell.textContent, avail: avail, widest: widest}; break; }
+  }
+  probe.remove();
   return {
-    inner: inner,
-    paneRight: pane.getBoundingClientRect().right,
-    tableWidth: table.getBoundingClientRect().width,
-    tableRight: table.getBoundingClientRect().right,
-    tableScroll: table.scrollWidth - table.clientWidth,
     paneScroll: pane.scrollWidth - pane.clientWidth,
+    scrollOverflowX: scroll ? getComputedStyle(scroll).overflowX : 'absent',
+    scrollTab: scroll ? scroll.tabIndex : null,
+    scrollSlack: scroll ? scroll.scrollWidth - scroll.clientWidth : null,
+    minCol: cols.length ? Math.min(...cols) : null,
+    broken: broken,
   };
 }"""
 
 
 @pytest.mark.parametrize("width", WIDTHS)
 @pytest.mark.parametrize("theme", THEMES)
-def test_page_one_table_fits_the_markdown_pane(base_url: str, theme: str, width: int) -> None:
+def test_page_one_table_readable_in_the_markdown_pane(base_url: str, theme: str, width: int) -> None:
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch()
         try:
@@ -189,7 +212,8 @@ def test_page_one_table_fits_the_markdown_pane(base_url: str, theme: str, width:
         finally:
             browser.close()
 
-    assert m["tableWidth"] <= m["inner"] + 0.5, (
-        f"table {m['tableWidth']:.0f}px is wider than the pane content {m['inner']:.0f}px: {m}")
-    assert m["tableScroll"] <= 0.5, f"table scrolls sideways inside the pane: {m}"
-    assert m["paneScroll"] <= 0.5, f"Markdown pane scrolls sideways: {m}"
+    assert m["paneScroll"] <= 0.5, f"the pane itself scrolls sideways: {m}"
+    assert m["scrollOverflowX"] == "scroll", f"wide table has no always-visible scroll box of its own: {m}"
+    assert m["scrollTab"] == 0, f"table scroll box is not keyboard-focusable: {m}"
+    assert m["broken"] is None, f"a word is broken across lines: {m}"
+    assert m["minCol"] >= 30, f"a column is narrower than 30px: {m}"
