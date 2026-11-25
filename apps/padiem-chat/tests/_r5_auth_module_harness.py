@@ -470,6 +470,45 @@ function surfaces() {
   results.publication = { tail: published,
     monotonic: published.every((row, i) => i === 0 || row.epoch === published[i - 1].epoch + 1) };
 
+  // 13. #8699: the first session check must not project a sign-out screen.
+  //     A not-ready answer or a failed attempt is retried once while the
+  //     pending (neutral) presentation stays on screen.
+  async function statusFlight(answers) {
+    // The module reads status through its local fetchAuthStatusOnce, which
+    // uses the global fetch; the harness routes that through live.fetchImpl.
+    const original = live.fetchImpl;
+    let index = 0;
+    const snapshots = [];
+    live.accountContainer.dataset.accountState = "pending";
+    live.loginButton.hidden = true;
+    live.loginButton.disabled = true;
+    live.accountName.hidden = true;
+    live.fetchImpl = async () => {
+      const answer = answers[index++];
+      snapshots.push({ attempt: index, before: surfaces() });
+      if (answer instanceof Error) throw answer;
+      return { ok: true, status: 200, json: async () => answer };
+    };
+    try {
+      await api.loadAuthStatus();
+    } finally {
+      live.fetchImpl = original;
+    }
+    snapshots.push({ attempt: index, after: surfaces() });
+    return { calls: index, snapshots, final: surfaces() };
+  }
+  const signedInAnswer = { ready: true, authenticated: true,
+    user: { name: "Kim", email: "member@example.com" },
+    session_state: "signed_in", history_ready: true, account_method: "password",
+    methods: { password: true, google: false } };
+  const notReadyAnswer = { ready: false, authenticated: false, user: null,
+    methods: { password: true, google: false } };
+  results.statusFlight = {
+    lateFirst: await statusFlight([notReadyAnswer, signedInAnswer]),
+    failedFirst: await statusFlight([new Error("auth status unavailable"), signedInAnswer]),
+    twiceNotReady: await statusFlight([notReadyAnswer, notReadyAnswer]),
+  };
+
   process.stdout.write(JSON.stringify(results));
 })().catch((error) => { console.error(error); process.exit(1); });
 """

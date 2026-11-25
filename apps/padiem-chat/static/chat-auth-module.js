@@ -207,6 +207,11 @@
     let data = null;
     for (let attempt = 0; attempt < 2; attempt += 1) {
       try {
+        // #8699: a first answer that is not ready is not a sign-out. The
+        // session check can be served by a Worker whose identity cache is
+        // still cold, so ask once more before projecting any session shape.
+        // Nothing is applied while the retry is in flight: the neutral
+        // "pending" presentation stays on screen.
         data = await fetchAuthStatusOnce();
         // The server reports a display-only hint; cookies remain HttpOnly.
         if (data.shared_login_enabled === true && data.ready === true && !data.authenticated &&
@@ -225,7 +230,10 @@
             }
           } catch (_) { /* keep the definitive guest status; never mask it as unreachable */ }
         }
-        break;
+        // Only a ready answer is a decision. A not-ready answer is retried once
+        // above; the second answer, ready or not, is what gets presented.
+        if (data && data.ready === true) break;
+        if (attempt === 1) break;
       } catch (_) {
         if (attempt === 1) data = null;
       }
