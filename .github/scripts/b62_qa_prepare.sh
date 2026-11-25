@@ -13,13 +13,18 @@ venv="${cache_root}/venv"
 browsers="${cache_root}/ms-playwright"
 marker="${cache_root}/ready"
 
+# Two runner processes share this host and can hit the same cold cache.
+# Serialize creation so a concurrent sync cannot leave a half-written venv.
+exec 9>"${cache_root}.lock"
+flock -x 9
 if [[ -f "$marker" && -x "${venv}/bin/python" && -d "$browsers" ]] \
    && grep -qx "$hash" "$marker"; then
   echo "B62_QA_ENV_REUSE=YES HASH=${hash:0:12}"
 else
   echo "B62_QA_ENV_REUSE=NO HASH=${hash:0:12}"
   mkdir -p "$cache_root"
-  UV_PROJECT_ENVIRONMENT="$venv" uv sync --project "${repo_root}/apps/padiem-chat" --extra dev
+  rm -rf "$venv"
+  UV_PROJECT_ENVIRONMENT="$venv" uv sync --locked --project "${repo_root}/apps/padiem-chat" --extra dev
   PLAYWRIGHT_BROWSERS_PATH="$browsers" UV_PROJECT_ENVIRONMENT="$venv" \
     uv run --project "${repo_root}/apps/padiem-chat" --locked --no-sync \
     python -m playwright install --only-shell chromium
