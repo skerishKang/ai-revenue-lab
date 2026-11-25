@@ -1235,6 +1235,8 @@
   --shared-six-panel-frame-edge: rgba(255,255,255,.70);
   --shared-six-panel-frame-narrow-bg: rgba(242, 245, 247, .90);
   --shared-six-panel-frame-narrow-edge: rgba(255, 255, 255, .58);
+  /* #7811 token-family --glass-portrait sha256=cde5dcf0ef2e53ce5626830e8a25e28035899b8a364b792e674018138f447990 */
+  --glass-portrait-answer-action-ink: #53606c;
 }
 
 /* ---- 테마별 값 ---- */
