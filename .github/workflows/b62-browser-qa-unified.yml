@@ -332,15 +332,27 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Run auth/history and account-session contract tests
         run: uv run pytest -q tests/test_auth_history.py tests/test_b62_1816_account_session_presentation.py
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -875,15 +887,27 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Run auth/history deletion contracts
         run: uv run pytest -q tests/test_auth_history.py
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -1019,17 +1043,29 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Compile conversation export QA
         run: uv run python -m py_compile ../../.github/scripts/b62_conversation_export_browser_qa.py
       - name: Run existing Saved Outputs contracts
         run: uv run pytest -q tests/test_saved_outputs.py
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -1165,15 +1201,27 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Deep Research and source contract regression
         run: uv run pytest -q tests/test_deep_research.py tests/test_search_sources_ui.py
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -1307,13 +1355,25 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -1447,15 +1507,27 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Run existing browser streaming contract tests
         run: uv run pytest -q tests/test_browser_streaming_contract.py
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -1597,13 +1669,25 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -1737,15 +1821,27 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Compile touch-target QA
         run: uv run python -m py_compile ../../.github/scripts/b62_mobile_touch_target_qa.py
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -1879,17 +1975,29 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Run Projects contract tests
         run: uv run pytest -q tests/test_projects.py
       - name: Compile browser QA
         run: uv run python -m py_compile ../../.github/scripts/b62_project_delete_browser_qa.py
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -2023,15 +2131,27 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Run existing document and Project Files contract tests
         run: uv run pytest -q tests/test_documents.py
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -2165,15 +2285,27 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Run existing Projects contract tests
         run: uv run pytest -q tests/test_projects.py
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -2307,15 +2439,27 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Run existing Saved Outputs contract tests
         run: uv run pytest -q tests/test_saved_outputs.py
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -2449,15 +2593,27 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Structured answer regression
         run: uv run pytest -q tests/test_rich_responses.py tests/test_browser_streaming_rich_integration.py
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache
@@ -2591,13 +2747,25 @@ jobs:
         shell: bash
         run: bash ../../.github/scripts/b62_qa_prepare.sh
       - name: Resolve B62
-        if: runner.environment != 'self-hosted'
         run: uv sync --extra dev
       - name: Install pinned Playwright
-        if: runner.environment != 'self-hosted'
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Prove repository packages come from this checkout
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          uv run python - <<'PY'
+          import os, pathlib
+          import padiem_ai_core, padiem_control_plane
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          for module in (padiem_ai_core, padiem_control_plane):
+              path = pathlib.Path(module.__file__).resolve()
+              if not path.is_relative_to(root):
+                  raise SystemExit(f'B62_QA_CHECKOUT_PACKAGES=FAIL {module.__name__}')
+          print('B62_QA_CHECKOUT_PACKAGES=PASS')
+          PY
       - name: Cache pinned Playwright Chromium
         if: runner.environment != 'self-hosted'
         id: playwright-browser-cache

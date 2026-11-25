@@ -49,6 +49,17 @@ class FlowScopeTests(unittest.TestCase):
         ]
         self.assertEqual(lanes(paths), set())
 
+    def test_auth_session_account_and_usage_gate_keep_full_lane_set(self):
+        # They are shared entrypoints/consumers, not one flow's private module.
+        for path in (
+            'apps/padiem-chat/app/auth_routes.py',
+            'apps/padiem-chat/app/session_revocation_guard.py',
+            'apps/padiem-chat/app/account_deletion.py',
+            'apps/padiem-chat/app/usage_gate.py',
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(len(lanes([path])), 16)
+
     def test_unknown_or_mixed_change_keeps_full_lane_set(self):
         self.assertEqual(
             len(lanes(['apps/padiem-chat/app/pc_helper_registration.py',

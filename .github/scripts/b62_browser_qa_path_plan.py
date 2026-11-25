@@ -423,10 +423,8 @@ FLOW_PATH_RULES = (
      frozenset({"document-browser-qa", "image-browser-qa"})),
     (re.compile(r"apps/padiem-chat/app/(?:web_search|search_sources|deep_research)[^/]*\.py\Z"),
      FLOW_ONLY_SEARCH),
-    (re.compile(r"apps/padiem-chat/app/(?:auth|session|account)[^/]*\.py\Z"),
-     frozenset({"auth-history-browser-qa"})),
-    (re.compile(r"apps/padiem-chat/app/usage_gate\.py\Z"),
-     FLOW_ONLY_CONVERSATION | FLOW_ONLY_SEARCH),
+    # 로그인/세션/계정은 모든 흐름의 입구이고 usage_gate는 chat/claw/document/
+    # orchestration 경로가 함께 소비하므로 흐름별 축소 대상에서 제외한다.
 )
 
 

@@ -1,44 +1,27 @@
 #!/usr/bin/env bash
-# Reuse a self-hosted Chat QA environment keyed by the locked dependency hash.
-# Hosted runners keep the existing per-job setup; this script only runs when
-# runner.environment == 'self-hosted'.
+# Self-hosted browser QA preparation: share only external Playwright browsers.
+# Repository packages are always installed by each job into its own checkout
+# venv, so one PR's source can never leak into another PR's test environment.
 set -euo pipefail
 
-repo_root="${GITHUB_WORKSPACE:-$(pwd)}"
-lock="${repo_root}/apps/padiem-chat/uv.lock"
-test -f "$lock"
-hash="$(sha256sum "$lock" | cut -d' ' -f1)"
-cache_root="${HOME}/.cache/b62-qa/${hash}"
-venv="${cache_root}/venv"
-browsers="${cache_root}/ms-playwright"
-marker="${cache_root}/ready"
+version='1.55.0'
+base="${HOME}/.cache/b62-qa"
+mkdir -p "$base"
+browsers="${base}/ms-playwright-${version}"
+lock="${base}/ms-playwright-${version}.lock"
 
-# Two runner processes share this host and can hit the same cold cache.
-# Serialize creation so a concurrent sync cannot leave a half-written venv.
-exec 9>"${cache_root}.lock"
+exec 9>"$lock"
 flock -x 9
-if [[ -f "$marker" && -x "${venv}/bin/python" && -d "$browsers" ]] \
-   && grep -qx "$hash" "$marker"; then
-  echo "B62_QA_ENV_REUSE=YES HASH=${hash:0:12}"
+if [[ -d "$browsers" ]]; then
+  echo "B62_QA_BROWSER_REUSE=YES VERSION=${version}"
 else
-  echo "B62_QA_ENV_REUSE=NO HASH=${hash:0:12}"
-  mkdir -p "$cache_root"
-  rm -rf "$venv"
-  UV_PROJECT_ENVIRONMENT="$venv" uv sync --locked --project "${repo_root}/apps/padiem-chat" --extra dev
-  # The Chat uv.lock does not pin Playwright; the workflow installs it pinned.
-  uv pip install --python "${venv}/bin/python" 'playwright==1.55.0'
-  PLAYWRIGHT_BROWSERS_PATH="$browsers" UV_PROJECT_ENVIRONMENT="$venv" \
-    uv run --project "${repo_root}/apps/padiem-chat" --locked --no-sync \
-    python -m playwright install --only-shell chromium
-  printf '%s\n' "$hash" > "$marker"
+  echo "B62_QA_BROWSER_REUSE=NO VERSION=${version}"
+  PLAYWRIGHT_BROWSERS_PATH="$browsers" \
+    uvx --from "playwright==${version}" playwright install --only-shell chromium
 fi
 
 {
-  echo "UV_PROJECT_ENVIRONMENT=${venv}"
-  # The shared environment is already locked and installed; concurrent jobs
-  # must not re-sync it while another job is using it.
-  echo "UV_NO_SYNC=1"
   echo "PLAYWRIGHT_BROWSERS_PATH=${browsers}"
-  echo "B62_QA_ENV_HASH=${hash}"
+  echo "B62_QA_BROWSER_VERSION=${version}"
 } >> "${GITHUB_ENV}"
 echo 'B62_QA_PREP_REUSE=PASS'
