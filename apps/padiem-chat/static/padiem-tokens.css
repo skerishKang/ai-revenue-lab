@@ -224,6 +224,12 @@
   --claw-local-border-strong: rgba(150,160,180,.45);
   --claw-local-border-soft: rgba(0,0,0,.14);
 
+  /* #7811 C2 pc-connect-flow(261125): 고정 딤·그림자. 기존 :root 토큰을 우선 재사용. */
+  /* #7811 token-family --pc-connect-flow sha256=a7c6ab0ced29448837552a5701217b9ce0f8fc21762448a7a756e0304593a9b5 */
+  --pc-connect-flow-backdrop: rgba(15, 16, 20, .44);
+  --pc-connect-flow-modal-shadow: 0 18px 48px rgba(0, 0, 0, .24);
+  --pc-connect-flow-popover-shadow: 0 12px 32px rgba(0, 0, 0, .18);
+
   /* #7811 C2 history.css(261118): 바탕 색. 값은 치환 전 사용처 리터럴 그대로다.
      5테마 실측(--computed)에서 모두 같은 값이라 :root 하나로 충분하고, 예외인
      --dialog-dim만 glass 블록이 덮는다(history.css의 glass 배경 선언은 그 값을

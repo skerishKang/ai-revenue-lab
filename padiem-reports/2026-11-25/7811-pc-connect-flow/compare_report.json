@@ -1,0 +1,285 @@
+{
+ "base": "ff443f82a6a8239c892449e6c7f5b07fbe3f2e05",
+ "scenes": [
+  "modal",
+  "popover",
+  "note"
+ ],
+ "combos": 30,
+ "nonzero": [],
+ "rows": [
+  {
+   "combo": "light__1440x950",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "light__1440x950",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "light__1440x950",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "light__390x844",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "light__390x844",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "light__390x844",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "dark__1440x950",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "dark__1440x950",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "dark__1440x950",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "dark__390x844",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "dark__390x844",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "dark__390x844",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    163701,
+    0
+   ],
+   "attempts": 2
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    192864,
+    0
+   ],
+   "attempts": 2
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    192864,
+    0
+   ],
+   "attempts": 2
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "cinematic__390x844",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "cinematic__390x844",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "cinematic__390x844",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": 1
+  }
+ ]
+}

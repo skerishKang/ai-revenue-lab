@@ -1,0 +1,503 @@
+{
+ "base": "ff443f82a6a8239c892449e6c7f5b07fbe3f2e05",
+ "targets": 7,
+ "themes": 5,
+ "viewports": [
+  "1440x950",
+  "390x844"
+ ],
+ "measurements": 70,
+ "nonzero": [],
+ "rows": [
+  {
+   "combo": "light__1440x950",
+   "target": "chipColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "light__1440x950",
+   "target": "backdrop",
+   "before": "rgba(15, 16, 20, 0.44)",
+   "after": "rgba(15, 16, 20, 0.44)",
+   "equal": true
+  },
+  {
+   "combo": "light__1440x950",
+   "target": "modalShadow",
+   "before": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "after": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "equal": true
+  },
+  {
+   "combo": "light__1440x950",
+   "target": "installColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "light__1440x950",
+   "target": "closeHover",
+   "before": "rgba(127, 127, 127, 0.14)",
+   "after": "rgba(127, 127, 127, 0.14)",
+   "equal": true
+  },
+  {
+   "combo": "light__1440x950",
+   "target": "popoverShadow",
+   "before": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "after": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "equal": true
+  },
+  {
+   "combo": "light__1440x950",
+   "target": "noteShadow",
+   "before": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "after": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "equal": true
+  },
+  {
+   "combo": "light__390x844",
+   "target": "chipColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "light__390x844",
+   "target": "backdrop",
+   "before": "rgba(15, 16, 20, 0.44)",
+   "after": "rgba(15, 16, 20, 0.44)",
+   "equal": true
+  },
+  {
+   "combo": "light__390x844",
+   "target": "modalShadow",
+   "before": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "after": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "equal": true
+  },
+  {
+   "combo": "light__390x844",
+   "target": "installColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "light__390x844",
+   "target": "closeHover",
+   "before": "rgba(127, 127, 127, 0.14)",
+   "after": "rgba(127, 127, 127, 0.14)",
+   "equal": true
+  },
+  {
+   "combo": "light__390x844",
+   "target": "popoverShadow",
+   "before": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "after": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "equal": true
+  },
+  {
+   "combo": "light__390x844",
+   "target": "noteShadow",
+   "before": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "after": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "equal": true
+  },
+  {
+   "combo": "dark__1440x950",
+   "target": "chipColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "dark__1440x950",
+   "target": "backdrop",
+   "before": "rgba(15, 16, 20, 0.44)",
+   "after": "rgba(15, 16, 20, 0.44)",
+   "equal": true
+  },
+  {
+   "combo": "dark__1440x950",
+   "target": "modalShadow",
+   "before": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "after": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "equal": true
+  },
+  {
+   "combo": "dark__1440x950",
+   "target": "installColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "dark__1440x950",
+   "target": "closeHover",
+   "before": "rgba(127, 127, 127, 0.14)",
+   "after": "rgba(127, 127, 127, 0.14)",
+   "equal": true
+  },
+  {
+   "combo": "dark__1440x950",
+   "target": "popoverShadow",
+   "before": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "after": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "equal": true
+  },
+  {
+   "combo": "dark__1440x950",
+   "target": "noteShadow",
+   "before": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "after": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "equal": true
+  },
+  {
+   "combo": "dark__390x844",
+   "target": "chipColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "dark__390x844",
+   "target": "backdrop",
+   "before": "rgba(15, 16, 20, 0.44)",
+   "after": "rgba(15, 16, 20, 0.44)",
+   "equal": true
+  },
+  {
+   "combo": "dark__390x844",
+   "target": "modalShadow",
+   "before": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "after": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "equal": true
+  },
+  {
+   "combo": "dark__390x844",
+   "target": "installColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "dark__390x844",
+   "target": "closeHover",
+   "before": "rgba(127, 127, 127, 0.14)",
+   "after": "rgba(127, 127, 127, 0.14)",
+   "equal": true
+  },
+  {
+   "combo": "dark__390x844",
+   "target": "popoverShadow",
+   "before": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "after": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "equal": true
+  },
+  {
+   "combo": "dark__390x844",
+   "target": "noteShadow",
+   "before": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "after": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "target": "chipColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "target": "backdrop",
+   "before": "rgba(15, 16, 20, 0.44)",
+   "after": "rgba(15, 16, 20, 0.44)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "target": "modalShadow",
+   "before": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "after": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "target": "installColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "target": "closeHover",
+   "before": "rgba(127, 127, 127, 0.14)",
+   "after": "rgba(127, 127, 127, 0.14)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "target": "popoverShadow",
+   "before": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "after": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__1440x950",
+   "target": "noteShadow",
+   "before": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "after": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "target": "chipColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "target": "backdrop",
+   "before": "rgba(15, 16, 20, 0.44)",
+   "after": "rgba(15, 16, 20, 0.44)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "target": "modalShadow",
+   "before": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "after": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "target": "installColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "target": "closeHover",
+   "before": "rgba(127, 127, 127, 0.14)",
+   "after": "rgba(127, 127, 127, 0.14)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "target": "popoverShadow",
+   "before": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "after": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "equal": true
+  },
+  {
+   "combo": "padiem-glass__390x844",
+   "target": "noteShadow",
+   "before": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "after": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "target": "chipColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "target": "backdrop",
+   "before": "rgba(15, 16, 20, 0.44)",
+   "after": "rgba(15, 16, 20, 0.44)",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "target": "modalShadow",
+   "before": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "after": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "target": "installColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "target": "closeHover",
+   "before": "rgba(127, 127, 127, 0.14)",
+   "after": "rgba(127, 127, 127, 0.14)",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "target": "popoverShadow",
+   "before": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "after": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__1440x950",
+   "target": "noteShadow",
+   "before": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "after": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__390x844",
+   "target": "chipColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__390x844",
+   "target": "backdrop",
+   "before": "rgba(15, 16, 20, 0.44)",
+   "after": "rgba(15, 16, 20, 0.44)",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__390x844",
+   "target": "modalShadow",
+   "before": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "after": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__390x844",
+   "target": "installColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__390x844",
+   "target": "closeHover",
+   "before": "rgba(127, 127, 127, 0.14)",
+   "after": "rgba(127, 127, 127, 0.14)",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__390x844",
+   "target": "popoverShadow",
+   "before": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "after": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "equal": true
+  },
+  {
+   "combo": "cinematic__390x844",
+   "target": "noteShadow",
+   "before": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "after": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "target": "chipColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "target": "backdrop",
+   "before": "rgba(15, 16, 20, 0.44)",
+   "after": "rgba(15, 16, 20, 0.44)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "target": "modalShadow",
+   "before": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "after": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "target": "installColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "target": "closeHover",
+   "before": "rgba(127, 127, 127, 0.14)",
+   "after": "rgba(127, 127, 127, 0.14)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "target": "popoverShadow",
+   "before": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "after": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__1440x950",
+   "target": "noteShadow",
+   "before": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "after": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "target": "chipColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "target": "backdrop",
+   "before": "rgba(15, 16, 20, 0.44)",
+   "after": "rgba(15, 16, 20, 0.44)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "target": "modalShadow",
+   "before": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "after": "rgba(0, 0, 0, 0.24) 0px 18px 48px 0px",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "target": "installColor",
+   "before": "rgb(255, 255, 255)",
+   "after": "rgb(255, 255, 255)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "target": "closeHover",
+   "before": "rgba(127, 127, 127, 0.14)",
+   "after": "rgba(127, 127, 127, 0.14)",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "target": "popoverShadow",
+   "before": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "after": "rgba(0, 0, 0, 0.18) 0px 12px 32px 0px",
+   "equal": true
+  },
+  {
+   "combo": "padiem-home__390x844",
+   "target": "noteShadow",
+   "before": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "after": "rgba(0, 0, 0, 0.16) 0px 8px 24px 0px",
+   "equal": true
+  }
+ ]
+}

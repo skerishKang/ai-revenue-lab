@@ -1,0 +1,149 @@
+{
+ "sheet": "pc-connect-flow.css",
+ "round": "#7811 C2 pc-connect-flow.css 7선언",
+ "base": "ff443f82a6a8239c892449e6c7f5b07fbe3f2e05",
+ "capture_protocol": {
+  "reduced_motion": true,
+  "transition_animation": "0s/none !important",
+  "caret": "transparent",
+  "theme": "documentElement/body data-theme asserted before capture",
+  "fonts": "document.fonts.ready + status loaded + all images complete",
+  "glass_shell": "field/portrait attached + progress() === target()",
+  "popover": "fixed left/top 16px, transform none",
+  "note_timer": "pending timeouts cleared after render",
+  "frame_stability": "3 consecutive identical screenshots",
+  "browser_isolation": "fresh browser per comparison attempt",
+  "raster": "srgb, GPU/partial raster off, LCD text off, DPR 1"
+ },
+ "audit": {
+  "css_color_literals": {
+   "before": 910,
+   "after": 903,
+   "delta": -7
+  },
+  "css_color_literals_unthemed": {
+   "before": 272,
+   "after": 265,
+   "delta": -7
+  },
+  "css_important": {
+   "before": 371,
+   "after": 371,
+   "delta": 0
+  },
+  "css_themed_important": {
+   "before": 86,
+   "after": 86,
+   "delta": 0
+  },
+  "css_files": {
+   "before": 92,
+   "after": 92,
+   "delta": 0
+  },
+  "css_rules": {
+   "before": 4353,
+   "after": 4353,
+   "delta": 0
+  },
+  "css_themed_rules": {
+   "before": 769,
+   "after": 769,
+   "delta": 0
+  },
+  "css_local_imports": 0
+ },
+ "tokens": {
+  "new": [
+   "--pc-connect-flow-backdrop",
+   "--pc-connect-flow-modal-shadow",
+   "--pc-connect-flow-popover-shadow"
+  ],
+  "reused": [
+   "--project-on-ink-text",
+   "--control-wash-strong",
+   "--pc-pairing-menu-shadow"
+  ],
+  "definition": "padiem-tokens.css :root pc-connect-flow group; no theme block redeclares any name"
+ },
+ "verification": {
+  "computed": {
+   "targets": 7,
+   "measurements": 70,
+   "nonzero": 0,
+   "report": "computed_report.json"
+  },
+  "pixel": {
+   "scenes": [
+    "modal",
+    "popover",
+    "note"
+   ],
+   "combos": 30,
+   "nonzero": 0,
+   "report": "compare_report.json"
+  },
+  "control": {
+   "scenes": [
+    "modal",
+    "popover",
+    "note"
+   ],
+   "combos": 30,
+   "nonzero": 0,
+   "report": "control_report.json"
+  },
+  "contrast": {
+   "report": "contrast_report.json",
+   "below_4_5_original": [
+    {
+     "element": "chip action",
+     "min_ratio": 1.224,
+     "max_ratio": 1.236,
+     "occurrences": 2
+    },
+    {
+     "element": "close button",
+     "min_ratio": 3.024,
+     "max_ratio": 4.201,
+     "occurrences": 6
+    },
+    {
+     "element": "install button",
+     "min_ratio": 1.224,
+     "max_ratio": 1.236,
+     "occurrences": 4
+    },
+    {
+     "element": "modal description",
+     "min_ratio": 3.235,
+     "max_ratio": 4.465,
+     "occurrences": 4
+    },
+    {
+     "element": "modal update note",
+     "min_ratio": 3.379,
+     "max_ratio": 4.453,
+     "occurrences": 4
+    },
+    {
+     "element": "popover empty",
+     "min_ratio": 2.621,
+     "max_ratio": 2.621,
+     "occurrences": 1
+    }
+   ]
+  },
+  "tamper": {
+   "token": "--pc-connect-flow-backdrop",
+   "pixel": 1291940,
+   "report": "tamper_report.json"
+  },
+  "tests": "30 focused + 14 structure = 44 passed"
+ },
+ "captures": {
+  "count": 8,
+  "hashes": "capture_hashes.json"
+ },
+ "seconds": 446.4
+}
