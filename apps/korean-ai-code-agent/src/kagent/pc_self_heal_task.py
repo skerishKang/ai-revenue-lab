@@ -75,6 +75,13 @@ def _interval_minutes(value: str) -> int:
     return int(match.group(1)) if match else INTERVAL_MINUTES
 
 
+def _iso_seconds(value: str) -> int:
+    """ExecutionTimeLimit도 ISO 문자열 그대로 넘기면 인자 변환에 실패한다."""
+
+    match = re.fullmatch(r"PT(\d+)S", str(value))
+    return int(match.group(1)) if match else 0
+
+
 def build_launch(*, python_executable: str,
                  module: str = MODULE, working_directory: str = "") -> SelfHealLaunch:
     """Build the watcher launch. Module names are internal constants, never PC text."""
@@ -156,7 +163,7 @@ def register_script(definition: dict[str, Any]) -> str:
         + literal(settings["MultipleInstances"])
         + " -DisallowStartIfOnBatteries:$" + ("true" if settings["DisallowStartIfOnBatteries"] else "false")
         + " -StopIfGoingOnBatteries:$" + ("true" if settings["StopIfGoingOnBatteries"] else "false")
-        + " -ExecutionTimeLimit " + literal(settings["ExecutionTimeLimit"]),
+        + " -ExecutionTimeLimit (New-TimeSpan -Seconds %d)" % _iso_seconds(settings["ExecutionTimeLimit"]),
         "Register-ScheduledTask -TaskName " + literal(definition["TaskName"])
         + " -TaskPath " + literal(definition["TaskPath"])
         + " -Action $action -Trigger $trigger -Principal $principal -Settings $settings"
@@ -214,7 +221,7 @@ def watcher_script() -> str:
         + " -LogonType " + _ps_literal(LOGON_TYPE_SERVICE)
         + " -RunLevel " + _ps_literal(RUN_LEVEL_HIGHEST),
         "$settings = New-ScheduledTaskSettingsSet -MultipleInstances "
-        + _ps_literal("IgnoreNew") + " -ExecutionTimeLimit " + _ps_literal("PT0S"),
+        + _ps_literal("IgnoreNew") + " -ExecutionTimeLimit (New-TimeSpan -Seconds 0)",
         "Register-ScheduledTask -TaskName $taskName -TaskPath $taskPath"
         + " -Action $action -Trigger $trigger -Principal $principal -Settings $settings"
         + " -Description " + _ps_literal(DESCRIPTION) + " -Force | Out-Null",

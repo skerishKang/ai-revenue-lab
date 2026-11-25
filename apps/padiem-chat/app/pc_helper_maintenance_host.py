@@ -554,7 +554,10 @@ async def reconcile(app, store, now):
                 rows = await store.rows(
                     "SELECT stopped FROM pc_helper_auto_attempts WHERE device_id=? AND source_sha256=?",
                     job["device_id"], job["source_sha256"])
-                if (rows and rows[0]["stopped"] and not job["dispatch_id"]
+                # #8359 배포 후 관찰: 디스패치까지 끝난 시도도 terminal인데
+                # dispatch_id가 있다는 이유만으로 reason이 비어 남아 다음 원본이
+                # 이어받지 못했다. attempt_id가 자동 시도 키이므로 이 행만 정리한다.
+                if (rows and rows[0]["stopped"]
                         and job["outcome"] != "already_reserved"):
                     await state.mesh_device_drive_store.record_updater_registration(
                         device_id=job["device_id"], sha256=job["registration_sha256"],

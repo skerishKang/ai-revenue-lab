@@ -74,6 +74,24 @@ def test_move_atomic_keeps_original_on_digest_mismatch(tmp_path):
     assert not (tmp_path / "update.ps1.stage").exists()
 
 
+def test_move_atomic_falls_back_when_rename_is_refused(tmp_path):
+    """대상이 읽기 전용처럼 이름 변경이 거절돼도 해시 검증 뒤 내용을 바꾼다."""
+    import os
+    import stat
+    target = tmp_path / "update.ps1"
+    source = tmp_path / "candidate.exe"
+    target.write_text("old", encoding="utf-8")
+    source.write_text("new", encoding="utf-8")
+    os.chmod(target, stat.S_IREAD)
+    digest = hashlib.sha256(b"new").hexdigest()
+    script = ("$ErrorActionPreference='Stop'\n" + _functions() + "\n"
+              + "Move-Atomic -source '" + _ps(source) + "' -target '" + _ps(target)
+              + "' -expectedHash '" + digest + "'\n'OK'\n")
+    out = _run(script)
+    assert out.returncode == 0, out.stderr
+    assert target.read_text(encoding="utf-8") == "new"
+
+
 def test_move_atomic_refuses_a_leftover_staging_file(tmp_path):
     target = tmp_path / "update.ps1"
     source = tmp_path / "candidate.exe"
