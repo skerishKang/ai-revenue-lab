@@ -196,13 +196,18 @@ def test_compare_preview_spans_the_full_tool_panel() -> None:
     assert preview_rules[0].declarations["grid-column"] == "1 / -1"
 
 
-def test_markdown_tables_keep_their_shape_with_horizontal_scroll() -> None:
+def test_markdown_tables_keep_their_shape_and_fit_the_pane() -> None:
+    # #8760: a table takes the pane's width and its cells wrap; no sideways
+    # scroll and no nowrap cells (the fit itself is test_8760_*).
     pages = js_view("util-pdfmd-pages.js")
     table_styles = [value for value in pages["string_literals"]
-                    if "width:max-content" in value and "overflow-x:auto" in value]
+                    if "border-collapse:collapse" in value]
     assert len(table_styles) == 1
-    assert "min-width:100%" in table_styles[0]
-    assert any("white-space:nowrap" in value for value in pages["string_literals"])
+    assert "width:100%" in table_styles[0]
+    assert "max-content" not in table_styles[0]
+    assert "overflow-x:auto" not in table_styles[0]
+    assert not any("white-space:nowrap" in value for value in pages["string_literals"])
+    assert any("overflow-wrap:anywhere" in value for value in pages["string_literals"])
 
 
 def test_recent_conversions_start_expanded() -> None:

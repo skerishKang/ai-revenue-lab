@@ -231,13 +231,15 @@
       const table = el("table", "pdfmd-page-table");
       // #8316: inline shape keeps the table inside one column instead of a
       // pipe string that wraps into scattered cells. No new CSS sheet rule.
-      table.style.cssText = "width:max-content;min-width:100%;border-collapse:collapse;margin:4px 0 10px;font:inherit;display:block;overflow-x:auto";
+      // #8760: the table takes the pane's width and its cells wrap, so a wide
+      // page-1 table is read in the pane instead of scrolling sideways.
+      table.style.cssText = "width:100%;border-collapse:collapse;margin:4px 0 10px;font:inherit;font-size:12px";
       rows.forEach((row, r) => {
         const tr = el("tr", "pdfmd-page-table-row");
         tr.style.cssText = "border-bottom:1px solid var(--line)";
         row.forEach((value) => {
           const cell = el(r === 0 ? "th" : "td", "pdfmd-page-table-cell", value);
-          cell.style.cssText = "padding:5px 8px;text-align:left;vertical-align:top;white-space:nowrap"
+          cell.style.cssText = "padding:4px 5px;text-align:left;vertical-align:top;white-space:normal;overflow-wrap:anywhere"
             + (r === 0 ? ";color:var(--muted);font-weight:750" : "");
           tr.appendChild(cell);
         });
