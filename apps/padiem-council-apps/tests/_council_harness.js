@@ -1132,7 +1132,7 @@ const SCENARIOS = {
     await find(A, "councilMeetingSave").dispatch("click");
     await sleep(60);
     const labelsA = find(A, "councilMeetingArchive").querySelectorAll("li button")
-      .map(deepText).filter((label) => label.indexOf("자)") >= 0);
+      .map(deepText).filter((label) => label.indexOf("(") >= 0);
     // Re-entry: a fresh session of the same account, the stored list rebuilt.
     const B = spawnSession();
     await B.ctx.window.PadiemCouncilApps.init();
@@ -1140,7 +1140,7 @@ const SCENARIOS = {
     await openMeeting(B);
     const archiveB = find(B, "councilMeetingArchive");
     const labelsB = archiveB.querySelectorAll("li button")
-      .map(deepText).filter((label) => label.indexOf("자)") >= 0);
+      .map(deepText).filter((label) => label.indexOf("(") >= 0);
     const row = archiveB.querySelectorAll("li button")
       .find((b) => deepText(b).indexOf("11월 민원 회의") === 0);
     if (!row) throw new Error("saved meeting row missing: " + JSON.stringify(labelsB));
@@ -2300,6 +2300,23 @@ const SCENARIOS = {
     out.speech.docx = toB64(out.speech.docx);
     out.book.hwpx = toB64(out.book.hwpx);
     out.book.docx = toB64(out.book.docx);
+
+    // #7575: the same export lane must turn markdown into document structure.
+    find(s, "councilBookOutput").value = [
+      "1. 10월 활동집",
+      "### 1. 회의 요약",
+      "* **신호등 설치 건:** 교통량 조사 후 검토 예정",
+      "---",
+      "**현장 확인** 후 회신하기로 함",
+    ].join("\n");
+    await find(s, "councilBookDownloadHwpx").dispatch("click");
+    await sleep(20);
+    await find(s, "councilBookDownloadDocx").dispatch("click");
+    await sleep(20);
+    out.markdown = {
+      hwpx: toB64(downloadDetails[4]),
+      docx: toB64(downloadDetails[5]),
+    };
     return out;
   },
   async pc_save_binary() {

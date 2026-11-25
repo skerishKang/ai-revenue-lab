@@ -68,8 +68,8 @@ def test_the_hwpx_package_is_a_hangul_readable_owpml_zip():
     assert "존경하는 시민 여러분" in section, "the manuscript body must survive the packaging"
     header = zf.read("Contents/header.xml").decode("utf-8")
     assert "함초롬바탕" in header
-    assert header.count("<hh:charPr ") == 3 and "<hh:bold/>" in header, \
-        "제목(20pt 볼드)·소제목(14pt 볼드)·본문 세 글자 모양이 필요하다"
+    assert header.count("<hh:charPr ") == 4 and "<hh:bold/>" in header, \
+        "제목·소제목·본문·굵은 글자 네 가지 모양이 필요하다"
     manifest = zf.read("Contents/content.hpf").decode("utf-8")
     for expected in ("Contents/header.xml", "Contents/section0.xml", "settings.xml"):
         assert expected in manifest

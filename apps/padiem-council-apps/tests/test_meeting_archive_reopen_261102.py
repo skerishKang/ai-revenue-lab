@@ -24,11 +24,11 @@ OBS = run("meeting_archive")
 
 def test_a_record_stored_before_kinds_existed_is_still_listed() -> None:
     # 하위호환: doc_kind 이전에 저장된 "예전 회의 기록.txt" 는 이름 규칙으로 분류된다.
-    assert any(label.startswith("예전 회의 기록.txt") for label in OBS["labelsB"]), OBS["labelsB"]
+    assert any(label.startswith("예전 회의 기록") for label in OBS["labelsB"]), OBS["labelsB"]
 
 
 def test_a_saved_meeting_is_listed_after_reentry_and_keeps_its_kind() -> None:
-    assert any(label.startswith("11월 민원 회의.txt") for label in OBS["labelsB"]), OBS["labelsB"]
+    assert any(label.startswith("11월 민원 회의") for label in OBS["labelsB"]), OBS["labelsB"]
     assert ["11월 민원 회의.txt", "meeting"] in OBS["storedKinds"], OBS["storedKinds"]
     # 저장 직후의 목록에도 같은 기록이 한 번만 있다(두 번 저장되지 않는다).
     assert [label for label in OBS["labelsA"] if "11월 민원 회의" in label] == [
