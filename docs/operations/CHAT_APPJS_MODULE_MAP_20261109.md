@@ -888,3 +888,12 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **수치**: app.js 2,385 → **2,378**줄, `appjs_forwarders` 9 → **0**(B7 완료), `appjs_function_decls` 67 → **58**. deps 161·listeners 44·dom 133 불변. 원문 단언 수 13,167 불변.
 - **시험(넓히기만)**: a6 전달 단언을 등록부 단언으로 전환+도달성 신규 1건, sessionStorage/TDZ/wire 순서 단언 유지.
 - **검증**: 래칫 4종 13 passed+가드 5, 부팅 장부 변형 풀 일치(main 30·branch 6 샘플, 신규 변형 0 — 시점 불변 증거), 골든 로그인 5경로 byte-identical+account 골든 일치, 뮤테이션 2건 적발(provide 제거→구조 1건, isAndroidWebView 조각 누락→구조·vm·도달성 3건), a6 8 passed, e2e 14, 오프라인 node --test 74+pytest 13, ui_request_speed 5 passed.
+
+
+### T2 follow-up card 1: document formats menu listeners (2026-11-25)
+
+- Scope: conversation-owned document formats menu only. The original listener block now invokes conversationModule().wireDocumentFormats() at the same position, preserving listener registration order; no copy/UI changes.
+- Moved into chat-conversation-module.js: two DOM lookups (documentFormatsToggle, documentFormatsPanel), two click listeners (toggle, document), and unchanged visibility/aria-expanded handling. No shared state or deps.
+- Metrics (main to branch): appjs_lines 2378 -> 2365; appjs_dom_lookups 133 -> 131; appjs_listeners 44 -> 42; appjs_deps_total 161 -> 161; appjs_forwarders 0 -> 0.
+- Direct contract: strict deps create() does not read deps, wireDocumentFormats() registers listeners, toggle/outside/inside clicks retain the original behavior.
+- Baseline mechanism: current main has no committed structure_baseline.json (#8054), so the existing main/head structural ratchet remains unchanged.

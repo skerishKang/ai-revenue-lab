@@ -1831,20 +1831,7 @@
   cancelStreamButton.addEventListener("click", streaming.cancelActiveStream);
   attachmentButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   documentStarterButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
-  const documentFormatsToggle = document.getElementById("documentFormatsToggle");
-  const documentFormatsPanel = document.getElementById("documentFormatsPanel");
-  if (documentFormatsToggle && documentFormatsPanel) {
-    documentFormatsToggle.addEventListener("click", () => {
-      const show = documentFormatsPanel.hidden;
-      documentFormatsPanel.hidden = !show;
-      documentFormatsToggle.setAttribute("aria-expanded", show ? "true" : "false");
-    });
-    document.addEventListener("click", (event) => {
-      if (documentFormatsPanel.hidden || (event.target.closest && event.target.closest(".document-starter-shell"))) return;
-      documentFormatsPanel.hidden = true;
-      documentFormatsToggle.setAttribute("aria-expanded", "false");
-    });
-  }
+  conversationModule().wireDocumentFormats();
   attachmentFileInput.addEventListener("change", () => {
     const files = Array.from(attachmentFileInput.files || []);
     if (files.length) void conversationModule().addAttachmentFiles(files);
