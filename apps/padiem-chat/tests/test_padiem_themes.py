@@ -296,3 +296,22 @@ def test_bright_theme_status_badge_is_readable_in_chat_and_claw():
     # The unscoped dark-surface badge stays: dark and cinematic themes still
     # need a near-white badge on their dark background.
     assert sheets.rules_with_selector("padiem-surfaces.css", ".demo-label")
+
+def test_c3_home_answer_and_demo_label_no_important():
+    """These theme-qualified rules outrank the later generic base owners."""
+    wanted = {
+        'html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-meta': {'color': 'var(--muted)'},
+        'html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content': {'color': '#1e2a3a'},
+        'html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label': {
+            'background': 'rgba(255,255,255,.62)',
+            'border-color': 'rgba(26,34,48,.10)',
+            'color': 'var(--muted)',
+        },
+    }
+    actual = {
+        rule.selector: sheets.decl_map(rule)
+        for rule in sheets.rules('padiem-themes.css')
+        if rule.selector in wanted
+    }
+    assert actual == wanted
+    assert all('!important' not in value for props in actual.values() for value in props.values())
