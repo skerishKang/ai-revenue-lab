@@ -55,7 +55,7 @@ def test_move_atomic_replaces_target_and_keeps_acl(tmp_path):
     assert out.stdout.strip().endswith("acl-ok")
     assert target.read_text(encoding="utf-8") == "new"
     assert source.read_text(encoding="utf-8") == "new"
-    assert not (tmp_path / "update.ps1.new").exists()
+    assert not (tmp_path / "update.ps1.stage").exists()
 
 
 def test_move_atomic_keeps_original_on_digest_mismatch(tmp_path):
@@ -71,7 +71,7 @@ def test_move_atomic_keeps_original_on_digest_mismatch(tmp_path):
     assert out.returncode != 0
     assert "staged_digest_mismatch" in out.stderr
     assert target.read_text(encoding="utf-8") == "old"
-    assert not (tmp_path / "update.ps1.new").exists()
+    assert not (tmp_path / "update.ps1.stage").exists()
 
 
 def test_move_atomic_refuses_a_leftover_staging_file(tmp_path):
@@ -79,7 +79,7 @@ def test_move_atomic_refuses_a_leftover_staging_file(tmp_path):
     source = tmp_path / "candidate.exe"
     target.write_text("old", encoding="utf-8")
     source.write_text("new", encoding="utf-8")
-    (tmp_path / "update.ps1.new").write_text("stale", encoding="utf-8")
+    (tmp_path / "update.ps1.stage").write_text("stale", encoding="utf-8")
     digest = hashlib.sha256(b"new").hexdigest()
     script = ("$ErrorActionPreference='Stop'\n" + _functions() + "\n"
               + "Move-Atomic -source '" + _ps(source) + "' -target '" + _ps(target)

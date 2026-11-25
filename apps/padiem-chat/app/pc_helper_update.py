@@ -75,7 +75,7 @@ function Move-Atomic($source,$target,$expectedHash) {
     # 정리하고, 검증 전에는 원본을 건드리지 않는다. Test-UpdateAcl은 그대로
     # 교체 뒤에 실행한다.
     $acl = Get-UpdateAcl $target
-    $staged = "$target.new"
+    $staged = "$target.stage"
     if (Test-Path -LiteralPath $staged) { throw 'unexpected_staging_file' }
     try {
         Copy-Item -LiteralPath $source -Destination $staged -Force
@@ -92,6 +92,9 @@ function Move-Atomic($source,$target,$expectedHash) {
 }
 function Replace-WithoutBackup($source,$target) {
     Move-Atomic $source $target (Get-UpdateDigest $source)
+    # .NET Replace는 원본을 소비한다. Move-Item은 복사본만 옮기므로 남은
+    # 스테이징 원본을 여기서 지워야 다음 쓰기가 같은 이름으로 막히지 않는다.
+    if (Test-Path -LiteralPath $source) { Remove-Item -LiteralPath $source -Force }
 }
 function Write-AtomicJson($path,$value) {
     $tmp = "$path.new"
