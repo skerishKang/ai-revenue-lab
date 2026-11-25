@@ -178,11 +178,17 @@ def test_the_icon_border_stays_in_the_theme_sheet_while_the_even_card_selector_o
 def test_the_cinematic_card_is_painted_by_the_readability_sheet_and_the_base_rule():
     # No cinematic starter rule is left in the theme sheet.
     assert [selector for selector in _theme_sheet_starter() if "cinematic" in selector] == []
-    # Surface, edge and glow: flagged in the readability sheet, so neither the
-    # removed resting values nor the removed hover values ever outranked them.
-    box = _declared("padiem-bright-readability.css", 'html[data-theme="cinematic"] .starter')
-    for prop in ("background", "border-color", "box-shadow"):
-        assert box[prop].endswith("!important"), prop
+    # Surface, edge and glow: painted by the readability sheet through the
+    # higher specificity of its body .app-shell selector (#7811 C3), so neither
+    # the removed resting values nor the removed hover values ever outranked
+    # them — and no override flag is needed any more.
+    box = _declared("padiem-bright-readability.css", 'html[data-theme="cinematic"] body .app-shell .starter')
+    assert box == {
+        "background": "linear-gradient(145deg, rgba(224,242,255,.10), rgba(255,255,255,.024)), rgba(7,11,18,.62)",
+        "border-color": "rgba(136,201,255,.24)",
+        "box-shadow": "0 0 26px rgba(96,178,242,.10), inset 0 1px 0 rgba(255,255,255,.08)",
+    }
+    assert all("!important" not in value for value in box.values())
     # Text colour and blur: the removed values repeated the base rule's own.
     base = _declared("padiem-surfaces.css", ".starter")
     assert base["color"] == "var(--surfaces-starter-text)"

@@ -235,11 +235,17 @@ def test_the_dark_composer_box_and_text_are_painted_by_the_dark_contrast_sheet()
 
 def test_the_cinematic_composer_box_is_painted_by_the_readability_sheet():
     box = _declared("padiem-bright-readability.css", 'html[data-theme="cinematic"] .composer')
-    # Same gradient the theme sheet used to repeat; border and shadow outrank
-    # any theme-sheet value through their flag.
+    # Same gradient the theme sheet used to repeat.
     assert box["background"] == "linear-gradient(145deg, rgba(18,30,46,.8), rgba(8,11,17,.76))"
-    assert box["border-color"].endswith("!important")
-    assert box["box-shadow"].endswith("!important")
+    # Border and shadow moved to the body .app-shell selector (#7811 C3): its
+    # specificity (0,3,2) outranks the (0,3,0) .app-shell[data-state] rules in
+    # later sheets, so they win without any override flag.
+    edge = _declared("padiem-bright-readability.css", 'html[data-theme="cinematic"] body .app-shell .composer')
+    assert edge == {
+        "border-color": "rgba(136,201,255,.26)",
+        "box-shadow": "0 0 40px rgba(93,178,246,.14), 0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08)",
+    }
+    assert all("!important" not in value for value in edge.values())
 
 
 def test_the_note_colour_outside_the_chat_state_is_painted_by_a_later_sheet():
