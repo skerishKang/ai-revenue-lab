@@ -1,0 +1,336 @@
+{
+ "1440": {
+  "main": {
+   "paragraph": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(17, 26, 34)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "rich": {
+    "opacity": "1",
+    "background": "rgba(255, 255, 255, 0.043) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(255, 255, 255, 0.043)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 33, 42)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "answer": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(83, 96, 108)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "card": {
+    "opacity": "1",
+    "background": "rgba(249, 250, 251, 0.94) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(249, 250, 251, 0.94)",
+    "backdrop-filter": "blur(18px) saturate(1.01)",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 33, 42)",
+    "filter": "none",
+    "box-shadow": "rgba(26, 35, 44, 0.11) 0px 18px 48px 0px, rgba(255, 255, 255, 0.48) 0px 1px 0px 0px inset"
+   },
+   "starter": {
+    "opacity": "1",
+    "background": "rgba(247, 249, 250, 0.91) linear-gradient(155deg, rgba(248, 250, 251, 0.56), rgba(228, 234, 238, 0.32)) repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(247, 249, 250, 0.91)",
+    "backdrop-filter": "blur(26px) saturate(1.04)",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(24, 35, 44)",
+    "filter": "none",
+    "box-shadow": "rgba(28, 38, 49, 0.14) 0px 18px 48px 0px, rgba(255, 255, 255, 0.58) 0px 1px 0px 0px inset"
+   },
+   "conversation": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) linear-gradient(155deg, rgba(248, 250, 251, 0.88), rgba(233, 238, 241, 0.84)) repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "blur(30px) saturate(1.06)",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 32, 42)",
+    "filter": "none",
+    "box-shadow": "rgba(28, 36, 44, 0.16) 0px 24px 70px 0px, rgba(255, 255, 255, 0.72) 0px 1px 0px 0px inset"
+   },
+   "portrait": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 32, 42)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "bodyAfter": {
+    "opacity": "0.1",
+    "background": "linear-gradient(rgba(255, 255, 255, 0.08) 1px, rgba(0, 0, 0, 0) 1px) repeat scroll 0% 0% / 84px 84px padding-box border-box, rgba(0, 0, 0, 0) linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, rgba(0, 0, 0, 0) 1px) repeat scroll 0% 0% / 84px 84px padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 32, 42)",
+    "filter": "none",
+    "box-shadow": "none"
+   }
+  },
+  "branch": {
+   "paragraph": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(17, 26, 34)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "rich": {
+    "opacity": "1",
+    "background": "rgba(255, 255, 255, 0.043) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(255, 255, 255, 0.043)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 33, 42)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "answer": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(83, 96, 108)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "card": {
+    "opacity": "1",
+    "background": "rgba(249, 250, 251, 0.94) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(249, 250, 251, 0.94)",
+    "backdrop-filter": "blur(18px) saturate(1.01)",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 33, 42)",
+    "filter": "none",
+    "box-shadow": "rgba(26, 35, 44, 0.11) 0px 18px 48px 0px, rgba(255, 255, 255, 0.48) 0px 1px 0px 0px inset"
+   },
+   "starter": {
+    "opacity": "1",
+    "background": "rgba(247, 249, 250, 0.91) linear-gradient(155deg, rgba(248, 250, 251, 0.56), rgba(228, 234, 238, 0.32)) repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(247, 249, 250, 0.91)",
+    "backdrop-filter": "blur(26px) saturate(1.04)",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(24, 35, 44)",
+    "filter": "none",
+    "box-shadow": "rgba(28, 38, 49, 0.14) 0px 18px 48px 0px, rgba(255, 255, 255, 0.58) 0px 1px 0px 0px inset"
+   },
+   "conversation": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) linear-gradient(155deg, rgba(248, 250, 251, 0.88), rgba(233, 238, 241, 0.84)) repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "blur(30px) saturate(1.06)",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 32, 42)",
+    "filter": "none",
+    "box-shadow": "rgba(28, 36, 44, 0.16) 0px 24px 70px 0px, rgba(255, 255, 255, 0.72) 0px 1px 0px 0px inset"
+   },
+   "portrait": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 32, 42)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "bodyAfter": {
+    "opacity": "0.1",
+    "background": "linear-gradient(rgba(255, 255, 255, 0.08) 1px, rgba(0, 0, 0, 0) 1px) repeat scroll 0% 0% / 84px 84px padding-box border-box, rgba(0, 0, 0, 0) linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, rgba(0, 0, 0, 0) 1px) repeat scroll 0% 0% / 84px 84px padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 32, 42)",
+    "filter": "none",
+    "box-shadow": "none"
+   }
+  },
+  "differences": []
+ },
+ "390": {
+  "main": {
+   "paragraph": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(17, 26, 34)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "rich": {
+    "opacity": "1",
+    "background": "rgba(255, 255, 255, 0.043) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(255, 255, 255, 0.043)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 33, 42)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "answer": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(83, 96, 108)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "card": {
+    "opacity": "1",
+    "background": "rgba(249, 250, 251, 0.94) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(249, 250, 251, 0.94)",
+    "backdrop-filter": "blur(18px) saturate(1.01)",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 33, 42)",
+    "filter": "none",
+    "box-shadow": "rgba(26, 35, 44, 0.11) 0px 18px 48px 0px, rgba(255, 255, 255, 0.48) 0px 1px 0px 0px inset"
+   },
+   "starter": {
+    "opacity": "1",
+    "background": "rgba(247, 249, 250, 0.91) linear-gradient(155deg, rgba(248, 250, 251, 0.56), rgba(228, 234, 238, 0.32)) repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(247, 249, 250, 0.91)",
+    "backdrop-filter": "blur(26px) saturate(1.04)",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(24, 35, 44)",
+    "filter": "none",
+    "box-shadow": "rgba(28, 38, 49, 0.14) 0px 18px 48px 0px, rgba(255, 255, 255, 0.58) 0px 1px 0px 0px inset"
+   },
+   "conversation": {
+    "opacity": "1",
+    "background": "rgba(242, 245, 247, 0.9) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(242, 245, 247, 0.9)",
+    "backdrop-filter": "blur(30px) saturate(1.06)",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 32, 42)",
+    "filter": "none",
+    "box-shadow": "rgba(28, 36, 44, 0.16) 0px 24px 70px 0px, rgba(255, 255, 255, 0.72) 0px 1px 0px 0px inset"
+   },
+   "portrait": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 32, 42)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "bodyAfter": {
+    "opacity": "0.025",
+    "background": "linear-gradient(rgba(255, 255, 255, 0.08) 1px, rgba(0, 0, 0, 0) 1px) repeat scroll 0% 0% / 84px 84px padding-box border-box, rgba(0, 0, 0, 0) linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, rgba(0, 0, 0, 0) 1px) repeat scroll 0% 0% / 84px 84px padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 32, 42)",
+    "filter": "none",
+    "box-shadow": "none"
+   }
+  },
+  "branch": {
+   "paragraph": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(17, 26, 34)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "rich": {
+    "opacity": "1",
+    "background": "rgba(255, 255, 255, 0.043) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(255, 255, 255, 0.043)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 33, 42)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "answer": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(83, 96, 108)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "card": {
+    "opacity": "1",
+    "background": "rgba(249, 250, 251, 0.94) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(249, 250, 251, 0.94)",
+    "backdrop-filter": "blur(18px) saturate(1.01)",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 33, 42)",
+    "filter": "none",
+    "box-shadow": "rgba(26, 35, 44, 0.11) 0px 18px 48px 0px, rgba(255, 255, 255, 0.48) 0px 1px 0px 0px inset"
+   },
+   "starter": {
+    "opacity": "1",
+    "background": "rgba(247, 249, 250, 0.91) linear-gradient(155deg, rgba(248, 250, 251, 0.56), rgba(228, 234, 238, 0.32)) repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(247, 249, 250, 0.91)",
+    "backdrop-filter": "blur(26px) saturate(1.04)",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(24, 35, 44)",
+    "filter": "none",
+    "box-shadow": "rgba(28, 38, 49, 0.14) 0px 18px 48px 0px, rgba(255, 255, 255, 0.58) 0px 1px 0px 0px inset"
+   },
+   "conversation": {
+    "opacity": "1",
+    "background": "rgba(242, 245, 247, 0.9) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(242, 245, 247, 0.9)",
+    "backdrop-filter": "blur(30px) saturate(1.06)",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 32, 42)",
+    "filter": "none",
+    "box-shadow": "rgba(28, 36, 44, 0.16) 0px 24px 70px 0px, rgba(255, 255, 255, 0.72) 0px 1px 0px 0px inset"
+   },
+   "portrait": {
+    "opacity": "1",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 32, 42)",
+    "filter": "none",
+    "box-shadow": "none"
+   },
+   "bodyAfter": {
+    "opacity": "0.025",
+    "background": "linear-gradient(rgba(255, 255, 255, 0.08) 1px, rgba(0, 0, 0, 0) 1px) repeat scroll 0% 0% / 84px 84px padding-box border-box, rgba(0, 0, 0, 0) linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, rgba(0, 0, 0, 0) 1px) repeat scroll 0% 0% / 84px 84px padding-box border-box",
+    "background-color": "rgba(0, 0, 0, 0)",
+    "backdrop-filter": "none",
+    "-webkit-backdrop-filter": "",
+    "color": "rgb(23, 32, 42)",
+    "filter": "none",
+    "box-shadow": "none"
+   }
+  },
+  "differences": []
+ }
+}

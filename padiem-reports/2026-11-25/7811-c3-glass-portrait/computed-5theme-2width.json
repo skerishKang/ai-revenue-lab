@@ -1,0 +1,62 @@
+[
+ {
+  "theme": "light",
+  "viewport": "1440x950",
+  "differences": [],
+  "body_after_opacity": "0.18"
+ },
+ {
+  "theme": "light",
+  "viewport": "390x844",
+  "differences": [],
+  "body_after_opacity": "0.14"
+ },
+ {
+  "theme": "dark",
+  "viewport": "1440x950",
+  "differences": [],
+  "body_after_opacity": "0.03"
+ },
+ {
+  "theme": "dark",
+  "viewport": "390x844",
+  "differences": [],
+  "body_after_opacity": "0.03"
+ },
+ {
+  "theme": "padiem-glass",
+  "viewport": "1440x950",
+  "differences": [],
+  "body_after_opacity": "0.1"
+ },
+ {
+  "theme": "padiem-glass",
+  "viewport": "390x844",
+  "differences": [],
+  "body_after_opacity": "0.1"
+ },
+ {
+  "theme": "cinematic",
+  "viewport": "1440x950",
+  "differences": [],
+  "body_after_opacity": "0.22"
+ },
+ {
+  "theme": "cinematic",
+  "viewport": "390x844",
+  "differences": [],
+  "body_after_opacity": "0.22"
+ },
+ {
+  "theme": "padiem-home",
+  "viewport": "1440x950",
+  "differences": [],
+  "body_after_opacity": "0.1"
+ },
+ {
+  "theme": "padiem-home",
+  "viewport": "390x844",
+  "differences": [],
+  "body_after_opacity": "0.1"
+ }
+]
