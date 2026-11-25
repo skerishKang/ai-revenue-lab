@@ -25,6 +25,8 @@ else
   mkdir -p "$cache_root"
   rm -rf "$venv"
   UV_PROJECT_ENVIRONMENT="$venv" uv sync --locked --project "${repo_root}/apps/padiem-chat" --extra dev
+  # The Chat uv.lock does not pin Playwright; the workflow installs it pinned.
+  uv pip install --python "${venv}/bin/python" 'playwright==1.55.0'
   PLAYWRIGHT_BROWSERS_PATH="$browsers" UV_PROJECT_ENVIRONMENT="$venv" \
     uv run --project "${repo_root}/apps/padiem-chat" --locked --no-sync \
     python -m playwright install --only-shell chromium
