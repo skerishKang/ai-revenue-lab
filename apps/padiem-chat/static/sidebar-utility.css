@@ -282,8 +282,6 @@ html[data-theme="padiem-glass"] .brand-row {
   }
   html[data-theme="padiem-glass"] body .app-shell.sidebar-collapsed[data-state="chat"] .conversation {
     width: min(1000px, calc(100% - 48px));
-    margin-left: auto;
-    margin-right: auto;
   }
 }
 
