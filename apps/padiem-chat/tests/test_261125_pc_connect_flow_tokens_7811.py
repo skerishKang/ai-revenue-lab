@@ -10,14 +10,11 @@ from css_rules import parse_rules
 
 NEW_TOKENS = {
     "--pc-connect-flow-backdrop": "rgba(15, 16, 20, .44)",
+    "--pc-connect-flow-close-wash": "rgba(127, 127, 127, .14)",
+    "--pc-connect-flow-ink-on-accent": "#fff",
     "--pc-connect-flow-modal-shadow": "0 18px 48px rgba(0, 0, 0, .24)",
+    "--pc-connect-flow-note-shadow": "0 8px 24px rgba(0, 0, 0, .16)",
     "--pc-connect-flow-popover-shadow": "0 12px 32px rgba(0, 0, 0, .18)",
-}
-
-REUSED_TOKENS = {
-    "--project-on-ink-text": "#fff",
-    "--control-wash-strong": "rgba(127, 127, 127, .14)",
-    "--pc-pairing-menu-shadow": "0 8px 24px rgba(0, 0, 0, .16)",
 }
 
 DECLARATIONS = (
@@ -26,15 +23,15 @@ DECLARATIONS = (
     (".pc-connect-modal", "box-shadow",
      "var(--pc-connect-flow-modal-shadow)", "0 18px 48px rgba(0, 0, 0, .24)"),
     (".pc-connect-install", "color",
-     "var(--project-on-ink-text)", "#fff"),
+     "var(--pc-connect-flow-ink-on-accent)", "#fff"),
     (".pc-connect-close:hover", "background",
-     "var(--control-wash-strong)", "rgba(127, 127, 127, .14)"),
+     "var(--pc-connect-flow-close-wash)", "rgba(127, 127, 127, .14)"),
     (".pc-connect-note", "box-shadow",
-     "var(--pc-pairing-menu-shadow)", "0 8px 24px rgba(0, 0, 0, .16)"),
+     "var(--pc-connect-flow-note-shadow)", "0 8px 24px rgba(0, 0, 0, .16)"),
     (".pc-connect-popover", "box-shadow",
      "var(--pc-connect-flow-popover-shadow)", "0 12px 32px rgba(0, 0, 0, .18)"),
     (".pc-connect-chip-action", "color",
-     "var(--project-on-ink-text)", "#fff"),
+     "var(--pc-connect-flow-ink-on-accent)", "#fff"),
 )
 
 THEMES = ("light", "dark", "padiem-glass", "cinematic", "padiem-home")
@@ -64,13 +61,6 @@ def test_new_tokens_hold_the_pre_change_literals():
     assert not (set(NEW_TOKENS) & overridden), "a theme repaints a pc-connect-flow token"
 
 
-def test_reused_tokens_are_defined_in_root_and_not_theme_overridden():
-    found, overridden = _token_facts()
-    for name, expected in REUSED_TOKENS.items():
-        assert found.get(name) == expected, f"{name} = {found.get(name)}"
-        assert name not in overridden, f"a theme repaints {name}"
-
-
 def test_every_declaration_reads_the_expected_token_value():
     rules = _flow_rules()
     for selector, prop, after, before in DECLARATIONS:
@@ -97,7 +87,6 @@ def test_every_token_is_read_by_the_sheet():
                for value in rule.declarations.values()
                for name in VAR_RX.findall(value)}
     assert set(NEW_TOKENS) <= painted
-    assert set(REUSED_TOKENS) <= painted
 
 
 def test_new_tokens_are_defined_only_in_the_token_file():

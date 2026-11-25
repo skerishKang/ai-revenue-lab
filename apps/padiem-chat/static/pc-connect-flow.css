@@ -53,7 +53,7 @@
   border: 0;
   border-radius: var(--radius-sm);
   background: var(--accent-strong);
-  color: var(--project-on-ink-text);
+  color: var(--pc-connect-flow-ink-on-accent);
   cursor: pointer;
   font: inherit;
   font-size: 15px;
@@ -130,7 +130,7 @@
 }
 
 .pc-connect-close:hover {
-  background: var(--control-wash-strong);
+  background: var(--pc-connect-flow-close-wash);
 }
 
 .pc-connect-modal {
@@ -149,7 +149,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
   background: var(--panel);
-  box-shadow: var(--pc-pairing-menu-shadow);
+  box-shadow: var(--pc-connect-flow-note-shadow);
   font-size: 13px;
   font-weight: 700;
   color: var(--success);
@@ -229,7 +229,7 @@
   padding: 2px 8px;
   border-radius: var(--radius-pill);
   background: var(--accent-strong);
-  color: var(--project-on-ink-text);
+  color: var(--pc-connect-flow-ink-on-accent);
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
