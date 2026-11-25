@@ -1018,6 +1018,16 @@ class B62ScopeTests(unittest.TestCase):
             bounds, [f'test "${{#modules[@]}}" -le {module.UI_CONTRACT_MAX_MODULES}']
         )
 
+    def test_ui_contract_module_count_has_headroom_before_the_cap(self):
+        # Fail early while there is still time to raise the bound; an exact
+        # match silently empties ui_contract_tests() and breaks the gate.
+        count = len(module.ui_contract_tests(ROOT))
+        limit = int(module.UI_CONTRACT_MAX_MODULES * 0.9)
+        self.assertLessEqual(
+            count, limit,
+            f"UI contract modules={count} reached 90% of cap={module.UI_CONTRACT_MAX_MODULES}; raise the cap before it empties discovery",
+        )
+
     def test_workflow_runs_all_static_contracts_and_requires_their_result(self):
         text = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
         self.assertIn("ui_contract: ${{ steps.classify-b62.outputs.ui_contract }}", text)
