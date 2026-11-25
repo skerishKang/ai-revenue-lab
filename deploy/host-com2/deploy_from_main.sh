@@ -707,6 +707,18 @@ stage_source() {
 }
 
 # Every install and every post-deploy probe reads the mirror, never the checkout.
+# Keep a bounded rollback history after a successful release. The release
+# currently being deployed ($old) is never a candidate for removal: it is the
+# rollback source until the next successful deploy has proven itself.
+prune_previous_checkouts() {
+  [[ -d $previous_dir ]] || return 0
+  "$python_bin" "$ops_checkout/deploy/host-com2/prune_previous_worktrees.py" \
+    "$previous_dir" "${old:-}" 10 || return 1
+  "$git_bin" -C "$ops_checkout" worktree prune || return 1
+  say 'PREVIOUS_WORKTREE_PRUNE=PASS'
+  return 0
+}
+
 verify_staged_source() {
   stage_source
   assert_service_readable STAGED "$staged" "$read_check_user" \
@@ -2235,6 +2247,9 @@ run_deploy() {
       --ai-status "$ai_status" --ai-code "${ai_code:-none}" || true
   fi
   if (( failed )); then exit 1; fi
+  if ! prune_previous_checkouts; then
+    say 'PREVIOUS_PRUNE=WARN'
+  fi
   return 0
 }
 
