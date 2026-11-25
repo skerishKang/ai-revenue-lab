@@ -19,13 +19,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from css_rules import declaration, parse_rules
+
 from _support.claw_continuity import (
     app_source,
     calendar_css,
     claw_form_source,
     claw_run_source,
     claw_status_source,
-    frame_css,
+    panel_layout_css,
     glass_css,
     index_html,
     library_css,
@@ -148,9 +150,11 @@ def test_page_eyebrow_shares_the_hero_vertical_origin() -> None:
     that declared the same origin; the row now reads the shared token, so one
     edit moves Chat, Claw and every page together.
     """
-    frame = frame_css()
-    decl = frame.split("use the Chat/Claw eyebrow origin", 1)[1].split("!important", 1)[0]
-    padding = [line for line in decl.splitlines() if line.strip().startswith("padding:")][0]
+    layout = parse_rules(panel_layout_css())
+    assert any(declaration(rule, "padding") == "var(--padiem-six-panel-page-padding)"
+               and any(".calendar-view" in sel for sel in rule.selectors) for rule in layout)
+    padding = next(value for rule in layout
+                   if (value := declaration(rule, "--padiem-six-panel-page-padding")))
     assert "calc(var(--padiem-first-screen-inset) - 7px)" in padding
     assert "clamp(52px, 7.4vh, 88px)" not in padding, "a copied inset drifts from the hero"
     assert "78px" not in padding, "a fixed inset cannot track the height-relative hero inset"

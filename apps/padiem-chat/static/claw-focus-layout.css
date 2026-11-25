@@ -36,13 +36,13 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-wor
   );
   /* Same panel language as Chat: translucent glass, soft white border, 30px. */
   border: 1px solid var(--glass-chat-border, rgba(255, 255, 255, .58));
-  border-radius: 30px;
-  background: linear-gradient(155deg, rgba(248, 250, 251, .88), var(--glass-chat-surface, rgba(238, 242, 245, .82)));
-  box-shadow: 0 24px 70px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .72);
+  border-radius: var(--padiem-six-panel-radius, 30px);
+  background: var(--padiem-six-panel-background, linear-gradient(155deg, rgba(248, 250, 251, .88), var(--glass-chat-surface, rgba(238, 242, 245, .82))));
+  box-shadow: var(--shared-six-panel-frame-shadow);
   backdrop-filter: blur(30px) saturate(106%);
   -webkit-backdrop-filter: blur(30px) saturate(106%);
   /* The flexbox bounds this canvas inside the column. */
-  max-height: none;
+  max-height: var(--padiem-six-panel-height, none);
   scroll-padding-bottom: calc(
     var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px) + 16px
   );
@@ -998,9 +998,9 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
    Chat and Claw use the same document-scrolling conversation lane.
    Active Claw workbench still retains its existing bounded scroll canvas. */
 .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .conversation {
-  min-height: auto;
-  max-height: none;
-  overflow-y: visible;
+  min-height: var(--padiem-six-panel-min-height, auto);
+  max-height: var(--padiem-six-panel-height, none);
+  overflow-y: var(--padiem-six-panel-overflow-y, visible);
   overscroll-behavior-y: auto;
   /* Must track the composer's measured height, not a constant. The composer
    * grows with the attachment tray, the model row and the cancel/status row,

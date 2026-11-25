@@ -22,7 +22,7 @@ from css_rules import (
 # #8060: shipped reads live in _support; the parsed CSS checks stay.
 from _support import body_glass_unification_source as sheets
 
-FRAME = sheets.sheet("shared-six-panel-frame.css")
+FRAME = sheets.sheet("shared-six-panel-frame.css") + sheets.sheet("padiem-glass-panel-layout.css")
 UTIL_CSS = sheets.sheet("util-menu.css")
 MEETING_CSS = sheets.sheet("meeting-capture.css")
 
@@ -51,7 +51,7 @@ def _targets(rule) -> frozenset:
 
 def test_util_view_joins_every_six_panel_frame_lane() -> None:
     frame_lists = [segment for segment in FRAME.split(":is(") if ".meeting-view" in segment]
-    assert len(frame_lists) >= 4, "expected the frame, ultrawide, eyebrow and collapse lanes"
+    assert len(frame_lists) >= 5, "expected the frame paint, geometry, ultrawide, eyebrow and collapse lanes"
     for segment in frame_lists:
         assert ".util-view" in segment, "a six-panel lane is missing .util-view"
 
