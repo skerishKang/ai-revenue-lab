@@ -416,11 +416,10 @@ jobs:
             done
           done
 
-          # Cold-start contention: the first four parallel Chromium processes
-          # all hit the mock server before its import/cache warm-up finished,
-          # and the 10s goto budget expired (exit 123 from xargs). Keep every
-          # assertion and timeout unchanged; only halve the parallel cold start.
-          xargs -r -P 2 -n 3 bash -c '
+          # Shared-runner browser contention still produced random Page.goto
+          # 10s timeouts with two parallel Chromium processes. Serialize these
+          # short cases: every assertion, case list and timeout stays unchanged.
+          xargs -r -P 1 -n 3 bash -c '
             set -euo pipefail
             theme="$1"
             viewport="$2"
