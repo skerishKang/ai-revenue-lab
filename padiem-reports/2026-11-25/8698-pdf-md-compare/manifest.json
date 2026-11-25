@@ -1,7 +1,7 @@
 {
  "issue": 8698,
  "base": "f514464316f12f19ab87b31d626be7486f8b3870",
- "head": "e4ebce053bf8e468f8be2923d88032598b2ff05c",
+ "head": "ccc37ad871750153ed8e6888eb1da88c329162ef",
  "capture_protocol": {
   "reduced_motion": true,
   "transition_animation": "0s/none !important",
@@ -22,8 +22,9 @@
   "unrelated_nonzero": 0,
   "control_nonzero": 0,
   "layout_problems": [],
+  "paging_qa": {"status": "PASS", "problems": 0},
   "captures": 8,
-  "tests": "51 non-browser focused + structure ratchet passed on COM1"
+  "tests": "51 non-browser focused + structure ratchet passed on COM1; PDFMD compare QA passed on remote isolated environment"
  },
  "seconds": 218.6
 }
