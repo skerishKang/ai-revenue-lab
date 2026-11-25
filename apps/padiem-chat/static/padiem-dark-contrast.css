@@ -2,7 +2,7 @@
  * Existing light, glass, cinematic and image layers intentionally untouched. */
 /* #7187 R3 5차: 테마 팔레트(dark)는 padiem-tokens.css가 소유한다. 이 시트는
    dark 표면의 구성 요소 규칙만 갖는다. */
-html[data-theme="dark"] body { background: #10151c; color: var(--text); }
+
 html[data-theme="dark"] body .app-shell .sidebar { background: #101b26; border-right-color: #354d61; }
 html[data-theme="dark"] body .app-shell :is(.side-item,.recent-item,.new-chat,.settings-button,.sidebar-account) {
   color: #e5f0f9;
