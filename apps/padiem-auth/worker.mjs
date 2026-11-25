@@ -1149,7 +1149,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
 const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'resetLoginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'ageConfirmedAt', 'putAccount', 'createAgeConfirmation', 'readAgeConfirmation', 'consumeAgeConfirmation', 'claimAgeConfirmation', 'recordAgeConfirmationResult', 'readAgeConfirmationResult', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
 export class AuthStateObject extends AuthState {
   constructor(state, env, { recoveryFetcher = fetch, recoveryStateFor = stateBindingFor(env) } = {}) {
-    super(state); this.state = state; this.env = env;
+    super(state, { lazySchema: Boolean(state.id) }); this.state = state; this.env = env;
     this.recoveryFetcher = recoveryFetcher; this.recoveryStateFor = recoveryStateFor;
   }
   // The one judgment for a mailed proof. 'restore' (#7606) brings back the
@@ -1251,9 +1251,10 @@ export class AuthStateObject extends AuthState {
   }
   async alarm() {
     const now = Math.floor(Date.now() / 1000);
-    this.clearExpiredProfiles(now);
-    this.pruneAccountDeletionAudit({ now });
-    const next = this.nextAccountDeletionAuditExpiry();
+    const tables = new Set(this.sql.exec("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('code_profiles','account_deletion_audit')").toArray().map(row => row.name));
+    if (tables.has('code_profiles')) this.clearExpiredProfiles(now);
+    if (tables.has('account_deletion_audit')) this.pruneAccountDeletionAudit({ now });
+    const next = tables.has('account_deletion_audit') ? this.nextAccountDeletionAuditExpiry() : null;
     if (next && typeof this.storage.setAlarm === 'function') await this.storage.setAlarm(Math.max(Date.now() + 1000, next * 1000));
   }
   async beginAccountDeletion(input) {
@@ -1408,7 +1409,7 @@ export class AuthStateObject extends AuthState {
     if (request.method !== 'POST' || !methods.has(action)) return json(404, { error: 'not_found' });
     if (['emailRecoveryCandidate', 'completeEmailRecovery'].includes(action) && !recoverySwitch(this.env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED)) return json(404, { error: 'not_found' });
     if (['passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation'].includes(action) && !recoverySwitch(this.env.PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED)) return json(404, { error: 'not_found' });
-    try { return json(200, { value: (await this[action](await request.json())) ?? null }); } catch { return json(500, { error: 'state_failure' }); }
+    try { this._ensureSchemaFor(action); return json(200, { value: (await this[action](await request.json())) ?? null }); } catch { return json(500, { error: 'state_failure' }); }
   }
 }
 
