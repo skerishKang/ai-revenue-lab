@@ -604,7 +604,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   max-width: none;
   min-width: 0;
   min-height: calc(100vh - 98px);
-  margin: 12px 0 28px 24px;
+  margin: var(--padiem-six-panel-margin, 12px 0 28px 24px);
   /* Chat/Claw home label starts about 80px below its glass panel top.
      Keep Calendar panel geometry; align its content origin to that baseline. */
   padding: 78px clamp(18px, 2.4vw, 34px) 36px;
@@ -657,13 +657,11 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
 @media (min-width: 1440px) {
  html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-view {
    width: min(1200px, calc(100vw - var(--workspace-rail, 252px) - clamp(48px, 4vw, 72px) - clamp(360px, 32vw, 560px) - 48px));
-   margin-left: clamp(48px, 4vw, 72px);
  }
 }
 @media (min-width: 1024px) and (max-width: 1439px) {
  html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-view {
    width: min(700px, calc(100vw - var(--workspace-rail, 252px) - clamp(300px, 32vw, 380px) - 48px));
-   margin-left: 24px;
  }
 }
 @media (max-width: 720px) {

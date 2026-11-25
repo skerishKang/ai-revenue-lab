@@ -88,7 +88,8 @@ html[data-theme="padiem-glass"] body .app-shell {
     height: var(--padiem-six-panel-height) !important;
     min-height: 0 !important;
     max-height: var(--padiem-six-panel-height) !important;
-    margin: 16px 0 16px var(--padiem-six-panel-left) !important;
+    --padiem-six-panel-margin: 16px 0 16px var(--padiem-six-panel-left);
+    margin: var(--padiem-six-panel-margin);
     border: 1px solid var(--shared-six-panel-frame-edge);
     border-radius: 30px !important;
     background: var(--shared-six-panel-frame-bg) !important;
@@ -104,12 +105,12 @@ html[data-theme="padiem-glass"] body .app-shell {
  * and the reserved artwork column, so the breathing room splits evenly instead
  * of opening one wide gap between the copy and the image. */
 @media (min-width: 1921px) {
-  html[data-theme="padiem-glass"] body .app-shell :is(
+  html[data-theme="padiem-glass"] body .app-shell:not(.sidebar-collapsed) :is(
     .conversation, .calendar-view, .connectors-view,
     .library-view, .automation-view, .meeting-view, .util-view,
     .settings-advanced-view
   ) {
-    margin-left: calc(
+    --padiem-six-panel-left: calc(
       (100vw - var(--workspace-rail, 252px) - clamp(360px, 32vw, 560px) - var(--padiem-six-panel-width)) / 2
     );
   }
@@ -181,8 +182,6 @@ html[data-theme="padiem-glass"] body .app-shell {
     .settings-advanced-view
   ) {
     width: min(920px, calc(100% - 48px));
-    margin-left: auto;
-    margin-right: auto;
   }
 }
 /* Reserve the scrollbar track before the async project/history rows arrive.

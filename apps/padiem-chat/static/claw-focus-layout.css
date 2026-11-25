@@ -28,7 +28,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-wor
    * gutters). Claw has no portrait art, so Chat's portrait reservation is
    * reclaimed and the lane stays centred instead of left-anchored. */
   width: min(1200px, calc(100% - 48px));
-  margin: 14px auto 0;
+  margin: var(--padiem-six-panel-margin, 14px auto 0);
   /* The landing scrolls with the document, so it reserves the fixed composer
    * area at its own end, exactly like the Chat lane. */
   padding: 24px clamp(18px, 2.4vw, 34px) calc(
