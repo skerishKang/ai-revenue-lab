@@ -1229,6 +1229,12 @@
   --admin-models-route-history-summary-text: #7b8b98;
   --admin-models-routeevents-source-card-bg: rgba(249,251,252,.55);
   --admin-models-routeevents-source-card-edge: rgba(255,255,255,.6);
+  /* #7811 token-family --shared-six-panel-frame sha256=d398a01055424ee8063a868a5c4635d38232ae48041788d1a4fe243a1fe748ac */
+  --shared-six-panel-frame-bg: linear-gradient(155deg, rgba(248,250,251,.88), rgba(233,238,241,.84));
+  --shared-six-panel-frame-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72);
+  --shared-six-panel-frame-edge: rgba(255,255,255,.70);
+  --shared-six-panel-frame-narrow-bg: rgba(242, 245, 247, .90);
+  --shared-six-panel-frame-narrow-edge: rgba(255, 255, 255, .58);
 }
 
 /* ---- 테마별 값 ---- */

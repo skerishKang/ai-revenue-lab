@@ -1,0 +1,8 @@
+{
+  "phase": "tamper",
+  "token": "--shared-six-panel-frame-bg",
+  "mutation": "linear-gradient(155deg, rgba(248,250,251,.88), rgba(233,238,241,.84))→none",
+  "screen": "conversation",
+  "pixel": 513996,
+  "seconds": 16.5
+}

@@ -1,0 +1,40 @@
+{
+  "issue": 7811,
+  "scope": "C3 shared-six-panel-frame.css",
+  "base": "cb7a7659594f366c62bc2fafa795a36ea36864da",
+  "themed_important_before": 18,
+  "themed_important_after": 10,
+  "total_important_before": 20,
+  "total_important_after": 12,
+  "tokens_added": 5,
+  "css_family_sha": "d398a01055424ee8063a868a5c4635d38232ae48041788d1a4fe243a1fe748ac",
+  "pixel_compare": {
+    "combos": 10,
+    "raw_nonzero": 0,
+    "noise_nonzero": 0,
+    "state_failures": 0
+  },
+  "pixel_control": {
+    "combos": 10,
+    "raw_nonzero": 0,
+    "noise_nonzero": 0,
+    "state_failures": 0
+  },
+  "computed_cssom": {
+    "combos": 10,
+    "differences": 0
+  },
+  "token_tamper": {
+    "token": "--shared-six-panel-frame-bg",
+    "changed_pixels": 513996
+  },
+  "screenshots": [
+    "glass-1440-conversation.png",
+    "glass-390-conversation.png"
+  ],
+  "priority_retained_why": {
+    "claw": "min-height, max-height and overflow-y changed without priority",
+    "calendar": "height, min-height, margin, padding, border-radius, background, box-shadow and overflow-y changed without priority",
+    "glass_reading_noise": "body::after .10 requires !important; removing it lets padiem-glass-reading.css win with .025, violating the home atmospheric grid visual contract"
+  }
+}
