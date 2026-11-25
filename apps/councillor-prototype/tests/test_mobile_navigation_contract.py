@@ -52,8 +52,13 @@ DATA = json.loads((APP_ROOT / "static" / "miraen.json").read_text(encoding="utf-
 
 
 # ── helpers ────────────────────────────────────────────────────────────────
+sys.path.insert(0, str(APP_ROOT / "scripts"))
+import assemble  # noqa: E402
+
+
 def page(name: str) -> str:
-    return (APP_ROOT / name).read_text(encoding="utf-8")
+    """The assembled source page: partials + this page's body, before prerender."""
+    return assemble.render(name)
 
 
 def nav_targets(html: str, cls: str) -> list[str]:
@@ -297,9 +302,11 @@ def test_robots_and_sitemap_agree_with_the_pages():
 def test_the_deployment_origin_lives_only_in_site_config():
     """A dedicated domain later must be a one-line change, not a 20-file sweep."""
     for name in SITE_PAGES + ["robots.txt", "sitemap.xml"]:
-        text = read_text(APP_ROOT / name)
+        text = assemble.render(name) if name.endswith(".html") else read_text(APP_ROOT / name)
         assert BASE_URL not in text, f"{name} hard-codes the deployment origin"
         assert PLACEHOLDER in text, f"{name} carries no base-URL token"
+    for path in sorted((APP_ROOT / "partials").glob("*.html")):
+        assert BASE_URL not in read_text(path), f"{path.name} hard-codes the deployment origin"
     for name in ("app.js", "home.js", "miraen.json"):
         assert BASE_URL not in read_text(APP_ROOT / "static" / name), f"{name} hard-codes the deployment origin"
 
@@ -352,7 +359,8 @@ def test_the_screens_render_miraen_json_without_copying_its_content():
     assert 'const DATA_URL = "./static/miraen.json";' in APP_JS
     assert "fetch(DATA_URL" in APP_JS
     assert "window.COUNCILLOR_DATA_READY = loadSiteData();" in APP_JS
-    assert "window.COUNCILLOR_DATA_READY" in HOME_JS, "home.js must wait on the shared load"
+    # #8724: home cards are prerendered, so home.js only enhances the existing DOM.
+    assert "enhanceMediaCards" in HOME_JS and "window.COUNCILLOR_DATA_READY" in APP_JS
     assert "fetch(" not in HOME_JS, "home.js must not load the data a second time"
     for name, js in (("app.js", APP_JS), ("home.js", HOME_JS)):
         for array in ("ACTIVITIES", "MEDIA", "NEWS"):

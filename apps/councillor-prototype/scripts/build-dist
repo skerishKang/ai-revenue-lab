@@ -15,6 +15,7 @@ import shutil
 import sys
 from pathlib import Path
 
+import assemble
 import prerender
 
 APP_ROOT = Path(__file__).resolve().parents[1]
@@ -57,7 +58,9 @@ def build(out_dir: Path, base_url: str) -> None:
     if missing:
         raise SystemExit(f"missing required pages: {', '.join(missing)}")
     for src in html_files:
-        shutil.copy2(src, out_dir / src.name)
+        # The seven source pages hold only their body; the shared head, header,
+        # footer and tab bar come from partials/pages.json.
+        (out_dir / src.name).write_text(assemble.render(src.name), encoding="utf-8")
     for name in ROOT_ASSETS:
         src = APP_ROOT / name
         if not src.is_file():

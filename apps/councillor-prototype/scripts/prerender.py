@@ -202,6 +202,21 @@ def prerender_media(data: dict) -> str:
     return "".join(cards)
 
 
+def prerender_media_more(data: dict) -> str:
+    """The link-only media tiles keep their compact list without client rendering."""
+    rows = []
+    for item in data["media"]["tiles"]:
+        if item.get("thumb"):
+            continue
+        href = _href(item.get("url")) or "#"
+        rows.append(
+            f'<li><a href="{_e(href)}" target="_blank" rel="noopener">'
+            f'<span class="link-title">{_e(item["title"])}</span>'
+            f'<span class="link-kind">{_e(item.get("kind", ""))}</span></a></li>'
+        )
+    return "".join(rows)
+
+
 def prerender_policy(data: dict) -> dict:
     policy = data["policy"]
     bills = policy["bills"]
@@ -344,5 +359,9 @@ def inject(out_dir: Path, data: dict) -> None:
         html = html.replace(
             '<div class="media-grid" id="mediaGrid"></div>',
             f'<div class="media-grid" id="mediaGrid">{media}</div>',
+        )
+        html = html.replace(
+            '<ul class="link-list" id="mediaMore"></ul>',
+            f'<ul class="link-list" id="mediaMore">{prerender_media_more(data)}</ul>',
         )
         media_path.write_text(html, encoding="utf-8")

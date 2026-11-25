@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,8 +22,12 @@ DATA = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))
 REMOVED_PHRASES = ("이 페이지에 정리한 자료", "성과나 평가 지표가 아닙니다")
 
 
+sys.path.insert(0, str(ROOT / "scripts"))
+import assemble  # noqa: E402
+
+
 def page(name: str) -> str:
-    return (ROOT / name).read_text(encoding="utf-8")
+    return assemble.render(name)
 
 
 def test_the_material_count_band_is_gone_and_guarded() -> None:
@@ -125,9 +130,9 @@ def test_the_gallery_has_no_empty_tile_and_the_rest_is_a_link_list() -> None:
     assert len(stills) == 4 and all(tile["thumb"].endswith(".webp") for tile in stills)
     media = page("media.html")
     assert 'id="mediaMore"' in media
-    app_js = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
-    assert "MEDIA.filter((m) => m.thumb)" in app_js
-    assert "renderMediaMore" in app_js
+    prerender = (ROOT / "scripts" / "prerender.py").read_text(encoding="utf-8")
+    assert "MEDIA.filter((m) => m.thumb)" not in (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+    assert "prerender_media_more" in prerender and "mediaMore" in prerender
 
 
 def test_the_introduction_video_reaches_a_screen_without_autoplay() -> None:
@@ -172,6 +177,6 @@ def test_the_build_rewrites_internal_links_to_clean_urls() -> None:
 def test_the_all_records_count_card_is_gone_and_guarded() -> None:
     home_js = (ROOT / "static" / "home.js").read_text(encoding="utf-8")
     assert 'class="ka-count"' not in home_js
-    assert "전체 의정활동 보기" in home_js
+    assert "전체 의정활동 보기" in (ROOT / "scripts" / "prerender.py").read_text(encoding="utf-8")
     assert 'id="homeNews"' not in page("index.html")
     assert "renderNewsColumn(NEWS)" not in home_js
