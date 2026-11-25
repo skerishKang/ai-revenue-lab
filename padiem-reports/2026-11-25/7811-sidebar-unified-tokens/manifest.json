@@ -1,0 +1,104 @@
+{
+  "sheet": "sidebar-unified.css",
+  "base": "7eeea1aae",
+  "measurement_host": "comp2 via ssh (own worktree)",
+  "audit": {
+    "css_color_literals": {
+      "before": 888,
+      "after": 882,
+      "delta": -6
+    },
+    "css_color_literals_unthemed": {
+      "before": 250,
+      "after": 244,
+      "delta": -6
+    },
+    "css_important": {
+      "before": 371,
+      "after": 371,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 86,
+      "after": 86,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 92,
+      "after": 92,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4353,
+      "after": 4353,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 769,
+      "after": 769,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": {
+      "--sidebar-unified-row-wash": "rgba(127,127,127,.09)",
+      "--sidebar-unified-hover-wash": "rgba(127,127,127,.18)",
+      "--sidebar-unified-action-hover-wash": "rgba(127,127,127,.15)"
+    },
+    "reused": [
+      "--editorial-chip-edge",
+      "--control-wash-strong",
+      "--b66-quote-faint-edge"
+    ],
+    "definition": "padiem-tokens.css :root sidebar-unified group with #7811 token-family --sidebar-unified sha256=0da15888a031cfc01e42739430f3bdbbca49ce3370e3ccaf435c60c40e65a15a; no theme block redeclares any of the 6 names",
+    "review": "replacement_review.json — 6 removed literals match 6 token values exactly (normalised spelling), 0 theme overrides"
+  },
+  "verification": {
+    "computed": {
+      "targets": 6,
+      "measurements": 60,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "diffs": 0,
+      "report": "computed_report.json",
+      "note": "hover/current pseudo states are pinned by the own-sheet contract table"
+    },
+    "pixel": {
+      "screen": "home-login",
+      "combos": 10,
+      "nonzero": [],
+      "report": "compare_report.json"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json"
+    },
+    "contrast": {
+      "report": "contrast_report.json",
+      "note": "no text-color declarations in this sheet; no sub-4.5 item introduced"
+    },
+    "tamper": {
+      "token": "--editorial-chip-edge",
+      "mutation": "rgba(255, 255, 255, .10)→#ff00ff",
+      "screen": "home-login",
+      "theme": "light",
+      "viewport": "1440x950",
+      "pixel": 9174,
+      "report": "tamper_report.json"
+    },
+    "tests": "컴1: 자기 시트 시험 + 구조 래칫만 통과",
+    "ratchet": "base 7eeea1aae 대비 head 실측. 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −6."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 최종 계산값·픽셀은 변하지 않는다.",
+    "재사용한 3개 토큰은 모두 :root 전용이고 테마 블록이 덮지 않는다.",
+    "기존 !important 개수는 34로 유지하고 새 !important는 없다.",
+    "계산값·픽셀·제어쌍·변조·캡처 측정은 ssh comp2의 자기 작업 폴더에서 수행했다.",
+    "캡처 8장은 파일·상태 표식으로만 확인했고 이 모델이 이미지 입력을 받지 않아 화면 직접 보기는 못했다(못 봄)."
+  ]
+}

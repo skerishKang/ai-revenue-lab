@@ -908,6 +908,18 @@
   --mcp-consent-capability-wash: rgba(47, 93, 80, 0.07);
   --mcp-consent-scope-edge: #d8d8e0;
 
+  /* #7811 token-family --sidebar-unified sha256=0da15888a031cfc01e42739430f3bdbbca49ce3370e3ccaf435c60c40e65a15a */
+  /* #7811 C2 sidebar-unified(261125): 통합 사이드바 행·동작 칸의 회청 씻김.
+     값은 치환 전 선언마다 박혀 있던 리터럴 그대로이고 :root에만 둔다 — 다섯
+     테마에서 같은 값으로 칠해져 온 고정 팔레트라 테마 블록이 덮지 않는다.
+     흰 테두리(.10)·강한 씻김(.14)·행 현재(.22)은 이미 :root 전용인
+     --editorial-chip-edge·--control-wash-strong·--b66-quote-faint-edge를
+     재사용하고, 나머지 세 값만 이 묶음이 소유한다. 기존 !important는 그대로
+     유지한다. */
+  --sidebar-unified-row-wash: rgba(127,127,127,.09);
+  --sidebar-unified-hover-wash: rgba(127,127,127,.18);
+  --sidebar-unified-action-hover-wash: rgba(127,127,127,.15);
+
   /* 연결 카드 대비 수리(261124): 연결 화면 카드는 다섯 테마 모두 밝은 판이다
      (standalone-views.css의 #connectorsViewBody .capability-card). 카드 이름은
      글자색을 지정받지 못해 테마 글자색을 상속했고, 상태 줄은 테마 --muted를

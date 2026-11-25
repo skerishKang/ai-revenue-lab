@@ -1,0 +1,8 @@
+{
+  "token": "--editorial-chip-edge",
+  "mutation": "rgba(255, 255, 255, .10)→#ff00ff",
+  "screen": "home-login",
+  "theme": "light",
+  "viewport": "1440x950",
+  "pixel": 9174
+}
