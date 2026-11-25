@@ -1,11 +1,14 @@
 """#7690 static contracts: public site feedback is anonymous, bounded, script-off safe."""
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+import assemble  # noqa: E402
 
 
 def test_home_has_footer_site_feedback_form():
-    html = (ROOT / "index.html").read_text(encoding="utf-8")
+    html = assemble.render("index.html")
     assert 'id="siteFeedback"' in html and 'id="siteFeedbackOpen"' in html
     assert 'id="siteFeedbackForm"' in html and 'id="siteFeedbackBody"' in html
     assert '이 사이트 오류·불편 알리기' in html

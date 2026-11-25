@@ -92,7 +92,9 @@ def browser():
 
 
 def test_opinion_names_and_office_link_are_distinct():
-    html = (ROOT / "index.html").read_text(encoding="utf-8")
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import assemble
+    html = assemble.render("index.html")
     assert "의회 홈페이지에 의견" in html and "의회에 의견 보내기" not in html
     assert "이 사이트 오류·불편 알리기" in html and "사이트 의견 보내기" not in html
     assert "의원님께 드리는 민원·제안은" in html and "의회 홈페이지로" in html

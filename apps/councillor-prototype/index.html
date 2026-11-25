@@ -1,72 +1,4 @@
-<!doctype html>
-<html lang="ko" data-theme="light">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light dark" />
-  <script>
-    (function () {
-      try {
-        var saved = localStorage.getItem("theme");
-        if (saved === "light" || saved === "dark") {
-          document.documentElement.setAttribute("data-theme", saved);
-        } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-          document.documentElement.setAttribute("data-theme", "dark");
-        }
-      } catch (error) { /* 저장소를 쓸 수 없으면 밝은 테마 기본값을 유지합니다. */ }
-    })();
-  </script>
-  <title>임미란 의원 — 의정활동 정보</title>
-  <meta name="description" content="남구 제1선거구 임미란 의원(전남광주통합특별시의회)의 의정활동 기록과 소식, 사진·영상 자료, 의원실 연락처를 한 곳에서 확인하세요." />
-  <link rel="canonical" href="__BASE_URL__/" />
-  <meta property="og:type" content="website" />
-  <meta property="og:locale" content="ko_KR" />
-  <meta property="og:site_name" content="임미란 의원" />
-  <meta property="og:title" content="임미란 의원 — 의정활동 정보" />
-  <meta property="og:description" content="남구 제1선거구 임미란 의원(전남광주통합특별시의회)의 의정활동 기록과 소식, 사진·영상 자료, 의원실 연락처를 한 곳에서 확인하세요." />
-  <meta property="og:url" content="__BASE_URL__/" />
-  <meta property="og:image" content="__BASE_URL__/static/images/og-card.jpg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="임미란 의원 프로필 사진과 이름" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="icon" href="./favicon.ico" sizes="any" />
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
-  <link rel="preload" href="./static/fonts/maruburi/MaruBuri-Bold.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="./static/fonts/maruburi.css" />
-  <!-- Keep the tablet hero action widths stable before first paint. -->
-  <link rel="preload" as="font" type="font/woff2" href="./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.88.woff2" crossorigin media="(max-width: 900px)">
-  <link rel="preload" as="font" type="font/woff2" href="./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.89.woff2" crossorigin media="(max-width: 900px)">
-  <link rel="preload" as="font" type="font/woff2" href="./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.90.woff2" crossorigin media="(max-width: 900px)">
-  <link rel="preload" as="font" type="font/woff2" href="./static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.91.woff2" crossorigin media="(max-width: 900px)">
-  <link rel="stylesheet" href="./static/fonts/pretendard/pretendard-variable-dynamic-subset.css" />
-  <link rel="stylesheet" href="./static/styles.css" />
-</head>
-<body>
-  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
 
-  <header class="topbar">
-    <a class="brand" href="./index.html">
-      <span class="brand-mark" aria-hidden="true">임</span>
-      <span class="brand-text">
-        <span class="brand-name">임미란 의원</span>
-        <span class="brand-tagline">전남광주통합특별시의회 · 남구 제1선거구</span>
-      </span>
-    </a>
-    <nav class="top-nav" aria-label="주요 메뉴">
-      <a href="./index.html" class="active">홈</a>
-      <a href="./about.html">의원 소개</a>
-      <a href="./activity.html">의정활동</a>
-      <a href="./policy.html">정책자료</a>
-      <a href="./media.html">미디어</a>
-    </nav>
-    <div class="top-actions">
-      <button class="ghost" id="themeToggle" type="button" aria-pressed="false" aria-label="어두운 화면으로 보기">어둡게 보기</button>
-      <a class="top-cta" href="./activity.html">의정활동 보기 <span aria-hidden="true">→</span></a>
-    </div>
-  </header>
 
   <main id="main">
     <!-- Cinematic hero (reference_01): light photographic band, copy left, portrait right.
@@ -174,53 +106,8 @@
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <strong>임미란 의원</strong>
-        <span>전남광주통합특별시의회 · 남구 제1선거구</span>
-      </div>
-      <nav class="footer-nav" aria-label="바닥글 메뉴">
-        <a href="./index.html">홈</a>
-        <a href="./about.html">의원 소개</a>
-        <a href="./activity.html">의정활동</a>
-        <a href="./policy.html">정책자료</a>
-        <a href="./media.html">미디어</a>
-        <a href="./news.html">새 소식</a>
-        <a href="https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList" target="_blank" rel="noopener">의회 공식 페이지</a>
-      </nav>
-      <p class="footer-note">자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-05 확인)<br />사진: 영산강 전경 — Saigen Jiro, Wikimedia Commons (CC0). 의정활동 사진 — 광주광역시의회 공개 사진자료실.</p>
-      <div class="site-feedback" id="siteFeedback" hidden>
-        <button class="site-feedback-open" id="siteFeedbackOpen" type="button" hidden>이 사이트 오류·불편 알리기</button>
-        <form class="site-feedback-form" id="siteFeedbackForm" hidden>
-          <p class="site-feedback-office">의원님께 드리는 민원·제안은 <a href="https://council.jeonnam-gwangju.go.kr/jngjassem/board/16" target="_blank" rel="noopener">의회 홈페이지로</a> <span aria-hidden="true">↗</span></p>
-          <p class="site-feedback-office">의원실 연락은 <a href="tel:062-613-5133">전화</a>·<a href="mailto:miran2640@naver.com">이메일</a>로 하실 수 있습니다.</p>
-          <label class="site-feedback-label" for="siteFeedbackBody">사이트 오류·불편</label>
-          <textarea class="site-feedback-body" id="siteFeedbackBody" name="body" rows="4" maxlength="2000" required></textarea>
-          <input class="site-feedback-trap" id="siteFeedbackTrap" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
-          <div class="site-feedback-actions">
-            <span class="site-feedback-count" id="siteFeedbackCount">0 / 2000</span>
-            <button class="site-feedback-send" type="submit">보내기</button>
-          </div>
-          <p class="site-feedback-status" id="siteFeedbackStatus" role="status"></p>
-        </form>
-        <!-- #7550 동훈 3회차: a 201 receipt replaces the form with an announced
-             notice; the form comes back through the button below. -->
-        <div class="site-feedback-done" id="siteFeedbackDone" role="status" aria-live="polite" hidden>
-          <p class="site-feedback-done-text">보내 주셔서 고맙습니다. 사이트 오류·불편 의견은 확인 뒤 고치는 데 씁니다. 답장은 드리지 않습니다.</p>
-          <button class="site-feedback-again" id="siteFeedbackAgain" type="button">의견 다시 보내기</button>
-        </div>
-      </div>
-    </div>
-  </footer>
+  <!-- @tail -->
 
-  <nav class="mobile-tabbar" aria-label="모바일 메뉴">
-    <a href="./index.html" class="active">홈</a>
-    <a href="./about.html">의원 소개</a>
-    <a href="./activity.html">의정활동</a>
-    <a href="./policy.html">정책자료</a>
-    <a href="./media.html">미디어</a>
-  </nav>
 
       <dialog class="lightbox" id="mediaLightbox" aria-labelledby="lightboxTitle">
         <div class="lightbox-head">
@@ -237,8 +124,3 @@
           <a id="lightboxLink" target="_blank" rel="noopener">원문 보기 ↗</a>
         </div>
       </dialog>
-  <script src="./static/app.js"></script>
-  <script src="./static/home.js"></script>
-  <script src="./static/site-feedback.js"></script>
-</body>
-</html>
