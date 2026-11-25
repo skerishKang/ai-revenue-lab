@@ -1,0 +1,116 @@
+{
+ "sheet": "padiem-surfaces.css",
+ "combos": 10,
+ "removed": [
+  {
+   "line": 162,
+   "prop": "background"
+  },
+  {
+   "line": 177,
+   "prop": "color"
+  },
+  {
+   "line": 267,
+   "prop": "color"
+  },
+  {
+   "line": 275,
+   "prop": "color"
+  },
+  {
+   "line": 281,
+   "prop": "color"
+  },
+  {
+   "line": 282,
+   "prop": "background"
+  },
+  {
+   "line": 304,
+   "prop": "?"
+  },
+  {
+   "line": 312,
+   "prop": "color"
+  },
+  {
+   "line": 320,
+   "prop": "border-color"
+  },
+  {
+   "line": 321,
+   "prop": "background"
+  },
+  {
+   "line": 322,
+   "prop": "color"
+  },
+  {
+   "line": 333,
+   "prop": "border-color"
+  },
+  {
+   "line": 334,
+   "prop": "background"
+  },
+  {
+   "line": 335,
+   "prop": "color"
+  },
+  {
+   "line": 345,
+   "prop": "border-color"
+  },
+  {
+   "line": 346,
+   "prop": "background"
+  },
+  {
+   "line": 347,
+   "prop": "color"
+  },
+  {
+   "line": 351,
+   "prop": "color"
+  },
+  {
+   "line": 406,
+   "prop": "left"
+  },
+  {
+   "line": 498,
+   "prop": "scroll-behavior"
+  },
+  {
+   "line": 499,
+   "prop": "animation-duration"
+  },
+  {
+   "line": 500,
+   "prop": "animation-iteration-count"
+  },
+  {
+   "line": 501,
+   "prop": "transition-duration"
+  }
+ ],
+ "kept": [
+  {
+   "line": 273,
+   "prop": "border-color"
+  },
+  {
+   "line": 274,
+   "prop": "background"
+  },
+  {
+   "line": 276,
+   "prop": "box-shadow"
+  },
+  {
+   "line": 407,
+   "prop": "width"
+  }
+ ]
+}
