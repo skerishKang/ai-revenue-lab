@@ -435,7 +435,10 @@ jobs:
             done
           done
 
-          xargs -r -P 4 -n 3 bash -c '
+          # Shared-runner browser contention still produced random Page.goto
+          # 10s timeouts with two parallel Chromium processes. Serialize these
+          # short cases: every assertion, case list and timeout stays unchanged.
+          xargs -r -P 1 -n 3 bash -c '
             set -euo pipefail
             theme="$1"
             viewport="$2"
