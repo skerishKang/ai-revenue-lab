@@ -1,7 +1,13 @@
 {
- "base": "ff443f82a6a8239c892449e6c7f5b07fbe3f2e05",
+ "base": "77eb700c1d349e059ea1fe42eda831b413fd191a",
  "targets": 7,
- "themes": 5,
+ "themes": [
+  "light",
+  "dark",
+  "padiem-glass",
+  "cinematic",
+  "padiem-home"
+ ],
  "viewports": [
   "1440x950",
   "390x844"
@@ -40,8 +46,8 @@
   {
    "combo": "light__1440x950",
    "target": "closeHover",
-   "before": "rgba(127, 127, 127, 0.14)",
-   "after": "rgba(127, 127, 127, 0.14)",
+   "before": "",
+   "after": "",
    "equal": true
   },
   {
@@ -89,8 +95,8 @@
   {
    "combo": "light__390x844",
    "target": "closeHover",
-   "before": "rgba(127, 127, 127, 0.14)",
-   "after": "rgba(127, 127, 127, 0.14)",
+   "before": "",
+   "after": "",
    "equal": true
   },
   {
@@ -138,8 +144,8 @@
   {
    "combo": "dark__1440x950",
    "target": "closeHover",
-   "before": "rgba(127, 127, 127, 0.14)",
-   "after": "rgba(127, 127, 127, 0.14)",
+   "before": "",
+   "after": "",
    "equal": true
   },
   {
@@ -187,8 +193,8 @@
   {
    "combo": "dark__390x844",
    "target": "closeHover",
-   "before": "rgba(127, 127, 127, 0.14)",
-   "after": "rgba(127, 127, 127, 0.14)",
+   "before": "",
+   "after": "",
    "equal": true
   },
   {
@@ -236,8 +242,8 @@
   {
    "combo": "padiem-glass__1440x950",
    "target": "closeHover",
-   "before": "rgba(127, 127, 127, 0.14)",
-   "after": "rgba(127, 127, 127, 0.14)",
+   "before": "",
+   "after": "",
    "equal": true
   },
   {
@@ -285,8 +291,8 @@
   {
    "combo": "padiem-glass__390x844",
    "target": "closeHover",
-   "before": "rgba(127, 127, 127, 0.14)",
-   "after": "rgba(127, 127, 127, 0.14)",
+   "before": "",
+   "after": "",
    "equal": true
   },
   {
@@ -334,8 +340,8 @@
   {
    "combo": "cinematic__1440x950",
    "target": "closeHover",
-   "before": "rgba(127, 127, 127, 0.14)",
-   "after": "rgba(127, 127, 127, 0.14)",
+   "before": "",
+   "after": "",
    "equal": true
   },
   {
@@ -383,8 +389,8 @@
   {
    "combo": "cinematic__390x844",
    "target": "closeHover",
-   "before": "rgba(127, 127, 127, 0.14)",
-   "after": "rgba(127, 127, 127, 0.14)",
+   "before": "",
+   "after": "",
    "equal": true
   },
   {
@@ -432,8 +438,8 @@
   {
    "combo": "padiem-home__1440x950",
    "target": "closeHover",
-   "before": "rgba(127, 127, 127, 0.14)",
-   "after": "rgba(127, 127, 127, 0.14)",
+   "before": "",
+   "after": "",
    "equal": true
   },
   {
@@ -481,8 +487,8 @@
   {
    "combo": "padiem-home__390x844",
    "target": "closeHover",
-   "before": "rgba(127, 127, 127, 0.14)",
-   "after": "rgba(127, 127, 127, 0.14)",
+   "before": "",
+   "after": "",
    "equal": true
   },
   {
