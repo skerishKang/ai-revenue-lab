@@ -1,0 +1,33 @@
+{
+  "sheet": "padiem-surfaces.css",
+  "base": "392713a07",
+  "claim": "https://github.com/skerishKang/ai-revenue-lab/issues/8340#issuecomment-7157784578",
+  "removed_count": 23,
+  "kept_count": 4,
+  "kept": [
+    {"line": 273, "property": "border-color", "beats": "스위프 10조합 계산값 차이"},
+    {"line": 274, "property": "background", "beats": "스위프 10조합 계산값 차이"},
+    {"line": 276, "property": "box-shadow", "beats": "스위프 10조합 계산값 차이"},
+    {"line": 407, "property": "width", "beats": "컴2 390px glass 대화·claw·project-dialog 픽셀 차이"}
+  ],
+  "audit": {
+    "css_important": {"before": 287, "after": 264, "delta": -23},
+    "css_themed_important": {"before": 75, "after": 75, "delta": 0},
+    "padiem-surfaces.css": {"before": 27, "after": 4, "delta": -23},
+    "css_color_literals": {"before": 864, "after": 864, "delta": 0},
+    "css_color_literals_unthemed": {"before": 239, "after": 239, "delta": 0},
+    "css_rules": {"before": 4350, "after": 4350, "delta": 0},
+    "css_files": {"before": 93, "after": 93, "delta": 0}
+  },
+  "verification": {
+    "computed": {"combos": 10, "declarations": 27, "removed": 23, "diffs": 0, "report": "computed_report.json", "sweep": "sweep_decisions.json"},
+    "pixel": {"host": "comp2", "combos": 60, "themes": 5, "viewports": ["1440x950", "390x844"], "screens": ["conversation", "claw", "calendar", "automation", "library", "project-dialog"], "nonzero": [], "report": "compare_report.json"},
+    "control": {"host": "comp2", "combos": 60, "nonzero": [], "report": "control_report.json"},
+    "tests": "관련 surfaces·veil·토큰·래칫 pytest 47 passed"
+  },
+  "notes": [
+    "측정은 컴2(ssh comp2)에서 수행했고 컴1에서는 변경 시험과 구조 래칫만 실행했다.",
+    "캡처·diff 이미지 합계 8장(#8661). 새 !important·색 리터럴·규칙 수 증가 없음.",
+    "#7811 계약 시험의 !important 기대값을 의도된 제거분만큼 갱신했다."
+  ]
+}
