@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """#8055 바뀐 CSS 시트 → 그 시트가 닿는 화면 목록.
 
-PR 픽셀 비교는 테마 5 × 폭 2 × 화면 13 = 130조합이라 10~20분이 든다. 바뀐
+PR 픽셀 비교는 테마 5 × 폭 2 × 화면 14 = 140조합이라 10~20분이 든다. 바뀐
 시트의 선택자가 닿는 화면만 고르면 몇십 조합으로 줄어든다. 화면 이름은
 `tools/chat_pixel_compare.py`의 `SCREENS`와 같아야 한다(시험이 대조한다).
 
@@ -26,6 +26,7 @@ ALL_SCREENS = (
     "conversation",
     "claw",
     "util",
+    "meeting-capture",
     "calendar",
     "automation",
     "library",
@@ -42,6 +43,7 @@ SCREEN_TOKENS = {
     "conversation": ("#messagelist", ".message-", ".composer-", "#emptystate", ".conversation-"),
     "claw": ("[data-claw-card", ".claw-", "#padiem-claw"),
     "util": ("#util", ".util-"),
+    "meeting-capture": ("#meetingview", "#meetingnavbutton", "#meetingcapturehost", ".meeting-"),
     "calendar": ("#calendarview", ".calendar-"),
     "automation": ("#automationview", ".automation-"),
     "library": ("#libraryview", ".library-"),

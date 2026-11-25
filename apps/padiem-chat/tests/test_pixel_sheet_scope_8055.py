@@ -72,8 +72,8 @@ def test_selection_is_the_union_and_reduces_combos() -> None:
     )
     combos = 5 * 2 * len(selected)
     assert 1 < combos < 5 * 2 * len(scope.ALL_SCREENS)
-    # 전 화면이 공용 시트에 걸리면 지금과 똑같이 130조합이다(느슨해지지 않음).
-    assert len(scope.ALL_SCREENS) == 13
+    # 전 화면이 공용 시트에 걸리면 지금과 똑같이 140조합이다(느슨해지지 않음).
+    assert len(scope.ALL_SCREENS) == 14
 
 
 def test_tokens_reference_known_screens() -> None:

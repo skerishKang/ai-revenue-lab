@@ -654,6 +654,11 @@
      더 짙은 기존 잉크로 덮는다. */
   --standalone-kicker-text: var(--accent);
   --standalone-tagline-text: var(--muted);
+
+  /* #7811 C2 meeting-capture(261125): fixed panel fallback colors. */
+  /* #7811 token-family --meeting-capture sha256=50c5ea1fc8a05bed368863defcae661aa71e83efedffadcc70e323a74c0a3953 */
+  --meeting-capture-panel-edge: rgba(128,128,128,.28);
+  --meeting-capture-panel-shadow: 0 14px 45px rgba(20,30,44,.10);
   /* #7811 C2 rich(261123): padiem-rich.css의 고정 어둡 표면·베일 색. 값은
      치환 전 사용처 리터럴 그대로이고 :root 하나로 충분하며 테마 블록에서
      덮지 않는다 — 코드 면(rgba(8,9,11,…))·흰 베일 선은 모든 테마에서 같은
