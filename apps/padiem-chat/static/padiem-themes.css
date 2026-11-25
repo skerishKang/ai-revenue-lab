@@ -115,7 +115,7 @@ html[data-theme="dark"] {
 }
 
 html[data-theme="dark"] body {
-  background: var(--bg);
+  background: #10151c;
   color: var(--text);
 }
 html[data-theme="dark"] body::before {

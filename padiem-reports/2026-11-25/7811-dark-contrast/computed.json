@@ -1,0 +1,82 @@
+[
+  {
+    "combo": "light__1440x950",
+    "same": true,
+    "bytes": [
+      994957,
+      994957
+    ]
+  },
+  {
+    "combo": "light__390x844",
+    "same": true,
+    "bytes": [
+      994938,
+      994938
+    ]
+  },
+  {
+    "combo": "dark__1440x950",
+    "same": true,
+    "bytes": [
+      994368,
+      994368
+    ]
+  },
+  {
+    "combo": "dark__390x844",
+    "same": true,
+    "bytes": [
+      994383,
+      994383
+    ]
+  },
+  {
+    "combo": "padiem-glass__1440x950",
+    "same": true,
+    "bytes": [
+      998913,
+      998913
+    ]
+  },
+  {
+    "combo": "padiem-glass__390x844",
+    "same": true,
+    "bytes": [
+      998608,
+      998608
+    ]
+  },
+  {
+    "combo": "cinematic__1440x950",
+    "same": true,
+    "bytes": [
+      1003413,
+      1003413
+    ]
+  },
+  {
+    "combo": "cinematic__390x844",
+    "same": true,
+    "bytes": [
+      1003249,
+      1003249
+    ]
+  },
+  {
+    "combo": "padiem-home__1440x950",
+    "same": true,
+    "bytes": [
+      993868,
+      993868
+    ]
+  },
+  {
+    "combo": "padiem-home__390x844",
+    "same": true,
+    "bytes": [
+      993696,
+      993696
+    ]
+  }
+]
