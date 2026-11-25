@@ -272,7 +272,12 @@ class TestRound7ThemeFill(unittest.TestCase):
         self.assertIn("var(--card-shadow, var(--shadow))", interaction)
         meeting = (STATIC / "meeting-capture.css").read_text(encoding="utf-8")
         self.assertIn(
-            "var(--card-shadow, 0 14px 45px rgba(20,30,44,.10))", meeting
+            "var(--card-shadow, var(--meeting-capture-panel-shadow))", meeting
+        )
+        tokens = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+        self.assertIn(
+            "--meeting-capture-panel-shadow: 0 14px 45px rgba(20,30,44,.10);",
+            tokens,
         )
         for name in ("answer-actions.css", "shared-tooltip.css"):
             text = (STATIC / name).read_text(encoding="utf-8")
