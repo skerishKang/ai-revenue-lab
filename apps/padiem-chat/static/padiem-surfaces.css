@@ -268,10 +268,18 @@
 }
 
 .attachment-chip,
-.attachment-preview,
-.project-banner {
+.attachment-preview {
   border-color: var(--surfaces-attachment-edge) !important;
   background: var(--surfaces-card-bg) !important;
+  color: var(--surfaces-card-text);
+  box-shadow: inset 0 1px 0 var(--inset-veil-panel) !important;
+}
+
+.project-banner {
+  border-color: var(--ws-banner-edge);
+  background:
+    linear-gradient(90deg, var(--ws-soft-wash), var(--ws-banner-wash-end)),
+    var(--surface-panel-deep);
   color: var(--surfaces-card-text);
   box-shadow: inset 0 1px 0 var(--inset-veil-panel) !important;
 }

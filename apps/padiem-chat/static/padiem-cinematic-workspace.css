@@ -58,11 +58,11 @@
   margin-bottom: 9px;
   padding: 9px 11px;
   border: 1px solid var(--ws-banner-edge);
-  border-left: 2px solid var(--ws-banner-accent) !important;
+  border-left: 2px solid var(--ws-banner-accent);
   border-radius: var(--radius-sm);
   background:
     linear-gradient(90deg, var(--ws-soft-wash), var(--ws-banner-wash-end)),
-    var(--surface-panel-deep) !important;
+    var(--surface-panel-deep);
   box-shadow:
     inset 0 1px 0 var(--inset-veil-panel),
     0 14px 38px var(--ws-banner-shadow);
@@ -91,10 +91,10 @@
 
 .project-banner-actions button {
   min-height: 30px;
-  border-color: var(--line-veil-dim) !important;
+  border-color: var(--line-veil-dim);
   border-radius: 6px;
-  background: var(--surface-veil-ghost) !important;
-  color: var(--ws-control-muted-text) !important;
+  background: var(--surface-veil-ghost);
+  color: var(--ws-control-muted-text);
   font-family: var(--font-label);
   font-size: 9px;
   letter-spacing: .035em;
@@ -150,10 +150,10 @@
 
 .project-dialog-close,
 .saved-output-close {
-  border: 1px solid var(--ws-dialog-edge) !important;
+  border: 1px solid var(--ws-dialog-edge);
   border-radius: var(--radius-xs);
-  background: var(--surface-veil-ghost) !important;
-  color: var(--ws-control-muted-text) !important;
+  background: var(--surface-veil-ghost);
+  color: var(--ws-control-muted-text);
 }
 
 .project-dialog-close:hover,
@@ -179,10 +179,10 @@
 .project-form input,
 .project-form textarea,
 .saved-output-title-input {
-  border-color: var(--ws-input-edge) !important;
+  border-color: var(--ws-input-edge);
   border-radius: 9px;
-  background: var(--ws-input-wash) !important;
-  color: var(--ws-input-text) !important;
+  background: var(--ws-input-wash);
+  color: var(--ws-input-text);
   box-shadow: inset 0 1px 0 var(--app-grid-line);
 }
 
@@ -210,22 +210,22 @@
 .project-primary,
 .saved-output-actions button {
   min-height: 38px;
-  border-radius: 7px !important;
+  border-radius: 7px;
   font-size: 12px;
 }
 
 .project-secondary,
 .saved-output-actions button {
-  border-color: var(--ws-input-edge) !important;
-  background: var(--ws-input-wash) !important;
-  color: var(--ws-secondary-text) !important;
+  border-color: var(--ws-input-edge);
+  background: var(--ws-input-wash);
+  color: var(--ws-secondary-text);
 }
 
 .project-primary,
 .saved-output-actions .saved-output-primary {
-  border-color: var(--ws-control-hover-edge-strong) !important;
-  background: var(--surface-veil-dim) !important;
-  color: var(--text-veil-strong) !important;
+  border-color: var(--ws-control-hover-edge-strong);
+  background: var(--surface-veil-dim);
+  color: var(--text-veil-strong);
 }
 
 .project-primary:hover,
@@ -235,7 +235,7 @@
 }
 
 .saved-output-actions .saved-output-danger {
-  color: var(--ws-danger-text) !important;
+  color: var(--ws-danger-text);
 }
 
 /* Project documents ------------------------------------------------------- */
@@ -260,10 +260,10 @@
 }
 
 .project-file-add {
-  border-color: var(--line-veil-dim) !important;
+  border-color: var(--line-veil-dim);
   border-radius: 7px;
-  background: var(--surface-veil-ghost) !important;
-  color: var(--ws-file-add-text) !important;
+  background: var(--surface-veil-ghost);
+  color: var(--ws-file-add-text);
   font-size: 10px;
   font-weight: 560;
 }
@@ -397,7 +397,7 @@ html:not([data-glass-mode]) .answer-action,
 .answer-source-copy small,
 .composer-note,
 .sidebar-footer {
-  color: var(--ws-control-muted-text) !important;
+  color: var(--ws-control-muted-text);
 }
 
 .demo-label,
