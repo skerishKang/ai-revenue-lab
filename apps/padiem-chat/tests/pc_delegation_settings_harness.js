@@ -87,7 +87,7 @@ async function main() {
     const dir = require("node:path").resolve(__dirname, "../static");
     const html = fs.readFileSync(require("node:path").join(dir, "index.html"), "utf8");
     const locale = fs.readFileSync(require("node:path").join(dir, "locale-pc-connect.js"), "utf8");
-    const css = fs.readFileSync(require("node:path").join(dir, "pc-delegation-settings.css"), "utf8");
+    const css = fs.readFileSync(require("node:path").join(dir, "pc-delegation-empty-guidance.css"), "utf8");
     for (const copy of [
       "연결된 PC가 없어요.",
       "PC를 연결하면 Claw가 그 PC의 파일을 읽고 정리하거나, 프로그램을 대신 실행할 수 있어요.",
