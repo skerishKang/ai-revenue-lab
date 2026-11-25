@@ -27,6 +27,10 @@ def history_module_js() -> str:
     return (_STATIC / "chat-history-module.js").read_text(encoding="utf-8")
 
 
+def project_module_js() -> str:
+    return (_STATIC / "chat-project-module.js").read_text(encoding="utf-8")
+
+
 def history_css() -> str:
     return (_STATIC / "history.css").read_text(encoding="utf-8")
 

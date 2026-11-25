@@ -18,7 +18,7 @@ from __future__ import annotations
 # #8060: shipped reads live in _support; assertions stay here.
 from _support.auth_error_history_locale_source import (
     app_js, conversation_search_js, history_css, history_module_js, index_html,
-    locale_source, outputs_js, read as _source_read,
+    locale_source, outputs_js, project_module_js, read as _source_read,
 )
 
 import re
@@ -29,7 +29,8 @@ STATIC = ROOT / "static"
 LOCALE = locale_source()
 INDEX = index_html()
 APP = (app_js()
-       + history_module_js())  # R5 step 3: history rows live in the module too
+       + history_module_js()
+       + project_module_js())  # R5: history and project rows live in their modules
 OUTPUTS = outputs_js()
 SEARCH = conversation_search_js()
 

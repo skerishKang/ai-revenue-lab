@@ -24,6 +24,7 @@ from __future__ import annotations
 from functools import lru_cache
 
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -108,6 +109,7 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "editProjectButton","exitProjectButton","projectDialog","projectForm","projectDialogTitle","projectDialogClose",
   "projectDialogCancel","projectNameInput","projectInstructionsInput","projectFormError","projectSaveButton",
   "projectFilesPanel","projectFileInput","projectFilesList","projectFilesEmpty","projectFileStatus",
+  "projectFilesUsage","projectDrivePanel",
   "clawNavButton","clawWorkspace","clawManualForm","clawChannel","clawAction","clawSender","clawRequestText",
   "clawResultArea","clawResultPreview","clawResultCard","clawResultEmpty","clawResultKind","clawGenerateBtn",
   "clawExecuteButton","clawResultBadge","clawResultDocx","clawStatus","clawArtifactMeta",
@@ -432,6 +434,15 @@ function laneCalls() { return requests.filter((r) => r.url.includes("/api/files/
 # All consumers assert read-only facts from the same completed real app.js
 # behavior journey. Reuse it once per Python module rather than respawning
 # Node for each test; separate pytest processes still run independent checks.
+def _node_env_with_module_preload() -> dict:
+    preload = Path(__file__).resolve().parents[1] / "tests" / "_node_appjs_modules_preload.js"
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    env = dict(os.environ)
+    if preload.as_posix() not in existing:
+        env["NODE_OPTIONS"] = f"{existing} --require {preload.as_posix()}".strip()
+    return env
+
+
 @lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
@@ -445,6 +456,7 @@ def _run_harness() -> dict:
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=60,
+            env=_node_env_with_module_preload(),
         )
     finally:
         harness_path.unlink(missing_ok=True)

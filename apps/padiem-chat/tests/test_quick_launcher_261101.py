@@ -21,6 +21,7 @@ from urllib import parse as uparse
 
 import pytest
 
+from _support.r5_module_source_7216 import project_module_js
 from _support import plain_message_launcher_source as sheets
 
 sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
@@ -184,7 +185,7 @@ def test_the_sidebar_order_is_menu_then_projects_then_recent_conversations():
 # ── 5. the selection highlight still exists, in its new home ─────────────────
 def test_the_project_row_selection_rule_moved_to_documents_css():
     assert ".project-file-row.quick-selected-file" in DOCUMENTS_CSS
-    assert 'row.classList.add("quick-selected-file");' in sheets.sheet("app.js")
+    assert 'row.classList.add("quick-selected-file");' in project_module_js()
 
 
 def test_the_two_argument_opener_lost_its_only_caller():
@@ -195,4 +196,6 @@ def test_the_two_argument_opener_lost_its_only_caller():
     so the next pass can decide to retire them rather than lose it in a diff.
     """
     assert "opener.openFile(" not in LIBRARY_JS
-    assert "openFile: async (projectId, fileId)" in sheets.sheet("app.js")
+    app = sheets.sheet("app.js")
+    assert "openFile: projectModule.openFile" in app
+    assert "open: projectModule.open" in app

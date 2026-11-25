@@ -22,6 +22,7 @@ import pytest
 
 from _r5_streaming_harness import run_streaming_scenario
 from _r5_b6_wiring import context_names, create_receives_app_context
+from _r5_function_source import definition_source
 from _support import streaming_module_source as streaming_source
 
 NAMES = (
@@ -41,6 +42,7 @@ NAMES = (
     "requestAnswer",
 )
 ASYNC_NAMES = {"requestCompletedAnswer", "requestStreamingAnswer", "requestAnswer"}
+PROJECT_API_NAMES = set(re.findall(r"^        (\w+),$", definition_source("loadProjects"), re.M))
 
 
 # ---------------------------------------------------------------------------
@@ -334,7 +336,8 @@ def test_deps_surface_matches_the_mover_analysis() -> None:
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
     assert gets <= EXPECTED_GETTERS
-    assert gets | (EXPECTED_GETTERS & context_names(app)) == EXPECTED_GETTERS
+    inherited_getters = context_names(app) | PROJECT_API_NAMES
+    assert gets | (EXPECTED_GETTERS & inherited_getters) == EXPECTED_GETTERS
     assert sets <= EXPECTED_SETTERS
     assert sets | (EXPECTED_SETTERS & context_names(app)) == EXPECTED_SETTERS
 

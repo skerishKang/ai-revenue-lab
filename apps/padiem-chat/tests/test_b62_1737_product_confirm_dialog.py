@@ -1,4 +1,5 @@
 # #8060: shipped reads live in _support; assertions stay here.
+from _r5_function_source import function_body
 from _support.final_share_source import locale_source, shared_read
 
 from pathlib import Path
@@ -14,18 +15,21 @@ def read(name: str) -> str:
 
 def test_native_destructive_confirm_is_removed() -> None:
     app = read("app.js")
-    # deleteConversation moved into chat-history-module.js (#7216 R5 step 3);
-    # the native-confirm ban and the confirm-dialog count cover both sources.
+    # deleteConversation moved into chat-history-module.js (#7216 R5 step 3)
+    # and project destructive actions into chat-project-module.js (R5); the
+    # native-confirm ban and confirm-dialog count cover all three sources.
     module = read("chat-history-module.js")
+    project = read("chat-project-module.js")
     outputs = read("outputs.js")
     a11y = read("a11y.js")
 
     assert "window.confirm(" not in app
     assert "window.confirm(" not in module
+    assert "window.confirm(" not in project
     assert "window.confirm(" not in outputs
     assert "window.confirm(" not in a11y
     confirm = "PadiemConfirmDialog.confirm({"
-    assert app.count(confirm) + module.count(confirm) == 3
+    assert app.count(confirm) + module.count(confirm) + project.count(confirm) == 3
     assert outputs.count("PadiemConfirmDialog.confirm({") == 1
 
 
@@ -56,10 +60,12 @@ def test_delete_calls_remain_after_explicit_confirmation() -> None:
     outputs = read("outputs.js")
 
     for function_name in ("deleteProjectFile", "deleteProject", "deleteConversation"):
-        source = module if function_name == "deleteConversation" else app
-        start = source.index(f"async function {function_name}")
-        end = source.find("\n  async function ", start + 1)
-        block = source[start:] if end < 0 else source[start:end]
+        if function_name == "deleteConversation":
+            start = module.index(f"async function {function_name}")
+            end = module.find("\n  async function ", start + 1)
+            block = module[start:] if end < 0 else module[start:end]
+        else:
+            block = function_body(function_name, prefix="async function ", end="\n      }")
         confirm_at = block.index("await window.PadiemConfirmDialog.confirm")
         guard_at = block.index("if (!confirmed) return")
         delete_at = block.index('method: "DELETE"')
