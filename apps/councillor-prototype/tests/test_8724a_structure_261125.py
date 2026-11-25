@@ -15,7 +15,7 @@ import assemble  # noqa: E402
 
 PAGES = ["index.html", "about.html", "activity.html", "policy.html", "media.html", "news.html", "404.html"]
 APP_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
-HOME_JS = (ROOT / "static" / "home.js").read_text(encoding="utf-8")
+HOME_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
 PRERENDER = (ROOT / "scripts" / "prerender.py").read_text(encoding="utf-8")
 
 

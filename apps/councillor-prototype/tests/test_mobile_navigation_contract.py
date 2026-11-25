@@ -47,7 +47,7 @@ STYLES = (APP_ROOT / "static" / "styles.css").read_text(encoding="utf-8")
 # Selector matching below is textual, so comments would glue onto the next selector.
 CSS_RULES = re.sub(r"/\*.*?\*/", "", STYLES, flags=re.S)
 APP_JS = (APP_ROOT / "static" / "app.js").read_text(encoding="utf-8")
-HOME_JS = (APP_ROOT / "static" / "home.js").read_text(encoding="utf-8")
+HOME_JS = APP_JS  # #8724: home.js was merged into app.js
 DATA = json.loads((APP_ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))
 
 
@@ -227,8 +227,7 @@ def test_no_page_calls_itself_a_prototype_site():
         html = page(name)
         for phrase in banned:
             assert phrase not in html, f"{name} still says {phrase!r}"
-    for asset in (APP_ROOT / "static" / "app.js", APP_ROOT / "static" / "home.js",
-                  APP_ROOT / "static" / "miraen.json"):
+    for asset in (APP_ROOT / "static" / "app.js", APP_ROOT / "static" / "miraen.json"):
         assert "시제품" not in asset.read_text(encoding="utf-8"), f"{asset.name} still carries the disclaimer"
     assert "prototypeNotice" not in DATA, "miraen.json still declares a prototype notice"
     assert DATA.get("notes") == [], "miraen.json still lists notice items"
@@ -307,7 +306,7 @@ def test_the_deployment_origin_lives_only_in_site_config():
         assert PLACEHOLDER in text, f"{name} carries no base-URL token"
     for path in sorted((APP_ROOT / "partials").glob("*.html")):
         assert BASE_URL not in read_text(path), f"{path.name} hard-codes the deployment origin"
-    for name in ("app.js", "home.js", "miraen.json"):
+    for name in ("app.js", "miraen.json"):
         assert BASE_URL not in read_text(APP_ROOT / "static" / name), f"{name} hard-codes the deployment origin"
 
 
@@ -359,17 +358,17 @@ def test_the_screens_render_miraen_json_without_copying_its_content():
     assert 'const DATA_URL = "./static/miraen.json";' in APP_JS
     assert "fetch(DATA_URL" in APP_JS
     assert "window.COUNCILLOR_DATA_READY = loadSiteData();" in APP_JS
-    # #8724: home cards are prerendered, so home.js only enhances the existing DOM.
-    assert "enhanceMediaCards" in HOME_JS and "window.COUNCILLOR_DATA_READY" in APP_JS
-    assert "fetch(" not in HOME_JS, "home.js must not load the data a second time"
-    for name, js in (("app.js", APP_JS), ("home.js", HOME_JS)):
+    # #8724: one script loads data once and enhances the prerendered home cards.
+    assert "enhanceMediaCards" in APP_JS and "window.COUNCILLOR_DATA_READY" in APP_JS
+    assert APP_JS.count("fetch(DATA_URL") == 1, "the data must be loaded exactly once"
+    for name, js in (("app.js", APP_JS),):
         for array in ("ACTIVITIES", "MEDIA", "NEWS"):
             for body in array_literals(js, array):
                 assert not body.strip(), f"{name} copies content into {array}"
     assert re.search(r"NEWS\s*=\s*\w+\.filter\(.*?featured\s*===\s*true", APP_JS), \
         "app.js must derive news from the featured activity items"
-    assert "renderNewsColumn(NEWS)" not in HOME_JS, "the duplicate home news column was removed"
-    assert "renderStats" not in HOME_JS, "the material-count band was removed by the 11-05 decision"
+    assert "renderNewsColumn(NEWS)" not in APP_JS, "the duplicate home news column was removed"
+    assert "renderStats" not in APP_JS, "the material-count band was removed by the 11-05 decision"
 
 
 def test_activity_records_are_verified_sorted_and_uniquely_keyed():

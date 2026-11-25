@@ -37,7 +37,7 @@ def test_the_material_count_band_is_gone_and_guarded() -> None:
             assert phrase not in html, f"{name} still carries {phrase!r}"
     index = page("index.html")
     assert 'id="statList"' not in index and 'class="stat-band"' not in index
-    home_js = (ROOT / "static" / "home.js").read_text(encoding="utf-8")
+    home_js = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
     assert "renderStats" not in home_js and "statList" not in home_js
     if DIST.is_dir():
         for name in PAGES:
@@ -175,7 +175,7 @@ def test_the_build_rewrites_internal_links_to_clean_urls() -> None:
 
 
 def test_the_all_records_count_card_is_gone_and_guarded() -> None:
-    home_js = (ROOT / "static" / "home.js").read_text(encoding="utf-8")
+    home_js = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
     assert 'class="ka-count"' not in home_js
     assert "전체 의정활동 보기" in (ROOT / "scripts" / "prerender.py").read_text(encoding="utf-8")
     assert 'id="homeNews"' not in page("index.html")

@@ -20,8 +20,7 @@ python -m http.server 8792 --directory apps/councillor-prototype/dist
 - `static/styles.css` — 디자인 토큰 기반 반응형 스타일 (본문 16px · 이름표 14px · 누르는 곳 44px)
 - `static/fonts/` — 자체 호스팅 웹폰트 (제목 마루부리 Bold 부분집합 · 본문 Pretendard), 라이선스 고지 포함
 - `scripts/prerender.py` — 목록·카드·소식·더 보기 목록을 만드는 유일한 곳
-- `static/app.js` — 이미 그려진 DOM에 검색·분류·상세·크게 보기·테마만 붙입니다
-- `static/home.js` — 홈 미디어 카드에 크게 보기 동작만 붙입니다
+- `static/app.js` — 이미 그려진 DOM에 검색·분류·상세·크게 보기·홈 미디어·테마만 붙입니다 (한 파일)
 - `static/miraen.json` — **내용 단일 소스.** 화면은 이 파일을 읽어 렌더링하고, 스크립트에는 내용을 복사하지 않습니다. `tests/`가 형식과 링크를 확인합니다.
 - `site.config.json` — 배포 기준 주소(`baseUrl`) 한 곳. HTML·`robots.txt`·`sitemap.xml`의 `__BASE_URL__`을 빌드할 때 이 값으로 바꿉니다.
 - `scripts/build-dist` — partials와 본문을 조립한 뒤 prerender를 적용해 `dist/`를 만듭니다. static·robots·sitemap·favicon만 복사하고 docs·tests·README·scripts는 넣지 않습니다. 내부 메뉴 링크는 `dist/`에서만 깨끗한 주소로 바꿉니다.

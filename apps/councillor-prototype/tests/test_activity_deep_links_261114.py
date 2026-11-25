@@ -36,7 +36,7 @@ CHROME = next(
 DATA = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))
 ITEMS = DATA["activity"]["items"]
 APP_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
-HOME_JS = (ROOT / "static" / "home.js").read_text(encoding="utf-8")
+HOME_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
 import sys  # noqa: E402
 
 sys.path.insert(0, str(ROOT / "scripts"))
