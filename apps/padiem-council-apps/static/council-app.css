@@ -2422,3 +2422,118 @@ html.council-in-workspace .council-tier { color: var(--text); }
 @media (max-width: 768px) {
   .council-tool-nav { display: flex; }
 }
+
+/* ── #7575 2차: one header, roomy entry, growing result, distinct styles ──── */
+html.council-in-workspace .council-card.active > h2,
+html.council-in-workspace .council-card.active > p,
+html.council-in-workspace .council-card.active > .council-card-icon,
+html.council-in-workspace .council-card.active > .council-card-select { display: none; }
+html.council-in-workspace .council-card.active {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  outline: 0;
+}
+.council-card-body > .council-form { max-width: 720px; margin-inline: auto; }
+@media (min-width: 901px) {
+  .council-card-body:has(.council-result:not([hidden])) {
+    display: grid;
+    grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+    column-gap: clamp(16px, 2vw, 28px);
+    align-items: start;
+  }
+  .council-card-body:has(.council-result:not([hidden])) > .council-form { grid-column: 1; max-width: none; }
+  .council-card-body:has(.council-result:not([hidden])) > .council-result { grid-column: 2; }
+  .council-card-body:has(.council-result:not([hidden])) > .council-saved-list,
+  .council-card-body:has(.council-result:not([hidden])) > .council-archive { grid-column: 1 / -1; }
+}
+.council-result textarea { min-height: 160px; height: auto; overflow: hidden; }
+.council-sns-view { display: grid; gap: 8px; }
+.council-sns-view[hidden], .council-result textarea[hidden], .council-sns-preview[hidden] { display: none; }
+.council-sns-edit { min-height: 44px; justify-self: end; padding: 8px 16px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--text); font: inherit; cursor: pointer; }
+.council-nav {
+  border-radius: 999px;
+  padding: 0 12px;
+  background: color-mix(in srgb, var(--tone-1) 55%, transparent);
+}
+.council-nav-item { color: var(--tone-8); text-shadow: 0 1px 3px color-mix(in srgb, var(--tone-1) 90%, transparent); }
+/* #7575 15: the three styles spend the same country material differently —
+   serif/paper, sans/white/navy, grayscale/border. Font and card face are both
+   measured to differ; border radii alone (the old blocks) were invisible. */
+html[data-style="classic"] {
+  --font-display: "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
+  --panel: color-mix(in srgb, var(--tone-8) 90%, var(--tone-6));
+  --page-bg: color-mix(in srgb, var(--tone-8) 84%, var(--tone-6));
+  --council-accent: var(--tone-6);
+}
+html[data-style="classic"] .council-card {
+  --work-face: color-mix(in srgb, var(--tone-8) 82%, var(--tone-6));
+  --work-ink: color-mix(in srgb, var(--tone-1) 78%, var(--tone-6));
+  --card-photo-op: 0;
+}
+html[data-style="classic"] .council-card h2 { font-family: var(--font-display); }
+html[data-style="classic"] .council-workspace-bar {
+  --band-face: color-mix(in srgb, var(--tone-8) 88%, var(--tone-6));
+  --band-ink: var(--tone-1);
+}
+
+html[data-style="modern"] {
+  --font-display: "Pretendard", "Noto Sans KR", Inter, sans-serif;
+  --panel: var(--tone-8);
+  --council-accent: var(--tone-1);
+  --ink: var(--tone-1);
+}
+html[data-style="modern"] .council-card {
+  --work-face: var(--tone-8);
+  --work-ink: var(--tone-1);
+  --card-photo-op: 0;
+}
+html[data-style="modern"] .council-card h2 { font-family: var(--font-display); }
+html[data-style="modern"] .council-workspace-bar { --band-face: var(--tone-1); --band-ink: var(--tone-8); }
+
+html[data-style="minimal"] {
+  --font-display: var(--font-body);
+  --panel: transparent;
+  --shadow: none;
+  --card-photo-op: 0;
+  --strip-bg: transparent;
+}
+html[data-style="minimal"] .council-card {
+  --work-face: color-mix(in srgb, var(--tone-1) 50%, var(--tone-8));
+  --work-ink: var(--tone-1);
+  --card-photo-op: 0;
+  filter: grayscale(1);
+}
+html[data-style="minimal"] .council-card h2 { font-family: var(--font-body); }
+html[data-style="minimal"] .council-workspace-bar {
+  --band-face: color-mix(in srgb, var(--tone-1) 46%, var(--tone-8));
+  --band-ink: var(--tone-1);
+}
+.council-record-moves { display: inline-flex; gap: 8px; margin-left: auto; }
+.council-record-moves .council-record-move { min-width: 44px; min-height: 44px; }
+.council-label-text { white-space: nowrap; }
+.council-required { color: var(--text); font-weight: 700; }
+/* #7575 2차 CTO 검토: 좁은 화면에서도 띠에 도구 이름을 남기고, '처음으로'는
+   내용 폭만큼만 차지하게 한다(390에서 전체 폭 350px → 내용 폭). */
+@media (max-width: 767px) {
+  html.council-in-workspace .council-workspace-bar .council-workspace-title { display: block; }
+}
+@media (max-width: 390px) {
+  html.council-in-workspace .council-workspace-bar .council-back {
+    width: auto;
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 390px) {
+  .council-hero-actions { margin-inline: 16px; }
+}
+
+html.council-in-workspace body .council-workspace-bar {
+  min-height: clamp(64px, 6vw, 88px);
+  margin-top: 6px;
+}
+html.council-in-workspace .council-card.active { padding: 16px; }
+@media (min-width: 901px) {
+  .council-card-body:not(:has(.council-result:not([hidden]))) { display: block; }
+  .council-card-body:not(:has(.council-result:not([hidden]))) > .council-form { max-width: 720px; margin-inline: auto; }
+}
