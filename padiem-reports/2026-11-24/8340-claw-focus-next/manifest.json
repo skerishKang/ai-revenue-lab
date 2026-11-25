@@ -1,0 +1,77 @@
+{
+ "sheet": "claw-focus-layout.css",
+ "base": "3897ba436",
+ "claim": "https://github.com/skerishKang/ai-revenue-lab/issues/8340#issuecomment-7144971442",
+ "removed_count": 42,
+ "kept_count": 18,
+ "verification": {
+  "computed": {
+   "combos": 40,
+   "declarations": 60,
+   "removed": 45,
+   "diffs": 0,
+   "report": "computed_report.json",
+   "sweep": "sweep_decisions.json"
+  },
+  "pixel": {
+   "host": "comp2",
+   "combos": 30,
+   "themes": 5,
+   "viewports": [
+    "1440x950",
+    "390x844"
+   ],
+   "screens": [
+    "claw",
+    "calendar"
+   ],
+   "nonzero": [],
+   "report": "compare_report.json"
+  },
+  "control": {
+   "host": "comp2",
+   "combos": 30,
+   "nonzero": [],
+   "report": "control_report.json"
+  },
+  "tests": "관련 claw·veil·래칫 pytest 67 passed"
+ },
+ "audit": {
+  "css_important": {
+   "before": 371,
+   "after": 329,
+   "delta": -42
+  },
+  "css_themed_important": {
+   "before": 86,
+   "after": 85,
+   "delta": -1
+  },
+  "claw-focus-layout.css": {
+   "before": 60,
+   "after": 18,
+   "delta": -42
+  },
+  "css_color_literals": {
+   "before": 888,
+   "after": 888,
+   "delta": 0
+  },
+  "css_rules": {
+   "before": 4353,
+   "after": 4353,
+   "delta": 0
+  },
+  "css_files": {
+   "before": 92,
+   "after": 92,
+   "delta": 0
+  }
+ },
+ "notes": [
+  "계산값 스위프(2테마×5폭×4상태)에서 차이 0인 선언을 제거했다.",
+  "계산 스위프 7건·컴2 픽셀 스위프 5건·계약 시험 6건(802·815·927·934·1109·1123)을 유지했다.",
+  "브라우저·픽셀·제어쌍 측정은 ssh comp2에서 수행했고 컴1에서는 변경 시험과 구조 래칫만 실행했다.",
+  "캡처·diff 이미지 합계 8장(#8661). 새 !important·색 리터럴·규칙 수 증가 없음."
+ ]
+}

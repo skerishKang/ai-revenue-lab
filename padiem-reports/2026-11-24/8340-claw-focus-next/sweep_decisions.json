@@ -1,0 +1,248 @@
+{
+ "sheet": "claw-focus-layout.css",
+ "combos": 40,
+ "removed": [
+  {
+   "line": 343,
+   "prop": "transform"
+  },
+  {
+   "line": 758,
+   "prop": "display"
+  },
+  {
+   "line": 761,
+   "prop": "display"
+  },
+  {
+   "line": 767,
+   "prop": "display"
+  },
+  {
+   "line": 770,
+   "prop": "display"
+  },
+  {
+   "line": 779,
+   "prop": "display"
+  },
+  {
+   "line": 786,
+   "prop": "display"
+  },
+  {
+   "line": 794,
+   "prop": "display"
+  },
+  {
+   "line": 808,
+   "prop": "display"
+  },
+  {
+   "line": 831,
+   "prop": "display"
+  },
+  {
+   "line": 833,
+   "prop": "display"
+  },
+  {
+   "line": 846,
+   "prop": "display"
+  },
+  {
+   "line": 863,
+   "prop": "display"
+  },
+  {
+   "line": 921,
+   "prop": "display"
+  },
+  {
+   "line": 924,
+   "prop": "padding"
+  },
+  {
+   "line": 925,
+   "prop": "border"
+  },
+  {
+   "line": 926,
+   "prop": "border-radius"
+  },
+  {
+   "line": 928,
+   "prop": "box-shadow"
+  },
+  {
+   "line": 929,
+   "prop": "overflow"
+  },
+  {
+   "line": 932,
+   "prop": "display"
+  },
+  {
+   "line": 933,
+   "prop": "width"
+  },
+  {
+   "line": 956,
+   "prop": "display"
+  },
+  {
+   "line": 965,
+   "prop": "display"
+  },
+  {
+   "line": 968,
+   "prop": "margin"
+  },
+  {
+   "line": 970,
+   "prop": "width"
+  },
+  {
+   "line": 971,
+   "prop": "min-width"
+  },
+  {
+   "line": 972,
+   "prop": "height"
+  },
+  {
+   "line": 973,
+   "prop": "min-height"
+  },
+  {
+   "line": 980,
+   "prop": "display"
+  },
+  {
+   "line": 992,
+   "prop": "display"
+  },
+  {
+   "line": 1110,
+   "prop": "grid-template-columns"
+  },
+  {
+   "line": 1111,
+   "prop": "gap"
+  },
+  {
+   "line": 1115,
+   "prop": "display"
+  },
+  {
+   "line": 1122,
+   "prop": "display"
+  },
+  {
+   "line": 1124,
+   "prop": "min-height"
+  },
+  {
+   "line": 1125,
+   "prop": "padding"
+  },
+  {
+   "line": 1126,
+   "prop": "gap"
+  },
+  {
+   "line": 1130,
+   "prop": "width"
+  },
+  {
+   "line": 1131,
+   "prop": "height"
+  },
+  {
+   "line": 1134,
+   "prop": "font-size"
+  },
+  {
+   "line": 1172,
+   "prop": "min-height"
+  },
+  {
+   "line": 1173,
+   "prop": "height"
+  }
+ ],
+ "kept": [
+  {
+   "line": 337,
+   "prop": "width"
+  },
+  {
+   "line": 338,
+   "prop": "margin-left"
+  },
+  {
+   "line": 339,
+   "prop": "margin-right"
+  },
+  {
+   "line": 342,
+   "prop": "left"
+  },
+  {
+   "line": 344,
+   "prop": "width"
+  },
+  {
+   "line": 353,
+   "prop": "width"
+  },
+  {
+   "line": 356,
+   "prop": "width"
+  },
+  {
+   "line": 764,
+   "prop": "display"
+  },
+  {
+   "line": 802,
+   "prop": "display"
+  },
+  {
+   "line": 815,
+   "prop": "display"
+  },
+  {
+   "line": 860,
+   "prop": "display"
+  },
+  {
+   "line": 927,
+   "prop": "background"
+  },
+  {
+   "line": 934,
+   "prop": "min-height"
+  },
+  {
+   "line": 969,
+   "prop": "padding"
+  },
+  {
+   "line": 1109,
+   "prop": "display"
+  },
+  {
+   "line": 1118,
+   "prop": "border-radius"
+  },
+  {
+   "line": 1119,
+   "prop": "overflow"
+  },
+  {
+   "line": 1123,
+   "prop": "align-items"
+  }
+ ]
+}
