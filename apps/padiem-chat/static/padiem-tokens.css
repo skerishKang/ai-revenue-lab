@@ -934,6 +934,12 @@
   --util-menu-pdfmd-shell-wash: rgba(239, 243, 246, .48);
   --util-menu-pdfmd-warn-ink: #8a4b0f;
 
+  /* #7811 token-family --util-tools sha256=f114a67c0efeb1d6f25493712df51139b37cf776873a13c370aff542b1cafb4f */
+  /* #7811 C2 util-tools(261125): 도구 화면 강조 버튼·탭 위의 흰 글자. 값은 치환 전
+     선언마다 박혀 있던 #fff 그대로이고 :root에만 둔다. 다섯 테마 모두 같은
+     흰 글자라 테마 블록이 덮지 않는다. */
+  --util-tools-on-accent: #fff;
+
   /* 연결 카드 대비 수리(261124): 연결 화면 카드는 다섯 테마 모두 밝은 판이다
      (standalone-views.css의 #connectorsViewBody .capability-card). 카드 이름은
      글자색을 지정받지 못해 테마 글자색을 상속했고, 상태 줄은 테마 --muted를

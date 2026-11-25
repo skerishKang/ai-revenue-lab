@@ -1,0 +1,157 @@
+{
+ "before": {
+  "light|util-tools-gate": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "Pretendard, \"Noto Sans KR\", Inter, ui-sans-serif, system-ui, -apple-system, sans-serif"
+  },
+  "light|util-tools-speech": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "Pretendard, \"Noto Sans KR\", Inter, ui-sans-serif, system-ui, -apple-system, sans-serif"
+  },
+  "light|util-tools-sns": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "Pretendard, \"Noto Sans KR\", Inter, ui-sans-serif, system-ui, -apple-system, sans-serif"
+  },
+  "dark|util-tools-gate": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "dark|util-tools-speech": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "dark|util-tools-sns": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "padiem-glass|util-tools-gate": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "padiem-glass|util-tools-speech": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "padiem-glass|util-tools-sns": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "cinematic|util-tools-gate": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "cinematic|util-tools-speech": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "cinematic|util-tools-sns": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "padiem-home|util-tools-gate": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "padiem-home|util-tools-speech": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "padiem-home|util-tools-sns": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  }
+ },
+ "after": {
+  "light|util-tools-gate": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "Pretendard, \"Noto Sans KR\", Inter, ui-sans-serif, system-ui, -apple-system, sans-serif"
+  },
+  "light|util-tools-speech": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "Pretendard, \"Noto Sans KR\", Inter, ui-sans-serif, system-ui, -apple-system, sans-serif"
+  },
+  "light|util-tools-sns": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "Pretendard, \"Noto Sans KR\", Inter, ui-sans-serif, system-ui, -apple-system, sans-serif"
+  },
+  "dark|util-tools-gate": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "dark|util-tools-speech": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "dark|util-tools-sns": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "padiem-glass|util-tools-gate": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "padiem-glass|util-tools-speech": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "padiem-glass|util-tools-sns": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "cinematic|util-tools-gate": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "cinematic|util-tools-speech": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "cinematic|util-tools-sns": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "padiem-home|util-tools-gate": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "padiem-home|util-tools-speech": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  },
+  "padiem-home|util-tools-sns": {
+   "color": "rgb(255, 255, 255)",
+   "bg": "rgb(53, 89, 119)",
+   "font": "\"SUIT Variable\", \"IBM Plex Sans KR\", system-ui, sans-serif"
+  }
+ },
+ "diffs": []
+}
