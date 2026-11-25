@@ -160,10 +160,7 @@ html body .app-shell .sidebar :is(.project-row, .history-row) svg {
 }
 /* Project and recent-section headings now share the same baseline.
  * Preserve each section's plus-button and existing rendering. */
-html body .app-shell .sidebar #projectsSection .section-heading-row {
-  margin: 12px 10px 8px;
-  padding: 0;
-}
+
 html body .app-shell .sidebar #historySection > h2 {
   margin: 12px 10px 8px;
   padding: 0;
@@ -174,4 +171,20 @@ html body .app-shell .sidebar #projectsSection .section-heading-row h2 { margin:
 .sidebar :is(.project-row, .history-row) :is(button, summary):focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
+}
+
+/* #7811 C4: the sidebar section control is owned by this component sheet. */
+.sidebar .sidebar-section-toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: inherit;
+  opacity: .88;
+  cursor: pointer;
 }
