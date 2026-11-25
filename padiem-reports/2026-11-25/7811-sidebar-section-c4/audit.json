@@ -1,0 +1,45 @@
+{
+  "css_rules": {
+    "base": 4356,
+    "head": 4355,
+    "delta": -1
+  },
+  "css_important": {
+    "base": 327,
+    "head": 327,
+    "delta": 0
+  },
+  "css_themed_rules": {
+    "base": 767,
+    "head": 767,
+    "delta": 0
+  },
+  "css_themed_important": {
+    "base": 83,
+    "head": 83,
+    "delta": 0
+  },
+  "css_color_literals": {
+    "base": 880,
+    "head": 880,
+    "delta": 0
+  },
+  "css_color_literals_unthemed": {
+    "base": 244,
+    "head": 244,
+    "delta": 0
+  },
+  "raw_static_text_assertions": {
+    "base": null,
+    "head": null,
+    "delta": 0
+  },
+  "sidebar-section-polish.css": {
+    "base_rules": 32,
+    "head_rules": 30
+  },
+  "sidebar-unified.css": {
+    "base_rules": 24,
+    "head_rules": 25
+  }
+}

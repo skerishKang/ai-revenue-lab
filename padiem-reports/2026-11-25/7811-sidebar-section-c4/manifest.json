@@ -1,0 +1,103 @@
+{
+  "issue": 7811,
+  "sheet": "sidebar-section-polish.css",
+  "baseline": "c2d6b87031ee000fb21d5152f545533df09e6961",
+  "computed": 10,
+  "pixel": 10,
+  "control": 10,
+  "mutations_detected": 2,
+  "computed_differences": 0,
+  "pixel_differences": 0,
+  "control_differences": 0,
+  "environment": "COM2 ssh headless Chromium, local HTTP proxy bypass",
+  "background_url_normalization": "host and port only, keep path",
+  "audit": {
+    "css_rules": {
+      "base": 4356,
+      "head": 4355,
+      "delta": -1
+    },
+    "css_important": {
+      "base": 327,
+      "head": 327,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "base": 767,
+      "head": 767,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "base": 83,
+      "head": 83,
+      "delta": 0
+    },
+    "css_color_literals": {
+      "base": 880,
+      "head": 880,
+      "delta": 0
+    },
+    "css_color_literals_unthemed": {
+      "base": 244,
+      "head": 244,
+      "delta": 0
+    },
+    "raw_static_text_assertions": {
+      "base": null,
+      "head": null,
+      "delta": 0
+    },
+    "sidebar-section-polish.css": {
+      "base_rules": 32,
+      "head_rules": 30
+    },
+    "sidebar-unified.css": {
+      "base_rules": 24,
+      "head_rules": 25
+    }
+  },
+  "screenshots": [
+    {
+      "file": "light_before.png",
+      "sha256": "38da597bf32b663e5d5e857ed15e1e053cf5d6159e7a586fdcb74060185ed7a3",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "light_after.png",
+      "sha256": "38da597bf32b663e5d5e857ed15e1e053cf5d6159e7a586fdcb74060185ed7a3",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "cinematic_before.png",
+      "sha256": "f81d9c5ff5c990487e9909f00adfe98ad59e4192f8a5160a125898f805557466",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "cinematic_after.png",
+      "sha256": "f81d9c5ff5c990487e9909f00adfe98ad59e4192f8a5160a125898f805557466",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "tamper_before.png",
+      "sha256": "f81d9c5ff5c990487e9909f00adfe98ad59e4192f8a5160a125898f805557466",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "tamper_after.png",
+      "sha256": "2851df346b4ecf748a4cc9edff9bfe70b1099aaf2da9911da6565d6606941508",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "tamper_diff.png",
+      "sha256": "10414310dbf3e090cc437c985eb0106e3d38a6bb6b5155de10d8dd86e8569785",
+      "width": 390,
+      "height": 844
+    }
+  ]
+}

@@ -175,3 +175,19 @@ html body .app-shell .sidebar #projectsSection .section-heading-row h2 { margin:
   outline: 2px solid var(--accent);
   outline-offset: -2px;
 }
+
+/* #7811 C4: the sidebar section control is owned by this component sheet. */
+.sidebar .sidebar-section-toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: inherit;
+  opacity: .88;
+  cursor: pointer;
+}
