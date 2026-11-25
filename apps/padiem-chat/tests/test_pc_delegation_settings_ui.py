@@ -44,4 +44,4 @@ def test_account_settings_flow():
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "PC_DELEGATION_SETTINGS=PASS" in result.stdout
-    assert result.stdout.count("PC_DELEGATION_CHECK") == 10
+    assert result.stdout.count("PC_DELEGATION_CHECK") == 14
