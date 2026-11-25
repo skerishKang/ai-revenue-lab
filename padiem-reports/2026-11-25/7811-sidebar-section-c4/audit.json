@@ -1,8 +1,8 @@
 {
   "css_rules": {
     "base": 4356,
-    "head": 4355,
-    "delta": -1
+    "head": 4354,
+    "delta": -2
   },
   "css_important": {
     "base": 327,
@@ -40,6 +40,6 @@
   },
   "sidebar-unified.css": {
     "base_rules": 24,
-    "head_rules": 25
+    "head_rules": 24
   }
 }

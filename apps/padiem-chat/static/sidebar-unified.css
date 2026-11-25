@@ -160,10 +160,7 @@ html body .app-shell .sidebar :is(.project-row, .history-row) svg {
 }
 /* Project and recent-section headings now share the same baseline.
  * Preserve each section's plus-button and existing rendering. */
-html body .app-shell .sidebar #projectsSection .section-heading-row {
-  margin: 12px 10px 8px;
-  padding: 0;
-}
+
 html body .app-shell .sidebar #historySection > h2 {
   margin: 12px 10px 8px;
   padding: 0;

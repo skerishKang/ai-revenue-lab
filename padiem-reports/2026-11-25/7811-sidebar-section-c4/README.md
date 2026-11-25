@@ -2,8 +2,8 @@
 
 ## Scope
 - Moved the sidebar section toggle base rule to its component owner sidebar-unified.css.
-- Removed one unreachable collapsed chevron transform rule, shadowed by the existing stronger selector.
-- Original sheet 32 to 30, owner sheet 24 to 25, total rules reduced by one.
+- Removed two unreachable rules: collapsed chevron transform shadowed by a stronger selector, and duplicate project heading margins already defined in sidebar-section-polish.css.
+- Original sheet 32 to 30, owner sheet remains 24, total rules reduced by two.
 - No new !important, color literals, or raw static-text assertions.
 
 ## Verification
@@ -11,14 +11,14 @@
 - COM2: 10/10 identical rendered pixel images and valid application states.
 - COM2: 10/10 identical same-code control pixels.
 - 2/2 intentional CSS mutations visibly detected.
-- COM1 worktree: 20 focused pytest and structure-ratchet cases passed.
+- COM1 worktree: 42 focused pytest and structure-ratchet cases passed (20 + 22).
 - Screenshot count 7, each checksummed in manifest.json.
 - Background-image origin normalization replaces host and port only; image path preserved.
 
 ## Structure audit
 | Metric | main | patch | delta |
 |---|---:|---:|---:|
-| css_rules | 4356 | 4355 | -1 |
+| css_rules | 4356 | 4354 | -2 |
 | css_important | 327 | 327 | +0 |
 | css_themed_rules | 767 | 767 | +0 |
 | css_themed_important | 83 | 83 | +0 |
