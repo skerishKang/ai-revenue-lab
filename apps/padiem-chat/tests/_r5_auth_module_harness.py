@@ -497,24 +497,28 @@ function surfaces() {
     snapshots.push({ attempt: index, after: surfaces() });
     return { calls: index, snapshots, final: surfaces() };
   }
-  const signedInAnswer = { ready: true, authenticated: true,
-    user: { name: "Kim", email: "member@example.com" },
-    session_state: "signed_in", history_ready: true, account_method: "password",
-    methods: { password: true, google: false } };
-  const notReadyAnswer = { ready: false, authenticated: false, user: null,
-    methods: { password: true, google: false } };
-  results.statusFlight = {
-    lateFirst: await statusFlight([notReadyAnswer, signedInAnswer]),
-    failedFirst: await statusFlight([new Error("auth status unavailable"), signedInAnswer]),
-    twiceNotReady: await statusFlight([notReadyAnswer, notReadyAnswer]),
-  };
-
-  process.stdout.write(JSON.stringify(results));
+  // 골든 스냅샷(observations())의 키 집합은 그대로 둔다. 이 관찰은 별도 모드로만
+  // 출력해 #8699 회귀 시험이 쓴다.
+  if (process.argv[5] === "status-flight") {
+    const signedInAnswer = { ready: true, authenticated: true,
+      user: { name: "Kim", email: "member@example.com" },
+      session_state: "signed_in", history_ready: true, account_method: "password",
+      methods: { password: true, google: false } };
+    const notReadyAnswer = { ready: false, authenticated: false, user: null,
+      methods: { password: true, google: false } };
+    process.stdout.write(JSON.stringify({
+      lateFirst: await statusFlight([notReadyAnswer, signedInAnswer]),
+      failedFirst: await statusFlight([new Error("auth status unavailable"), signedInAnswer]),
+      twiceNotReady: await statusFlight([notReadyAnswer, notReadyAnswer]),
+    }));
+  } else {
+    process.stdout.write(JSON.stringify(results));
+  }
 })().catch((error) => { console.error(error); process.exit(1); });
 """
 
 
-def _run_harness() -> dict:
+def _run_harness(mode: str = "") -> dict:
     node = shutil.which("node")
     if not node:
         pytest.skip("node is not available for the module harness")
@@ -527,7 +531,7 @@ def _run_harness() -> dict:
         )
         completed = subprocess.run(
             [node, str(harness), str(STATIC / "chat-auth-module.js"), str(STATIC / "chat-account-module.js"),
-             str(STATIC / "chat-login-dialog-module.js")],
+             str(STATIC / "chat-login-dialog-module.js")] + ([mode] if mode else []),
             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,
         )
     assert completed.returncode == 0, completed.stderr
@@ -539,3 +543,10 @@ def observations() -> dict:
     """모듈을 실제 실행해 얻은 한 번의 관찰(시험 파일 간 공유)."""
 
     return _run_harness()
+
+
+@lru_cache(maxsize=1)
+def status_observations() -> dict:
+    """#8699: 상태 확인 시퀀스 관찰만 별도로 실행한다(골든 키 집합 유지)."""
+
+    return _run_harness("status-flight")

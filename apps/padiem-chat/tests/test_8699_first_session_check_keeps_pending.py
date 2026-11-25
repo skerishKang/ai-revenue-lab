@@ -11,11 +11,11 @@
 """
 from __future__ import annotations
 
-from _r5_auth_module_harness import observations
+from _r5_auth_module_harness import status_observations
 
 
-def _flight(observations_map, key):
-    flight = observations_map["statusFlight"][key]
+def _flight(status_map, key):
+    flight = status_map[key]
     assert flight["calls"] == 2, "a first unfinished check must be asked once more"
     before = [row["before"] for row in flight["snapshots"] if "before" in row]
     assert all(row["accountState"] == "pending" for row in before), before
@@ -24,7 +24,7 @@ def _flight(observations_map, key):
 
 
 def test_first_not_ready_answer_does_not_paint_a_sign_out_screen():
-    flight = _flight(observations(), "lateFirst")
+    flight = _flight(status_observations(), "lateFirst")
     final = flight["final"]
     assert final["accountState"] == "signed_in"
     assert final["loginHidden"] is True
@@ -33,7 +33,7 @@ def test_first_not_ready_answer_does_not_paint_a_sign_out_screen():
 
 
 def test_first_failed_answer_does_not_paint_a_sign_out_screen():
-    flight = _flight(observations(), "failedFirst")
+    flight = _flight(status_observations(), "failedFirst")
     final = flight["final"]
     assert final["accountState"] == "signed_in"
     assert final["loginText"] == "logout"
@@ -41,6 +41,6 @@ def test_first_failed_answer_does_not_paint_a_sign_out_screen():
 
 
 def test_two_not_ready_answers_decide_on_the_second_one():
-    flight = observations()["statusFlight"]["twiceNotReady"]
+    flight = status_observations()["twiceNotReady"]
     assert flight["calls"] == 2
     assert flight["final"]["accountState"] == "unavailable"
