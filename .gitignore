@@ -55,6 +55,12 @@ _synccheck/
 padiem-reports/2026-10-06/b66-pdf-preview-parity/
 padiem-reports/b66-shell-cgi-v2/
 
+# PR 캡처는 비공개 컴패니언 저장소로 보내고 JSON 요약만 여기에 추적한다.
+padiem-reports/**/*.[pP][nN][gG]
+padiem-reports/**/*.[jJ][pP][gG]
+padiem-reports/**/*.[jJ][pP][eE][gG]
+padiem-reports/**/*.[wW][eE][bB][pP]
+
 # #5967: 대표가 전달한 디자인 원본 PNG와 생성 원본 PNG는 공개 검토가 끝날 때까지 비공개로 유지한다.
 # 화면에 나가는 파생본만 reference/padiem-parliament-ai-design-v1/assets/ 에 추적된다.
 reference/design-assets/

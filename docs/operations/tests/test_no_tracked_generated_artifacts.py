@@ -40,6 +40,10 @@ REQUIRED_IGNORE_RULES = (
     "_synccheck/",
     "padiem-reports/2026-10-06/b66-pdf-preview-parity/",
     "padiem-reports/b66-shell-cgi-v2/",
+    "padiem-reports/**/*.[pP][nN][gG]",
+    "padiem-reports/**/*.[jJ][pP][gG]",
+    "padiem-reports/**/*.[jJ][pP][eE][gG]",
+    "padiem-reports/**/*.[wW][eE][bB][pP]",
 )
 
 # The one report that stays tracked because it is registered public evidence.
@@ -122,6 +126,16 @@ def test_repository_gitignore_declares_every_required_rule() -> None:
     }
     missing = [rule for rule in REQUIRED_IGNORE_RULES if rule not in rules]
     assert missing == [], f"missing .gitignore rules: {missing}"
+
+
+def test_future_report_images_stay_ignored() -> None:
+    for suffix in ("png", "PNG", "jpg", "JPG", "jpeg", "JPEG", "webp", "WEBP"):
+        probe = f"padiem-reports/2026-11-26/re-entry-probe.{suffix}"
+        source = _ignore_source(probe)
+        assert source is not None, f"{suffix} captures are not ignored"
+        assert source.replace("\\", "/").endswith(".gitignore"), (
+            f"{suffix} capture ignore is only machine-local"
+        )
 
 
 def test_kept_evidence_and_canonical_source_are_present() -> None:

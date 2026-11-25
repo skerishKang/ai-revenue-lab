@@ -124,15 +124,20 @@ Report claims remain subordinate to current GitHub truth. CENTRAL still independ
 - PR 증거 캡처는 확인한 핵심 이미지 최대 8장만 저장소에 남긴다. 나머지 비교 이미지는 수치(manifest·compare 결과 JSON)로만 남긴다.
 
 
-Prefer GitHub Actions artifacts for:
+Prefer GitHub Actions artifacts for transient CI output:
 
-- screenshots;
 - Playwright traces;
 - archives;
 - large logs;
 - browser/runtime evidence that is too large for a Markdown report.
 
-The private report should reference the relevant workflow/run/artifact rather than embedding large payloads.
+PR review screenshots that must remain directly linked use a private companion
+repository through `tools/publish_pr_captures.py`; keep the JSON summary in this
+repository and put the immutable capture links in the PR body. Public-repository
+artifacts and attachments are not private evidence storage. See
+[PR capture storage design](PR_CAPTURE_STORAGE_DESIGN_20261126.md).
+
+The private report should reference the relevant workflow/run/artifact or private capture commit rather than embedding large payloads.
 
 ## 6. Google Drive / rclone
 

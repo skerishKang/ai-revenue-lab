@@ -203,6 +203,13 @@ python tools/chat_pixel_compare.py --computed ".project-drive-status" color
 반경·색 1단계 변경은 이 도구로 잡히지 않으므로 해당 변경은 숫자 시험으로
 확인한다.
 
+### PR 캡처 게시 — `tools/publish_pr_captures.py`
+
+JSON 요약은 `padiem-reports/<날짜>/<묶음>/`에 커밋하고, 캡처는 최대 8장만 비공개
+컴패니언 저장소로 올린다. 도구가 PR 본문에 immutable 링크를 넣거나 교체한다.
+저장소 생성·보관 기간·기존 PNG 정리는 대표 결정 항목이다.
+상세 비교와 실행 예는 [PR 캡처 저장소 밖 설계](PR_CAPTURE_STORAGE_DESIGN_20261126.md)을 본다.
+
 ---
 
 ## 4. JS가 실행 중에 붙이는 시트 (#7811 C1 목록)

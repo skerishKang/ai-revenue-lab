@@ -136,7 +136,8 @@
 
 - 5테마 × 1440·390 픽셀 비교: `nonzero: []`, 제어쌍 0.
 - 변조: 이번에 만든 토큰 하나를 바꾸면 화면이 달라진다.
-- 캡처와 `manifest.json`: `padiem-reports/<날짜>/7811-<묶음>/`.
+- JSON 요약과 `manifest.json`: `padiem-reports/<날짜>/7811-<묶음>/`에 커밋.
+- 캡처는 최대 8장을 `tools/publish_pr_captures.py`로 비공개 컴패니언 저장소에 올리고 PR 본문 링크를 남긴다. 절차는 [PR 캡처 저장소 밖 설계](PR_CAPTURE_STORAGE_DESIGN_20261126.md).
 - 수치 전 → 후: `css_color_literals`, `css_color_literals_unthemed`, `css_important`, `css_themed_important`, 시트 수.
 - CSS 글자를 읽는 시험이 깨지면 읽는 대상을 새 위치로 옮기거나 계산된 값 검사로 바꾼다. 검사를 약하게 만들지 않는다.
 
