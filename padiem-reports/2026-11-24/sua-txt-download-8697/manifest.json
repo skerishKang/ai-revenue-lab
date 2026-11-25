@@ -1,0 +1,158 @@
+{
+  "issue": "8697",
+  "round": ".answer-txt-download 이름 + dark 저장한 답변 단추 라벨 대비",
+  "base": "288c3ba24",
+  "measurement": "COM2(ssh comp2) Playwright — 5테마 × 2폭, 미변경 화면 픽셀·제어쌍",
+  "label": {
+    "ko": "텍스트 파일로 내려받기",
+    "en": "Download as text file",
+    "menu": "기타(···) 안 유지, 저장한 답변으로 저장과 나란히"
+  },
+  "audit": {
+    "css_important": {
+      "before": 371,
+      "after": 371,
+      "delta": 0
+    },
+    "css_color_literals": {
+      "before": 888,
+      "after": 888,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4353,
+      "after": 4353,
+      "delta": 0
+    },
+    "css_color_literals_unthemed": {
+      "before": 250,
+      "after": 250,
+      "delta": 0
+    }
+  },
+  "verification": {
+    "pixel_untouched": [
+      {
+        "combo": "light__1440x950",
+        "diff": 0
+      },
+      {
+        "combo": "light__390x844",
+        "diff": 0
+      },
+      {
+        "combo": "dark__1440x950",
+        "diff": 0
+      },
+      {
+        "combo": "dark__390x844",
+        "diff": 0
+      },
+      {
+        "combo": "padiem-glass__1440x950",
+        "diff": 0
+      },
+      {
+        "combo": "padiem-glass__390x844",
+        "diff": 0
+      },
+      {
+        "combo": "cinematic__1440x950",
+        "diff": 0
+      },
+      {
+        "combo": "cinematic__390x844",
+        "diff": 0
+      },
+      {
+        "combo": "padiem-home__1440x950",
+        "diff": 0
+      },
+      {
+        "combo": "padiem-home__390x844",
+        "diff": 0
+      }
+    ],
+    "control": [
+      {
+        "combo": "light__1440x950",
+        "diff": 0
+      },
+      {
+        "combo": "light__390x844",
+        "diff": 0
+      },
+      {
+        "combo": "dark__1440x950",
+        "diff": 0
+      },
+      {
+        "combo": "dark__390x844",
+        "diff": 0
+      },
+      {
+        "combo": "padiem-glass__1440x950",
+        "diff": 0
+      },
+      {
+        "combo": "padiem-glass__390x844",
+        "diff": 0
+      },
+      {
+        "combo": "cinematic__1440x950",
+        "diff": 0
+      },
+      {
+        "combo": "cinematic__390x844",
+        "diff": 0
+      },
+      {
+        "combo": "padiem-home__1440x950",
+        "diff": 0
+      },
+      {
+        "combo": "padiem-home__390x844",
+        "diff": 0
+      }
+    ],
+    "contrast": [
+      {
+        "theme": "light",
+        "button_color": "rgb(111, 112, 121)",
+        "panel_color": "rgb(255, 255, 255)",
+        "ratio": 4.92
+      },
+      {
+        "theme": "dark",
+        "button_color": "rgba(255, 255, 255, 0.64)",
+        "panel_color": "rgba(8, 9, 11, 0.97)",
+        "ratio": 8.22
+      },
+      {
+        "theme": "padiem-glass",
+        "button_color": "rgb(83, 96, 108)",
+        "panel_color": "rgba(235, 239, 242, 0.46)",
+        "ratio": 4.15
+      },
+      {
+        "theme": "cinematic",
+        "button_color": "rgba(255, 255, 255, 0.64)",
+        "panel_color": "rgba(8, 9, 11, 0.97)",
+        "ratio": 8.23
+      },
+      {
+        "theme": "padiem-home",
+        "button_color": "rgb(90, 101, 120)",
+        "panel_color": "rgba(255, 255, 255, 0.72)",
+        "ratio": 2.95
+      }
+    ],
+    "captures": 8
+  },
+  "notes": [
+    "미변경 화면 10조합 픽셀 차이 0, 제어쌍 10조합 차이 0.",
+    "dark 저장한 답변 단추 라벨 대비 8.22:1 (>=4.5) — 기존 --outputs-secondary-text 토큰 경로로 이미 충족, 새 색 숫자·!important·새 규칙 없음.",
+    "glass 4.15:1·padiem-home 2.95:1는 기존 대비 미달로 목록에만 남기고 고치지 않음.",
+    "캡처 8장, 회귀 시험 1개 추가 + 로컬 구조 래칫 통과."
+  ]
+}

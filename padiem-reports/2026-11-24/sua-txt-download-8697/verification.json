@@ -1,0 +1,128 @@
+{
+  "pixel_untouched": [
+    {
+      "combo": "light__1440x950",
+      "diff": 0
+    },
+    {
+      "combo": "light__390x844",
+      "diff": 0
+    },
+    {
+      "combo": "dark__1440x950",
+      "diff": 0
+    },
+    {
+      "combo": "dark__390x844",
+      "diff": 0
+    },
+    {
+      "combo": "padiem-glass__1440x950",
+      "diff": 0
+    },
+    {
+      "combo": "padiem-glass__390x844",
+      "diff": 0
+    },
+    {
+      "combo": "cinematic__1440x950",
+      "diff": 0
+    },
+    {
+      "combo": "cinematic__390x844",
+      "diff": 0
+    },
+    {
+      "combo": "padiem-home__1440x950",
+      "diff": 0
+    },
+    {
+      "combo": "padiem-home__390x844",
+      "diff": 0
+    }
+  ],
+  "control": [
+    {
+      "combo": "light__1440x950",
+      "diff": 0
+    },
+    {
+      "combo": "light__390x844",
+      "diff": 0
+    },
+    {
+      "combo": "dark__1440x950",
+      "diff": 0
+    },
+    {
+      "combo": "dark__390x844",
+      "diff": 0
+    },
+    {
+      "combo": "padiem-glass__1440x950",
+      "diff": 0
+    },
+    {
+      "combo": "padiem-glass__390x844",
+      "diff": 0
+    },
+    {
+      "combo": "cinematic__1440x950",
+      "diff": 0
+    },
+    {
+      "combo": "cinematic__390x844",
+      "diff": 0
+    },
+    {
+      "combo": "padiem-home__1440x950",
+      "diff": 0
+    },
+    {
+      "combo": "padiem-home__390x844",
+      "diff": 0
+    }
+  ],
+  "contrast": [
+    {
+      "theme": "light",
+      "button_color": "rgb(111, 112, 121)",
+      "panel_color": "rgb(255, 255, 255)",
+      "ratio": 4.92
+    },
+    {
+      "theme": "dark",
+      "button_color": "rgba(255, 255, 255, 0.64)",
+      "panel_color": "rgba(8, 9, 11, 0.97)",
+      "ratio": 8.22
+    },
+    {
+      "theme": "padiem-glass",
+      "button_color": "rgb(83, 96, 108)",
+      "panel_color": "rgba(235, 239, 242, 0.46)",
+      "ratio": 4.15
+    },
+    {
+      "theme": "cinematic",
+      "button_color": "rgba(255, 255, 255, 0.64)",
+      "panel_color": "rgba(8, 9, 11, 0.97)",
+      "ratio": 8.23
+    },
+    {
+      "theme": "padiem-home",
+      "button_color": "rgb(90, 101, 120)",
+      "panel_color": "rgba(255, 255, 255, 0.72)",
+      "ratio": 2.95
+    }
+  ],
+  "captures": [
+    "chat__light__before.png",
+    "chat__light__after.png",
+    "chat__dark__before.png",
+    "chat__dark__after.png",
+    "chat__padiem-glass__before.png",
+    "chat__padiem-glass__after.png",
+    "saved__dark__before.png",
+    "saved__dark__after.png"
+  ]
+}
