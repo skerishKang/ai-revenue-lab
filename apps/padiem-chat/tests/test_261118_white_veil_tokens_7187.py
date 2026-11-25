@@ -208,9 +208,9 @@ CHANGED = {
     ],
     "padiem-surfaces.css": [
         ("background",
-         "linear-gradient(145deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .018)), rgba(8, 9, 11, .97) !important",
+         "linear-gradient(145deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .018)), rgba(8, 9, 11, .97)",
          # #7811 C2 surfaces 2차: .018 꼬리는 전용 쓰임새 토큰으로 옮겼다.
-         "linear-gradient(145deg, var(--surface-veil-soft), var(--ws-form-wash)), var(--surface-panel-solid) !important"),
+         "linear-gradient(145deg, var(--surface-veil-soft), var(--ws-form-wash)), var(--surface-panel-solid)"),
         ("background", "rgba(255, 255, 255, .05)", "var(--surface-veil-faint)"),
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
         ("background", "rgba(255, 255, 255, .72)", "var(--surface-veil-strong)"),
@@ -221,7 +221,7 @@ CHANGED = {
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04)", "inset 0 1px 0 var(--inset-veil-panel)"),
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04)", "inset 0 1px 0 var(--inset-veil-panel)"),
         ("box-shadow", "inset 0 1px 0 rgba(255, 255, 255, .04) !important", "inset 0 1px 0 var(--inset-veil-panel) !important"),
-        ("background", "rgba(255, 255, 255, .09) !important", "var(--surface-veil-dim) !important"),
+        ("background", "rgba(255, 255, 255, .09)", "var(--surface-veil-dim)"),
     ],
     "padiem-themes.css": [
         ("background",
