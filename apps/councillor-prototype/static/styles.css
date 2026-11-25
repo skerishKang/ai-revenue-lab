@@ -51,6 +51,11 @@
   --muted: #546078;
   --border: rgba(11, 26, 46, 0.12);
 }
+/* #8740: one place changes every reading size; the base sizes stay untouched. */
+html[data-text-size="large"] {
+  --fs-body: 20px;
+  --fs-label: 17px;
+}
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
@@ -116,6 +121,30 @@ main { flex: 1 0 auto; }
   font: inherit; font-size: var(--fs-label); letter-spacing: 0.02em;
 }
 .ghost:hover { border-color: var(--accent-2); color: var(--accent-2); }
+/* #8740b: header controls keep their own type scale so large text cannot grow
+   the bar, and narrow screens swap the words for 44px icon buttons. */
+.topbar .ghost { font-size: 14px; white-space: nowrap; word-break: keep-all; }
+.theme-label-dark, .text-size-label-large, .header-icon { display: none; }
+html[data-text-size="large"] .text-size-label-normal { display: none; }
+html[data-text-size="large"] .text-size-label-large { display: inline; }
+[data-theme="dark"] .theme-label-normal { display: none; }
+[data-theme="dark"] .theme-label-dark { display: inline; }
+[data-theme="dark"] .icon-moon { display: none; }
+html[data-text-size="large"] .icon-text-large { display: none; }
+@media (max-width: 480px) {
+  .topbar { gap: 8px; padding: 0 12px; }
+  .top-actions { gap: 8px; }
+  .topbar .ghost { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; }
+  .topbar .header-label { display: none !important; }
+  .topbar .header-icon { display: none; align-items: center; justify-content: center; font-size: 18px; line-height: 1; }
+  .topbar .icon-moon, .topbar .icon-text-large { display: inline-flex; }
+  [data-theme="dark"] .topbar .icon-moon { display: none; }
+  [data-theme="dark"] .topbar .icon-sun { display: inline-flex; }
+  html[data-text-size="large"] .topbar .icon-text-large { display: none; }
+  html[data-text-size="large"] .topbar .icon-text-normal { display: inline-flex; }
+  .brand-tagline { display: none; }
+}
+.brand-name { white-space: nowrap; word-break: keep-all; overflow: hidden; text-overflow: ellipsis; }
 .top-cta {
   display: inline-flex; align-items: center; gap: 8px; min-height: var(--tap);
   background: var(--accent); color: var(--paper); text-decoration: none;
@@ -715,7 +744,7 @@ main { flex: 1 0 auto; }
 }
 .lightbox-foot h2 { margin: 0 0 4px; font-family: var(--font-serif); font-size: 18px; font-weight: 700; color: var(--ivory); }
 .lightbox-foot a { display: inline-flex; min-height: var(--tap); align-items: center; color: var(--ivory); font-size: var(--fs-body); font-weight: 600; }
-.lightbox-source { max-width: 720px; margin: 4px auto 6px; color: rgba(245, 241, 232, .86); font-size: var(--fs-label); line-height: 1.6; }
+.lightbox-source { max-width: 720px; margin: 4px auto 6px; color: rgba(245, 241, 232, .86); font-size: var(--fs-body); line-height: 1.6; }
 @media (max-width: 900px) {
 body.lightbox-open .mobile-tabbar { visibility: hidden; }
 .lightbox-foot { padding-bottom: calc(var(--tap) + 16px + env(safe-area-inset-bottom, 0px)); }
@@ -856,6 +885,6 @@ body.lightbox-open .mobile-tabbar { visibility: hidden; }
 .combined-policy-row a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--text); }
 /* Public change history uses the existing card palette. */.site-change-list { display: grid; gap: 16px; margin-top: 24px; }
 .site-change h2 { font-size: 20px; margin: 8px 0; }
-.site-change time { color: var(--muted); font-size: 16px; }
+.site-change time { color: var(--muted); font-size: var(--fs-body); }
 .site-change ul { padding-inline-start: 24px; line-height: 1.8; }
 

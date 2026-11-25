@@ -89,7 +89,7 @@ def test_settings_plate_is_member_of_every_shared_frame_lane() -> None:
 
     plate = [
         rule for rule in lanes
-        if declaration(rule, "width") == "var(--padiem-six-panel-width) !important"
+        if declaration(rule, "width") == "var(--padiem-six-panel-width)"
     ]
     assert plate, "the six-panel plate literal must be the shared one"
     padding = [

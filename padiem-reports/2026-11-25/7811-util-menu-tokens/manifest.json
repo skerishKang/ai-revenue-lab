@@ -1,0 +1,102 @@
+{
+  "sheet": "util-menu.css",
+  "base": "c2d6b8703",
+  "measurement_host": "comp2 via ssh (own worktree)",
+  "audit": {
+    "css_color_literals": {
+      "before": 880,
+      "after": 875,
+      "delta": -5
+    },
+    "css_color_literals_unthemed": {
+      "before": 244,
+      "after": 239,
+      "delta": -5
+    },
+    "css_important": {
+      "before": 327,
+      "after": 327,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 83,
+      "after": 83,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 93,
+      "after": 93,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4356,
+      "after": 4356,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 767,
+      "after": 767,
+      "delta": 0
+    },
+    "css_local_imports": 0
+  },
+  "tokens": {
+    "new": {
+      "--util-menu-pdfmd-shell-wash": "rgba(239, 243, 246, .48)",
+      "--util-menu-pdfmd-warn-ink": "#8a4b0f"
+    },
+    "reused": [
+      "--voice-panel-bg"
+    ],
+    "definition": "padiem-tokens.css :root util-menu group with #7811 token-family --util-menu sha256=3f9c7a84406be51e1249a2c664987e0e2f53c559d647f5c071fa945fc370bc3e; no theme block redeclares any of the 3 names; theme-overridden --user-bubble-text was not reused",
+    "review": "replacement_review.json — 5 removed literals match 3 token values exactly, 0 theme overrides"
+  },
+  "verification": {
+    "computed": {
+      "targets": 5,
+      "measurements": 50,
+      "themes": 5,
+      "viewports": [
+        "1440x950",
+        "390x844"
+      ],
+      "diffs": 0,
+      "report": "computed_report.json"
+    },
+    "pixel": {
+      "screen": "util + fixed PDFMD markers",
+      "combos": 10,
+      "nonzero": [],
+      "report": "compare_report.json"
+    },
+    "control": {
+      "combos": 10,
+      "nonzero": [],
+      "report": "control_report.json"
+    },
+    "contrast": {
+      "report": "contrast_report.json",
+      "below_4_5_original": [],
+      "note": "warn ink 6.79:1 on white, 6.09:1 on light shell"
+    },
+    "tamper": {
+      "token": "--util-menu-pdfmd-warn-ink",
+      "mutation": "#8a4b0f→#ff00ff",
+      "screen": "util",
+      "theme": "light",
+      "viewport": "1440x950",
+      "pixel": 1571,
+      "report": "tamper_report.json"
+    },
+    "tests": "컴1: 자기 시트 시험 + 구조 래칫만 통과",
+    "ratchet": "base c2d6b8703 대비 head 실측. 규칙·important·테마 규칙·시트 수 변화 0, 비테마 색 리터럴 −5."
+  },
+  "notes": [
+    "값은 치환 전 리터럴 그대로라 최종 계산값·픽셀은 변하지 않는다.",
+    "재사용한 --voice-panel-bg는 :root 전용이다. 같은 색이지만 테마가 덮는 --user-bubble-text는 쓰지 않았다.",
+    "새 !important 없음. 새 색 리터럴은 토큰 정의에만 있다.",
+    "계산값·픽셀·제어쌍·변조·캡처 측정은 ssh comp2의 자기 작업 폴더에서 수행했다.",
+    "캡처 8장은 파일·상태 표식으로만 확인했고 이 모델이 이미지 입력을 받지 않아 화면 직접 보기는 못했다(못 봄).",
+    "작업 중 main이 갱신돼 최신 main(c2d6b8703)에 리베이스한 뒤 컴2에서 다시 측정했다."
+  ]
+}

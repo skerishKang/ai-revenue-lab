@@ -1,0 +1,39 @@
+....................                                                     [100%]
+============================== warnings summary ===============================
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+  <unknown>:326: DeprecationWarning: invalid escape sequence '\d'
+
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+  <unknown>:287: DeprecationWarning: invalid escape sequence '\W'
+
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+  <unknown>:166: DeprecationWarning: invalid escape sequence '\w'
+
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+  <unknown>:325: DeprecationWarning: invalid escape sequence '\g'
+
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+  <unknown>:355: DeprecationWarning: invalid escape sequence '\W'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================ slowest 50 durations =============================
+62.00s call     tests/test_structure_ratchet.py::test_head_metrics_never_exceed_the_base_tree
+0.49s setup    tests/test_structure_ratchet.py::test_tool_and_head_tree_are_present
+
+(48 durations < 0.2s hidden.)
+20 passed, 20 warnings in 63.78s (0:01:03)

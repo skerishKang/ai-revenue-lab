@@ -12,7 +12,7 @@ DOC = sheets.doc()
 MENU = sheets.menu_model()
 RUNTIME = sheets.runtime()
 
-REBUILT_SHA256 = "d17dc6a674de6719ccade4a1aaf0be13ce1f0dbe756ccac45007f9d76476dbc0"
+REBUILT_SHA256 = "7f0c4e6869d214f04f05f10224ead2de15630e2deaf1d7a936de1d959d4679e2"
 
 
 def test_the_installer_registers_the_windows_app_list_entry():

@@ -136,11 +136,16 @@ def test_cinematic_canvas_is_atmospheric_filmic():
     assert "var(--film-blue-glow)" in cin_rules
 
 
-def test_polish_layer_keeps_bounded_cinematic_atmosphere_only():
-    assert 'html[data-theme="cinematic"] body {' in POLISH_CSS
-    assert "rgba(108,190,255,.28)" in POLISH_CSS
-    assert "rgba(239,201,132,.20)" in POLISH_CSS
-    # The atmospheric polish layer must not re-inject gradients into Dark.
+def test_cinematic_atmosphere_is_absorbed_into_theme_owner_only():
+    # #7811 C4: filmic body and pseudo-element gradients are owned by themes,
+    # not duplicated in the historical readability override sheet.
+    assert 'html[data-theme="cinematic"] body {' not in POLISH_CSS
+    assert 'html[data-theme="cinematic"] body::before {' not in POLISH_CSS
+    assert 'html[data-theme="cinematic"] body {' in THEMES_CSS
+    assert 'html[data-theme="cinematic"] body::before {' in THEMES_CSS
+    assert "rgba(108,190,255,.28)" in THEMES_CSS
+    assert "rgba(239,201,132,.20)" in THEMES_CSS
+    assert "rgba(136,201,255,.08)" in THEMES_CSS
     assert 'html[data-theme="dark"] body {' not in POLISH_CSS
     assert 'html[data-theme="dark"] .composer {' not in POLISH_CSS
 

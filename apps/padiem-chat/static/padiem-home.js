@@ -314,33 +314,20 @@
     // different account. Hide the previous identity/catalog while the server
     // read is pending, even if this GET stalls or returns an error.
     clearPrivate();
-    const controller = new AbortController();
-    pending = controller;
     const request = sequence;
     refs.status.textContent = locale().loading;
-    const timer = window.setTimeout(() => controller.abort(), READ_TIMEOUT_MS);
     try {
-      const response = await fetch(STATUS_ENDPOINT, {
-        method: "GET",
-        credentials: "same-origin",
-        cache: "no-store",
-        headers: { Accept: "application/json" },
-        signal: controller.signal,
-      });
-      if (request !== sequence) return;
-      if (!response.ok) {
-        showGate("unavailable");
-        return;
-      }
-      const payload = await response.json();
-      if (request !== sequence) return;
-      const verdict = classify(payload);
-      if (typeof verdict === "string") {
-        showGate(verdict);
-      } else {
-        let accesses = null;
+      let verdict = "unavailable";
+      let accesses = null;
+      // #8699: a first read that is not ready (or never answered) is not a
+      // sign-out. Ask once more while the neutral loading text stays up; only
+      // the second answer decides which screen is painted.
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const controller = new AbortController();
+        pending = controller;
+        const timer = window.setTimeout(() => controller.abort(), READ_TIMEOUT_MS);
         try {
-          const accessResponse = await fetch(ACCESS_ENDPOINT, {
+          const response = await fetch(STATUS_ENDPOINT, {
             method: "GET",
             credentials: "same-origin",
             cache: "no-store",
@@ -348,18 +335,40 @@
             signal: controller.signal,
           });
           if (request !== sequence) return;
-          if (accessResponse.ok) accesses = classifyAccess(await accessResponse.json());
+          if (!response.ok) verdict = "unavailable";
+          else {
+            const payload = await response.json();
+            if (request !== sequence) return;
+            verdict = classify(payload);
+            if (typeof verdict !== "string") {
+              try {
+                const accessResponse = await fetch(ACCESS_ENDPOINT, {
+                  method: "GET",
+                  credentials: "same-origin",
+                  cache: "no-store",
+                  headers: { Accept: "application/json" },
+                  signal: controller.signal,
+                });
+                if (request !== sequence) return;
+                if (accessResponse.ok) accesses = classifyAccess(await accessResponse.json());
+              } catch {
+                // An unverified product is not an allowed product link.
+              }
+            }
+          }
         } catch {
-          // An unverified product is not an allowed product link.
+          verdict = "unavailable";
+        } finally {
+          window.clearTimeout(timer);
+          if (pending === controller) pending = null;
         }
         if (request !== sequence) return;
-        showServices(verdict.name, accesses);
+        if (verdict !== "unavailable") break;
       }
+      if (typeof verdict === "string") showGate(verdict);
+      else showServices(verdict.name, accesses);
     } catch {
       if (request === sequence) showGate("unavailable");
-    } finally {
-      window.clearTimeout(timer);
-      if (pending === controller) pending = null;
     }
   }
 

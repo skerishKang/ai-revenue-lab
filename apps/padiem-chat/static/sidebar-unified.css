@@ -10,7 +10,7 @@
   min-width: 0;
   border: 1px solid var(--line);
   border-radius: 11px;
-  background: rgba(255,255,255,.10);
+  background: var(--editorial-chip-edge);
   overflow: hidden;
 }
 .sidebar .sidebar-actions-row.sidebar-unified-row > :is(.new-chat, .sidebar-search-item) {
@@ -18,9 +18,9 @@
   min-height: 44px;
   margin: 0;
   padding: 0 11px;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   box-shadow: none !important;
   color: inherit;
 }
@@ -46,7 +46,7 @@
 }
 .sidebar .sidebar-actions-row.sidebar-unified-row > :is(.new-chat, .sidebar-search-item):not(:disabled):hover,
 .sidebar .sidebar-actions-row.sidebar-unified-row > :is(.new-chat, .sidebar-search-item).is-active {
-  background: rgba(127,127,127,.14) !important;
+  background: var(--control-wash-strong);
 }
 /* Original search module owns button availability; don't enable a guest
  * or an unavailable server-side history capability through CSS. 11-03 audit:
@@ -56,15 +56,15 @@
   opacity: .78;
 }
 .sidebar .visually-hidden {
-  position: absolute !important;
-  height: 1px !important;
-  width: 1px !important;
-  margin: -1px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  overflow: hidden !important;
-  clip-path: inset(50%) !important;
-  white-space: nowrap !important;
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 /* Projects and recent conversations: each pair of controls sits on one
  * common cell background with a single row hover/current state. */
@@ -77,15 +77,15 @@ html body .app-shell .sidebar :is(.project-row, .history-row) {
   min-height: 44px;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
-  background: rgba(127,127,127,.09);
+  background: var(--sidebar-unified-row-wash);
   position: relative;
 }
 html body .app-shell .sidebar :is(.project-row, .history-row):hover,
 html body .app-shell .sidebar :is(.project-row, .history-row):focus-within {
-  background: rgba(127,127,127,.18);
+  background: var(--sidebar-unified-hover-wash);
 }
 html body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]) {
-  background: rgba(127,127,127,.22);
+  background: var(--b66-quote-faint-edge);
 }
 html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item) {
   flex: 1 1 0;
@@ -93,12 +93,12 @@ html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-ite
   min-width: 0;
   height: 44px;
   min-height: 44px;
-  padding: 0 10px !important;
+  padding: 0 10px;
   margin: 0;
-  border: 0 !important;
-  border-radius: 10px 0 0 10px !important;
-  background: transparent !important;
-  box-shadow: none !important;
+  border: 0;
+  border-radius: 10px 0 0 10px;
+  background: transparent;
+  box-shadow: none;
   /* #7953: 유리 테마에서 상속이 어두운 본문 색을 가져와 목록 글자가
      바탕과 같은 색이 됐다. 사이드바 글자 토큰으로 고정한다 — 없는 테마는
      본문 토큰이 그 역할을 한다. */
@@ -113,17 +113,17 @@ html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-man
   height: 44px;
   min-width: 44px;
   min-height: 44px;
-  padding: 0 !important;
+  padding: 0;
   margin: 0;
-  border: 0 !important;
-  border-radius: 0 10px 10px 0 !important;
+  border: 0;
+  border-radius: 0 10px 10px 0;
   background: transparent !important;
-  box-shadow: none !important;
-  color: inherit !important;
+  box-shadow: none;
+  color: inherit;
 }
 html body .app-shell .sidebar .project-row > .project-manage {
-  font-size: 0 !important;
-  display: grid !important;
+  font-size: 0;
+  display: grid;
   place-items: center;
 }
 html body .app-shell .sidebar .project-row > .project-manage svg {
@@ -137,16 +137,16 @@ html body .app-shell .sidebar .history-actions > .history-more {
   place-items: center;
   width: 44px;
   height: 44px;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 10px 10px 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: inherit !important;
+  padding: 0;
+  border: 0;
+  border-radius: 0 10px 10px 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
   cursor: pointer;
 }
 html body .app-shell .sidebar :is(.project-manage, .history-more):is(:hover, :focus-visible) {
-  background: rgba(127,127,127,.15) !important;
+  background: var(--sidebar-unified-action-hover-wash);
 }
 html body .app-shell .sidebar .history-actions[open] { z-index: 10; }
 /* Original delete popup remains a distinct temporary menu, not a second
@@ -160,10 +160,7 @@ html body .app-shell .sidebar :is(.project-row, .history-row) svg {
 }
 /* Project and recent-section headings now share the same baseline.
  * Preserve each section's plus-button and existing rendering. */
-html body .app-shell .sidebar #projectsSection .section-heading-row {
-  margin: 12px 10px 8px;
-  padding: 0;
-}
+
 html body .app-shell .sidebar #historySection > h2 {
   margin: 12px 10px 8px;
   padding: 0;
@@ -174,4 +171,20 @@ html body .app-shell .sidebar #projectsSection .section-heading-row h2 { margin:
 .sidebar :is(.project-row, .history-row) :is(button, summary):focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
+}
+
+/* #7811 C4: the sidebar section control is owned by this component sheet. */
+.sidebar .sidebar-section-toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: inherit;
+  opacity: .88;
+  cursor: pointer;
 }

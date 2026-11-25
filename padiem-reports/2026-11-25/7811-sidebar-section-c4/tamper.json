@@ -1,0 +1,26 @@
+[
+  {
+    "theme": "cinematic",
+    "size": "390x844",
+    "mutation": "html[data-theme=\"cinematic\"] body{background:magenta!important}",
+    "changed_pixels": 295325,
+    "valid": [
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  {
+    "theme": "cinematic",
+    "size": "1440x950",
+    "mutation": "html[data-theme=\"cinematic\"] body::before{background:magenta!important}",
+    "changed_pixels": 1274158,
+    "valid": [
+      true,
+      true,
+      true,
+      true
+    ]
+  }
+]

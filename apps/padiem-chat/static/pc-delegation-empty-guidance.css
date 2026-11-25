@@ -1,0 +1,18 @@
+.pc-delegation-empty-guide {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 16px;
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  color: var(--text);
+}
+.pc-delegation-empty-guide[hidden] { display: none; }
+.pc-delegation-empty-guide > strong { color: var(--text); }
+.pc-delegation-empty-guide > p { margin: 0; line-height: 1.6; }
+.settings-advanced-view .pc-delegation-empty-guide > button.settings-action {
+  justify-self: start;
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}

@@ -340,7 +340,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
   }
   html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .composer-wrap {
     left: calc(var(--workspace-rail, 252px) + (100vw - var(--workspace-rail, 252px)) / 2) !important;
-    transform: translateX(-50%) !important;
+    transform: translateX(-50%);
     width: min(1168px, calc(100vw - var(--workspace-rail, 252px) - 64px)) !important;
     padding-top: 8px;
     padding-bottom: 12px;
@@ -755,19 +755,19 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  */
 .claw-hero-line,
 .claw-home-card {
-  display: none !important;
+  display: none;
 }
 .app-shell[data-state="claw"] .chat-hero-line {
-  display: none !important;
+  display: none;
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-hero-line {
   display: inline !important;
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card {
-  display: flex !important;
+  display: flex;
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .starter-grid > :not(.claw-home-card) {
-  display: none !important;
+  display: none;
 }
 /* Chat uses the same introductory block; only Claw's copy and four
  * destinations differ. Respect JS's hidden state after a real message.
@@ -776,14 +776,14 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  * `conversation` layout variant, so the Claw hero and the Chat hero start on
  * the same row instead of Claw carrying a second copy of the decision. */
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) ~ #clawTaskHub {
-  display: none !important;
+  display: none;
 }
 /* No headings that read as empty "Approved memory / Recent runs" lists
  * on the first-use landing. Their underlying histories remain available
  * when the user enters the corresponding workflow, not deleted.
  */
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation > .empty-state:not([hidden]) ~ :is(#clawApprovedMemory,#clawRunHistory) {
-  display: none !important;
+  display: none;
 }
 /* Same model-free first-use composer as Chat. Existing advanced Claw model
  * controls remain present in manual mode and in their original workflow.
@@ -791,7 +791,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  */
 .app-shell[data-state="claw"]:not([data-claw-tier="plus"]) .claw-workspace[data-view="general"] ~ .composer-wrap #composerForm > .claw-model-advanced {
   /* Free uses the verified selector; raw advanced model IDs stay Plus-only. */
-  display: none !important;
+  display: none;
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .composer-wrap #composerForm > #messageInput {
   /* Canonical Chat #messageInput styles are shared without overrides. */
@@ -805,7 +805,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  * still show the exact owner model-status control present in Chat. */
 @media (max-width: 600px) {
   html body .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) #composerForm > #ownerModelPreviewOpen {
-    display: inline-flex !important;
+    display: inline-flex;
   }
 }
 /* The manual shortcut is hidden only while the first-use hero is visible.
@@ -828,9 +828,9 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
 
 /* Claw-only shortcut to the existing owner-scoped Chat/Claw conversation history.
    Keep the existing run history disclosure separate from conversation history. */
-.claw-history-shortcut,.claw-history-feedback { display: none !important; }
+.claw-history-shortcut,.claw-history-feedback { display: none; }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-history-shortcut {
-  display: inline-flex !important;
+  display: inline-flex;
   align-items: center;
   min-height: 44px;
   margin: 14px auto 0;
@@ -843,7 +843,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   font: inherit;
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-history-feedback:not([hidden]) {
-  display: block !important;
+  display: block;
   margin: 6px auto;
   color: var(--muted);
 }
@@ -860,7 +860,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
 .app-shell[data-state="claw"] #clawPreviousConversationsFeedback { display: none !important; }
 .claw-home-card { display: none; min-width: 0; flex-direction: column; }
 .claw-home-card > .claw-workspace-starter {
-  display: flex !important; flex: 1 1 auto; width: 100%; height: 100%;
+  display: flex; flex: 1 1 auto; width: 100%; height: 100%;
   min-width: 0; text-align: left; border: none; background: transparent; box-shadow: none;
 }
 .claw-home-card > .claw-connection-toggle {
@@ -918,19 +918,19 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  * heavier ("찐한") than Chat and forced the 116px clamp that clipped the
  * description text. */
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card {
-  display: block !important;
+  display: block;
   position: relative;
   min-width: 0;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   background: none !important;
-  box-shadow: none !important;
-  overflow: visible !important;
+  box-shadow: none;
+  overflow: visible;
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
-  display: flex !important;
-  width: 100% !important;
+  display: flex;
+  width: 100%;
   min-height: 0 !important;
 }
 /* Truthful connection headline: always top-right, on every connector card. */
@@ -953,7 +953,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  * button's aria-label and in the top-right headline, so the inline label is
  * removed rather than stretching the switch across the card. */
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .claw-connection-label {
-  display: none !important;
+  display: none;
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
   position: absolute;
@@ -962,22 +962,22 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   z-index: 2;
   align-self: auto;
   box-sizing: border-box;
-  display: flex !important;
+  display: flex;
   flex-direction: row;
   gap: 4px;
-  margin: 0 !important;
+  margin: 0;
   padding: 2px 5px !important;
-  width: auto !important;
-  min-width: 0 !important;
-  height: 24px !important;
-  min-height: 24px !important;
+  width: auto;
+  min-width: 0;
+  height: 24px;
+  min-height: 24px;
   max-width: calc(100% - 24px);
   border-radius: var(--radius-xs);
   font-size: 9px;
   line-height: 1.1;
 }
 .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation > .empty-state:not([hidden])) :is(#clawApprovedMemory,#clawRunHistory,#clawMemoryReview,#clawRunHistoryDisclosure) {
-  display: none !important;
+  display: none;
 }
 
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-connection-feedback:not([hidden]) {
@@ -989,7 +989,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   /* Mobile Claw landing uses the actual shared Chat width and composer,
    * while manual/workbench retains its separate collapse controls. */
   .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .claw-mobile-composer-toggle {
-    display: none !important;
+    display: none;
   }
 }
 
@@ -1107,31 +1107,31 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
 @media (max-width: 620px) {
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) .starter-grid {
     display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 8px !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
     align-items: stretch;
   }
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card {
-    display: block !important;
+    display: block;
     min-width: 0;
     min-height: 134px;
     border-radius: var(--radius-md) !important;
     overflow: hidden !important;
   }
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
-    display: flex !important;
+    display: flex;
     align-items: flex-start !important;
-    min-height: 134px !important;
-    padding: 32px 9px 37px !important;
-    gap: 7px !important;
+    min-height: 134px;
+    padding: 32px 9px 37px;
+    gap: 7px;
   }
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .starter-icon {
     flex: 0 0 30px;
-    width: 30px !important;
-    height: 30px !important;
+    width: 30px;
+    height: 30px;
   }
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .starter strong {
-    font-size: 12px !important;
+    font-size: 12px;
     overflow-wrap: anywhere;
     line-height: 1.3;
   }
@@ -1169,8 +1169,8 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  * declared later in this file so it wins without any !important. */
 @media (max-width: 720px) {
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
-    min-height: 44px !important;
-    height: 44px !important;
+    min-height: 44px;
+    height: 44px;
     min-width: 72px;
     box-sizing: border-box;
     width: auto;

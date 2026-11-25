@@ -1,0 +1,9 @@
+{
+  "sheet": "sidebar-unified.css",
+  "targets": 6,
+  "checked": 60,
+  "combos": 10,
+  "empty_computed_values": 0,
+  "diffs": [],
+  "note": "hover/current pseudo states are pinned by the contract table, not measured here"
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "label": "PDFMD warn on white page",
+    "fg": "#8a4b0f",
+    "bg": "#ffffff",
+    "ratio": 6.79,
+    "floor": 4.5,
+    "pass": true
+  },
+  {
+    "label": "PDFMD warn on light shell",
+    "fg": "#8a4b0f",
+    "bg": "#f0f3f6",
+    "ratio": 6.09,
+    "floor": 4.5,
+    "pass": true
+  }
+]

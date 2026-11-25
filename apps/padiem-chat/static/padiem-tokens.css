@@ -908,6 +908,27 @@
   --mcp-consent-capability-wash: rgba(47, 93, 80, 0.07);
   --mcp-consent-scope-edge: #d8d8e0;
 
+  /* #7811 token-family --sidebar-unified sha256=0da15888a031cfc01e42739430f3bdbbca49ce3370e3ccaf435c60c40e65a15a */
+  /* #7811 C2 sidebar-unified(261125): 통합 사이드바 행·동작 칸의 회청 씻김.
+     값은 치환 전 선언마다 박혀 있던 리터럴 그대로이고 :root에만 둔다 — 다섯
+     테마에서 같은 값으로 칠해져 온 고정 팔레트라 테마 블록이 덮지 않는다.
+     흰 테두리(.10)·강한 씻김(.14)·행 현재(.22)은 이미 :root 전용인
+     --editorial-chip-edge·--control-wash-strong·--b66-quote-faint-edge를
+     재사용하고, 나머지 세 값만 이 묶음이 소유한다. 기존 !important는 그대로
+     유지한다. */
+  --sidebar-unified-row-wash: rgba(127,127,127,.09);
+  --sidebar-unified-hover-wash: rgba(127,127,127,.18);
+  --sidebar-unified-action-hover-wash: rgba(127,127,127,.15);
+
+  /* #7811 token-family --util-menu sha256=3f9c7a84406be51e1249a2c664987e0e2f53c559d647f5c071fa945fc370bc3e */
+  /* #7811 C2 util-menu(261125): PDFMD 보기 화면의 고정 팔레트. 값은 치환 전
+     선언마다 박혀 있던 리터럴 그대로이고 :root에만 둔다 — 다섯 테마에서 같은
+     값으로 칠해져 온 고정 팔레트라 테마 블록이 덮지 않는다. 흰 판(#ffffff)은
+     이미 :root 전용인 --voice-panel-bg를 재사용한다(테마가 덮는
+     --user-bubble-text는 쓰지 않음). */
+  --util-menu-pdfmd-shell-wash: rgba(239, 243, 246, .48);
+  --util-menu-pdfmd-warn-ink: #8a4b0f;
+
   /* 연결 카드 대비 수리(261124): 연결 화면 카드는 다섯 테마 모두 밝은 판이다
      (standalone-views.css의 #connectorsViewBody .capability-card). 카드 이름은
      글자색을 지정받지 못해 테마 글자색을 상속했고, 상태 줄은 테마 --muted를
@@ -1217,6 +1238,12 @@
   --admin-models-route-history-summary-text: #7b8b98;
   --admin-models-routeevents-source-card-bg: rgba(249,251,252,.55);
   --admin-models-routeevents-source-card-edge: rgba(255,255,255,.6);
+  /* #7811 token-family --shared-six-panel-frame sha256=d398a01055424ee8063a868a5c4635d38232ae48041788d1a4fe243a1fe748ac */
+  --shared-six-panel-frame-bg: linear-gradient(155deg, rgba(248,250,251,.88), rgba(233,238,241,.84));
+  --shared-six-panel-frame-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72);
+  --shared-six-panel-frame-edge: rgba(255,255,255,.70);
+  --shared-six-panel-frame-narrow-bg: rgba(242, 245, 247, .90);
+  --shared-six-panel-frame-narrow-edge: rgba(255, 255, 255, .58);
 }
 
 /* ---- 테마별 값 ---- */
