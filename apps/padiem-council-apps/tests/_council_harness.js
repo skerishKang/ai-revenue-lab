@@ -2568,9 +2568,21 @@ const SCENARIOS = {
     const session = spawnSession();
     await session.ctx.window.PadiemCouncilApps.init();
     await sleep(20);
-    const helps = session.root.querySelectorAll(".council-pc-ref-help")
-      .map((n) => n.textContent.trim());
-    return { helps, pageErrors };
+    const has = (formId, sentence) => {
+      const form = session.ctx.document.getElementById(formId);
+      if (!form) return false;
+      return Array.from(form.querySelectorAll(".council-pc-ref-help"))
+        .some((n) => n.textContent.trim() === sentence);
+    };
+    const meetingLine = "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 회의 메모를 가져옵니다.";
+    const oldLine = "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 예전 글을 가져옵니다.";
+    return {
+      meetingHasMeetingLine: has("councilMeetingForm", meetingLine),
+      snsHasMeetingLine: has("councilSnsForm", meetingLine),
+      snsHasOldLine: has("councilSnsForm", oldLine),
+      speechHasOldLine: has("councilSpeechForm", oldLine),
+      pageErrors,
+    };
   },
   async quick_period_first_click() {
     authState = { authenticated: true, user: { name: "테스트 사용자" } };

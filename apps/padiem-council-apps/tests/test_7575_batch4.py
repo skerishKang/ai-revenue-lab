@@ -26,9 +26,12 @@ def test_failed_fact_check_keeps_the_first_draft_and_warns():
     assert fail["fact"] == "원문 대조를 하지 못했습니다. 사실관계를 직접 확인해 주세요", fail
 
 
-def test_meeting_pc_import_explains_what_connects():
+def test_pc_import_help_lines_are_on_the_right_screens():
     seen = run("meeting_pc_help")
-    assert "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 회의 메모를 가져옵니다." in seen["helps"], seen
+    assert seen["meetingHasMeetingLine"] is True, seen
+    assert seen["snsHasMeetingLine"] is False, seen
+    assert seen["snsHasOldLine"] is True, seen
+    assert seen["speechHasOldLine"] is True, seen
     assert seen["pageErrors"] == [], seen
 
 

@@ -1764,7 +1764,7 @@
       pcSection = createPcReferenceSection();
       refFieldset.appendChild(pcSection.box);
       refFieldset.appendChild(el("p", "council-pc-ref-help",
-        "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 회의 메모를 가져옵니다."));
+        "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 예전 글을 가져옵니다."));
       form.appendChild(refFieldset);
       const fields = [
         ["event", "행사명", "text", true, "예: 주민 정원 사업 설명회"],
@@ -2473,6 +2473,8 @@
         },
       });
       refFieldset.appendChild(pcSection.box);
+      refFieldset.appendChild(el("p", "council-pc-ref-help",
+        "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 회의 메모를 가져옵니다."));
       form.appendChild(refFieldset);
       const fields = [
         ["title", "회의명", "text", true, "예: 10월 주민 민원 회의"],
