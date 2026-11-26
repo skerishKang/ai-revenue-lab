@@ -271,7 +271,12 @@ async function fetch(url, init) {
   requests.push(options);
   if (method === "POST" && String(url) === "/api/chat/stream") {
     chatPayloads.push(body);
-    if (chatResponseOverride) return chatResponseOverride;
+    if (chatResponseOverride) {
+      if (Array.isArray(chatResponseOverride)) {
+        return chatResponseOverride.shift() || sseResponse();
+      }
+      return chatResponseOverride;
+    }
     return sseResponse();
   }
   if (String(url) === "/api/pc/pairings") {
@@ -1121,9 +1126,10 @@ const SCENARIOS = {
     const checks = find(session, "councilMeetingArchive").querySelectorAll(".council-book-check");
     const selected = checks.filter((c) => c.checked).map((c) => c.value);
     await find(session, "councilBookGenerate").dispatch("click");
-    const payload = chatPayloads[chatPayloads.length - 1];
-    const generated = find(session, "councilBookOutput").value;
-    find(session, "councilBookOutput").value = "의정활동집 편집본\n" + generated;
+    const payload = chatPayloads[0];
+    const factPayload = chatPayloads[1];
+    const generated = session.ctx.document.getElementById("councilBookOutput").value;
+    session.ctx.document.getElementById("councilBookOutput").value = "의정활동집 편집본\n" + generated;
     await find(session, "councilBookSave").dispatch("click");
     await sleep(30);
     const reopened = spawnSession();
@@ -1131,7 +1137,7 @@ const SCENARIOS = {
     await sleep(30);
     const open = find(reopened, "councilMeetingArchive").querySelectorAll(".council-book-open")[0];
     await open.dispatch("click");
-    return { status, selected, payload, generated,
+    return { status, selected, payload, factPayload, generated,
       reopened: find(reopened, "councilBookOutput").value,
       endpoints: endpointSet(), alerts, pageErrors };
   },
@@ -1399,7 +1405,7 @@ const SCENARIOS = {
     const bookCalls = chatPayloads.length;
     await find(session, "councilBookGenerate").dispatch("click");
     await sleep(20);
-    const bookOutput = find(session, "councilBookOutput").value;
+    const bookOutput = session.ctx.document.getElementById("councilBookOutput").value;
     const bookPrompt = chatPayloads[bookCalls];
 
     const actionOrder = (resultId) => {
@@ -2285,7 +2291,7 @@ const SCENARIOS = {
     const s = spawnSession({ authenticated: true, user: { name: "테스트 사용자" } });
     const api = s.ctx.window.PadiemCouncilApps;
     await api.init();
-    await sleep(30);
+    await sleep(200);
     const out = {};
 
     // 축사: 폼의 행사명·날짜가 문서 제목과 파일명에 그대로 간다.
@@ -2515,6 +2521,80 @@ const SCENARIOS = {
         absolute: api._versionedAsset("https://chat.padiem.net/apps/council/static/document-export.js"),
         absoluteWithQuery: api._versionedAsset("https://chat.padiem.net/apps/council/static/photo-resize.js?v=old"),
       } };
+  },
+  async book_factcheck() {
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const source = "회의 일시: 2026-11-26T10:00\n\n경로당 매트는 11월 20일까지 교체하기로 했다.\n안내판 설치를 검토하기로 했다.";
+    stored("보안 간담회.txt", source, "text/plain", null, null, "meeting");
+    const session = spawnSession();
+    const api = session.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(150);
+    const card = session.root.querySelectorAll(".council-card-select")
+      .find((b) => b.dataset.tool === "meeting");
+    await card.dispatch("click");
+    await sleep(150);
+    const bookCheck = session.ctx.document.querySelector(".council-book-check");
+    bookCheck.checked = true;
+    chatPayloads.length = 0;
+    const first = "초안입니다. 기한이 경과된 상태입니다.";
+    const revised = "고친 초안입니다. 교체하기로 했고 설치를 검토하기로 했다.\n고친 곳: 2";
+    chatResponseOverride = [sseResponse([first]), sseResponse([revised])];
+    await find(session, "councilBookGenerate").dispatch("click");
+    await sleep(60);
+    const ok = {
+      calls: chatPayloads.length,
+      firstPromptHasSource: String(chatPayloads[0]?.messages?.[0]?.content || "").includes("교체하기로 했다"),
+      secondPromptHasSource: String(chatPayloads[1]?.messages?.[0]?.content || "").includes("교체하기로 했다"),
+      secondPromptHasDraft: String(chatPayloads[1]?.messages?.[0]?.content || "").includes(first),
+      secondUtil: chatPayloads[1]?.util || "",
+      output: session.ctx.document.getElementById("councilBookOutput").value,
+      fact: session.ctx.document.getElementById("councilBookFactResult").textContent.trim(),
+    };
+    chatPayloads.length = 0;
+    chatResponseOverride = [sseResponse([first]), { ok: false, status: 500,
+      json: async () => ({ error: { code: "x" } }), headers: { get: () => null } }];
+    await find(session, "councilBookGenerate").dispatch("click");
+    await sleep(60);
+    const fail = {
+      calls: chatPayloads.length,
+      output: session.ctx.document.getElementById("councilBookOutput").value,
+      fact: session.ctx.document.getElementById("councilBookFactResult").textContent.trim(),
+    };
+    chatResponseOverride = null;
+    return { ok, fail, pageErrors };
+  },
+  async meeting_pc_help() {
+    const session = spawnSession();
+    await session.ctx.window.PadiemCouncilApps.init();
+    await sleep(20);
+    const helps = session.root.querySelectorAll(".council-pc-ref-help")
+      .map((n) => n.textContent.trim());
+    return { helps, pageErrors };
+  },
+  async quick_period_first_click() {
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    const thisMonth = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-05";
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 5);
+    const lastStamp = lastMonth.getFullYear() + "-" + pad(lastMonth.getMonth() + 1) + "-05";
+    stored("이번 달 회의.txt", "회의 일시: " + thisMonth + "T10:00\n안건 확인", "text/plain", null, null, "meeting");
+    stored("지난달 회의.txt", "회의 일시: " + lastStamp + "T10:00\n범위 밖", "text/plain", null, null, "meeting");
+    const session = spawnSession();
+    const api = session.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(25);
+    const picks = session.root.querySelectorAll(".council-book-quick");
+    const first = picks.find((n) => n.textContent.trim() === "이번 달");
+    await first.dispatch("click");
+    await sleep(40);
+    const checks = Array.from(session.root.querySelectorAll(".council-book-check"))
+      .map((n) => ({ v: n.value.slice(0, 3), checked: n.checked }));
+    return { picks: picks.length, checks,
+      status: find(session, "councilBookPeriodStatus").textContent.trim(),
+      start: find(session, "councilBookStart").value, end: find(session, "councilBookEnd").value,
+      pageErrors };
   },
   async card_click_fix() {
     authState = { authenticated: true, user: { name: "테스트 사용자" } };

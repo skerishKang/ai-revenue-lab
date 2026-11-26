@@ -1763,6 +1763,8 @@
       refFieldset.appendChild(el("legend", null, "참고 글"));
       pcSection = createPcReferenceSection();
       refFieldset.appendChild(pcSection.box);
+      refFieldset.appendChild(el("p", "council-pc-ref-help",
+        "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 회의 메모를 가져옵니다."));
       form.appendChild(refFieldset);
       const fields = [
         ["event", "행사명", "text", true, "예: 주민 정원 사업 설명회"],
@@ -2436,6 +2438,17 @@
     return prompt;
   }
 
+  function buildBookFactCheckPrompt(contents, draft) {
+    let prompt = "아래는 사용자가 선택한 회의 기록 원문과, 그 기록으로 만든 활동집 초안입니다.\n\n";
+    prompt += "[원문]\n" + contents.join("\n\n") + "\n\n";
+    prompt += "[초안]\n" + draft + "\n\n";
+    prompt += "초안의 각 문장이 원문에 근거가 있는지 확인하라.\n";
+    prompt += "근거가 없거나 원문보다 강한 표현(계획→완료, 검토→결정, 날짜·기간·횟수 추가)은 원문 수준으로 고쳐라.\n";
+    prompt += "고친 초안 전체를 먼저 쓰고, 마지막 줄에 '고친 곳: N' 을 쓴다.\n";
+    prompt += "그 밖의 말은 쓰지 마라.";
+    return prompt;
+  }
+
   const meetingModule = (() => {
     let pcSection = null;
 
@@ -2630,7 +2643,11 @@
         const factCheck = el("p", "council-fact-check", "선택한 기록에 없는 내용이 없는지 사실관계를 확인해 주세요.");
         factCheck.id = "councilBookFactCheck";
         factCheck.setAttribute("role", "note");
-        bookResult.appendChild(factCheck);
+        const factResult = el("p", "council-book-fact-result");
+        factResult.id = "councilBookFactResult";
+        factResult.setAttribute("role", "status");
+        factResult.hidden = true;
+        bookResult.append(factCheck, factResult);
         bookResult.appendChild(el("h3", null, "활동집 초안"));
         const bookOutput = document.createElement("textarea");
         bookOutput.id = "councilBookOutput";
@@ -2689,6 +2706,34 @@
           periodStatus.id = "councilBookPeriodStatus";
           periodStatus.setAttribute("role", "status");
           range.append(startLabel, endLabel, selectPeriod);
+          // One awaited selection path for the button and the quick pills.
+          // The dates were already read into meetingMeta while the archive was
+          // built, so a quick pill must not race a fresh file read.
+          let periodRun = Promise.resolve();
+          async function applyPeriod() {
+            if (!start.value || !end.value || start.value > end.value) {
+              periodStatus.textContent = "시작일과 종료일을 올바르게 선택해 주세요.";
+              return;
+            }
+            selectPeriod.disabled = true;
+            periodStatus.textContent = "회의 날짜를 확인하는 중입니다.";
+            try {
+              const selected = [];
+              let undated = 0;
+              for (const file of meetingFiles) {
+                const date = (meetingMeta[file.id] && meetingMeta[file.id].date) || "";
+                if (!date) { undated += 1; continue; }
+                if (date >= start.value && date <= end.value) selected.push(file.id);
+              }
+              ul.querySelectorAll(".council-book-check").forEach((cb) => { cb.checked = selected.includes(cb.value); });
+              periodStatus.textContent = selected.length + "건을 선택했습니다. 날짜를 확인할 수 없는 " + undated + "건은 직접 확인해 선택해 주세요.";
+            } catch (_) {
+              periodStatus.textContent = "회의 기록을 읽지 못해 기간을 적용하지 못했습니다. 다시 시도해 주세요.";
+            } finally {
+              selectPeriod.disabled = false;
+            }
+          }
+          const runPeriod = () => { periodRun = periodRun.then(applyPeriod); return periodRun; };
           // 기간 빠른 선택 — 시작/종료를 채우고 같은 선택 동작을 누른다.
           const iso = (d) => {
             const pad = (n) => String(n).padStart(2, "0");
@@ -2704,7 +2749,7 @@
               const [from, to] = pick(new Date());
               start.value = iso(from);
               end.value = iso(to);
-              void selectPeriod.click();
+              void runPeriod();
             });
             range.appendChild(quick);
           });
@@ -2783,33 +2828,7 @@
             ul.appendChild(li);
           });
           arc.appendChild(ul);
-          selectPeriod.addEventListener("click", async () => {
-            if (!start.value || !end.value || start.value > end.value) {
-              periodStatus.textContent = "시작일과 종료일을 올바르게 선택해 주세요.";
-              return;
-            }
-            selectPeriod.disabled = true;
-            periodStatus.textContent = "회의 날짜를 확인하는 중입니다.";
-            try {
-              const selected = [];
-              let undated = 0;
-              for (const file of meetingFiles) {
-                const content = await fetchProjectFile(pid, file.id);
-                if (typeof content !== "string") throw new Error("읽기 실패");
-                // Only an explicit meeting date counts; upload time and dates
-                // in a filename or discussion do not establish the meeting date.
-                const match = content.match(/(?:^|\n)\s*회의\s*일시\s*[:：]\s*(\d{4}-\d{2}-\d{2})/m);
-                if (!match) { undated += 1; continue; }
-                if (match[1] >= start.value && match[1] <= end.value) selected.push(file.id);
-              }
-              ul.querySelectorAll(".council-book-check").forEach((cb) => { cb.checked = selected.includes(cb.value); });
-              periodStatus.textContent = selected.length + "건을 선택했습니다. 날짜를 확인할 수 없는 " + undated + "건은 직접 확인해 선택해 주세요.";
-            } catch (_) {
-              periodStatus.textContent = "회의 기록을 읽지 못해 기간을 적용하지 못했습니다. 다시 시도해 주세요.";
-            } finally {
-              selectPeriod.disabled = false;
-            }
-          });
+          selectPeriod.addEventListener("click", () => { void runPeriod(); });
         }
         arc.appendChild(bookNotice);
         arc.appendChild(bookResult);
@@ -2849,12 +2868,30 @@
               contents.push("[기록: " + data.file.name + "]\n" + data.file.content);
             }
             setNotice(bookNotice, "활동집 초안을 만드는 중…", "busy");
+            factResult.textContent = "";
+            factResult.hidden = true;
             stage = "generate";
             const answer = await apiChat(buildBookPrompt(contents), "meeting", (partial) => {
               setResultValue(bookOutput, partial);
               bookResult.hidden = false;
             });
-            setResultValue(bookOutput, answer);
+            // Same stream route and util scope as the generation call: a second
+            // pass brings overstated sentences back to the source level.
+            let final = answer;
+            let factMessage = "";
+            try {
+              const checked = await apiChat(buildBookFactCheckPrompt(contents, answer), "meeting");
+              const countMatch = /(?:^|\n)\s*고친\s*곳\s*:\s*(\d+)\s*$/.exec(checked);
+              const count = countMatch ? Number(countMatch[1]) : 0;
+              final = (countMatch ? checked.slice(0, countMatch.index) : checked).replace(/\s+$/, "");
+              factMessage = count > 0 ? "원문과 대조해 " + count + "곳을 고쳤습니다" : "원문과 대조했습니다";
+            } catch (_) {
+              // Keep the first draft; only the notice tells the writer to check.
+              factMessage = "원문 대조를 하지 못했습니다. 사실관계를 직접 확인해 주세요";
+            }
+            setResultValue(bookOutput, final);
+            factResult.textContent = factMessage;
+            factResult.hidden = !factMessage;
             bookResult.hidden = false;
             bookFailed = false;
             finishGeneration(bookNotice, bookResult);
