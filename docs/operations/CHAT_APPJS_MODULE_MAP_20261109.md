@@ -894,7 +894,8 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **범위**: 프로젝트 목록·선택·대화상자·프로젝트 파일 함수 23개를 `chat-project-module.js`로 이동. 모듈 전용 DOM·상태 선언은 `create()`, 리스너 14개는 `wireProjectListeners()`에 두고 app.js는 등록·마운트·wire 호출만 유지한다. 동작·문구·화면 변경은 없다.
 - **수치**(`chat_structure_audit.py`, main `1231983a1b` → head): `appjs_lines` 2378 → 1796, `appjs_dom_lookups` 133 → 103, `appjs_listeners` 44 → 30, `appjs_function_decls` 58 → 35, `appjs_forwarders` 0 → 0, `appjs_deps_total` 161 → 154. `index_script_tags` 136 → 137은 새 모듈 1개라 래칫 제외 항목이다.
 - **본문 동등성**: 23/23 일치. 의존성 주입(`deps.`·기존 모듈 팩토리 호출), `create()`로 올린 `drivePanel` 선언 1개, 줄바꿈·공백을 정규화했다. 원문 함수 선언 집합의 차이는 23개이고 모듈에 없는 삭제 함수는 0개다.
-- **시험**: 바뀐 33개 pytest 파일 334 passed. 신규 계약 6개는 strict deps 생성·wire 순서·직접 동작·`projectById` 뮤테이션 실패를 확인한다. 기존 원문 단서는 읽는 대상을 모듈로 옮기거나 프로젝트 모듈 전체로 확대해 강도를 유지했다.
+- **시험**: 바뀐 38개 pytest 파일 408 passed. 신규 계약 6개는 strict deps 생성·wire 순서·직접 동작·`projectById` 뮤테이션 실패를 확인한다. 기존 원문 단서는 읽는 대상을 모듈로 옮기거나 프로젝트 모듈 전체로 확대해 강도를 유지했다.
 - **브라우저 회귀 수리**: `fetch`를 `deps` 메서드로 넘길 때 `this`가 달라지는 문제를 `fetch.bind(window)`로 수정했다. 기존 auth-loss 브라우저 계약과 프로젝트 QA가 회귀를 재현했고, 수정 후 main과 branch를 같은 조건으로 비교한다.
+- **CI 정적 계약 적응**: 전체 pytest에서 드러난 7개 실패는 프로젝트·네비·Claw 상태 모듈로 읽기 대상과 레지스트리 스텁을 옮겨 복구했다. route inventory에는 프로젝트 모듈을 추가했다. main에서도 동일하게 실패하는 council entry 계약 1건은 이 변경의 범위 밖이다.
 - **구조 래칫**: exact main 기준 13 passed, 늘어난 비교 수치 0.
 - **부팅 장부**: 외부 Windows 측정 호스트가 Tailscale 오프라인이라 1440·390 재측정은 미실행이다. 측정 완료 전에는 통과로 보고하지 않는다.

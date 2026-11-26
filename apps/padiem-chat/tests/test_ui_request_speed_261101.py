@@ -175,6 +175,7 @@ const PRODUCT_CLAW='claw',PRODUCT_CHAT='chat';
 const conversationState={resetProduct(){},setProduct(){},setConversationId(){},appendMessage(){}};
 const messageList={replaceChildren(){}};const conversationArtifactContext=null;
 const clearAttachment=()=>{},renderProjectState=()=>{},refreshActiveProjectFileCount=()=>{};
+const projectModule={renderProjectState,refreshActiveProjectFileCount};
 const openClawWorkspace=()=>{},showConversation=()=>{},resumeUnfinishedPcRun=()=>{};
 // B7 18차+19차: the conversation piece is reached through the registry; this
 // harness mirrors the same path with the same stubs (clearAttachment,
