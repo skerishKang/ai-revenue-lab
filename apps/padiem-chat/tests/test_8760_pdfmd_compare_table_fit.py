@@ -30,7 +30,14 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import pytest
-from playwright.sync_api import Page, Route, sync_playwright
+
+# Core pytest runners intentionally do not install Playwright. Skip this
+# optional browser suite there instead of aborting collection.
+try:
+    from playwright.sync_api import Page, Route, sync_playwright
+except ImportError:
+    Page = Route = object  # type: ignore[assignment,misc]
+    sync_playwright = None
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
@@ -195,6 +202,7 @@ _MEASURE = r"""() => {
 }"""
 
 
+@pytest.mark.skipif(sync_playwright is None, reason="playwright not installed")
 @pytest.mark.parametrize("width", WIDTHS)
 @pytest.mark.parametrize("theme", THEMES)
 def test_page_one_table_readable_in_the_markdown_pane(base_url: str, theme: str, width: int) -> None:
