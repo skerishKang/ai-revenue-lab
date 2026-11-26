@@ -80,10 +80,14 @@ THEME_VALUES = {
     "--rich-composer-border": {
         "light": "var(--composer-border)",
         "padiem-home": "rgba(26,34,48,.10)",
+        # #7811 C3 (bright-readability): the readability sheet's cinematic
+        # composer edge used to beat this rule with !important.
+        "cinematic": "var(--composer-film-edge)",
     },
     "--rich-composer-shadow": {
         "light": "var(--composer-shadow)",
         "padiem-home": HOME_COMPOSER_SHADOW,
+        "cinematic": "var(--composer-film-glow)",
     },
     "--rich-composer-note": {"light": "var(--muted)", "padiem-home": "var(--muted)"},
     "--surfaces-composer-text": {
@@ -234,17 +238,16 @@ def test_the_dark_composer_box_and_text_are_painted_by_the_dark_contrast_sheet()
 
 
 def test_the_cinematic_composer_box_is_painted_by_the_readability_sheet():
-    # Each box is one rule, on the body .app-shell selector (#7811 C3), so no
-    # per-file rule count grows; background is the same gradient the theme
-    # sheet used to repeat.
-    edge = _declared("padiem-bright-readability.css", 'html[data-theme="cinematic"] body .app-shell .composer')
-    assert edge["background"] == "linear-gradient(145deg, rgba(18,30,46,.8), rgba(8,11,17,.76))"
-    assert edge == {
+    box = _declared("padiem-bright-readability.css", 'html[data-theme="cinematic"] .composer')
+    # Same gradient the theme sheet used to repeat. Border and shadow read the
+    # cinematic film tokens (#7811 C3, bright-readability pass); the home and
+    # chat state rules that used to lose to an !important read the same tokens
+    # through --composer-home-edge/-shadow and --rich-composer-border/-shadow.
+    assert box == {
         "background": "linear-gradient(145deg, rgba(18,30,46,.8), rgba(8,11,17,.76))",
-        "border-color": "rgba(136,201,255,.26)",
-        "box-shadow": "0 0 40px rgba(93,178,246,.14), 0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08)",
+        "border-color": "var(--composer-film-edge)",
+        "box-shadow": "var(--composer-film-glow)",
     }
-    assert all("!important" not in value for value in edge.values())
 
 
 def test_the_note_colour_outside_the_chat_state_is_painted_by_a_later_sheet():

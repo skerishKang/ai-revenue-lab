@@ -64,15 +64,16 @@ def test_cinematic_has_bounded_atmospheric_distinction_from_neutral_dark():
     assert 'html[data-theme="cinematic"] body::before {' in themes_css
     assert "rgba(108,190,255,.28)" in themes_css
     assert "rgba(239,201,132,.20)" in themes_css
-    # #7811 C3: each cinematic box is one rule on the higher-specificity
-    # body .app-shell selector so it wins without !important.
-    assert 'html[data-theme="cinematic"] body .app-shell .sidebar {' in polish_css()
-    assert 'html[data-theme="cinematic"] body .app-shell .topbar {' in polish_css()
-    assert 'html[data-theme="cinematic"] body .app-shell .starter {' in polish_css()
-    assert 'html[data-theme="cinematic"] body .app-shell .composer {' in polish_css()
-    assert 'html[data-theme="cinematic"] body .app-shell .sidebar {' in polish_css()
-    assert 'html[data-theme="cinematic"] body .app-shell::before {' in polish_css()
-    assert '!important' not in polish_css()
+    # #7811 C3: the sidebar edge, topbar and top-rim glow are painted by the
+    # theme sheet's own cinematic rules, which read the film tokens; only the
+    # starter card and composer box stay in the readability layer.
+    assert 'html[data-theme="cinematic"] .sidebar {' not in polish_css()
+    assert 'html[data-theme="cinematic"] .topbar {' not in polish_css()
+    assert 'html[data-theme="cinematic"] .app-shell::before {' not in polish_css()
+    assert 'html[data-theme="cinematic"] .sidebar {' in themes_css
+    assert 'html[data-theme="cinematic"] .topbar {' in themes_css
+    assert 'html[data-theme="cinematic"] .starter {' in polish_css()
+    assert 'html[data-theme="cinematic"] .composer {' in polish_css()
     # DARK receives typography only; no cinematic atmosphere/surface override.
     assert 'html[data-theme="dark"] body {' not in polish_css()
     assert 'html[data-theme="dark"] .composer {' not in polish_css()

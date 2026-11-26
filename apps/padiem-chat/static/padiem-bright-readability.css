@@ -90,54 +90,32 @@ html[data-theme="cinematic"] .sidebar .section-heading-row h2 {
 
 
 
-/* Former flagged edge/glow values. Specificity (body .app-shell) beats the
- * same-level cinematic rules in padiem-themes.css and .app-shell[data-state]
- * rules in later sheets without any override flag, so each box stays in one
- * rule and no per-file rule count grows. (#7811 C3) */
-html[data-theme="cinematic"] body .app-shell .sidebar {
-  background:
-    linear-gradient(180deg, rgba(7,11,19,.93), rgba(5,8,14,.86)),
-    rgba(4,7,12,.9);
-  border-right-color: rgba(136,201,255,.20);
-  box-shadow:
-    22px 0 70px rgba(0,0,0,.28),
-    inset -1px 0 0 rgba(136,201,255,.14),
-    10px 0 48px rgba(91,166,230,.08);
-}
+/* #7811 C3: 시네마틱 테두리·빛 값은 padiem-tokens.css cinematic 블록의 토큰이
+ * 갖는다. 같은 대상을 다시 칠하던 규칙(padiem-themes.css cinematic 규칙, home·chat
+ * 상태 입력창 규칙)이 그 토큰을 읽으므로 !important 없이 같은 값이 칠해진다.
+ * .sidebar·.topbar·.app-shell::before는 padiem-themes.css의 같은 선택자 규칙이
+ * 칠한다(여기 있던 선언은 그 규칙에 늘 졌거나 폰 폭에서 interaction-polish.css에
+ * 졌다).
+ *
+ * .starter의 !important는 남긴다: 폰 폭 Claw 일반 화면에서 connector-pages.css가
+ * 카드를 지우는 규칙(배경 투명·테두리 0·그림자 없음)을 이 값이 이기고 있어, 토큰으로
+ * 옮기면 토큰 하나가 네 테마에서는 "카드 없음", 시네마틱에서는 "카드"를 뜻하게 된다. */
 
-html[data-theme="cinematic"] body .app-shell .topbar {
-  background: linear-gradient(180deg, rgba(7,11,19,.78), rgba(6,9,15,.16));
-  border-bottom-color: rgba(136,201,255,.20);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.06),
-    0 10px 30px rgba(25,83,126,.12);
-}
-
-html[data-theme="cinematic"] body .app-shell .starter {
+html[data-theme="cinematic"] .starter {
   background:
     linear-gradient(145deg, rgba(224,242,255,.10), rgba(255,255,255,.024)),
-    rgba(7,11,18,.62);
-  border-color: rgba(136,201,255,.24);
+    rgba(7,11,18,.62) !important;
+  border-color: rgba(136,201,255,.24) !important;
   box-shadow:
     0 0 26px rgba(96,178,242,.10),
-    inset 0 1px 0 rgba(255,255,255,.08);
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
 }
 
-html[data-theme="cinematic"] body .app-shell .composer {
+html[data-theme="cinematic"] .composer {
   background:
     linear-gradient(145deg, rgba(18,30,46,.8), rgba(8,11,17,.76));
-  border-color: rgba(136,201,255,.26);
-  box-shadow:
-    0 0 40px rgba(93,178,246,.14),
-    0 18px 44px rgba(0,0,0,.28),
-    inset 0 1px 0 rgba(255,255,255,.08);
-}
-
-html[data-theme="cinematic"] body .app-shell::before {
-  opacity: .58;
-  box-shadow:
-    0 0 16px rgba(136,201,255,.18),
-    0 0 22px rgba(239,201,132,.10);
+  border-color: var(--composer-film-edge);
+  box-shadow: var(--composer-film-glow);
 }
 
 /* Mobile product polish ---------------------------------------------------- */
