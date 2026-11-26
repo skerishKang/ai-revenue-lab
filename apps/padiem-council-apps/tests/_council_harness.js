@@ -2522,6 +2522,35 @@ const SCENARIOS = {
         absoluteWithQuery: api._versionedAsset("https://chat.padiem.net/apps/council/static/photo-resize.js?v=old"),
       } };
   },
+  async book_filename() {
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    stored("회의.txt", "회의 일시: 2026-11-05T10:00\n안건", "text/plain", null, null, "meeting");
+    const session = spawnSession();
+    const api = session.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(150);
+    const card = session.root.querySelectorAll(".council-card-select")
+      .find((b) => b.dataset.tool === "meeting");
+    await card.dispatch("click");
+    await sleep(200);
+    find(session, "councilBookStart").value = "2026-11-01";
+    find(session, "councilBookEnd").value = "2026-11-30";
+    const draft = find(session, "councilBookOutput");
+    const grab = async (firstLine) => {
+      draft.value = firstLine + "\n본문";
+      downloads.length = 0;
+      downloadDetails.length = 0;
+      for (const id of ["councilBookDownloadHwpx", "councilBookDownloadDocx", "councilBookDownload"]) {
+        find(session, id).dispatch("click");
+        await sleep(10);
+      }
+      return downloads.slice();
+    };
+    const heading = await grab("### 1. 책 제목 후보");
+    const empty = await grab("### 1. ");
+    const real = await grab("### 1. 함께 만드는 가온동 안전망");
+    return { heading, empty, real, pageErrors };
+  },
   async book_factcheck() {
     authState = { authenticated: true, user: { name: "테스트 사용자" } };
     const source = "회의 일시: 2026-11-26T10:00\n\n경로당 매트는 11월 20일까지 교체하기로 했다.\n안내판 설치를 검토하기로 했다.";
@@ -2548,6 +2577,7 @@ const SCENARIOS = {
       secondPromptHasSource: String(chatPayloads[1]?.messages?.[0]?.content || "").includes("교체하기로 했다"),
       secondPromptHasDraft: String(chatPayloads[1]?.messages?.[0]?.content || "").includes(first),
       secondUtil: chatPayloads[1]?.util || "",
+      secondPrompt: String(chatPayloads[1]?.messages?.[0]?.content || ""),
       output: session.ctx.document.getElementById("councilBookOutput").value,
       fact: session.ctx.document.getElementById("councilBookFactResult").textContent.trim(),
     };
