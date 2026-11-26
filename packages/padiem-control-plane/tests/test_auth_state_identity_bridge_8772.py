@@ -136,8 +136,11 @@ def test_auth_state_doors_require_an_id_bound_v2_proof():
 
 def test_auth_state_doors_are_absent_without_their_secrets():
     stub = _Stub({"ok": True})
-    _, worker = _worker(stub)
+    module, worker = _worker(stub)
     for prefix in (IDENTITY_PREFIX, DELETION_PREFIX):
         response = _run(worker.fetch(_request(prefix + "unknown", b"{}", IDENTITY_SECRET)))
         assert response.status == 404 and response.body == "Not Found"
     assert stub.calls == []
+    unbound = module.Default(env=_env())
+    response = _run(unbound.fetch(_Request("https://identity.invalid/internal/rpc/unknown", body=b"{}")))
+    assert response.status == 404 and response.body == "Not Found"

@@ -9,14 +9,14 @@
 
 ## 현재 상태 호출 경로
 
-`apps/padiem-auth/worker.mjs:377`의 `stateBindingFor(env)`가 유일한 상태 RPC 어댑터다. 각 호출은 아래 형태를 사용한다.
+`apps/padiem-auth/worker.mjs:378`의 `stateBindingFor(env)`가 유일한 상태 RPC 어댑터다. 각 호출은 아래 형태를 사용한다.
 
 ```js
 env.AUTH_STATE.get(env.AUTH_STATE.idFromName(name))
   .fetch(`https://internal/${method}`, { method: 'POST', body: JSON.stringify(args) })
 ```
 
-성공 응답의 `{ value }`만 반환하고, 실패하면 `state failed` 예외를 던진다. Worker 진입점은 `worker.mjs:1487`에서 이 어댑터를 `createApp`에 주입한다. `AuthStateObject.fetch`는 `worker.mjs:1189`의 메서드 허용 목록, `state.mjs`의 SQL, 일부 계정·복구·삭제 오버라이드를 실행한다.
+성공 응답의 `{ value }`만 반환하고, 실패하면 `state failed` 예외를 던진다. Worker 진입점은 `worker.mjs:1488`에서 이 어댑터를 `createApp`에 주입한다. `AuthStateObject.fetch`는 `worker.mjs:1190`의 메서드 허용 목록, `state.mjs`의 SQL, 일부 계정·복구·삭제 오버라이드를 실행한다.
 
 ## `idFromName` 이름 종류
 
@@ -33,7 +33,7 @@ env.AUTH_STATE.get(env.AUTH_STATE.idFromName(name))
 
 ## 노출 RPC 메서드
 
-`worker.mjs:1189`의 허용 목록 44개다.
+`worker.mjs:1190`의 허용 목록 44개다.
 
 ```text
 createLogin, consumeLogin, beginPasswordAttempt,

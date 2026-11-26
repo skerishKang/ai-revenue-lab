@@ -859,9 +859,8 @@ class Default(WorkerEntrypoint):
         return await self._stub().issue_google_connect_ticket_for_subject(payload)
 
     async def fetch(self, request):
-        stub = self._stub()
-        replay_guard = DurableObjectServiceIdReplayGuard(stub)
-        dedicated_doors = (
+        dedicated_doors = []
+        for prefix, binding, allowed_methods, dispatcher in (
             (
                 AUTH_STATE_IDENTITY_RPC_PATH_PREFIX,
                 AUTH_STATE_IDENTITY_RPC_SECRET_BINDING,
@@ -874,11 +873,18 @@ class Default(WorkerEntrypoint):
                 AUTH_STATE_DELETION_RECORD_RPC_METHODS,
                 CommonLoginDeletionRecord(env=self.env),
             ),
-        )
-        for prefix, binding, allowed_methods, dispatcher in dedicated_doors:
+        ):
             secret = await resolve_ingress_secret(getattr(self.env, binding, None))
-            if secret is None:
-                continue
+            if secret is not None:
+                dedicated_doors.append((prefix, secret, allowed_methods, dispatcher))
+        shared_secret = await resolve_ingress_secret(
+            getattr(self.env, IDENTITY_RPC_INGRESS_SECRET_BINDING, None)
+        )
+        if not dedicated_doors and shared_secret is None:
+            del request
+            return Response("Not Found", status=404, headers={"cache-control": "no-store"})
+        replay_guard = DurableObjectServiceIdReplayGuard(self._stub())
+        for prefix, secret, allowed_methods, dispatcher in dedicated_doors:
             handled = await handle_internal_rpc(
                 request,
                 secret=secret,
@@ -896,13 +902,10 @@ class Default(WorkerEntrypoint):
                     status=status,
                     headers=headers,
                 )
-        secret = await resolve_ingress_secret(
-            getattr(self.env, IDENTITY_RPC_INGRESS_SECRET_BINDING, None)
-        )
-        if secret is not None:
+        if shared_secret is not None:
             handled = await handle_internal_rpc(
                 request,
-                secret=secret,
+                secret=shared_secret,
                 allowed_methods=IDENTITY_RPC_INGRESS_METHODS,
                 dispatcher=self,
                 service_id_policy=service_id_policy_from_env(
