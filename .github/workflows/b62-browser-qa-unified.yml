@@ -46,7 +46,7 @@ concurrency:
 
 jobs:
   plan:
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     outputs:
       glass_visual_tail_required: ${{ steps.classify.outputs.glass_visual_tail_required }}
@@ -288,7 +288,7 @@ jobs:
   auth-history-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.auth_history_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -843,7 +843,7 @@ jobs:
   conversation-delete-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.conversation_delete_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -999,7 +999,7 @@ jobs:
   conversation-export-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.conversation_export_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -1157,7 +1157,7 @@ jobs:
   deep-research-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.deep_research_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -1311,7 +1311,7 @@ jobs:
   document-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.document_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -1463,7 +1463,7 @@ jobs:
   error-retry-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.error_retry_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -1625,7 +1625,7 @@ jobs:
   image-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.image_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -1777,7 +1777,7 @@ jobs:
   mobile-touch-target-qa:
     needs: plan
     if: ${{ needs.plan.outputs.mobile_touch_target_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       B62_QA_TMP_TAG: b62-mobile-touch-target-qa-${{ github.run_id }}-${{ github.run_attempt }}
@@ -1931,7 +1931,7 @@ jobs:
   project-delete-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.project_delete_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -2087,7 +2087,7 @@ jobs:
   project-files-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.project_files_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -2241,7 +2241,7 @@ jobs:
   projects-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.projects_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -2395,7 +2395,7 @@ jobs:
   saved-outputs-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.saved_outputs_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -2549,7 +2549,7 @@ jobs:
   structured-answer-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.structured_answer_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -2703,7 +2703,7 @@ jobs:
   web-search-browser-qa:
     needs: plan
     if: ${{ needs.plan.outputs.web_search_browser_qa == 'true' }}
-    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && fromJSON('["self-hosted","padiem-com2-ci"]') || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:

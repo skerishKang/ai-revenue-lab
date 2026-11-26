@@ -70,7 +70,7 @@ SCENARIOS = ("generate", "restore", "errors", "calendar_words", "auth",
              "meeting_archive",
              "cinematic", "storage", "conflict", "roster", "runtime", "speech_form",
              "pc", "pc_import", "streaming", "parity", "nav_search", "export", "pc_save_binary",
-             "tier", "card_click_fix", "unsaved_fix", "asset_loader_versions")
+             "tier", "card_click_fix", "unsaved_fix", "asset_loader_versions", "book_factcheck", "meeting_pc_help", "quick_period_first_click")
 
 
 @lru_cache(maxsize=len(SCENARIOS))
