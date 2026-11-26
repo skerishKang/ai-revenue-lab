@@ -37,6 +37,16 @@ class N {
     this._listeners = {};
     this._cls = "";
     this.parentNode = null;
+    if (this.tagName === "SCRIPT" || this.tagName === "LINK") {
+      const key = this.tagName === "SCRIPT" ? "src" : "href";
+      let raw = "";
+      Object.defineProperty(this, key, {
+        get: () => (raw ? new URL(raw, "https://chat.padiem.net/apps/council/").href : ""),
+        set: (v) => { raw = String(v || ""); },
+        configurable: true,
+      });
+      Object.defineProperty(this, "_raw" + key, { get: () => raw, configurable: true });
+    }
   }
   set className(v) { this._cls = String(v || ""); }
   get className() { return this._cls || ""; }
@@ -452,6 +462,15 @@ class FakeFileReader {
   }
 }
 
+const ASSET_VERSIONS_FIXTURE = {
+  "document-export.js": "deadbee5",
+  "photo-resize.js": "f00d1234",
+  "pc-file-exchange.js": "c0ffee11",
+  "pc-file-exchange.css": "feedface",
+  "tus-upload.js": "b16b0021",
+  "project-file-upload.js": "a5set000",
+};
+
 function spawnSession(windowState = {}) {
   if (typeof windowState.addEventListener !== "function") {
     windowState._listeners = windowState._listeners || {};
@@ -467,7 +486,10 @@ function spawnSession(windowState = {}) {
     if (cls) node.className = cls;
     return node;
   };
-
+  const versionMap = mk("script", "padiem-asset-versions");
+  versionMap.type = "application/json";
+  versionMap.textContent = JSON.stringify(ASSET_VERSIONS_FIXTURE);
+  root.append(versionMap);
   const speechBody = mk("div", "councilSpeechBody");
   const snsBody = mk("div", "councilSnsBody");
   const meetingBody = mk("div", "councilMeetingBody");
@@ -2458,6 +2480,42 @@ const SCENARIOS = {
     return out;
   },
 
+  async asset_loader_versions() {
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const session = spawnSession();
+    const api = session.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(20);
+    const nodeKey = (n) => (n.tagName === "SCRIPT" ? "src" : "href");
+    const injected = () => session.ctx.document.body.children
+      .filter((n) => n.tagName === "SCRIPT" || n.tagName === "LINK")
+      .map((n) => ({ tag: n.tagName, url: n[nodeKey(n)], raw: n["_raw" + nodeKey(n)] }));
+    const out = {};
+    // document-export.js is preloaded into the sandbox; clear the global so the
+    // loader actually injects its versioned script for this observation.
+    session.ctx.window.PadiemDocumentExport = null;
+    for (const name of ["document", "photo", "pc", "project"]) {
+      // The fake DOM never delivers a `load` event, so the loader promise stays
+      // pending; the injected node is appended synchronously before that await.
+      api._loaders[name]();
+      await sleep(10);
+      // The chained project loader waits for tus-upload's load event.
+      if (name === "project") {
+        const tus = session.ctx.document.body.children
+          .filter((n) => n.tagName === "SCRIPT" && n._rawsrc.indexOf("tus-upload.js") >= 0)
+          .pop();
+        if (tus) await tus.dispatch("load");
+        await sleep(20);
+      }
+      out[name] = injected();
+    }
+    return { out, map: ASSET_VERSIONS_FIXTURE,
+      probe: {
+        relative: api._versionedAsset("./static/document-export.js"),
+        absolute: api._versionedAsset("https://chat.padiem.net/apps/council/static/document-export.js"),
+        absoluteWithQuery: api._versionedAsset("https://chat.padiem.net/apps/council/static/photo-resize.js?v=old"),
+      } };
+  },
   async card_click_fix() {
     authState = { authenticated: true, user: { name: "테스트 사용자" } };
     const session = spawnSession();

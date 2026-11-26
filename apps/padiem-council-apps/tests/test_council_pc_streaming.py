@@ -157,6 +157,6 @@ def test_the_pc_bridge_reuses_the_existing_pc_routes_only() -> None:
     # The dialog itself is this app's own copy of the shipped component.
     for name in ("pc-file-exchange.js", "pc-file-exchange.css"):
         assert (STATIC / name).is_file(), name
-    assert 'script.src = "./static/pc-file-exchange.js"' in source
+    assert 'versionedAsset("./static/pc-file-exchange.js")' in source
     # No second pairing screen: the connect link goes to the Chat Connectors page.
     assert 'COMPUTER_CONNECT_HREF = "/#padiem-connectors"' in source
