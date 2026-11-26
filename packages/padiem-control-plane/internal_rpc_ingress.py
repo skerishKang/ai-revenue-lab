@@ -114,10 +114,10 @@ def service_id_policy_from_env(value: Any) -> str:
     return text if text in SERVICE_ID_POLICIES else DEFAULT_SERVICE_ID_POLICY
 
 
-def rpc_method_from_path(path: str) -> str | None:
-    if not isinstance(path, str) or not path.startswith(RPC_PATH_PREFIX):
+def rpc_method_from_path(path: str, prefix: str = RPC_PATH_PREFIX) -> str | None:
+    if not isinstance(path, str) or not path.startswith(prefix):
         return None
-    name = path[len(RPC_PATH_PREFIX):]
+    name = path[len(prefix):]
     return name if _METHOD_RE.fullmatch(name) else None
 
 
@@ -159,6 +159,7 @@ async def handle_internal_rpc(
     service_id_policy: str = DEFAULT_SERVICE_ID_POLICY,
     replay_guard: Any = None,
     required_service_id_methods: frozenset[str] = frozenset(),
+    path_prefix: str = RPC_PATH_PREFIX,
 ) -> tuple[int, dict[str, Any], dict[str, str]] | None:
     """Answer one ingress request, or ``None`` when the path is not ours.
 
@@ -166,7 +167,7 @@ async def handle_internal_rpc(
     """
 
     path = urlsplit(str(request.url)).path
-    method_name = rpc_method_from_path(path)
+    method_name = rpc_method_from_path(path, path_prefix)
     if method_name is None:
         return None
     if str(request.method).upper() != "POST":
