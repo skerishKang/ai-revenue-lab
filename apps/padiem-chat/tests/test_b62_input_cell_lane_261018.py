@@ -18,7 +18,7 @@ border and shadow, which is a documented state treatment, not drift.
 """
 
 # #8060: shipped reads live in _support; the measured declarations stay here.
-from _support import input_cell_lane_source as sheets
+from _support import claw_static, input_cell_lane_source as sheets
 
 FRAME = sheets.frame()
 GLASS = sheets.glass()
@@ -34,7 +34,8 @@ def _body(css: str, selector: str) -> str:
 
 def test_shared_frame_height_subtracts_the_topbar_and_both_margins() -> None:
     """78px topbar + 16px + 16px: the box the frame is actually laid out inside."""
-    decl = [line for line in FRAME.splitlines() if "--padiem-six-panel-height:" in line]
+    frame_and_layout = FRAME + claw_static.sheet("padiem-glass-panel-layout.css")
+    decl = [line for line in frame_and_layout.splitlines() if "--padiem-six-panel-height:" in line]
     assert len(decl) == 1, "one height authority, not a per-page override"
     assert "calc(100dvh - 110px)" in decl[0], decl[0]
     assert "100px)" not in decl[0], "the 100px inset overflowed every viewport by 10px"

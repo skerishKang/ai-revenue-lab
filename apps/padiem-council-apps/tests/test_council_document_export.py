@@ -68,8 +68,8 @@ def test_the_hwpx_package_is_a_hangul_readable_owpml_zip():
     assert "존경하는 시민 여러분" in section, "the manuscript body must survive the packaging"
     header = zf.read("Contents/header.xml").decode("utf-8")
     assert "함초롬바탕" in header
-    assert header.count("<hh:charPr ") == 3 and "<hh:bold/>" in header, \
-        "제목(20pt 볼드)·소제목(14pt 볼드)·본문 세 글자 모양이 필요하다"
+    assert header.count("<hh:charPr ") == 4 and "<hh:bold/>" in header, \
+        "제목·소제목·본문·굵은 글자 네 가지 모양이 필요하다"
     manifest = zf.read("Contents/content.hpf").decode("utf-8")
     for expected in ("Contents/header.xml", "Contents/section0.xml", "settings.xml"):
         assert expected in manifest
@@ -140,7 +140,7 @@ def test_the_export_module_rides_the_same_versioned_asset_lane():
     from pathlib import Path
 
     js = (Path(__file__).resolve().parents[1] / "static" / "council-app.js").read_text(encoding="utf-8")
-    assert re.search(r'script\.src = "\./static/document-export\.js";', js)
-    assert 'versionedAsset(script.src)' in js
+    assert 'versionedAsset("./static/document-export.js")' in js
+    assert 'versionedAsset("./static/document-export.js")' in js
     versions = compute_versions(Path(__file__).resolve().parents[1] / "static")
     assert "document-export.js" in versions

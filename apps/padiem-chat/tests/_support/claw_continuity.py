@@ -56,8 +56,8 @@ def portrait_css() -> str:
     return (_STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
 
 
-def frame_css() -> str:
-    return (_STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
+def panel_layout_css() -> str:
+    return (_STATIC / "padiem-glass-panel-layout.css").read_text(encoding="utf-8")
 
 
 def library_js_source() -> str:

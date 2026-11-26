@@ -80,10 +80,17 @@ test("#8316 a Markdown pipe table becomes aligned cells, not wrapped text", () =
     "합계.",
   ].join("\n");
   const blocks = map.pageBlocks(md, el);
-  // One <pre> before, one table, one <pre> after; the |---| divider is dropped.
+  // One <pre> before, one table in its own scroll box, one <pre> after; the
+  // |---| divider is dropped. #8760: the box keeps the table's sideways
+  // scroll out of the whole pane.
   assert.deepEqual(Array.from(blocks, (b) => b.cls),
-    ["pre", "table", "pre"]);
-  const table = blocks[1];
+    ["pre", "div", "pre"]);
+  const scroll = blocks[1];
+  assert.equal(scroll.kind, "pdfmd-table-scroll");
+  assert.match(scroll.style.cssText, /overflow-x:scroll/);
+  assert.match(scroll.style.cssText, /max-width:100%/);
+  assert.equal(scroll.tabIndex, 0);
+  const table = scroll.children[0];
   assert.deepEqual(Array.from(table.children, (tr) => Array.from(tr.children, (c) => [c.cls, c.text])), [
     [["th", "구분"], ["th", "수량"], ["th", "금액"]],
     [["td", "상품A"], ["td", "2"], ["td", "1,000,000"]],

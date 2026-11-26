@@ -23,6 +23,10 @@ def app_js() -> str:
     return (_STATIC / "app.js").read_text(encoding="utf-8")
 
 
+def project_module_js() -> str:
+    return (_STATIC / "chat-project-module.js").read_text(encoding="utf-8")
+
+
 def project_drive_folder_js() -> str:
     return (_STATIC / "project-drive-folder.js").read_text(encoding="utf-8")
 

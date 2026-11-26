@@ -1,0 +1,13 @@
+{
+ "removed_declarations": 7,
+ "new_tokens": {
+  "--pc-connect-flow-backdrop": "rgba(15, 16, 20, .44)",
+  "--pc-connect-flow-close-wash": "rgba(127, 127, 127, .14)",
+  "--pc-connect-flow-ink-on-accent": "#fff",
+  "--pc-connect-flow-modal-shadow": "0 18px 48px rgba(0, 0, 0, .24)",
+  "--pc-connect-flow-note-shadow": "0 8px 24px rgba(0, 0, 0, .16)",
+  "--pc-connect-flow-popover-shadow": "0 12px 32px rgba(0, 0, 0, .18)"
+ },
+ "reused_tokens": {},
+ "theme_overrides": 0
+}

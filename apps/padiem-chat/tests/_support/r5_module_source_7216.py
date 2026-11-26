@@ -26,5 +26,9 @@ def android_handoff_module_js() -> str:
     return (_STATIC / "chat-android-handoff-module.js").read_text(encoding="utf-8")
 
 
+def project_module_js() -> str:
+    return (_STATIC / "chat-project-module.js").read_text(encoding="utf-8")
+
+
 def login_dialog_js() -> str:
     return (_STATIC / "chat-login-dialog-module.js").read_text(encoding="utf-8")

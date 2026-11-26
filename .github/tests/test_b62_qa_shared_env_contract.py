@@ -26,21 +26,31 @@ class SharedEnvContract(unittest.TestCase):
         lock = next(i for i, line in enumerate(lines) if line.startswith('exec 9>'))
         self.assertLess(mkdir, lock)
 
-    def test_every_self_hosted_job_proves_packages_come_from_its_own_checkout(self):
+    def test_every_browser_job_is_hosted_and_self_hosted_only_steps_are_guarded(self):
         doc = yaml.safe_load(WORKFLOW.read_text(encoding='utf-8'))
-        for name, job in doc['jobs'].items():
-            if name == 'plan' or 'fromJSON(\'["self-hosted","padiem-com2-ci"]\')' not in str(job.get('runs-on')):
-                continue
+        browser_jobs = [name for name in doc['jobs'] if name != 'plan']
+        self.assertEqual(len(browser_jobs), 17)
+        for name in browser_jobs:
+            job = doc['jobs'][name]
+            self.assertEqual(job['runs-on'], 'ubuntu-24.04', name)
             steps = job['steps']
             names = [step.get('name', '') for step in steps]
-            self.assertIn('Prove repository packages come from this checkout', names, name)
             for step_name in ('Resolve B62', 'Install pinned Playwright'):
                 step = next(s for s in steps if s.get('name') == step_name)
                 self.assertNotIn('if', step, f'{name}/{step_name}')
-            proof = next(s for s in steps if s.get('name') == 'Prove repository packages come from this checkout')
-            self.assertIn('padiem_ai_core', proof['run'])
-            self.assertIn('padiem_control_plane', proof['run'])
-            self.assertIn('GITHUB_WORKSPACE', proof['run'])
+            # Jobs that carry COM2-only steps must prove checkout purity, and
+            # that proof must skip on hosted runners. Other lanes own no shared cache.
+            proofs = [s for s in steps if s.get('name') == 'Prove repository packages come from this checkout']
+            self.assertLessEqual(len(proofs), 1, name)
+            if 'Prepare reusable QA environment (self-hosted)' in names:
+                self.assertEqual(len(proofs), 1, name)
+                proof = proofs[0]
+                self.assertEqual(proof.get('if'), "runner.environment == 'self-hosted'", name)
+                self.assertIn('padiem_ai_core', proof['run'])
+                self.assertIn('padiem_control_plane', proof['run'])
+                self.assertIn('GITHUB_WORKSPACE', proof['run'])
+            else:
+                self.assertEqual(proofs, [], name)
 
 
 if __name__ == '__main__':

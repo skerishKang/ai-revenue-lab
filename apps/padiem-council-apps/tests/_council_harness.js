@@ -37,6 +37,16 @@ class N {
     this._listeners = {};
     this._cls = "";
     this.parentNode = null;
+    if (this.tagName === "SCRIPT" || this.tagName === "LINK") {
+      const key = this.tagName === "SCRIPT" ? "src" : "href";
+      let raw = "";
+      Object.defineProperty(this, key, {
+        get: () => (raw ? new URL(raw, "https://chat.padiem.net/apps/council/").href : ""),
+        set: (v) => { raw = String(v || ""); },
+        configurable: true,
+      });
+      Object.defineProperty(this, "_raw" + key, { get: () => raw, configurable: true });
+    }
   }
   set className(v) { this._cls = String(v || ""); }
   get className() { return this._cls || ""; }
@@ -261,7 +271,12 @@ async function fetch(url, init) {
   requests.push(options);
   if (method === "POST" && String(url) === "/api/chat/stream") {
     chatPayloads.push(body);
-    if (chatResponseOverride) return chatResponseOverride;
+    if (chatResponseOverride) {
+      if (Array.isArray(chatResponseOverride)) {
+        return chatResponseOverride.shift() || sseResponse();
+      }
+      return chatResponseOverride;
+    }
     return sseResponse();
   }
   if (String(url) === "/api/pc/pairings") {
@@ -452,7 +467,22 @@ class FakeFileReader {
   }
 }
 
+const ASSET_VERSIONS_FIXTURE = {
+  "document-export.js": "deadbee5",
+  "photo-resize.js": "f00d1234",
+  "pc-file-exchange.js": "c0ffee11",
+  "pc-file-exchange.css": "feedface",
+  "tus-upload.js": "b16b0021",
+  "project-file-upload.js": "a5set000",
+};
+
 function spawnSession(windowState = {}) {
+  if (typeof windowState.addEventListener !== "function") {
+    windowState._listeners = windowState._listeners || {};
+    windowState.addEventListener = (type, fn) => {
+      (windowState._listeners[type] = windowState._listeners[type] || []).push(fn);
+    };
+  }
   const root = new N("html");
   const byId = {};
   const mk = (tag, id, cls) => {
@@ -461,7 +491,10 @@ function spawnSession(windowState = {}) {
     if (cls) node.className = cls;
     return node;
   };
-
+  const versionMap = mk("script", "padiem-asset-versions");
+  versionMap.type = "application/json";
+  versionMap.textContent = JSON.stringify(ASSET_VERSIONS_FIXTURE);
+  root.append(versionMap);
   const speechBody = mk("div", "councilSpeechBody");
   const snsBody = mk("div", "councilSnsBody");
   const meetingBody = mk("div", "councilMeetingBody");
@@ -549,6 +582,9 @@ function spawnSession(windowState = {}) {
   ["speech", "sns", "meeting"].forEach((tool) => {
     const section = mk("section", "council-" + tool, "council-card");
     section.dataset.tool = tool;
+    const heading = mk("h2");
+    heading.textContent = tool;
+    section.append(heading);
     const button = mk("button", null, "council-card-select");
     button.type = "button";
     button.dataset.tool = tool;
@@ -1090,9 +1126,10 @@ const SCENARIOS = {
     const checks = find(session, "councilMeetingArchive").querySelectorAll(".council-book-check");
     const selected = checks.filter((c) => c.checked).map((c) => c.value);
     await find(session, "councilBookGenerate").dispatch("click");
-    const payload = chatPayloads[chatPayloads.length - 1];
-    const generated = find(session, "councilBookOutput").value;
-    find(session, "councilBookOutput").value = "의정활동집 편집본\n" + generated;
+    const payload = chatPayloads[0];
+    const factPayload = chatPayloads[1];
+    const generated = session.ctx.document.getElementById("councilBookOutput").value;
+    session.ctx.document.getElementById("councilBookOutput").value = "의정활동집 편집본\n" + generated;
     await find(session, "councilBookSave").dispatch("click");
     await sleep(30);
     const reopened = spawnSession();
@@ -1100,7 +1137,7 @@ const SCENARIOS = {
     await sleep(30);
     const open = find(reopened, "councilMeetingArchive").querySelectorAll(".council-book-open")[0];
     await open.dispatch("click");
-    return { status, selected, payload, generated,
+    return { status, selected, payload, factPayload, generated,
       reopened: find(reopened, "councilBookOutput").value,
       endpoints: endpointSet(), alerts, pageErrors };
   },
@@ -1132,7 +1169,7 @@ const SCENARIOS = {
     await find(A, "councilMeetingSave").dispatch("click");
     await sleep(60);
     const labelsA = find(A, "councilMeetingArchive").querySelectorAll("li button")
-      .map(deepText).filter((label) => label.indexOf("자)") >= 0);
+      .map(deepText).filter((label) => label.indexOf("(") >= 0);
     // Re-entry: a fresh session of the same account, the stored list rebuilt.
     const B = spawnSession();
     await B.ctx.window.PadiemCouncilApps.init();
@@ -1140,7 +1177,7 @@ const SCENARIOS = {
     await openMeeting(B);
     const archiveB = find(B, "councilMeetingArchive");
     const labelsB = archiveB.querySelectorAll("li button")
-      .map(deepText).filter((label) => label.indexOf("자)") >= 0);
+      .map(deepText).filter((label) => label.indexOf("(") >= 0);
     const row = archiveB.querySelectorAll("li button")
       .find((b) => deepText(b).indexOf("11월 민원 회의") === 0);
     if (!row) throw new Error("saved meeting row missing: " + JSON.stringify(labelsB));
@@ -1368,7 +1405,7 @@ const SCENARIOS = {
     const bookCalls = chatPayloads.length;
     await find(session, "councilBookGenerate").dispatch("click");
     await sleep(20);
-    const bookOutput = find(session, "councilBookOutput").value;
+    const bookOutput = session.ctx.document.getElementById("councilBookOutput").value;
     const bookPrompt = chatPayloads[bookCalls];
 
     const actionOrder = (resultId) => {
@@ -2254,7 +2291,7 @@ const SCENARIOS = {
     const s = spawnSession({ authenticated: true, user: { name: "테스트 사용자" } });
     const api = s.ctx.window.PadiemCouncilApps;
     await api.init();
-    await sleep(30);
+    await sleep(200);
     const out = {};
 
     // 축사: 폼의 행사명·날짜가 문서 제목과 파일명에 그대로 간다.
@@ -2300,6 +2337,23 @@ const SCENARIOS = {
     out.speech.docx = toB64(out.speech.docx);
     out.book.hwpx = toB64(out.book.hwpx);
     out.book.docx = toB64(out.book.docx);
+
+    // #7575: the same export lane must turn markdown into document structure.
+    find(s, "councilBookOutput").value = [
+      "1. 10월 활동집",
+      "### 1. 회의 요약",
+      "* **신호등 설치 건:** 교통량 조사 후 검토 예정",
+      "---",
+      "**현장 확인** 후 회신하기로 함",
+    ].join("\n");
+    await find(s, "councilBookDownloadHwpx").dispatch("click");
+    await sleep(20);
+    await find(s, "councilBookDownloadDocx").dispatch("click");
+    await sleep(20);
+    out.markdown = {
+      hwpx: toB64(downloadDetails[4]),
+      docx: toB64(downloadDetails[5]),
+    };
     return out;
   },
   async pc_save_binary() {
@@ -2432,6 +2486,230 @@ const SCENARIOS = {
     return out;
   },
 
+  async asset_loader_versions() {
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const session = spawnSession();
+    const api = session.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(20);
+    const nodeKey = (n) => (n.tagName === "SCRIPT" ? "src" : "href");
+    const injected = () => session.ctx.document.body.children
+      .filter((n) => n.tagName === "SCRIPT" || n.tagName === "LINK")
+      .map((n) => ({ tag: n.tagName, url: n[nodeKey(n)], raw: n["_raw" + nodeKey(n)] }));
+    const out = {};
+    // document-export.js is preloaded into the sandbox; clear the global so the
+    // loader actually injects its versioned script for this observation.
+    session.ctx.window.PadiemDocumentExport = null;
+    for (const name of ["document", "photo", "pc", "project"]) {
+      // The fake DOM never delivers a `load` event, so the loader promise stays
+      // pending; the injected node is appended synchronously before that await.
+      api._loaders[name]();
+      await sleep(10);
+      // The chained project loader waits for tus-upload's load event.
+      if (name === "project") {
+        const tus = session.ctx.document.body.children
+          .filter((n) => n.tagName === "SCRIPT" && n._rawsrc.indexOf("tus-upload.js") >= 0)
+          .pop();
+        if (tus) await tus.dispatch("load");
+        await sleep(20);
+      }
+      out[name] = injected();
+    }
+    return { out, map: ASSET_VERSIONS_FIXTURE,
+      probe: {
+        relative: api._versionedAsset("./static/document-export.js"),
+        absolute: api._versionedAsset("https://chat.padiem.net/apps/council/static/document-export.js"),
+        absoluteWithQuery: api._versionedAsset("https://chat.padiem.net/apps/council/static/photo-resize.js?v=old"),
+      } };
+  },
+  async book_filename() {
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    stored("회의.txt", "회의 일시: 2026-11-05T10:00\n안건", "text/plain", null, null, "meeting");
+    const session = spawnSession();
+    const api = session.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(150);
+    const card = session.root.querySelectorAll(".council-card-select")
+      .find((b) => b.dataset.tool === "meeting");
+    await card.dispatch("click");
+    await sleep(200);
+    find(session, "councilBookStart").value = "2026-11-01";
+    find(session, "councilBookEnd").value = "2026-11-30";
+    const draft = find(session, "councilBookOutput");
+    const grab = async (firstLine) => {
+      draft.value = firstLine + "\n본문";
+      downloads.length = 0;
+      downloadDetails.length = 0;
+      for (const id of ["councilBookDownloadHwpx", "councilBookDownloadDocx", "councilBookDownload"]) {
+        find(session, id).dispatch("click");
+        await sleep(10);
+      }
+      return downloads.slice();
+    };
+    const heading = await grab("### 1. 책 제목 후보");
+    const empty = await grab("### 1. ");
+    const real = await grab("### 1. 함께 만드는 가온동 안전망");
+    return { heading, empty, real, pageErrors };
+  },
+  async book_factcheck() {
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const source = "회의 일시: 2026-11-26T10:00\n\n경로당 매트는 11월 20일까지 교체하기로 했다.\n안내판 설치를 검토하기로 했다.";
+    stored("보안 간담회.txt", source, "text/plain", null, null, "meeting");
+    const session = spawnSession();
+    const api = session.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(150);
+    const card = session.root.querySelectorAll(".council-card-select")
+      .find((b) => b.dataset.tool === "meeting");
+    await card.dispatch("click");
+    await sleep(150);
+    const bookCheck = session.ctx.document.querySelector(".council-book-check");
+    bookCheck.checked = true;
+    chatPayloads.length = 0;
+    const first = "초안입니다. 기한이 경과된 상태입니다.";
+    const revised = "고친 초안입니다. 교체하기로 했고 설치를 검토하기로 했다.\n고친 곳: 2";
+    chatResponseOverride = [sseResponse([first]), sseResponse([revised])];
+    await find(session, "councilBookGenerate").dispatch("click");
+    await sleep(60);
+    const ok = {
+      calls: chatPayloads.length,
+      firstPromptHasSource: String(chatPayloads[0]?.messages?.[0]?.content || "").includes("교체하기로 했다"),
+      secondPromptHasSource: String(chatPayloads[1]?.messages?.[0]?.content || "").includes("교체하기로 했다"),
+      secondPromptHasDraft: String(chatPayloads[1]?.messages?.[0]?.content || "").includes(first),
+      secondUtil: chatPayloads[1]?.util || "",
+      secondPrompt: String(chatPayloads[1]?.messages?.[0]?.content || ""),
+      output: session.ctx.document.getElementById("councilBookOutput").value,
+      fact: session.ctx.document.getElementById("councilBookFactResult").textContent.trim(),
+    };
+    chatPayloads.length = 0;
+    chatResponseOverride = [sseResponse([first]), { ok: false, status: 500,
+      json: async () => ({ error: { code: "x" } }), headers: { get: () => null } }];
+    await find(session, "councilBookGenerate").dispatch("click");
+    await sleep(60);
+    const fail = {
+      calls: chatPayloads.length,
+      output: session.ctx.document.getElementById("councilBookOutput").value,
+      fact: session.ctx.document.getElementById("councilBookFactResult").textContent.trim(),
+    };
+    chatResponseOverride = null;
+    return { ok, fail, pageErrors };
+  },
+  async meeting_pc_help() {
+    const session = spawnSession();
+    await session.ctx.window.PadiemCouncilApps.init();
+    await sleep(20);
+    const has = (formId, sentence) => {
+      const form = session.ctx.document.getElementById(formId);
+      if (!form) return false;
+      return Array.from(form.querySelectorAll(".council-pc-ref-help"))
+        .some((n) => n.textContent.trim() === sentence);
+    };
+    const meetingLine = "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 회의 메모를 가져옵니다.";
+    const oldLine = "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 예전 글을 가져옵니다.";
+    return {
+      meetingHasMeetingLine: has("councilMeetingForm", meetingLine),
+      snsHasMeetingLine: has("councilSnsForm", meetingLine),
+      snsHasOldLine: has("councilSnsForm", oldLine),
+      speechHasOldLine: has("councilSpeechForm", oldLine),
+      pageErrors,
+    };
+  },
+  async quick_period_first_click() {
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    const thisMonth = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-05";
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 5);
+    const lastStamp = lastMonth.getFullYear() + "-" + pad(lastMonth.getMonth() + 1) + "-05";
+    stored("이번 달 회의.txt", "회의 일시: " + thisMonth + "T10:00\n안건 확인", "text/plain", null, null, "meeting");
+    stored("지난달 회의.txt", "회의 일시: " + lastStamp + "T10:00\n범위 밖", "text/plain", null, null, "meeting");
+    const session = spawnSession();
+    const api = session.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(25);
+    const picks = session.root.querySelectorAll(".council-book-quick");
+    const first = picks.find((n) => n.textContent.trim() === "이번 달");
+    await first.dispatch("click");
+    await sleep(40);
+    const checks = Array.from(session.root.querySelectorAll(".council-book-check"))
+      .map((n) => ({ v: n.value.slice(0, 3), checked: n.checked }));
+    return { picks: picks.length, checks,
+      status: find(session, "councilBookPeriodStatus").textContent.trim(),
+      start: find(session, "councilBookStart").value, end: find(session, "councilBookEnd").value,
+      pageErrors };
+  },
+  async card_click_fix() {
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const session = spawnSession();
+    const api = session.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(20);
+    const cardFor = (tool) => session.root.querySelectorAll(".council-card")
+      .find((c) => (c.dataset.tool || "") === tool || c.id === "council-" + tool);
+    const selectFor = (tool) => session.root.querySelectorAll(".council-card-select")
+      .find((b) => b.dataset.tool === tool);
+    await selectFor("speech").dispatch("click");
+    await sleep(20);
+    const opened = api.state().selected;
+    const body = find(session, "councilSpeechBody");
+    await body.dispatch("click");
+    await sleep(20);
+    const afterBodyClick = api.state().selected;
+    await selectFor("speech").dispatch("click");
+    await sleep(20);
+    const afterClose = api.state().selected;
+    const heading = cardFor("meeting").querySelectorAll("h2")[0];
+    await heading.dispatch("click");
+    await sleep(20);
+    return { opened, afterBodyClick, afterClose, afterHeadingClick: api.state().selected, pageErrors };
+  },
+  async unsaved_fix() {
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    stored("회의 일시: 2026-11-01T10:00\n안건 확인");
+    const blocked = (session) => {
+      const fns = (session.ctx.window._listeners && session.ctx.window._listeners.beforeunload) || [];
+      const evt = { returnValue: "", preventDefault() { evt.blocked = true; } };
+      fns.forEach((fn) => fn(evt));
+      return evt.blocked === true || evt.returnValue !== "";
+    };
+    const out = {};
+    let s = spawnSession();
+    await s.ctx.window.PadiemCouncilApps.init();
+    await sleep(20);
+    find(s, "councilSpeechForm").querySelector("[name=event]").value = "저장 확인 행사";
+    await find(s, "councilSpeechForm").dispatch("submit");
+    await sleep(20);
+    out.speechGenerated = blocked(s);
+    await find(s, "councilSpeechSave").dispatch("click");
+    await sleep(30);
+    out.speechSaved = blocked(s);
+
+    s = spawnSession();
+    await s.ctx.window.PadiemCouncilApps.init();
+    await sleep(20);
+    const meetingForm = find(s, "councilMeetingForm");
+    meetingForm.querySelector("[name=title]").value = "저장 확인 회의";
+    meetingForm.querySelector("[name=content]").value = "안건 확인";
+    await meetingForm.dispatch("submit");
+    await sleep(20);
+    out.meetingGenerated = blocked(s);
+    await find(s, "councilMeetingSave").dispatch("click");
+    await sleep(30);
+    out.meetingSaved = blocked(s);
+
+    s = spawnSession();
+    await s.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    const bookCheck = find(s, "councilMeetingArchive").querySelectorAll(".council-book-check")[0];
+    bookCheck.checked = true;
+    await find(s, "councilBookGenerate").dispatch("click");
+    await sleep(20);
+    out.bookGenerated = blocked(s);
+    await find(s, "councilBookSave").dispatch("click");
+    await sleep(30);
+    out.bookSaved = blocked(s);
+    return { ...out, alerts, pageErrors };
+  },
   async pc_import() {
     // 2026-11-02: 축사·SNS 참고 글의 "내 PC에서 가져오기"가 문서까지 잡는다.
     // 텍스트(.txt·.md)는 기존 /api/pc/reference 읽기, 문서(.hwpx·.docx·.pdf)는

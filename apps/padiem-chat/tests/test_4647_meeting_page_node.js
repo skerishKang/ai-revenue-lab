@@ -14,6 +14,7 @@ const clawCss = fs.readFileSync(path.join(root, "claw-focus-layout.css"), "utf8"
 const meetingCss = fs.readFileSync(path.join(root, "meeting-capture.css"), "utf8");
 const polish = fs.readFileSync(path.join(root, "padiem-chat-ui-polish.css"), "utf8");
 const frame = fs.readFileSync(path.join(root, "shared-six-panel-frame.css"), "utf8");
+const frameLayout = fs.readFileSync(path.join(root, "padiem-glass-panel-layout.css"), "utf8");
 const surfaces = fs.readFileSync(path.join(root, "padiem-surfaces.css"), "utf8");
 
 test("Chat and Claw share a group; the tool menu and meeting entry remain reachable", () => {
@@ -101,10 +102,10 @@ test("meeting view joins the shared glass frame instead of drawing its own surfa
   assert.match(unified, /\[data-state="meeting"\]/);
   assert.match(unified, /\.standalone-view-kicker, \.calendar-view-kicker, \.library-kicker, \.claw-workspace-kicker\) \{/);
   assert.match(unified, /\.standalone-view-kicker, \.calendar-view-kicker, \.library-kicker, \.claw-workspace-kicker\)::before \{/);
-  // #5661 added the fourth list: the >=1921px centring rule keeps meeting in
-  // the same frame family on ultra-wide screens.
-  assert.equal((frame.match(/\.automation-view, \.meeting-view/g) || []).length, 4,
-    "meeting must be in all four six-panel frame lists");
+  assert.equal((frame.match(/\.automation-view, \.meeting-view/g) || []).length, 3,
+    "meeting must share the frame paint, ultra-wide margin and collapsed width");
+  assert.equal((frameLayout.match(/\.automation-view, \.meeting-view/g) || []).length, 2,
+    "meeting must share the desktop frame geometry and page padding");
   assert.ok(frame.includes(".calendar-view, .connectors-view"), "the owner visual-lock frame literal stays intact");
   assert.doesNotMatch(meetingCss, /max-width:\s*1080px/);
   assert.doesNotMatch(meetingCss, /\.meeting-header\s+(p|h2)\s*\{/);

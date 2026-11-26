@@ -14,7 +14,7 @@ What this file still guarantees:
 
 - SIGNED_OUT_FAIL_CLOSED: the entry is inert and issues zero project API calls.
 - No new backend route, storage authority, upload or delete path is introduced.
-- The #2319/#2342 request contracts in ``app.js`` are byte-for-byte preserved.
+- The #2319/#2342 request contracts in ``chat-project-module.js`` are byte-for-byte preserved.
 - ``library.js`` reads only the two canonical owner-scoped list endpoints and
   never fetches file bytes or a file detail route.
 - Storage that is not provisioned disables the *listing*, never the navigation.
@@ -85,9 +85,12 @@ def test_library_entry_moves_out_of_app_js_into_the_module() -> None:
     # The old gate that also required project-file storage is gone, so storage
     # provisioning can no longer make a signed-in owner's navigation inert.
     assert facts["legacy_tokens"] == []
-    # app.js keeps only the narrow trusted seam, and it resolves the project from
-    # the already-loaded owner list rather than from a caller-supplied object.
-    for key in ("find_project", "open_dialog", "seam_guard"):
+    # app.js keeps only the narrow publication seam. The project module resolves
+    # the project from the already-loaded owner list rather than a caller object.
+    for key in (
+        "open_file_publication", "open_publication",
+        "find_project", "open_dialog", "seam_guard",
+    ):
         assert facts[key] is True
 
 
@@ -113,12 +116,12 @@ def test_library_module_keeps_the_privacy_and_sink_boundaries() -> None:
     assert facts["no_console"] is True
 
 
-def test_no_new_file_backend_routes_or_storage_in_app_js() -> None:
+def test_no_new_file_backend_routes_or_storage_in_project_module() -> None:
     facts = backend_routes_facts()
     assert facts["missing_templates"] == []
     assert facts["files_count"] == 3  # GET list, POST upload, DELETE (unchanged)
     # #6579: binaries go through the shared tus module; the retired direct
-    # octet-stream POST must not come back to app.js.
+    # octet-stream POST must not come back to the project module.
     assert facts["upload_seam"] is True
     assert facts["forbidden_tokens"] == []
     assert facts["payload_builder"] is True

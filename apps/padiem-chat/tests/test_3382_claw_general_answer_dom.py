@@ -16,6 +16,7 @@ Engine, B14 or provider endpoint is ever contacted.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -530,6 +531,15 @@ function collectAnswerDom(byId) {
 """
 
 
+def _node_env_with_module_preload() -> dict:
+    preload = Path(__file__).resolve().parents[1] / "tests" / "_node_appjs_modules_preload.js"
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    env = dict(os.environ)
+    if preload.as_posix() not in existing:
+        env["NODE_OPTIONS"] = f"{existing} --require {preload.as_posix()}".strip()
+    return env
+
+
 def _run_client(cases: list[dict]) -> list[dict]:
     node = shutil.which("node")
     assert node, "node runtime is required for the client harness"
@@ -542,6 +552,7 @@ def _run_client(cases: list[dict]) -> list[dict]:
         capture_output=True,
         text=True, encoding="utf-8",
         timeout=180,
+        env=_node_env_with_module_preload(),
     )
     assert result.returncode == 0, f"harness exited {result.returncode}: {result.stderr[:4000]}"
     payload = json.loads(result.stdout.strip().splitlines()[-1])
