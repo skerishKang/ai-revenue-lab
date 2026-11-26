@@ -894,6 +894,7 @@ class Default(WorkerEntrypoint):
                 replay_guard=replay_guard,
                 required_service_id_methods=allowed_methods,
                 path_prefix=prefix,
+                require_content_length=True,
             )
             if handled is not None:
                 status, payload, headers = handled

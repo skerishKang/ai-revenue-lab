@@ -333,6 +333,11 @@ function chatDeletionFlusher({ passwordRpcSecret, passwordRpcOrigin, fetcher = f
   };
 }
 
+export async function identityDeletedWithPendingCleanup({ registry, fingerprint, flushPending }) {
+  try { await flushPending(registry); } catch { console.error(JSON.stringify({ auth_stage: 'pending_chat_deletion_retry_failed' })); }
+  return registry.identityIsDeleted({ fingerprint });
+}
+
 function durableStateBindingFor(env) {
   if (!env.AUTH_STATE?.get || !env.AUTH_STATE?.idFromName) throw new Error('auth state binding missing');
   return (name) => new Proxy({}, { get(_target, method) { return async (args) => {
@@ -1092,7 +1097,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         if (!keyResponse.ok) throw new Error('google keys unavailable');
         return verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: now(), profile: profileClaimAllowlist(clients[pending.client]).length > 0 });
       });
-      if (await stateFor('google-account-registry').identityIsDeleted({ fingerprint: await identityFingerprint(identityKey, identity.sub) })) {
+      if (await identityDeletedWithPendingCleanup({ registry: stateFor('google-account-registry'), fingerprint: await identityFingerprint(identityKey, identity.sub), flushPending: flushPendingChatDeletions })) {
         return deletedGoogleAccountResponse(request);
       }
       const fingerprint = await identityFingerprint(identityKey, identity.sub);
@@ -1190,11 +1195,11 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
 export const AUTH_STATE_METHODS = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'resetLoginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'ageConfirmedAt', 'putAccount', 'createAgeConfirmation', 'readAgeConfirmation', 'consumeAgeConfirmation', 'claimAgeConfirmation', 'recordAgeConfirmationResult', 'readAgeConfirmationResult', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
 async function revokeMappedAccountSessionsWith({ registry, stateFor, productUserId, except }) {
   try {
-    for (const accountId of registry.accountIdsForChatUser({ productUserId })) {
+    for (const accountId of await registry.accountIdsForChatUser({ productUserId })) {
       if (accountId === except) continue;
-      const account = registry.accountById(accountId);
+      const account = await registry.accountById(accountId);
       if (!account || account.state !== 'active') continue;
-      const sessions = registry.indexedAccountSessions({ accountId });
+      const sessions = await registry.indexedAccountSessions({ accountId });
       if (!Array.isArray(sessions)) return false;
       for (const row of sessions) {
         if (!row || !opaque.test(row.object_id ?? '') || !opaque.test(row.session_id ?? '')) return false;

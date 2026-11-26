@@ -43,6 +43,7 @@ def _request(path, body, secret, *, at=None, service_id=None, proof=None):
     at = int(time.time()) if at is None else at
     service_id = service_id or str(uuid.uuid4())
     headers = {
+        "content-length": str(len(body)),
         "x-padiem-service-at": str(at),
         "x-padiem-service-id": service_id,
         "x-padiem-service-proof": proof or proof_for_v2(
@@ -125,12 +126,39 @@ def test_auth_state_doors_require_an_id_bound_v2_proof():
     legacy = proof_for(IDENTITY_SECRET, method="POST", path=path, at=at, body=body)
     unsigned = _Request(
         "https://identity.invalid" + path,
-        headers={"x-padiem-service-at": str(at), "x-padiem-service-proof": legacy},
+        headers={"content-length": str(len(body)), "x-padiem-service-at": str(at), "x-padiem-service-proof": legacy},
         body=body,
     )
     assert json.loads(_run(worker.fetch(unsigned)).body)["error"]["code"] == "rpc_service_id_required"
     unsigned_id = _request(path, body, IDENTITY_SECRET, at=at, proof=legacy)
     assert json.loads(_run(worker.fetch(unsigned_id)).body)["error"]["code"] == "rpc_service_id_unsigned"
+    assert stub.calls == []
+
+
+def test_auth_state_doors_reject_missing_or_mismatched_content_length_before_dispatch():
+    stub = _Stub({"ok": True})
+    _, worker = _worker(stub, PADIEM_AUTH_STATE_IDENTITY_RPC_SECRET=IDENTITY_SECRET)
+    path = IDENTITY_PREFIX + "list_active_product_links_for_subject"
+    body = b'{"canonical_subject_id":"sub_synthetic"}'
+
+    class ReadProbe(_Request):
+        read = False
+
+        async def text(self):
+            self.read = True
+            return await super().text()
+
+    missing = _request(path, body, IDENTITY_SECRET)
+    probe = ReadProbe(str(missing.url), headers=missing.headers, body=missing._body)
+    del probe.headers["content-length"]
+    response = _run(worker.fetch(probe))
+    assert response.status == 411
+    assert probe.read is False
+    mismatched = _request(path, body, IDENTITY_SECRET)
+    mismatched.headers["content-length"] = "1"
+    response = _run(worker.fetch(mismatched))
+    assert response.status == 400
+    assert json.loads(response.body)["error"]["code"] == "rpc_invalid_length"
     assert stub.calls == []
 
 

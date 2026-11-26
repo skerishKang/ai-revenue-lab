@@ -19,6 +19,7 @@ async function callSigned({ origin, secret, fetcher, now, path, payload }) {
     method: 'POST', redirect: 'manual', body, signal: AbortSignal.timeout(10_000),
     headers: {
       'content-type': 'application/json',
+      'content-length': String(body.length),
       'x-padiem-service-at': at,
       'x-padiem-service-id': serviceId,
       'x-padiem-service-proof': proof,

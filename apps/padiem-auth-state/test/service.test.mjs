@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHmac, randomUUID } from 'node:crypto';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -172,11 +172,31 @@ test('every AuthState method is present on the COM2 object without a second SQL 
   }
 });
 
+test('systemd example keeps the state directory and writable path aligned', () => {
+  const unit = readFileSync(new URL('../deploy/padiem-auth-state.service.example', import.meta.url), 'utf8');
+  assert.match(unit, /^StateDirectory=padiem\/auth-state$/m);
+  assert.match(unit, /^ReadWritePaths=\/var\/lib\/padiem\/auth-state$/m);
+});
+
 test('a fresh logical object initializes only its required schema group', () => {
   const service = createStateService({ secret, now: () => epoch });
   service.stateFor('client-assertion-replay').claimAssertion({ key: 'synthetic-jti', expires: 1100, now: epoch });
   const tables = service.database.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name<>'auth_state_nonces' ORDER BY name").all().map(row => row.name);
   assert.deepEqual(tables, ['client_assertions']);
+  service.database.close();
+});
+
+test('idle logical objects are evicted without dropping an in-flight request', async () => {
+  const service = createStateService({ secret, now: () => epoch });
+  const registry = service.stateFor('google-account-registry');
+  const active = service.stateFor('active-object');
+  const pending = active.accountById('synthetic-missing');
+  for (let index = 0; index < 2050; index++) service.stateFor(`idle-object-${index}`);
+  assert.equal(service.stateFor('active-object'), active);
+  assert.equal(service.stateFor('google-account-registry'), registry);
+  await pending;
+  service.stateFor('idle-object-final');
+  assert.ok(service.cacheSize() <= 2048);
   service.database.close();
 });
 
@@ -271,6 +291,9 @@ test('maintenance removes expired state and WAL is enabled on a file database', 
   service.stateFor(objectName).createSession({ id: 'expired', client: 'b62', subject: 'sub', accountId: 'sub', expires: epoch, digest: 'refresh' });
   service.stateFor('google-account-registry').putAccount({ fingerprint: 'fp', accountId: 'sub', now: epoch });
   service.stateFor('google-account-registry').indexAccountSession({ accountId: 'sub', objectId: objectName, sessionId: 'expired', expires: epoch, now: epoch });
+  const pendingHash = 'c'.repeat(64);
+  service.database.prepare('INSERT INTO account_deletion_audit(account_id_hash,deleted_at) VALUES(?,?)').run(pendingHash, epoch - 366 * 24 * 60 * 60);
+  service.database.prepare('INSERT INTO pending_chat_account_deletions(product_user_id,account_id_hash,deleted_at) VALUES(?,?,?)').run('usr_pending', pendingHash, epoch - 366 * 24 * 60 * 60);
   const originalNow = Date.now;
   Date.now = () => (epoch + 1000) * 1000;
   try { service.maintenance(); } finally { Date.now = originalNow; }
@@ -278,4 +301,6 @@ test('maintenance removes expired state and WAL is enabled on a file database', 
   assert.equal(service.database.prepare('SELECT COUNT(*) AS n FROM sessions').get().n, 0);
   assert.equal(service.database.prepare('SELECT COUNT(*) AS n FROM refresh_tokens').get().n, 0);
   assert.equal(service.database.prepare('SELECT COUNT(*) AS n FROM auth_session_index').get().n, 0);
+  assert.equal(service.database.prepare('SELECT COUNT(*) AS n FROM account_deletion_audit WHERE account_id_hash=?').get(pendingHash).n, 1);
+  assert.equal(await service.stateFor('google-account-registry').finalizeAccountDeletion({ accountId: 'sub_missing', accountIdHash: pendingHash, lockToken: 'missing-lock', now: epoch + 1000 }), true);
 });

@@ -41,42 +41,64 @@ function parsePayload(body) {
 
 function createObjectStore(database, env, fetcher) {
   const objects = new Map();
+  const permanentNames = new Set(['google-account-registry', 'google-age-confirmation', 'password-login-gate', 'client-assertion-replay']);
+  const objectLimit = 2048;
   const sql = sqliteAdapter(database);
-  const stateFor = (name) => {
-    if (!objects.has(name)) {
-      let queue = Promise.resolve();
-      const storage = {
-        id: name,
-        sql,
-        transactionSync(operation) { return transactionSync(database, operation); },
-        blockConcurrencyWhile(operation) {
-          const next = queue.then(operation);
-          queue = next.catch(() => {});
-          return next;
-        },
-        // The service maintenance loop owns expiry alarms for the shared database.
-        async setAlarm() {},
-      };
-      const state = { id: name, storage, blockConcurrencyWhile(operation) { return storage.blockConcurrencyWhile(operation); } };
-      const object = new AuthStateObject(state, env, {
-        recoveryFetcher: fetcher,
-        recoveryStateFor: stateFor,
-        deletedAccountCleanup: async ({ accountIdHash }) => ({ state: 'deleted', accountIdHash }),
-      });
-      objects.set(name, new Proxy(object, {
-        get(target, property, receiver) {
-          const value = Reflect.get(target, property, receiver);
-          if (typeof value !== 'function' || property === 'constructor') return value;
-          return (...args) => {
-            target._ensureSchemaFor(property);
-            return value.apply(target, args);
-          };
-        },
-      }));
+  const evictIdle = () => {
+    for (const [name, entry] of objects) {
+      if (!permanentNames.has(name) && entry.active === 0) {
+        objects.delete(name);
+        return;
+      }
     }
-    return objects.get(name);
   };
-  return stateFor;
+  const stateFor = (name) => {
+    const existing = objects.get(name);
+    if (existing) {
+      objects.delete(name);
+      objects.set(name, existing);
+      return existing.proxy;
+    }
+    if (objects.size >= objectLimit) evictIdle();
+    let queue = Promise.resolve();
+    const storage = {
+      id: name,
+      sql,
+      transactionSync(operation) { return transactionSync(database, operation); },
+      blockConcurrencyWhile(operation) {
+        const next = queue.then(operation);
+        queue = next.catch(() => {});
+        return next;
+      },
+      // The service maintenance loop owns expiry alarms for the shared database.
+      async setAlarm() {},
+    };
+    const state = { id: name, storage, blockConcurrencyWhile(operation) { return storage.blockConcurrencyWhile(operation); } };
+    const object = new AuthStateObject(state, env, {
+      recoveryFetcher: fetcher,
+      recoveryStateFor: stateFor,
+      deletedAccountCleanup: async ({ accountIdHash }) => ({ state: 'deleted', accountIdHash }),
+    });
+    const entry = { active: 0, proxy: null };
+    entry.proxy = new Proxy(object, {
+      get(target, property, receiver) {
+        const value = Reflect.get(target, property, receiver);
+        if (typeof value !== 'function' || property === 'constructor') return value;
+        return async (...args) => {
+          entry.active++;
+          try {
+            target._ensureSchemaFor(property);
+            return await value.apply(target, args);
+          } finally {
+            entry.active--;
+          }
+        };
+      },
+    });
+    objects.set(name, entry);
+    return entry.proxy;
+  };
+  return { stateFor, cacheSize: () => objects.size };
 }
 
 function createNonceStore(database, now) {
@@ -105,7 +127,7 @@ function createMaintenance(database) {
       'DELETE FROM refresh_tokens WHERE session_id IN (SELECT id FROM sessions WHERE expires<=?)',
       'DELETE FROM sessions WHERE expires<=?',
       'DELETE FROM account_deletion_locks WHERE expires<=?',
-      'DELETE FROM account_deletion_audit WHERE deleted_at<=?',
+      'DELETE FROM account_deletion_audit WHERE deleted_at<=? AND account_id_hash NOT IN (SELECT account_id_hash FROM pending_chat_account_deletions)',
       'DELETE FROM email_confirmation_tokens WHERE expires<=?',
       "DELETE FROM email_confirmation_budget WHERE (scope='all' AND bucket<?) OR (scope<>'all' AND bucket<?)",
       'DELETE FROM login_failure_budget WHERE day<?',
@@ -124,7 +146,7 @@ function createMaintenance(database) {
 
 export function createStateService({ database = openStateDatabase(':memory:'), secret, env = {}, fetcher = fetch, now = epoch } = {}) {
   if (typeof secret !== 'string' || new TextEncoder().encode(secret).length < 32) throw new Error('state_secret_required');
-  const stateFor = createObjectStore(database, env, fetcher);
+  const { stateFor, cacheSize } = createObjectStore(database, env, fetcher);
   const claimNonce = createNonceStore(database, now);
   const maintenance = createMaintenance(database);
 
@@ -172,5 +194,5 @@ export function createStateService({ database = openStateDatabase(':memory:'), s
     });
   });
 
-  return { server, stateFor, database, maintenance };
+  return { server, stateFor, cacheSize, database, maintenance };
 }

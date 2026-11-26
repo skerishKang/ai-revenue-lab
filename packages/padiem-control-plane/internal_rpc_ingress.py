@@ -160,6 +160,7 @@ async def handle_internal_rpc(
     replay_guard: Any = None,
     required_service_id_methods: frozenset[str] = frozenset(),
     path_prefix: str = RPC_PATH_PREFIX,
+    require_content_length: bool = False,
 ) -> tuple[int, dict[str, Any], dict[str, str]] | None:
     """Answer one ingress request, or ``None`` when the path is not ours.
 
@@ -172,19 +173,27 @@ async def handle_internal_rpc(
         return None
     if str(request.method).upper() != "POST":
         return _error(405, "rpc_method_not_allowed", "POST only.")
-    declared = request.headers.get("content-length")
-    if declared is not None:
-        try:
-            if int(declared) > MAX_BODY_BYTES:
-                return _error(413, "rpc_body_too_large", "Request body exceeds the ceiling.")
-        except ValueError:
-            return _error(400, "rpc_invalid_length", "Invalid content length.")
-    body = await _read_body(request)
-    if len(body) > MAX_BODY_BYTES:
-        return _error(413, "rpc_body_too_large", "Request body exceeds the ceiling.")
     if method_name not in allowed_methods:
         # Same answer as a typo: the inventory is not enumerable.
         return _error(404, "rpc_unknown_method", "Unknown RPC method.")
+    declared = request.headers.get("content-length")
+    declared_length = None
+    if declared is not None:
+        try:
+            declared_length = int(declared)
+        except ValueError:
+            return _error(400, "rpc_invalid_length", "Invalid content length.")
+        if declared_length < 0:
+            return _error(400, "rpc_invalid_length", "Invalid content length.")
+        if declared_length > MAX_BODY_BYTES:
+            return _error(413, "rpc_body_too_large", "Request body exceeds the ceiling.")
+    elif require_content_length:
+        return _error(411, "rpc_content_length_required", "Content length required.")
+    body = await _read_body(request)
+    if len(body) > MAX_BODY_BYTES:
+        return _error(413, "rpc_body_too_large", "Request body exceeds the ceiling.")
+    if require_content_length and declared_length != len(body):
+        return _error(400, "rpc_invalid_length", "Content length does not match the body.")
     at_raw = request.headers.get(AT_HEADER)
     proof_raw = request.headers.get(PROOF_HEADER)
     if not isinstance(at_raw, str) or not isinstance(proof_raw, str):

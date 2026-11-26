@@ -73,7 +73,7 @@ recordEmailConfirmationToken, completeEmailConfirmation
 | `refresh_tokens` | 세션 생성 1행, 갱신마다 선행 갱신+후행 삽입 | 세션 수명과 함께 DO 퇴거에 의존, token 자체 만료 열 없음 |
 | `auth_session_index` | 코드 교환 후 계정당 1행 | 만료 30일, 계정 삭제 외 정리 없음 |
 | `account_deletion_locks` | 삭제 시작·재시도 | 임대 300초, 시작/해제/완료 시 정리 |
-| `account_deletion_audit` | 계정 삭제 완료 | 365일, 완료 또는 alarm 때 정리 |
+| `account_deletion_audit` | 계정 삭제 완료 | 365일, 완료 또는 alarm 때 정리. pending Chat 삭제가 참조하는 hash는 정리에서 제외 |
 | `identity_deletion_tombstone` | 계정 삭제 | 명시적 재가입 전까지 유지 |
 | `account_chat_users` | 계정↔Chat 사용자 연결 | 계정 삭제까지 |
 | `pending_chat_account_deletions` | 마지막 연결 삭제 | Chat 삭제 완료까지 재시도 |
@@ -99,7 +99,7 @@ recordEmailConfirmationToken, completeEmailConfirmation
 - Node HTTP 서비스 뒤에 기존 터널을 두고, Worker는 HTTPS로만 호출한다.
 - SQLite는 WAL, `synchronous=NORMAL`, `foreign_keys=ON`, `busy_timeout`을 사용한다. 각 상태 메서드의 `transactionSync`는 `BEGIN IMMEDIATE`로 직렬화한다.
 - `state.mjs`를 그대로 import하고 `this.sql.exec`/`this.storage.transactionSync`를 Node SQLite 어댑터로 제공한다. 계정·복구·삭제 오버라이드도 가능한 한 기존 `AuthStateObject`를 재사용한다.
-- 객체 이름별 인스턴스와 직렬화 큐를 유지한다. 전역 레지스트리의 비동기 account 작업은 기존 DO의 `blockConcurrencyWhile`와 같은 이름 단위 직렬화를 제공하고, 세션 객체의 SQL 트랜잭션은 SQLite가 원자적으로 보호한다.
+- 객체 이름별 인스턴스와 직렬화 큐를 유지한다. 전역 레지스트리의 비동기 account 작업은 기존 DO의 `blockConcurrencyWhile`와 같은 이름 단위 직렬화를 제공하고, 세션 객체의 SQL 트랜잭션은 SQLite가 원자적으로 보호한다. 로그인·세션 객체는 LRU 상한 2048개로 제한하고 진행 중인 요청이 있는 객체는 퇴거하지 않는다.
 - Worker 인증은 요청 본문 원문·메서드·경로·시각·nonce를 HMAC-SHA256으로 서명한다. 시각 허용 오차는 ±300초, nonce는 1회만 허용하며, 본문 크기와 JSON 형식을 검증한다. 비밀 값은 코드·시험·로그·문서에 넣지 않는다.
 - 응답은 DO와 같이 성공 시 `{ value }`, 상태 실패 시 `{ error: 'state_failure' }`를 반환한다. 서명·시각·nonce 오류는 각각 거절하고 본문·헤더·비밀을 로그에 남기지 않는다.
 
@@ -109,9 +109,9 @@ recordEmailConfirmationToken, completeEmailConfirmation
 
 - identity 전용 문: `/internal/auth-state/identity/<method>`, 비밀 `PADIEM_AUTH_STATE_IDENTITY_RPC_SECRET`, v2 서명, 허용 메서드는 `resolve_or_create_identity_subject`, `resolve_or_create_product_link`, `list_active_product_links_for_subject` 3개뿐이다.
 - 삭제 기록 전용 문: `/internal/auth-state/deletion-record/<method>`, 비밀 `PADIEM_AUTH_STATE_DELETION_RECORD_RPC_SECRET`, v2 서명, 허용 메서드는 `resolve_subject_removed_by_account_deletion` 1개뿐이다.
-- 두 문은 기존 공유 ingress 비밀로 열리지 않으며, 비secret 설정 시 404를 유지한다. 재전송 ID는 기존 identity Durable Object의 replay 표를 사용한다.
+- 두 문은 기존 공유 ingress 비밀로 열리지 않으며, 전용 비밀 미설정 시 404를 유지한다. 재전송 ID는 기존 identity Durable Object의 replay 표를 사용한다. auth-state 전용 요청은 `Content-Length`를 필수로 하고 실제 본문 길이와 일치해야 하며, downstream 호출은 10초 제한을 둔다.
 - 컴2에는 Worker↔상태 서비스·identity·삭제 기록 전용 비밀만 둔다. 기존 Chat 비밀번호 RPC 비밀과 identity HMAC 키는 Worker에만 남긴다.
-- `completeEmailRecovery`는 기존 Chat 비밀과 identity HMAC 키를 필요로 하므로 Worker에서 오케스트레이션을 유지하고, 상태 메서드만 컴2를 호출한다. 삭제 복구의 로컬 tombstone은 컴2가 커밋한 뒤 Chat 정리는 Worker가 이어서 수행한다. 이 내부 handoff는 Worker가 제거하고 공개 응답은 기존 `{ state: 'deleted' }`를 유지한다.
+- `completeEmailRecovery`는 기존 Chat 비밀과 identity HMAC 키를 필요로 하므로 Worker에서 오케스트레이션을 유지하고, 상태 메서드만 컴2를 호출한다. 삭제 복구의 로컬 tombstone은 컴2가 커밋한 뒤 Chat 정리는 Worker가 이어서 수행한다. Chat 정리가 실패해 pending 행이 남으면 다음 Google 로그인의 tombstone 확인 전에 Worker가 독립적으로 재시도한다. 이 내부 handoff는 Worker가 제거하고 공개 응답은 기존 `{ state: 'deleted' }`를 유지한다.
 
 ## Worker 전환 스위치
 

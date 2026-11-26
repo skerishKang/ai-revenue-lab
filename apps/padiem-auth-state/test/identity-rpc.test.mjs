@@ -15,6 +15,7 @@ function verifyV2(secret, url, init) {
   ])).digest('hex');
   assert.equal(init.headers['x-padiem-service-proof'], expected);
   assert.equal(init.redirect, 'manual');
+  assert.ok(init.signal);
 }
 
 test('identity adapter exposes only the three dedicated methods and signs v2 requests', async () => {

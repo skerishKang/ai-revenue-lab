@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { stateBindingFor } from '../worker.mjs';
+import { identityDeletedWithPendingCleanup, stateBindingFor } from '../worker.mjs';
 import { verifyStateRpc } from '../state-rpc.mjs';
 
 const secret = 'synthetic-state-rpc-secret-at-least-32-bytes';
@@ -111,6 +111,47 @@ test('com2 keeps password recovery orchestration and its existing secrets in the
   assert.equal(calls.filter(call => call.url.includes('chat.example.invalid')).length, 3);
 });
 
+test('com2 password reset awaits mapped account session revocation before Chat completion', async () => {
+  const calls = [];
+  const productUserId = 'usr_' + 'b'.repeat(32);
+  const env = {
+    AUTH_STATE_BACKEND: 'com2',
+    AUTH_STATE_URL: 'https://state.example.invalid',
+    AUTH_STATE_SECRET: secret,
+    PADIEM_AUTH_EMAIL_RECOVERY_ENABLED: true,
+    PADIEM_AUTH_PASSWORD_FIND_ENABLED: true,
+    PADIEM_AUTH_PASSWORD_RPC_SECRET: 'synthetic-chat-rpc-secret-at-least-32-bytes',
+    PADIEM_CHAT_PASSWORD_RPC_ORIGIN: 'https://chat.example.invalid',
+    PADIEM_AUTH_IDENTITY_HMAC_KEY: Buffer.alloc(32, 7).toString('base64url'),
+  };
+  const fetcher = async (url, init) => {
+    calls.push({ url, init });
+    if (url.includes('/rpc/')) {
+      const method = new URL(url).pathname.split('/').at(-1);
+      const payload = JSON.parse(Buffer.from(init.body).toString()).args;
+      const values = {
+        emailRecoveryCandidate: { account_id: 'sub_synthetic', credential_epoch: '2026-11-26T00:00:00+00:00' },
+        beginAccountDeletion: true,
+        accountIdsForChatUser: ['sub_other'],
+        accountById: { account_id: 'sub_other', state: 'active' },
+        indexedAccountSessions: payload.accountId === 'sub_other' ? [{ object_id: 'O'.repeat(43), session_id: 'S'.repeat(43) }] : [],
+        forceRevokeForAccountDeletion: true,
+        releaseAccountDeletion: true,
+      };
+      return Response.json({ value: values[method] });
+    }
+    const action = new URL(url).pathname.split('/').at(-1);
+    if (action === 'inspect') return Response.json({ ok: true, email: 'user@example.invalid', account_id: 'sub_synthetic', credential_epoch: '2026-11-26T00:00:00+00:00', mode: 'reset', product_user_id: productUserId });
+    if (action === 'status') return Response.json({ ok: true, present: true });
+    if (action === 'complete') return Response.json({ ok: true, product_user_id: productUserId, account_id: 'sub_synthetic', credential_epoch: '2026-11-26T00:00:00+00:00' });
+    throw new Error('unexpected synthetic route');
+  };
+  const result = await stateBindingFor(env, fetcher)('google-account-registry').completeEmailRecovery({ token: 't'.repeat(43), newPassword: 'synthetic-password', now: 1000 });
+  assert.deepEqual(result, { ok: true });
+  assert.equal(calls.filter(call => new URL(call.url).pathname.endsWith('/complete')).length, 1);
+  assert.equal(calls.some(call => new URL(call.url).pathname.endsWith('/forceRevokeForAccountDeletion')), true);
+});
+
 test('com2 deletion recovery hands Chat cleanup back to the Worker without exposing the handoff', async () => {
   const calls = [];
   const env = {
@@ -138,6 +179,17 @@ test('com2 deletion recovery hands Chat cleanup back to the Worker without expos
   assert.deepEqual(result, { state: 'deleted' });
   assert.equal(calls.filter(call => call.url.includes('chat.example.invalid')).length, 1);
   await assert.rejects(() => stateBindingFor(env, async () => Response.json({ value: { state: 'deleted' } }))('google-account-registry').resolveAccount({ fingerprint: 'synthetic' }), /state failed/);
+});
+
+test('pending Chat deletion cleanup is retried before a tombstone answer', async () => {
+  let flushes = 0;
+  let checks = 0;
+  const registry = { identityIsDeleted() { checks++; return true; } };
+  const flushPending = async () => { flushes++; if (flushes === 1) throw new Error('synthetic cleanup failure'); };
+  assert.equal(await identityDeletedWithPendingCleanup({ registry, fingerprint: 'synthetic', flushPending }), true);
+  assert.equal(await identityDeletedWithPendingCleanup({ registry, fingerprint: 'synthetic', flushPending }), true);
+  assert.equal(flushes, 2);
+  assert.equal(checks, 2);
 });
 
 test('invalid backend selection and incomplete com2 configuration fail closed', () => {

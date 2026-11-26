@@ -275,15 +275,17 @@ test('Map RPC decision is normalized before the strict boolean check', async t =
   assertRecovered(f);
 });
 
-test('Chat failure after commit keeps the tombstone, so the next login is 403', async t => {
+test('Chat failure after commit keeps the tombstone and the next login retries cleanup', async t => {
   const f = await setup(t);
   f.setChatStatus(503);
   await assertUnavailable(await f.callback());
   assertRecovered(f);
   assert.deepEqual(f.registry.pendingChatAccountDeletions(), [f.userId]);
+  f.setChatStatus(200);
   assert.equal((await f.callback()).status, 403);
   assert.equal(f.decisionCalls.length, 1);
-  assert.equal(f.chatCalls.length, 1);
+  assert.equal(f.chatCalls.length, 2);
+  assert.deepEqual(f.registry.pendingChatAccountDeletions(), []);
 });
 
 test('alarm failure after finalize commit leaves a tombstone for the next login', async t => {
@@ -293,7 +295,8 @@ test('alarm failure after finalize commit leaves a tombstone for the next login'
   assertRecovered(f);
   assert.equal((await f.callback()).status, 403);
   assert.equal(f.decisionCalls.length, 1);
-  assert.equal(f.chatCalls.length, 0);
+  assert.equal(f.chatCalls.length, 1);
+  assert.deepEqual(f.registry.pendingChatAccountDeletions(), []);
 });
 
 test('a missing historical Chat mapping does not invent a Chat user id', async t => {
