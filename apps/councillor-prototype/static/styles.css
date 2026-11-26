@@ -241,6 +241,14 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 /* Button labels wrap at word boundaries only (keep-all) and a sub value drops
    to its own line, so a narrow column can never stack one character per line. */.hero-actions .btn { flex-wrap: wrap; word-break: keep-all; }
 .hero-actions .office-number, .profile-list dd a[href^="tel:"] { font-size: 20px; font-weight: 700; opacity: 1; white-space: nowrap; }
+/* #8806 D1: 721px 이상은 단추 4개를 같은 폭 2열로 묶고, 묶음 폭은 아래 검색 줄(560px)과 맞춘다.
+   칸이 좁아 번호·주소가 있는 단추는 이름 아래 둘째 줄로 내려가므로 줄 간격을 좁힌다. */
+@media (min-width: 721px) {
+.hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 560px; }
+.hero-actions .btn { row-gap: 0; line-height: 1.35; }
+
+
+}
 @media (max-width: 720px) {
 .hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .hero-actions .btn.primary { grid-column: 1 / -1; }
@@ -359,12 +367,13 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 }
 [data-theme="dark"] .col-tile { background: var(--navy-soft); border-color: var(--border); }
 .col-tile:hover { border-color: var(--accent-2); }
-.col-tile-icon { color: var(--accent-2-text); font-size: 16px; }
 .col-tile-label { font-size: var(--fs-label); font-weight: 700; line-height: 1.35; }
 @media (min-width: 721px) {
-.col-tile-grid { display: flex; flex-wrap: wrap; gap: 6px 10px; }
-.col-tile { flex-direction: row; min-height: 0; padding: 4px 0; border: 0; background: transparent; }
-[data-theme="dark"] .col-tile { background: transparent; border-color: transparent; }
+/* #8806 D9: 정책자료 쪽 바로가기 칩(.policy-jump a)과 같은 모양. */
+.col-tile-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.col-tile { flex-direction: row; align-items: center; min-height: var(--tap); padding: 0 12px; border-color: var(--border); border-radius: 999px; background: transparent; }
+.col-tile-label { font-weight: 600; }
+[data-theme="dark"] .col-tile { background: transparent; border-color: var(--border); }
 
 
 }
@@ -612,8 +621,8 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 :root { --gutter: 28px; }
 .top-nav { gap: 18px; }
 .key-activity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.hero-strip-inner { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.hero-strip-inner .strip-link { grid-column: 1 / -1; }
+.hero-strip-inner { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 4px; }
+.hero-strip-inner .strip-link { grid-column: 1 / -1; justify-self: end; }
 .col-grid { grid-template-columns: 1fr 1fr; }
 .col-grid > :last-child { grid-column: 1 / -1; }
 
@@ -691,7 +700,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
       rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.82) 55%, rgba(255, 255, 255, 0.55) 100%);
   }
 .hero-strip-inner { grid-template-columns: 1fr; gap: 14px; padding: 16px var(--gutter); }
-.hero-strip-inner .strip-link { grid-column: auto; }
+.hero-strip-inner .strip-link { grid-column: auto; justify-self: auto; }
 .section { padding: 26px var(--gutter); }
 .key-activity-grid { grid-template-columns: 1fr; }
 .col-grid { grid-template-columns: 1fr; gap: 24px; }

@@ -122,23 +122,24 @@ def prerender_home(data: dict) -> dict:
         + "</li>"
         for m in media
     )
+    # #8806 D9: 안쪽 쪽은 표시 없이, 바깥 사이트만 글자 뒤에 ↗.
     links = [
-        ("◆", "정책자료", "./policy"),
-        ("◆", "의원 소개", "./about"),
-        ("◆", "의정활동", "./activity"),
-        ("◆", "미디어", "./media"),
-        ("↗", "의회 공식 페이지", "https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList"),
-        ("↗", "중앙선거관리위원회", "http://data.nec.go.kr/resource/Cnddt_100157517520260603"),
+        ("정책자료", "./policy"),
+        ("의원 소개", "./about"),
+        ("의정활동", "./activity"),
+        ("미디어", "./media"),
+        ("의회 공식 페이지", "https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList"),
+        ("중앙선거관리위원회", "http://data.nec.go.kr/resource/Cnddt_100157517520260603"),
     ]
     links_html = "".join(
         _link(
             href,
             "col-tile",
-            f'<span class="col-tile-icon" aria-hidden="true">{icon}</span>'
-            f'<span class="col-tile-label">{_e(label)}</span>',
+            f'<span class="col-tile-label">{_e(label)}</span>'
+            + (' <span class="ext-mark" aria-hidden="true">↗</span>' if href.startswith("http") else ""),
             external=href.startswith("http"),
         )
-        for icon, label, href in links
+        for label, href in links
     )
     return {"keyActivities": "".join(cards) + summary, "homeMedia": media_html, "homeLinks": links_html}
 

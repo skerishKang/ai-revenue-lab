@@ -115,7 +115,9 @@ def test_hero_buttons_stay_low_at_390_320_1440(browser, base_url):
         page.set_viewport_size({"width": 1440, "height": 900})
         page.wait_for_timeout(150)
         for row in _hero_button_heights(page):
-            assert row["h"] < 60, f"1440px: {row['text']!r} button is {row['h']:.0f}px tall"
+            # #8806: 1440에서는 같은 폭 2열(묶음 560px)이라 번호·주소가 있는 단추가 이름 아래
+            # 둘째 줄로 내려간다. 두 줄까지는 괜찮고, 글자 하나씩 쌓이는 높이는 막는다.
+            assert row["h"] < 80, f"1440px: {row['text']!r} button is {row['h']:.0f}px tall"
     finally:
         page.close()
 
