@@ -275,15 +275,6 @@
   box-shadow: inset 0 1px 0 var(--inset-veil-panel) !important;
 }
 
-.project-banner {
-  border-color: var(--ws-banner-edge);
-  background:
-    linear-gradient(90deg, var(--ws-soft-wash), var(--ws-banner-wash-end)),
-    var(--surface-panel-deep);
-  color: var(--surfaces-card-text);
-  box-shadow: inset 0 1px 0 var(--inset-veil-panel) !important;
-}
-
 .attachment-chip .file-icon,
 .document-attachment-icon {
   color: var(--ws-attachment-text);

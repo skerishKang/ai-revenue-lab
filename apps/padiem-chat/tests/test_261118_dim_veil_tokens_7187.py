@@ -36,9 +36,9 @@ CHANGED = {
         ("box-shadow", "inset -1px 0 var(--inset-veil-dim)"): 1,
     },
     "padiem-cinematic-workspace.css": {
-        ("border-color", "var(--line-veil-dim) !important"): 2,
-        ("border-color", "var(--line-veil-dim)"): 3,
-        ("background", "var(--surface-veil-dim) !important"): 1,
+        # 7811 C5: 이 시트의 우선 표시를 걷어 내 다섯 선언 모두 토큰만 소비한다.
+        ("border-color", "var(--line-veil-dim)"): 5,
+        ("background", "var(--surface-veil-dim)"): 1,
     },
     "padiem-rich.css": {
         ("border-bottom-color", "var(--line-veil-dim)"): 1,

@@ -57,15 +57,17 @@
   width: min(840px, calc(100% - 18px));
   margin-bottom: 9px;
   padding: 9px 11px;
-  border: 1px solid var(--ws-banner-edge);
+  /* 7811 C5: 테두리 색·그림자·글자 색은 padiem-surfaces.css의 공용 첨부 카드
+   * 규칙이 우선 표시로 칠하던 값이다(여기 있던 --ws-banner-edge 테두리와 바깥
+   * 그림자는 그 규칙에 늘 졌다). 그 규칙에서 .project-banner를 빼고 값을 옮겼다. */
+  border: 1px solid var(--surfaces-attachment-edge);
   border-left: 2px solid var(--ws-banner-accent);
   border-radius: var(--radius-sm);
   background:
     linear-gradient(90deg, var(--ws-soft-wash), var(--ws-banner-wash-end)),
     var(--surface-panel-deep);
-  box-shadow:
-    inset 0 1px 0 var(--inset-veil-panel),
-    0 14px 38px var(--ws-banner-shadow);
+  color: var(--surfaces-card-text);
+  box-shadow: inset 0 1px 0 var(--inset-veil-panel);
   backdrop-filter: blur(20px);
 }
 
@@ -100,11 +102,7 @@
   letter-spacing: .035em;
 }
 
-.project-banner-actions button:hover {
-  border-color: var(--ws-control-hover-edge-strong);
-  background: var(--ws-control-hover-wash);
-  color: var(--ws-control-hover-text);
-}
+/* 7811 C5: hover 색 규칙은 기본 규칙의 우선 표시에 늘 져서 칠해진 적이 없어 지웠다. */
 
 /* Shared modal geometry --------------------------------------------------- */
 .project-dialog,
@@ -156,11 +154,7 @@
   color: var(--ws-control-muted-text);
 }
 
-.project-dialog-close:hover,
-.saved-output-close:hover {
-  background: var(--ws-current-wash);
-  color: var(--ws-control-hover-text);
-}
+/* 7811 C5: hover 색 규칙은 기본 규칙의 우선 표시에 늘 져서 칠해진 적이 없어 지웠다. */
 
 .project-form label,
 .saved-output-view label {
@@ -189,8 +183,8 @@
 .project-form input:focus,
 .project-form textarea:focus,
 .saved-output-title-input:focus {
+  /* 7811 C5: focus 테두리 색은 기본 규칙의 우선 표시에 늘 져서 지웠다. */
   outline: none;
-  border-color: var(--ws-input-focus-edge);
   box-shadow: 0 0 0 3px var(--ws-input-focus-glow);
 }
 
@@ -210,7 +204,10 @@
 .project-primary,
 .saved-output-actions button {
   min-height: 38px;
-  border-radius: 7px;
+  /* 7811 C5: 남긴 우선 표시. projects.css의 .project-form-actions button
+   * (11px, 특이도가 더 높음)을 이긴다. 같은 규칙이 프로젝트 삭제 단추에는
+   * 11px로 칠해야 해서 토큰 하나로 풀 수 없다. */
+  border-radius: 7px !important;
   font-size: 12px;
 }
 
@@ -228,11 +225,7 @@
   color: var(--text-veil-strong);
 }
 
-.project-primary:hover,
-.saved-output-actions .saved-output-primary:hover {
-  border-color: var(--line-veil-mist);
-  background: var(--ws-primary-hover-wash);
-}
+/* 7811 C5: hover 색 규칙은 기본 규칙의 우선 표시에 늘 져서 칠해진 적이 없어 지웠다. */
 
 .saved-output-actions .saved-output-danger {
   color: var(--ws-danger-text);
@@ -263,16 +256,12 @@
   border-color: var(--line-veil-dim);
   border-radius: 7px;
   background: var(--surface-veil-ghost);
-  color: var(--ws-file-add-text);
+  color: var(--ws-file-add-text) !important;
   font-size: 10px;
   font-weight: 560;
 }
 
-.project-file-add:hover {
-  border-color: var(--ws-control-hover-edge-strong);
-  background: var(--ws-control-hover-wash);
-  color: var(--ws-control-hover-text);
-}
+/* 7811 C5: hover 색 규칙은 기본 규칙의 우선 표시에 늘 져서 칠해진 적이 없어 지웠다. */
 
 .project-file-row {
   border: 1px solid var(--ws-file-row-edge);
@@ -397,7 +386,7 @@ html:not([data-glass-mode]) .answer-action,
 .answer-source-copy small,
 .composer-note,
 .sidebar-footer {
-  color: var(--ws-control-muted-text);
+  color: var(--ws-control-muted-text) !important;
 }
 
 .demo-label,

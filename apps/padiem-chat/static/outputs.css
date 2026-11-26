@@ -151,7 +151,7 @@
 
 .saved-output-actions button {
   min-height: 40px;
-  border-radius: 7px;
+  border-radius: 11px;
   padding: 0 14px;
   border: 1px solid var(--project-border);
   background: var(--project-solid-bg);

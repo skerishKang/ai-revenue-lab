@@ -121,21 +121,21 @@ CHANGED = {
          "linear-gradient(145deg, var(--surface-veil-soft), var(--ws-form-wash)), var(--surface-panel-solid)"),
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
-        ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
-        ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
-        ("background", "rgba(255, 255, 255, .035) !important", "var(--surface-veil-ghost) !important"),
+        ("background", "rgba(255, 255, 255, .035)", "var(--surface-veil-ghost)"),
+        ("background", "rgba(255, 255, 255, .035)", "var(--surface-veil-ghost)"),
+        ("background", "rgba(255, 255, 255, .035)", "var(--surface-veil-ghost)"),
         ("background", "rgba(255, 255, 255, .035)", "var(--surface-veil-ghost)"),
         ("box-shadow",
-         "inset 0 1px 0 rgba(255, 255, 255, .04), 0 14px 38px rgba(0, 0, 0, .12)",
-         "inset 0 1px 0 var(--inset-veil-panel), 0 14px 38px var(--ws-banner-shadow)"),
+         "inset 0 1px 0 rgba(255, 255, 255, .04)",
+         "inset 0 1px 0 var(--inset-veil-panel)"),  # 7811 C5: 늘 지던 바깥 그림자 삭제
         ("background", "rgba(255, 255, 255, .04)", "var(--surface-veil-panel)"),
-        ("border-color", "rgba(255, 255, 255, .09) !important", "var(--line-veil-dim) !important"),
-        ("border-color", "rgba(255, 255, 255, .09) !important", "var(--line-veil-dim) !important"),
         ("border-color", "rgba(255, 255, 255, .09)", "var(--line-veil-dim)"),
         ("border-color", "rgba(255, 255, 255, .09)", "var(--line-veil-dim)"),
         ("border-color", "rgba(255, 255, 255, .09)", "var(--line-veil-dim)"),
-        ("background", "rgba(255, 255, 255, .09) !important", "var(--surface-veil-dim) !important"),
-        ("border-color", "rgba(255, 255, 255, .34)", "var(--line-veil-mist)"),
+        ("border-color", "rgba(255, 255, 255, .09)", "var(--line-veil-dim)"),
+        ("border-color", "rgba(255, 255, 255, .09)", "var(--line-veil-dim)"),
+        ("background", "rgba(255, 255, 255, .09)", "var(--surface-veil-dim)"),
+        # 7811 C5: primary hover 테두리(.34 → --line-veil-mist)는 늘 져서 삭제.
     ],
     "padiem-dark-contrast.css": [
         ("background", "rgba(255, 255, 255, .06)", "var(--surface-veil-soft)"),
@@ -364,8 +364,9 @@ def test_changed_sheets_are_only_consumed_by_pages_that_load_tokens() -> None:
 def test_this_round_replaced_exactly_44_declarations() -> None:
     """1차 44선언은 그대로이고, 3차 10·4차 11·5차 10·7차 11·8차 표면·테두리 4선언을 더했다.
     (7차 1선언은 #8001에서 --card-bg 한 판 토큰으로 바뀌며 계약에서 빠졌다.
-    4차 1선언은 #7811 C3에서 칠하지 못하던 줄로 지워지며 계약에서 빠졌다.)"""
-    assert sum(len(items) for items in CHANGED.values()) == 88
+    4차 1선언은 #7811 C3에서 칠하지 못하던 줄로 지워지며 계약에서 빠졌다.
+    workspace primary hover 테두리 1선언은 7811 C5에서 칠하지 못하던 줄로 지워지며 빠졌다.)"""
+    assert sum(len(items) for items in CHANGED.values()) == 87
     ghost = sum(
         1
         for items in CHANGED.values()
@@ -393,7 +394,7 @@ def test_this_round_replaced_exactly_44_declarations() -> None:
         for _prop, _old, new in items
         if "veil-mist" in new
     )
-    assert mist == 10
+    assert mist == 9  # 7811 C5: 죽은 hover 테두리 1건 삭제
 
 
 UTIL_MENU_CSS = (STATIC / "util-menu.css").read_bytes().decode("utf-8", errors="replace")
