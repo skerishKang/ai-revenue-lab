@@ -1,0 +1,372 @@
+{
+ "base": "77eb700c1d349e059ea1fe42eda831b413fd191a",
+ "scenes": [
+  "modal",
+  "popover",
+  "note"
+ ],
+ "combos": 30,
+ "nonzero": [],
+ "rows": [
+  {
+   "combo": "light__1440x950__modal",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "light__1440x950__popover",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "light__1440x950__note",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "light__390x844__modal",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "light__390x844__popover",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "light__390x844__note",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "dark__1440x950__modal",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "dark__1440x950__popover",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "dark__1440x950__note",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "dark__390x844__modal",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "dark__390x844__popover",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "dark__390x844__note",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "padiem-glass__1440x950__modal",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "padiem-glass__1440x950__popover",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "padiem-glass__1440x950__note",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "padiem-glass__390x844__modal",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "padiem-glass__390x844__popover",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "padiem-glass__390x844__note",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "cinematic__1440x950__modal",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "cinematic__1440x950__popover",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "cinematic__1440x950__note",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "cinematic__390x844__modal",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "cinematic__390x844__popover",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "cinematic__390x844__note",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "padiem-home__1440x950__modal",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "padiem-home__1440x950__popover",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "padiem-home__1440x950__note",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "padiem-home__390x844__modal",
+   "scene": "modal",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "padiem-home__390x844__popover",
+   "scene": "popover",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  },
+  {
+   "combo": "padiem-home__390x844__note",
+   "scene": "note",
+   "pixels": 0,
+   "pairs": [
+    0
+   ],
+   "attempts": [
+    1,
+    1
+   ]
+  }
+ ]
+}

@@ -229,10 +229,10 @@ def test_stream_state_commits_only_on_done_and_partial_error_is_preserved() -> N
     assert "project_files_used" in done_source
 
     # B7 18차+19차: the renderStreamError forwarder is gone from app.js; the
-    # app-owned retry-box code now lives in renderCancelled, ending at
-    # clearProjectsUI.
+    # app-owned retry-box code stays in renderCancelled. Project functions moved
+    # out, so use the next function boundary instead of a project sentinel.
     partial_start = _source().index("  function renderCancelled(")
-    partial_end = _source().index("  function clearProjectsUI(", partial_start)
+    partial_end = _next_fn_end(_source(), partial_start)
     partial_source = _source()[partial_start:partial_end]
     conv_partial_start = conv.index("  function renderStreamError(")
     conv_partial = conv[conv_partial_start:_next_fn_end(conv, conv_partial_start)]

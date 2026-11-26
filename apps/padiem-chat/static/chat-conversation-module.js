@@ -14,6 +14,22 @@
       // Short-lived overlay, not a new composer row.
       const composerInlineHint = document.getElementById("composerInlineHint");
       let composerInlineHintTimer = null;
+  function wireDocumentFormats() {
+    const documentFormatsToggle = document.getElementById("documentFormatsToggle");
+    const documentFormatsPanel = document.getElementById("documentFormatsPanel");
+    if (documentFormatsToggle && documentFormatsPanel) {
+      documentFormatsToggle.addEventListener("click", () => {
+        const show = documentFormatsPanel.hidden;
+        documentFormatsPanel.hidden = !show;
+        documentFormatsToggle.setAttribute("aria-expanded", show ? "true" : "false");
+      });
+      document.addEventListener("click", (event) => {
+        if (documentFormatsPanel.hidden || (event.target.closest && event.target.closest(".document-starter-shell"))) return;
+        documentFormatsPanel.hidden = true;
+        documentFormatsToggle.setAttribute("aria-expanded", "false");
+      });
+    }
+  }
   function attachmentCopy() {
     return deps.attachmentCapabilities.copy(document.documentElement.lang);
   }
@@ -463,6 +479,7 @@
     return deps.clawT("claw-memory-error-generic");
   }
       return {
+        wireDocumentFormats,
         attachmentCopy,
         showComposerInlineHint,
         updateComposer,

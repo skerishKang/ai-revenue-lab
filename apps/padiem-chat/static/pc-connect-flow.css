@@ -15,7 +15,7 @@
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(15, 16, 20, .44);
+  background: var(--pc-connect-flow-backdrop);
 }
 
 .pc-connect-backdrop[hidden] {
@@ -30,7 +30,7 @@
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--panel);
-  box-shadow: 0 18px 48px rgba(0, 0, 0, .24);
+  box-shadow: var(--pc-connect-flow-modal-shadow);
 }
 
 .pc-connect-modal-title {
@@ -53,7 +53,7 @@
   border: 0;
   border-radius: var(--radius-sm);
   background: var(--accent-strong);
-  color: #fff;
+  color: var(--pc-connect-flow-ink-on-accent);
   cursor: pointer;
   font: inherit;
   font-size: 15px;
@@ -130,7 +130,7 @@
 }
 
 .pc-connect-close:hover {
-  background: rgba(127, 127, 127, .14);
+  background: var(--pc-connect-flow-close-wash);
 }
 
 .pc-connect-modal {
@@ -149,7 +149,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
   background: var(--panel);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .16);
+  box-shadow: var(--pc-connect-flow-note-shadow);
   font-size: 13px;
   font-weight: 700;
   color: var(--success);
@@ -170,7 +170,7 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--panel);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, .18);
+  box-shadow: var(--pc-connect-flow-popover-shadow);
 }
 
 .pc-connect-popover[hidden] {
@@ -229,7 +229,7 @@
   padding: 2px 8px;
   border-radius: var(--radius-pill);
   background: var(--accent-strong);
-  color: #fff;
+  color: var(--pc-connect-flow-ink-on-accent);
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;

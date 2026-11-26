@@ -77,7 +77,7 @@ const context = {
   authState: { authenticated: true },
   navModuleInstance: { openClawWorkspace() { historyOpens += 1; } },
   conversationState: { setConversationId() {} },
-  renderProjectState() {},
+  projectModule: { renderProjectState() {} },
   requestAnswer: async () => { replays += 1; return false; },
   // B7: app.js calls the registry piece; mirror the same counting stub.
   streaming: { requestAnswer: async () => { replays += 1; return false; } },

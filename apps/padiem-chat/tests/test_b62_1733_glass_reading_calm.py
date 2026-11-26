@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from css_rules import find_rules_with_selector, parse_rules
+
 # #8060 52차: the shipped sources are read in _support; these tests receive
 # the texts and assert the same contracts — no static reads in this module.
 from _support.glass_reading_calm import (
@@ -74,8 +76,11 @@ def test_pointer_and_answer_reveal_are_composed_together_boundedly() -> None:
 def test_reading_css_is_glass_only_and_reduces_visual_noise() -> None:
     assert 'data-theme="padiem-glass"' in READING
     assert 'data-glass-mode="reading"' in READING
-    assert 'body::after' in READING
-    assert 'opacity: .025;' in READING
+    (grain,) = find_rules_with_selector(
+        parse_rules(READING), 'html[data-theme="padiem-glass"][data-glass-mode="reading"] body::after',
+    )
+    assert grain.media == "not all and (min-width: 921px)"
+    assert grain.declarations["--shared-six-panel-frame-grain-opacity"] == ".025"
     assert '.main-panel::before' in READING
     # #2573: desktop reading presence now follows the bounded reveal variable,
     # while retaining .28 as the calm fallback.

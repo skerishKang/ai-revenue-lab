@@ -1,0 +1,1838 @@
+{
+  "issue": 8763,
+  "base": "ae63d8f25f5d6d9a0a252fc934173ca1f971027d",
+  "screen": "home-logout",
+  "sidebar": "Expanded on desktop; default mobile state at 390px",
+  "device_scale_factor": 1,
+  "harness": "tools/chat_pixel_compare.py Browser, Compare.capture_validated, diff_pixels and diff_pixels_noise",
+  "browser": "159.0.8154.6",
+  "pixel_unit": "RGB pixels containing any changed channel",
+  "geometry_unit": "CSS px",
+  "css_blob_after": "e0c43df80ee04212690e79e5fc6ed46b2df5a749",
+  "verified_static_blobs": 284,
+  "tamper": {
+    "property": "--padiem-six-panel-margin",
+    "stylesheet": "shared-six-panel-frame.css",
+    "from": "16px 0 16px var(--padiem-six-panel-left)",
+    "to": "0",
+    "theme": "padiem-glass",
+    "viewport": "1440x900",
+    "raw_pixel_diff": 555433,
+    "noise_pixel_diff": 340786,
+    "clean_control_raw_pixels": 0,
+    "clean_frame": {
+      "left": 309.59375,
+      "right": 931.1875,
+      "width": 621.59375,
+      "top": 94,
+      "bottom": 884,
+      "height": 790
+    },
+    "mutated_frame": {
+      "left": 252,
+      "right": 873.59375,
+      "width": 621.59375,
+      "top": 94,
+      "bottom": 884,
+      "height": 790
+    },
+    "method": "One declaration replaced in the local browser route's stylesheet response; the working file SHA-256 was verified unchanged."
+  },
+  "captures": 8,
+  "cases": [
+    {
+      "theme": "padiem-glass",
+      "viewport": "2560x1080",
+      "before": {
+        "theme": "padiem-glass",
+        "state": "home",
+        "viewport": [
+          2560,
+          1080
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 324,
+          "right": 1284,
+          "width": 960,
+          "top": 94,
+          "bottom": 1064,
+          "height": 970
+        },
+        "composer": {
+          "left": 660,
+          "right": 1592,
+          "width": 932,
+          "top": 903,
+          "bottom": 1064,
+          "height": 161
+        },
+        "form": {
+          "left": 660,
+          "right": 1592,
+          "width": 932,
+          "top": 923,
+          "bottom": 1048,
+          "height": 125
+        },
+        "field": {
+          "left": 673,
+          "right": 1579,
+          "width": 906,
+          "top": 936,
+          "bottom": 992,
+          "height": 56
+        },
+        "left_inset": 336,
+        "right_inset": -308,
+        "form_left_inset": 336,
+        "form_right_inset": -308,
+        "declared_inset": "14px"
+      },
+      "after": {
+        "theme": "padiem-glass",
+        "state": "home",
+        "viewport": [
+          2560,
+          1080
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 646,
+          "right": 1606,
+          "width": 960,
+          "top": 94,
+          "bottom": 1064,
+          "height": 970
+        },
+        "composer": {
+          "left": 660,
+          "right": 1592,
+          "width": 932,
+          "top": 903,
+          "bottom": 1064,
+          "height": 161
+        },
+        "form": {
+          "left": 660,
+          "right": 1592,
+          "width": 932,
+          "top": 923,
+          "bottom": 1048,
+          "height": 125
+        },
+        "field": {
+          "left": 673,
+          "right": 1579,
+          "width": 906,
+          "top": 936,
+          "bottom": 992,
+          "height": 56
+        },
+        "left_inset": 14,
+        "right_inset": 14,
+        "form_left_inset": 14,
+        "form_right_inset": 14,
+        "declared_inset": "14px"
+      },
+      "raw_pixel_diff": 1361649,
+      "noise_pixel_diff": 1175641,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": [
+        "captures/padiem-glass__2560x1080__guest-home__before.png",
+        "captures/padiem-glass__2560x1080__guest-home__after.png"
+      ]
+    },
+    {
+      "theme": "light",
+      "viewport": "2560x1080",
+      "before": {
+        "theme": "light",
+        "state": "home",
+        "viewport": [
+          2560,
+          1080
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 906,
+          "right": 1906,
+          "width": 1000,
+          "top": 78,
+          "bottom": 1080,
+          "height": 1002
+        },
+        "composer": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 887,
+          "bottom": 1080,
+          "height": 193
+        },
+        "form": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 913,
+          "bottom": 1034,
+          "height": 121
+        },
+        "field": {
+          "left": 988,
+          "right": 1824,
+          "width": 836,
+          "top": 924,
+          "bottom": 980,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": ""
+      },
+      "after": {
+        "theme": "light",
+        "state": "home",
+        "viewport": [
+          2560,
+          1080
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 906,
+          "right": 1906,
+          "width": 1000,
+          "top": 78,
+          "bottom": 1080,
+          "height": 1002
+        },
+        "composer": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 887,
+          "bottom": 1080,
+          "height": 193
+        },
+        "form": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 913,
+          "bottom": 1034,
+          "height": 121
+        },
+        "field": {
+          "left": 988,
+          "right": 1824,
+          "width": 836,
+          "top": 924,
+          "bottom": 980,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": ""
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": [
+        "captures/light__2560x1080__guest-home__identical.png"
+      ]
+    },
+    {
+      "theme": "dark",
+      "viewport": "2560x1080",
+      "before": {
+        "theme": "dark",
+        "state": "home",
+        "viewport": [
+          2560,
+          1080
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 906,
+          "right": 1906,
+          "width": 1000,
+          "top": 78,
+          "bottom": 1080,
+          "height": 1002
+        },
+        "composer": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 887,
+          "bottom": 1080,
+          "height": 193
+        },
+        "form": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 913,
+          "bottom": 1034,
+          "height": 121
+        },
+        "field": {
+          "left": 988,
+          "right": 1824,
+          "width": 836,
+          "top": 924,
+          "bottom": 980,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": ""
+      },
+      "after": {
+        "theme": "dark",
+        "state": "home",
+        "viewport": [
+          2560,
+          1080
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 906,
+          "right": 1906,
+          "width": 1000,
+          "top": 78,
+          "bottom": 1080,
+          "height": 1002
+        },
+        "composer": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 887,
+          "bottom": 1080,
+          "height": 193
+        },
+        "form": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 913,
+          "bottom": 1034,
+          "height": 121
+        },
+        "field": {
+          "left": 988,
+          "right": 1824,
+          "width": 836,
+          "top": 924,
+          "bottom": 980,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": ""
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": [
+        "captures/dark__2560x1080__guest-home__identical.png"
+      ]
+    },
+    {
+      "theme": "cinematic",
+      "viewport": "2560x1080",
+      "before": {
+        "theme": "cinematic",
+        "state": "home",
+        "viewport": [
+          2560,
+          1080
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 906,
+          "right": 1906,
+          "width": 1000,
+          "top": 78,
+          "bottom": 1080,
+          "height": 1002
+        },
+        "composer": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 887,
+          "bottom": 1080,
+          "height": 193
+        },
+        "form": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 913,
+          "bottom": 1034,
+          "height": 121
+        },
+        "field": {
+          "left": 988,
+          "right": 1824,
+          "width": 836,
+          "top": 924,
+          "bottom": 980,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": ""
+      },
+      "after": {
+        "theme": "cinematic",
+        "state": "home",
+        "viewport": [
+          2560,
+          1080
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 906,
+          "right": 1906,
+          "width": 1000,
+          "top": 78,
+          "bottom": 1080,
+          "height": 1002
+        },
+        "composer": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 887,
+          "bottom": 1080,
+          "height": 193
+        },
+        "form": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 913,
+          "bottom": 1034,
+          "height": 121
+        },
+        "field": {
+          "left": 988,
+          "right": 1824,
+          "width": 836,
+          "top": 924,
+          "bottom": 980,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": ""
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": [
+        "captures/cinematic__2560x1080__guest-home__identical.png"
+      ]
+    },
+    {
+      "theme": "padiem-home",
+      "viewport": "2560x1080",
+      "before": {
+        "theme": "padiem-home",
+        "state": "home",
+        "viewport": [
+          2560,
+          1080
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 906,
+          "right": 1906,
+          "width": 1000,
+          "top": 78,
+          "bottom": 1080,
+          "height": 1002
+        },
+        "composer": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 887,
+          "bottom": 1080,
+          "height": 193
+        },
+        "form": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 913,
+          "bottom": 1034,
+          "height": 121
+        },
+        "field": {
+          "left": 988,
+          "right": 1824,
+          "width": 836,
+          "top": 924,
+          "bottom": 980,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": ""
+      },
+      "after": {
+        "theme": "padiem-home",
+        "state": "home",
+        "viewport": [
+          2560,
+          1080
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 906,
+          "right": 1906,
+          "width": 1000,
+          "top": 78,
+          "bottom": 1080,
+          "height": 1002
+        },
+        "composer": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 887,
+          "bottom": 1080,
+          "height": 193
+        },
+        "form": {
+          "left": 976,
+          "right": 1836,
+          "width": 860,
+          "top": 913,
+          "bottom": 1034,
+          "height": 121
+        },
+        "field": {
+          "left": 988,
+          "right": 1824,
+          "width": 836,
+          "top": 924,
+          "bottom": 980,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": ""
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": [
+        "captures/padiem-home__2560x1080__guest-home__identical.png"
+      ]
+    },
+    {
+      "theme": "padiem-glass",
+      "viewport": "1920x1080",
+      "before": {
+        "theme": "padiem-glass",
+        "state": "home",
+        "viewport": [
+          1920,
+          1080
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 324,
+          "right": 1284,
+          "width": 960,
+          "top": 94,
+          "bottom": 1064,
+          "height": 970
+        },
+        "composer": {
+          "left": 338,
+          "right": 1270,
+          "width": 932,
+          "top": 903,
+          "bottom": 1064,
+          "height": 161
+        },
+        "form": {
+          "left": 338,
+          "right": 1270,
+          "width": 932,
+          "top": 923,
+          "bottom": 1048,
+          "height": 125
+        },
+        "field": {
+          "left": 351,
+          "right": 1257,
+          "width": 906,
+          "top": 936,
+          "bottom": 992,
+          "height": 56
+        },
+        "left_inset": 14,
+        "right_inset": 14,
+        "form_left_inset": 14,
+        "form_right_inset": 14,
+        "declared_inset": "14px"
+      },
+      "after": {
+        "theme": "padiem-glass",
+        "state": "home",
+        "viewport": [
+          1920,
+          1080
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 324,
+          "right": 1284,
+          "width": 960,
+          "top": 94,
+          "bottom": 1064,
+          "height": 970
+        },
+        "composer": {
+          "left": 338,
+          "right": 1270,
+          "width": 932,
+          "top": 903,
+          "bottom": 1064,
+          "height": 161
+        },
+        "form": {
+          "left": 338,
+          "right": 1270,
+          "width": 932,
+          "top": 923,
+          "bottom": 1048,
+          "height": 125
+        },
+        "field": {
+          "left": 351,
+          "right": 1257,
+          "width": 906,
+          "top": 936,
+          "bottom": 992,
+          "height": 56
+        },
+        "left_inset": 14,
+        "right_inset": 14,
+        "form_left_inset": 14,
+        "form_right_inset": 14,
+        "declared_inset": "14px"
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": [
+        "captures/padiem-glass__1920x1080__guest-home__identical.png"
+      ]
+    },
+    {
+      "theme": "padiem-glass",
+      "viewport": "1440x900",
+      "before": {
+        "theme": "padiem-glass",
+        "state": "home",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 309.59375,
+          "right": 931.1875,
+          "width": 621.59375,
+          "top": 94,
+          "bottom": 884,
+          "height": 790
+        },
+        "composer": {
+          "left": 323.59375,
+          "right": 917.1875,
+          "width": 593.59375,
+          "top": 723,
+          "bottom": 884,
+          "height": 161
+        },
+        "form": {
+          "left": 323.59375,
+          "right": 917.1875,
+          "width": 593.59375,
+          "top": 743,
+          "bottom": 868,
+          "height": 125
+        },
+        "field": {
+          "left": 336.59375,
+          "right": 904.1875,
+          "width": 567.59375,
+          "top": 756,
+          "bottom": 812,
+          "height": 56
+        },
+        "left_inset": 14,
+        "right_inset": 14,
+        "form_left_inset": 14,
+        "form_right_inset": 14,
+        "declared_inset": "14px"
+      },
+      "after": {
+        "theme": "padiem-glass",
+        "state": "home",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 309.59375,
+          "right": 931.1875,
+          "width": 621.59375,
+          "top": 94,
+          "bottom": 884,
+          "height": 790
+        },
+        "composer": {
+          "left": 323.59375,
+          "right": 917.1875,
+          "width": 593.59375,
+          "top": 723,
+          "bottom": 884,
+          "height": 161
+        },
+        "form": {
+          "left": 323.59375,
+          "right": 917.1875,
+          "width": 593.59375,
+          "top": 743,
+          "bottom": 868,
+          "height": 125
+        },
+        "field": {
+          "left": 336.59375,
+          "right": 904.1875,
+          "width": 567.59375,
+          "top": 756,
+          "bottom": 812,
+          "height": 56
+        },
+        "left_inset": 14,
+        "right_inset": 14,
+        "form_left_inset": 14,
+        "form_right_inset": 14,
+        "declared_inset": "14px"
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": [
+        "captures/padiem-glass__1440x900__guest-home__identical.png"
+      ]
+    },
+    {
+      "theme": "padiem-glass",
+      "viewport": "2047x900",
+      "before": {
+        "theme": "padiem-glass",
+        "state": "home",
+        "viewport": [
+          2047,
+          900
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 324,
+          "right": 1284,
+          "width": 960,
+          "top": 94,
+          "bottom": 884,
+          "height": 790
+        },
+        "composer": {
+          "left": 403.5,
+          "right": 1335.5,
+          "width": 932,
+          "top": 723,
+          "bottom": 884,
+          "height": 161
+        },
+        "form": {
+          "left": 403.5,
+          "right": 1335.5,
+          "width": 932,
+          "top": 743,
+          "bottom": 868,
+          "height": 125
+        },
+        "field": {
+          "left": 416.5,
+          "right": 1322.5,
+          "width": 906,
+          "top": 756,
+          "bottom": 812,
+          "height": 56
+        },
+        "left_inset": 79.5,
+        "right_inset": -51.5,
+        "form_left_inset": 79.5,
+        "form_right_inset": -51.5,
+        "declared_inset": "14px"
+      },
+      "after": {
+        "theme": "padiem-glass",
+        "state": "home",
+        "viewport": [
+          2047,
+          900
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 389.5,
+          "right": 1349.5,
+          "width": 960,
+          "top": 94,
+          "bottom": 884,
+          "height": 790
+        },
+        "composer": {
+          "left": 403.5,
+          "right": 1335.5,
+          "width": 932,
+          "top": 723,
+          "bottom": 884,
+          "height": 161
+        },
+        "form": {
+          "left": 403.5,
+          "right": 1335.5,
+          "width": 932,
+          "top": 743,
+          "bottom": 868,
+          "height": 125
+        },
+        "field": {
+          "left": 416.5,
+          "right": 1322.5,
+          "width": 906,
+          "top": 756,
+          "bottom": 812,
+          "height": 56
+        },
+        "left_inset": 14,
+        "right_inset": 14,
+        "form_left_inset": 14,
+        "form_right_inset": 14,
+        "declared_inset": "14px"
+      },
+      "raw_pixel_diff": 768404,
+      "noise_pixel_diff": 397365,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": []
+    },
+    {
+      "theme": "light",
+      "viewport": "1440x900",
+      "before": {
+        "theme": "light",
+        "state": "home",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 346,
+          "right": 1346,
+          "width": 1000,
+          "top": 78,
+          "bottom": 900,
+          "height": 822
+        },
+        "composer": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 707,
+          "bottom": 900,
+          "height": 193
+        },
+        "form": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 733,
+          "bottom": 854,
+          "height": 121
+        },
+        "field": {
+          "left": 428,
+          "right": 1264,
+          "width": 836,
+          "top": 744,
+          "bottom": 800,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": "",
+        "sidebar_visible": true
+      },
+      "after": {
+        "theme": "light",
+        "state": "home",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 346,
+          "right": 1346,
+          "width": 1000,
+          "top": 78,
+          "bottom": 900,
+          "height": 822
+        },
+        "composer": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 707,
+          "bottom": 900,
+          "height": 193
+        },
+        "form": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 733,
+          "bottom": 854,
+          "height": 121
+        },
+        "field": {
+          "left": 428,
+          "right": 1264,
+          "width": 836,
+          "top": 744,
+          "bottom": 800,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": "",
+        "sidebar_visible": true
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": []
+    },
+    {
+      "theme": "light",
+      "viewport": "390x844",
+      "before": {
+        "theme": "light",
+        "state": "home",
+        "viewport": [
+          390,
+          844
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 13,
+          "right": 377,
+          "width": 364,
+          "top": 56,
+          "bottom": 844,
+          "height": 788
+        },
+        "composer": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 650,
+          "bottom": 844,
+          "height": 194
+        },
+        "form": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 676,
+          "bottom": 788,
+          "height": 112
+        },
+        "field": {
+          "left": 23,
+          "right": 367,
+          "width": 344,
+          "top": 685,
+          "bottom": 735,
+          "height": 50
+        },
+        "left_inset": 1,
+        "right_inset": 1,
+        "form_left_inset": 1,
+        "form_right_inset": 1,
+        "declared_inset": "",
+        "sidebar_visible": false
+      },
+      "after": {
+        "theme": "light",
+        "state": "home",
+        "viewport": [
+          390,
+          844
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 13,
+          "right": 377,
+          "width": 364,
+          "top": 56,
+          "bottom": 844,
+          "height": 788
+        },
+        "composer": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 650,
+          "bottom": 844,
+          "height": 194
+        },
+        "form": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 676,
+          "bottom": 788,
+          "height": 112
+        },
+        "field": {
+          "left": 23,
+          "right": 367,
+          "width": 344,
+          "top": 685,
+          "bottom": 735,
+          "height": 50
+        },
+        "left_inset": 1,
+        "right_inset": 1,
+        "form_left_inset": 1,
+        "form_right_inset": 1,
+        "declared_inset": "",
+        "sidebar_visible": false
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": []
+    },
+    {
+      "theme": "dark",
+      "viewport": "1440x900",
+      "before": {
+        "theme": "dark",
+        "state": "home",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 346,
+          "right": 1346,
+          "width": 1000,
+          "top": 78,
+          "bottom": 900,
+          "height": 822
+        },
+        "composer": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 707,
+          "bottom": 900,
+          "height": 193
+        },
+        "form": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 733,
+          "bottom": 854,
+          "height": 121
+        },
+        "field": {
+          "left": 428,
+          "right": 1264,
+          "width": 836,
+          "top": 744,
+          "bottom": 800,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": "",
+        "sidebar_visible": true
+      },
+      "after": {
+        "theme": "dark",
+        "state": "home",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 346,
+          "right": 1346,
+          "width": 1000,
+          "top": 78,
+          "bottom": 900,
+          "height": 822
+        },
+        "composer": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 707,
+          "bottom": 900,
+          "height": 193
+        },
+        "form": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 733,
+          "bottom": 854,
+          "height": 121
+        },
+        "field": {
+          "left": 428,
+          "right": 1264,
+          "width": 836,
+          "top": 744,
+          "bottom": 800,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": "",
+        "sidebar_visible": true
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": []
+    },
+    {
+      "theme": "dark",
+      "viewport": "390x844",
+      "before": {
+        "theme": "dark",
+        "state": "home",
+        "viewport": [
+          390,
+          844
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 13,
+          "right": 377,
+          "width": 364,
+          "top": 56,
+          "bottom": 844,
+          "height": 788
+        },
+        "composer": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 650,
+          "bottom": 844,
+          "height": 194
+        },
+        "form": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 676,
+          "bottom": 788,
+          "height": 112
+        },
+        "field": {
+          "left": 23,
+          "right": 367,
+          "width": 344,
+          "top": 685,
+          "bottom": 735,
+          "height": 50
+        },
+        "left_inset": 1,
+        "right_inset": 1,
+        "form_left_inset": 1,
+        "form_right_inset": 1,
+        "declared_inset": "",
+        "sidebar_visible": false
+      },
+      "after": {
+        "theme": "dark",
+        "state": "home",
+        "viewport": [
+          390,
+          844
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 13,
+          "right": 377,
+          "width": 364,
+          "top": 56,
+          "bottom": 844,
+          "height": 788
+        },
+        "composer": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 650,
+          "bottom": 844,
+          "height": 194
+        },
+        "form": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 676,
+          "bottom": 788,
+          "height": 112
+        },
+        "field": {
+          "left": 23,
+          "right": 367,
+          "width": 344,
+          "top": 685,
+          "bottom": 735,
+          "height": 50
+        },
+        "left_inset": 1,
+        "right_inset": 1,
+        "form_left_inset": 1,
+        "form_right_inset": 1,
+        "declared_inset": "",
+        "sidebar_visible": false
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": []
+    },
+    {
+      "theme": "padiem-glass",
+      "viewport": "390x844",
+      "before": {
+        "theme": "padiem-glass",
+        "state": "home",
+        "viewport": [
+          390,
+          844
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 13,
+          "right": 377,
+          "width": 364,
+          "top": 56,
+          "bottom": 844,
+          "height": 788
+        },
+        "composer": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 694,
+          "bottom": 844,
+          "height": 150
+        },
+        "form": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 720,
+          "bottom": 832,
+          "height": 112
+        },
+        "field": {
+          "left": 23,
+          "right": 367,
+          "width": 344,
+          "top": 729,
+          "bottom": 779,
+          "height": 50
+        },
+        "left_inset": 1,
+        "right_inset": 1,
+        "form_left_inset": 1,
+        "form_right_inset": 1,
+        "declared_inset": "14px",
+        "sidebar_visible": false
+      },
+      "after": {
+        "theme": "padiem-glass",
+        "state": "home",
+        "viewport": [
+          390,
+          844
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 13,
+          "right": 377,
+          "width": 364,
+          "top": 56,
+          "bottom": 844,
+          "height": 788
+        },
+        "composer": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 694,
+          "bottom": 844,
+          "height": 150
+        },
+        "form": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 720,
+          "bottom": 832,
+          "height": 112
+        },
+        "field": {
+          "left": 23,
+          "right": 367,
+          "width": 344,
+          "top": 729,
+          "bottom": 779,
+          "height": 50
+        },
+        "left_inset": 1,
+        "right_inset": 1,
+        "form_left_inset": 1,
+        "form_right_inset": 1,
+        "declared_inset": "14px",
+        "sidebar_visible": false
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": []
+    },
+    {
+      "theme": "cinematic",
+      "viewport": "1440x900",
+      "before": {
+        "theme": "cinematic",
+        "state": "home",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 346,
+          "right": 1346,
+          "width": 1000,
+          "top": 78,
+          "bottom": 900,
+          "height": 822
+        },
+        "composer": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 707,
+          "bottom": 900,
+          "height": 193
+        },
+        "form": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 733,
+          "bottom": 854,
+          "height": 121
+        },
+        "field": {
+          "left": 428,
+          "right": 1264,
+          "width": 836,
+          "top": 744,
+          "bottom": 800,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": "",
+        "sidebar_visible": true
+      },
+      "after": {
+        "theme": "cinematic",
+        "state": "home",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 346,
+          "right": 1346,
+          "width": 1000,
+          "top": 78,
+          "bottom": 900,
+          "height": 822
+        },
+        "composer": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 707,
+          "bottom": 900,
+          "height": 193
+        },
+        "form": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 733,
+          "bottom": 854,
+          "height": 121
+        },
+        "field": {
+          "left": 428,
+          "right": 1264,
+          "width": 836,
+          "top": 744,
+          "bottom": 800,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": "",
+        "sidebar_visible": true
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": []
+    },
+    {
+      "theme": "cinematic",
+      "viewport": "390x844",
+      "before": {
+        "theme": "cinematic",
+        "state": "home",
+        "viewport": [
+          390,
+          844
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 13,
+          "right": 377,
+          "width": 364,
+          "top": 56,
+          "bottom": 844,
+          "height": 788
+        },
+        "composer": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 650,
+          "bottom": 844,
+          "height": 194
+        },
+        "form": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 676,
+          "bottom": 788,
+          "height": 112
+        },
+        "field": {
+          "left": 23,
+          "right": 367,
+          "width": 344,
+          "top": 685,
+          "bottom": 735,
+          "height": 50
+        },
+        "left_inset": 1,
+        "right_inset": 1,
+        "form_left_inset": 1,
+        "form_right_inset": 1,
+        "declared_inset": "",
+        "sidebar_visible": false
+      },
+      "after": {
+        "theme": "cinematic",
+        "state": "home",
+        "viewport": [
+          390,
+          844
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 13,
+          "right": 377,
+          "width": 364,
+          "top": 56,
+          "bottom": 844,
+          "height": 788
+        },
+        "composer": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 650,
+          "bottom": 844,
+          "height": 194
+        },
+        "form": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 676,
+          "bottom": 788,
+          "height": 112
+        },
+        "field": {
+          "left": 23,
+          "right": 367,
+          "width": 344,
+          "top": 685,
+          "bottom": 735,
+          "height": 50
+        },
+        "left_inset": 1,
+        "right_inset": 1,
+        "form_left_inset": 1,
+        "form_right_inset": 1,
+        "declared_inset": "",
+        "sidebar_visible": false
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": []
+    },
+    {
+      "theme": "padiem-home",
+      "viewport": "1440x900",
+      "before": {
+        "theme": "padiem-home",
+        "state": "home",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 346,
+          "right": 1346,
+          "width": 1000,
+          "top": 78,
+          "bottom": 900,
+          "height": 822
+        },
+        "composer": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 707,
+          "bottom": 900,
+          "height": 193
+        },
+        "form": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 733,
+          "bottom": 854,
+          "height": 121
+        },
+        "field": {
+          "left": 428,
+          "right": 1264,
+          "width": 836,
+          "top": 744,
+          "bottom": 800,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": "",
+        "sidebar_visible": true
+      },
+      "after": {
+        "theme": "padiem-home",
+        "state": "home",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 346,
+          "right": 1346,
+          "width": 1000,
+          "top": 78,
+          "bottom": 900,
+          "height": 822
+        },
+        "composer": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 707,
+          "bottom": 900,
+          "height": 193
+        },
+        "form": {
+          "left": 416,
+          "right": 1276,
+          "width": 860,
+          "top": 733,
+          "bottom": 854,
+          "height": 121
+        },
+        "field": {
+          "left": 428,
+          "right": 1264,
+          "width": 836,
+          "top": 744,
+          "bottom": 800,
+          "height": 56
+        },
+        "left_inset": 70,
+        "right_inset": 70,
+        "form_left_inset": 70,
+        "form_right_inset": 70,
+        "declared_inset": "",
+        "sidebar_visible": true
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": []
+    },
+    {
+      "theme": "padiem-home",
+      "viewport": "390x844",
+      "before": {
+        "theme": "padiem-home",
+        "state": "home",
+        "viewport": [
+          390,
+          844
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 13,
+          "right": 377,
+          "width": 364,
+          "top": 56,
+          "bottom": 844,
+          "height": 788
+        },
+        "composer": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 650,
+          "bottom": 844,
+          "height": 194
+        },
+        "form": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 676,
+          "bottom": 788,
+          "height": 112
+        },
+        "field": {
+          "left": 23,
+          "right": 367,
+          "width": 344,
+          "top": 685,
+          "bottom": 735,
+          "height": 50
+        },
+        "left_inset": 1,
+        "right_inset": 1,
+        "form_left_inset": 1,
+        "form_right_inset": 1,
+        "declared_inset": "",
+        "sidebar_visible": false
+      },
+      "after": {
+        "theme": "padiem-home",
+        "state": "home",
+        "viewport": [
+          390,
+          844
+        ],
+        "sidebar_open": true,
+        "frame": {
+          "left": 13,
+          "right": 377,
+          "width": 364,
+          "top": 56,
+          "bottom": 844,
+          "height": 788
+        },
+        "composer": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 650,
+          "bottom": 844,
+          "height": 194
+        },
+        "form": {
+          "left": 14,
+          "right": 376,
+          "width": 362,
+          "top": 676,
+          "bottom": 788,
+          "height": 112
+        },
+        "field": {
+          "left": 23,
+          "right": 367,
+          "width": 344,
+          "top": 685,
+          "bottom": 735,
+          "height": 50
+        },
+        "left_inset": 1,
+        "right_inset": 1,
+        "form_left_inset": 1,
+        "form_right_inset": 1,
+        "declared_inset": "",
+        "sidebar_visible": false
+      },
+      "raw_pixel_diff": 0,
+      "noise_pixel_diff": 0,
+      "control_raw_pixel_diff": 0,
+      "control_geometry_equal": true,
+      "before_state_valid": true,
+      "after_state_valid": true,
+      "captures": []
+    }
+  ],
+  "capture_sha256": {
+    "captures/padiem-glass__2560x1080__guest-home__before.png": "3ef039a2ff57320785a4cb51b30ccda1672753257c40ca2aab2c8f3d4ed97ed7",
+    "captures/padiem-glass__2560x1080__guest-home__after.png": "bca21919a3c5f043b202c62b26e9f5cfe37e240a3b7b26d876cf3465610c8de5",
+    "captures/light__2560x1080__guest-home__identical.png": "2a1de0e4b8b1652b3de702976c7d2f6c919e9662542534eafe8d935456af8988",
+    "captures/dark__2560x1080__guest-home__identical.png": "5a3012f23538f71d8b9857eb8f052a6f155805885dab162523a758eecb49ac3e",
+    "captures/cinematic__2560x1080__guest-home__identical.png": "afd2c054fae783e08ff353464b8a06a5cf53e60e390a95b8584066fde7d99be5",
+    "captures/padiem-home__2560x1080__guest-home__identical.png": "8a7e1eb0a601de50d040fd7c58487628f800633b893ced7929af5f022cf55d95",
+    "captures/padiem-glass__1920x1080__guest-home__identical.png": "764c86b6efaa71e5744ee4014b145ee176138b59ee49ad120cc3d36e2122f1bb",
+    "captures/padiem-glass__1440x900__guest-home__identical.png": "97fb2102fa05d023d41ac89072c1428d8a2582bbcf4e186966f8b872dca13ca1"
+  }
+}

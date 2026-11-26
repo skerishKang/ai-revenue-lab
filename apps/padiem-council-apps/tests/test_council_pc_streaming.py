@@ -77,7 +77,7 @@ def test_generation_is_streamed_from_the_stream_route() -> None:
     intermediate = [n for n in obs["lengths"] if 0 < n < len(obs["expected"])]
     assert intermediate, obs["lengths"]
     assert obs["final"] == obs["expected"]
-    assert obs["notice"] == ""
+    assert obs["notice"] == "초안이 준비됐습니다"
     assert obs["pageErrors"] == []
 
 
@@ -96,7 +96,7 @@ def test_a_failed_generation_offers_retry_and_it_really_runs_again() -> None:
     assert obs["retryPresent"] is True
     assert obs["retried"]["calls"] == 1
     assert obs["retried"]["output"].startswith("생성된 초안 본문입니다.")
-    assert obs["retried"]["notice"] == ""
+    assert obs["retried"]["notice"] == "초안이 준비됐습니다"
 
 
 def test_the_shared_dialog_speaks_korean_in_this_app() -> None:
@@ -157,6 +157,6 @@ def test_the_pc_bridge_reuses_the_existing_pc_routes_only() -> None:
     # The dialog itself is this app's own copy of the shipped component.
     for name in ("pc-file-exchange.js", "pc-file-exchange.css"):
         assert (STATIC / name).is_file(), name
-    assert 'script.src = "./static/pc-file-exchange.js"' in source
+    assert 'versionedAsset("./static/pc-file-exchange.js")' in source
     # No second pairing screen: the connect link goes to the Chat Connectors page.
     assert 'COMPUTER_CONNECT_HREF = "/#padiem-connectors"' in source

@@ -1,0 +1,70 @@
+{
+ "sheet": "pc-connect-flow.css",
+ "round": "#7811 C2 pc-connect-flow.css 자기 계열 토큰",
+ "base": "77eb700c1d349e059ea1fe42eda831b413fd191a",
+ "head": "a2c84b62ef65b3b829ac6bfc42988d31848e36a7",
+ "capture_protocol": {
+  "reduced_motion": true,
+  "transition_animation": "0s/none !important",
+  "caret": "transparent",
+  "theme": "documentElement/body data-theme asserted before capture",
+  "fonts": "document.fonts.ready + status loaded + all images complete",
+  "glass_shell": "field/portrait attached + progress() === target()",
+  "popover": "fixed left/top 16px, transform none",
+  "note_timer": "직접 만든 노트 요소를 사용해 대기 타이머 없이 고정",
+  "frame_stability": "3 consecutive identical screenshots",
+  "browser_isolation": "fresh browser per comparison attempt",
+  "raster": "srgb, GPU/partial raster off, LCD text off, DPR 1"
+ },
+ "tokens": {
+  "new": [
+   "--pc-connect-flow-backdrop",
+   "--pc-connect-flow-close-wash",
+   "--pc-connect-flow-ink-on-accent",
+   "--pc-connect-flow-modal-shadow",
+   "--pc-connect-flow-note-shadow",
+   "--pc-connect-flow-popover-shadow"
+  ],
+  "reused": [],
+  "definition": "padiem-tokens.css :root pc-connect-flow group; no theme block redeclares any name",
+  "family_sha256": "2dece9f81baebbaeba0c48a998480ad9a4f950f7bd6c74f1989b811f820a6ac2"
+ },
+ "verification": {
+  "computed": {
+   "targets": 7,
+   "measurements": 70,
+   "nonzero": 0,
+   "report": "computed_report.json"
+  },
+  "pixel": {
+   "scenes": [
+    "modal",
+    "popover",
+    "note"
+   ],
+   "combos": 30,
+   "nonzero": 0,
+   "report": "compare_report.json"
+  },
+  "control": {
+   "scenes": [
+    "modal",
+    "popover",
+    "note"
+   ],
+   "combos": 30,
+   "nonzero": 0,
+   "report": "control_report.json"
+  },
+  "tamper": {
+   "token": "--pc-connect-flow-backdrop",
+   "pixel": 1352406,
+   "report": "tamper_report.json"
+  },
+  "tests": "COM1: pc-connect-flow 토큰 6 + 구조 래칫 13 = 19 passed"
+ },
+ "captures": {
+  "count": 8,
+  "hashes": "capture_hashes.json"
+ }
+}
