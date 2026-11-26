@@ -97,15 +97,31 @@
   const HEADING_RE = /^\s*(?:제?\s*\d+\s*장|\d+\s*[.)]|[IVX]+\.)\s*\S/;
   const PERIOD_RE = /\d{4}[.\-]\d{1,2}[.\-]\d{1,2}\s*(?:~|–|부터|-)\s*\d{4}[.\-]\d{1,2}[.\-]\d{1,2}|^\s*기간\s*[:：]/;
 
+  function inlineRuns(text) {
+    // **굵게** is the only inline markdown the exports need to understand.
+    // The returned ranges are half-open [start, end) pairs in the stripped text.
+    const raw = String(text || "");
+    const ranges = [];
+    let out = "";
+    let at = 0;
+    const re = /\*\*([^*]+)\*\*/g;
+    let match;
+    while ((match = re.exec(raw)) !== null) {
+      out += raw.slice(at, match.index);
+      const start = out.length;
+      out += match[1];
+      ranges.push([start, out.length]);
+      at = match.index + match[0].length;
+    }
+    out += raw.slice(at);
+    return { text: out, bold: ranges };
+  }
+
   function blocksFromText(text, options) {
     const opts = options || {};
     const blocks = [];
     const lines = String(text || "").replace(/\r\n?/g, "\n").split("\n");
     let first = true;
-    // 2026-11-05: a period line ("기간: 2026-10-01 ~ 2026-10-31") is front
-    // matter — it sits between the title and the first heading/paragraph. The
-    // old test required `first`, which the title had already consumed, so the
-    // period style never applied.
     let frontMatter = false;
     lines.forEach((raw) => {
       const line = raw.replace(/\s+$/, "");
@@ -113,18 +129,44 @@
         if (blocks.length && blocks[blocks.length - 1].kind !== "blank") blocks.push({ kind: "blank" });
         return;
       }
+      // #7575: markdown separators are layout, not text. `---` is a blank line.
+      if (/^\s*(?:---+|___+|\*\*\*+)\s*$/.test(line)) {
+        if (blocks.length && blocks[blocks.length - 1].kind !== "blank") blocks.push({ kind: "blank" });
+        first = false;
+        return;
+      }
+      const mdHeading = line.match(/^\s*(#{1,6})\s+(.*)$/);
+      if (mdHeading) {
+        const runs = inlineRuns(mdHeading[2].trim());
+        blocks.push({ kind: mdHeading[1].length === 1 ? "title" : "heading", text: runs.text, bold: runs.bold });
+        frontMatter = false;
+        first = false;
+        return;
+      }
+      const mdList = line.match(/^\s*([*+-]|\d+[.])\s+(.*)$/);
+      if (mdList && !(first && opts.firstLineTitle)) {
+        const runs = inlineRuns(mdList[2].trim());
+        const marker = /^\d+[.]$/.test(mdList[1]) ? mdList[1] + " " : "• ";
+        const shifted = runs.bold.map(([a, b]) => [a + marker.length, b + marker.length]);
+        blocks.push({ kind: "list", text: marker + runs.text, bold: shifted });
+        frontMatter = false;
+        first = false;
+        return;
+      }
       if (first && opts.firstLineTitle) {
-        // The book draft opens with its title (optionally "1. 제목") — the
-        // same first line the book file name rule reads.
-        blocks.push({ kind: "title", text: line.replace(/^\s*\d+\.\s*/, "").trim() });
+        const runs = inlineRuns(line.replace(/^\s*\d+\.\s*/, "").trim());
+        blocks.push({ kind: "title", text: runs.text, bold: runs.bold });
         frontMatter = true;
       } else if (frontMatter && PERIOD_RE.test(line)) {
-        blocks.push({ kind: "period", text: line.trim() });
+        const runs = inlineRuns(line.trim());
+        blocks.push({ kind: "period", text: runs.text, bold: runs.bold });
       } else if (opts.headings && HEADING_RE.test(line)) {
-        blocks.push({ kind: "heading", text: line.trim() });
+        const runs = inlineRuns(line.trim());
+        blocks.push({ kind: "heading", text: runs.text, bold: runs.bold });
         frontMatter = false;
       } else {
-        blocks.push({ kind: "para", text: line.trim() });
+        const runs = inlineRuns(line.trim());
+        blocks.push({ kind: "para", text: runs.text, bold: runs.bold });
         frontMatter = false;
       }
       first = false;
@@ -208,6 +250,18 @@
   // 2026-11-05: the title block that paragraph 0 already carries is not
   // written a second time. Before this, every HWPX opened with the same
   // title on two lines (paragraph 0 + the title block); DOCX was unaffected.
+  function runsXml(text, boldRanges) {
+    const runs = [];
+    let at = 0;
+    boldRanges.forEach(([start, end]) => {
+      if (start > at) runs.push({ char: "0", text: text.slice(at, start) });
+      runs.push({ char: "3", text: text.slice(start, end) });
+      at = end;
+    });
+    if (at < text.length) runs.push({ char: "0", text: text.slice(at) });
+    return runs;
+  }
+
   function hwpxSection(titleText, blocks) {
     const first = titleText || "";
     let titleCarried = false;
@@ -232,15 +286,16 @@
         titleCarried = true;
         return;
       }
-      const t = escapeXml(block.text || "");
-      if (block.kind === "blank") {
+      const kind = block.kind;
+      const runs = block.bold && block.bold.length
+        ? runsXml(block.text || "", block.bold) : [{ char: "0", text: block.text || "" }];
+      const runXml = runs.map((r) => '<hp:run charPrIDRef="' + r.char + '"><hp:t>' + escapeXml(r.text) + '</hp:t></hp:run>').join("");
+      if (kind === "blank") {
         paras += '<hp:p id="' + id + '" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="0"><hp:t></hp:t></hp:run></hp:p>';
-      } else if (block.kind === "title") {
-        paras += '<hp:p id="' + id + '" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="1"><hp:t>' + t + '</hp:t></hp:run></hp:p>';
-      } else if (block.kind === "heading") {
-        paras += '<hp:p id="' + id + '" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="2"><hp:t>' + t + '</hp:t></hp:run></hp:p>';
       } else {
-        paras += '<hp:p id="' + id + '" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="0"><hp:t>' + t + '</hp:t></hp:run></hp:p>';
+        const char = kind === "title" ? "1" : kind === "heading" ? "2" : null;
+        const body = char ? '<hp:run charPrIDRef="' + char + '"><hp:t>' + escapeXml(block.text || "") + '</hp:t></hp:run>' : runXml;
+        paras += '<hp:p id="' + id + '" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">' + body + '</hp:p>';
       }
       id += 1;
     });
@@ -253,7 +308,7 @@
     const creator = String(opts.creator || "PADIEM 의원3종");
     const now = new Date().toISOString();
     const blocks = opts.blocks || [];
-    const charProperties = [hwpxCharPr(0, 1000, false), hwpxCharPr(1, 2000, true), hwpxCharPr(2, 1400, true)];
+    const charProperties = [hwpxCharPr(0, 1000, false), hwpxCharPr(1, 2000, true), hwpxCharPr(2, 1400, true), hwpxCharPr(3, 1000, true)];
     const firstBlock = blocks.find((block) => block.kind === "title");
     const entries = [
       { name: "mimetype", data: utf8(HWPX_MIME) },
@@ -288,18 +343,25 @@
 
   // ── DOCX (minimal WordprocessingML, ported from kagent document_export) ──
   function docxParagraph(block) {
-    const t = escapeXml(block.text || "");
+    const runs = block.bold && block.bold.length
+      ? runsXml(block.text || "", block.bold) : [{ char: "0", text: block.text || "" }];
+    const body = runs.map((r) => '<w:r>' + (r.char === "3" || block.kind === "title" || block.kind === "heading"
+      ? '<w:rPr><w:b/></w:rPr>' : "") + '<w:t>' + escapeXml(r.text) + '</w:t></w:r>').join("");
     if (block.kind === "title") {
-      return '<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="36"/></w:rPr><w:t>' + t + '</w:t></w:r></w:p>';
+      return '<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="36"/></w:rPr><w:t>' + escapeXml(block.text || "") + '</w:t></w:r></w:p>';
+    }
+    if (block.kind === "list") {
+      return '<w:p><w:pPr><w:pStyle w:val="ListParagraph"/></w:pPr>' + body + '</w:p>';
     }
     if (block.kind === "heading") {
-      return '<w:p><w:r><w:rPr><w:b/><w:sz w:val="28"/></w:rPr><w:t>' + t + '</w:t></w:r></w:p>';
+      const styled = runs.map((r) => '<w:r><w:rPr><w:b/><w:sz w:val="28"/></w:rPr><w:t>' + escapeXml(r.text) + '</w:t></w:r>').join("");
+      return '<w:p><w:pPr><w:pStyle w:val="Heading2"/></w:pPr>' + styled + '</w:p>';
     }
     if (block.kind === "period") {
-      return '<w:p><w:r><w:rPr><w:i/><w:color w:val="555555"/></w:rPr><w:t>' + t + '</w:t></w:r></w:p>';
+      return '<w:p><w:r><w:rPr><w:i/><w:color w:val="555555"/></w:rPr><w:t>' + escapeXml(block.text || "") + '</w:t></w:r></w:p>';
     }
     if (block.kind === "blank") return "<w:p/>";
-    return '<w:p><w:r><w:t>' + t + '</w:t></w:r></w:p>';
+    return '<w:p>' + body + '</w:p>';
   }
 
   function buildDocx(options) {

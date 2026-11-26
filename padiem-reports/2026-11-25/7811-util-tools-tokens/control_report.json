@@ -1,0 +1,152 @@
+[
+ {
+  "combo": "light__1440x950__util-tools-gate",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "light__1440x950__util-tools-speech",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "light__1440x950__util-tools-sns",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "light__390x844__util-tools-gate",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "light__390x844__util-tools-speech",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "light__390x844__util-tools-sns",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "dark__1440x950__util-tools-gate",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "dark__1440x950__util-tools-speech",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "dark__1440x950__util-tools-sns",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "dark__390x844__util-tools-gate",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "dark__390x844__util-tools-speech",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "dark__390x844__util-tools-sns",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "padiem-glass__1440x950__util-tools-gate",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "padiem-glass__1440x950__util-tools-speech",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "padiem-glass__1440x950__util-tools-sns",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "padiem-glass__390x844__util-tools-gate",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "padiem-glass__390x844__util-tools-speech",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "padiem-glass__390x844__util-tools-sns",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "cinematic__1440x950__util-tools-gate",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "cinematic__1440x950__util-tools-speech",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "cinematic__1440x950__util-tools-sns",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "cinematic__390x844__util-tools-gate",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "cinematic__390x844__util-tools-speech",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "cinematic__390x844__util-tools-sns",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "padiem-home__1440x950__util-tools-gate",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "padiem-home__1440x950__util-tools-speech",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "padiem-home__1440x950__util-tools-sns",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "padiem-home__390x844__util-tools-gate",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "padiem-home__390x844__util-tools-speech",
+  "noise": 0,
+  "raw": null
+ },
+ {
+  "combo": "padiem-home__390x844__util-tools-sns",
+  "noise": 0,
+  "raw": null
+ }
+]

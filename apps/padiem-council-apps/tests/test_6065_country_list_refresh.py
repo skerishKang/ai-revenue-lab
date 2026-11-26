@@ -61,7 +61,7 @@ def test_the_activity_archive_follows_the_country_and_its_own_kind() -> None:
     record for an activity book; the archive follows the selected country.
     """
     obs = observation()
-    assert obs["krArchive"] == [KR_MEETING], obs["krArchive"]
+    assert obs["krArchive"] == [KR_MEETING.replace(".txt", "")], obs["krArchive"]
     assert obs["frArchive"] == [], obs["frArchive"]
 
 

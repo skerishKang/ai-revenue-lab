@@ -95,6 +95,18 @@ IDENTITY_RPC_INGRESS_METHODS: frozenset[str] = frozenset({
     "authorize_connector_enrollment_redeem_for_subject",
     "issue_google_connect_ticket_for_subject",
 })
+AUTH_STATE_IDENTITY_RPC_PATH_PREFIX = "/internal/auth-state/identity/"
+AUTH_STATE_IDENTITY_RPC_SECRET_BINDING = "PADIEM_AUTH_STATE_IDENTITY_RPC_SECRET"
+AUTH_STATE_IDENTITY_RPC_METHODS: frozenset[str] = frozenset({
+    "resolve_or_create_identity_subject",
+    "resolve_or_create_product_link",
+    "list_active_product_links_for_subject",
+})
+AUTH_STATE_DELETION_RECORD_RPC_PATH_PREFIX = "/internal/auth-state/deletion-record/"
+AUTH_STATE_DELETION_RECORD_RPC_SECRET_BINDING = "PADIEM_AUTH_STATE_DELETION_RECORD_RPC_SECRET"
+AUTH_STATE_DELETION_RECORD_RPC_METHODS: frozenset[str] = frozenset({
+    "resolve_subject_removed_by_account_deletion",
+})
 _SERVICE_ID_CLAIM_KEYS = frozenset({"service_id", "expires_at"})
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})
 _SESSION_KEYS = frozenset({"product_id", "subject", "authenticated_at", "not_after"})
@@ -847,19 +859,60 @@ class Default(WorkerEntrypoint):
         return await self._stub().issue_google_connect_ticket_for_subject(payload)
 
     async def fetch(self, request):
-        secret = await resolve_ingress_secret(
+        dedicated_doors = []
+        for prefix, binding, allowed_methods, dispatcher in (
+            (
+                AUTH_STATE_IDENTITY_RPC_PATH_PREFIX,
+                AUTH_STATE_IDENTITY_RPC_SECRET_BINDING,
+                AUTH_STATE_IDENTITY_RPC_METHODS,
+                self,
+            ),
+            (
+                AUTH_STATE_DELETION_RECORD_RPC_PATH_PREFIX,
+                AUTH_STATE_DELETION_RECORD_RPC_SECRET_BINDING,
+                AUTH_STATE_DELETION_RECORD_RPC_METHODS,
+                CommonLoginDeletionRecord(env=self.env),
+            ),
+        ):
+            secret = await resolve_ingress_secret(getattr(self.env, binding, None))
+            if secret is not None:
+                dedicated_doors.append((prefix, secret, allowed_methods, dispatcher))
+        shared_secret = await resolve_ingress_secret(
             getattr(self.env, IDENTITY_RPC_INGRESS_SECRET_BINDING, None)
         )
-        if secret is not None:
+        if not dedicated_doors and shared_secret is None:
+            del request
+            return Response("Not Found", status=404, headers={"cache-control": "no-store"})
+        replay_guard = DurableObjectServiceIdReplayGuard(self._stub())
+        for prefix, secret, allowed_methods, dispatcher in dedicated_doors:
             handled = await handle_internal_rpc(
                 request,
                 secret=secret,
+                allowed_methods=allowed_methods,
+                dispatcher=dispatcher,
+                service_id_policy="required",
+                replay_guard=replay_guard,
+                required_service_id_methods=allowed_methods,
+                path_prefix=prefix,
+                require_content_length=True,
+            )
+            if handled is not None:
+                status, payload, headers = handled
+                return Response(
+                    json.dumps(payload, separators=(",", ":"), ensure_ascii=False),
+                    status=status,
+                    headers=headers,
+                )
+        if shared_secret is not None:
+            handled = await handle_internal_rpc(
+                request,
+                secret=shared_secret,
                 allowed_methods=IDENTITY_RPC_INGRESS_METHODS,
                 dispatcher=self,
                 service_id_policy=service_id_policy_from_env(
                     getattr(self.env, SERVICE_ID_POLICY_ENV, None)
                 ),
-                replay_guard=DurableObjectServiceIdReplayGuard(self._stub()),
+                replay_guard=replay_guard,
                 required_service_id_methods=CONNECTOR_ACCOUNT_KEY_WRITE_METHODS | IDENTITY_SUBJECT_WRITE_METHODS,
             )
             if handled is not None:
@@ -878,9 +931,9 @@ class CommonLoginDeletionRecord(WorkerEntrypoint):
 
     It carries one read-only question: was this account number removed by
     account deletion. The method is deliberately absent from ``Default`` (the
-    entrypoint every other bound Worker holds) and from the HTTPS ingress
-    allowlist, so only a Service Binding that names this entrypoint reaches
-    it. The common login (padiem-auth) is its one reviewed caller.
+    entrypoint every other bound Worker holds) and from the shared HTTPS ingress
+    allowlist. The auth-state service reaches only this method through its own
+    default-off, v2-signed HTTPS door.
     """
 
     def _stub(self):
@@ -928,6 +981,10 @@ ACCOUNT_DELETION_RECORD_ENTRYPOINT = "CommonLoginDeletionRecord"
 ACCOUNT_DELETION_RECORD_CALLER = "padiem-auth"
 ACCOUNT_DELETION_RECORD_RPC_ON_DEFAULT_ENTRYPOINT = False
 ACCOUNT_DELETION_RECORD_RPC_ON_HTTPS_INGRESS = False
+ACCOUNT_DELETION_RECORD_RPC_ON_AUTH_STATE_HTTPS_INGRESS = True
+ACCOUNT_DELETION_RECORD_RPC_AUTH_STATE_METHODS = AUTH_STATE_DELETION_RECORD_RPC_METHODS
+AUTH_STATE_IDENTITY_RPC_HTTPS_INGRESS = True
+AUTH_STATE_IDENTITY_RPC_HTTPS_INGRESS_DEFAULT_OFF = True
 ACCOUNT_DELETION_RECORD_RPC_WRITES = False
 ACCOUNT_DELETION_RECORD_RPC_ACCEPTS_CALLER_CLOCK = False
 ACCOUNT_DELETION_RECORD_RETENTION_DAYS = 365

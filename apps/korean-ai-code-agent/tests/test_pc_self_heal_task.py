@@ -9,6 +9,9 @@ from __future__ import annotations
 import base64
 import gzip
 import re
+import shutil
+import subprocess
+import sys
 import unittest
 
 from kagent.pc_self_heal_task import (
@@ -91,7 +94,8 @@ class InstallerPayloadTests(unittest.TestCase):
         self.assertIn("'PADIEM_PC_SELF_HEAL'", script)
         self.assertIn("'PADIEM_PC_SELF_HEAL_RESTART'", script)
         self.assertIn("'Machine'", script)
-        self.assertIn("PT%dM" % INTERVAL_MINUTES, script)
+        self.assertIn("(New-TimeSpan -Minutes %d)" % INTERVAL_MINUTES, script)
+        self.assertNotIn("'PT%dM'" % INTERVAL_MINUTES, script)
 
     def test_watcher_script_has_no_machine_name_exception(self):
         # #8225 removed the single-host exclusion; every managed PC registers.
@@ -122,6 +126,36 @@ class InstallerPayloadTests(unittest.TestCase):
                 "-Unregister" if unregister else "-PythonExecutable $PythonExecutable"))
             self.assertNotIn("Invoke-Expression", command)
             self.assertNotIn("http", command)
+
+
+_SHELL = shutil.which("powershell") or shutil.which("pwsh")
+
+
+@unittest.skipUnless(sys.platform == "win32" and _SHELL,
+                     "New-ScheduledTaskTrigger is a Windows-only cmdlet")
+class RealPowerShellTriggerTests(unittest.TestCase):
+    """#8359 후속3: 등록 없이 트리거 생성만 실제 PowerShell에서 확인한다."""
+
+    def test_watcher_trigger_interval_is_a_timespan(self):
+        line = next(line for line in watcher_script().splitlines()
+                    if line.startswith("$trigger = New-ScheduledTaskTrigger"))
+        command = ("$ErrorActionPreference='Stop'; " + line
+                   + "; $trigger.Repetition.Interval")
+        out = subprocess.run([_SHELL, "-NoProfile", "-NonInteractive", "-Command", command],
+                             capture_output=True, text=True, timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(out.stdout.strip(), "PT%dM" % INTERVAL_MINUTES)
+
+    def test_definition_register_trigger_interval_is_a_timespan(self):
+        line = next(line for line in register_script(task_definition(
+            launch=build_launch(python_executable=r"C:\Python311\python.exe"))).splitlines()
+            if line.lstrip().startswith("$trigger = New-ScheduledTaskTrigger"))
+        command = ("$ErrorActionPreference='Stop'; " + line.strip()
+                   + "; $trigger.Repetition.Interval")
+        out = subprocess.run([_SHELL, "-NoProfile", "-NonInteractive", "-Command", command],
+                             capture_output=True, text=True, timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(out.stdout.strip(), "PT%dM" % INTERVAL_MINUTES)
 
 
 if __name__ == "__main__":

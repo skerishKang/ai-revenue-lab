@@ -512,7 +512,7 @@
     const download = document.createElement("button");
     download.type = "button";
     download.className = "answer-action answer-download";
-    download.textContent = localeText("answer-txt-download", "TXT 다운로드");
+    download.textContent = localeText("answer-txt-download", "텍스트 파일로 내려받기");
     download.dataset.localeKey = "answer-txt-download";
     download.addEventListener("click", () => {
       if (lifecycleApi().isCompleted(article)) downloadText(text, titleFromText(text));

@@ -11,7 +11,7 @@ from _support import sidebar_single_cell_source as sheets
 
 HTML = sheets.html()
 CSS = sheets.css()
-APP = sheets.app()  # R5 step 3: history rows live in the module too
+APP = sheets.app()  # R5: history and project rows live in their modules
 SEARCH = sheets.search()
 
 

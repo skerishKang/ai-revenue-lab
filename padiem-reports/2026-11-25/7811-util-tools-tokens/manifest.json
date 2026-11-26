@@ -1,0 +1,99 @@
+{
+  "sheet": "util-tools.css",
+  "base": "77eb700c1",
+  "measurement_host": "comp2 via schtasks Padiem7811Measure",
+  "audit": {
+    "css_color_literals": {
+      "before": 859,
+      "after": 855,
+      "delta": -4
+    },
+    "css_color_literals_unthemed": {
+      "before": 234,
+      "after": 230,
+      "delta": -4
+    },
+    "css_important": {
+      "before": 243,
+      "after": 243,
+      "delta": 0
+    },
+    "css_themed_important": {
+      "before": 66,
+      "after": 66,
+      "delta": 0
+    },
+    "css_files": {
+      "before": 93,
+      "after": 93,
+      "delta": 0
+    },
+    "css_rules": {
+      "before": 4350,
+      "after": 4350,
+      "delta": 0
+    },
+    "css_themed_rules": {
+      "before": 766,
+      "after": 766,
+      "delta": 0
+    }
+  },
+  "tokens": {
+    "new": {
+      "--util-tools-on-accent": "#fff"
+    },
+    "reused": [],
+    "definition": "padiem-tokens.css :root util-tools group with #7811 token-family --util-tools sha256=f114a67c0efeb1d6f25493712df51139b37cf776873a13c370aff542b1cafb4f",
+    "review": "4 identical #fff literals replaced by one token; no theme override"
+  },
+  "verification": {
+    "computed": {
+      "keys": 15,
+      "diffs": [],
+      "report": "computed_report.json"
+    },
+    "control": {
+      "combos": 30,
+      "nonzero": [],
+      "report": "control_report.json"
+    },
+    "tamper": {
+      "token": "--util-tools-on-accent",
+      "mutation": "#fff->#ff00ff",
+      "nonzero": [
+        "light__1440x950__util-tools-gate",
+        "light__1440x950__util-tools-speech",
+        "light__1440x950__util-tools-sns",
+        "dark__1440x950__util-tools-gate",
+        "dark__1440x950__util-tools-speech",
+        "dark__1440x950__util-tools-sns",
+        "padiem-glass__1440x950__util-tools-gate",
+        "padiem-glass__1440x950__util-tools-speech",
+        "padiem-glass__1440x950__util-tools-sns",
+        "cinematic__1440x950__util-tools-gate",
+        "cinematic__1440x950__util-tools-speech",
+        "cinematic__1440x950__util-tools-sns",
+        "padiem-home__1440x950__util-tools-gate",
+        "padiem-home__1440x950__util-tools-speech",
+        "padiem-home__1440x950__util-tools-sns"
+      ],
+      "zero": [],
+      "gate": 291,
+      "speech": 985,
+      "sns": 503,
+      "report": "tamper_report.json"
+    },
+    "compare": {
+      "combos": 30,
+      "nonzero": [],
+      "report": "compare_report.json"
+    }
+  },
+  "notes": [
+    "측정 서버를 ThreadingHTTPServer로 바꾸고 BrokenPipe를 흡수해 재측정했다. 기준·재시도·대기는 변경 없음.",
+    "캡처 8장은 상태 표식으로 확인했고 이 모델은 이미지를 직접 보지 못했다(못 봄).",
+    "컴1에서는 자기 시트 시험과 구조 래칫만 실행했다.",
+    "작업 중 main이 갱신돼 최신 main(77eb700c1)에 리베이스한 뒤 네 단계를 모두 다시 측정했다."
+  ]
+}

@@ -87,10 +87,10 @@ def affordance_facts() -> dict:
 
 
 def nav_facts() -> dict:
-    app = sheet("app.js")
+    nav = sheet("chat-nav-module.js")
     css = sheet("claw-workspace.css")
     return {
-        "aria_current_set": 'setAttribute("aria-current"' in app,
+        "aria_current_set": 'setAttribute("aria-current"' in nav,
         "missing_css": _missing(css, (
             '#clawNavButton[aria-current="page"]', '#newChatButton[aria-current="page"]',
         )),

@@ -67,16 +67,34 @@ function Set-UpdateAcl($path,$sddl) {
     $security.SetSecurityDescriptorSddlForm($sddl,[Security.AccessControl.AccessControlSections]'Owner,Group,Access')
     Set-Acl -LiteralPath $path -AclObject $security
 }
-function Replace-WithoutBackup($source,$target) {
-    # Windows PowerShell binds a null string argument as empty. Use a fixed
-    # same-directory backup and remove it only after an atomic replacement.
-    $previous = "$target.old"
-    if (Test-Path -LiteralPath $previous) { throw 'unexpected_backup' }
+function Move-Atomic($source,$target,$expectedHash) {
+    # #8359 후속3: [IO.File]::Replace는 대상 옆에 백업 파일을 만들어야 하고
+    # 대상·백업 경로가 잠기거나 읽기 전용이면 MethodInvocationException으로
+    # 실패한다. 대상과 같은 폴더에 임시 파일을 쓰고 ACL을 물려받고 해시를
+    # 확인한 뒤 같은 볼륨에서 Move-Item으로 덮어쓴다. 임시 파일은 finally에서
+    # 정리하고, 검증 전에는 원본을 건드리지 않는다. Test-UpdateAcl은 그대로
+    # 교체 뒤에 실행한다.
     $acl = Get-UpdateAcl $target
-    Set-UpdateAcl $source $acl
-    [IO.File]::Replace($source,$target,$previous)
-    if (-not (Test-UpdateAcl $target $acl)) { throw 'replacement_acl_changed' }
-    Remove-Item -LiteralPath $previous -Force
+    $staged = "$target.stage"
+    if (Test-Path -LiteralPath $staged) { throw 'unexpected_staging_file' }
+    try {
+        Copy-Item -LiteralPath $source -Destination $staged -Force
+        Set-UpdateAcl $staged $acl
+        $digest = Get-UpdateDigest $staged
+        if ($digest -ne $expectedHash -or $digest -ne (Get-UpdateDigest $source)) {
+            throw 'staged_digest_mismatch'
+        }
+        Move-Item -LiteralPath $staged -Destination $target -Force
+        if (-not (Test-UpdateAcl $target $acl)) { throw 'replacement_acl_changed' }
+    } finally {
+        if (Test-Path -LiteralPath $staged) { Remove-Item -LiteralPath $staged -Force }
+    }
+}
+function Replace-WithoutBackup($source,$target) {
+    Move-Atomic $source $target (Get-UpdateDigest $source)
+    # .NET Replace는 원본을 소비한다. Move-Item은 복사본만 옮기므로 남은
+    # 스테이징 원본을 여기서 지워야 다음 쓰기가 같은 이름으로 막히지 않는다.
+    if (Test-Path -LiteralPath $source) { Remove-Item -LiteralPath $source -Force }
 }
 function Write-AtomicJson($path,$value) {
     $tmp = "$path.new"
@@ -420,7 +438,14 @@ function Invoke-HelperUpdate {
                 $journal = [PSCustomObject]@{old=$status;next=$next;acl=$acl}
                 Write-AtomicJson $script:Journal $journal
                 Set-UpdateAcl $script:Candidate $acl
-                [IO.File]::Replace($script:Candidate,$script:Exe,$script:Backup)
+                # #8359 후속3: .NET Replace 대신 같은 폴더 임시 파일 + Move-Item.
+                 # 롤백용 이전 실행 파일은 임시 파일을 복사해 먼저 보존한다.
+                 if ((Get-UpdateDigest $script:Candidate) -ne $m.sha256) { throw 'candidate_digest_mismatch' }
+                 if (Test-Path -LiteralPath $script:Backup) { throw 'unexpected_backup' }
+                 Copy-Item -LiteralPath $script:Exe -Destination $script:Backup -Force
+                 Set-UpdateAcl $script:Backup $acl
+                 if ((Get-UpdateDigest $script:Backup) -ne (Get-UpdateDigest $script:Exe)) { throw 'backup_copy_mismatch' }
+                 Move-Atomic $script:Candidate $script:Exe $m.sha256
                 if (-not (Test-UpdateAcl $script:Exe $acl) -or (Get-UpdateDigest $script:Exe) -ne $m.sha256) {
                     Restore-Previous $journal
                     throw 'replacement_unverified'

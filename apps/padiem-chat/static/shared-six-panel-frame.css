@@ -15,12 +15,6 @@ html[data-theme="padiem-glass"] body .app-shell {
   /* The Chat/Claw composer is inset this far from the frame edge, and the amount
    * it overlaps the portrait artwork is part of the locked first-screen look. */
   --padiem-six-panel-input-inset: 14px;
-  /* The 110px is the box the frame actually sits inside: a 78px topbar plus the
-   * 16px top and 16px bottom margins. Chat's `.conversation` hides a wrong value
-   * here because `flex: 1 1 0%` recomputes its height from the free space, while
-   * the page views are `flex: 0 1 auto` and take this literal, which overflowed
-   * the document by 10px at every viewport height. */
-  --padiem-six-panel-height: calc(100dvh - 110px);
   /* ONE first-screen origin: the inset that puts the brand line (the eyebrow) and
    * the hero at the same row in every product surface. It is derived from the band
    * between the content column and the composer, NOT from the product's own block
@@ -85,17 +79,13 @@ html[data-theme="padiem-glass"] body .app-shell {
     width: var(--padiem-six-panel-width);
     min-width: 0;
     max-width: none;
-    height: var(--padiem-six-panel-height) !important;
-    min-height: 0 !important;
-    max-height: var(--padiem-six-panel-height) !important;
-    margin: 16px 0 16px var(--padiem-six-panel-left) !important;
+    --padiem-six-panel-margin: 16px 0 16px var(--padiem-six-panel-left);
+    margin: var(--padiem-six-panel-margin);
     border: 1px solid var(--shared-six-panel-frame-edge);
-    border-radius: 30px !important;
-    background: var(--shared-six-panel-frame-bg) !important;
-    box-shadow: var(--shared-six-panel-frame-shadow) !important;
+    background: var(--shared-six-panel-frame-bg);
+    box-shadow: var(--shared-six-panel-frame-shadow);
     backdrop-filter: blur(30px) saturate(106%);
     -webkit-backdrop-filter: blur(30px) saturate(106%);
-    overflow-y: auto !important;
     overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
   }
@@ -104,37 +94,16 @@ html[data-theme="padiem-glass"] body .app-shell {
  * and the reserved artwork column, so the breathing room splits evenly instead
  * of opening one wide gap between the copy and the image. */
 @media (min-width: 1921px) {
-  html[data-theme="padiem-glass"] body .app-shell :is(
+  html[data-theme="padiem-glass"] body .app-shell:not(.sidebar-collapsed) :is(
     .conversation, .calendar-view, .connectors-view,
     .library-view, .automation-view, .meeting-view, .util-view,
     .settings-advanced-view
   ) {
-    margin-left: calc(
+    --padiem-six-panel-left: calc(
       (100vw - var(--workspace-rail, 252px) - clamp(360px, 32vw, 560px) - var(--padiem-six-panel-width)) / 2
     );
   }
 }
-  /* Calendar/Connectors/Library/Automation/Meeting use the Chat/Claw eyebrow origin:
-   * one token, minus the 6px the page header box adds above its first line, so the
-   * brand line lands on the same row as the hero at desktop viewport heights
-   * previous copy of the inset here matched only one height. */
-  html[data-theme="padiem-glass"] body .app-shell :is(
-    .calendar-view, .connectors-view, .library-view, .automation-view, .meeting-view, .util-view,
-    .settings-advanced-view
-  ) {
-    padding: calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px !important;
-  }
-  /* #7476 H2: the advanced-settings plate used to be a copy of this frame in
-   * standalone-views.css; it joins the family here. Both it and the connectors
-   * page size to their content instead of taking the fixed frame height, which
-   * left an empty half-plate under the last card. The fixed ceiling stays, so
-   * a long page still scrolls inside the first-screen frame. */
-  html[data-theme="padiem-glass"] body .app-shell[data-state="settings"] .settings-advanced-view,
-  html[data-theme="padiem-glass"] body .app-shell[data-state="connectors"] .connectors-view {
-    height: auto;
-    min-height: 0;
-    max-height: var(--padiem-six-panel-height);
-  }
   /* The meeting transcript is the page's whole working surface, the same role the
    * composer has in Chat/Claw, so it takes the composer lane: inset 14px from the
    * frame edge instead of inheriting the 34px panel padding. Calendar and
@@ -181,8 +150,6 @@ html[data-theme="padiem-glass"] body .app-shell {
     .settings-advanced-view
   ) {
     width: min(920px, calc(100% - 48px));
-    margin-left: auto;
-    margin-right: auto;
   }
 }
 /* Reserve the scrollbar track before the async project/history rows arrive.
@@ -383,9 +350,6 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
       linear-gradient(180deg,rgba(255,255,255,.08),transparent 38%,rgba(17,24,31,.10));
     box-shadow: inset 0 0 180px 48px rgba(20,29,38,.12);
   }
-  html[data-theme="padiem-glass"][data-glass-mode="reading"] body::after {
-    opacity: .10 !important;
-  }
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"]::before {
     opacity: .34;
   }
@@ -573,7 +537,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspa
   #clawApprovedDisclosure,
   #clawApprovedMemory
 ) {
-  display: none !important;
+  --claw-disclosure-display: none;
 }
 /* #7459: Chat 대화 중에는 메모리·실행기록 패널을 다시 보이게 하지 않는다.
  * (이전에는 chat 상태에서 empty-state가 숨겨지면 display:block으로 되살렸다.)
@@ -587,5 +551,5 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspa
   #clawRunHistory,
   #clawApprovedMemory
 ):not([hidden]) {
-  display: block !important;
+  --claw-disclosure-display: block;
 }

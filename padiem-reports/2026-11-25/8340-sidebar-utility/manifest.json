@@ -1,0 +1,28 @@
+{
+  "sheet": "sidebar-utility.css",
+  "base": "9519ae3b9",
+  "claim": "https://github.com/skerishKang/ai-revenue-lab/issues/8340#issuecomment-7162395018",
+  "removed_count": 21,
+  "kept_count": 0,
+  "audit": {
+    "css_important": {"before": 264, "after": 243, "delta": -21},
+    "css_themed_important": {"before": 75, "after": 66, "delta": -9},
+    "sidebar-utility.css": {"before": 21, "after": 0, "delta": -21},
+    "css_color_literals": {"before": 864, "after": 864, "delta": 0},
+    "css_color_literals_unthemed": {"before": 239, "after": 239, "delta": 0},
+    "css_rules": {"before": 4350, "after": 4350, "delta": 0},
+    "css_files": {"before": 93, "after": 93, "delta": 0}
+  },
+  "verification": {
+    "computed": {"combos": 10, "declarations": 21, "removed": 21, "diffs": 0, "report": "computed_report.json", "sweep": "sweep_decisions.json"},
+    "pixel": {"host": "comp2", "combos": 30, "themes": 5, "viewports": ["1440x950", "390x844"], "screens": ["conversation", "claw", "settings-dialog", "profile-menu", "calendar"], "nonzero": [], "report": "compare_report.json"},
+    "control": {"host": "comp2", "combos": 30, "nonzero": [], "report": "control_report.json"},
+    "tests": "관련 사이드바 계약 pytest 51 passed"
+  },
+  "notes": [
+    "컴2 스위프 10조합에서 21선언 모두 계산값 차이 0이었고 픽셀 차이도 없어 전부 제거했다.",
+    "측정은 컴2(ssh comp2), 컴1에서는 변경 시험과 구조 래칫만 실행했다.",
+    "캡처 8장(2026-11-25, #8661). 시험 기대값은 !important 글자 제거만 반영했다.",
+    "새 !important·색 리터럴·규칙 수 증가 없음."
+  ]
+}

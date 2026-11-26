@@ -17,8 +17,10 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] body::before {
   box-shadow: inset 0 0 140px 28px rgba(20, 29, 38, .07);
 }
 
-html[data-theme="padiem-glass"][data-glass-mode="reading"] body::after {
-  opacity: .025;
+@media not all and (min-width: 921px) {
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body::after {
+    --shared-six-panel-frame-grain-opacity: .025;
+  }
 }
 
 html[data-theme="padiem-glass"][data-glass-mode="reading"] .app-shell::before {

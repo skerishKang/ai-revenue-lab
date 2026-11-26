@@ -356,6 +356,7 @@ def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_
     root = Path(__file__).resolve().parents[1]
     html = sheets.sheet("index.html")
     js = sheets.sheet("app.js")
+    project_js = sheets.sheet("chat-project-module.js")
     capabilities = sheets.sheet("attachment-capabilities.js")
     migration = sheets.migration("003_project_files.sql")
     assert 'id="attachmentFileInput"' in html
@@ -373,8 +374,9 @@ def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_
     assert "PDF·DOCX는 아직 지원하지 않습니다" not in html
     assert "presentationml" not in html
     assert "spreadsheetml" not in html
-    assert 'fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`' in js
+    assert 'fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`' in project_js
     assert "innerHTML" not in js
+    assert "innerHTML" not in project_js
     assert "CREATE TABLE IF NOT EXISTS project_files" in migration
     assert "content_chars <= 40000" in migration
     repo = root.parents[1]

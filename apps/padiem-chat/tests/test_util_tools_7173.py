@@ -164,7 +164,7 @@ def test_the_sheet_uses_tokens_only() -> None:
     rules = css["rules"]
     generate = [r for r in rules if any(s == ".util-generate" for s in r.selectors)]
     assert generate and declaration(generate[0], "background") == "var(--primary-bg)"
-    assert declaration(generate[0], "color") == "#fff"
+    assert declaration(generate[0], "color") == "var(--util-tools-on-accent)"
     focus = find_rules_with_selector(rules, ".util-generate:focus-visible")
     assert focus and declaration(focus[0], "outline") == "3px solid var(--primary-focus)"
     field_rules = find_rules_with_selector(rules, ".util-input")

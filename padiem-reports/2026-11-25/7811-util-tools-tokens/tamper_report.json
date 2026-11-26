@@ -1,0 +1,81 @@
+{
+ "token": "--util-tools-on-accent",
+ "mutation": "#fff->#ff00ff",
+ "results": [
+  {
+   "combo": "light__1440x950__util-tools-gate",
+   "noise": 291,
+   "raw": null
+  },
+  {
+   "combo": "light__1440x950__util-tools-speech",
+   "noise": 985,
+   "raw": null
+  },
+  {
+   "combo": "light__1440x950__util-tools-sns",
+   "noise": 503,
+   "raw": null
+  },
+  {
+   "combo": "dark__1440x950__util-tools-gate",
+   "noise": 200,
+   "raw": null
+  },
+  {
+   "combo": "dark__1440x950__util-tools-speech",
+   "noise": 732,
+   "raw": null
+  },
+  {
+   "combo": "dark__1440x950__util-tools-sns",
+   "noise": 370,
+   "raw": null
+  },
+  {
+   "combo": "padiem-glass__1440x950__util-tools-gate",
+   "noise": 202,
+   "raw": null
+  },
+  {
+   "combo": "padiem-glass__1440x950__util-tools-speech",
+   "noise": 718,
+   "raw": null
+  },
+  {
+   "combo": "padiem-glass__1440x950__util-tools-sns",
+   "noise": 369,
+   "raw": null
+  },
+  {
+   "combo": "cinematic__1440x950__util-tools-gate",
+   "noise": 200,
+   "raw": null
+  },
+  {
+   "combo": "cinematic__1440x950__util-tools-speech",
+   "noise": 732,
+   "raw": null
+  },
+  {
+   "combo": "cinematic__1440x950__util-tools-sns",
+   "noise": 370,
+   "raw": null
+  },
+  {
+   "combo": "padiem-home__1440x950__util-tools-gate",
+   "noise": 200,
+   "raw": null
+  },
+  {
+   "combo": "padiem-home__1440x950__util-tools-speech",
+   "noise": 732,
+   "raw": null
+  },
+  {
+   "combo": "padiem-home__1440x950__util-tools-sns",
+   "noise": 370,
+   "raw": null
+  }
+ ]
+}

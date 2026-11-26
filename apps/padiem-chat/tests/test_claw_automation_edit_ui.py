@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -526,6 +527,15 @@ const editButtonFor = (ruleId) => {
 """
 
 
+def _node_env_with_module_preload() -> dict:
+    preload = Path(__file__).resolve().parents[1] / "tests" / "_node_appjs_modules_preload.js"
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    env = dict(os.environ)
+    if preload.as_posix() not in existing:
+        env["NODE_OPTIONS"] = f"{existing} --require {preload.as_posix()}".strip()
+    return env
+
+
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
@@ -537,6 +547,7 @@ def _run_harness() -> dict:
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=120,
+            env=_node_env_with_module_preload(),
         )
     finally:
         harness_path.unlink(missing_ok=True)
