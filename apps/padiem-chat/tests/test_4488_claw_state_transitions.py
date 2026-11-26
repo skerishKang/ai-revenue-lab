@@ -48,6 +48,7 @@ faked with ``div`` + click handlers.
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -429,8 +430,6 @@ function boot(state) {
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-// #7216 R5 A5a: app.js 부팅이 clawRunModule() 팩토리를 필요로 하므로 모듈을 먼저 적재한다.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-claw-run-module.js"), "utf8"), sandbox, { filename: "chat-claw-run-module.js" });
 // Harness probe: the session transition is driven through the app's own status
 // read. The IIFE keeps loadAuthStatus private, so expose it for the harness
 // only; the shipped behavior under test is unchanged.
@@ -712,6 +711,15 @@ function decisionPosts(requests) {
 """
 
 
+def _node_env_with_module_preload() -> dict:
+    preload = Path(__file__).resolve().parents[1] / "tests" / "_node_appjs_modules_preload.js"
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    env = dict(os.environ)
+    if preload.as_posix() not in existing:
+        env["NODE_OPTIONS"] = f"{existing} --require {preload.as_posix()}".strip()
+    return env
+
+
 @lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
@@ -733,6 +741,7 @@ def _run_harness() -> dict:
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=120,
+            env=_node_env_with_module_preload(),
         )
     assert result.returncode == 0, f"harness exited {result.returncode}: {result.stderr}"
     line = result.stdout.strip().splitlines()[-1] if result.stdout.strip() else "{}"

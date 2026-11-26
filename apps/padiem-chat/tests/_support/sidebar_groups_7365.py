@@ -13,6 +13,8 @@ from pathlib import Path
 
 import locale_bundle
 
+from _r5_function_source import function_body
+
 ROOT = Path(__file__).resolve().parents[2]
 STATIC = ROOT / "static"
 
@@ -155,7 +157,7 @@ def settings_button_hidden() -> bool:
 
 
 def clear_project_assignments() -> list[str]:
-    block = app_js().split("function clearProjectsUI()", 1)[1].split("renderProjectState();", 1)[0]
+    block = function_body("clearProjectsUI", end="\n      }")
     return re.findall(r"\w+\.hidden\s*=\s*[^;]+;", block)
 
 

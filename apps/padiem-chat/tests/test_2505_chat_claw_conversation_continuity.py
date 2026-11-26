@@ -28,6 +28,7 @@ provider or Engine is contacted.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -495,6 +496,15 @@ vm.runInContext(APP, sandbox, { filename: "app.js" });
 """
 
 
+def _node_env_with_module_preload() -> dict:
+    preload = Path(__file__).resolve().parents[1] / "tests" / "_node_appjs_modules_preload.js"
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    env = dict(os.environ)
+    if preload.as_posix() not in existing:
+        env["NODE_OPTIONS"] = f"{existing} --require {preload.as_posix()}".strip()
+    return env
+
+
 def _run_harness() -> dict:
     with tempfile.TemporaryDirectory() as tmp:
         harness = Path(tmp) / "harness.js"
@@ -503,6 +513,7 @@ def _run_harness() -> dict:
             ["node", str(harness), str(app_js_path()), str(state_js_path()), str(transport_js_path())],
             capture_output=True,
             text=True, encoding="utf-8",
+            env=_node_env_with_module_preload(),
         )
     assert completed.returncode == 0, completed.stdout + completed.stderr
     return json.loads(completed.stdout)

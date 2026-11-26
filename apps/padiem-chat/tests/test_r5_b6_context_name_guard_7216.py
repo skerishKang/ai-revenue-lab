@@ -71,7 +71,7 @@ Object.defineProperty(shared, "setNavActive", {
   set() {},
   enumerable: true, configurable: true,
 });
-for (const k of ["setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog", "loadRecentConversations", "closeProfilePanel", "authMethodEnabled", "loadAuthStatus", "reviewedGoogleAuthorizationUrl", "uiT", "clawT", "mappedUiError", "idleNote", "setNote"]) {
+for (const k of ["setAuthFormError", "syncAuthDialogMethods", "openAuthDialog", "closeAuthDialog", "loadRecentConversations", "closeProfilePanel", "authMethodEnabled", "loadAuthStatus", "reviewedGoogleAuthorizationUrl", "uiT", "clawT", "mappedUiError", "idleNote", "setNote", "loadProjects", "renderProjectState"]) {
   Object.defineProperty(shared, k, {
     get() { return "app.js accessor value"; },
     set() {},
@@ -148,6 +148,11 @@ app4.provide("core", {
 });
 for (const k of ["uiT", "clawT", "mappedUiError", "idleNote", "setNote"]) {
   assert.equal(app4[k], coreOwner, "allowlist된 core 이름도 모듈 값이 보인다: " + k);
+}
+const projectOwner = () => "project owner";
+app4.provide("project", { loadProjects: projectOwner, renderProjectState: projectOwner });
+for (const k of ["loadProjects", "renderProjectState"]) {
+  assert.equal(app4[k], projectOwner, "allowlist된 project 이름도 모듈 값이 보인다: " + k);
 }
 checks.allowlisted_name_shows_module_value = true;
 
