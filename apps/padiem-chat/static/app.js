@@ -467,7 +467,7 @@
 
       get binaryDocuments() { return binaryDocuments; },
       get failureCodeNote() { return failureCodeNote; },
-      get fetch() { return fetch; },
+      get fetch() { return fetch.bind(window); },
       get selectedAttachments() { return selectedAttachments; },
 
     }, app)));

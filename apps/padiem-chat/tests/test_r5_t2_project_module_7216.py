@@ -183,6 +183,7 @@ def test_shared_state_stays_app_owned_and_deps_surface_is_exact() -> None:
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(\)", block))
     assert gets == {"binaryDocuments", "failureCodeNote", "fetch", "selectedAttachments"}
+    assert "get fetch() { return fetch.bind(window); }" in block
     assert sets == set()
     names = context_names(APP)
     for name in SHARED_STATE:
