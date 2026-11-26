@@ -617,12 +617,26 @@
     return isTextDocument(file)
       && (hasDocKind(file, "book") || (!(file && file.doc_kind) && isStoredBook(file)));
   }
-  /** The book file name comes from the draft's own first line, so an edited
-   *  title re-saves under the edited name; unsafe characters are dropped. */
+  /** Strip markdown markers, a leading number and heading words such as
+   *  '제목 후보' from the draft's first line. What remains is the title the
+   *  writer actually sees; the document title and the file name share it. */
+  function bookTitleFromDraft(text) {
+    return String(text || "").split("\n", 1)[0].trim()
+      .replace(/^#{1,6}\s*/, "")
+      .replace(/^[-*+]\s+/, "")
+      .replace(/^[0-9]+\.\s*/, "")
+      .replace(/^(?:책\s*\/\s*)?(?:활동집\s*)?(?:책\s*)?제목\s*후보\s*[:：]?\s*/i, "")
+      .replace(/[\\/:*?"<>|]/g, "")
+      .trim();
+  }
   function bookBaseName(text) {
-    const firstLine = String(text || "").split("\n", 1)[0].replace(/^[0-9]+\.\s*/, "").trim();
-    const safe = firstLine.replace(/[\\/:*?"<>|]/g, "").replace(/\.*$/, "").slice(0, 40).trim();
-    return BOOK_PREFIX + (safe || "제목 미정");
+    const safe = fileNamePart(bookTitleFromDraft(text)).replace(/\.*$/, "").slice(0, 40).trim();
+    if (safe.length < 2) {
+      const from = document.getElementById("councilBookStart")?.value || "";
+      const to = document.getElementById("councilBookEnd")?.value || "";
+      return "활동집_" + (from && to ? from + "~" + to : "기간미정") + "_" + todayStamp();
+    }
+    return BOOK_PREFIX + safe;
   }
   function bookFileName(text) {
     return bookBaseName(text) + ".txt";
@@ -2444,6 +2458,8 @@
     prompt += "[초안]\n" + draft + "\n\n";
     prompt += "초안의 각 문장이 원문에 근거가 있는지 확인하라.\n";
     prompt += "근거가 없거나 원문보다 강한 표현(계획→완료, 검토→결정, 날짜·기간·횟수 추가)은 원문 수준으로 고쳐라.\n";
+    prompt += "원문이 '확인한다'면 '수리한다·완료'로 바꾸지 마라. 원문이 '다시 정하기로 했다'면 '예고·확정'으로 바꾸지 마라.\n";
+    prompt += "원문에 없는 끝 날짜·기간(예: ~11월 말까지)을 만들지 마라. '계획·검토·예정·확인 예정'은 그 낱말 그대로 둘 것.\n";
     prompt += "고친 초안 전체를 먼저 쓰고, 마지막 줄에 '고친 곳: N' 을 쓴다.\n";
     prompt += "그 밖의 말은 쓰지 마라.";
     return prompt;
@@ -2923,7 +2939,7 @@
             const firstLine = String(bookOutput.value || "").split("\n", 1)[0].trim();
             return "활동집_" + (fileNamePart(firstLine.replace(/^[0-9]+\.\s*/, "")) || "초안");
           },
-          title: () => fileNamePart(String(bookOutput.value || "").split("\n", 1)[0].replace(/^[0-9]+\.\s*/, "")) || "활동집",
+          title: () => fileNamePart(bookTitleFromDraft(bookOutput.value)) || "활동집",
         });
         bookDl.addEventListener("click", () => {
           const text = String(bookOutput.value || "").trim();
