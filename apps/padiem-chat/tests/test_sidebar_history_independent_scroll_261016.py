@@ -32,7 +32,7 @@ def test_desktop_scrollport_and_pinned_account_are_explicit():
     # #4905: keep the pinned layout while it fits and let the sidebar scroll
     # itself when it cannot, so history rows are not covered by the pinned stack.
     declarations = facts["declarations"]
-    assert ("overflow", "hidden !important") in declarations
+    assert ("overflow", "hidden") in declarations
     assert ("overflow-y", "auto !important") in declarations
     assert _has_selector(facts, "#historySection:not([hidden])")
     assert ("flex", "1 1 auto") in declarations
@@ -58,8 +58,8 @@ def test_clean_rows_keep_secondary_actions_and_interactive_states():
     facts = css_facts()
     assert _has_selector(facts, ":is(.project-row, .history-row)")
     declarations = facts["declarations"]
-    assert ("border", "0 !important") in declarations
-    assert ("background", "transparent !important") in declarations
+    assert ("border", "0") in declarations
+    assert ("background", "transparent") in declarations
     assert _has_selector(facts, '.project-row:has(.project-item[aria-current="true"])')
     assert _has_selector(facts, '.history-row:has(.history-item[aria-current="page"])')
     assert _has_selector(facts, ":focus-within")

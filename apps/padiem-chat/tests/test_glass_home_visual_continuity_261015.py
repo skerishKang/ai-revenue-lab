@@ -6,6 +6,7 @@ from _support.admin_brand_home_source import (
 )
 
 from pathlib import Path
+from _support.calendar_palette import root_declarations
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 FRAME = six_panel_css()
@@ -15,8 +16,9 @@ THEME = theme_js()
 def test_owner_visual_authority_outweighs_reading_css() -> None:
     assert "CENTRAL_OWNER_HOME_VISUAL_LOCK_20261015" in FRAME
     assert '.app-shell[data-state="chat"] .conversation.conversation' in FRAME
-    assert "rgba(248,250,251,.88)" in FRAME
-    assert "rgba(233,238,241,.84)" in FRAME
+    paint = root_declarations()["--shared-six-panel-frame-bg"]
+    assert paint == "linear-gradient(155deg, rgba(248,250,251,.88), rgba(233,238,241,.84))"
+    assert "var(--shared-six-panel-frame-bg)" in FRAME
     assert "opacity: var(--glass-art-opacity)" in FRAME
     assert "filter: var(--glass-art-filter)" in FRAME
     assert "transform: translate3d(0,0,0) scale(1)" in FRAME

@@ -43,6 +43,10 @@
     set activeClawRunId(value) { activeClawRunId = value; },
     get activeProject() { return activeProject; },
     set activeProject(value) { activeProject = value; },
+    get activeProjectFileCount() { return activeProjectFileCount; },
+    set activeProjectFileCount(value) { activeProjectFileCount = value; },
+    get projectsReady() { return projectsReady; },
+    set projectsReady(value) { projectsReady = value; },
     get activeRequestArticle() { return activeRequestArticle; },
     set activeRequestArticle(value) { activeRequestArticle = value; },
     get activeRequestCancelReason() { return activeRequestCancelReason; },
@@ -102,7 +106,7 @@
     get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
     set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
     get loadAuthStatus() { return authModule().loadAuthStatus; },
-    get loadProjects() { return loadProjects; },
+    get loadProjects() { return projectModule.loadProjects; },
     get loadRecentConversations() { return historyModule().loadRecentConversations; },
     get messageList() { return messageList; },
     get openAuthDialog() { return loginDialogModule().openAuthDialog; },
@@ -120,7 +124,7 @@
     get passwordResetToken() { return passwordResetToken; },
     set passwordResetToken(value) { passwordResetToken = value; },
     get profileToggle() { return profileToggle; },
-    get renderProjectState() { return renderProjectState; },
+    get renderProjectState() { return projectModule.renderProjectState; },
     get renderStreamError() { return conversationModule().renderStreamError; },
     get renderWebGroundingNotice() { return renderWebGroundingNotice; },
     get resetConversationView() { return conversationModule().resetConversationView; },
@@ -231,7 +235,6 @@
         get applyAuthState() { return authModule().applyAuthState; },
         get clawApprovalSessionToken() { return clawApprovalSessionToken; },
         set clawApprovalSessionToken(value) { clawApprovalSessionToken = value; },
-        get clearProjectsUI() { return clearProjectsUI; },
         get invalidateClawApprovalSession() { return authModule().invalidateClawApprovalSession; },
         get loginButton() { return loginButton; },
         get openClawRunTarget() { return navModuleInstance.openClawRunTarget; },
@@ -240,7 +243,6 @@
         get pendingNotificationRunId() { return pendingNotificationRunId; },
         set pendingNotificationRunId(value) { pendingNotificationRunId = value; },
         get profilePanel() { return loginDialogModule().profilePanelElement(); },
-        get projectsBadge() { return projectsBadge; },
         get resetAccountDeleteConfirm() { return accountModule().resetAccountDeleteConfirm; },
         get resolveSessionPresentation() { return authModule().resolveSessionPresentation; },
         get setLoginButtonCopy() { return authModule().setLoginButtonCopy; },
@@ -287,8 +289,6 @@
       conversationModuleInstance = app.provide("conversation", window.PadiemChatConversationModule.create(Object.setPrototypeOf({
 
         get accountInitial() { return authModule().accountInitial; },
-        get activeProjectFileCount() { return activeProjectFileCount; },
-        set activeProjectFileCount(value) { activeProjectFileCount = value; },
         get attachmentButton() { return attachmentButton; },
         get attachmentCapabilities() { return attachmentCapabilities; },
         get attachmentCountLimit() { return conversationModule().attachmentCountLimit; },
@@ -297,9 +297,6 @@
         get buildRetryBox() { return buildRetryBox; },
         get cancelStreamButton() { return cancelStreamButton; },
         get clearAttachment() { return conversationModule().clearAttachment; },
-        get editProjectButton() { return editProjectButton; },
-        get exitProject() { return exitProject; },
-        get exitProjectButton() { return exitProjectButton; },
         get extensionOf() { return coreModule().extensionOf; },
         get failureStatusLabel() { return failureStatusLabel; },
         get form() { return form; },
@@ -333,10 +330,6 @@
       get handleCustomRequestFailure() { return handleCustomRequestFailure; },
       get invalidateClawRunsRead() { return app.invalidateClawRunsRead; },
       get lifecycleForError() { return lifecycleForError; },
-      get projectById() { return projectById; },
-      get projectFileStatus() { return projectFileStatus; },
-      get projectsReady() { return projectsReady; },
-      set projectsReady(value) { projectsReady = value; },
       get recoverStoredPcResult() { return pcRunModuleInstance.recoverStoredPcResult; },
       get renderAnswer() { return conversationModule().renderAnswer; },
       get renderCancelled() { return renderCancelled; },
@@ -467,41 +460,18 @@
   const historyList = document.getElementById("historyList");
   const historyActionStatus = document.getElementById("historyActionStatus");
   const historyEmpty = document.getElementById("historyEmpty");
-  const projectsNavButton = document.getElementById("projectsNavButton");
-  const projectsBadge = document.getElementById("projectsBadge");
-  const projectsSection = document.getElementById("projectsSection");
-  const projectsList = document.getElementById("projectsList");
-  const projectsEmpty = document.getElementById("projectsEmpty");
-  const projectCreateButton = document.getElementById("projectCreateButton");
-  const projectBanner = document.getElementById("projectBanner");
-  const activeProjectName = document.getElementById("activeProjectName");
-  const activeProjectFiles = document.getElementById("activeProjectFiles");
-  const editProjectButton = document.getElementById("editProjectButton");
-  const exitProjectButton = document.getElementById("exitProjectButton");
-  const projectDialog = document.getElementById("projectDialog");
-  const projectForm = document.getElementById("projectForm");
-  const projectDialogTitle = document.getElementById("projectDialogTitle");
-  const projectDialogClose = document.getElementById("projectDialogClose");
-  const projectDialogCancel = document.getElementById("projectDialogCancel");
-  const projectNameInput = document.getElementById("projectNameInput");
-  const projectInstructionsInput = document.getElementById("projectInstructionsInput");
-  const projectFormError = document.getElementById("projectFormError");
-  const projectSaveButton = document.getElementById("projectSaveButton");
-  const projectFormActions = projectForm.querySelector(".project-form-actions");
-  const projectDeleteButton = document.createElement("button");
-  projectDeleteButton.id = "projectDeleteButton";
-  projectDeleteButton.type = "button";
-  projectDeleteButton.className = "project-danger";
-  projectDeleteButton.textContent = coreModule().uiT("project-delete");
-  projectDeleteButton.hidden = true;
-  projectDeleteButton.setAttribute("aria-label", coreModule().uiT("project-delete-aria"));
-  projectFormActions.prepend(projectDeleteButton);
-  const projectFilesPanel = document.getElementById("projectFilesPanel");
-  const projectFileInput = document.getElementById("projectFileInput");
-  const projectFilesList = document.getElementById("projectFilesList");
-  const projectFilesUsage = document.getElementById("projectFilesUsage");
-  const projectFilesEmpty = document.getElementById("projectFilesEmpty");
-  const projectFileStatus = document.getElementById("projectFileStatus");
+  // #7812 R5 B7: the project list, dialogs and project-file controls are created
+  // here at the original declaration position. Shared selection state stays in app.js.
+  const projectModule = app.provide("project",
+    window.PadiemChatProjectModule.create(Object.setPrototypeOf({
+
+      get binaryDocuments() { return binaryDocuments; },
+      get failureCodeNote() { return failureCodeNote; },
+      get fetch() { return fetch.bind(window); },
+      get selectedAttachments() { return selectedAttachments; },
+
+    }, app)));
+  projectModule.mountProjectControls();
   const chatTransport = window.PadiemChatTransport;
   const conversationState = window.PadiemChatConversationState;
   // #2505: Chat(B62) and Claw(B54) are two screens of one product and share one
@@ -520,12 +490,6 @@
   const MESSAGE_LIFECYCLE = window.PadiemChatLifecycle.states;
   const attachmentCapabilities = window.PadiemAttachmentCapabilities;
   const binaryDocuments = window.PadiemBinaryDocuments;
-
-  const PROJECT_BINARY_EXTENSION_MEDIA = new Map([
-    [".pdf", "application/pdf"],
-    [".hwpx", "application/hwp+zip"],
-    [".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
-  ]);
 
   const ALLOWED_IMAGE_TYPES = new Set(attachmentCapabilities.images.flatMap((format) => format.mediaTypes));
   const ALLOWED_DOCUMENT_TYPES = new Set(attachmentCapabilities.textDocuments.flatMap((format) => format.mediaTypes));
@@ -559,16 +523,9 @@
   // Only the owner-scoped Claw run history can identify a Claw thread.
   const clawConversationIds = new Set();
   let clawConversationLabelsRead = null;
-  let projects = [];
   let projectsReady = false;
-  // #5882: next-page cursor from the server. When present a "load more" button is
-  // appended; on the last page there is none, so the list no longer stops silently at 50.
-  let projectsNextCursor = null;
-  let projectsLoadingMore = false;
   let activeProject = null;
   let activeProjectFileCount = 0;
-  let editingProjectId = null;
-  let dialogProjectFiles = [];
 
   // Android 1.0.0 keeps chat.padiem.net in a WebView and completes Google in a
   // Custom Tab whose cookies never reach the WebView. The WebView therefore
@@ -792,7 +749,7 @@
       conversationState.setProduct?.(retryContext.product || conversationProduct);
       conversationState.setConversationId(retryContext.conversationId);
       activeProject = retryContext.project;
-      renderProjectState();
+      projectModule.renderProjectState();
       const success = await streaming.requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, true);
       if (success && selectedAttachments === retryAttachment) conversationModule().clearAttachment();
     }, { once: true });
@@ -840,513 +797,6 @@
     content.appendChild(buildRetryBox(coreModule().uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, coreModule().uiT("regenerate")));
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
-  }
-
-  // #4489: the Library entry is owned by static/library.js. The old
-  // filesNavAvailable()/syncFilesNav() gate that also required project-file
-  // storage was removed, because Library navigation must work for a signed-in
-  // owner even when that storage is not provisioned.
-  function clearProjectsUI() {
-    projects = [];
-    projectsReady = false;
-    activeProject = null;
-    activeProjectFileCount = 0;
-    projectsList.replaceChildren();
-    // #7365: the materials group (projects and recent conversations) stays
-    // visible even with nothing in it — the section heading and the
-    // empty-state note are the honest empty answer (a guest sees the same
-    // group a signed-in account sees).
-    projectsSection.hidden = false;
-    projectsEmpty.hidden = false;
-    setProjectsListNote("");
-    if (projectsNavButton) {
-      projectsNavButton.disabled = true;
-      projectsNavButton.setAttribute("aria-disabled", "true");
-    }
-    if (projectsBadge) projectsBadge.textContent = authState.authenticated ? coreModule().uiT("setup-needed") : coreModule().uiT("login-after");
-    renderProjectState();
-  }
-  function renderProjectState() {
-    projectBanner.hidden = !activeProject;
-    activeProjectName.textContent = activeProject ? activeProject.name : "";
-    activeProjectFiles.hidden = !activeProject || activeProjectFileCount < 1;
-    activeProjectFiles.textContent = activeProjectFileCount > 0 ? coreModule().uiT("project-files-count", { count: activeProjectFileCount }) : "";
-    projectsList.querySelectorAll(".project-item").forEach((button) => {
-      button.setAttribute("aria-current", activeProject && button.dataset.projectId === activeProject.id ? "true" : "false");
-    });
-    if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
-  }
-  // Static, accessible sidebar actions: keep the translated button text
-  // and ARIA labels; only replace the low-contrast visual affordance.
-  // R5 B7: the icon renderer lives in the sidebar module (registry-provided).
-  function renderProjects() {
-    projectsList.replaceChildren();
-    projectsSection.hidden = !projectsReady;
-    projectsEmpty.hidden = !projectsReady || projects.length !== 0;
-    projects.forEach((project) => {
-      const row = document.createElement("div");
-      row.className = "project-row";
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "recent-item project-item";
-      button.dataset.projectId = project.id;
-      button.textContent = project.name;
-      button.setAttribute("aria-current", activeProject && activeProject.id === project.id ? "true" : "false");
-      button.addEventListener("click", () => selectProject(project));
-      const manage = document.createElement("button");
-      manage.type = "button";
-      manage.className = "project-manage";
-      manage.textContent = coreModule().uiT("manage");
-      manage.prepend(sidebar.sidebarActionIcon("settings"));
-      manage.setAttribute("aria-label", coreModule().uiT("project-manage-aria", { name: project.name }));
-      window.PadiemSharedTooltip?.label?.(manage, coreModule().uiT("project-manage-aria", { name: project.name }));
-      manage.addEventListener("click", () => openProjectDialog(project));
-      row.append(button, manage);
-      projectsList.appendChild(row);
-    });
-    if (projectsNextCursor && projectsReady) {
-      const moreRow = document.createElement("div");
-      moreRow.className = "project-row project-more-row";
-      const more = document.createElement("button");
-      more.type = "button";
-      more.className = "recent-item project-more";
-      more.id = "projectsMore";
-      more.textContent = coreModule().uiT("projects-more");
-      more.setAttribute("aria-label", coreModule().uiT("projects-more-aria"));
-      more.disabled = projectsLoadingMore;
-      more.addEventListener("click", () => { void loadMoreProjects(); });
-      moreRow.appendChild(more);
-      projectsList.appendChild(moreRow);
-    }
-    if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : coreModule().uiT("create-new");
-  }
-  // #6645: a stale cursor used to report through the composer note, which the
-  // glass desktop frame hides (display: none). The notice belongs next to the
-  // list it is about, so it is always painted.
-  function setProjectsListNote(text) {
-    const note = document.getElementById("projectsListNote");
-    if (!note) return;
-    const copy = typeof text === "string" ? text : "";
-    note.textContent = copy;
-    note.hidden = !copy;
-  }
-  async function loadMoreProjects() {
-    if (!projectsNextCursor || projectsLoadingMore || !authState.authenticated) return false;
-    const epoch = authViewEpoch;
-    const cursor = projectsNextCursor;
-    projectsLoadingMore = true;
-    renderProjects();
-    try {
-      const response = await fetch(
-        `/api/projects?cursor=${encodeURIComponent(cursor)}`,
-        { headers: { "Accept": "application/json" }, cache: "no-store" },
-      );
-      const data = await response.json().catch(() => null);
-      if (epoch !== authViewEpoch || !authState.authenticated || !response.ok || !data || !Array.isArray(data.projects)) {
-        // A cursor this server no longer accepts is answered 400. Refuse to loop:
-        // drop it and show what is already on screen with a plain Korean notice.
-        if (response.status === 400) {
-          projectsNextCursor = null;
-          setProjectsListNote(coreModule().uiT("projects-more-stale"));
-        }
-        return false;
-      }
-      const seen = new Set(projects.map((item) => item.id));
-      const fresh = data.projects.filter((item) => item && typeof item.id === "string"
-        && typeof item.name === "string" && !seen.has(item.id));
-      projects = projects.concat(fresh);
-      projectsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
-      setProjectsListNote("");
-      return true;
-    } catch (_) {
-      return false;
-    } finally {
-      projectsLoadingMore = false;
-      if (epoch === authViewEpoch) renderProjects();
-    }
-  }
-  async function loadProjects() {
-    if (!authState.authenticated || !authState.history_ready) {
-      clearProjectsUI();
-      return false;
-    }
-    const epoch = authViewEpoch;
-    if (projectsNavButton) {
-      projectsNavButton.disabled = true;
-      projectsNavButton.setAttribute("aria-disabled", "true");
-    }
-    if (projectsBadge) projectsBadge.textContent = coreModule().uiT("checking");
-    try {
-      const response = await fetch("/api/projects", { headers: { "Accept": "application/json" }, cache: "no-store" });
-      const data = await response.json().catch(() => null);
-      if (epoch !== authViewEpoch || !authState.authenticated) return false;
-      if (!response.ok || !data || !Array.isArray(data.projects)) throw new Error("projects unavailable");
-      projects = data.projects.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
-      projectsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
-      projectsReady = true;
-      if (projectsNavButton) {
-        projectsNavButton.disabled = false;
-        projectsNavButton.setAttribute("aria-disabled", "false");
-      }
-      if (activeProject) activeProject = projects.find((item) => item.id === activeProject.id) || activeProject;
-      renderProjects();
-      return true;
-    } catch (_) {
-      if (epoch !== authViewEpoch || !authState.authenticated) return false;
-      clearProjectsUI();
-      return false;
-    }
-  }
-  function projectById(id) {
-    return projects.find((project) => project.id === id) || null;
-  }
-  async function ensureProject(id) {
-    if (!id) return null;
-    const known = projectById(id);
-    if (known) return known;
-    if (!authState.authenticated || !projectsReady) return null;
-    const requestAuth = authState;
-    try {
-      const response = await fetch(`/api/projects/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
-      const data = await response.json().catch(() => null);
-      if (authState !== requestAuth || !authState.authenticated || !response.ok || !data || !data.project || typeof data.project.id !== "string") return null;
-      projects.unshift(data.project);
-      renderProjects();
-      return data.project;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  // Only messages constructed by our own mapping may be shown to the user.
-  function showProjectError(error, fallback) {
-    projectFormError.textContent = conversationModule().safeLocalUiMessage(error, fallback);
-    const note = failureCodeNote(error?.code, "");
-    if (note) projectFormError.appendChild(note);
-    projectFormError.hidden = false;
-  }
-
-  async function fetchProjectFiles(projectId) {
-    if (!authState.authenticated || !authState.project_files_ready || !projectId) return [];
-    const response = await fetch(`/api/projects/${encodeURIComponent(projectId)}/files`, { headers: { "Accept": "application/json" }, cache: "no-store" });
-    const data = await response.json().catch(() => null);
-    if (!response.ok || !data || !Array.isArray(data.files)) throw coreModule().mappedUiError(coreModule().uiT("project-files-load-failed"), data);
-    return data.files.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
-  }
-  async function refreshActiveProjectFileCount() {
-    if (!activeProject || !authState.project_files_ready) {
-      activeProjectFileCount = 0;
-      renderProjectState();
-      return;
-    }
-    try {
-      const files = await fetchProjectFiles(activeProject.id);
-      activeProjectFileCount = files.length;
-    } catch (_) {
-      activeProjectFileCount = 0;
-    }
-    renderProjectState();
-  }
-  let highlightedProjectFileId = null;
-  function renderProjectFiles() {
-    projectFilesList.replaceChildren();
-    const totalChars = dialogProjectFiles.reduce((sum, file) => sum + Number(file.content_chars || 0), 0);
-    if (projectFilesUsage) {
-      projectFilesUsage.textContent = coreModule().uiT("project-files-usage", {
-        count: dialogProjectFiles.length,
-        chars: totalChars.toLocaleString(),
-      });
-      projectFilesUsage.hidden = false;
-    }
-    projectFilesEmpty.hidden = dialogProjectFiles.length !== 0;
-    dialogProjectFiles.forEach((file) => {
-      const row = document.createElement("div");
-      row.className = "project-file-row";
-      if (file.id === highlightedProjectFileId) {
-        row.classList.add("quick-selected-file");
-        row.tabIndex = -1;
-        requestAnimationFrame(() => {
-          if (projectDialog.open && editingProjectId && row.isConnected) {
-            row.scrollIntoView({ block: "nearest" });
-            row.focus({ preventScroll: true });
-          }
-        });
-      }
-      const copy = document.createElement("div");
-      const strong = document.createElement("strong");
-      strong.textContent = file.name;
-      const small = document.createElement("small");
-      small.textContent = `${file.media_type} · ${coreModule().uiT("character-count", { count: Number(file.content_chars || 0).toLocaleString() })}`;
-      copy.append(strong, small);
-      const remove = document.createElement("button");
-      remove.type = "button";
-      remove.textContent = coreModule().uiT("delete");
-      remove.addEventListener("click", () => deleteProjectFile(file.id, file.name));
-      row.append(copy, remove);
-      projectFilesList.appendChild(row);
-    });
-  }
-  async function loadProjectFilesForDialog(projectId) {
-    if (!projectId || !authState.project_files_ready) {
-      dialogProjectFiles = [];
-      renderProjectFiles();
-      return;
-    }
-    try {
-      const files = await fetchProjectFiles(projectId);
-      if (!projectDialog.open || editingProjectId !== projectId) return;
-      dialogProjectFiles = files;
-      renderProjectFiles();
-      if (activeProject && activeProject.id === projectId) {
-        activeProjectFileCount = dialogProjectFiles.length;
-        renderProjectState();
-      }
-    } catch (error) {
-      showProjectError(error, coreModule().uiT("project-files-load-failed"));
-    }
-  }
-  function projectBinaryMediaType(file) {
-    // Project-scoped subset preflight: PDF/DOCX only (the server allow-lists exactly these two
-    // binaries). Extension-driven to mirror document-binary.js canRead/canonicalMediaType, which
-    // are themselves extension-canonical. Everything else — PPTX/XLSX and unsupported text types —
-    // falls through to the text path and is rejected there BEFORE any request is made.
-    return PROJECT_BINARY_EXTENSION_MEDIA.get(coreModule().extensionOf(file && file.name)) || null;
-  }
-  let projectFileBusy = false;
-  function setProjectFileBusy(busy) {
-    projectFileBusy = busy;
-    if (busy) {
-      projectFilesPanel.setAttribute("aria-busy", "true");
-      projectFileInput.setAttribute("aria-disabled", "true");
-      if (projectFileStatus) { projectFileStatus.textContent = coreModule().uiT("document-saving"); projectFileStatus.hidden = false; }
-    } else {
-      projectFilesPanel.removeAttribute("aria-busy");
-      projectFileInput.removeAttribute("aria-disabled");
-      if (projectFileStatus) { projectFileStatus.hidden = true; projectFileStatus.textContent = ""; }
-    }
-  }
-  async function addProjectFile(file) {
-    if (!file || !editingProjectId || !authState.project_files_ready) return;
-    projectFileInput.value = "";
-    if (projectFileBusy) return;
-    // Clear any stale error so a successful retry never leaves the old message up.
-    projectFormError.hidden = true;
-    projectFormError.textContent = "";
-    // #6126: a project .hwp is judged by its own bytes. The older OLE2 binary
-    // Hangul format is never converted — the panel answers with the ordinary
-    // save-as-HWPX guidance as a status note (not the error row) — and a
-    // mislabeled file whose bytes are a real HWPX (ZIP) package keeps working
-    // as HWPX through the same binary upload the .hwpx extension uses.
-    const hwpFamily = coreModule().extensionOf(file.name) === ".hwp"
-      ? (await binaryDocuments?.headerFamily?.(file)) || null
-      : null;
-    if (hwpFamily === "ole") {
-      if (projectFileStatus) {
-        projectFileStatus.textContent = coreModule().hwpLegacyGuidance();
-        projectFileStatus.hidden = false;
-      }
-      return;
-    }
-    setProjectFileBusy(true);
-    try {
-      let projectBinary = projectBinaryMediaType(file);
-      if (!projectBinary && hwpFamily === "zip" && binaryDocuments?.hwpxMedia) {
-        projectBinary = binaryDocuments.hwpxMedia;
-      }
-      if (projectBinary) {
-        // #6579: every binary goes through the shared tus module, which owns the
-        // progress line, the resume policy and the first-party guidance copy.
-        if (!window.PadiemProjectFileUpload) throw coreModule().mappedUiError(coreModule().uiT("project-file-save-failed"), null);
-        const uploaded = await window.PadiemProjectFileUpload.upload({
-          file,
-          projectId: editingProjectId,
-          mediaType: projectBinary,
-          onProgress: (sent, total) => {
-            if (projectFileStatus && !projectFileStatus.hidden && total > 0) {
-              const percent = Math.min(100, Math.round((sent / total) * 100));
-              projectFileStatus.textContent = `${coreModule().uiT("document-saving")} ${percent}%`;
-            }
-          },
-        });
-        if (!uploaded || !uploaded.file) throw coreModule().mappedUiError(coreModule().uiT("project-file-save-failed"), null);
-      } else {
-        const documentFile = await coreModule().readDocumentFile(file);
-        const payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
-        const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
-          method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const data = await response.json().catch(() => null);
-        if (!response.ok || !data || !data.file) {
-          throw coreModule().mappedUiError(coreModule().uiT("project-file-save-failed"), data);
-        }
-      }
-      await loadProjectFilesForDialog(editingProjectId);
-    } catch (error) {
-      showProjectError(error, coreModule().uiT("project-file-save-failed"));
-    } finally {
-      setProjectFileBusy(false);
-    }
-  }
-  async function deleteProjectFile(fileId, name) {
-    if (!editingProjectId || !authState.project_files_ready) return;
-    const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: coreModule().uiT("project-file-delete-title"),
-      message: coreModule().uiT("project-file-delete-message", { name }),
-      cancelLabel: coreModule().uiT("cancel"),
-      confirmLabel: coreModule().uiT("delete"),
-    });
-    if (!confirmed) return;
-    try {
-      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files/${encodeURIComponent(fileId)}`, { method: "DELETE" });
-      if (!response.ok) throw coreModule().mappedUiError(coreModule().uiT("project-file-delete-failed"), await response.json().catch(() => null));
-      await loadProjectFilesForDialog(editingProjectId);
-    } catch (error) {
-      showProjectError(error, coreModule().uiT("project-file-delete-failed"));
-    }
-  }
-
-  // #2505: the sidebar Chat entry returns to the Chat lane while the user is in
-  // the Claw workspace. Inside the Chat state the same entry starts a new
-  // conversation. Every other caller resets the view directly, because a
-  // sign-out, a project change or a delete must clear the conversation no
-  // matter which product is on screen.
-  function selectProject(project) {
-    if (!projectsReady || !project || inFlight) return;
-    activeProject = project;
-    activeProjectFileCount = 0;
-    conversationModule().resetConversationView(true);
-    refreshActiveProjectFileCount();
-  }
-  function exitProject() {
-    if (inFlight) return;
-    activeProject = null;
-    activeProjectFileCount = 0;
-    conversationModule().resetConversationView(false);
-  }
-  function openProjectDialog(project = null, selectedFileId = null) {
-    if (!projectsReady || !authState.authenticated || inFlight) return;
-    editingProjectId = project ? project.id : null;
-    highlightedProjectFileId = selectedFileId;
-    projectDialogTitle.textContent = project ? coreModule().uiT("project-edit-title") : coreModule().uiT("project-new");
-    projectNameInput.value = project ? project.name : "";
-    projectInstructionsInput.value = project && typeof project.instructions === "string" ? project.instructions : "";
-    projectFormError.textContent = "";
-    projectFormError.hidden = true;
-    projectSaveButton.disabled = false;
-    projectDeleteButton.hidden = !project;
-    projectDeleteButton.disabled = false;
-    projectFilesPanel.hidden = !(project && authState.project_files_ready);
-    dialogProjectFiles = [];
-    renderProjectFiles();
-    projectDialog.showModal();
-  // #3190: an existing project loads its Drive case-folder status; a brand new
-  // project has no project_id yet, so the Drive section stays hidden.
-  const drivePanel = document.getElementById("projectDrivePanel");
-  if (window.padiemProjectDriveFolder) {
-    window.padiemProjectDriveFolder.reset();
-    if (project && project.id) {
-      if (drivePanel) drivePanel.hidden = false;
-      window.padiemProjectDriveFolder.loadStatus(project.id);
-    } else if (drivePanel) {
-      drivePanel.hidden = true;
-    }
-  }
-    if (project && authState.project_files_ready) loadProjectFilesForDialog(project.id);
-    projectNameInput.focus();
-  }
-  function closeProjectDialog() {
-    if (window.padiemProjectDriveFolder) window.padiemProjectDriveFolder.reset();
-  if (projectDialog.open && typeof projectDialog.close === "function") projectDialog.close();
-    editingProjectId = null;
-    dialogProjectFiles = [];
-    projectFileInput.value = "";
-    projectFormError.textContent = "";
-    projectFormError.hidden = true;
-  }
-  async function saveProject(event) {
-    event.preventDefault();
-    if (!projectsReady || !authState.authenticated) return;
-    const name = projectNameInput.value.trim();
-    const instructions = projectInstructionsInput.value.trim();
-    if (!name) {
-      projectFormError.textContent = coreModule().uiT("project-name-required");
-      projectFormError.hidden = false;
-      return;
-    }
-    projectSaveButton.disabled = true;
-    projectFormError.hidden = true;
-    try {
-      const editing = Boolean(editingProjectId);
-      const url = editing ? `/api/projects/${encodeURIComponent(editingProjectId)}` : "/api/projects";
-      const response = await fetch(url, {
-        method: editing ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ name, instructions }),
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.project) {
-        throw coreModule().mappedUiError(coreModule().uiT("project-save-failed"), data);
-      }
-      const saved = data.project;
-      const index = projects.findIndex((item) => item.id === saved.id);
-      if (index >= 0) projects[index] = saved; else projects.unshift(saved);
-      if (activeProject && activeProject.id === saved.id) activeProject = saved;
-      renderProjects();
-      renderProjectState();
-      closeProjectDialog();
-      if (!editing) selectProject(saved);
-    } catch (error) {
-      showProjectError(error, coreModule().uiT("project-save-failed"));
-      projectSaveButton.disabled = false;
-    }
-  }
-
-  async function deleteProject() {
-    if (!editingProjectId || !projectsReady || !authState.authenticated || inFlight) return;
-    const project = projectById(editingProjectId);
-    if (!project) return;
-    const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: coreModule().uiT("project-delete-title"),
-      message: coreModule().uiT("project-delete-message", { name: project.name }),
-      cancelLabel: coreModule().uiT("cancel"),
-      confirmLabel: coreModule().uiT("delete"),
-    });
-    if (!confirmed) return;
-    const deletingId = editingProjectId;
-    const deletingActiveProject = Boolean(activeProject && activeProject.id === deletingId);
-    projectDeleteButton.disabled = true;
-    projectSaveButton.disabled = true;
-    projectFormError.hidden = true;
-    try {
-      const response = await fetch(`/api/projects/${encodeURIComponent(deletingId)}`, {
-        method: "DELETE",
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || data.deleted !== true || data.project_id !== deletingId) {
-        throw coreModule().mappedUiError(coreModule().uiT("project-delete-failed"), data);
-      }
-      projects = projects.filter((item) => item.id !== deletingId);
-      if (deletingActiveProject) {
-        activeProject = null;
-        activeProjectFileCount = 0;
-      }
-      renderProjects();
-      renderProjectState();
-      closeProjectDialog();
-      await loadProjects();
-      if (deletingActiveProject) {
-        renderProjectState();
-        coreModule().setNote(coreModule().idleNote());
-      }
-      input.focus();
-    } catch (error) {
-      showProjectError(error, coreModule().uiT("project-delete-failed"));
-      projectDeleteButton.disabled = false;
-      projectSaveButton.disabled = false;
-    }
   }
 
   // #5479: one presentation rule for every session state, so the sign-in entry
@@ -1541,7 +991,7 @@
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.conversation || !Array.isArray(data.conversation.messages)) throw new Error(coreModule().uiT("conversation-load-failed"));
       const savedProjectId = typeof data.conversation.project_id === "string" ? data.conversation.project_id : null;
-      const restoredProject = savedProjectId ? await ensureProject(savedProjectId) : null;
+      const restoredProject = savedProjectId ? await projectModule.ensureProject(savedProjectId) : null;
       if (savedProjectId && !restoredProject) throw new Error(coreModule().uiT("conversation-project-load-failed"));
       // Paint the list early, but preserve the existing canonical Claw lane
       // classification when the user opens a row before its labels arrive.
@@ -1562,8 +1012,8 @@
       conversationState.setConversationId(data.conversation.id, targetProduct);
       activeProject = restoredProject;
       activeProjectFileCount = 0;
-      renderProjectState();
-      if (activeProject) refreshActiveProjectFileCount();
+      projectModule.renderProjectState();
+      if (activeProject) projectModule.refreshActiveProjectFileCount();
       if (isVerifiedClawThread) navModuleInstance.openClawWorkspace();
       conversationModule().showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
       app.syncApprovedMemoryVisibility();
@@ -1605,21 +1055,8 @@
   // resolves from the owner list or its existing authenticated project lookup;
   // a foreign or stale id opens nothing. This handle grants no new authority.
   window.PadiemChatProjectOpener = Object.freeze({
-    openFile: async (projectId, fileId) => {
-      if (!projectsReady || !authState.authenticated || inFlight) return false;
-      const requestAuth = authState;
-      const project = await ensureProject(projectId);
-      if (!project || authState !== requestAuth || !authState.authenticated || inFlight) return false;
-      openProjectDialog(project, fileId);
-      return true;
-    },
-    open: (projectId) => {
-      if (!projectsReady || !authState.authenticated || inFlight) return false;
-      const project = projects.find((item) => item && item.id === projectId);
-      if (!project) return false;
-      openProjectDialog(project);
-      return true;
-    },
+    openFile: projectModule.openFile,
+    open: projectModule.open,
   });
 
     // Hark's private web XLSX intake creates a separate trusted owner-owned
@@ -1851,26 +1288,7 @@
       if (files.length) void conversationModule().addAttachmentFiles(files);
     });
   }
-  if (projectsNavButton) projectsNavButton.addEventListener("click", () => {
-    if (!projectsReady) return;
-    if (projects.length === 0) openProjectDialog();
-    else projectsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  });
-  projectCreateButton.addEventListener("click", () => openProjectDialog());
-  editProjectButton.addEventListener("click", () => { if (activeProject) openProjectDialog(activeProject); });
-  exitProjectButton.addEventListener("click", exitProject);
-  projectDialogClose.addEventListener("click", closeProjectDialog);
-  projectDialogCancel.addEventListener("click", closeProjectDialog);
-  projectForm.addEventListener("submit", saveProject);
-  projectDeleteButton.addEventListener("click", deleteProject);
-  projectFileInput.addEventListener("change", () => {
-    const [file] = projectFileInput.files || [];
-    addProjectFile(file);
-  });
-  projectDialog.addEventListener("cancel", (event) => {
-    event.preventDefault();
-    closeProjectDialog();
-  });
+  projectModule.wireProjectListeners();
   // #5560: one sign-out implementation, reached from the sidebar session
   // button and from Settings > Account. The server session invalidation and
   // the local conversation reset are the same in both paths.
@@ -1917,8 +1335,8 @@
     authModule().applyAuthState(authState);
     androidHandoffModule().renderAndroidHandoff();
     navModuleInstance.setNavActive();
-    if (projectsReady) renderProjects();
-    renderProjectState();
+    if (projectsReady) projectModule.renderProjects();
+    projectModule.renderProjectState();
     if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
     clawStatusModule().syncComposerForClaw(shell.dataset.state === "claw");
       });
@@ -2243,7 +1661,7 @@
   });
 
   coreModule().setNote(coreModule().idleNote());
-  renderProjectState();
+  projectModule.renderProjectState();
   conversationModule().updateComposer();
   // A guide example arrives as text only: it fills the composer, sends nothing,
   // and leaves no query in the address bar for the next refresh to replay.
@@ -2256,7 +1674,7 @@
     } catch (_) {}
   }
   window.PadiemChatSession.bind({
-    clearHistoryUI: historyModule().clearHistoryUI, clearProjectsUI, resetConversationView: conversationModule().resetConversationView, clearAndroidHandoff: androidHandoffModule().clearAndroidHandoff,
+    clearHistoryUI: historyModule().clearHistoryUI, clearProjectsUI: projectModule.clearProjectsUI, resetConversationView: conversationModule().resetConversationView, clearAndroidHandoff: androidHandoffModule().clearAndroidHandoff,
     hasAndroidHandoff: () => Boolean(androidHandoff),
     clearHandoffStorage: () => {
       try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}

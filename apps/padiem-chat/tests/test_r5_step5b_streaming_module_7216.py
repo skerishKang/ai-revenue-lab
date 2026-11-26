@@ -25,12 +25,14 @@ from pathlib import Path
 
 import pytest
 from _r5_b6_wiring import context_names, create_receives_app_context
+from _r5_function_source import definition_source
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = app_js()
 MODULE = streaming_module_js()
 INDEX = index_html()
 STRICT = strict_deps_js()
+PROJECT_API_NAMES = set(re.findall(r"^        (\w+),$", definition_source("loadProjects"), re.M))
 
 NAMES = (
     "requestCompletedAnswer",
@@ -188,7 +190,8 @@ def test_deps_count_matches_the_mover_analysis() -> None:
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
     assert gets <= EXPECTED_GETTERS
-    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
+    inherited_getters = context_names(APP) | PROJECT_API_NAMES
+    assert gets | (EXPECTED_GETTERS & inherited_getters) == EXPECTED_GETTERS
     assert sets <= EXPECTED_SETTERS
     assert sets | (EXPECTED_SETTERS & context_names(APP)) == EXPECTED_SETTERS
 

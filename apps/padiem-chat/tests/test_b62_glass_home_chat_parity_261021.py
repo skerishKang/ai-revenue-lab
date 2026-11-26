@@ -26,6 +26,8 @@ import pytest
 
 # #8060: 원문 read는 _support(glass_home_parity_source)가 담당하고,
 # 이 모듈은 파싱된 블록과 계산된 offender 목록으로 단언한다.
+from css_rules import is_list_items, rules_for_sheet
+from _support.calendar_palette import root_declarations
 from _support.glass_home_parity_source import (  # noqa: E402
     all_css_sheets, css_text, js_text, markup_text, tokens_text,
 )
@@ -151,7 +153,7 @@ def test_the_chat_panel_is_not_restyled_by_the_brand_sheet() -> None:
 # its own copy of the origin is what drifted the Claw brand line ~30px below the
 # Chat one, invisibly: nothing compared the two products' Y coordinates.
 ORIGIN_CONTRACT_FILES = (
-    "padiem-first-use.css", "shared-six-panel-frame.css",
+    "padiem-first-use.css", "shared-six-panel-frame.css", "padiem-glass-panel-layout.css",
     "padiem-glass-brand-polish.css", "padiem-glass-portrait.css",
 )
 ORIGIN_TOKEN = "--padiem-first-screen-inset"
@@ -327,12 +329,17 @@ def test_every_reachable_shell_state_declares_its_page_contract() -> None:
 
 
 def test_every_page_view_reads_the_same_origin_token() -> None:
-    """The five workflow pages already say they use the Chat/Claw eyebrow row."""
-    css = css_text("shared-six-panel-frame.css")
-    shared = css.split(".calendar-view, .connectors-view, .library-view", 1)[1][:400]
-    assert f"var({ORIGIN_TOKEN})" in shared
-    # The copied expression is what made the other pages drift with the hero.
-    assert "clamp(52px, 7.4vh, 88px)" not in shared
+    """All seven workflow views read their vertical origin from the Glass frame."""
+    rules = rules_for_sheet("padiem-glass-panel-layout.css")
+    owner, = [rule for rule in rules if "--padiem-six-panel-page-padding" in rule.declarations]
+    assert owner.declarations["--padiem-six-panel-page-padding"] == (
+        f"calc(var({ORIGIN_TOKEN}) - 7px) var(--padiem-six-panel-pad-x) 36px"
+    )
+    pages, = [rule for rule in rules if rule.declarations.get("padding") == "var(--padiem-six-panel-page-padding)"]
+    assert {page for selector in pages.selectors for page in is_list_items(selector)} == {
+        ".calendar-view", ".connectors-view", ".library-view", ".automation-view",
+        ".meeting-view", ".util-view", ".settings-advanced-view",
+    }
 
 
 def test_the_chat_state_reads_the_first_screen_surface_tokens() -> None:
@@ -353,12 +360,13 @@ def test_the_narrow_window_is_locked_to_the_first_screen() -> None:
     tablet = css.split("@media (max-width: 920px)", 1)[1].split("@media (max-width: 620px)", 1)[0]
     assert '.conversation.conversation' in tablet
     # #8008 11차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
-    assert "background: rgba(242, 245, 247, .90);" in tablet
+    assert "background: var(--shared-six-panel-frame-narrow-bg);" in tablet
+    assert root_declarations()["--shared-six-panel-frame-narrow-bg"] == "rgba(242, 245, 247, .90)"
     assert "blur(30px) saturate(106%);" in tablet
     assert ".main-panel::before" in tablet
-    assert "opacity: .22 !important;" in tablet
+    assert "opacity: .22;" in tablet
     phone = css.split("@media (max-width: 620px)", 1)[1].split("/* The surface tokens", 1)[0]
-    assert "opacity: .16 !important;" in phone
+    assert "opacity: .16;" in phone
 
 
 def test_the_chat_composer_row_spacing_stays_first_screen() -> None:

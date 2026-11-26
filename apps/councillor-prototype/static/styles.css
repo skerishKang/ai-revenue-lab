@@ -121,9 +121,30 @@ main { flex: 1 0 auto; }
   font: inherit; font-size: var(--fs-label); letter-spacing: 0.02em;
 }
 .ghost:hover { border-color: var(--accent-2); color: var(--accent-2); }
-.text-size-label-large { display: none; }
+/* #8740b: header controls keep their own type scale so large text cannot grow
+   the bar, and narrow screens swap the words for 44px icon buttons. */
+.topbar .ghost { font-size: 14px; white-space: nowrap; word-break: keep-all; }
+.theme-label-dark, .text-size-label-large, .header-icon { display: none; }
 html[data-text-size="large"] .text-size-label-normal { display: none; }
 html[data-text-size="large"] .text-size-label-large { display: inline; }
+[data-theme="dark"] .theme-label-normal { display: none; }
+[data-theme="dark"] .theme-label-dark { display: inline; }
+[data-theme="dark"] .icon-moon { display: none; }
+html[data-text-size="large"] .icon-text-large { display: none; }
+@media (max-width: 480px) {
+  .topbar { gap: 8px; padding: 0 12px; }
+  .top-actions { gap: 8px; }
+  .topbar .ghost { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; }
+  .topbar .header-label { display: none !important; }
+  .topbar .header-icon { display: none; align-items: center; justify-content: center; font-size: 18px; line-height: 1; }
+  .topbar .icon-moon, .topbar .icon-text-large { display: inline-flex; }
+  [data-theme="dark"] .topbar .icon-moon { display: none; }
+  [data-theme="dark"] .topbar .icon-sun { display: inline-flex; }
+  html[data-text-size="large"] .topbar .icon-text-large { display: none; }
+  html[data-text-size="large"] .topbar .icon-text-normal { display: inline-flex; }
+  .brand-tagline { display: none; }
+}
+.brand-name { white-space: nowrap; word-break: keep-all; overflow: hidden; text-overflow: ellipsis; }
 .top-cta {
   display: inline-flex; align-items: center; gap: 8px; min-height: var(--tap);
   background: var(--accent); color: var(--paper); text-decoration: none;
@@ -204,7 +225,7 @@ html[data-text-size="large"] .text-size-label-large { display: inline; }
 [data-theme="dark"] .hero-name-sub { color: #7cc0ea; }
 .hero-lead {
   margin: 0 0 20px; max-width: 44ch;
-  font-size: 16px; line-height: 1.62;
+  font-size: var(--fs-body); line-height: 1.62;
   color: var(--navy-soft);
 }
 [data-theme="dark"] .hero-lead { color: #c3ccd8; }
@@ -651,7 +672,7 @@ html[data-text-size="large"] .text-size-label-large { display: inline; }
     filter: drop-shadow(0 6px 16px rgba(11, 26, 46, 0.16));
   }
 .hero-name { font-size: 30px; margin-bottom: 10px; }
-.hero-lead { font-size: var(--fs-body); margin-bottom: 16px; max-width: none; }
+.hero-lead { margin-bottom: 16px; max-width: none; }
 /* The base veil fades out to the right and is fully transparent past 64% of the width,
      so a full-width phone paragraph loses its backing over the right third (measured 3.97:1
      worst-case against 9px-wide photo pockets at 390px). The 900px block's vertical veil

@@ -1,0 +1,144 @@
+{
+ "sheet": "sidebar-unified.css",
+ "combos": 10,
+ "removed": [
+  {
+   "line": 21,
+   "prop": "border"
+  },
+  {
+   "line": 22,
+   "prop": "border-radius"
+  },
+  {
+   "line": 23,
+   "prop": "background"
+  },
+  {
+   "line": 49,
+   "prop": "background"
+  },
+  {
+   "line": 59,
+   "prop": "position"
+  },
+  {
+   "line": 60,
+   "prop": "height"
+  },
+  {
+   "line": 61,
+   "prop": "width"
+  },
+  {
+   "line": 62,
+   "prop": "margin"
+  },
+  {
+   "line": 63,
+   "prop": "padding"
+  },
+  {
+   "line": 64,
+   "prop": "border"
+  },
+  {
+   "line": 65,
+   "prop": "overflow"
+  },
+  {
+   "line": 66,
+   "prop": "clip-path"
+  },
+  {
+   "line": 67,
+   "prop": "white-space"
+  },
+  {
+   "line": 96,
+   "prop": "padding"
+  },
+  {
+   "line": 98,
+   "prop": "border"
+  },
+  {
+   "line": 99,
+   "prop": "border-radius"
+  },
+  {
+   "line": 100,
+   "prop": "background"
+  },
+  {
+   "line": 101,
+   "prop": "box-shadow"
+  },
+  {
+   "line": 116,
+   "prop": "padding"
+  },
+  {
+   "line": 118,
+   "prop": "border"
+  },
+  {
+   "line": 119,
+   "prop": "border-radius"
+  },
+  {
+   "line": 121,
+   "prop": "box-shadow"
+  },
+  {
+   "line": 122,
+   "prop": "color"
+  },
+  {
+   "line": 125,
+   "prop": "font-size"
+  },
+  {
+   "line": 126,
+   "prop": "display"
+  },
+  {
+   "line": 140,
+   "prop": "padding"
+  },
+  {
+   "line": 141,
+   "prop": "border"
+  },
+  {
+   "line": 142,
+   "prop": "border-radius"
+  },
+  {
+   "line": 143,
+   "prop": "background"
+  },
+  {
+   "line": 144,
+   "prop": "box-shadow"
+  },
+  {
+   "line": 145,
+   "prop": "color"
+  },
+  {
+   "line": 149,
+   "prop": "background"
+  }
+ ],
+ "kept": [
+  {
+   "line": 24,
+   "prop": "box-shadow"
+  },
+  {
+   "line": 120,
+   "prop": "background"
+  }
+ ]
+}

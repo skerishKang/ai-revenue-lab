@@ -173,3 +173,38 @@ def test_refresh_command_registers_the_fixed_watcher_after_the_updater():
     for text in ("updated:registered", "updated:watcher_python_missing", "failed:watcher_unregistered"):
         assert parse_receipt("PADIEM_HELPER_REFRESH:" + text)["reason"] == text.split(":")[1]
     assert "http" not in command.replace("FromBase64String", "")
+
+
+def test_reservation_is_taken_over_only_after_a_terminal_attempt():
+    """#8359 후속3: 끝난 시도는 새 원본의 시도가 이어받고, 진행 중은 막는다."""
+
+    async def run():
+        db, _ = database(full=True)
+        try:
+            store = D1MeshDeviceDriveStore(SqliteD1(db))
+            device = "node//takeover"
+            observed = "d" * 64
+            first, second, third = "a" * 64, "b" * 64, "c" * 64
+            assert await store.reserve_updater_registration(
+                device_id=device, sha256=observed, actor=OWNER, attempt_id=first, now=NOW)
+            await store.record_updater_registration(
+                device_id=device, sha256=observed, attempt_id=first, reason="stopped")
+            assert (await store.load_updater_registration(
+                device_id=device, sha256=observed))["reason"] == "stopped"
+
+            assert await store.reserve_updater_registration(
+                device_id=device, sha256=observed, actor=OTHER, attempt_id=second, now=NOW)
+            row = await store.load_updater_registration(device_id=device, sha256=observed)
+            assert row["attempt_id"] == second and row["actor_user_id"] == OTHER
+            assert row["dispatch_id"] is None and row["reason"] is None
+
+            await store.record_updater_registration(
+                device_id=device, sha256=observed, attempt_id=second, dispatch_id="disp-1")
+            assert not await store.reserve_updater_registration(
+                device_id=device, sha256=observed, actor=OTHER, attempt_id=third, now=NOW)
+            assert (await store.load_updater_registration(
+                device_id=device, sha256=observed))["attempt_id"] == second
+        finally:
+            db.close()
+
+    asyncio.run(run())

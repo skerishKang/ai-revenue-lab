@@ -44,6 +44,7 @@ import locale_bundle
 from functools import lru_cache
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -740,6 +741,15 @@ function cardWith(summary) {
 # All consumers assert read-only facts from the same completed real app.js
 # behavior journey. Reuse it once per Python module rather than respawning
 # Node for each test; separate pytest processes still run independent checks.
+def _node_env_with_module_preload() -> dict:
+    preload = Path(__file__).resolve().parents[1] / "tests" / "_node_appjs_modules_preload.js"
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    env = dict(os.environ)
+    if preload.as_posix() not in existing:
+        env["NODE_OPTIONS"] = f"{existing} --require {preload.as_posix()}".strip()
+    return env
+
+
 @lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
@@ -754,6 +764,7 @@ def _run_harness() -> dict:
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=120,
+            env=_node_env_with_module_preload(),
         )
     finally:
         harness_path.unlink(missing_ok=True)

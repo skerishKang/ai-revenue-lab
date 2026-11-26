@@ -83,7 +83,7 @@ html[data-theme="padiem-glass"] .sidebar-bottom-divider {
   border-radius: var(--sidebar-control-radius);
 }
 .sidebar-account[hidden] {
-  display: none !important;
+  display: none;
 }
 .account-avatar {
   width: 30px;
@@ -145,7 +145,7 @@ html[data-theme="padiem-glass"] .sidebar-bottom-divider {
   background: color-mix(in srgb, var(--text) 10%, transparent);
 }
 .sidebar-account[data-account-state="pending"][data-account-hint="signed_in"] #loginPending {
-  display: none !important;
+  display: none;
 }
 
 @media (max-width: 640px) {
@@ -245,7 +245,7 @@ html[data-theme="padiem-glass"] .brand-row {
 @media (max-width: 920px) {
   .sidebar-collapse-button,
   .sidebar-restore-button {
-    display: none !important;
+    display: none;
   }
 }
 @media (min-width: 921px) {
@@ -266,24 +266,22 @@ html[data-theme="padiem-glass"] .brand-row {
     min-width: 0;
   }
   html body .app-shell.sidebar-collapsed .composer-wrap {
-    left: 50% !important;
-    width: min(920px, calc(100vw - 48px)) !important;
-    transform: translateX(-50%) !important;
+    left: 50%;
+    width: min(920px, calc(100vw - 48px));
+    transform: translateX(-50%);
   }
   html[data-theme="padiem-glass"] body .app-shell.sidebar-collapsed[data-state="claw"] .composer-wrap {
-    left: 50% !important;
-    width: min(920px, calc(100vw - 48px)) !important;
-    transform: translateX(-50%) !important;
+    left: 50%;
+    width: min(920px, calc(100vw - 48px));
+    transform: translateX(-50%);
   }
   html[data-theme="padiem-glass"] body .app-shell.sidebar-collapsed[data-state="chat"] .composer-wrap {
-    left: 50% !important;
-    width: min(920px, calc(100vw - 48px)) !important;
-    transform: translateX(-50%) !important;
+    left: 50%;
+    width: min(920px, calc(100vw - 48px));
+    transform: translateX(-50%);
   }
   html[data-theme="padiem-glass"] body .app-shell.sidebar-collapsed[data-state="chat"] .conversation {
-    width: min(1000px, calc(100% - 48px)) !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    width: min(1000px, calc(100% - 48px));
   }
 }
 
@@ -325,7 +323,7 @@ html[data-theme="padiem-glass"] .brand-row {
   color: var(--text);
 }
 .sidebar-account .profile-menu[hidden] {
-  display: none !important;
+  display: none;
 }
 .sidebar-account .profile-menu-divider {
   border: none;
@@ -479,7 +477,7 @@ html[data-theme="padiem-glass"] .sidebar-account .profile-menu .home-link-mark {
 .sidebar-account[data-account-state="expired"] .account-name,
 .sidebar-account[data-account-state="guest"] .account-profile-toggle,
 .sidebar-account[data-account-state="expired"] .account-profile-toggle {
-  display: none !important;
+  display: none;
 }
 .sidebar-account[data-account-state="guest"] .login-button,
 .sidebar-account[data-account-state="expired"] .login-button {
@@ -599,12 +597,12 @@ a.side-item:focus-visible {
 /* The avatar face stays readable on the dark sidebar and on bright themes.
  * An opaque white face makes initials pass 4.5:1 in every supported theme. */
 .sidebar-account .account-avatar {
-  color: var(--sidebar-utility-avatar-ink) !important;
-  background-color: var(--calendar-paper) !important;
-  border-color: var(--sidebar-utility-avatar-edge) !important;
+  color: var(--sidebar-utility-avatar-ink);
+  background-color: var(--calendar-paper);
+  border-color: var(--sidebar-utility-avatar-edge);
 }
 .sidebar-account[data-account-state="expired"] .account-avatar {
-  color: var(--sidebar-utility-expired-ink) !important;
+  color: var(--sidebar-utility-expired-ink);
 }
 html body .app-shell .sidebar .sidebar-bottom {
   position: sticky;

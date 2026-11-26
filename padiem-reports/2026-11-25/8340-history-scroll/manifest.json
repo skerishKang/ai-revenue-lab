@@ -1,0 +1,28 @@
+{
+  "sheet": "sidebar-history-scroll.css",
+  "base": "77eb700c1",
+  "claim": "https://github.com/skerishKang/ai-revenue-lab/issues/8340#issuecomment-7163527796",
+  "removed_count": 13,
+  "kept_count": 1,
+  "kept": [{"line": 16, "property": "overflow-y", "beats": "스위프 10조합 계산값 차이 — 사이드바 독립 스크롤 캡"}],
+  "audit": {
+    "css_important": {"before": 243, "after": 230, "delta": -13},
+    "css_themed_important": {"before": 66, "after": 66, "delta": 0},
+    "sidebar-history-scroll.css": {"before": 14, "after": 1, "delta": -13},
+    "css_color_literals": {"before": 859, "after": 859, "delta": 0},
+    "css_color_literals_unthemed": {"before": 234, "after": 234, "delta": 0},
+    "css_rules": {"before": 4350, "after": 4350, "delta": 0},
+    "css_files": {"before": 93, "after": 93, "delta": 0}
+  },
+  "verification": {
+    "computed": {"combos": 10, "declarations": 14, "removed": 13, "diffs": 0, "report": "computed_report.json", "sweep": "sweep_decisions.json"},
+    "pixel": {"host": "comp2", "combos": 10, "themes": 5, "viewports": ["1440x950", "390x844"], "screens": ["conversation", "project-dialog"], "nonzero": [], "report": "compare_report.json"},
+    "control": {"host": "comp2", "combos": 10, "nonzero": [], "report": "control_report.json"},
+    "tests": "관련 사이드바 스크롤·veil·래칫 pytest 57 passed"
+  },
+  "notes": [
+    "측정은 컴2(ssh comp2), 컴1에서는 변경 시험과 구조 래칫만 실행했다.",
+    "시험 기대값은 !important 글자 제거만 반영했다.",
+    "캡처 6장(2026-11-25, #8661). 새 !important·색 리터럴·규칙 수 증가 없음."
+  ]
+}

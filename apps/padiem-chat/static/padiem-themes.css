@@ -115,7 +115,7 @@ html[data-theme="dark"] {
 }
 
 html[data-theme="dark"] body {
-  background: var(--bg);
+  background: #10151c;
   color: var(--text);
 }
 html[data-theme="dark"] body::before {
@@ -342,9 +342,9 @@ html[data-theme="padiem-home"] .composer-wrap { background: linear-gradient(to b
 /* PADIEM_HOME chat-state — override dark cinematic chat selectors */
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .message-bubble { background: var(--user-bubble-bg); color: var(--user-bubble-text); border-color: transparent; box-shadow: 0 4px 16px rgba(26,34,48,.10); }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-avatar { background: rgba(255,255,255,.72); border: 1px solid var(--line); color: var(--text-deep-ink); box-shadow: 0 6px 18px rgba(26,34,48,.08); }
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-meta { color: var(--muted) !important; }
-html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label { background: rgba(255,255,255,.62) !important; border-color: rgba(26,34,48,.10) !important; color: var(--muted) !important; }
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content { color: #1e2a3a !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-meta { color: var(--muted); }
+html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label { background: rgba(255,255,255,.62); border-color: rgba(26,34,48,.10); color: var(--muted); }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content { color: #1e2a3a; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-message::before { background: linear-gradient(to bottom, rgba(26,34,48,.12), rgba(26,34,48,.04), transparent) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer { background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(250,252,255,.78)); }
 /* Bright chat — assistant answer subtree.

@@ -110,9 +110,14 @@ def test_entry_page_root_absolute_chat_references_exist() -> None:
     for reference in borrowed:
         assert (ROOT / "static" / reference.lstrip("/")).is_file(), reference
     # The Google entry is the server's own route, not a static asset.
-    factory = app_factory_source()
+    # The shared sign-up entry (#8766) is registered by the shared login flow,
+    # not the factory itself, and that module quotes its route with ' - read
+    # both sources and accept either quote so the check follows the route, not
+    # the quoting style.
+    route_sources = app_factory_source() + (ROOT / "app" / "shared_login_flow.py").read_text(encoding="utf-8")
     for target in re.findall(r'href="(/auth/[^"]+)"', html):
-        assert f'Route("{target.split("?")[0]}"' in factory, target
+        path = target.split("?")[0]
+        assert re.search(r"Route\(\s*['\"]" + re.escape(path) + r"['\"]", route_sources), target
 
 
 def test_every_relative_reference_of_the_entry_page_resolves_in_the_staged_tree() -> None:

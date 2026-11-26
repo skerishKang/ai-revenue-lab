@@ -24,6 +24,7 @@ from _support import settings_standalone_source as sheets
 HTML = sheets.sheet("index.html")
 VIEWS_CSS = sheets.sheet("standalone-views.css")
 FRAME_CSS = sheets.sheet("shared-six-panel-frame.css")
+LAYOUT_CSS = sheets.sheet("padiem-glass-panel-layout.css")
 POLISH_CSS = sheets.sheet("padiem-chat-ui-polish.css")
 SETTINGS_CSS = sheets.sheet("padiem-settings.css")  # #7476-14
 TOKENS_CSS = sheets.sheet("padiem-tokens.css")
@@ -80,28 +81,35 @@ def test_settings_joins_the_shared_title_kicker_and_stack_rules() -> None:
 
 
 def test_settings_plate_is_member_of_every_shared_frame_lane() -> None:
-    rules = _rules(FRAME_CSS)
+    layout = _rules(LAYOUT_CSS)
+    rules = _rules(FRAME_CSS) + layout
     lanes = [rule for rule in rules if ".settings-advanced-view" in _selector_text(rule)]
-    # plate, ultrawide margin, padding origin, collapsed sidebar, content height
-    assert len(lanes) >= 5, [rule.selectors for rule in lanes]
+    # Plate paint and geometry, ultrawide margin, page padding, collapsed sidebar, content height.
+    assert len(lanes) >= 6, [rule.selectors for rule in lanes]
     for rule in lanes:
         assert ".connectors-view" in _selector_text(rule), rule.selectors
 
     plate = [
         rule for rule in lanes
-        if declaration(rule, "width") == "var(--padiem-six-panel-width) !important"
+        if declaration(rule, "width") == "var(--padiem-six-panel-width)"
     ]
     assert plate, "the six-panel plate literal must be the shared one"
     padding = [
         rule for rule in lanes
-        if declaration(rule, "padding") == (
-            "calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px !important"
-        )
+        if declaration(rule, "padding") == "var(--padiem-six-panel-page-padding)"
     ]
     assert padding, "the shared first-screen origin must name settings"
 
-    relaxed = [rule for rule in lanes if declaration(rule, "height") == "auto"]
-    assert relaxed, "settings and connectors must size to their content"
+    assert any(
+        declaration(rule, "--padiem-six-panel-page-padding")
+        == "calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px"
+        for rule in layout
+    )
+    relaxed = [rule for rule in lanes
+               if declaration(rule, "height") == "var(--padiem-six-panel-height, auto)"]
+    assert relaxed, "settings and connectors share the desktop frame height and content-size fallback"
+    assert any(declaration(rule, "--padiem-six-panel-height") == "calc(100dvh - 110px)"
+               for rule in layout)
     assert declaration(relaxed[0], "max-height") == "var(--padiem-six-panel-height)"
 
 

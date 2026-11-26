@@ -25,7 +25,7 @@ COMPOSER_BASE = (
     'html[data-theme="padiem-glass"] body .app-shell:not(.sidebar-collapsed):is(\n'
     '    [data-state="home"], [data-state="chat"], [data-state="claw"]\n'
     "  ) .composer-wrap {\n"
-    "    left: calc(var(--workspace-rail, 252px) + var(--padiem-six-panel-left) + var(--padiem-six-panel-input-inset)) !important;"
+    "    left: calc(var(--workspace-rail, 252px) + var(--padiem-six-panel-left) + var(--padiem-six-panel-input-inset));"
 )
 
 
@@ -37,7 +37,7 @@ def test_composer_override_recenters_with_the_frame_past_1920() -> None:
     assert "(100vw - var(--workspace-rail, 252px) - clamp(360px, 32vw, 560px) - var(--padiem-six-panel-width)) / 2" in override
     assert "+ var(--workspace-rail, 252px)" in override
     assert "+ var(--padiem-six-panel-input-inset)" in override
-    assert "!important" in override
+    assert "!important" not in override
 
 
 def test_composer_override_shares_the_conversation_states_and_wins_the_cascade() -> None:

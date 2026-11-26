@@ -56,9 +56,10 @@ class B62HeadlessShellContract(unittest.TestCase):
                 self.assertIn("uv pip install 'playwright==1.55.0'", job)
                 self.assertIn("path: ~/.cache/ms-playwright", job)
                 self.assertIn("id: playwright-browser-cache", job)
-                self.assertIn(
-                    "if: steps.playwright-browser-cache.outputs.cache-hit != 'true'", job
-                )
+                # Browser QA runs on the pinned hosted image after the CI split.
+                self.assertIn("runs-on: ubuntu-24.04\n", job)
+                browser_if = "if: runner.environment != 'self-hosted' && steps.playwright-browser-cache.outputs.cache-hit != 'true'"
+                self.assertTrue(browser_if in job or "if: steps.playwright-browser-cache.outputs.cache-hit != 'true'" in job)
                 self.assertNotIn("install --with-deps chromium", job)
                 self.assertNotIn("b62-playwright-1.55.0-", job)
                 self.assertNotIn("install chromium --only-shell", job)

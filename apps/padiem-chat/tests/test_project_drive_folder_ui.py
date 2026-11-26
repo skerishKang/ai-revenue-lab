@@ -11,7 +11,7 @@ assertions pin the same contract a browser QA pass would exercise.
 from __future__ import annotations
 
 # #8060: shipped reads live in _support; assertions stay here.
-from _support.file_preview_source import app_js, claw_form_module_js, claw_run_module_js, claw_session_js, claw_workspace_css, history_module_js, index_html, locale_source, pdf_preview_js, project_drive_folder_js, projects_css, run_history_module_js
+from _support.file_preview_source import claw_form_module_js, claw_run_module_js, claw_session_js, claw_workspace_css, history_module_js, index_html, locale_source, pdf_preview_js, project_drive_folder_js, project_module_js, projects_css, run_history_module_js
 
 import pathlib
 
@@ -169,12 +169,12 @@ def test_modified_time_slot_is_compact_and_nowrap() -> None:
 # --- 7. dialog lifecycle ---------------------------------------------------
 
 
-def test_dialog_lifecycle_is_wired_in_app_js() -> None:
-    app = app_js()
-    assert "window.padiemProjectDriveFolder.reset()" in app
-    assert "window.padiemProjectDriveFolder.loadStatus(project.id)" in app
-    assert 'document.getElementById("projectDrivePanel")' in app
-    assert "drivePanel.hidden = true" in app
+def test_dialog_lifecycle_is_wired_in_project_module() -> None:
+    project = project_module_js()
+    assert "window.padiemProjectDriveFolder.reset()" in project
+    assert "window.padiemProjectDriveFolder.loadStatus(project.id)" in project
+    assert 'document.getElementById("projectDrivePanel")' in project
+    assert "drivePanel.hidden = true" in project
 
 
 def test_reset_invalidates_tokens_and_clears_the_picker() -> None:

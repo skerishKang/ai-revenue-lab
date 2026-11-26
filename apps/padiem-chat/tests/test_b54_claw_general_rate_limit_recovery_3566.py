@@ -56,7 +56,7 @@ const context = {
   // B7 (12차, core 등록부): sliced refusal copy reaches copy through it.
   coreModule: () => ({ uiT: (key) => key }),
   conversationState: {setConversationId() {}},
-  renderProjectState() {},
+  projectModule: {renderProjectState() {}},
   requestAnswer: async () => {repeatCalls += 1; return false;},
   // B7: app.js calls the registry piece; mirror the same counting stub.
   streaming: { requestAnswer: async () => {repeatCalls += 1; return false;} },

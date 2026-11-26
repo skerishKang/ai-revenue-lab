@@ -224,6 +224,16 @@
   --claw-local-border-strong: rgba(150,160,180,.45);
   --claw-local-border-soft: rgba(0,0,0,.14);
 
+  /* #7811 C2 pc-connect-flow(261125): 고정 딤·그림자·잉크·워시. 다른 화면 계열에서
+     빌려 쓰지 않고 이 시트의 값만 자기 계열 토큰으로 둔다. */
+  /* #7811 token-family --pc-connect-flow sha256=2dece9f81baebbaeba0c48a998480ad9a4f950f7bd6c74f1989b811f820a6ac2 */
+  --pc-connect-flow-backdrop: rgba(15, 16, 20, .44);
+  --pc-connect-flow-close-wash: rgba(127, 127, 127, .14);
+  --pc-connect-flow-ink-on-accent: #fff;
+  --pc-connect-flow-modal-shadow: 0 18px 48px rgba(0, 0, 0, .24);
+  --pc-connect-flow-note-shadow: 0 8px 24px rgba(0, 0, 0, .16);
+  --pc-connect-flow-popover-shadow: 0 12px 32px rgba(0, 0, 0, .18);
+
   /* #7811 C2 history.css(261118): 바탕 색. 값은 치환 전 사용처 리터럴 그대로다.
      5테마 실측(--computed)에서 모두 같은 값이라 :root 하나로 충분하고, 예외인
      --dialog-dim만 glass 블록이 덮는다(history.css의 glass 배경 선언은 그 값을
@@ -654,6 +664,11 @@
      더 짙은 기존 잉크로 덮는다. */
   --standalone-kicker-text: var(--accent);
   --standalone-tagline-text: var(--muted);
+
+  /* #7811 C2 meeting-capture(261125): fixed panel fallback colors. */
+  /* #7811 token-family --meeting-capture sha256=50c5ea1fc8a05bed368863defcae661aa71e83efedffadcc70e323a74c0a3953 */
+  --meeting-capture-panel-edge: rgba(128,128,128,.28);
+  --meeting-capture-panel-shadow: 0 14px 45px rgba(20,30,44,.10);
   /* #7811 C2 rich(261123): padiem-rich.css의 고정 어둡 표면·베일 색. 값은
      치환 전 사용처 리터럴 그대로이고 :root 하나로 충분하며 테마 블록에서
      덮지 않는다 — 코드 면(rgba(8,9,11,…))·흰 베일 선은 모든 테마에서 같은
@@ -919,6 +934,21 @@
   --sidebar-unified-row-wash: rgba(127,127,127,.09);
   --sidebar-unified-hover-wash: rgba(127,127,127,.18);
   --sidebar-unified-action-hover-wash: rgba(127,127,127,.15);
+
+  /* #7811 token-family --util-menu sha256=3f9c7a84406be51e1249a2c664987e0e2f53c559d647f5c071fa945fc370bc3e */
+  /* #7811 C2 util-menu(261125): PDFMD 보기 화면의 고정 팔레트. 값은 치환 전
+     선언마다 박혀 있던 리터럴 그대로이고 :root에만 둔다 — 다섯 테마에서 같은
+     값으로 칠해져 온 고정 팔레트라 테마 블록이 덮지 않는다. 흰 판(#ffffff)은
+     이미 :root 전용인 --voice-panel-bg를 재사용한다(테마가 덮는
+     --user-bubble-text는 쓰지 않음). */
+  --util-menu-pdfmd-shell-wash: rgba(239, 243, 246, .48);
+  --util-menu-pdfmd-warn-ink: #8a4b0f;
+
+  /* #7811 token-family --util-tools sha256=f114a67c0efeb1d6f25493712df51139b37cf776873a13c370aff542b1cafb4f */
+  /* #7811 C2 util-tools(261125): 도구 화면 강조 버튼·탭 위의 흰 글자. 값은 치환 전
+     선언마다 박혀 있던 #fff 그대로이고 :root에만 둔다. 다섯 테마 모두 같은
+     흰 글자라 테마 블록이 덮지 않는다. */
+  --util-tools-on-accent: #fff;
 
   /* 연결 카드 대비 수리(261124): 연결 화면 카드는 다섯 테마 모두 밝은 판이다
      (standalone-views.css의 #connectorsViewBody .capability-card). 카드 이름은
@@ -1229,6 +1259,15 @@
   --admin-models-route-history-summary-text: #7b8b98;
   --admin-models-routeevents-source-card-bg: rgba(249,251,252,.55);
   --admin-models-routeevents-source-card-edge: rgba(255,255,255,.6);
+  /* #7811 token-family --shared-six-panel-frame sha256=f2fd3668bb49ba29ab20bdc4a7395b4e3ddb095c0cd26d201915e557a59ddc20 */
+  --shared-six-panel-frame-bg: linear-gradient(155deg, rgba(248,250,251,.88), rgba(233,238,241,.84));
+  --shared-six-panel-frame-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72);
+  --shared-six-panel-frame-edge: rgba(255,255,255,.70);
+  --shared-six-panel-frame-grain-opacity: .10;
+  --shared-six-panel-frame-narrow-bg: rgba(242, 245, 247, .90);
+  --shared-six-panel-frame-narrow-edge: rgba(255, 255, 255, .58);
+  /* #7811 token-family --glass-portrait sha256=cde5dcf0ef2e53ce5626830e8a25e28035899b8a364b792e674018138f447990 */
+  --glass-portrait-answer-action-ink: #53606c;
 }
 
 /* ---- 테마별 값 ---- */

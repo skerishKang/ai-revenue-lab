@@ -138,25 +138,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
  * alike). Same compact gray line, sidebar-local spacing; the collapsed sidebar
  * hides the whole rail, so the links hide with it.
  * The accepted base stylesheet stays byte-pinned, so this layer owns the rule. */
-.sidebar-legal-links {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.5;
-  /* inherit on purpose: each theme tints the sidebar bottom itself (the glass
-     theme paints rgba(255,255,255,.68), the light themes their muted ink). */
-  color: inherit;
-  text-align: left;
-}
-.sidebar-legal-links a {
-  color: inherit;
-  text-decoration: none;
-  display: inline-block;
-  min-height: 24px;
-  padding: 4px 2px;
-  box-sizing: border-box;
-}
-.sidebar-legal-links a:hover { color: var(--accent-strong); text-decoration: underline; }
-
 /* The login dialog carries the one-line consent notice; the two nouns are the
  * links, the surrounding sentence is plain muted text. */
 .auth-legal-consent {

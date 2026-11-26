@@ -1,0 +1,28 @@
+[Unit]
+Description=Padiem auth state service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=padiem
+Group=padiem
+WorkingDirectory=/opt/padiem/auth-state
+EnvironmentFile=/etc/padiem/auth-state.env
+ExecStart=/usr/bin/node /opt/padiem/auth-state/index.mjs
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+StateDirectory=padiem/auth-state
+StateDirectoryMode=0750
+ReadWritePaths=/var/lib/padiem/auth-state
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target

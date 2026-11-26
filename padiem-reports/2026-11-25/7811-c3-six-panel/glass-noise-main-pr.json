@@ -1,0 +1,26 @@
+{
+  "main": {
+    "home": {
+      "opacity": "0.1",
+      "mode": "home",
+      "readingRules": 2
+    },
+    "reading": {
+      "opacity": "0.1",
+      "mode": "reading",
+      "readingRules": 2
+    }
+  },
+  "PR": {
+    "home": {
+      "opacity": "0.1",
+      "mode": "home",
+      "readingRules": 2
+    },
+    "reading": {
+      "opacity": "0.1",
+      "mode": "reading",
+      "readingRules": 2
+    }
+  }
+}

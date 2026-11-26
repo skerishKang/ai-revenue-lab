@@ -1,0 +1,91 @@
+{
+ "sheet": "sidebar-utility.css",
+ "combos": 10,
+ "removed": [
+  {
+   "line": 86,
+   "prop": "display"
+  },
+  {
+   "line": 148,
+   "prop": "display"
+  },
+  {
+   "line": 248,
+   "prop": "display"
+  },
+  {
+   "line": 269,
+   "prop": "left"
+  },
+  {
+   "line": 270,
+   "prop": "width"
+  },
+  {
+   "line": 271,
+   "prop": "transform"
+  },
+  {
+   "line": 274,
+   "prop": "left"
+  },
+  {
+   "line": 275,
+   "prop": "width"
+  },
+  {
+   "line": 276,
+   "prop": "transform"
+  },
+  {
+   "line": 279,
+   "prop": "left"
+  },
+  {
+   "line": 280,
+   "prop": "width"
+  },
+  {
+   "line": 281,
+   "prop": "transform"
+  },
+  {
+   "line": 284,
+   "prop": "width"
+  },
+  {
+   "line": 285,
+   "prop": "margin-left"
+  },
+  {
+   "line": 286,
+   "prop": "margin-right"
+  },
+  {
+   "line": 328,
+   "prop": "display"
+  },
+  {
+   "line": 482,
+   "prop": "display"
+  },
+  {
+   "line": 602,
+   "prop": "color"
+  },
+  {
+   "line": 603,
+   "prop": "background-color"
+  },
+  {
+   "line": 604,
+   "prop": "border-color"
+  },
+  {
+   "line": 607,
+   "prop": "color"
+  }
+ ],
+ "kept": []
+}

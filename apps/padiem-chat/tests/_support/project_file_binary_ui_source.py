@@ -22,6 +22,10 @@ def app_js() -> str:
     return (_APP / "static" / "app.js").read_text(encoding="utf-8")
 
 
+def project_module_js() -> str:
+    return (_APP / "static" / "chat-project-module.js").read_text(encoding="utf-8")
+
+
 def tus_module_js() -> str:
     return (_APP / "static" / "project-file-upload.js").read_text(encoding="utf-8")
 

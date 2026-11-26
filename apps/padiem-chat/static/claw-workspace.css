@@ -757,7 +757,7 @@
 
 /* ── Approved memory review ──────────────────────────────────── */
 .claw-memory-review {
-  display: grid;
+  display: var(--claw-disclosure-display, grid);
   gap: 10px;
   padding: 14px;
   border: 1px solid var(--line);
@@ -822,8 +822,12 @@
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
-.claw-approved-memory {
-  display: grid;
+.claw-disclosure {
+  display: var(--claw-disclosure-display, block);
+}
+.claw-approved-memory,
+.claw-run-history {
+  display: var(--claw-disclosure-display, grid);
   gap: 12px;
 }
 .claw-approved-memory-header {
@@ -1066,10 +1070,6 @@
 
 /* #2317 recent-run presentation: renders only what the owner-scoped
  * run-history route already returns. Shared theme roles, no Claw palette. */
-.claw-run-history {
-  display: grid;
-  gap: 12px;
-}
 .claw-run-history-header {
   display: flex;
   align-items: flex-start;

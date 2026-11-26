@@ -1,0 +1,6 @@
+......................                                                   [100%]
+============================ slowest 50 durations =============================
+0.44s setup    tests/test_sidebar_collapse_cards_261016.py::test_project_and_recent_have_independent_explicit_collapse_controls
+
+(49 durations < 0.2s hidden.)
+22 passed in 3.55s

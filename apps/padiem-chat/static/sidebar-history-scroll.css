@@ -12,7 +12,7 @@
        .sidebar-bottom, so every row click was intercepted by the account stack.
        Keep the pinned layout while the content fits, and let the sidebar itself
        scroll when it cannot, so no row can ever sit under the pinned stack. */
-    overflow: hidden !important;
+    overflow: hidden;
     overflow-y: auto !important;
     display: flex;
     flex-direction: column;
@@ -62,7 +62,7 @@
     padding-bottom: 56px;
   }
   html body .app-shell .sidebar #historySection.is-collapsed #historyList {
-    display: none !important;
+    display: none;
   }
   html body .app-shell .sidebar .sidebar-bottom {
     flex: 0 0 auto;
@@ -73,29 +73,29 @@
 /* A single sidebar backdrop; no outlined or separately filled cells.
    Hover/selected/focus can still identify the active row. */
 html:not([data-glass-mode]) body .app-shell .sidebar :is(.project-row, .history-row) {
-  background: transparent !important;
-  background-color: transparent !important;
-  border: 0 !important;
+  background: transparent;
+  background-color: transparent;
+  border: 0;
   box-shadow: none;
   backdrop-filter: none;
-  -webkit-backdrop-filter: none !important;
+  -webkit-backdrop-filter: none;
 }
 html:not([data-glass-mode]) body .app-shell .sidebar :is(.project-row, .history-row):hover,
 html:not([data-glass-mode]) body .app-shell .sidebar :is(.project-row, .history-row):focus-within {
-  background: rgba(255,255,255,.065) !important;
+  background: rgba(255,255,255,.065);
 }
 html:not([data-glass-mode]) body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]),
 html body .app-shell .sidebar .history-row:has(.history-item[aria-current="page"]) {
-  background: rgba(255,255,255,.12) !important;
+  background: rgba(255,255,255,.12);
 }
 /* Previous single-row rules painted no interior surface: preserve this. */
 html body .app-shell .sidebar :is(.project-row, .history-row)
  > :is(.project-item, .history-item, .project-manage, .history-actions),
 html body .app-shell .sidebar .history-actions > .history-more {
-  background: transparent !important;
-  background-color: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
+  background: transparent;
+  background-color: transparent;
+  border: 0;
+  box-shadow: none;
 }
 html body .app-shell .sidebar .history-actions-menu {
   /* Only the opened contextual menu remains a separate surface. */
@@ -104,7 +104,7 @@ html body .app-shell .sidebar .history-actions-menu {
 
 @media (max-width: 920px) {
   html body .app-shell .sidebar {
-    overflow-y: auto !important;
+    overflow-y: auto;
     overflow-x: hidden;
     max-height: 100dvh;
     overscroll-behavior-y: contain;

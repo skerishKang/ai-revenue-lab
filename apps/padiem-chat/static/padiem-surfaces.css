@@ -159,7 +159,7 @@
 .output-card,
 .document-card {
   border-color: var(--surfaces-card-border);
-  background: var(--surfaces-card-bg) !important;
+  background: var(--surfaces-card-bg);
   color: var(--surfaces-card-text);
   box-shadow: inset 0 1px 0 var(--inset-veil-panel);
   backdrop-filter: blur(14px);
@@ -174,7 +174,7 @@
 .rich-response small,
 .output-card small,
 .document-card small {
-  color: var(--surfaces-card-muted-text) !important;
+  color: var(--surfaces-card-muted-text);
 }
 
 .error-box {
@@ -264,7 +264,7 @@
 .composer-note,
 .project-form-note,
 .project-files-note {
-  color: var(--surfaces-note-text) !important;
+  color: var(--surfaces-note-text);
 }
 
 .attachment-chip,
@@ -272,14 +272,14 @@
 .project-banner {
   border-color: var(--surfaces-attachment-edge) !important;
   background: var(--surfaces-card-bg) !important;
-  color: var(--surfaces-card-text) !important;
+  color: var(--surfaces-card-text);
   box-shadow: inset 0 1px 0 var(--inset-veil-panel) !important;
 }
 
 .attachment-chip .file-icon,
 .document-attachment-icon {
-  color: var(--ws-attachment-text) !important;
-  background: var(--surfaces-starter-icon-bg) !important;
+  color: var(--ws-attachment-text);
+  background: var(--surfaces-starter-icon-bg);
 }
 
 /* Dialogs / project surfaces ---------------------------------------------- */
@@ -301,7 +301,7 @@
   border: 1px solid var(--surfaces-starter-border);
   background:
     linear-gradient(145deg, var(--surface-veil-soft), var(--ws-form-wash)),
-    var(--surface-panel-solid) !important;
+    var(--surface-panel-solid);
   color: var(--surfaces-starter-text);
   box-shadow: 0 34px 110px var(--surfaces-project-shadow);
   backdrop-filter: blur(30px);
@@ -309,7 +309,7 @@
 
 .project-dialog-header p,
 .saved-output-header p {
-  color: var(--ws-dialog-kicker-text) !important;
+  color: var(--ws-dialog-kicker-text);
   font-family: var(--font-label);
   letter-spacing: .15em;
 }
@@ -317,9 +317,9 @@
 .project-form input,
 .project-form textarea,
 .saved-output-title-input {
-  border-color: var(--surfaces-form-edge) !important;
-  background: var(--surfaces-starter-icon-bg) !important;
-  color: var(--foundation-strong-text) !important;
+  border-color: var(--surfaces-form-edge);
+  background: var(--surfaces-starter-icon-bg);
+  color: var(--foundation-strong-text);
 }
 
 .project-form input::placeholder,
@@ -330,9 +330,9 @@
 
 .project-primary,
 .saved-output-primary {
-  border-color: var(--ws-control-hover-edge-strong) !important;
-  background: var(--surface-veil-dim) !important;
-  color: var(--text-veil-strong) !important;
+  border-color: var(--ws-control-hover-edge-strong);
+  background: var(--surface-veil-dim);
+  color: var(--text-veil-strong);
 }
 
 .project-secondary,
@@ -342,13 +342,13 @@
 .section-add-button,
 .project-file-add,
 .project-banner-actions button {
-  border-color: var(--surfaces-card-border) !important;
-  background: var(--surfaces-starter-icon-bg) !important;
-  color: var(--editorial-summary-text) !important;
+  border-color: var(--surfaces-card-border);
+  background: var(--surfaces-starter-icon-bg);
+  color: var(--editorial-summary-text);
 }
 
 .saved-output-danger {
-  color: var(--surfaces-retry-text) !important;
+  color: var(--surfaces-retry-text);
 }
 
 /* Scrollbars --------------------------------------------------------------- */
@@ -403,7 +403,7 @@
   }
 
   .composer-wrap {
-    left: 50% !important;
+    left: 50%;
     width: calc(100vw - 28px) !important;
   }
 }
@@ -495,9 +495,9 @@
   *,
   *::before,
   *::after {
-    scroll-behavior: auto !important;
-    animation-duration: .001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .001ms !important;
+    scroll-behavior: auto;
+    animation-duration: .001ms;
+    animation-iteration-count: 1;
+    transition-duration: .001ms;
   }
 }

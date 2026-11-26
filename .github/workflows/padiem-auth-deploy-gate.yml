@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/padiem-auth-deploy-gate.yml'
       - 'apps/padiem-auth/**'
+      - 'apps/padiem-auth-state/**'
       # #7541: the tests read the identity authority's product boundary from here.
       - 'packages/padiem-control-plane/identity_authority_worker.py'
   workflow_dispatch:
@@ -35,6 +36,7 @@ jobs:
         with:
           node-version: '22'
       - run: node --test apps/padiem-auth/test/*.test.mjs
+      - run: node --test apps/padiem-auth-state/test/*.test.mjs
       - run: npm install --no-save --no-audit --no-fund wrangler@4.130.0
       - name: Test synthetic secrets through stdin in dry-run
         shell: bash
@@ -114,6 +116,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test apps/padiem-auth/test/*.test.mjs
+          node --test apps/padiem-auth-state/test/*.test.mjs
           npx --no-install wrangler deploy --keep-vars --config apps/padiem-auth/wrangler.toml --dry-run --outdir "$RUNNER_TEMP/padiem-auth-build"
       - name: Require successful readonly run for this exact SHA
         if: inputs.mode == 'deploy'
