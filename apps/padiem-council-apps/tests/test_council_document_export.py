@@ -140,7 +140,7 @@ def test_the_export_module_rides_the_same_versioned_asset_lane():
     from pathlib import Path
 
     js = (Path(__file__).resolve().parents[1] / "static" / "council-app.js").read_text(encoding="utf-8")
-    assert re.search(r'script\.src = "\./static/document-export\.js";', js)
-    assert 'versionedAsset(script.src)' in js
+    assert 'versionedAsset("./static/document-export.js")' in js
+    assert 'versionedAsset("./static/document-export.js")' in js
     versions = compute_versions(Path(__file__).resolve().parents[1] / "static")
     assert "document-export.js" in versions

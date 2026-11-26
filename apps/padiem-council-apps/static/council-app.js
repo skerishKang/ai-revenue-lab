@@ -450,9 +450,9 @@
     documentExportLoading = new Promise((resolve, reject) => {
       const head = document.head || document.body;
       const script = document.createElement("script");
-      script.src = "./static/document-export.js";
       // ?v=<content hash> from the served map; the bare URL stays the fallback.
-      script.src = versionedAsset(script.src);
+      // Version the relative string first: reading script.src back is absolute.
+      script.src = versionedAsset("./static/document-export.js");
       script.addEventListener("load", () => {
         if (window.PadiemDocumentExport) resolve(window.PadiemDocumentExport);
         else reject(new Error("document-export-unavailable"));
@@ -680,8 +680,23 @@
       field.style.height = Math.max(160, field.scrollHeight || 0) + "px";
     };
     field.addEventListener("input", grow);
+    field.__growResult = grow;
     grow();
     return grow;
+  }
+
+  /** Assign generated/restored text and immediately resize its result box. */
+  function setResultValue(field, text) {
+    field.value = text;
+    const grow = field.__growResult;
+    if (typeof grow === "function") {
+      grow();
+      // The result panel may still be hidden at this instant (a saved draft
+      // being opened, the first stream chunk). Re-measure once it is laid out.
+      if (typeof requestAnimationFrame === "function") requestAnimationFrame(grow);
+      else setTimeout(grow, 0);
+    }
+    return field.value;
   }
 
   function setNotice(line, text, tone) {
@@ -775,9 +790,9 @@
     photoResizeLoading = new Promise((resolve, reject) => {
       const head = document.head || document.body;
       const script = document.createElement("script");
-      script.src = "./static/photo-resize.js";
       // ?v=<content hash> from the served map; the bare URL stays the fallback.
-      script.src = versionedAsset(script.src);
+      // Version the relative string first: reading script.src back is absolute.
+      script.src = versionedAsset("./static/photo-resize.js");
       script.addEventListener("load", () => {
         if (window.PadiemPhotoResize) resolve(window.PadiemPhotoResize);
         else reject(new Error("photo-resize-unavailable"));
@@ -903,16 +918,15 @@
       if (head && !document.querySelector("link[data-council-pc-exchange]")) {
         const css = document.createElement("link");
         css.rel = "stylesheet";
-        css.href = "./static/pc-file-exchange.css";
         // ?v=<content hash> from the served map; the bare URL stays the fallback.
-        css.href = versionedAsset(css.href);
+        css.href = versionedAsset("./static/pc-file-exchange.css");
         css.setAttribute("data-council-pc-exchange", "1");
         head.appendChild(css);
       }
       const script = document.createElement("script");
-      script.src = "./static/pc-file-exchange.js";
       // ?v=<content hash> from the served map; the bare URL stays the fallback.
-      script.src = versionedAsset(script.src);
+      // Version the relative string first: reading script.src back is absolute.
+      script.src = versionedAsset("./static/pc-file-exchange.js");
       script.addEventListener("load", () => {
         if (window.PadiemPcFileExchange) resolve(window.PadiemPcFileExchange);
         else reject(new Error("pc-exchange-unavailable"));
@@ -935,9 +949,8 @@
       const head = document.head || document.body;
       const load = (src) => new Promise((done, fail) => {
         const script = document.createElement("script");
-        script.src = src;
         // ?v=<content hash> from the served map; the bare URL stays the fallback.
-        script.src = versionedAsset(script.src);
+        script.src = versionedAsset(src);
         script.addEventListener("load", done, { once: true });
         script.addEventListener("error", () => fail(new Error("project-upload-unavailable")), { once: true });
         head.appendChild(script);
@@ -1565,7 +1578,7 @@
           btn.addEventListener("click", async () => {
             const content = await fetchProjectFile(pid, f.id);
             if (typeof content === "string") {
-              output.value = content;
+              setResultValue(output, content);
               result.hidden = false;
               failed = false;
               setNotice(notice, f.name + "를 열었습니다. 같은 이름으로 저장하면 새 이름/덮어쓰기를 묻습니다.", "info");
@@ -1608,11 +1621,11 @@
           const answer = await apiChat(
             buildSpeechPrompt(form, pcSection ? pcSection.read() : ""), "speech",
             (partial) => {
-              output.value = partial;
+              setResultValue(output, partial);
               result.hidden = false;
             },
           );
-          output.value = answer;
+          setResultValue(output, answer);
           result.hidden = false;
           failed = false;
           finishGeneration(notice, result);
@@ -1659,8 +1672,8 @@
         },
       });
       saveBtn.addEventListener("click", async () => {
-        const text = output.value.trim();
-        if (!text || saveBtn.disabled) return;
+        const text = output.value;
+        if (!text.trim() || saveBtn.disabled) return;
         const pid = await councilProject.ensure();
         if (!pid) {
           setNotice(notice, "저장할 프로젝트를 찾지 못했습니다. 잠시 후 다시 시도해 주세요.", "error");
@@ -2138,6 +2151,9 @@
         output.hidden = !!editing === false;
         previewBox.hidden = !!editing;
         editBtn.textContent = editing ? "미리보기로" : "고치기";
+        // The textarea is hidden while the preview shows, so its scrollHeight
+        // was 0 when the answer arrived. Resize once it becomes visible.
+        if (editing && typeof output.__growResult === "function") output.__growResult();
         if (!editing) renderPreview();
       };
       editBtn.addEventListener("click", () => showSnsView(!snsEditing));
@@ -2180,7 +2196,7 @@
               setNotice(notice, "저장된 SNS 글의 본문을 읽을 수 없습니다.", "error");
               return;
             }
-            output.value = content;
+            setResultValue(output, content);
             result.hidden = false;
             failed = false;
             refreshSave();
@@ -2236,7 +2252,7 @@
               if (toneOptions.indexOf(savedDraft.tone) >= 0) toneSel.value = savedDraft.tone;
             }
             result.hidden = false;
-            output.value = savedDraft.text;
+            setResultValue(output, savedDraft.text);
             showSnsView(false);
             failed = false;
             refreshSave();
@@ -2283,12 +2299,12 @@
           const answer = await apiChat(
             buildSnsPrompt(form, platform, photos, pcSection ? pcSection.read() : ""), "sns",
             (partial) => {
-              output.value = partial;
+              setResultValue(output, partial);
               result.hidden = false;
               showSnsView(false);
             },
           );
-          output.value = answer;
+          setResultValue(output, answer);
           result.hidden = false;
           showSnsView(false);
           failed = false;
@@ -2506,10 +2522,10 @@
         setNotice(notice, "생성 중…", "busy");
         try {
           const answer = await apiChat(buildMeetingPrompt(form), "meeting", (partial) => {
-            output.value = partial;
+            setResultValue(output, partial);
             result.hidden = false;
           });
-          output.value = answer;
+          setResultValue(output, answer);
           result.hidden = false;
           failed = false;
           finishGeneration(notice, result);
@@ -2620,6 +2636,7 @@
         bookOutput.id = "councilBookOutput";
         bookOutput.rows = 16;
         bookResult.appendChild(bookOutput);
+        autoGrowResult(bookOutput);
         const bookNotice = noticeLine("councilBookNotice");
         const bookActions = el("div", "council-actions");
         const bookCopy = el("button", "council-primary", "복사");
@@ -2726,10 +2743,10 @@
                 const savedDate = content.match(/^회의 일시: (\d{4}-\d{2}-\d{2}T\d{2}:\d{2})\n\n/);
                 if (savedDate) {
                   form.querySelector("[name=when]").value = savedDate[1];
-                  output.value = content.slice(savedDate[0].length);
+                  setResultValue(output, content.slice(savedDate[0].length));
                 } else {
                   form.querySelector("[name=when]").value = "";
-                  output.value = content;
+                  setResultValue(output, content);
                 }
                 // 다시 열기는 본문만이 아니라 회의명까지 되돌린다. 제목 칸을 비워 두면
                 // 내보내기 기본 이름이 "회의_회의_날짜"가 되고, 이어서 저장하면 이미 있는
@@ -2834,10 +2851,10 @@
             setNotice(bookNotice, "활동집 초안을 만드는 중…", "busy");
             stage = "generate";
             const answer = await apiChat(buildBookPrompt(contents), "meeting", (partial) => {
-              bookOutput.value = partial;
+              setResultValue(bookOutput, partial);
               bookResult.hidden = false;
             });
-            bookOutput.value = answer;
+            setResultValue(bookOutput, answer);
             bookResult.hidden = false;
             bookFailed = false;
             finishGeneration(bookNotice, bookResult);
@@ -2886,8 +2903,8 @@
         // flight and the list is refreshed from the server afterwards.
         let bookSaving = false;
         bookSave.addEventListener("click", async () => {
-          const text = bookOutput.value.trim();
-          if (!text || bookSaving || bookSave.disabled) return;
+          const text = bookOutput.value;
+          if (!text.trim() || bookSaving || bookSave.disabled) return;
           bookSaving = true;
           bookSave.disabled = true;
           bookSave.textContent = "저장 중…";
@@ -2940,7 +2957,7 @@
                 return;
               }
               bookResult.hidden = false;
-              bookOutput.value = content;
+              setResultValue(bookOutput, content);
               bookFailed = false;
               setNotice(bookNotice, "");
               refreshBookSave();
@@ -3208,9 +3225,13 @@
     } catch (_) { return {}; }
   })();
   function versionedAsset(url) {
-    const match = /^(?:\.\/|\/)?static\/(.+)$/.exec(url);
+    const raw = String(url || "");
+    // A script/link .src setter resolves the string to an absolute URL in a real
+    // browser (…/apps/council/static/x.js). Accept both that form and the local
+    // ./static/x.js form the loaders pass in.
+    const match = /(?:^|\/)static\/([^?#]+)/.exec(raw);
     const digest = match && ASSET_VERSIONS[match[1]];
-    return digest ? url.split("?")[0] + "?v=" + digest : url;
+    return digest ? raw.split("?")[0] + "?v=" + digest : raw;
   }
   function setBadge(text) { const node = host("councilAuthBadge"); if (node) node.textContent = text; }
   function setStatus(text) {
@@ -3802,6 +3823,15 @@
     speech: speechModule,
     sns: snsModule,
     meeting: meetingModule,
+    // Test seam: lets a harness call each dynamic loader and inspect the
+    // versioned src actually attached to the injected node.
+    _loaders: {
+      document: loadDocumentExport,
+      photo: loadPhotoResize,
+      pc: loadPcExchange,
+      project: loadProjectUpload,
+    },
+    _versionedAsset: versionedAsset,
   };
 
   if (document.readyState === "loading") {
