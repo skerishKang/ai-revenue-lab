@@ -121,12 +121,13 @@ def test_duplicate_submit_guard_and_bounded_states() -> None:
     # Single in-flight flag gates both actions
     assert "clawInFlight" in APP
     assert "setClawButtonsBusy" in APP
-    assert "aria-busy" in APP
+    assert "aria-busy" in CLAW_STATUS
     assert 'data-claw-state' in INDEX or 'clawStatus' in INDEX or 'claw-status' in WORKSPACE_CSS.lower()
     # Buttons disabled via JS when busy
     assert "clawGenerateBtn" in CLAW_STATUS
     assert "clawExecuteButton" in APP
-    assert ".disabled = busy" in APP or "disabled = true" in APP
+    assert "clawGenerateBtn.disabled = busy" in CLAW_STATUS
+    assert "clawExecuteButton.disabled = blocked" in CLAW_STATUS
     # CSS treats disabled/blocked state as not-allowed
     assert "cursor: not-allowed" in WORKSPACE_CSS
     # States: idle/submitting/success/failure must exist as data attributes/classes
@@ -324,4 +325,4 @@ def test_sidebar_and_shell_contracts_preserved() -> None:
     assert 'id="sidebar"' in INDEX
     assert 'class="app-shell"' in INDEX
     assert "setNavActive" in APP
-    assert 'setAttribute("aria-current"' in APP
+    assert 'setAttribute("aria-current"' in NAV

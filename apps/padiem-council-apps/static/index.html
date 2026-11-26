@@ -33,8 +33,8 @@
   -->
   <link rel="stylesheet" href="/padiem-tokens.css" />
   <link rel="stylesheet" href="/padiem-themes.css" />
-  <link rel="stylesheet" href="./static/council-app.css?v=e1d288a3" />
-  <script type="application/json" id="padiem-asset-versions">{"assets/ATTRIBUTION.md":"ec91846d","assets/IMAGE-SLOTS.md":"62758390","assets/fonts/LICENSE-MaruBuri-NAVER.txt":"cacefe00","assets/fonts/LICENSE-PlayfairDisplay-OFL-1.1.txt":"aac9acd4","assets/fonts/LICENSE-Pretendard-OFL-1.1.txt":"14d6e897","assets/fonts/MaruBuri-Bold.woff2":"c8af5b6f","assets/fonts/MaruBuri-Regular.woff2":"e57ef6cc","assets/fonts/PlayfairDisplay-Bold-latin.woff2":"e90a9418","assets/fonts/Pretendard-Bold.woff2":"2d1cd41d","assets/fonts/Pretendard-Medium.woff2":"faae7e3f","assets/fonts/Pretendard-Regular.woff2":"5f473645","assets/fonts/Pretendard-SemiBold.woff2":"dae60b27","assets/meeting-card.jpg":"7a63c4af","assets/parliament-fr-hero.jpg":"6d938045","assets/parliament-hero.jpg":"9f5a06e5","assets/parliament-uk-hero.jpg":"c6f02283","assets/parliament-us-hero.jpg":"46393697","assets/sns-card.jpg":"b350d00a","assets/speech-card.jpg":"b3abc302","council-app.css":"e1d288a3","council-app.js":"53f32f9a","document-export.js":"ddad0a22","pc-file-exchange.css":"180d53ab","pc-file-exchange.js":"24c726d0","photo-resize.js":"f9cf022a","project-file-upload.js":"e658f90e","tus-upload.js":"ae495d74"}</script>
+  <link rel="stylesheet" href="./static/council-app.css?v=a2a8a445" />
+  <script type="application/json" id="padiem-asset-versions">{"assets/ATTRIBUTION.md":"ec91846d","assets/IMAGE-SLOTS.md":"62758390","assets/fonts/LICENSE-MaruBuri-NAVER.txt":"cacefe00","assets/fonts/LICENSE-PlayfairDisplay-OFL-1.1.txt":"aac9acd4","assets/fonts/LICENSE-Pretendard-OFL-1.1.txt":"14d6e897","assets/fonts/MaruBuri-Bold.woff2":"c8af5b6f","assets/fonts/MaruBuri-Regular.woff2":"e57ef6cc","assets/fonts/PlayfairDisplay-Bold-latin.woff2":"e90a9418","assets/fonts/Pretendard-Bold.woff2":"2d1cd41d","assets/fonts/Pretendard-Medium.woff2":"faae7e3f","assets/fonts/Pretendard-Regular.woff2":"5f473645","assets/fonts/Pretendard-SemiBold.woff2":"dae60b27","assets/meeting-card.jpg":"7a63c4af","assets/parliament-fr-hero.jpg":"6d938045","assets/parliament-hero.jpg":"9f5a06e5","assets/parliament-uk-hero.jpg":"c6f02283","assets/parliament-us-hero.jpg":"46393697","assets/sns-card.jpg":"b350d00a","assets/speech-card.jpg":"b3abc302","council-app.css":"a2a8a445","council-app.js":"8abcc8c4","document-export.js":"bd6d73b5","pc-file-exchange.css":"180d53ab","pc-file-exchange.js":"24c726d0","photo-resize.js":"f9cf022a","project-file-upload.js":"e658f90e","tus-upload.js":"ae495d74"}</script>
 </head>
 <body class="council-body">
   <a class="council-skip" href="#councilMain">본문 바로가기</a>
@@ -73,7 +73,7 @@
         <select id="councilTier" name="tier" aria-label="AI 등급"></select>
         <span class="council-tier-status" id="councilTierStatus" role="status" aria-live="polite" hidden></span>
       </label>
-      <button type="button" class="council-badge-action" id="councilAuthAction" hidden>로그인</button>
+      <button type="button" class="council-badge-action" id="councilAuthAction">로그인</button>
       <!-- 시안의 두 축 전환은 우상단 아이콘 하나. 값은 스크린리더에만 남긴다. -->
       <span class="council-theme" id="councilTheme">
         <button type="button" class="council-theme-trigger" id="councilThemeTrigger"
@@ -111,6 +111,12 @@
   </header>
   <main id="councilMain">
     <!-- 작업실: 업무를 고르면 히어로와 스트립이 물러나고 이 막대가 헤더 아래 흐름으로 앉는다. -->
+    <nav class="council-tool-nav" id="councilToolNav" aria-label="도구 이동">
+      <button type="button" data-nav="home">홈</button>
+      <button type="button" data-nav="speech">축사</button>
+      <button type="button" data-nav="sns">SNS</button>
+      <button type="button" data-nav="meeting">회의·활동집</button>
+    </nav>
     <div class="council-workspace-bar" id="councilWorkspaceBar" hidden>
       <button type="button" class="council-back" id="councilBack">&larr; 처음으로</button>
       <span class="council-workspace-title" id="councilWorkspaceTitle"></span>
@@ -232,6 +238,8 @@
           <button type="submit" class="council-login">로그인</button>
         </div>
       </form>
+      <p class="council-auth-signup">계정이 없나요? <a id="councilSignupLink"
+        href="/auth/shared/start?return_to=%2Fapps%2Fcouncil%2F">PADIEM 회원가입</a></p>
       <p class="council-auth-alt" id="councilGoogleRow" hidden>
         <a class="council-google" id="councilGoogleLogin"
            href="/auth/google/start?return_to=%2Fapps%2Fcouncil%2F">Google로 로그인</a>
@@ -247,6 +255,6 @@
       </p>
     </footer>
   </main>
-  <script src="./static/council-app.js?v=53f32f9a" defer></script>
+  <script src="./static/council-app.js?v=8abcc8c4" defer></script>
 </body>
 </html>

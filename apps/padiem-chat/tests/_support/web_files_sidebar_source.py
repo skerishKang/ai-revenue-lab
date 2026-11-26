@@ -7,6 +7,7 @@ raw source text.
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -46,6 +47,11 @@ def index_html() -> str:
 @lru_cache(maxsize=1)
 def app_js_text() -> str:
     return sheet("app.js")
+
+
+@lru_cache(maxsize=1)
+def project_module_js_text() -> str:
+    return sheet("chat-project-module.js")
 
 
 @lru_cache(maxsize=1)
@@ -124,15 +130,18 @@ def app_seam_facts() -> dict:
     source = app_js_text()
     seam = source[source.index("window.PadiemChatProjectOpener"):]
     seam = seam[:seam.index("});")]
+    project = project_module_js_text()
     return {
         "legacy_tokens": [
             token for token in (
                 "function filesNavAvailable()", "function syncFilesNav()", 'getElementById("filesNavButton")',
             ) if token in source
         ],
-        "find_project": "projects.find((item) => item && item.id === projectId)" in seam,
-        "open_dialog": "openProjectDialog(project)" in seam,
-        "seam_guard": "if (!projectsReady || !authState.authenticated || inFlight) return false;" in seam,
+        "open_file_publication": "openFile: projectModule.openFile" in seam,
+        "open_publication": "open: projectModule.open" in seam,
+        "find_project": "projects.find((item) => item && item.id === projectId)" in project,
+        "open_dialog": "openProjectDialog(project)" in project,
+        "seam_guard": "if (!deps.projectsReady || !deps.authState.authenticated || deps.inFlight) return false;" in project,
     }
 
 
@@ -172,7 +181,7 @@ def library_boundary_facts() -> dict:
 
 
 def backend_routes_facts() -> dict:
-    source = app_js_text()
+    source = project_module_js_text()
     found = set()
     for line in source.splitlines():
         stripped = line.strip()
@@ -269,6 +278,7 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "editProjectButton","exitProjectButton","projectDialog","projectForm","projectDialogTitle","projectDialogClose",
   "projectDialogCancel","projectNameInput","projectInstructionsInput","projectFormError","projectSaveButton",
   "projectFilesPanel","projectFileInput","projectFilesList","projectFilesEmpty","projectFileStatus",
+  "projectFilesUsage","projectDrivePanel",
   "clawNavButton","clawWorkspace","clawManualForm","clawChannel","clawAction","clawSender","clawRequestText",
   "clawResultArea","clawResultPreview","clawResultCard","clawResultEmpty","clawResultKind","clawGenerateBtn",
   "clawExecuteButton","clawResultBadge","clawResultDocx","clawStatus","clawArtifactMeta",
@@ -760,6 +770,15 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
 })();
 """
 
+def _node_env_with_module_preload() -> dict:
+    preload = (ROOT / "tests" / "_node_appjs_modules_preload.js").resolve()
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    env = dict(os.environ)
+    if preload.as_posix() not in existing:
+        env["NODE_OPTIONS"] = f"{existing} --require {preload.as_posix()}".strip()
+    return env
+
+
 def _run_harness(mode: str, auth: dict, sessions: dict, options: dict | None = None) -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
@@ -779,6 +798,7 @@ def _run_harness(mode: str, auth: dict, sessions: dict, options: dict | None = N
             text=True, encoding="utf-8",
             timeout=60,
             cwd=str(ROOT),
+            env=_node_env_with_module_preload(),
         )
     finally:
         harness_path.unlink(missing_ok=True)

@@ -111,7 +111,7 @@ def test_saving_stores_each_draft_through_the_project_file_channel() -> None:
     assert observed["savedCount"] == 6
     # 2026-11-05: the SNS draft is named like the speech — SNS_행사명_날짜 — so a
     # second save no longer collides with "<플랫폼> 게시글.txt" every time.
-    sns_name = f"SNS_주민 정원 사업 설명회_{TODAY}.txt"
+    sns_name = f"SNS_인스타그램_주민 정원 사업 설명회_{TODAY}.txt"
     assert observed["savedNames"] == [
         "축사_제78주년 광복절 기념식_2026-08-15.txt",
         "현장1.png",
@@ -272,7 +272,7 @@ def test_generation_failures_say_it_on_the_notice_line_not_in_the_draft() -> Non
         assert row["noticeHidden"] is False and row["noticeTone"] == "error", row
         assert row["generateDisabled"] is False, row
     success = observed["success"]
-    assert success["notice"] == "" and success["noticeHidden"] is True
+    assert success["notice"] == "초안이 준비됐습니다" and success["noticeHidden"] is False
     assert success["output"].startswith("생성된 초안 본문입니다.")
     assert success["saveDisabled"] is False
     assert not observed["pageErrors"], observed["pageErrors"]

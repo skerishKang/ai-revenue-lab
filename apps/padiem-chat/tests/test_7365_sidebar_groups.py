@@ -75,9 +75,9 @@ def test_guests_see_the_materials_group_honestly_empty() -> None:
     assert guest["historyHidden"] is False
     assert guest["historyEmptyHidden"] is False
     assert guest["settingsHidden"] is True
-    # Boundary kept as parsed assignments: clearProjectsUI lives in app.js,
-    # which no module owns (R5 did not move it), so its markup assignment has
-    # no execution harness. This is the projects half of the same #7438 decision.
+    # Boundary kept as parsed assignments: clearProjectsUI now lives in the
+    # project module, so the definition-aware helper follows the real function.
+    # This is the projects half of the same #7438 decision.
     assignments = support.clear_project_assignments()
     assert "projectsSection.hidden = false;" in assignments
     assert "projectsEmpty.hidden = false;" in assignments

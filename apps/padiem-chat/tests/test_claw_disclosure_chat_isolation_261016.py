@@ -4,6 +4,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from css_rules import is_list_items, parse_rules, rules_for_sheet
+
 # #8060: shipped reads live in _support; assertions stay here.
 from _support.chat_news_disclosure_source import (
     app_js, conversation_module_js, index_html, locale_source, memory_module_js,
@@ -122,10 +124,23 @@ def test_show_chat_resets_stale_claw_disclosures_without_destroying_runs():
 
 def test_claw_disclosures_are_css_hidden_outside_claw_state():
     assert "CLAW_DISCLOSURE_CHAT_ISOLATION_20261016" in CSS
-    assert '.app-shell:not([data-state="claw"])' in CSS
-    assert "#clawRunHistoryDisclosure" in CSS
-    assert "#clawApprovedDisclosure" in CSS
-    assert "display: none !important" in CSS
+    outside = [rule for rule in parse_rules(CSS)
+               if any(sel.startswith('.app-shell:not([data-state="claw"]) :is(')
+                      for sel in rule.selectors)]
+    assert len(outside) == 1
+    assert set(is_list_items(outside[0].selectors[0])) == {
+        "#clawRunHistoryDisclosure", "#clawApprovedDisclosure",
+        "#clawRunHistory", "#clawApprovedMemory",
+    }
+    assert outside[0].declarations["--claw-disclosure-display"] == "none"
+    owners = rules_for_sheet("claw-workspace.css")
+    for selector, fallback in ((".claw-disclosure", "block"),
+                               (".claw-approved-memory", "grid"),
+                               (".claw-run-history", "grid"),
+                               (".claw-memory-review", "grid")):
+        values = [rule.declarations["display"] for rule in owners
+                  if selector in rule.selectors and "display" in rule.declarations]
+        assert values == [f"var(--claw-disclosure-display, {fallback})"]
 
 
 def test_claw_owner_scoped_history_contract_survives():
@@ -137,3 +152,16 @@ def test_claw_owner_scoped_history_contract_survives():
 def test_7459_chat_state_never_reexposes_claw_panels():
     """Chat 대화 중(empty-state 숨김)에도 패널을 display:block으로 되살리면 안 된다."""
     assert '.app-shell[data-state="chat"] .empty-state[hidden] ~' not in CSS
+    active = [rule for rule in parse_rules(CSS)
+              if rule.declarations.get("--claw-disclosure-display") == "block"]
+    assert len(active) == 1
+    prefix = ('.app-shell[data-state="claw"] .claw-workspace[data-view="general"]'
+              ' ~ .conversation .empty-state[hidden] ~ ')
+    assert len(active[0].selectors) == 2
+    for target, expected in (
+        (":is(", {"#clawRunHistoryDisclosure", "#clawApprovedDisclosure", "#clawMemoryReview"}),
+        ("details :is(", {"#clawRunHistory", "#clawApprovedMemory"}),
+    ):
+        (selector,) = [sel for sel in active[0].selectors if sel.startswith(prefix + target)]
+        assert selector.endswith("):not([hidden])")
+        assert set(is_list_items(selector)) == expected

@@ -16,7 +16,7 @@ from _support.projects_recovery_template_source import (
 from pathlib import Path
 
 # R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
-from _r5_function_source import definition_source
+from _r5_function_source import function_body
 
 CHAT = Path(__file__).resolve().parents[1]
 STATIC = CHAT / "static"
@@ -40,18 +40,18 @@ def test_the_project_list_owns_a_status_note_next_to_the_more_button() -> None:
 
 def test_a_rejected_cursor_reports_into_that_note() -> None:
     source = read("app.js")
-    # R5 0단계(R-01): loadMoreProjects의 실제 정의 소스에서 잘라낸다.
-    more_source = definition_source("loadMoreProjects")
-    body = more_source.split("async function loadMoreProjects()", 1)[1].split("async function loadProjects()", 1)[0]
+    project_source = read("chat-project-module.js")
+    # R5 0단계(R-01): 이동한 함수의 실제 정의를 같은 도우미로 잘라낸다.
+    body = function_body("loadMoreProjects", end="\n      }")
     assert "response.status === 400" in body
     stale = body.split("response.status === 400", 1)[1]
-    assert 'setProjectsListNote(coreModule().uiT("projects-more-stale"))' in stale
+    assert 'setProjectsListNote(deps.uiT("projects-more-stale"))' in stale
     # The composer note was the silent path; it must not carry this message again.
     assert "setNote(uiT(\"projects-more-stale\"))" not in source
+    assert "setNote(uiT(\"projects-more-stale\"))" not in project_source
     # A successful page clears the notice so it never outlives the failure.
     assert 'setProjectsListNote("");' in body
-    clear_source = definition_source("clearProjectsUI")
-    clear = clear_source.split("function clearProjectsUI()", 1)[1].split("function ", 1)[0]
+    clear = function_body("clearProjectsUI", end="\n      }")
     assert 'setProjectsListNote("");' in clear
 
 

@@ -310,6 +310,20 @@ class ReleaseScriptStaticContract(unittest.TestCase):
         # A failed fetch must not silently pin stale refs on a real run.
         self.assertIn("refusing to pin from stale refs", self.text)
 
+    def test_step2_waits_for_a_still_running_com2_deploy(self):
+        """release_326 timed out after 15 minutes while COM2 was still copying
+        a 1 GB worktree. STEP2 must keep polling an active unit and only fail
+        once the unit has ended without writing a summary."""
+        text = SCRIPT.read_text(encoding="utf-8-sig")
+        self.assertIn("$Script:PollMaxRounds = 240", text)
+        self.assertIn("$Script:PollInactiveGraceRounds = 8", text)
+        self.assertIn("function Get-Com2UnitState", text)
+        self.assertIn("if ($unitState -eq \"active\") { $inactiveRounds = 0 }", text)
+        self.assertIn("COM2_DEPLOY_SUMMARY after unit $unitName ended", text)
+        self.assertNotIn("no COM2_DEPLOY_SUMMARY within the polling window", text)
+        # A finished unit's journal is still the source of the summary.
+        self.assertLess(text.find("function Get-Com2Journal"), text.find("$summaryLine = $null"))
+
     def test_dry_run_completes_with_the_plan_contract(self):
         """The CTO's first touch is -DryRun: it must run to completion on a
         plain checkout (no Cloudflare auth, no COM2 access) and print the

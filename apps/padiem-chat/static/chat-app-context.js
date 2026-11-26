@@ -109,6 +109,10 @@
     "resetConversationView",
     "safeLocalUiMessage",
     "updateComposer",
+    // loadProjects / renderProjectState — the project module owns the project
+    // UI implementation; app.js accessors delegate to the same registry methods.
+    "loadProjects",
+    "renderProjectState",
   ]);
   window.PadiemChatAppContext = {
     create(shared) {

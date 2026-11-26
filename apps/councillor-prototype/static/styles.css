@@ -225,7 +225,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 [data-theme="dark"] .hero-name-sub { color: #7cc0ea; }
 .hero-lead {
   margin: 0 0 20px; max-width: 44ch;
-  font-size: 16px; line-height: 1.62;
+  font-size: var(--fs-body); line-height: 1.62;
   color: var(--navy-soft);
 }
 [data-theme="dark"] .hero-lead { color: #c3ccd8; }
@@ -672,7 +672,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
     filter: drop-shadow(0 6px 16px rgba(11, 26, 46, 0.16));
   }
 .hero-name { font-size: 30px; margin-bottom: 10px; }
-.hero-lead { font-size: var(--fs-body); margin-bottom: 16px; max-width: none; }
+.hero-lead { margin-bottom: 16px; max-width: none; }
 /* The base veil fades out to the right and is fully transparent past 64% of the width,
      so a full-width phone paragraph loses its backing over the right third (measured 3.97:1
      worst-case against 9px-wide photo pockets at 390px). The 900px block's vertical veil

@@ -818,10 +818,52 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     }
 
 
+async def _open_guest_home(page: Page) -> None:
+    await page.route("**/api/auth/status", lambda route: route.fulfill(json={
+        "ready": True, "authenticated": False, "session_state": "guest",
+    }))
+    await page.goto(f"{BASE_URL}/?theme=padiem-glass", wait_until="domcontentloaded", timeout=60_000)
+    await page.locator('.sidebar-account[data-account-state="guest"]').wait_for(state="attached")
+
+
+async def _guest_home_frame(page: Page, width: int, height: int) -> dict[str, float]:
+    """#8763: compare the actual composer form with its desktop frame."""
+    await page.set_viewport_size({"width": width, "height": height})
+    home = page.locator('html[data-theme="padiem-glass"] .app-shell[data-state="home"]:not(.sidebar-collapsed)')
+    await home.locator(".sidebar").wait_for(state="visible")
+    await home.locator("#emptyState").wait_for(state="visible")
+    await home.locator("#messageInput").wait_for(state="visible")
+    await page.evaluate("""() => document.fonts.ready.then(
+        () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))""")
+    await _assert_no_horizontal_overflow(page, f"guest home {width}x{height}")
+    frame = await _assert_in_viewport(page, ".conversation")
+    form = await _assert_in_viewport(page, "#composerForm")
+    if min(frame["width"], frame["height"], form["width"], form["height"]) <= 0:
+        raise AssertionError(f"{width}x{height} empty frame or form: {frame}, {form}")
+    frame_right, form_right = await page.evaluate("""() => [
+        document.querySelector('.conversation').getBoundingClientRect().right,
+        document.querySelector('#composerForm').getBoundingClientRect().right
+    ]""")
+    if form_right > frame_right - 14:
+        raise AssertionError(
+            f"{width}x{height} composer right {form_right:.2f} exceeds "
+            f"frame right {frame_right:.2f} minus the 14px inset"
+        )
+    return {"frame_right": frame_right, "form_right": form_right}
+
+
 async def _run_checks(report: dict[str, Any]) -> None:
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
         try:
+            report["guest_home_frame"] = {}
+            page = await browser.new_page(viewport={"width": 1440, "height": 900})
+            try:
+                await _open_guest_home(page)
+                for width, height in ((1440, 900), (1920, 1080), (2560, 1080)):
+                    report["guest_home_frame"][f"{width}x{height}"] = await _guest_home_frame(page, width, height)
+            finally:
+                await page.close()
             for name, width, height in VIEWPORTS:
                 async def _viewport_cycle(
                     name: str = name, width: int = width, height: int = height

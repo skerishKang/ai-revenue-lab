@@ -6,6 +6,7 @@ from _support.sidebar_collapse import (
     chat_history_module_source,
     glass_css,
     index_html,
+    project_module_source,
     sidebar_section_collapse_js,
     sidebar_section_polish_css,
 )
@@ -13,7 +14,7 @@ from _support.sidebar_collapse import (
 HTML = index_html()
 JS = sidebar_section_collapse_js()
 CSS = sidebar_section_polish_css()
-APP = app_source() + chat_history_module_source()  # R5 step 3: history rows live in the module too
+APP = app_source() + chat_history_module_source() + project_module_source()  # R5 module-owned rows
 
 
 def test_project_and_recent_have_independent_explicit_collapse_controls():

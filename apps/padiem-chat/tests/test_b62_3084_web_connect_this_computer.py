@@ -944,7 +944,9 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
                # #7216 R5 A9: 커넥터 상태 읽기 소비자는 chat-connectors-module.js에 있다.
                + named("chat-connectors-module.js")
                # #7812 R5 B5: 일정 읽기 활성화 소비자는 chat-calendar-module.js에 있다.
-               + named("chat-calendar-module.js"))
+               + named("chat-calendar-module.js")
+               # #7812: 프로젝트·프로젝트 파일 소비자는 chat-project-module.js에 있다.
+               + named("chat-project-module.js"))
     # #3932: same existing run-history endpoint, bounded 10/30 on explicit user click.
     # Keep the old baseline route in scope; never admit a new endpoint silently.
     assert shipped.count("deps.readClawRuns(deps.clawRunHistoryLimit") == 1

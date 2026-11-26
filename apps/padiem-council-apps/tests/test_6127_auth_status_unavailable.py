@@ -40,7 +40,7 @@ def test_the_gate_stays_closed_in_every_answer() -> None:
         assert row["anyToolBuilt"] is False, name
         assert row["panelHidden"] is True, name
         # the way to obtain a session must survive a server fault
-        assert row["loginActionHidden"] is True, name
+        assert row["loginActionHidden"] is False, name
 
 
 def test_a_server_fault_is_reported_as_a_fault_not_as_a_logout() -> None:
