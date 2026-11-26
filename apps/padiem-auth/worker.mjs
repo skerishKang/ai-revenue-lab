@@ -1,4 +1,5 @@
 import { AuthState } from './state.mjs';
+import { signStateRpc } from './state-rpc.mjs';
 import { verifyGoogleIdToken } from './google-id-token.mjs';
 import { issueAccessToken } from './access-token.mjs';
 import { emailAssertionField } from './email-assertion.mjs';
@@ -332,7 +333,13 @@ function chatDeletionFlusher({ passwordRpcSecret, passwordRpcOrigin, fetcher = f
   };
 }
 
-function stateBindingFor(env) {
+export async function identityDeletedWithPendingCleanup({ registry, fingerprint, flushPending }) {
+  try { await flushPending(registry); } catch { console.error(JSON.stringify({ auth_stage: 'pending_chat_deletion_retry_failed' })); }
+  return registry.identityIsDeleted({ fingerprint });
+}
+
+function durableStateBindingFor(env) {
+  if (!env.AUTH_STATE?.get || !env.AUTH_STATE?.idFromName) throw new Error('auth state binding missing');
   return (name) => new Proxy({}, { get(_target, method) { return async (args) => {
     const stub = env.AUTH_STATE.get(env.AUTH_STATE.idFromName(name));
     const response = await stub.fetch(`https://internal/${method}`, { method: 'POST', body: JSON.stringify(args) });
@@ -341,10 +348,49 @@ function stateBindingFor(env) {
   }; } });
 }
 
+function com2StateBindingFor(env, fetcher) {
+  const origin = env.AUTH_STATE_URL;
+  const secret = env.AUTH_STATE_SECRET;
+  if (typeof origin !== 'string' || !/^https:\/\/[^/]+\/?$/.test(origin) ||
+      typeof secret !== 'string' || encoder.encode(secret).length < 32) throw new Error('auth state com2 configuration missing');
+  const base = origin.replace(/\/+$/, '');
+  const request = async (name, method, args) => {
+    const path = `/rpc/${method}`;
+    const body = encoder.encode(JSON.stringify({ name, args }));
+    const headers = await signStateRpc({ secret, path, at: epoch(), nonce: crypto.randomUUID(), body });
+    const response = await fetcher(base + path, { method: 'POST', redirect: 'manual', headers, body, signal: AbortSignal.timeout(10_000) });
+    if (!response.ok) throw new Error('state failed');
+    const data = await response.json();
+    if (!data || !Object.hasOwn(data, 'value')) throw new Error('state failed');
+    return data.value;
+  };
+  const stateFor = (name) => new Proxy({}, { get(_target, method) { return async (args) => {
+    if (method === 'completeEmailRecovery') return completeEmailRecoveryWith({
+      registry: stateFor('google-account-registry'), stateFor, env, recoveryFetcher: fetcher, ...args,
+    });
+    const value = await request(name, method, args);
+    if (method === 'resolveAccount' && value?.state === 'deleted') {
+      if (!/^[0-9a-f]{64}$/.test(value.accountIdHash ?? '')) throw new Error('state failed');
+      await chatDeletionFlusher({ passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, fetcher, now: epoch })(stateFor('google-account-registry'), value.accountIdHash);
+      console.log(JSON.stringify({ auth_stage: 'account_deletion_recovery_complete' }));
+      return DELETED_ACCOUNT;
+    }
+    return value;
+  }; } });
+  return stateFor;
+}
+
+export function stateBindingFor(env, fetcher = fetch) {
+  const configured = String(env.AUTH_STATE_BACKEND ?? '').trim().toLowerCase();
+  if (!configured || configured === 'do') return durableStateBindingFor(env);
+  if (configured === 'com2') return com2StateBindingFor(env, fetcher);
+  throw new Error('invalid auth state backend');
+}
+
 const deletedGoogleAccountResponse = (request) => htmlPage(403, messagePage('탈퇴한 계정입니다. 다시 시작하려면 새 계정으로 가입해 주세요.', resolveLang(request.headers.get('accept-language'))));
 const DELETED_ACCOUNT = Object.freeze({ state: 'deleted' });
 
-// An adapter is injected in tests; the deployed entry point below only uses DO bindings.
+// An adapter is injected in tests; the deployed entry point selects DO or the signed COM2 store.
 export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch, emailRecoveryEnabled = false, passwordFindEnabled = false, emailConfirmationEnabled = false, accountCreatedAtClaims = false, emailAssertionKey = null, trustedSourceHashes = '', defer }) {
   const trustedHashes = trustedSourceSet(trustedSourceHashes);
   const passwordRpcConfigured = typeof passwordRpcSecret === 'string' && passwordRpcSecret.length >= 32 &&
@@ -1051,7 +1097,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         if (!keyResponse.ok) throw new Error('google keys unavailable');
         return verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: now(), profile: profileClaimAllowlist(clients[pending.client]).length > 0 });
       });
-      if (await stateFor('google-account-registry').identityIsDeleted({ fingerprint: await identityFingerprint(identityKey, identity.sub) })) {
+      if (await identityDeletedWithPendingCleanup({ registry: stateFor('google-account-registry'), fingerprint: await identityFingerprint(identityKey, identity.sub), flushPending: flushPendingChatDeletions })) {
         return deletedGoogleAccountResponse(request);
       }
       const fingerprint = await identityFingerprint(identityKey, identity.sub);
@@ -1146,11 +1192,73 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'resetLoginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'ageConfirmedAt', 'putAccount', 'createAgeConfirmation', 'readAgeConfirmation', 'consumeAgeConfirmation', 'claimAgeConfirmation', 'recordAgeConfirmationResult', 'readAgeConfirmationResult', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
+export const AUTH_STATE_METHODS = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'loginFailureBudget', 'resetLoginFailureBudget', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'accountCreatedAt', 'ageConfirmedAt', 'putAccount', 'createAgeConfirmation', 'readAgeConfirmation', 'consumeAgeConfirmation', 'claimAgeConfirmation', 'recordAgeConfirmationResult', 'readAgeConfirmationResult', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion', 'passwordBindingRefused', 'emailRecoveryCandidate', 'completeEmailRecovery', 'passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation']);
+async function revokeMappedAccountSessionsWith({ registry, stateFor, productUserId, except }) {
+  try {
+    for (const accountId of await registry.accountIdsForChatUser({ productUserId })) {
+      if (accountId === except) continue;
+      const account = await registry.accountById(accountId);
+      if (!account || account.state !== 'active') continue;
+      const sessions = await registry.indexedAccountSessions({ accountId });
+      if (!Array.isArray(sessions)) return false;
+      for (const row of sessions) {
+        if (!row || !opaque.test(row.object_id ?? '') || !opaque.test(row.session_id ?? '')) return false;
+        if (await stateFor(row.object_id).forceRevokeForAccountDeletion({ id: row.session_id }) !== true) return false;
+      }
+    }
+    return true;
+  } catch { return false; }
+}
+
+async function completeEmailRecoveryWith({ registry, stateFor, env, recoveryFetcher, token, newPassword, now }) {
+  if (!recoverySwitch(env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED)) return { status: 404 };
+  if (!validRecoveryToken(token) || typeof newPassword !== 'string' || newPassword.length > 128 || !Number.isSafeInteger(now)) return { status: 400 };
+  const rpc = (action, payload) => recoveryRpc({
+    secret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, origin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN,
+    fetcher: recoveryFetcher, now,
+  }, action, payload);
+  const response = await rpc('inspect', { token, new_password: newPassword });
+  if (response.status !== 200) {
+    const failure = await response.json();
+    if (response.status === 400 && failure?.error?.code === 'invalid_password') return { status: 400, error: 'password_recovery_password_invalid' };
+    return { status: response.status >= 500 ? 503 : 400 };
+  }
+  const proof = await response.json();
+  if (proof?.ok !== true || !validRecoveryEmail(proof.email) || proof.email !== proof.email.trim().toLowerCase() ||
+      !/^sub_[A-Za-z0-9_-]+$/.test(proof.account_id ?? '') || !CREDENTIAL_EPOCH.test(proof.credential_epoch ?? '')) return { status: 400 };
+  const reset = proof.mode === 'reset';
+  if (reset && (!recoverySwitch(env.PADIEM_AUTH_PASSWORD_FIND_ENABLED) || !/^usr_[0-9a-f]{32}$/.test(proof.product_user_id ?? ''))) return { status: 400 };
+  const bytes = un64(env.PADIEM_AUTH_IDENTITY_HMAC_KEY);
+  if (bytes.length !== 32) throw new Error('identity_key_unavailable');
+  const key = await crypto.subtle.importKey('raw', bytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const fingerprint = await passwordIdentityFingerprint(key, proof.email);
+  const candidate = await registry.emailRecoveryCandidate(reset ? { fingerprint, now, mode: 'reset' } : { fingerprint, now });
+  if (!candidate || candidate.account_id !== proof.account_id || candidate.credential_epoch !== proof.credential_epoch) return { status: 400 };
+  const availability = await rpc('status', { email: proof.email });
+  if (availability.status !== 200) return { status: 503 };
+  const current = await availability.json();
+  if (current?.ok !== true || (reset ? current.present !== true : current.available !== true)) return { status: 400 };
+  const prepared = await prepareAccountDeletion(registry, stateFor, { accountId: candidate.account_id, now });
+  if (!prepared.ok) return { status: 503 };
+  try {
+    if (reset && !await revokeMappedAccountSessionsWith({ registry, stateFor, productUserId: proof.product_user_id, except: candidate.account_id })) return { status: 503 };
+    const completed = await rpc('complete', { token, new_password: newPassword, account_id: candidate.account_id, credential_epoch: candidate.credential_epoch });
+    const answer = await completed.json();
+    if (completed.status === 400 && answer?.error?.code === 'invalid_password') return { status: 400, error: 'password_recovery_password_invalid' };
+    if (completed.status !== 200) return { status: completed.status >= 500 ? 503 : 400 };
+    if (answer?.ok !== true || !/^usr_[0-9a-f]{32}$/.test(answer.product_user_id ?? '') ||
+        answer.account_id !== candidate.account_id || answer.credential_epoch !== candidate.credential_epoch) return { status: 503 };
+    if (reset && answer.product_user_id !== proof.product_user_id) return { status: 503 };
+    return { ok: true };
+  } finally {
+    await registry.releaseAccountDeletion({ accountId: candidate.account_id, lockToken: prepared.lockToken });
+  }
+}
+
 export class AuthStateObject extends AuthState {
-  constructor(state, env, { recoveryFetcher = fetch, recoveryStateFor = stateBindingFor(env) } = {}) {
+  constructor(state, env, { recoveryFetcher = fetch, recoveryStateFor = (name) => durableStateBindingFor(env)(name), deletedAccountCleanup = null } = {}) {
     super(state, { lazySchema: Boolean(state.id) }); this.state = state; this.env = env;
-    this.recoveryFetcher = recoveryFetcher; this.recoveryStateFor = recoveryStateFor;
+    this.recoveryFetcher = recoveryFetcher; this.recoveryStateFor = recoveryStateFor; this.deletedAccountCleanup = deletedAccountCleanup;
   }
   // The one judgment for a mailed proof. 'restore' (#7606) brings back the
   // credential of a Chat-only withdrawal; 'reset' (#7679 password find) changes
@@ -1174,76 +1282,14 @@ export class AuthStateObject extends AuthState {
   // this Chat user is recorded under, the same set the signed revoke route
   // covers for Chat's own password change (#7078). The proven account itself
   // is revoked under its lock by prepareAccountDeletion.
-  async revokeMappedAccountSessions({ productUserId, except }) {
-    try {
-      for (const accountId of this.accountIdsForChatUser({ productUserId })) {
-        if (accountId === except) continue;
-        const account = this.accountById(accountId);
-        if (!account || account.state !== 'active') continue;
-        const sessions = this.indexedAccountSessions({ accountId });
-        if (!Array.isArray(sessions)) return false;
-        for (const row of sessions) {
-          if (!row || !opaque.test(row.object_id ?? '') || !opaque.test(row.session_id ?? '')) return false;
-          if (await this.recoveryStateFor(row.object_id).forceRevokeForAccountDeletion({ id: row.session_id }) !== true) return false;
-        }
-      }
-      return true;
-    } catch { return false; }
+  async revokeMappedAccountSessions(input) {
+    return revokeMappedAccountSessionsWith({ registry: this, stateFor: this.recoveryStateFor, ...input });
   }
-  async completeEmailRecovery({ token, newPassword, now }) {
-    if (!recoverySwitch(this.env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED)) return { status: 404 };
-    if (!validRecoveryToken(token) || typeof newPassword !== 'string' || newPassword.length > 128 || !Number.isSafeInteger(now)) return { status: 400 };
-    return this.state.blockConcurrencyWhile(async () => {
-      const rpc = (action, payload) => recoveryRpc({
-        secret: this.env.PADIEM_AUTH_PASSWORD_RPC_SECRET, origin: this.env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN,
-        fetcher: this.recoveryFetcher, now,
-      }, action, payload);
-      const response = await rpc('inspect', { token, new_password: newPassword });
-      if (response.status !== 200) {
-        const failure = await response.json();
-        if (response.status === 400 && failure?.error?.code === 'invalid_password') return { status: 400, error: 'password_recovery_password_invalid' };
-        return { status: response.status >= 500 ? 503 : 400 };
-      }
-      const proof = await response.json();
-      if (proof?.ok !== true || !validRecoveryEmail(proof.email) || proof.email !== proof.email.trim().toLowerCase() ||
-          !/^sub_[A-Za-z0-9_-]+$/.test(proof.account_id ?? '') || !CREDENTIAL_EPOCH.test(proof.credential_epoch ?? '')) return { status: 400 };
-      // #7679: Chat names a proof that belongs to a live credential. It is
-      // honoured only while password find is on and is re-judged below like
-      // any other proof.
-      const reset = proof.mode === 'reset';
-      if (reset && (!recoverySwitch(this.env.PADIEM_AUTH_PASSWORD_FIND_ENABLED) || !/^usr_[0-9a-f]{32}$/.test(proof.product_user_id ?? ''))) return { status: 400 };
-      const bytes = un64(this.env.PADIEM_AUTH_IDENTITY_HMAC_KEY);
-      if (bytes.length !== 32) throw new Error('identity_key_unavailable');
-      const key = await crypto.subtle.importKey('raw', bytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-      const fingerprint = await passwordIdentityFingerprint(key, proof.email);
-      const candidate = await this.emailRecoveryCandidate(reset ? { fingerprint, now, mode: 'reset' } : { fingerprint, now });
-      if (!candidate || candidate.account_id !== proof.account_id || candidate.credential_epoch !== proof.credential_epoch) return { status: 400 };
-      const availability = await rpc('status', { email: proof.email });
-      if (availability.status !== 200) return { status: 503 };
-      const current = await availability.json();
-      if (current?.ok !== true || (reset ? current.present !== true : current.available !== true)) return { status: 400 };
-      // The registry remains serialized across revocation and Chat's atomic
-      // completion. Its existing lock also refuses new session indexing.
-      const prepared = await prepareAccountDeletion(this, this.recoveryStateFor, { accountId: candidate.account_id, now });
-      if (!prepared.ok) return { status: 503 };
-      try {
-        if (reset && !await this.revokeMappedAccountSessions({ productUserId: proof.product_user_id, except: candidate.account_id })) return { status: 503 };
-        const completed = await rpc('complete', { token, new_password: newPassword, account_id: candidate.account_id, credential_epoch: candidate.credential_epoch });
-        const answer = await completed.json();
-        if (completed.status === 400 && answer?.error?.code === 'invalid_password') return { status: 400, error: 'password_recovery_password_invalid' };
-        if (completed.status !== 200) return { status: completed.status >= 500 ? 503 : 400 };
-        // Recovery creates a fresh product-local identity so a deleted Chat
-        // cookie can never become valid again. The signed Chat result must
-        // retain the proven common account and logical credential generation.
-        if (answer?.ok !== true || !/^usr_[0-9a-f]{32}$/.test(answer.product_user_id ?? '') ||
-            answer.account_id !== candidate.account_id || answer.credential_epoch !== candidate.credential_epoch) return { status: 503 };
-        // A password change keeps the local identity it was proven for.
-        if (reset && answer.product_user_id !== proof.product_user_id) return { status: 503 };
-        return { ok: true };
-      } finally {
-        await this.releaseAccountDeletion({ accountId: candidate.account_id, lockToken: prepared.lockToken });
-      }
-    });
+  async completeEmailRecovery(input) {
+    return this.state.blockConcurrencyWhile(() => completeEmailRecoveryWith({
+      registry: this, stateFor: this.recoveryStateFor, env: this.env,
+      recoveryFetcher: this.recoveryFetcher, ...input,
+    }));
   }
   async createCode(input) {
     if (input.encryptedProfile) await this.storage.setAlarm(input.expires * 1000);
@@ -1289,16 +1335,23 @@ export class AuthStateObject extends AuthState {
       stage = 'account_deletion_recovery_prepare';
       // Use this registry directly: a fetch to this same DO would deadlock
       // while resolveAccount holds blockConcurrencyWhile.
-      prepared = await prepareAccountDeletion(this, stateBindingFor(this.env), { accountId, now });
+      prepared = await prepareAccountDeletion(this, this.recoveryStateFor, { accountId, now });
       if (!prepared.ok) throw new Error('account_deletion_prepare_failed');
       stage = 'account_deletion_recovery_finalize';
       const accountIdHash = await digestHex(accountId);
       const completed = await this.finalizeAccountDeletion({ accountId, accountIdHash, lockToken: prepared.lockToken, now });
       if (completed !== true) throw new Error('account_deletion_finalize_failed');
+      if (this.deletedAccountCleanup) {
+        stage = 'account_deletion_recovery_cleanup_handoff';
+        const handoff = await this.deletedAccountCleanup({ accountIdHash });
+        if (handoff?.state !== 'deleted' || !/^[0-9a-f]{64}$/.test(handoff.accountIdHash ?? '')) throw new Error('account_deletion_cleanup_handoff_invalid');
+        console.log(JSON.stringify({ auth_stage: 'account_deletion_recovery_local_complete' }));
+        return handoff;
+      }
       stage = 'account_deletion_recovery_chat_cleanup';
       await chatDeletionFlusher({ passwordRpcSecret: this.env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: this.env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, now: () => now })(this, accountIdHash);
       console.log(JSON.stringify({ auth_stage: 'account_deletion_recovery_complete' }));
-      return true;
+      return DELETED_ACCOUNT;
     } catch {
       if (prepared?.ok) {
         try { await this.releaseAccountDeletion({ accountId, lockToken: prepared.lockToken }); }
@@ -1365,16 +1418,16 @@ export class AuthStateObject extends AuthState {
         const errorKeys = result && typeof result.error === 'object' && result.error ? Object.keys(result.error).sort().join(',') : '';
         console.error(JSON.stringify({ auth_stage: 'identity_authority_rejected', product: productId, code, shape, error_keys: errorKeys, expected_subject_sent: Boolean(current) }));
         checked = 'rejected';
-        if (provider === 'google' && productId === 'b62' && current && result?.ok === false && code === 'identity_rebind_forbidden' &&
-            await this.recoverDeletedAccount(current.account_id, now)) {
-          return DELETED_ACCOUNT;
-        }
+        const recovered = provider === 'google' && productId === 'b62' && current && result?.ok === false && code === 'identity_rebind_forbidden'
+          ? await this.recoverDeletedAccount(current.account_id, now)
+          : false;
+        if (recovered) return recovered;
         throw new Error('identity authority failed');
       }
       checked = 'called';
       return result;
     }).finally(() => logAccountCheck(productId, provider, Boolean(current), checked));
-    if (linked === DELETED_ACCOUNT) return linked;
+    if (linked?.state === 'deleted') return linked;
     if (current && current.account_id !== linked.link.canonical_subject_id) throw new Error('identity_conflict');
 
     if (mode === 'on') {
@@ -1406,7 +1459,7 @@ export class AuthStateObject extends AuthState {
   }
   async fetch(request) {
     const action = new URL(request.url).pathname.slice(1);
-    if (request.method !== 'POST' || !methods.has(action)) return json(404, { error: 'not_found' });
+    if (request.method !== 'POST' || !AUTH_STATE_METHODS.has(action)) return json(404, { error: 'not_found' });
     if (['emailRecoveryCandidate', 'completeEmailRecovery'].includes(action) && !recoverySwitch(this.env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED)) return json(404, { error: 'not_found' });
     if (['passwordEmailConfirmed', 'reserveEmailConfirmation', 'recordEmailConfirmationToken', 'completeEmailConfirmation'].includes(action) && !recoverySwitch(this.env.PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED)) return json(404, { error: 'not_found' });
     try { this._ensureSchemaFor(action); return json(200, { value: (await this[action](await request.json())) ?? null }); } catch { return json(500, { error: 'state_failure' }); }
@@ -1436,7 +1489,7 @@ export default {
       const refreshBytes = un64(env.PADIEM_AUTH_REFRESH_ENCRYPTION_KEY);
       if (refreshBytes.length !== 32) throw new Error('refresh key must be 32 bytes');
       const refreshKey = await crypto.subtle.importKey('raw', refreshBytes, 'AES-GCM', false, ['encrypt', 'decrypt']);
-      if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.PADIEM_AUTH_SIGNING_KID || !env.AUTH_STATE || !env.IDENTITY_AUTHORITY) throw new Error('missing binding');
+      if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.PADIEM_AUTH_SIGNING_KID || !env.IDENTITY_AUTHORITY) throw new Error('missing binding');
       const stateFor = stateBindingFor(env);
       return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor, emailRecoveryEnabled: env.PADIEM_AUTH_EMAIL_RECOVERY_ENABLED, passwordFindEnabled: env.PADIEM_AUTH_PASSWORD_FIND_ENABLED, emailConfirmationEnabled: env.PADIEM_AUTH_EMAIL_CONFIRMATION_ENABLED, accountCreatedAtClaims: env.PADIEM_AUTH_ACCOUNT_CREATED_AT_CLAIM_ENABLED, emailAssertionKey: env.PADIEM_AUTH_EMAIL_ASSERTION_KEY_LOVETREE, trustedSourceHashes: env.PADIEM_AUTH_TRUSTED_SOURCE_HASHES, defer: typeof ctx?.waitUntil === 'function' ? work => ctx.waitUntil(work) : undefined }).fetch(request);
     } catch { return json(503, { error: 'authentication_unavailable' }); }
