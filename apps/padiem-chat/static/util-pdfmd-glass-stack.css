@@ -1,0 +1,28 @@
+/*
+ * #8812 D1·D4 — PDF→MD 전용 유일 규칙 시트 (padiem-glass 좁은 판 한 칸 쌓기).
+ *
+ * 배경: padiem-glass의 공유 여섯 판 레인은 첫 화면 초상 아트워크 열을
+ * (clamp(360px, 32vw, 560px)) 유틸 화면에도 그대로 예약하는 고정 디자인이다.
+ * 1440에서 PDF→MD 본문 판은 약 542px로 좁아 두 칸(입력 판 + 오른쪽 안내 카드)
+ * 이 압착된다. 판 폭과 아트워크 열은 공유 모양이라 그대로 두고, 판 안의 두 칸을
+ * 판 폭 기준(컨테이너 쿼리)으로 한 칸에 쌓는다 — 안내 카드는 입력 판 아래로.
+ *
+ * - 컨테이너는 pdfmd 도구 화면의 .util-view에만 inline-size로 선언한다
+ *   (다른 뷰·다른 테마는 컨테이너가 아니므로 @container가 절대 걸리지 않는다).
+ *   사이드바를 접으면 판이 넓어지고 컨테이너 폭이 임계값을 넘어 두 칸으로 돌아간다.
+ * - 임계값 800px(내용 상자 기준): 다른 테마가 두 칸을 유지하는 폭(872px+)에서는
+ *   두 칸 그대로. glass 2560(내용 880px)도 두 칸 유지.
+ * - 새 important 선언 없음, 새 색 숫자 없음, 선택자 강화 없음. #8054 구조
+ *   래칫: 기존 시트에 규칙을 더하지 않기 위해 새 시트로 둔다.
+ */
+html[data-theme="padiem-glass"] body .app-shell[data-state="util"]
+  .util-view:has(.util-tool-screen[data-util-tool="pdfmd"]) {
+  container-type: inline-size;
+}
+
+@container (max-width: 799px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="util"]
+    .util-tool-screen #utilPdfmdPanel {
+    grid-template-columns: 1fr;
+  }
+}
