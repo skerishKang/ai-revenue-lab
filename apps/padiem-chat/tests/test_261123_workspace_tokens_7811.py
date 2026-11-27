@@ -73,9 +73,24 @@ def test_tokens_are_theme_invariant() -> None:
             assert declaration(rule, name) is None, (rule.selectors[0], name)
 
 
+#: 7811 C5: 이 시트에서 이 토큰을 읽던 선언(배너 바깥 그림자·테두리, hover·focus
+#: 색)은 기본 규칙의 우선 표시에 늘 져서 칠해진 적이 없어 지웠다. 토큰 정의는
+#: 다른 토큰(outputs 쪽)이 읽거나 값 기록으로 남긴다.
+NO_LONGER_READ_HERE = {
+    "--ws-control-hover-text",
+    "--ws-banner-edge",
+    "--ws-banner-shadow",
+    "--ws-input-focus-edge",
+    "--ws-primary-hover-wash",
+}
+
+
 def test_sheet_consumes_tokens_without_raw_colors() -> None:
     assert COLOR.search(SHEET_TEXT) is None
     for name in ROOT_TOKENS:
+        if name in NO_LONGER_READ_HERE:
+            assert f"var({name})" not in SHEET_TEXT, name
+            continue
         assert f"var({name})" in SHEET_TEXT, name
     assert SHEET_TEXT.count("var(--text-veil-strong)") == 1
     assert len(SHEET_RULES) > 0

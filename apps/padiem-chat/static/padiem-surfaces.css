@@ -268,8 +268,7 @@
 }
 
 .attachment-chip,
-.attachment-preview,
-.project-banner {
+.attachment-preview {
   border-color: var(--surfaces-attachment-edge) !important;
   background: var(--surfaces-card-bg) !important;
   color: var(--surfaces-card-text);
