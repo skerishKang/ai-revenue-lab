@@ -53,7 +53,7 @@ NODE_HARNESS = r'''
 const fs = require("node:fs");
 const vm = require("node:vm");
 
-const [manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdPagesFile, pdfmdFile, appFile] = process.argv.slice(2);
+const [manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdPagesFile, pdfmdRecoveryFile, pdfmdFile, appFile] = process.argv.slice(2);
 
 const registry = [];
 function El(tag) {
@@ -343,7 +343,7 @@ const ctx = {
 };
 ctx.globalThis = ctx;
 vm.createContext(ctx);
-[manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdPagesFile, pdfmdFile, appFile].forEach((file) => {
+[manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdPagesFile, pdfmdRecoveryFile, pdfmdFile, appFile].forEach((file) => {
   vm.runInContext(fs.readFileSync(file, "utf8"), ctx, { filename: file });
 });
 
@@ -612,6 +612,7 @@ def _run_stage2_harness() -> dict:
                 sheets.static_path("util-tools.js"),
                 sheets.static_path("util-quote.js"),
                 sheets.static_path("util-pdfmd-pages.js"),
+                sheets.static_path("util-pdfmd-recovery.js"),
                 sheets.static_path("util-pdfmd.js"),
                 sheets.static_path("util-app.js"),
             ],
@@ -691,7 +692,7 @@ def test_stage2_all_four_tools_question_order_gate_sync_and_library_save() -> No
     pdfmd = out["pdfmd"]
     assert pdfmd["asked"] == ["files"]
     assert pdfmd["hasFileTrigger"] is True
-    assert "검증 변환" in pdfmd["summaryBefore"]
+    assert "꼼꼼히 바꾸기" in pdfmd["summaryBefore"]
     assert pdfmd["postsBefore"] == 0
     assert pdfmd["postsAfterNoFile"] == 0
     # #7865: the upload starts its own conversion — the run POST follows the

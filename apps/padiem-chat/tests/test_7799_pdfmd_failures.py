@@ -226,7 +226,7 @@ def test_the_front_end_speaks_in_user_words_and_shows_no_raw_code() -> None:
     js = sheets.pdfmd_js()
     # File problems, the scan guidance, and the transient outage each speak
     # Korean; the retry timing is stated for the transient family.
-    assert 'pdf_encrypted: "암호가 있는 PDF는 변환할 수 없습니다.' in js
+    assert 'pdf_encrypted: "암호가 있는 PDF는 바꿀 수 없습니다.' in js
     assert 'pdf_invalid: "PDF 형식이 아니거나 손상된 파일입니다."' in js
     assert 'live_abuse_gate_unavailable: "일시적인 오류입니다. 잠시 후(5분 뒤) 다시 시도해 주세요."' in js
     assert "스캔본이라 글자가 없어 지금은 읽을 수 없습니다." in js

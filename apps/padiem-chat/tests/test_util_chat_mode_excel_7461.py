@@ -57,7 +57,7 @@ NODE_HARNESS = r'''
 const fs = require("node:fs");
 const vm = require("node:vm");
 
-const [manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdFile, excelFile, appFile] = process.argv.slice(2);
+const [manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdPagesFile, pdfmdRecoveryFile, pdfmdFile, excelFile, appFile] = process.argv.slice(2);
 
 const registry = [];
 function El(tag) {
@@ -327,7 +327,7 @@ const ctx = {
 };
 ctx.globalThis = ctx;
 vm.createContext(ctx);
-[manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdFile, excelFile, appFile].forEach((file) => {
+[manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdPagesFile, pdfmdRecoveryFile, pdfmdFile, excelFile, appFile].forEach((file) => {
   vm.runInContext(fs.readFileSync(file, "utf8"), ctx, { filename: file });
 });
 
@@ -497,6 +497,8 @@ def _run_excel_harness() -> dict:
                 sheets.static_path("util-chat-mode.js"),
                 sheets.static_path("util-tools.js"),
                 sheets.static_path("util-quote.js"),
+                sheets.static_path("util-pdfmd-pages.js"),
+                sheets.static_path("util-pdfmd-recovery.js"),
                 sheets.static_path("util-pdfmd.js"),
                 sheets.static_path("util-excel.js"),
                 sheets.static_path("util-app.js"),

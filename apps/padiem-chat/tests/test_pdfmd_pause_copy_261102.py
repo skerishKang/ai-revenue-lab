@@ -43,7 +43,7 @@ def test_the_internal_channel_name_is_gone_from_the_screen() -> None:
 def test_the_pause_still_says_what_is_and_is_not_possible() -> None:
     # The panel states the absence and states what still works, in plain words —
     # painted only when the server actually answers that the work is paused.
-    assert "지금은 새 변환을 시작할 수 없습니다" in PDFMD
+    assert "지금은 새 바꾸기를 시작할 수 없습니다" in PDFMD
     assert "기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다" in PDFMD
     assert "곧 다시 이용할 수 있어요" in PDFMD
     # The static card no longer claims a pause on first paint: new work is
@@ -52,7 +52,7 @@ def test_the_pause_still_says_what_is_and_is_not_possible() -> None:
     assert "일시 중단" not in INDEX
     # #7173 / #7460: the card copy lives in the unified util manifest.
     manifest = util_manifest_js()
-    assert "PDF·ZIP을 Markdown으로 변환·비교·다운로드" in manifest
+    assert "PDF·ZIP을 Markdown으로 바꾸고, 비교하고, 내려받아요" in manifest
 
 
 def test_the_owner_pause_contract_is_untouched() -> None:
@@ -60,7 +60,7 @@ def test_the_owner_pause_contract_is_untouched() -> None:
     # they may be painted — the harness in test_5568_pdfmd_ui_p1.py now asserts
     # them after a paused answer instead of on the first paint.
     # #7865: the notice lives on the head status line with the same promise.
-    assert '"지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다."' in PDFMD
+    assert '"지금은 새 바꾸기를 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다."' in PDFMD
     assert '"업로드 일시 중단"' in PDFMD
     assert 'workState = "checking"' in PDFMD, "the first paint must start as unknown, not as paused"
 
@@ -80,18 +80,22 @@ def test_the_real_gate_is_still_the_server_answer_not_the_copy() -> None:
     assert "const workBlocked = PDFMD_NEW_WORK_DISABLED || PDFMD_LOGIN_REQUIRED || PDFMD_CHECKING;" in PDFMD
     assert "modeSel.disabled = workBlocked;" in PDFMD
     assert "fileInput.disabled = workBlocked;" in PDFMD
-    assert 'if (workBlocked) return false;' in PDFMD
+    assert 'if (workBlocked || quotaExhausted) return false;' in PDFMD
 
 
 def test_a_guest_401_asks_for_login_instead_of_claiming_a_pause() -> None:
     # A 401 says the session is missing, not that the work stopped. It has its
     # own state, its own sentence and the app's existing login entry.
+    # #8812 D6·D7 대표 확인: the one 로그인 button is the drop box's own CTA —
+    # the notice line keeps the sentence only, so the action is never offered
+    # twice on one screen.
     assert 'const PDFMD_LOGIN_REQUIRED = workState === "login_required";' in PDFMD
     assert 'window.initPdfMdUtility(panel, "login_required");' in PDFMD
-    assert "로그인 후 PDF 변환을 이용할 수 있습니다." in PDFMD
+    assert "로그인하면 PDF를 바꿀 수 있어요." in PDFMD
     assert "로그인이 필요합니다" in PDFMD
-    assert "로그인 필요" in PDFMD
-    assert 'loginEntry.id = "pdfmdLoginEntry";' in PDFMD
+    assert 'dropCta.textContent = "로그인";' in PDFMD
+    assert 'if (PDFMD_LOGIN_REQUIRED) { openExistingLogin(); return; }' in PDFMD
+    assert 'loginEntry.id = "pdfmdLoginEntry";' not in PDFMD
     assert 'document.getElementById("loginButton")' in PDFMD
     # The 401 branch is decided before the no-answer branch, so a guest never
     # falls through to the pause sentence.

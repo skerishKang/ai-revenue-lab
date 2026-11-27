@@ -161,7 +161,7 @@ def _open_compare(page: Page, base_url: str, theme: str) -> None:
         fold.locator("summary").click()
     page.locator(".pdfmd-history-item").first.click()
     page.wait_for_timeout(800)
-    page.locator('button[aria-label$="원본과 변환본 비교"]').first.click()
+    page.locator('button[aria-label$="원본과 바꾼 결과 비교"]').first.click()
     page.locator(".pdfmd-preview").wait_for(state="visible", timeout=8_000)
     page.locator(".pdfmd-page-table").first.wait_for(state="attached", timeout=8_000)
     page.wait_for_timeout(600)

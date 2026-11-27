@@ -59,7 +59,7 @@ def test_single_choice_mode_field_is_hidden_but_kept() -> None:
     """변환 방식은 한 줄로 숨겨 둔다 — 서버가 빠른·검증 두 방식을 모두 받으므로
     선택지를 완전히 없애면 검증 변환(페이지별 일치도 보고)이 사라진다."""
     js = sheets.pdfmd_js()
-    assert 'modeSel.setAttribute("aria-label", "변환 방식")' in js
+    assert 'modeSel.setAttribute("aria-label", "바꾸기 방식")' in js
     assert "pdfmd-mode-help" not in js, "긴 도움말 문단이 돌아왔다"
 
 
@@ -123,7 +123,7 @@ def test_the_all_zip_bar_sits_above_results_and_only_when_many() -> None:
 def test_the_history_folds_into_one_line() -> None:
     js = sheets.pdfmd_js()
     assert 'el("details", "pdfmd-history-fold")' in js
-    assert '"지난 변환 "' in js
+    assert '"지난 기록 "' in js
     css = sheets.util_menu_css()
     rules = parse_rules(css)
     fold = find_rules_with_selector(rules, ".pdfmd-history-summary")[0]
@@ -236,6 +236,7 @@ BAND_HTML = """<!DOCTYPE html>
 <link rel="stylesheet" href="./sidebar-utility.css">
 <link rel="stylesheet" href="./standalone-views.css">
 <link rel="stylesheet" href="./util-menu.css">
+<link rel="stylesheet" href="./util-pdfmd-recovery.css">
 <link rel="stylesheet" href="./util-app.css">
 <link rel="stylesheet" href="./util-chat-mode.css">
 </head><body>
@@ -246,6 +247,7 @@ BAND_HTML = """<!DOCTYPE html>
 <script src="./util-manifest.js"></script>
 <script src="./util-chat-mode.js"></script>
 <script src="./util-pdfmd-pages.js"></script>
+<script src="./util-pdfmd-recovery.js"></script>
 <script src="./util-pdfmd.js"></script>
 <script>
   const panel = document.createElement("div");

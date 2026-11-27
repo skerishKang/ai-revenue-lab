@@ -51,7 +51,7 @@ LOCALE_KEYS = (
 # locale-key contracts that belonged to the removed paragraph went with it.
 def test_the_mode_select_names_itself_without_the_help_paragraph() -> None:
     js = sheets.pdfmd_js()
-    assert 'modeSel.setAttribute("aria-label", "변환 방식")' in js
+    assert 'modeSel.setAttribute("aria-label", "바꾸기 방식")' in js
     assert 'const modeHelp = el("p", "pdfmd-mode-help")' not in js
     assert 'MODE_HELP = {' not in js
     assert 'pdfmd-mode-help' not in js
@@ -96,7 +96,8 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 
 const pagesPath = process.argv[2];
-const pdfmdPath = process.argv[3];
+const recoveryPath = process.argv[3];
+const pdfmdPath = process.argv[4];
 
 class N {
   constructor(tag) {
@@ -135,6 +136,13 @@ class N {
   appendChild(child) { this.children.push(child); child.parentNode = this; return child; }
   append(...children) { children.forEach((child) => this.appendChild(child)); }
   replaceChildren(...children) { this.children = []; this.append(...children); }
+  insertBefore(node, ref) {
+    const at = ref ? this.children.indexOf(ref) : -1;
+    if (at === -1) return this.appendChild(node);
+    this.children.splice(at, 0, node);
+    node.parentNode = this;
+    return node;
+  }
   addEventListener(type, fn) { (this._listeners[type] = this._listeners[type] || []).push(fn); }
   removeEventListener() {}
   async dispatch(type, event) {
@@ -269,6 +277,7 @@ const ctx = {
 vm.createContext(ctx);
 // #7834: page numbering and the original pane live in their own module.
 vm.runInContext(fs.readFileSync(pagesPath, "utf8"), ctx, { filename: "util-pdfmd-pages.js" });
+vm.runInContext(fs.readFileSync(recoveryPath, "utf8"), ctx, { filename: "util-pdfmd-recovery.js" });
 vm.runInContext(fs.readFileSync(pdfmdPath, "utf8"), ctx, { filename: "util-pdfmd.js" });
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -298,7 +307,7 @@ async function search(value) {
   //    field; the one quiet select still names itself for the owner.
   const mode = panel.querySelector("#pdfmdMode");
   if (!mode) fail("MODE_SELECT_MISSING");
-  if (mode.getAttribute("aria-label") !== "변환 방식") fail("MODE_ARIA_MISSING", mode.getAttribute("aria-label"));
+  if (mode.getAttribute("aria-label") !== "바꾸기 방식") fail("MODE_ARIA_MISSING", mode.getAttribute("aria-label"));
 
   // 2) Search input is localized and history is grouped by date.
   const input = panel.querySelector("#pdfmdHistorySearch");
@@ -328,7 +337,7 @@ async function search(value) {
   if (JSON.stringify(headings()) !== JSON.stringify(["EN today"])) fail("FILTERED_GROUP_WRONG", headings());
 
   // 5) Status, mode, date and id search work without any extra API call.
-  await search("검증");
+  await search("꼼꼼");
   if (rows().length !== 1 || rows()[0].dataset.jobId !== "dcj_yesterd2") fail("MODE_SEARCH_FAILED", rows().map((r) => r.dataset.jobId));
   await search("실패");
   if (rows().length !== 1 || rows()[0].dataset.jobId !== "dcj_earlier3") fail("STATUS_SEARCH_FAILED", rows().map((r) => r.dataset.jobId));
@@ -365,6 +374,7 @@ def _run_harness() -> dict:
     try:
         result = subprocess.run(
             [node, str(harness_path), sheets.static_path("util-pdfmd-pages.js"),
+             sheets.static_path("util-pdfmd-recovery.js"),
              sheets.static_path("util-pdfmd.js")],
             capture_output=True,
             text=True,
