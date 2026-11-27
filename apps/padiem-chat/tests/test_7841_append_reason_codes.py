@@ -15,6 +15,8 @@ from __future__ import annotations
 import asyncio
 import re
 from pathlib import Path
+
+from _support.migrated_db_template import migrated_connection, fill_empty_connection
 import sqlite3
 from types import SimpleNamespace
 
@@ -78,10 +80,8 @@ class _Log:
 
 
 def _database():
-    connection = sqlite3.connect(":memory:", check_same_thread=False)
-    connection.row_factory = sqlite3.Row
-    for path in sorted(MIGRATIONS.glob("*.sql")):
-        connection.executescript(path.read_text(encoding="utf8"))
+    connection = migrated_connection(":memory:", MIGRATIONS,
+        check_same_thread=False, isolation_level="", row_factory=sqlite3.Row)
     connection.execute(
         "INSERT INTO users(id,auth_provider,provider_subject,email,created_at,updated_at) "
         "VALUES (?,?,?,?,?,?)",

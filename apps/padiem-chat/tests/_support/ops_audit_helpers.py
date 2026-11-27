@@ -15,7 +15,7 @@ from starlette.requests import Request
 from app.config import Settings
 from app.d1_sqlite import SqliteD1
 from app.feedback_store import D1FeedbackStore
-from app.local_cpython import apply_migrations
+from _support.migrated_db_template import apply_copied_migrations as apply_migrations
 from sid_session_helper import sid_session_token
 
 CHAT_DIR = Path(__file__).resolve().parents[2]

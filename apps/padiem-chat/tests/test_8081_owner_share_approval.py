@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 from app.d1_sqlite import SqliteD1
-from app.local_cpython import apply_migrations
+from _support.migrated_db_template import apply_copied_migrations as apply_migrations
 from app.pc_device_pairing_store import D1PcPairingStore, PcPairingError
 
 HERE = Path(__file__).resolve().parent

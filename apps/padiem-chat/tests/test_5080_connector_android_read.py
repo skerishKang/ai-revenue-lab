@@ -12,6 +12,8 @@ import asyncio
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+from _support.migrated_db_template import copy_migrated_database
 from types import SimpleNamespace
 
 import httpx
@@ -68,11 +70,10 @@ _MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
 def _open_database(path):
     """Real app migrations; sync-off keeps Windows fsync-per-statement cheap."""
     path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
+    foreign_keys = copy_migrated_database(path, _MIGRATIONS)
     db = _SqliteD1(path)
+    db._connection.execute(f"PRAGMA foreign_keys={foreign_keys}")
     db._connection.execute("PRAGMA synchronous=OFF")
-    for migration in sorted(_MIGRATIONS.glob("*.sql")):
-        db._connection.executescript(migration.read_text(encoding="utf-8"))
     return db
 
 

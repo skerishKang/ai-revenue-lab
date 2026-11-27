@@ -19,7 +19,7 @@ import pytest
 
 from app.d1_sqlite import SqliteD1, connect
 from app.history import D1HistoryStore, expire_stale_confirmation_cards_for_all_owners
-from app.local_cpython import apply_migrations
+from _support.migrated_db_template import apply_copied_migrations as apply_migrations
 
 import app.expired_purge as expired_purge
 from app.expired_purge import STATUS_PREFIX, run_once

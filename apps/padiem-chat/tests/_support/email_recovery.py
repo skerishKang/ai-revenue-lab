@@ -7,6 +7,8 @@ import secrets
 import sqlite3
 from pathlib import Path
 
+from _support.migrated_db_template import migrated_connection
+
 import httpx
 
 from app.config import Settings
@@ -56,12 +58,11 @@ class Mail:
 
 
 def build(*, enabled=True, before_recovery_migration=False):
-    connection = sqlite3.connect(":memory:", isolation_level=None, check_same_thread=False)
-    connection.row_factory = sqlite3.Row
-    for path in sorted((ROOT / "migrations").glob("*.sql")):
-        if before_recovery_migration and path.name.startswith("114_"):
-            continue
-        connection.executescript(path.read_text(encoding="utf-8"))
+    connection = migrated_connection(
+        ":memory:", ROOT / "migrations", isolation_level=None,
+        check_same_thread=False, row_factory=sqlite3.Row,
+        exclude_prefixes=("114_",) if before_recovery_migration else (),
+    )
     db = SqliteD1(connection)
     settings = Settings.from_values(
         runtime_mode="mock", auth_mode="password", public_base_url=BASE,

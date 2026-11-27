@@ -20,7 +20,7 @@ from app import mcp_gateway_execution as execution
 from app.chat_pc_drive import _tool_arguments_for_plan, chat_pc_plan_for_tool
 from app.d1_sqlite import SqliteD1, connect
 from app.history import D1HistoryStore
-from app.local_cpython import apply_migrations
+from _support.migrated_db_template import apply_copied_migrations as apply_migrations
 from app.mcp_gateway_transport import _TOOLS as MCP_TOOLS
 from app.mcp_gateway_transport import validate_tool_arguments
 from app.oracle_mesh_read_return_routes import _pc_files_command
