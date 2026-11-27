@@ -23,6 +23,8 @@ import asyncio
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+from _support.migrated_db_template import migrated_connection, fill_empty_connection
 import sys
 
 import httpx
@@ -85,10 +87,8 @@ def _now() -> datetime:
 
 
 def database() -> sqlite3.Connection:
-    conn = sqlite3.connect(":memory:", isolation_level=None)
-    conn.row_factory = sqlite3.Row
-    for path in sorted(MIGRATIONS.glob("*.sql")):
-        conn.executescript(path.read_text(encoding="utf-8"))
+    conn = migrated_connection(":memory:", MIGRATIONS,
+        isolation_level=None, row_factory=sqlite3.Row)
     return conn
 
 

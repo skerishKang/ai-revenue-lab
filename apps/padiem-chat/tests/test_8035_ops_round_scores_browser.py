@@ -69,7 +69,7 @@ def test_the_administrator_enters_edits_and_hides_a_round_from_the_screen():
     import sqlite3
     import tempfile
 
-    from app.local_cpython import apply_migrations
+    from _support.migrated_db_template import apply_copied_migrations as apply_migrations
 
     path = Path(tempfile.mkdtemp(prefix='ops_scores_browser_')) / 'ops.sqlite3'
     seed = sqlite3.connect(str(path), isolation_level=None)

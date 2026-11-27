@@ -20,7 +20,7 @@ from types import SimpleNamespace
 from app.auth import SESSION_COOKIE
 from app.config import Settings
 from app.d1_sqlite import SqliteD1
-from app.local_cpython import apply_migrations
+from _support.migrated_db_template import apply_copied_migrations as apply_migrations
 from app.ops_alert_delivery import drain_alert_tasks, enqueue_and_deliver
 from app.ops_alert_store import D1OpsAlertStore
 from app.ops_audit_store import OpsAuditStore

@@ -11,6 +11,8 @@ import json
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+from _support.migrated_db_template import migrated_connection, fill_empty_connection
 from types import SimpleNamespace
 
 import pytest
@@ -103,10 +105,8 @@ class _DB:
 
 
 def _database() -> sqlite3.Connection:
-    connection = sqlite3.connect(":memory:", check_same_thread=False)
-    connection.row_factory = sqlite3.Row
-    for path in sorted(MIGRATIONS.glob("*.sql")):
-        connection.executescript(path.read_text(encoding="utf-8"))
+    connection = migrated_connection(":memory:", MIGRATIONS,
+        check_same_thread=False, isolation_level="", row_factory=sqlite3.Row)
     for user in (OWNER, OTHER_OWNER):
         connection.execute(
             "INSERT INTO users (id,auth_provider,provider_subject,email,created_at,updated_at) "

@@ -18,6 +18,8 @@ import asyncio
 import sqlite3
 from pathlib import Path
 
+from _support.migrated_db_template import migrated_connection, fill_empty_connection
+
 from app.history import (
     D1HistoryStore,
     PC_SCOPE_NOTICE_LABELS,
@@ -38,10 +40,8 @@ MARKER_ONLY_TOKEN = "documents/quotes"
 
 
 def _database() -> sqlite3.Connection:
-    connection = sqlite3.connect(":memory:", check_same_thread=False)
-    connection.row_factory = sqlite3.Row
-    for path in sorted(MIGRATIONS.glob("*.sql")):
-        connection.executescript(path.read_text(encoding="utf-8"))
+    connection = migrated_connection(":memory:", MIGRATIONS,
+        check_same_thread=False, isolation_level="", row_factory=sqlite3.Row)
     connection.execute(
         "INSERT INTO users (id,auth_provider,provider_subject,email,created_at,updated_at) "
         "VALUES (?,'google',?,'owner@example.test','2026-11-11','2026-11-11')",

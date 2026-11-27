@@ -9,6 +9,9 @@ from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
+import threading
+
+from _support.migrated_db_template import fill_empty_connection, migrated_template
 
 from starlette.testclient import TestClient
 
@@ -68,6 +71,12 @@ class ThreadSafeSqliteD1(account_harness.SqliteD1):
 
 
 def apply_all_migrations(db) -> None:
+    # Account-deletion and password-RPC fixtures start with empty adapters.
+    if not db.conn.execute("SELECT 1 FROM sqlite_master LIMIT 1").fetchone():
+        fill_empty_connection(db.conn, ROOT / "migrations")
+        return
+    # Account-isolation seeds three users before applying the missing schema:
+    # do not overwrite those rows with a blank template.
     for path in sorted((ROOT / "migrations").glob("*.sql")):
         db.conn.executescript(path.read_text(encoding="utf-8"))
 
@@ -92,15 +101,30 @@ def isolation_app(db):
     return app
 
 
+_SEEDED_TEMPLATES = {}
+_SEED_LOCK = threading.RLock()
+
+
 def clients():
     """(app, A 클라이언트, B 클라이언트) — A=PLUS, B=FREE 회원."""
-    original = account_harness.SqliteD1
-    account_harness.SqliteD1 = ThreadSafeSqliteD1
-    try:
-        db, _admin, a, b = seed_db()
-    finally:
-        account_harness.SqliteD1 = original
-    apply_all_migrations(db)
+    # This fixture seeds *before* migration. Cache that seeded result once per
+    # SQL content hash, then back up into fresh memory for every test.
+    migration_template, _fk = migrated_template(ROOT / "migrations")
+    with _SEED_LOCK:
+        cached = _SEEDED_TEMPLATES.get(migration_template)
+        if cached is None:
+            original = account_harness.SqliteD1
+            account_harness.SqliteD1 = ThreadSafeSqliteD1
+            try:
+                db, _admin, a, b = seed_db()
+            finally:
+                account_harness.SqliteD1 = original
+            apply_all_migrations(db)
+            cached = (db, a, b)
+            _SEEDED_TEMPLATES[migration_template] = cached
+        seed, a, b = cached
+        db = ThreadSafeSqliteD1()
+        seed.conn.backup(db.conn)
     app = isolation_app(db)
     client_a = TestClient(app, base_url=BASE)
     client_b = TestClient(app, base_url=BASE)

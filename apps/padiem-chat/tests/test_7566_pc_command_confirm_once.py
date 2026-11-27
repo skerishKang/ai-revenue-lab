@@ -28,7 +28,7 @@ from app import chat_pc_command as lane
 from app import oracle_mesh_read_return_routes as mesh_routes
 from app.d1_sqlite import SqliteD1
 from app.history import D1HistoryStore
-from app.local_cpython import apply_migrations
+from _support.migrated_db_template import apply_copied_migrations as apply_migrations
 from app.pc_command_confirmation import (
     STATUS_AWAITING_CONFIRMATION,
     direct_command_eligible,

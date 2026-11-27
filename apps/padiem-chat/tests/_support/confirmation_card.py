@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 
 from app.d1_sqlite import SqliteD1
 from app.history import D1HistoryStore
-from app.local_cpython import apply_migrations
+from _support.migrated_db_template import migrated_connection
 
 UID = "usr_" + "8" * 32
 WORKSPACE = "ws-7603"
@@ -38,9 +38,10 @@ def _fixture(tmp_path, *, memory=False):
     # 수십 초가 걸릴 수 있다. 파일 내용을 단언하지 않는 시험은 메모리 DB를
     # 써도 검증하는 동작이 그대로다(기본값은 파일 — 기존 호출부 유지).
     target = ":memory:" if memory else str(tmp_path / "chat.sqlite3")
-    connection = sqlite3.connect(target, isolation_level=None)
-    connection.row_factory = sqlite3.Row
-    apply_migrations(connection)
+    connection = migrated_connection(
+        target, loader="local_cpython", isolation_level=None,
+        row_factory=sqlite3.Row,
+    )
     connection.execute(
         "INSERT INTO users (id, auth_provider, provider_subject, email, display_name, "
         "picture_url, created_at, updated_at) VALUES (?, 'google', 'sub_7603', "

@@ -23,6 +23,8 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from _support.migrated_db_template import migrated_connection, fill_empty_connection
+
 import httpx
 import pytest
 
@@ -210,8 +212,7 @@ class World:
         self.connection.row_factory = sqlite3.Row
         if shape == "local":
             # The host's own database: every Chat migration, then the D1 stores.
-            for path in sorted(MIGRATIONS.glob("*.sql")):
-                self.connection.executescript(path.read_text(encoding="utf-8"))
+            fill_empty_connection(self.connection, MIGRATIONS)
             database = SqliteD1(self.connection)
             self.pairing = D1PcPairingStore(database)
             self.presence = D1MeshDevicePresenceStore(database)

@@ -5,7 +5,7 @@ import sqlite3
 
 from app.d1_sqlite import SqliteD1
 from app.feedback_store import D1FeedbackStore
-from app.local_cpython import apply_migrations
+from _support.migrated_db_template import apply_copied_migrations as apply_migrations
 
 OWNER = 'usr_' + 'a' * 32
 OTHER = 'usr_' + 'b' * 32

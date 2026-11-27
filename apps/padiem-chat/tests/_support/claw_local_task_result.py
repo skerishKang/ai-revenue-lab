@@ -11,6 +11,8 @@ import asyncio
 import sqlite3
 from pathlib import Path
 
+from _support.migrated_db_template import copy_migrated_database
+
 from app.history import PRODUCT_SCOPE_CHAT
 
 APP_ROOT = Path(__file__).resolve().parents[2]
@@ -96,10 +98,12 @@ class _SqliteD1:
 
 
 def _open_database(path: Path, *, migrate: bool = True) -> _SqliteD1:
+    # A closed migrated file is built once per session / SQL content digest.
+    # Each test opens its *own copy*; migrate=False reopens without resetting it.
+    foreign_keys = copy_migrated_database(path, APP_ROOT / "migrations") if migrate else None
     db = _SqliteD1(path)
-    if migrate:
-        for migration in sorted((APP_ROOT / "migrations").glob("*.sql")):
-            db._connection.executescript(migration.read_text(encoding="utf-8"))
+    if foreign_keys is not None:
+        db._connection.execute(f"PRAGMA foreign_keys={foreign_keys}")
     return db
 
 

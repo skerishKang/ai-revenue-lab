@@ -41,7 +41,7 @@ from app.control_plane_identity_worker import (
 )
 from app.d1_sqlite import SqliteD1, connect
 from app.identity_call_cache import CachedIdentityAuthority
-from app.local_cpython import apply_migrations
+from _support.migrated_db_template import apply_copied_migrations as apply_migrations
 
 ROOT = Path(__file__).resolve().parents[1]
 MIGRATIONS = ROOT / "migrations"

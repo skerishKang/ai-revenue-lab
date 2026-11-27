@@ -294,3 +294,12 @@ def cross_app_source_paths(monkeypatch: pytest.MonkeyPatch) -> None:
     existing = os.environ.get("PYTHONPATH", "")
     value = os.pathsep.join(str(path) for path in paths)
     monkeypatch.setenv("PYTHONPATH", value + (os.pathsep + existing if existing else ""))
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _finish_migrated_template_session():
+    """Clean only this pytest worker's immutable DB template files."""
+    yield
+    module = _sys.modules.get("_support.migrated_db_template")
+    if module is not None:
+        module.close_templates()

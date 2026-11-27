@@ -38,7 +38,7 @@ from app.conversation_restore import (
 )
 from app.d1_sqlite import SqliteD1
 from app.history import D1HistoryStore, HistoryForbidden, PRODUCT_SCOPE_CHAT
-from app.local_cpython import apply_migrations
+from _support.migrated_db_template import apply_copied_migrations as apply_migrations
 
 # #8060: raw source reads live in _support; guard windows stay here.
 from _support.conversation_soft_delete_7388_source import ops_restore_script, source_files
