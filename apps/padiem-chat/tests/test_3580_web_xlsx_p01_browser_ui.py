@@ -29,7 +29,7 @@ def test_hark_browser_p01_ui_has_closed_explicit_controls():
     assert 'id="clawWebXlsxP01Approve" hidden disabled' in html
     assert 'id="clawWebXlsxP01Deny" hidden disabled' in html
     assert ".claw-web-office-approval[hidden]" in css
-    assert "P01 승인" in html
+    assert "P01 허락" in html
     assert 'SELECTIONS + "/" + encodeURIComponent(ref) + "/p01-decision"' in js
     assert 'SELECTIONS + "/" + encodeURIComponent(selectionRef) + "/p01-status"' in js
     assert 'body: JSON.stringify({ decision })' in js
