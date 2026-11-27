@@ -89,6 +89,11 @@
       }
 
       function wireSettingsDialog() {
+        deps.settingsButton.addEventListener("click", () => { deps.closeProfilePanel(); openSettings(); });
+        deps.settingsDialog.addEventListener("close", () => {
+          deps.settingsButton.setAttribute("aria-expanded", "false");
+          deps.profileToggle.setAttribute("aria-expanded", "false");
+        });
         deps.settingsDialog.addEventListener("cancel", (event) => {
           event.preventDefault();
           closeSettings();
