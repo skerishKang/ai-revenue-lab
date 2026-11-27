@@ -1135,11 +1135,11 @@
     function showError(code, serverCode = "") {
       if (errorCopy) {
         errorCopy.textContent = code === 401
-          ? (korean() ? "일정 조회에 로그인이 필요합니다. 다시 로그인해 주세요." : "Sign in to view calendar events.")
+          ? (korean() ? "일정을 보려면 로그인이 필요합니다. 다시 로그인해 주세요." : "Sign in to view calendar events.")
           : code >= 500
           ? (korean() ? "일정을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요." : "Could not load events. Try again.")
           : code >= 400
-          ? (korean() ? "일정 조회에 실패했습니다. 다시 시도해 주세요." : "Could not load events. Try again.")
+          ? (korean() ? "일정을 불러오지 못했어요. 다시 시도해 주세요." : "Could not load events. Try again.")
           : (korean() ? "캘린더를 불러오지 못했습니다. 다시 시도해 주세요." : "Could not load the calendar. Try again.");
       }
       if (errorCopy && /^[a-z][a-z0-9_]{0,63}$/.test(serverCode)) {

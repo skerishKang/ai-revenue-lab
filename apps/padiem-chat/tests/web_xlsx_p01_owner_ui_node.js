@@ -361,7 +361,7 @@ async function prepare(config) {
   assert.deepEqual(ready.network.sent, ["approve"]);
   assert.equal(ready.client.getState().decisionAttempted, true);
   assert.equal(ready.root.nodes.clawWebXlsxP01Approve.hidden, true);
-  assert.match(ready.root.nodes.clawWebXlsxP01Status.textContent, /승인/);
+  assert.match(ready.root.nodes.clawWebXlsxP01Status.textContent, /허락/);
   ready.existing.handlers.click(); await settle();
   assert.equal(ready.root.nodes.clawWebXlsxP01Approve.disabled, true);
   ready.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
@@ -638,7 +638,7 @@ async function prepare(config) {
   assert.equal(retryable.root.nodes.clawWebXlsxP01Approve.disabled, false,
     "the owner must be able to decide again after a retryable rejection");
   // The safe status re-read restores the server-truth waiting message.
-  assert.match(retryable.root.nodes.clawWebXlsxP01Status.textContent, /승인을 기다리고/);
+  assert.match(retryable.root.nodes.clawWebXlsxP01Status.textContent, /허락을 기다리고/);
   retryable.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
   assert.deepEqual(retryable.network.sent, ["approve", "approve"],
     "a retry is only ever a fresh owner click, never automatic");
@@ -710,7 +710,7 @@ async function prepare(config) {
     "The previous workcopy must not survive into the new source");
   assert.equal(reuse.root.nodes.clawWebXlsxList.children.length, 2,
     "Both the original upload and the adopted result are listed");
-  assert.match(reuse.root.nodes.clawWebXlsxNotice.textContent, /새 P01 읽기 승인/);
+  assert.match(reuse.root.nodes.clawWebXlsxNotice.textContent, /새 P01 읽기 허락/);
 
   // Malformed identifiers are refused locally and never reach the server.
   for (const args of [
@@ -770,7 +770,7 @@ async function prepare(config) {
       "A failed selection must never look selected: " + label);
     assert.equal(failed.client.getState().selectedSelectionRef, REF, label);
     assert.doesNotMatch(failed.root.nodes.clawWebXlsxNotice.textContent,
-      /새 P01 읽기 승인이 필요합니다/,
+      /새 P01 읽기 허락이 필요합니다/,
       "A failed selection must never be announced as a completed reuse: " + label);
     assert.match(failed.root.nodes.clawWebXlsxNotice.textContent,
       /시작되지 않았습니다/, label);

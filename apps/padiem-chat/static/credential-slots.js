@@ -20,9 +20,9 @@
     none: "",
   };
   const LEDGER_LABELS = {
-    bound: "호출 이력 연결됨",
-    not_configured: "호출 이력 미연결",
-    unavailable: "호출 이력 읽기 실패",
+    bound: "호출 기록 연결됨",
+    not_configured: "호출 기록 미연결",
+    unavailable: "호출 기록 읽기 실패",
   };
 
   function node(tag, text, className) {
@@ -139,8 +139,8 @@
 
     const notes = [];
     if (payload.registry === "unavailable") notes.push("공급사 레지스트리를 읽지 못해 공급사 열이 비어 있습니다.");
-    if (ledger.state === "not_configured") notes.push("호출 이력 저장소가 이 배포에 연결되지 않았습니다.");
-    if (ledger.state === "unavailable") notes.push("호출 이력을 읽지 못했습니다. 오류를 0으로 표시하지 않습니다.");
+    if (ledger.state === "not_configured") notes.push("호출 기록 저장소가 이 배포에 연결되지 않았습니다.");
+    if (ledger.state === "unavailable") notes.push("호출 기록을 읽지 못했습니다. 오류를 0으로 표시하지 않습니다.");
     notice(notes.join(" "));
   }
 

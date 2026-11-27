@@ -268,7 +268,7 @@ function stubServer({ refuseSelection = false } = {}) {
     assert.ok(workcopy);
     assert.equal(workcopy.hidden, true,
       "The previous workcopy must never carry over to the new source");
-    assert.match(doc.nodes.clawWebXlsxNotice.textContent, /새 P01 읽기 승인/);
+    assert.match(doc.nodes.clawWebXlsxNotice.textContent, /새 P01 읽기 허락/);
 
     // 5. The owner now explicitly starts and approves the NEW READ request.
     doc.nodes.clawWebXlsxP01Start.handlers.click();
@@ -309,7 +309,7 @@ function stubServer({ refuseSelection = false } = {}) {
       "A refused selection must never look selected");
     assert.equal(refusedPanel.getState().selectedSelectionRef, null);
     assert.doesNotMatch(refusedDoc.nodes.clawWebXlsxNotice.textContent,
-      /새 P01 읽기 승인이 필요합니다/,
+      /새 P01 읽기 허락이 필요합니다/,
       "The user must never be told the reuse completed");
     assert.match(refusedDoc.nodes.clawWebXlsxNotice.textContent,
       /시작되지 않았습니다/);

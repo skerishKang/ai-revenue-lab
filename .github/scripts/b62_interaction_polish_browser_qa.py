@@ -217,9 +217,9 @@ async def _run(page: Page, *, label: str) -> dict[str, Any]:
     timed_out = page.locator("#messageList .assistant-message:last-child")
     if await timed_out.get_attribute("data-terminal-actions-safe") != "false":
         raise AssertionError(f"timed-out answer incorrectly marked safe at {label}")
-    if "응답 시간이 지났습니다." not in await timed_out.inner_text():
+    if "답이 늦었습니다." not in await timed_out.inner_text():
         raise AssertionError(f"timeout heading not normalized at {label}")
-    if "정해진 시간 안에 응답이 완료되지 않았습니다." not in await timed_out.inner_text():
+    if "정해진 시간 안에 답이 완료되지 않았습니다." not in await timed_out.inner_text():
         raise AssertionError(f"timeout body not distinct at {label}")
     await timed_out.locator(".retry-button", has_text="다시 시도").wait_for(state="visible")
     await page.wait_for_function("() => document.activeElement?.id === 'messageInput'", timeout=5_000)

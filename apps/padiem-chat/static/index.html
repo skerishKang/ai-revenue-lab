@@ -432,7 +432,7 @@
           <div class="capability-card" data-connector="gmail" data-connector-id="connector:google:gmail@1" data-connector-status="loading" data-service-mark="M"><strong>Gmail</strong><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">확인 중…</span><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">확인 중…</span><button class="connector-retry connector-connect" type="button" data-google-connector-connect="gmail" data-google-connect-endpoint="/api/connectors/google/ticket" data-locale-key="connectors-connect-gmail" hidden>Gmail 연결</button><button class="connector-retry" type="button" id="connectorGmailRemove" data-locale-key="connectors-gmail-remove" hidden>연결 삭제</button><span class="capability-workspace" id="connectorGmailFeedback" role="status" hidden></span></div>
           <div class="capability-card" data-connector="telegram" data-connector-id="connector:telegram:bot@1" data-connector-status="loading" data-service-mark="T"><strong>Telegram</strong><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">확인 중…</span><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">확인 중…</span></div>
           <div class="capability-card" data-connector="slack" data-connector-id="connector:slack:workspace@1" data-connector-status="loading" data-service-mark="S"><strong>Slack</strong><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">확인 중…</span><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">확인 중…</span></div>
-          <div class="capability-card" data-connector="google-calendar" data-connector-id="connector:google:calendar@1" data-connector-status="loading" data-service-mark="C"><strong>Google Calendar</strong><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">확인 중…</span><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">확인 중…</span><span class="capability-read-state" data-connector-read-state role="status" data-read-state="pending" data-locale-key="connectors-calendar-read-pending" hidden>Calendar 읽기 권한 활성화 필요</span><button class="connector-retry connector-connect" type="button" data-google-connector-connect="google-calendar" data-google-connect-endpoint="/api/connectors/google/ticket" data-locale-key="connectors-connect-calendar" hidden>Google Calendar 연결</button></div>
+          <div class="capability-card" data-connector="google-calendar" data-connector-id="connector:google:calendar@1" data-connector-status="loading" data-service-mark="C"><strong>Google Calendar</strong><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">확인 중…</span><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">확인 중…</span><span class="capability-read-state" data-connector-read-state role="status" data-read-state="pending" data-locale-key="connectors-calendar-read-pending" hidden>Calendar 읽기 권한을 켜야 해요</span><button class="connector-retry connector-connect" type="button" data-google-connector-connect="google-calendar" data-google-connect-endpoint="/api/connectors/google/ticket" data-locale-key="connectors-connect-calendar" hidden>Google Calendar 연결</button></div>
         </div>
       </dialog>
       <!-- A small status-button guide, never a second connector authority. -->
@@ -798,7 +798,7 @@
             <ul class="mcp-settings-list" id="mcpGatewayPcLinks" data-locale-aria-label="pc-links-list" aria-label="연결된 PC"></ul>
           <section class="settings-section pc-delegation-settings" id="pcDelegationSettings" aria-labelledby="pcDelegationTitle">
             <h3 id="pcDelegationTitle" data-locale-key="pc-delegation-title">PC에 맡길 일</h3>
-            <p data-locale-key="pc-delegation-help">요청한 일 중 정한 폴더와 행동에 맞는 작업을 맡깁니다. 파일이나 웹 안의 지시가 작업 허락이 되지는 않습니다.</p>
+            <p data-locale-key="pc-delegation-help">부탁한 일 중 정한 폴더와 행동에 맞는 작업을 맡깁니다. 파일이나 웹 안의 지시가 작업 허락이 되지는 않습니다.</p>
             <p class="pc-delegation-send-note" data-locale-key="pc-delegation-send-note">메일·메시지 보내기와 외부 서비스에 기록할 때는 항상 확인합니다.</p>
             <p id="pcDelegationStatus" class="pc-delegation-status" role="status" aria-live="polite"></p>
             <div class="pc-delegation-toolbar">
@@ -823,7 +823,7 @@
                 <label><input id="pcDelegationMove" type="checkbox" value="move" /><span data-locale-key="pc-delegation-move">파일 정리·이동</span></label>
                 <label><input id="pcDelegationDelete" type="checkbox" value="delete" /><span data-locale-key="pc-delegation-delete">파일 삭제</span></label>
               </fieldset>
-              <label for="pcDelegationMode" data-locale-key="pc-delegation-mode">어떻게 처리할까요?</label>
+              <label for="pcDelegationMode" data-locale-key="pc-delegation-mode">어떻게 할까요?</label>
               <select id="pcDelegationMode" disabled>
                 <option value="allow" data-locale-key="pc-delegation-allow">이 범위에서는 다시 묻지 않기</option>
                 <option value="ask" data-locale-key="pc-delegation-ask">항상 물어보기</option>
@@ -963,7 +963,7 @@
             <button type="button" class="starter" id="pcConnectStarter" aria-haspopup="dialog" aria-expanded="false" data-pc-connect-starter="true"><span class="starter-icon" aria-hidden="true"><svg class="starter-card-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg></span><span><strong data-locale-key="pc-connect-title">내 컴퓨터</strong><small data-pc-connect-state aria-live="polite">확인 중…</small></span></button>
             <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true"><svg class="starter-card-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg></span><span><strong data-locale-key="life-title">생활 도움</strong><small data-locale-key="life-copy">일상 질문과 계획 세우기</small></span></button>
             <div class="document-starter-shell">
-              <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true"><svg class="starter-card-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 3h7l5 5v13H5V3z"></path><path d="M14 3v6h6M8 13h8M8 17h8"></path></svg></span><span><strong data-locale-key="document-upload-title">파일 업로드</strong><small data-locale-key="document-upload-copy">파일을 첨부하여 질문하기</small></span></button>
+              <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true"><svg class="starter-card-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 3h7l5 5v13H5V3z"></path><path d="M14 3v6h6M8 13h8M8 17h8"></path></svg></span><span><strong data-locale-key="document-upload-title">파일 업로드</strong><small data-locale-key="document-upload-copy">파일을 붙여 질문하기</small></span></button>
               <button type="button" id="documentFormatsToggle" class="document-formats-toggle" aria-expanded="false" aria-controls="documentFormatsPanel" aria-label="지원 형식" data-locale-key="document-formats">지원 형식</button>
               <div id="documentFormatsPanel" class="document-formats-panel" role="note" hidden><strong data-locale-key="document-formats">지원 형식</strong></div>
             </div>
@@ -1030,7 +1030,7 @@
                 <li data-locale-key="settings-help-excel-step3">파일을 읽거나 수정하려면 따로 허락해야 합니다.</li>
               </ol>
             </details>
-            <p>웹에서 XLSX를 직접 선택해 원본 그대로 보관합니다(최대 1 MiB, 24시간). 이 단계는 파일을 수정하거나 PDF로 변환하지 않습니다. 실제 처리는 별도의 P01 승인이 필요합니다.</p>
+            <p>웹에서 XLSX를 직접 선택해 원본 그대로 보관합니다(최대 1 MiB, 24시간). 이 단계는 파일을 수정하거나 PDF로 변환하지 않습니다. 실제 처리는 별도의 P01 허락이 필요합니다.</p>
             <div class="claw-web-office-actions">
               <label for="clawWebXlsxInput">XLSX 파일 선택</label>
               <input type="file" id="clawWebXlsxInput" />
@@ -1039,18 +1039,18 @@
               <button type="button" id="clawWebXlsxRefresh">보관한 원본 조회</button>
             </div>
             <p class="claw-web-office-pc-note" id="clawWebXlsxPcNote" role="status" hidden></p>
-            <p role="status" aria-live="polite" id="clawWebXlsxNotice">파일을 선택하면 원본을 보존하며, 읽기·수정 승인은 별도로 진행합니다.</p>
+            <p role="status" aria-live="polite" id="clawWebXlsxNotice">파일을 선택하면 원본을 보존하며, 읽기·수정 허락은 별도로 진행합니다.</p>
             <ul id="clawWebXlsxList" aria-label="보관된 웹 Excel 원본"></ul>
-            <section id="clawWebXlsxP01Panel" class="claw-web-office-approval" aria-label="선택한 Excel 원본의 P01 승인" hidden>
+            <section id="clawWebXlsxP01Panel" class="claw-web-office-approval" aria-label="선택한 Excel 원본의 P01 허락" hidden>
               <p id="clawWebXlsxP01Selected"></p>
-              <p id="clawWebXlsxP01Status" role="status" aria-live="polite">승인 상태 확인 중</p>
+              <p id="clawWebXlsxP01Status" role="status" aria-live="polite">허락 상태 확인 중</p>
               <div class="claw-web-office-actions">
-                <button type="button" id="clawWebXlsxP01Refresh">승인 상태 확인</button>
-                <button type="button" id="clawWebXlsxP01Start" hidden disabled>P01 승인 요청 시작</button>
-                <button type="button" id="clawWebXlsxP01Approve" hidden disabled>원본 확인 승인</button>
+                <button type="button" id="clawWebXlsxP01Refresh">허락 상태 확인</button>
+                <button type="button" id="clawWebXlsxP01Start" hidden disabled>P01 허락 요청 시작</button>
+                <button type="button" id="clawWebXlsxP01Approve" hidden disabled>원본 확인 허락</button>
                 <button type="button" id="clawWebXlsxP01Deny" hidden disabled>거절</button>
               </div>
-              <p>승인해도 Excel 원본을 읽거나 변경하지 않습니다. 실제 작업 사본과 PDF 처리는 아직 시작하지 않습니다.</p>
+              <p>허락해도 Excel 원본을 읽거나 변경하지 않습니다. 실제 작업 사본과 PDF 처리는 아직 시작하지 않습니다.</p>
             </section>
           </details>
         </section>
@@ -1264,13 +1264,13 @@
             <div class="composer-tools">
               <button class="model-pill composer-tier-trigger" type="button" data-locale-aria-label="tier" aria-label="AI 등급" data-locale-title="model-select-tooltip" data-padiem-tooltip="모델 선택"><span>Padiem Plus</span></button>
               <input id="attachmentFileInput" type="file" multiple hidden />
-              <button type="button" class="tool-button" id="attachmentButton" data-padiem-tooltip="파일 첨부" aria-label="파일 첨부"><span aria-hidden="true">＋</span><span>파일</span></button>
+              <button type="button" class="tool-button" id="attachmentButton" data-padiem-tooltip="파일 붙이기" aria-label="파일 붙이기"><span aria-hidden="true">＋</span><span>파일</span></button>
             </div>
-            <button class="cancel-stream-button" id="cancelStreamButton" type="button" data-locale-key="cancel" data-locale-aria-label="cancel-answer" aria-label="답변 생성 취소" hidden>취소</button>
-            <button class="send-button" id="sendButton" type="submit" data-padiem-tooltip="메시지 전송" data-locale-title="send-tooltip" data-locale-aria-label="send" aria-label="메시지 보내기"><svg class="send-arrow-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" focusable="false"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="send-waveform-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" focusable="false" hidden><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="cancel-stream-button" id="cancelStreamButton" type="button" data-locale-key="cancel" data-locale-aria-label="cancel-answer" aria-label="답변 만들기 취소" hidden>취소</button>
+            <button class="send-button" id="sendButton" type="submit" data-padiem-tooltip="메시지 보내기" data-locale-title="send-tooltip" data-locale-aria-label="send" aria-label="메시지 보내기"><svg class="send-arrow-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" focusable="false"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="send-waveform-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" focusable="false" hidden><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </form>
-        <p class="composer-note" id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.</p>
+        <p class="composer-note" id="runtimeNote">붙일 파일 형식을 확인하는 중입니다.</p>
       </section>
     <!-- #4647: dedicated meeting workspace within the Chat/Claw shell, not a popup. -->
     <section id="meetingView" class="standalone-view meeting-view" aria-labelledby="meetingTitle" hidden>
@@ -1333,7 +1333,7 @@
         <p class="project-drive-status-live" id="projectDriveStatusLive" role="status" aria-live="polite" aria-busy="false"></p>
         <div class="project-drive-actions">
           <button id="projectDrivePickButton" class="project-drive-button" type="button">폴더 선택</button>
-          <button id="projectDriveClearButton" class="project-drive-button project-drive-button-secondary" type="button" hidden>해제</button>
+          <button id="projectDriveClearButton" class="project-drive-button project-drive-button-secondary" type="button" hidden>끊기</button>
         </div>
         <dialog class="project-drive-picker" id="projectDrivePicker" aria-labelledby="projectDrivePickerTitle" hidden>
           <div class="project-drive-picker-header">

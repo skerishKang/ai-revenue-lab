@@ -489,7 +489,7 @@
     let elapsedTimer = 0;
     const statuses = {
       recording: "녹음 중 · 마이크가 켜져 있습니다.",
-      meeting_active: "회의 진행 중 · 마이크가 켜져 있습니다.",
+      meeting_active: "회의 중 · 마이크가 켜져 있습니다.",
       meeting_stopped: "회의 종료 · 결과를 확인하고 다운로드하세요.",
       meeting_stopped_with_transcription_error: "회의 종료 · 전사가 일부 중단됐습니다. 녹음 파일을 확인하세요.",
       recording_error: "녹음 장치 오류가 발생했습니다. 자료를 확인하세요.",
@@ -748,7 +748,7 @@
         const open = doc.createElement("button");
         open.type = "button"; open.className = "meeting-record-open";
         open.textContent = row.title + " · " + (MODE_LABEL[row.mode] || row.mode)
-          + " · " + (row.status === "active" ? "진행 중" : "종료");
+          + " · " + (row.status === "active" ? "하는 중" : "종료");
         open.addEventListener("click", () => { void openRecord(row.meeting_ref); });
         const remove = doc.createElement("button");
         remove.type = "button"; remove.className = "meeting-record-delete";
@@ -778,7 +778,7 @@
       const heading = doc.createElement("p");
       heading.className = "meeting-record-heading";
       heading.textContent = data.meeting.title + " · "
-        + (data.meeting.ended_at ? "종료" : "진행 중");
+        + (data.meeting.ended_at ? "종료" : "하는 중");
       recordsDetail.appendChild(heading);
       (data.artifacts || []).forEach((artifact) => {
         const line = doc.createElement("p");

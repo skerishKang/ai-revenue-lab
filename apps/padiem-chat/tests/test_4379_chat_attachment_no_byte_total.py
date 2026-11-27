@@ -110,7 +110,7 @@ def test_the_composer_still_streams_the_file_behind_a_bounded_metadata_frame() -
         (body["headerBytes"] >> 8) & 0xFF,
         body["headerBytes"] & 0xFF,
     ]
-    assert observed["oversized"] == "첨부 메타데이터가 너무 큽니다."
+    assert observed["oversized"] == "붙인 파일 정보가 너무 큽니다."
 
 
 def test_the_readme_names_the_platform_and_provider_as_the_ceilings() -> None:
