@@ -14,6 +14,7 @@ from types import SimpleNamespace
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app import oracle_mesh_read_return_routes as routes  # noqa: E402
+from app import oracle_mesh_engine_files as engine_files  # noqa: E402
 import test_261109_pc_dispatch_workspace_seam as seam  # noqa: E402
 
 OWNER = seam.OWNER
@@ -42,7 +43,7 @@ def engine_state(monkeypatch, roots):
             "workspace_ref": WORKSPACE,
         }, None
 
-    monkeypatch.setattr(routes, "_engine_pc_files_target", resolved_target)
+    monkeypatch.setattr(engine_files, "_engine_pc_files_target", resolved_target)
     return state, history
 
 
