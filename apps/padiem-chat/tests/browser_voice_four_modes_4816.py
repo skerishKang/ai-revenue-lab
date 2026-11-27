@@ -33,7 +33,7 @@ def test_voice_labels_come_from_the_locale_catalogue():
         "voice-mode-call": "음성 통화",
         "voice-speech-unavailable": "음성 재생 불가",
         "voice-call-listening": "듣는 중",
-        "voice-call-transcribing": "변환 중",
+        "voice-call-transcribing": "바꾸는 중",
         "voice-call-final": "최종 전사",
         "voice-call-stopped": "중지됨",
         "voice-call-error": "오류",

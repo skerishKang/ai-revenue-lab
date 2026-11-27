@@ -71,7 +71,7 @@ async def _assert_mock_answer(assistant) -> str:
     runtime_label = (await assistant.locator("[data-runtime-label]").inner_text()).strip()
     if not answer_text:
         raise AssertionError("mock document answer must be visible")
-    if "모의 응답" not in runtime_label or "실제 모델 호출 없음" not in runtime_label:
+    if "모의 답" not in runtime_label or "실제 모델 호출 없음" not in runtime_label:
         raise AssertionError(f"mock truth label missing: {runtime_label!r}")
     return answer_text
 

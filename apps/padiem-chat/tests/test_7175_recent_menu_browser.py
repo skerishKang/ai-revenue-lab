@@ -240,7 +240,7 @@ def test_pin_groups_on_top_and_unpin_removes_group_and_persists(browser, server,
     page.locator("#historyList .history-row").first.wait_for(state="visible", timeout=15_000)
     assert page.locator(".history-row-pinned").count() == 2
 
-    # 첫 행 고정 해제 → 묶음에는 견적서만 남는다.
+    # 첫 행 고정 풀기 → 묶음에는 견적서만 남는다.
     row(page, 0).locator("summary").click()
     assert row(page, 0).locator(".history-menu-pin").inner_text() == locale_copy("conversation-unpin")
     row(page, 0).locator(".history-menu-pin").click()

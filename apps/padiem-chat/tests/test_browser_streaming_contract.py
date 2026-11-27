@@ -284,7 +284,7 @@ def test_streamed_browser_path_never_renders_provider_route_details() -> None:
     # "AI 응답" line is not rendered. The locale key stays for compatibility.
     assert 'textContent = uiT("ai-response")' not in stream_source
     assert 'textContent = deps.uiT("ai-response")' not in stream_source
-    assert '"ai-response": "AI 응답"' in locale_source()
+    assert '"ai-response": "AI 답"' in locale_source()
 
 
 def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -> None:
@@ -328,8 +328,8 @@ def test_cancel_and_retry_are_product_surface_only_and_preserve_stream_boundary(
     assert 'textContent = deps.uiT("generation-cancelled")' in _conv_source()
     assert 'uiT("regenerate")' in _conv_source()
     locale = locale_source()
-    assert '"generation-cancelled": "생성 취소됨"' in locale
-    assert '"regenerate": "다시 생성"' in locale
+    assert '"generation-cancelled": "만들기 취소됨"' in locale
+    assert '"regenerate": "다시 만들기"' in locale
     assert 'retry.textContent = actionLabel' in _conv_source()
     assert "deps.requestStreamingAnswer(\n        article" in stream
     assert "deps.chatTransport.requestStreaming(payload, signal)" in stream

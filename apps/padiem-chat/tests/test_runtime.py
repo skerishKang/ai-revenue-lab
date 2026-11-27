@@ -408,7 +408,7 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in html
     assert "웹 검색 · 준비 중" not in html
     assert 'uiT("mock-response")' in conv_js
-    assert '"mock-response": "모의 응답 · 실제 모델 호출 없음"' in locale
+    assert '"mock-response": "모의 답 · 실제 모델 호출 없음"' in locale
     assert "deps.chatTransport.requestCompleted(payload, signal)" in stream_js
     assert 'fetch("/api/chat"' in transport
     assert "deps.conversationState.setSkill(selectedSkill)" in definition_source("submitPrompt")

@@ -72,7 +72,7 @@
   }
 
   // The card owns the live status of a running turn. The badge owns the
-  // terminal outcome ("연결 오류", "생성 취소됨"), so the two never show the
+  // terminal outcome ("연결 오류", "만들기 취소됨"), so the two never show the
   // same thing at the same time and the outcome keeps its own wording.
   function cardShowsLiveStatus(article) {
     const lifecycle = article && article.dataset ? article.dataset.lifecycle : null;
@@ -142,7 +142,7 @@
   // happened or the real lifecycle state says so.
   const taskStatusCatalog = Object.freeze({
     preparing: Object.freeze({ state: "active", ko: "답변 준비 중", en: "Preparing answer" }),
-    generating: Object.freeze({ state: "active", ko: "답변 생성 중", en: "Generating answer" }),
+    generating: Object.freeze({ state: "active", ko: "답변 만드는 중", en: "Generating answer" }),
     searching: Object.freeze({ state: "active", ko: "웹 검색 중", en: "Searching the web" }),
     tool: Object.freeze({ state: "active", ko: "도구 작업 중", en: "Tool in progress" }),
     approval: Object.freeze({ state: "paused", ko: "확인 대기 중", en: "Waiting for confirmation" }),
@@ -1003,7 +1003,7 @@
     const label = article.querySelector("[data-runtime-label]");
     // The brand (Padiem Chat / Padiem Claw) stays in [data-assistant-product].
     // A finished answer releases the preparing chip; a real status stays.
-    if (label && label.textContent === "AI 응답") applyRuntimeLabel(article, "", RUNTIME_LABEL_STATE.STATUS);
+    if (label && label.textContent === "AI 답") applyRuntimeLabel(article, "", RUNTIME_LABEL_STATE.STATUS);
     else releasePreparingRuntimeLabel(article);
     const conversationState = window.PadiemChatConversationState;
     if (conversationState) {
