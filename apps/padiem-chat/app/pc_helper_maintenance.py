@@ -134,32 +134,35 @@ def maintenance_candidate(*, env, device_id, observation, manifest, rollout, now
     # Only the authenticated explicit missing status permits fresh install.
     if plan["action"] == "install" and state.get("helper_status_present") is not False:
         return None, "digest_unverified"
-    # A fresh authenticated helper-status file proves installation even when
-    # the console cannot observe the updater file/task. Its missing updater
-    # evidence is not a mismatch of the pinned command or release manifest.
-    # The fixed SYSTEM refresh checks the actual updater hash/task on the PC,
-    # verifies the installed EXE against its install record before registering,
-    # and refuses on error. Never turn unknown installation into an install.
-    # The receipt's independent post-dispatch observation remains mandatory.
+    # A readable helper status file proves the helper is installed, but a
+    # refused Mesh task-file download does NOT prove the updater or watcher
+    # is absent. Never turn transport uncertainty into a SYSTEM refresh.
     installed = (state.get("helper_status_present") is True
             and isinstance(state.get("helper_sha256"), str)
             and _DIGEST.fullmatch(state["helper_sha256"]) is not None
             and version_parts(state.get("helper_version") or observation.get("helper_version")) is not None)
     if (plan["action"] == "failed" and plan["reason"] == "digest_unverified"
             and installed):
-        plan = {"action": "refresh", "reason": "updater_probe_unverified"}
-    # A canceled file download does not establish absent/present. Do not
-    # silently skip a managed installed PC just because the watcher could
-    # not be observed. The fixed refresh independently checks the scheduled
-    # task before registering it; success still requires fresh positive proof.
-    if (plan["action"] == "skipped" and installed
-            and state.get("self_heal_task_present") is None):
-        plan = {"action": "refresh", "reason": "watcher_probe_unverified"}
+        # A different observed digest or explicit missing task/source is
+        # actionable, even if another probe returned unknown.
+        digest = state.get("updater_source_sha256")
+        confirmed_drift = (state.get("updater_source_present") is False
+                or state.get("updater_task_present") is False
+                or isinstance(digest, str) and bool(digest) and digest != SOURCE_SHA256)
+        if confirmed_drift:
+            plan = {"action": "refresh", "reason": "updater_confirmed_drift"}
+        else:
+            return None, "probe_needed"
     if plan["action"] == "skipped":
         current = version_parts(state.get("helper_version") or observation.get("helper_version"))
         minimum = version_parts(manifest.get("min_supported_version"))
         if current is not None and minimum is not None and current < minimum:
-            plan = {"action": "refresh"}
+            plan = {"action": "refresh", "reason": "outdated_release"}
+        elif installed and state.get("self_heal_task_present") is None:
+            # Source/task match and installed release is current, but watcher
+            # observation is missing: wait for an independently observed
+            # true/false, without consuming a PC attempt or owner session.
+            return None, "probe_needed"
     fixed = command_for_plan(plan, manifest=manifest, env=env)
     if fixed is None:
         return None, "install_switch_off" if plan["action"] == "install" else plan["reason"]

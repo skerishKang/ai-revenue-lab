@@ -442,7 +442,8 @@ async def consider_device(app, env, store, device, *, now=None, report=None):
     report["outcome"] = "check_candidate"
     digest = _candidate_digest(facts, env, report)
     if digest is None:
-        report["outcome"] = "candidate_denied"
+        report["outcome"] = ("probe_needed" if report["maintenance_candidate"] == "probe_needed"
+                             else "candidate_denied")
         return
     # #8772: a PC whose attempt for this exact source is stopped, in flight or
     # over the shared limit cannot be claimed this round whatever the owner

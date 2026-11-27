@@ -287,7 +287,7 @@ def test_candidate_diagnostics_are_bounded_and_cover_general_pc(rig, caplog, mon
     assert not history.rows
 
 
-def test_file_only_observation_can_select_refresh_but_not_verify_it(rig, monkeypatch, caplog):
+def test_file_only_observation_requires_probe_until_real_mismatch(rig, monkeypatch, caplog):
     app, queue, history, flags, store, db = rig
     for key in ("updater_source_present", "updater_source_sha256", "updater_task_present",
                 "self_heal_task_present"):
@@ -300,11 +300,20 @@ def test_file_only_observation_can_select_refresh_but_not_verify_it(rig, monkeyp
 
     async def run():
         await host.maintenance_round(app, ENV, store)
+        assert len(history.rows) == 0
+        assert not flags["reads"]
+        assert db.execute("SELECT count(*) FROM pc_helper_auto_attempts").fetchone()[0] == 0
+        assert any("maintenance_candidate=probe_needed" in r.getMessage()
+                   and "outcome=probe_needed" in r.getMessage() for r in caplog.records)
+        # Independently confirmed missing updater task, not the absence of a
+        # downloaded file, is enough to require a genuine refresh.
+        queue.state["updater_task_present"] = False
+        await host.maintenance_round(app, ENV, store)
         assert len(history.rows) == 1
         assert history.rows[0]["command_text"] == registration_command()
         assert history.rows[0]["user_mode"] is False
         assert any("maintenance_candidate=refresh" in r.getMessage()
-                   and "updater_digest=missing" in r.getMessage() for r in caplog.records)
+                   for r in caplog.records)
         history.done = True
         queue.now += timedelta(seconds=60)
         await host.maintenance_round(app, ENV, store)
@@ -319,6 +328,25 @@ def test_file_only_observation_can_select_refresh_but_not_verify_it(rig, monkeyp
         assert len(history.rows) == 1
 
     asyncio.run(run())
+
+def test_watcher_unknown_only_is_probe_needed_without_owner_or_pc_attempt(rig, caplog):
+    app, queue, history, flags, store, db = rig
+    queue.state["updater_source_sha256"] = SOURCE_SHA256
+    queue.state["helper_version"] = RELEASE["version"]
+    queue.state.pop("self_heal_task_present")
+
+    async def check():
+        await host.maintenance_round(app, ENV, store)
+        assert not history.rows and not history.runs
+        assert not flags["reads"]
+        assert db.execute("SELECT count(*) FROM pc_helper_auto_attempts").fetchone()[0] == 0
+        assert db.execute("SELECT count(*) FROM pc_helper_maintenance_jobs").fetchone()[0] == 0
+        assert any("watcher_task=unknown" in r.getMessage()
+                   and "maintenance_candidate=probe_needed" in r.getMessage()
+                   and "outcome=probe_needed" in r.getMessage()
+                   for r in caplog.records)
+    asyncio.run(check())
+
 
 @pytest.mark.parametrize("denial", [
     "switch", "unmanaged", "multi", "offline", "owner", "scope", "auto_off",

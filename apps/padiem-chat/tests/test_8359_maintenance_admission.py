@@ -100,17 +100,16 @@ def test_install_requires_both_switches_and_explicit_absence():
     ("updater_source_sha256",), ("updater_task_present",),
     ("updater_source_present", "updater_source_sha256", "updater_task_present"),
 ])
-def test_fresh_installed_file_only_observation_selects_fixed_refresh(missing):
+def test_fresh_installed_file_only_observation_needs_probe_not_refresh(missing):
     state = {k: v for k, v in OBS["state"].items() if k not in missing}
+    # Avoid the fixture's deliberately mismatched updater digest: only the
+    # missing probe evidence should decide this case.
+    if "updater_source_sha256" in state:
+        state["updater_source_sha256"] = SOURCE_SHA256
     observation = {**OBS, "state": state}
-    intent, reason = admit(observation=observation)
-    assert reason is None and intent.action == "refresh"
-    assert intent.command == registration_command()
-    assert intent.registration_sha256 == SOURCE_SHA256
+    assert admit(observation=observation) == (None, "probe_needed")
     assert admit(observation=observation, owner_session=False) == (None, "owner_unresolved")
     assert admit(observation=observation, admin_now=False) == (None, "manager_not_admin")
-    assert admit(observation=observation, command="arbitrary") == (None, "command_mismatch")
-    assert admit(observation=observation, source_sha256="d" * 64) == (None, "source_mismatch")
 
 
 @pytest.mark.parametrize("change", [
@@ -133,12 +132,29 @@ def test_current_updater_with_unobserved_watcher_selects_only_fixed_refresh(watc
     intent, reason = admit(observation=observation)
     if watcher is True:
         assert intent is None and reason == "already_current"
+    elif watcher is None:
+        assert intent is None and reason == "probe_needed"
     else:
         assert reason is None and intent.action == "refresh"
         assert intent.command == registration_command()
         assert admit(observation=observation, owner_session=False) == (None, "owner_unresolved")
         assert admit(observation=observation, managed_links=[]) == (None, "not_managed")
         assert admit(observation=observation, rollout={**ROLLOUT, "stage": "paused"}) == (None, "stage_closed")
+
+
+def test_confirmed_drift_refreshes_even_when_watcher_unobserved():
+    state = {**OBS["state"], "updater_source_sha256": "c" * 64}
+    state.pop("self_heal_task_present")
+    intent, reason = admit(observation={**OBS, "state": state})
+    assert reason is None and intent.action == "refresh"
+    assert intent.command == registration_command()
+
+    # An explicitly absent updater task also needs real repair, even when
+    # reading the script digest and watcher both returned unknown.
+    state["updater_source_sha256"] = None
+    state["updater_task_present"] = False
+    intent, reason = admit(observation={**OBS, "state": state})
+    assert reason is None and intent.action == "refresh"
 
 
 def _db():
