@@ -258,7 +258,7 @@ function tick() { return new Promise((resolve) => setImmediate(resolve)); }
   form.listeners.submit({ preventDefault() {} });
   await tick();
   check("empty_submit_blocked", requests.length === 0);
-  check("empty_submit_says_required", /요청 원문/.test(text(host)) || scenario.lang === "en");
+  check("empty_submit_says_required", /받은 원문/.test(text(host)) || scenario.lang === "en");
 
   content.value = "A상사에서 10박스 견적 요청";
   const channel = find(host, "#utilQuoteField-channel");

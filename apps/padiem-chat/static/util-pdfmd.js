@@ -303,7 +303,7 @@
     const pauseNote = el("p", "pdfmd-status", "");
     pauseNote.setAttribute("role", "status");
     if (PDFMD_NEW_WORK_DISABLED) {
-      pauseNote.textContent = "지금은 새 바꾸기를 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
+      pauseNote.textContent = "지금은 새 바꾸기를 시작할 수 없습니다. 기존 작업 기록과 결과 내려받기는 그대로 이용할 수 있습니다.";
     } else if (PDFMD_LOGIN_REQUIRED) {
       /* #8812 D6·D7 대표 확인: 안내 줄은 문장만 — 로그인 단추는 상자 CTA 하나. */
       pauseNote.textContent = "로그인하면 PDF를 바꿀 수 있어요.";
@@ -576,7 +576,7 @@
     histSearch.setAttribute("data-locale-placeholder", "pdfmd-history-search-placeholder");
     histSearch.setAttribute("data-locale-aria-label", "pdfmd-history-search-label");
     histSearch.placeholder = copy("pdfmd-history-search-placeholder", "날짜·파일명·상태로 검색");
-    histSearch.setAttribute("aria-label", copy("pdfmd-history-search-label", "작업 이력 검색"));
+    histSearch.setAttribute("aria-label", copy("pdfmd-history-search-label", "작업 기록 검색"));
     histTools.appendChild(histSearch);
     histBody.appendChild(histTools);
     const histList = el("div", "pdfmd-history");
@@ -894,9 +894,9 @@
       if (uploaded && !failed) {
         uploadStatus.textContent = uploaded + "개 파일을 올렸습니다. 곧 바꾸기가 시작됩니다.";
       } else if (uploaded && failed) {
-        uploadStatus.textContent = uploaded + "개 파일 처리 완료, " + failed + "개 실패. " + (lastUploadError || "파일 형식을 확인해 주세요.");
+        uploadStatus.textContent = uploaded + "개 파일을 올렸고 " + failed + "개는 실패했어요. " + (lastUploadError || "파일 형식을 확인해 주세요.");
       } else if (failed) {
-        uploadStatus.textContent = failed + "개 파일을 처리하지 못했습니다. " + (lastUploadError || "파일 형식을 확인해 주세요.");
+        uploadStatus.textContent = failed + "개 파일을 올리지 못했어요. " + (lastUploadError || "파일 형식을 확인해 주세요.");
       }
       uploadRowsActive = false;
       if (uploaded) await loadHistory();
@@ -1290,7 +1290,7 @@
     function renderHistory() {
       histList.replaceChildren();
       if (!historyJobs.length) {
-        histList.appendChild(emptyBlock("아직 작업 이력이 없습니다.", "첫 파일을 바꾸면 여기에 기록됩니다.", null));
+        histList.appendChild(emptyBlock("아직 작업 기록이 없습니다.", "첫 파일을 바꾸면 여기에 기록됩니다.", null));
         return;
       }
       const query = historyQuery.trim().toLowerCase();
@@ -1338,7 +1338,7 @@
     });
 
     async function loadHistory() {
-      histList.replaceChildren(el("p", "pdfmd-empty", "작업 이력을 불러오는 중..."));
+      histList.replaceChildren(el("p", "pdfmd-empty", "작업 기록을 불러오는 중..."));
       try {
         const data = await api("/api/document-conversions?limit=50");
         const answer = data.new_work_enabled === true ? "open" : "paused";
@@ -1366,7 +1366,7 @@
           historyJobs = [];
           syncHistoryFold();
           histList.replaceChildren();
-          histList.appendChild(emptyBlock("로그인하면 작업 이력을 볼 수 있습니다.", null, null));
+          histList.appendChild(emptyBlock("로그인하면 작업 기록을 볼 수 있습니다.", null, null));
           return;
         }
         if (PDFMD_CHECKING) {
@@ -1379,7 +1379,7 @@
         historyJobs = [];
         syncHistoryFold();
         histList.replaceChildren();
-        histList.appendChild(emptyBlock("작업 이력을 불러오지 못했습니다.", describeError(e), null));
+        histList.appendChild(emptyBlock("작업 기록을 불러오지 못했습니다.", describeError(e), null));
       }
     }
 

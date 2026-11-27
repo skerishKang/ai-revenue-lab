@@ -221,11 +221,11 @@ def test_locale_state_copy_is_complete_and_oauth_preserving_in_ko_and_en() -> No
     assert "Google 계정 연결됨" == table["ko"]["connectors-calendar-oauth-connected"]
     assert "Google account connected" == table["en"]["connectors-calendar-oauth-connected"]
     # …and the READ axis has its own pending/active copy.
-    assert "활성화 필요" in table["ko"]["connectors-calendar-read-pending"]
+    assert "켜야 해요" in table["ko"]["connectors-calendar-read-pending"]
     assert "needs activation" in table["en"]["connectors-calendar-read-pending"]
-    assert table["ko"]["connectors-calendar-read-active"] == "Calendar 읽기 활성화됨"
+    assert table["ko"]["connectors-calendar-read-active"] == "Calendar 읽기 켜짐"
     # Failure copy keeps the OAuth connection explicitly intact.
-    for phrase in ("Google 계정 연결은", "실패했습니다"):
+    for phrase in ("Google 계정 연결은", "켜지 못했습니다"):
         assert phrase in table["ko"]["connectors-calendar-read-failed"]
     en_failed = table["en"]["connectors-calendar-read-failed"].lower()
     for phrase in ("google account", "failed"):
@@ -233,7 +233,7 @@ def test_locale_state_copy_is_complete_and_oauth_preserving_in_ko_and_en() -> No
     assert "연결은 유지됩니다" in table["ko"]["connectors-calendar-read-activation-error"]
     assert "stays connected" in table["en"]["connectors-calendar-read-activation-error"]
     # Done state is a state, not a request receipt.
-    assert table["ko"]["connectors-calendar-read-activation-done"] == "Calendar 읽기 활성화됨"
+    assert table["ko"]["connectors-calendar-read-activation-done"] == "Calendar 읽기 켜짐"
     assert table["en"]["connectors-calendar-read-activation-done"] == "Calendar read access is active"
 
 
