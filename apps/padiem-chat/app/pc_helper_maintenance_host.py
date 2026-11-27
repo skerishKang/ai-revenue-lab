@@ -11,6 +11,7 @@ import hashlib
 import json
 import logging
 import time
+from uuid import uuid4
 from datetime import datetime, timedelta, timezone
 
 from starlette.requests import Request
@@ -37,6 +38,9 @@ logger = logging.getLogger(__name__)
 #: its receipt/observation keeps the old 60 s cadence, because TTL,
 #: VERIFY_SECONDS and the 180 s observation window below are tuned to it.
 IDLE_INTERVAL = 900
+# An unfinished round may be reclaimed after a worker dies. The OS lock still
+# prevents two live workers from running maintenance at the same time.
+ROUND_LEASE_SECONDS = 120
 INTERVAL = 60  # active cadence (unchanged)
 TTL = 300
 VERIFY_SECONDS = 600
@@ -127,6 +131,42 @@ class HostMaintenanceStore(MaintenanceAttemptStore):
             result, proof.value if isinstance(proof, PrecontactProof) else None, claim.token)
         if rows:
             await self.settle(claim, now=_stamp(now), verified=result == "verified", proof=proof)
+
+    async def claim_round(self, cadence, now):
+        """Atomic cross-worker claim for one UTC cadence window.
+
+        Idle maintenance runs once per 900-second window; an in-flight job
+        keeps its existing 60-second reconcile window (#8831). Completed
+        windows cannot be reclaimed, even after their lease has expired.
+        """
+        if cadence not in (INTERVAL, IDLE_INTERVAL):
+            raise ValueError("unsupported maintenance cadence")
+        round_id = uuid4().hex
+        stamp = _stamp(now)
+        rows = await self.rows(
+            "INSERT INTO pc_helper_maintenance_rounds "
+            "(cadence_seconds, window_id, round_id, last_round_at, lease_expires_at, completed_at) "
+            "VALUES (?,?,?,?,?,NULL) "
+            "ON CONFLICT(cadence_seconds) DO UPDATE SET "
+            "window_id=excluded.window_id, round_id=excluded.round_id, "
+            "last_round_at=excluded.last_round_at, lease_expires_at=excluded.lease_expires_at, "
+            "completed_at=NULL "
+            "WHERE excluded.window_id > pc_helper_maintenance_rounds.window_id "
+            "OR (excluded.window_id = pc_helper_maintenance_rounds.window_id "
+            "AND pc_helper_maintenance_rounds.completed_at IS NULL "
+            "AND pc_helper_maintenance_rounds.lease_expires_at <= excluded.last_round_at) "
+            "RETURNING round_id",
+            cadence, int(now.timestamp()) // cadence, round_id, stamp,
+            _stamp(now + timedelta(seconds=ROUND_LEASE_SECONDS)))
+        return round_id if any(row["round_id"] == round_id for row in rows) else None
+
+    async def complete_round(self, cadence, round_id, now):
+        """A stale owner cannot finish a lease recovered by another worker."""
+        rows = await self.rows(
+            "UPDATE pc_helper_maintenance_rounds SET completed_at=? "
+            "WHERE cadence_seconds=? AND round_id=? AND completed_at IS NULL "
+            "RETURNING round_id", _stamp(now), cadence, round_id)
+        return bool(rows)
 
     async def in_flight(self):
         """True while any attempt still needs the fast cadence (read-only).
@@ -692,6 +732,33 @@ async def next_delay(store):
         return INTERVAL  # unknown state: stay on the deadline-safe cadence
 
 
+async def maintenance_tick(app, env, store, process_lock):
+    """Try one locally gated round; a lock miss never claims the DB lease."""
+    if not process_lock.acquire(wait=False):
+        logger.warning("pc_maintenance_round lock=busy")
+        return "busy"
+    try:
+        cadence = await next_delay(store)
+        round_id = await store.claim_round(cadence, _now())
+        if round_id is None:
+            return "already_run"
+        try:
+            await maintenance_round(app, env, store)
+        except Exception:
+            # Leave the lease incomplete so another worker can recover it.
+            logger.warning("pc_maintenance_round_failed")
+            return "failed"
+        if not await store.complete_round(cadence, round_id, _now()):
+            logger.warning("pc_maintenance_round lease_lost")
+            return "lease_lost"
+        return "completed"
+    except Exception:
+        logger.warning("pc_maintenance_round_gate_failed")
+        return "failed"
+    finally:
+        process_lock.release()
+
+
 def install_maintenance_timer(app, *, env, db, process_lock):
     """Only the CPython Chat host calls this, never Worker or Mesh queue."""
     if not auto_update_enabled(env):
@@ -701,16 +768,12 @@ def install_maintenance_timer(app, *, env, db, process_lock):
 
     async def loop():
         while True:
-            if process_lock.acquire(wait=False):
-                try:
-                    await maintenance_round(app, env, store)
-                except Exception:
-                    logger.warning("pc_maintenance_round_failed")
-                finally:
-                    process_lock.release()
-            else:
-                logger.warning("pc_maintenance_round lock=busy")
-            await asyncio.sleep(await next_delay(store))
+            await maintenance_tick(app, env, store, process_lock)
+            # Only the local SQLite lease is polled each minute. When idle,
+            # the remote/identity maintenance round still runs every 900 s.
+            # A dead worker's uncompleted lease becomes reclaimable within
+            # ROUND_LEASE_SECONDS instead of waiting an entire idle interval.
+            await asyncio.sleep(INTERVAL)
 
     async def start():
         nonlocal task
