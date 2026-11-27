@@ -50,6 +50,8 @@ def test_index_loads_form_module_once_between_run_module_and_app() -> None:
 def test_app_keeps_only_the_factory_and_two_wire_calls() -> None:
     assert "function clawFormModule() {" in APP
     assert "window.PadiemChatClawFormModule.create(Object.setPrototypeOf({" in APP
+    assert APP.count("clawFormModule().wireModeChips({ set clawLastAction(value) { clawLastAction = value; } });") == 1
+    assert APP.index("navModuleInstance.wireNavEntryListeners();") < APP.index("clawFormModule().wireModeChips(") < APP.index("navModuleInstance.setNavActive();", APP.index("clawFormModule().wireModeChips(")) < APP.index("clawFormModule().wireManualForm();")
     assert APP.count("clawFormModule().wireManualForm();") == 1
     assert APP.count("clawFormModule().wireExecuteControls();") == 1
     # Wire calls stay at the original registration positions: the form wires
@@ -79,6 +81,7 @@ def test_deps_getters_match_the_exact_closure_surface() -> None:
     assert gets <= EXPECTED_GETTERS
     assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
     assert sets == set()
+    assert "set clawLastAction(value) { clawLastAction = value; }" in APP
 
 
 def test_listeners_drive_preview_execute_and_retry_in_node_vm() -> None:
@@ -109,6 +112,9 @@ const el = () => ({
 });
 
 const clawManualForm = el();
+const chips = ["quote", "order", "reply", "summary"].map(action => Object.assign(el(), {dataset: {clawAction: action}}));
+clawManualForm.querySelectorAll = selector => { assert.equal(selector, ".claw-chip[data-claw-action]"); return chips; };
+let lastAction = "quote";
 const clawResultDocx = el();
 const clawResultCard = el();
 const clawResultEmpty = el();
@@ -171,6 +177,18 @@ const empty = ctx.window.PadiemChatClawFormModule.create(ctx.r5StrictDeps({}, "e
 assert.equal(typeof empty.wireManualForm, "function");
 assert.equal(typeof empty.wireExecuteControls, "function");
 
+mod.wireModeChips({set clawLastAction(value) {lastAction = value;}});
+for (const chip of chips) {
+  assert.deepEqual(Object.keys(chip.listeners), ["click"]);
+  assert.equal(chip.listeners.click.length, 1);
+  chip.fire("click");
+  assert.equal(clawAction.value, chip.dataset.clawAction);
+  assert.equal(lastAction, chip.dataset.clawAction);
+  for (const other of chips) assert.equal(other.attrs["aria-pressed"], other === chip ? "true" : "false");
+}
+assert.equal(input.focused, 4);
+clawAction.value = "";
+input.focused = 0;
 mod.wireManualForm();
 assert.deepEqual(Object.keys(clawManualForm.listeners), ["submit"]);
 assert.deepEqual(Object.keys(clawResultDocx.listeners), ["click"]);
