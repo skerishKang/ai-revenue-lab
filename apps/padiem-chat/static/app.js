@@ -1234,6 +1234,7 @@
         get revealClawCard() { return clawRun.revealClawCard; },
         get runClawExecution() { return clawRun.runClawExecution; },
         get noteClawContentEdited() { return clawStatusModule().noteClawContentEdited; },
+        set clawLastAction(value) { clawLastAction = value; },
         get app() { return app; },
       
   }, app));
@@ -1324,21 +1325,7 @@
   // entry bar (#3531 keeps the workspace canvas hidden in general/manual
   // views, so the entry lives beside the manual-entry control instead).
   // In-conversation run status/results are unchanged.
-  if (clawManualForm) {
-    const modeChips = clawManualForm.querySelectorAll(".claw-chip[data-claw-action]");
-    modeChips.forEach((chip) => {
-      chip.addEventListener("click", () => {
-        const action = chip.dataset.clawAction;
-        if (clawAction && action) clawAction.value = action;
-        modeChips.forEach((other) => {
-          other.setAttribute("aria-pressed", other === chip ? "true" : "false");
-        });
-        clawLastAction = action || null;
-        input.focus();
-      });
-    });
-    // Keyboard: chips are buttons so Enter/Space already work; ensure roving focus stays visible.
-  }
+  clawFormModule().wireModeChips();
   navModuleInstance.setNavActive();
 
 

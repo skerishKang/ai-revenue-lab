@@ -923,3 +923,10 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - Existing state remains in app.js; the existing four live setters for conversationProduct, activeProject, activeProjectFileCount, and clawArtifactShownFor are reused. Shared accessors for clawConversationIds, clawConversationLabelsRead, and selectedAttachments are consolidated into the common context.
 - `tools/verify_7809_t2_stage3.py` verifies exact bodies after explicit dependency-reference substitution (4/4), all three Android storage functions unchanged, and no change in app.js window assignments. R-06 and R-11 unchanged; no audit or rule changes.
 - Focused regression: 241 passed after relocating source assertions and harness wiring; new live-state regression uses shipped context accessors and registry to verify all four restored state values and project render observation. Structure and file-size checks: 16 passed.
+
+### #7809 T2 stage 5 (2026-11-27)
+
+- Mode-chip click wiring moves to `chat-claw-form-module.js` via `wireModeChips()` at the original registration position. Four existing buttons, one registration site. app.js: 1490 -> 1477 lines. The original `clawLastAction` initialization stays in app.js and the module writes through a live setter.
+- All eight DOM refs remain shared: manual form (nav/entry), channel/action/sender (status), result area (nav/status), preview/card/empty (run). The window localechange listener remains at its original position.
+- Exact normalized event body and reconstructed app.js match the base; Android storage and window assignments unchanged. Existing A5b contract verifies all four chip handlers, pressed states, selected action, focus, setter and registration order. Focused/structure/file size checks: 21 passed.
+- Boot ledger: 1440 exact; 390 asynchronous registration order and DOMContentLoaded count vary on both base and head. All 18 repeated 390 runs retain the same Claw listener block (positions 149-171). No timing rule or audit changed.
