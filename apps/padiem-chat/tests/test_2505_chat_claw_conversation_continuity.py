@@ -109,13 +109,13 @@ def test_the_panel_no_longer_parks_one_screen_to_show_the_other() -> None:
 def test_a_claw_submit_carries_the_chat_conversation_id() -> None:
     submit = function_statements("submitPrompt", prefix="async function ")
     # The lane is still decided per submit…
-    assert "const product = clawGeneralRequest ? PRODUCT_CLAW : PRODUCT_CHAT;" in submit
+    assert "const product = clawGeneralRequest ? deps.PRODUCT_CLAW : deps.PRODUCT_CHAT;" in submit
     # …and the conversation comes from the one shared store.
     assert any("conversationState.getConversationId(product)" in statement for statement in submit)
     # A saved thread is loaded into that same store, whichever lane owns it.
     open_saved = function_statements("openSavedConversation")
-    assert "conversationState.resetProduct?.(targetProduct);" in open_saved
-    assert "conversationState.setConversationId(data.conversation.id, targetProduct);" in open_saved
+    assert "deps.conversationState.resetProduct?.(targetProduct);" in open_saved
+    assert "deps.conversationState.setConversationId(data.conversation.id, targetProduct);" in open_saved
 
 
 def test_the_server_still_keeps_one_scoped_record_for_both_lanes() -> None:

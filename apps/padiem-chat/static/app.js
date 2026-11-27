@@ -6,6 +6,11 @@
   // keeps owning authState/shell/clawWorkspace and the shared functions
   // until R5 B6; they are mounted here as live accessors.
   const app = window.PadiemChatAppContext.create({
+    get clawConversationIds() { return clawConversationIds; },
+    get clawConversationLabelsRead() { return clawConversationLabelsRead; },
+    get selectedAttachments() { return selectedAttachments; },
+    set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; },
+    set selectedAttachments(value) { selectedAttachments = value; },
     get authState() { return authState; },
     set authState(value) { authState = value; },
     get shell() { return shell; },
@@ -20,7 +25,6 @@
     get approvedMemoryErrorMessage() { return conversationModule().approvedMemoryErrorMessage; },
     get safeLocalUiMessage() { return conversationModule().safeLocalUiMessage; },
     get failureCodeNote() { return conversationModule().failureCodeNote; },
-    get openSavedConversation() { return openSavedConversation; },
     get downloadClawArtifact() { return clawRun.downloadClawArtifact; },
     get clawRunHistoryPdfControllers() { return clawRunHistoryPdfControllers; },
     get renderClawApprovalControls() { return clawRun.renderClawApprovalControls; },
@@ -208,11 +212,8 @@
     if (!historyModuleInstance) {
       historyModuleInstance = app.provide("history", window.PadiemChatHistoryModule.create(Object.setPrototypeOf({
 
-        get clawConversationIds() { return clawConversationIds; },
         get sidebarActionIcon() { return app.sidebarActionIcon; },
         get readClawRuns() { return app.readClawRuns; },
-        get clawConversationLabelsRead() { return clawConversationLabelsRead; },
-        set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; }
       
   }, app)));
     }
@@ -307,8 +308,6 @@
         get renderAttachmentChips() { return conversationModule().renderAttachmentChips; },
         get resetConversation() { return conversationModule().resetConversation; },
         get selectImage() { return coreModule().selectImage; },
-        get selectedAttachments() { return selectedAttachments; },
-        set selectedAttachments(value) { selectedAttachments = value; },
         get sendButton() { return sendButton; },
         get switchConversationProduct() { return navModuleInstance.switchConversationProduct; },
       
@@ -468,7 +467,6 @@
       get binaryDocuments() { return binaryDocuments; },
       get failureCodeNote() { return conversationModule().failureCodeNote; },
       get fetch() { return fetch.bind(window); },
-      get selectedAttachments() { return selectedAttachments; },
 
     }, app)));
   projectModule.mountProjectControls();
@@ -810,70 +808,15 @@
   // #7812 R5 B4-2 (rule (b)): the auth module registers the session-refresh
   // listener at this original position, keeping its document order.
   authModule().wireSessionRefresh();
-  async function openSavedConversation(id) {
-    if (!authState.authenticated || inFlight) return;
-    const epoch = authViewEpoch;
-    try {
-      const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.conversation || !Array.isArray(data.conversation.messages)) throw new Error(coreModule().uiT("conversation-load-failed"));
-      const savedProjectId = typeof data.conversation.project_id === "string" ? data.conversation.project_id : null;
-      const restoredProject = savedProjectId ? await projectModule.ensureProject(savedProjectId) : null;
-      if (savedProjectId && !restoredProject) throw new Error(coreModule().uiT("conversation-project-load-failed"));
-      // Paint the list early, but preserve the existing canonical Claw lane
-      // classification when the user opens a row before its labels arrive.
-      const labels = clawConversationLabelsRead;
-      if (labels && labels.epoch === epoch) await labels.promise;
-      if (epoch !== authViewEpoch || !authState.authenticated) return false;
-      conversationModule().clearAttachment();
-      // #2505: the saved thread is the ONE conversation, so it is loaded into
-      // the shared store. A thread that has Claw turns still opens on the Claw
-      // screen (its last lane), and the other screen shows the same record.
-      const isVerifiedClawThread = clawConversationIds.has(data.conversation.id);
-      const targetProduct = isVerifiedClawThread ? PRODUCT_CLAW : PRODUCT_CHAT;
-      messageList.replaceChildren();
-      messageList.hidden = true;
-      conversationState.resetProduct?.(targetProduct);
-      conversationState.setProduct?.(targetProduct);
-      conversationProduct = targetProduct;
-      conversationState.setConversationId(data.conversation.id, targetProduct);
-      activeProject = restoredProject;
-      activeProjectFileCount = 0;
-      projectModule.renderProjectState();
-      if (activeProject) projectModule.refreshActiveProjectFileCount();
-      if (isVerifiedClawThread) navModuleInstance.openClawWorkspace();
-      conversationModule().showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
-      app.syncApprovedMemoryVisibility();
-      runHistory.syncClawRunHistoryVisibility();
-      conversationArtifactContext?.show?.(data.conversation.id);
-      if (isVerifiedClawThread) clawArtifactShownFor = data.conversation.id;
-      data.conversation.messages.forEach((item) => {
-        if (!item || typeof item.content !== "string") return;
-        if (item.role === "user") conversationModule().addUserMessage(item.content, null, { restored: true });
-        if (item.role === "assistant") conversationModule().renderStoredAssistant(item.content, item);
-        if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content }, targetProduct);
-      });
-      // #5895: keep showing a PC turn that is still running on the server, and
-      // restore the thread once its stored answer lands.
-      void pcRunModuleInstance.resumeUnfinishedPcRun(data.conversation.id);
-      // A restored conversation opens on its newest turn with follow resumed,
-      // on the same shared Chat/Claw control.
-      window.__padiemConversationMotion?.resume?.();
-      sidebar.closeSidebar();
-      input.focus();
-      return true;
-    } catch (error) {
-      coreModule().setNote(error instanceof Error ? error.message : coreModule().uiT("conversation-load-failed"), "error");
-      return false;
-    }
-  }
+
+  const entry = app.provide("entry", window.PadiemChatEntryModule.create(app));
 
   // #4471: the sidebar conversation search opens a hit through this loader
   // instead of a recent-list DOM row, so a hit outside the recent page still
   // restores with the same auth guard, inFlight lock, project restore and the
   // server-verified Claw set. Read-only handle: it grants no new authority.
   window.PadiemChatConversationOpener = Object.freeze({
-    open: (conversationId) => openSavedConversation(conversationId),
+    open: (conversationId) => entry.openSavedConversation(conversationId),
   });
 
   // #4489: the Library opens a stored project file through that file's owning
@@ -911,7 +854,7 @@
     // confirmed the exact owner-scoped artifact GET before raising an
     // artifact-bearing event, and the owner workcopy status read for the
     // conversation-only one.
-    const opened = await openSavedConversation(detail.conversationId);
+    const opened = await entry.openSavedConversation(detail.conversationId);
     if (!opened) return;
     const notice = document.createElement("p");
     notice.className = "reference-note";
@@ -960,9 +903,6 @@
   // This predicate documents the product state that selects the lane: the Claw
   // shell with the explicit manual form hidden. It must be read at submit time,
   // BEFORE any conversation presentation transition.
-  function clawGeneralRequestActive() {
-    return shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
-  }
 
   // One-click answer regenerate for the action bar (outputs.js). Only the
   // latest completed answer may regenerate: the stored article, lifecycle
@@ -970,23 +910,12 @@
   // lock rejects any overlapping second call, so no duplicate or unintended
   // paid model call can fire. No user bubble is added; the same outbound
   // messages replay through the identical routing path.
-  function storedRegenerateRequest(article) {
-    const stored = lastCompletedAnswerRequest;
-    if (!stored || stored.article !== article) return null;
-    if (!article || !article.isConnected) return null;
-    if (!window.PadiemChatLifecycle || !window.PadiemChatLifecycle.isCompleted(article)) return null;
-    if (inFlight) return null;
-    const list = document.getElementById("messageList");
-    const items = list ? list.querySelectorAll(".assistant-message") : [];
-    if (!items.length || items[items.length - 1] !== article) return null;
-    return stored;
-  }
   window.PadiemChatRegenerate = Object.freeze({
     available(article) {
-      return storedRegenerateRequest(article) !== null;
+      return entry.storedRegenerateRequest(article) !== null;
     },
     regenerate(article) {
-      const stored = storedRegenerateRequest(article);
+      const stored = entry.storedRegenerateRequest(article);
       if (!stored) return false;
       void streaming.requestAnswer(stored.outboundMessages, stored.skill, stored.attachment, stored.contextSnapshot, stored.clawGeneralRequest);
       return true;
@@ -1000,43 +929,6 @@
   // login_required. A mock/preview deployment that cannot authenticate keeps
   // its CI harness behavior through the server-owned flag.
 
-  async function submitPrompt(text, selectedSkill) {
-    const prompt = text.trim();
-    if (!prompt || inFlight) return;
-    if (!authModule().requireSessionForModelUse()) return;
-    // #3539: snapshot the canonical lane before changing presentation;
-    // #3931: keep a general Claw request in the same Claw conversation.
-    // Neither UI state nor the selected model ID may authorize fallback.
-    const clawGeneralRequest = clawGeneralRequestActive();
-    // Chat/Claw separation: the lane decides the product. The conversation id, the turn
-    // store and the skill all come from that product's own slot, so a Claw
-    // request never carries the Chat conversation id and a Chat request never
-    // carries the Claw one. This is an immutable submit-time snapshot.
-    const product = clawGeneralRequest ? PRODUCT_CLAW : PRODUCT_CHAT;
-    conversationState.setProduct?.(product);
-    if (selectedSkill) conversationState.setSkill(selectedSkill);
-    const attachmentSnapshot = selectedAttachments;
-    const contextSnapshot = { product, conversationId: conversationState.getConversationId(product), project: activeProject };
-    // PADIEM Custom is text-only on both Chat and Claw. Refuse attachments
-    // here, with the typed prompt preserved.
-    const customSelected = Boolean(window.PadiemCustomSelection?.get?.());
-    if (customSelected && attachmentSnapshot.length) {
-      coreModule().setNote(coreModule().uiT("custom-text-only"), "error");
-      return;
-    }
-    // #6828: grade-only Claw execution. The grade travels as `tier` and the
-    // server resolves the grade route; no per-request model id is ever sent.
-    contextSnapshot.selectedModelId = "";
-    conversationModule().showConversation({ preserveClaw: clawGeneralRequest });
-    conversationModule().addUserMessage(prompt, attachmentSnapshot);
-    input.value = "";
-    // #5561: the composer is empty again, so the primary action slot returns
-    // to the voice waveform.
-    conversationModule().updateComposer();
-    const outbound = conversationState.outboundWithUser(prompt);
-    const success = await streaming.requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
-    if (success && selectedAttachments === attachmentSnapshot) conversationModule().clearAttachment();
-  }
 
   // R5 B7: openSettings·closeSettings·openAdvancedSettingsView·
   // closeAdvancedSettingsView are on the registry (provide("settings")).
@@ -1078,7 +970,7 @@
     // #4647: the meeting workbench consumes its own explicit meeting-setup
     // command from its own capture-phase listener on this same form, so this
     // handler keeps no shell-state fork and every other prompt is unaffected.
-    submitPrompt(input.value);
+    entry.submitPrompt(input.value);
   });
   cancelStreamButton.addEventListener("click", streaming.cancelActiveStream);
   attachmentButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
@@ -1121,7 +1013,7 @@
   // listeners at this original position, so their registration order is unchanged.
   accountModule().wireAccountControls();
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
-    submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
+    entry.submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
     sidebar.closeSidebar();
   }));
   newChatButton.addEventListener("click", () => conversationModule().resetConversation(true));

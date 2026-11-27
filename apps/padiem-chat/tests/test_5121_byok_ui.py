@@ -305,7 +305,7 @@ def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() 
     # #7297: Custom is shared between Chat and Claw; text-only refusal preserves the typed prompt.
     app = _app()
     assert 'setNote(uiT("custom-chat-only"), "error");' not in app
-    assert 'coreModule().setNote(coreModule().uiT("custom-text-only"), "error");' in app
+    assert 'deps.setNote(deps.uiT("custom-text-only"), "error");' in definition_source("submitPrompt")
     assert "custom-text-only" in locale_bundle.keys("ko")
     assert "custom-text-only" in locale_bundle.keys("en")
 

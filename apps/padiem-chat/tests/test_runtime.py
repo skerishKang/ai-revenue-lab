@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+from _r5_function_source import definition_source
 import locale_bundle
 
 import json
@@ -409,7 +411,7 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert '"mock-response": "모의 응답 · 실제 모델 호출 없음"' in locale
     assert "deps.chatTransport.requestCompleted(payload, signal)" in stream_js
     assert 'fetch("/api/chat"' in transport
-    assert "conversationState.setSkill(selectedSkill)" in js
+    assert "deps.conversationState.setSkill(selectedSkill)" in definition_source("submitPrompt")
     assert 'skill: "auto"' in conversation_state
     assert "OPENROUTER" not in html.upper()
     assert "API_KEY" not in html

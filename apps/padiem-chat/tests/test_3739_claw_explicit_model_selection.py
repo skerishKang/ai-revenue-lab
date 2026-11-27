@@ -1,3 +1,4 @@
+from _r5_function_source import definition_source
 """#6828: Claw's grade route is server-resolved and never client-selected.
 
 Network-free contracts. B14 catalog/provider resolution remains B14's authority.
@@ -29,7 +30,7 @@ ORIGINAL_ACTIVE_ROUTE_FOR = product_tier_routes.active_route_for
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = index_html()
-FRONT = app_js()
+FRONT = app_js() + definition_source("submitPrompt")
 STREAM = stream_js()
 SETTINGS = settings_js()
 GENERAL = claw_general_routes()

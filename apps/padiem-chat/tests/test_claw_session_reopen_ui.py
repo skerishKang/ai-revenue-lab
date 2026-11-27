@@ -276,7 +276,7 @@ def test_session_action_adds_no_new_route_or_second_store() -> None:
     # moved into chat-history-module.js (#7216 R5 step 3); the count spans the
     # two shipped sources so the "exactly three" contract keeps its strength.
     route = "api/conversations/${encodeURIComponent(id)}"
-    assert app.count(route) + module.count(route) == 3
+    assert app.count(route) + module.count(route) + definition_source("openSavedConversation").count(route) == 3
     create_at = app.index('sessionBtn = document.createElement("button");')
     append_at = app.index("if (sessionBtn) card.appendChild(sessionBtn);")
     session_block = app[create_at:append_at]

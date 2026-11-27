@@ -105,6 +105,7 @@ def _harness() -> str:
         + [SOURCE[map_start:map_end].replace("deps.", "")]
         + [_conv_function(name) if name == "showConversation"
            else _stream_function(name) if name in ("requestAnswer", "requestStreamingAnswer")
+           else _js_function(SOURCE, name).replace("deps.", "") if name in ("submitPrompt", "clawGeneralRequestActive")
            else _js_function(AUTH_SOURCE if name == "requireSessionForModelUse" else SOURCE, name)
            for name in ROUTING_FUNCTIONS]
     )

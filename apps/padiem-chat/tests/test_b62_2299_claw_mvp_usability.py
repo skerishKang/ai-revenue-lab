@@ -135,7 +135,7 @@ def test_duplicate_submit_guard_and_bounded_states() -> None:
     assert '"idle"' in APP or "'idle'" in APP
     assert '"submitting"' in APP + CLAW_FORM or "'submitting'" in APP + CLAW_FORM
     assert '"success"' in APP + CLAW_FORM or "'success'" in APP + CLAW_FORM
-    assert '"error"' in APP or "'error'" in APP
+    assert '"error"' in CLAW_FORM or "'error'" in CLAW_FORM
 
 
 # ── 6 · Clear bounded states exist (idle/submitting/success/failure) ───────
@@ -186,7 +186,7 @@ def test_safe_artifact_action_without_raw_bytes_or_secrets() -> None:
     assert "/api/claw/manual-intake/artifact/" in CLAW_RUN
     assert "URL.createObjectURL" in CLAW_RUN
     assert "URL.revokeObjectURL" in CLAW_RUN
-    assert "encodeURIComponent(documentId)" in APP or "encodeURIComponent" in APP
+    assert "encodeURIComponent(documentId)" in CLAW_RUN
     # Only safe descriptor fields rendered in meta
     assert 'id="clawArtifactMeta"' in INDEX
     assert 'id="clawArtifactName"' in INDEX

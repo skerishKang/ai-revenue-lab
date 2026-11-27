@@ -309,7 +309,7 @@ def test_app_js_publishes_the_canonical_opener_and_search_uses_it() -> None:
     assert opener["frozen"] is True
     assert (opener["open_param"], opener["open_callee"], opener["open_arg"]) == (
         "conversationId",
-        "openSavedConversation",
+        "entry.openSavedConversation",
         "conversationId",
     )
 

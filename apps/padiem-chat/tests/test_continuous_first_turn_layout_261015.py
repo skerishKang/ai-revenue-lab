@@ -1,3 +1,4 @@
+from _r5_function_source import definition_source
 """Owner-accepted inline first-turn, not a replacement conversation surface."""
 import json
 import os
@@ -160,7 +161,7 @@ def test_first_user_turn_preserves_original_hero_and_appends_messages() -> None:
                                     "listHidden": False, "messages": 0, "state": "chat"}
     # 스트리밍 와이어링(submitPrompt)의 showConversation 호출점은 아직 app.js에
     # 있다. 이 구역이 모듈로 이동하는 PR에서 이 문자열 계약을 옮겨야 한다.
-    assert 'showConversation({ preserveClaw: clawGeneralRequest });' in APP
+    assert 'showConversation({ preserveClaw: clawGeneralRequest });' in definition_source('submitPrompt')
 
 
 def test_saved_conversation_reopens_without_hero_and_new_chat_resets() -> None:
@@ -173,7 +174,7 @@ def test_saved_conversation_reopens_without_hero_and_new_chat_resets() -> None:
     assert _run_mode("reset") == {"thread": None, "emptyHidden": False,
                                   "listHidden": True, "messages": 0, "state": "home"}
     # 저장 대화 재열기 호출점(openSavedConversation)도 아직 app.js에 있다.
-    assert 'showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true })' in APP
+    assert 'showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true })' in definition_source('openSavedConversation')
     # openClawWorkspace의 히어로 복원 — R5 A10에서 chat-nav-module.js로 이동
     # (deps 접두사). 대화 모듈 계약이 아니므로 유지.
     assert 'deps.emptyState.hidden = false;' in NAV
