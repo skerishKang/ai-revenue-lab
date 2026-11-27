@@ -108,7 +108,7 @@ describe("React clone Claw execution lane", () => {
 
     // Only a validated canonical P01 envelope may set the runtime label.
     const label = document.querySelector(".assistant-message [data-runtime-label]");
-    expect(label?.textContent).toBe("도구가 실행 중입니다");
+    expect(label?.textContent).toBe("도구가 작업 중입니다");
 
     const calls = (globalThis.fetch as unknown as {
       mock: { calls: [RequestInfo | URL, RequestInit | undefined][] };

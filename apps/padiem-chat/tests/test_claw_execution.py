@@ -1334,7 +1334,7 @@ def test_execute_handler_calls_a_registered_route(client: TestClient) -> None:
 
 
 def test_execute_button_label_exists_in_both_locales() -> None:
-    assert locale_value("claw-btn-execute", "ko") == "실제 실행"
+    assert locale_value("claw-btn-execute", "ko") == "실제 작업 시작"
     assert locale_value("claw-btn-execute", "en") == "Run with real model"
 
 
@@ -1346,7 +1346,7 @@ def test_execute_button_meets_touch_target_contract() -> None:
 def test_executed_result_is_not_labelled_as_preview() -> None:
     assert index_element_attrs("clawResultBadge") is not None
     assert js_statement("chat-claw-run-module.js", "revealClawCard(result.title, true)")
-    assert locale_value("claw-result-badge-run", "ko") == "실제 실행"
+    assert locale_value("claw-result-badge-run", "ko") == "실제 작업"
     assert locale_value("claw-result-badge-run", "en") == "Real run"
 
 

@@ -174,5 +174,5 @@ def test_real_lifecycle_shows_claw_progress_elapsed_and_terminal_stop(page):
       return {foreign,accepted,during,heartbeat,late:api.recordPcProgress(article,{...value,stage:'result',sequence:3,elapsed_ms:14000},expected),
        buttons:article.querySelectorAll('button').length};
     }""")
-    assert observed == {"foreign": False, "accepted": True, "during": "PC 실행 중 · 12s",
-                        "heartbeat": "PC 실행 중 · 13s", "late": False, "buttons": 0}
+    assert observed == {"foreign": False, "accepted": True, "during": "PC에서 작업 중 · 12s",
+                        "heartbeat": "PC에서 작업 중 · 13s", "late": False, "buttons": 0}

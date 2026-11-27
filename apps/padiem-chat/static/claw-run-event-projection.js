@@ -5,18 +5,18 @@
   const COPY = Object.freeze({
     run_started: ["작업이 시작되었습니다", "Task started"],
     context_prepared: ["작업을 준비했습니다", "Task context prepared"],
-    plan_created: ["실행 계획이 준비되었습니다", "Execution plan prepared"],
-    tool_resolution: ["실행 도구를 확인했습니다", "Execution tool resolved"],
-    tool_started: ["도구가 실행 중입니다", "Tool running"],
-    tool_completed: ["도구 실행이 끝났습니다", "Tool step finished"],
-    tool_failed: ["도구 실행에 실패했습니다", "Tool step failed"],
+    plan_created: ["작업 계획이 준비되었습니다", "Execution plan prepared"],
+    tool_resolution: ["작업에 사용할 도구를 확인했습니다", "Execution tool resolved"],
+    tool_started: ["도구가 작업 중입니다", "Tool running"],
+    tool_completed: ["도구 작업이 끝났습니다", "Tool step finished"],
+    tool_failed: ["도구 작업에 실패했습니다", "Tool step failed"],
     verification_completed: ["결과 검증 단계가 끝났습니다", "Verification step finished"],
     approval_paused: ["사용자 허락을 기다리고 있습니다", "Awaiting user approval"],
     run_resumed: ["작업이 재개되었습니다", "Task resumed"],
     run_cancelled: ["작업이 취소되었습니다", "Task cancelled"],
     pc_read_failed: ["PC에서 파일을 읽지 못했어요.", "The PC could not read the file."],
     run_failed: ["작업이 실패했습니다", "Task failed"],
-    run_completed: ["작업 실행이 완료되었습니다", "Task execution completed"],
+    run_completed: ["작업이 완료되었습니다", "Task execution completed"],
   });
   const TERMINAL = new Set(["run_cancelled", "run_failed", "run_completed"]);
   const KNOWN = new Set([

@@ -228,7 +228,7 @@ def test_the_stored_setting_is_still_never_presented_as_live_execution() -> None
     html = index_html()
     band = html[html.index('id="clawAutomation"') : html.index('<section class="calendar-view"')]
     assert 'id="clawAutomationSchedulerNote"' in band
-    assert "자동 실행이 이미 활성화되어" in band
+    assert "자동으로 작업하기 기능이 이미 켜졌다는" in band
     assert 'id="clawAutomation"' in html
     assert 'id="clawAutomation" aria-labelledby' in html or 'aria-labelledby="clawAutomationTitle"' in html
     assert html.count('id="clawAutomation"') == 1

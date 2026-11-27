@@ -263,7 +263,7 @@ def test_the_runtime_chip_behaviour_in_a_real_browser(browser, server) -> None:
       steps.afterDone = read();
 
       // A real status (a Claw P01 stage) is kept when the run completes.
-      api.applyRuntimeLabel(article, '작업 실행이 완료되었습니다', 'status');
+      api.applyRuntimeLabel(article, '작업이 완료되었습니다', 'status');
       api.releasePreparingRuntimeLabel(article);
       steps.afterStatusDone = read();
 
@@ -288,7 +288,7 @@ def test_the_runtime_chip_behaviour_in_a_real_browser(browser, server) -> None:
         "localeKey": "",
     }
     assert result["afterStatusDone"] == {
-        "text": "작업 실행이 완료되었습니다",
+        "text": "작업이 완료되었습니다",
         "hidden": False,
         "state": "status",
         "localeKey": "",

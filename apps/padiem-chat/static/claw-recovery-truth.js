@@ -13,19 +13,19 @@
   ]);
   const COPY = Object.freeze({
     failed: Object.freeze({
-      ko: "실행이 실패했습니다. 일부 내용이 남아 있어도 전체 작업 완료가 아닙니다. 최근 실행을 확인하세요.",
+      ko: "작업이 실패했습니다. 일부 내용이 남아 있어도 전체 작업 완료가 아닙니다. 최근 작업 기록을 확인하세요.",
       en: "Execution failed. Any partial output is not a completed task. Check Recent runs.",
     }),
     cancelled: Object.freeze({
-      ko: "실행이 취소됐습니다. 일부 내용은 최종 결과가 아닙니다. 재전송하지 않고 최근 실행을 확인하세요.",
+      ko: "작업이 취소됐습니다. 일부 내용은 최종 결과가 아닙니다. 재전송하지 않고 최근 작업 기록을 확인하세요.",
       en: "Execution was cancelled. Partial output is not final. Check Recent runs before a new request.",
     }),
     waiting_for_approval: Object.freeze({
-      ko: "승인을 기다리는 작업입니다. 이 화면에는 승인 권한이 없으며 자동으로 다시 실행하지 않습니다.",
+      ko: "허락을 기다리는 작업입니다. 이 화면에서는 허락할 수 없으며 자동으로 다시 작업하지 않습니다.",
       en: "This task is awaiting approval. No approval authority or automatic replay is available here.",
     }),
     unknown: Object.freeze({
-      ko: "실행 상태를 확인하지 못했습니다. 이미 실행됐을 수 있으니 최근 실행을 확인하세요. 자동 재시도하지 않습니다.",
+      ko: "작업 상태를 확인하지 못했습니다. 이미 작업이 진행됐을 수 있으니 최근 작업 기록을 확인하세요. 자동 재시도하지 않습니다.",
       en: "Run state is unverified. It may already have executed. Check Recent runs; there is no automatic retry.",
     }),
   });

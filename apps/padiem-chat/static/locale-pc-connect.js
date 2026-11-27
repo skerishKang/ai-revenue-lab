@@ -10,7 +10,7 @@
       "pc-session-copied": "세션 번호를 복사했습니다.",
       "pc-session-copy-failed": "표시된 세션 번호를 선택해 복사해 주세요.",
       "pc-session-output": "최근 출력",
-      "pc-session-running": "실행 중",
+      "pc-session-running": "작업 중",
       "pc-session-ended": "종료됨",
       "pc-session-read": "출력 읽기",
       "pc-session-status": "상태 확인",
