@@ -958,3 +958,65 @@ def test_revoked_owner_is_refused_before_write_after_precheck_8772(rig, monkeypa
         await host.maintenance_round(app, ENV, store)
         assert not history.rows
     asyncio.run(run())
+
+
+
+# --- #8772: two-speed cadence -------------------------------------------------
+
+
+def test_cadence_idle_fast_while_in_flight_then_idle_again_8772(rig, monkeypatch):
+    app, queue, history, flags, store, db = rig
+
+    async def original(*args, **kw):
+        return "PADIEM_HELPER_REFRESH:updated:registered"
+
+    monkeypatch.setattr("app.mcp_gateway_shell._read_original", original)
+    assert (host.IDLE_INTERVAL, host.INTERVAL) == (900, 60)
+    # The values the command lifetime and observation window are tuned to.
+    assert host.TTL == 300 and host.VERIFY_SECONDS == 600
+
+    async def run():
+        # Nothing reserved or queued: slow cadence.
+        flags["session"] = False  # owner deferred, no attempt in flight
+        await host.maintenance_round(app, ENV, store)
+        assert await host.next_delay(store) == 900
+        flags["session"] = True
+        start = queue.now
+        await host.maintenance_round(app, ENV, store)
+        assert len(history.rows) == 1
+        assert await host.next_delay(store) == 60
+        # Drive the real loop timing: every wait is what next_delay returns.
+        history.done = True
+        steps = 0
+        while await host.next_delay(store) == 60:
+            queue.now += timedelta(seconds=60)
+            queue.state["updater_source_sha256"] = SOURCE_SHA256
+            await host.maintenance_round(app, ENV, store)
+            steps += 1
+            assert steps < 10
+        outcome = db.execute("SELECT outcome FROM pc_helper_maintenance_jobs").fetchone()[0]
+        assert outcome == "verified"
+        # Verified inside the 600 s deadline, then back to the slow cadence.
+        assert (queue.now - start).total_seconds() <= host.VERIFY_SECONDS
+        assert await host.next_delay(store) == 900
+    asyncio.run(run())
+
+
+def test_unnotified_terminal_job_and_unknown_state_stay_fast_8772(rig, monkeypatch):
+    app, queue, history, flags, store, db = rig
+    history.failed = True  # terminal dispatch_unconfirmed
+
+    async def run():
+        await host.maintenance_round(app, ENV, store)
+        db.execute("UPDATE pc_helper_maintenance_jobs SET notified=0")
+        db.commit()
+        assert await host.next_delay(store) == 60
+        db.execute("UPDATE pc_helper_maintenance_jobs SET notified=1")
+        db.commit()
+        assert await host.next_delay(store) == 900
+
+        class Broken:
+            async def in_flight(self):
+                raise RuntimeError("db unavailable")
+        assert await host.next_delay(Broken()) == 60
+    asyncio.run(run())

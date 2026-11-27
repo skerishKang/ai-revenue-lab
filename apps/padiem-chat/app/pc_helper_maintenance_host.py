@@ -32,7 +32,12 @@ from .connector_account_subject import maintenance_owner_context
 from .connector_account_shadow import mode_connector_read
 
 logger = logging.getLogger(__name__)
-INTERVAL = 60
+#: #8772: how often the round runs. Idle rounds only look for a new candidate,
+#: so they are slow; any attempt that is reserved, dispatched or waiting for
+#: its receipt/observation keeps the old 60 s cadence, because TTL,
+#: VERIFY_SECONDS and the 180 s observation window below are tuned to it.
+IDLE_INTERVAL = 900
+INTERVAL = 60  # active cadence (unchanged)
 TTL = 300
 VERIFY_SECONDS = 600
 ACTOR = "system:pc_maintenance"
@@ -122,6 +127,17 @@ class HostMaintenanceStore(MaintenanceAttemptStore):
             result, proof.value if isinstance(proof, PrecontactProof) else None, claim.token)
         if rows:
             await self.settle(claim, now=_stamp(now), verified=result == "verified", proof=proof)
+
+    async def in_flight(self):
+        """True while any attempt still needs the fast cadence (read-only).
+
+        A reserved claim, a job that is not terminal, or a terminal job whose
+        notice is not yet delivered. Ends when reconcile has finished them.
+        """
+        return bool(await self.rows(
+            "SELECT 1 AS busy FROM pc_helper_maintenance_jobs WHERE status!='terminal' OR notified=0 "
+            "UNION ALL SELECT 1 FROM pc_helper_auto_attempts "
+            "WHERE stopped=0 AND last_reason LIKE 'reserved:%' LIMIT 1"))
 
     async def active(self):
         return await self.rows(
@@ -665,6 +681,14 @@ async def maintenance_round(app, env, store):
                            " ".join(f"{key}={value}" for key, value in report.items()))
 
 
+async def next_delay(store):
+    """Seconds to wait before the next round (#8772)."""
+    try:
+        return INTERVAL if await store.in_flight() else IDLE_INTERVAL
+    except Exception:
+        return INTERVAL  # unknown state: stay on the deadline-safe cadence
+
+
 def install_maintenance_timer(app, *, env, db, process_lock):
     """Only the CPython Chat host calls this, never Worker or Mesh queue."""
     if not auto_update_enabled(env):
@@ -683,7 +707,7 @@ def install_maintenance_timer(app, *, env, db, process_lock):
                     process_lock.release()
             else:
                 logger.warning("pc_maintenance_round lock=busy")
-            await asyncio.sleep(INTERVAL)
+            await asyncio.sleep(await next_delay(store))
 
     async def start():
         nonlocal task
