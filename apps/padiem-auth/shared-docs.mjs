@@ -7,9 +7,30 @@ const esc = (value) => String(value)
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
   .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
 
-const DOC_CSS = `:root{--bg:#f5f6f8;--panel:#fff;--text:#1c1e21;--muted:#5f6368;--primary:#1a73e8;--line:#dadce0;--card:#f0f4f9;color-scheme:light}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,'Noto Sans KR',Inter,ui-sans-serif,system-ui,sans-serif;line-height:1.7}main{display:block;max-width:760px;margin:0 auto;padding:40px 24px 64px}h1{font-size:26px;letter-spacing:-.02em;margin:0 0 8px}.meta{color:var(--muted);font-size:13px;margin:0 0 24px}.card{background:var(--card);border-radius:12px;padding:16px 18px;margin:0 0 28px;font-size:14px}.card p{margin:6px 0}nav.toc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:0 0 32px;font-size:14px}nav.toc strong{display:block;margin-bottom:6px}nav.toc a{color:var(--primary)}h2{font-size:20px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)}h3{font-size:16px;margin:24px 0 8px}ul,ol{margin:8px 0;padding-left:22px}li{margin:4px 0}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}th{background:var(--card);font-weight:600}code{font-size:.92em;background:var(--card);padding:1px 5px;border-radius:4px}a{color:var(--primary)}.back{display:inline-block;margin-bottom:16px;font-size:14px}footer.doc-foot{margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}footer.doc-foot nav{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}@media (prefers-color-scheme:dark){:root{--bg:#10151c;--panel:#1a232d;--text:#edf4fa;--muted:#9fb3c3;--primary:#7fb3f0;--line:#2d3a47;--card:#1e2c3a;color-scheme:dark}}`;
+// #8897: 본문 16px·줄간격 1.7·최대 폭 720px, 제목 단계 구분, 목차 터치 영역 확대,
+// 표는 가로 스크롤 칸 안에서만 넘치게 한다. ?theme=night|garden 은
+// :root[data-doc-theme] 로 받고, 없거나 모르는 값이면 기본 모양(아래 기본 변수)을 쓴다.
+const DOC_CSS = `:root{--bg:#f5f6f8;--panel:#fff;--text:#1c1e21;--muted:#5f6368;--primary:#1a73e8;--line:#dadce0;--card:#f0f4f9;color-scheme:light}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,'Noto Sans KR',Inter,ui-sans-serif,system-ui,sans-serif;font-size:16px;line-height:1.7}main{display:block;max-width:720px;margin:0 auto;padding:40px 20px 64px}h1{font-size:30px;line-height:1.3;letter-spacing:-.02em;margin:0 0 10px}.meta{color:var(--muted);font-size:14px;margin:0 0 28px}.card{background:var(--card);border-radius:12px;padding:16px 18px;margin:0 0 28px;font-size:15px}.card p{margin:6px 0}nav.toc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 32px;font-size:15px;line-height:1.6}nav.toc strong{display:block;margin-bottom:8px}nav.toc a{color:var(--primary);display:inline-block;padding:6px 4px;margin:0 2px 2px 0}h2{font-size:22px;line-height:1.35;margin:48px 0 14px;padding-top:16px;border-top:1px solid var(--line)}h3{font-size:18px;line-height:1.4;margin:28px 0 10px}p,li,td,th{overflow-wrap:break-word}ul,ol{margin:10px 0;padding-left:24px}li{margin:6px 0}table{display:block;width:100%;max-width:100%;border-collapse:collapse;margin:14px 0;font-size:15px;overflow-x:auto;-webkit-overflow-scrolling:touch}th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}th{background:var(--card);font-weight:600}code{font-size:.92em;background:var(--card);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}a{color:var(--primary)}.back{display:inline-block;margin-bottom:16px;font-size:14px}footer.doc-foot{margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}footer.doc-foot nav{display:flex;gap:10px 16px;flex-wrap:wrap;margin-bottom:8px}footer.doc-foot nav a{padding:2px 0}@media (max-width:480px){main{padding:28px 16px 56px}h1{font-size:26px}h2{font-size:20px}h3{font-size:17px}}@media (prefers-color-scheme:dark){:root{--bg:#10151c;--panel:#1a232d;--text:#edf4fa;--muted:#9fb3c3;--primary:#7fb3f0;--line:#2d3a47;--card:#1e2c3a;color-scheme:dark}}:root[data-doc-theme=night]{--bg:#0e1319;--panel:#1a232d;--text:#edf4fa;--muted:#9fb3c3;--primary:#7fb3f0;--line:#2d3a47;--card:#1e2c3a;color-scheme:dark}:root[data-doc-theme=garden]{--bg:#f3f8f0;--panel:#fff;--text:#1f2a1f;--muted:#5c6e5a;--primary:#2f7d33;--line:#d2e2cf;--card:#e9f3e6;color-scheme:light}`;
 
-const docShell = ({ title, meta, toc, body }) => `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="index, follow"><title>${esc(title)} — PADIEM 계정</title><meta name="referrer" content="no-referrer"><style>${DOC_CSS}</style></head><body><main><h1>${esc(title)}</h1><p class="meta">${meta}</p><nav class="toc" aria-label="목차"><strong>목차</strong>${toc}</nav>${body}<footer class="doc-foot"><nav><a href="/privacy">공용 개인정보처리방침</a><a href="/terms">공용 이용약관</a><a href="https://chat.padiem.net/privacy.html">Chat 개인정보처리방침 원문</a><a href="https://chat.padiem.net/terms.html">Chat 이용약관 원문</a></nav><p>PADIEM 계정으로 로그인합니다 · 하나의 계정으로 PADIEM 서비스를 이용할 수 있어요</p></footer></main></body></html>`;
+// #8897: 문서가 받는 테마는 밤(night)·정원(garden)뿐이다. 값이 없거나
+// 목록에 없는 값이면 기본 모양을 뜻하는 빈 문자열로 정규화한다.
+const DOC_THEMES = ['night', 'garden'];
+export const resolveDocTheme = (value) => DOC_THEMES.includes(value) ? value : '';
+
+// #8897: 테마를 받았을 때만 문서 안의 이동 링크(목차 앵커, 공용 방침↔약관)에
+// 같은 테마 값을 이어 붙인다. 문서 본문의 조항·문구·외부 링크 주소는 그대로 둔다.
+const themedLinks = (html, theme) => theme
+  ? html.replaceAll('href="#', `href="?theme=${theme}#`)
+    .replaceAll('href="/privacy"', `href="/privacy?theme=${theme}"`)
+    .replaceAll('href="/terms"', `href="/terms?theme=${theme}"`)
+  : html;
+
+const docShell = ({ title, meta, toc, body, theme }) => {
+  const resolved = resolveDocTheme(theme);
+  const themeAttr = resolved ? ` data-doc-theme="${resolved}"` : '';
+  const themed = (html) => themedLinks(html, resolved);
+  return `<!doctype html><html lang="ko"${themeAttr}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="index, follow"><title>${esc(title)} — PADIEM 계정</title><meta name="referrer" content="no-referrer"><style>${DOC_CSS}</style></head><body><main><h1>${esc(title)}</h1><p class="meta">${meta}</p><nav class="toc" aria-label="목차"><strong>목차</strong>${themed(toc)}</nav>${body}<footer class="doc-foot"><nav>${themed('<a href="/privacy">공용 개인정보처리방침</a><a href="/terms">공용 이용약관</a>')}<a href="https://chat.padiem.net/privacy.html">Chat 개인정보처리방침 원문</a><a href="https://chat.padiem.net/terms.html">Chat 이용약관 원문</a></nav><p>PADIEM 계정으로 로그인합니다 · 하나의 계정으로 PADIEM 서비스를 이용할 수 있어요</p></footer></main></body></html>`;
+};
 
 // #7846: 2026-11-16 대표 결정 — 운영진 열람 문장은 최초 게시(v1)에 원래 있던 문장으로 넣는다.
 // 처리방침은 게시된 지 하루밖에 안 됐고 정식 오픈 전이므로 버전·시행일을 그대로 두고 변경 이력도 넣지 않는다.
@@ -274,10 +295,10 @@ const chatTerms = `
 const privacyToc = `<a href="#common">가. PADIEM 계정 공통</a> · <a href="#chat">나. PADIEM Chat</a> · <a href="#lovetree">다. 러브트리</a>`;
 const termsToc = `<a href="#common">가. PADIEM 계정 공통</a> · <a href="#chat">나. PADIEM Chat</a>`;
 
-export function privacyPage() {
-  return docShell({ title: '개인정보처리방침', meta: META_LINE, toc: privacyToc, body: commonPrivacy + chatPrivacy + lovetreePrivacy });
+export function privacyPage(theme) {
+  return docShell({ title: '개인정보처리방침', meta: META_LINE, toc: privacyToc, body: commonPrivacy + chatPrivacy + lovetreePrivacy, theme });
 }
 
-export function termsPage() {
-  return docShell({ title: '이용약관', meta: META_LINE, toc: termsToc, body: commonTerms + chatTerms });
+export function termsPage(theme) {
+  return docShell({ title: '이용약관', meta: META_LINE, toc: termsToc, body: commonTerms + chatTerms, theme });
 }
