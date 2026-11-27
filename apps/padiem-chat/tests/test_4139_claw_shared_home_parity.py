@@ -10,6 +10,7 @@ from _r5_function_source import definition_source
 
 from html.parser import HTMLParser
 
+from _support import theme_sheets
 from _support.claw_static import locale_source, sheet
 
 # #8060: sheet reads live in the helper; this module only asserts on the
@@ -208,9 +209,18 @@ def test_shared_chat_visuals_are_not_duplicated_for_claw_landing():
 
 
 def test_first_use_claw_retains_chat_alignment_and_input_tools():
-    assert "display: grid !important;" in CSS  # The shared hero is never right-shifted by flex.
-    assert ".composer-tools {\n  display: flex !important;" in CSS
-    assert "#clawManualEntryBar {\n  display: none !important;" in CSS
+    # #8340: the contract is the declared value, not the priority syntax; the
+    # sheet carries no priority flag any more (test_261128_claw_focus_important_8340).
+    def displays(selector_part: str) -> list[str]:
+        return [
+            theme_sheets.decl_map(rule).get("display", "")
+            for rule in theme_sheets.rules_with_selector("claw-focus-layout.css", selector_part)
+        ]
+
+    # The shared hero is never right-shifted by flex.
+    assert "grid" in displays(".empty-state:not([hidden]) .starter-grid")
+    assert "flex" in displays("~ .conversation) .composer-tools")
+    assert "none" in displays("#clawManualEntryBar")
     assert HTML.count('class="claw-connection-track"') == 3
     assert HTML.count('class="claw-state-on">ON') == 3
     assert HTML.count('class="claw-state-off">OFF') == 3
