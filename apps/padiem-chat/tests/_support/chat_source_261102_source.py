@@ -41,4 +41,6 @@ def settings_js() -> str:
 
 
 def claw_general_routes() -> str:
-    return (_CHAT / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
+    from _support.claw_general_modules import sources
+
+    return sources()

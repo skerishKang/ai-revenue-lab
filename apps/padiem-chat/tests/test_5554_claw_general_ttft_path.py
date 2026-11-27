@@ -28,13 +28,13 @@ import threading
 
 import pytest
 
-import app.claw_general_routes as general_routes_module
 from app.drive_general_grounding import DriveGroundingError
 from app.history import HistoryContextIncomplete
 from app import claw_routes as claw_routes_module
 from app import request_telemetry as telemetry_module
 
 import test_b54_claw_general_p01_routing as base
+from _support.claw_general_modules import patch_bound
 
 GENERAL_ROUTE_PATH = "/api/claw/general"
 
@@ -95,8 +95,8 @@ def _install_barrier(monkeypatch: pytest.MonkeyPatch, barrier: _Barrier) -> None
     async def _session_ref(request, data):
         return None, None
 
-    monkeypatch.setattr(general_routes_module, "_owner_claw_context", _history)
-    monkeypatch.setattr(general_routes_module, "drive_general_grounding", _drive)
+    patch_bound(monkeypatch, "_owner_claw_context", _history)
+    patch_bound(monkeypatch, "drive_general_grounding", _drive)
     monkeypatch.setattr(claw_routes_module, "_resolve_intake_session_reference", _session_ref)
 
 
@@ -107,7 +107,7 @@ def _record_stages(monkeypatch: pytest.MonkeyPatch) -> list[dict]:
         events.append({"stage": stage, "outcome": outcome, "duration_ms": duration_ms, **extra})
 
     monkeypatch.setattr(telemetry_module, "emit_stage_event", _capture)
-    monkeypatch.setattr(general_routes_module, "emit_stage_event", _capture)
+    patch_bound(monkeypatch, "emit_stage_event", _capture)
     return events
 
 
@@ -137,8 +137,8 @@ def test_history_refusal_still_wins_when_drive_also_fails(
     async def _drive(request, user_text):
         raise DriveGroundingError("drive_read_failed", "드라이브 검색을 완료하지 못했습니다.", 502)
 
-    monkeypatch.setattr(general_routes_module, "_owner_claw_context", _history)
-    monkeypatch.setattr(general_routes_module, "drive_general_grounding", _drive)
+    patch_bound(monkeypatch, "_owner_claw_context", _history)
+    patch_bound(monkeypatch, "drive_general_grounding", _drive)
     adapter = base._make_adapter()
 
     with base._client(adapter) as client:
@@ -160,8 +160,8 @@ def test_drive_refusal_is_unchanged_when_history_succeeds(
     async def _drive(request, user_text):
         raise DriveGroundingError("drive_not_connected", "Google Drive를 먼저 연결해 주세요.", 409)
 
-    monkeypatch.setattr(general_routes_module, "_owner_claw_context", _history)
-    monkeypatch.setattr(general_routes_module, "drive_general_grounding", _drive)
+    patch_bound(monkeypatch, "_owner_claw_context", _history)
+    patch_bound(monkeypatch, "drive_general_grounding", _drive)
     adapter = base._make_adapter()
 
     with base._client(adapter) as client:

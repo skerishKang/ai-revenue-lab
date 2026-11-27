@@ -22,6 +22,7 @@ from test_5015_pc_work_context import Directory, Identity, Mesh, device, mesh_ro
 from _support.live_sse_relay import _event
 from _support.claw_general_routing import _make_outcome, _settings
 from _support.claw_local_task_result import _open_database
+from _support.claw_general_modules import patch_bound
 
 TEXT = "example.com 열어서 제목 알려 줘"
 ANSWER = "페이지 제목은 Example Domain입니다."
@@ -31,7 +32,6 @@ DEVICE = "office-pc"
 
 @pytest.fixture
 def browser_entry(tmp_path, monkeypatch):
-    import app.claw_general_routes as routes
     import app.oracle_mesh_read_return_routes as files
     import padiem_control_plane.b54_identity_bridge as bridge
 
@@ -67,7 +67,7 @@ def browser_entry(tmp_path, monkeypatch):
     monkeypatch.setattr(pc_work_context, "_resolve_owner_session", owner_session)
     monkeypatch.setattr(bridge, "resolve_current_b54_canonical_session", connector_session)
     monkeypatch.setattr(files, "_engine_pc_files_target", files_forbidden)
-    monkeypatch.setattr(routes, "drive_general_grounding", AsyncMock(return_value=(None, ())))
+    patch_bound(monkeypatch, "drive_general_grounding", AsyncMock(return_value=(None, ())))
     seen = []
 
     class Adapter:

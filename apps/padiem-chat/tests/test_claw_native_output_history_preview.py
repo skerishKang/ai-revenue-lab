@@ -11,6 +11,7 @@ import pytest
 
 from app import claw_general_routes as routes
 from app.history import MAX_HISTORY_MESSAGE_CHARS
+from _support.claw_general_modules import patch_bound
 
 
 class CaptureHistory:
@@ -31,8 +32,8 @@ def request_with_store(store):
 def test_claw_long_completed_answer_passes_full_text_to_owner_history_store(monkeypatch):
     store = CaptureHistory()
     req = request_with_store(store)
-    monkeypatch.setattr(routes, "auth_ready", lambda _request: True)
-    monkeypatch.setattr(routes, "current_user_id", lambda _request: "canonical-user")
+    patch_bound(monkeypatch, "auth_ready", lambda _request: True)
+    patch_bound(monkeypatch, "current_user_id", lambda _request: "canonical-user")
 
     long_answer = ("긴 답변 " * 2000) + "완료"
     long_request = ("긴 요청 " * 2000) + "완료"
@@ -55,8 +56,8 @@ def test_claw_long_completed_answer_passes_full_text_to_owner_history_store(monk
 
 def test_claw_short_completed_answer_preserves_text_exactly(monkeypatch):
     store = CaptureHistory()
-    monkeypatch.setattr(routes, "auth_ready", lambda _request: True)
-    monkeypatch.setattr(routes, "current_user_id", lambda _request: "canonical-user")
+    patch_bound(monkeypatch, "auth_ready", lambda _request: True)
+    patch_bound(monkeypatch, "current_user_id", lambda _request: "canonical-user")
     asyncio.run(routes._save_claw_exchange(
         request_with_store(store), conversation_id=None,
         user_text="질문", answer="정상 완료",
@@ -66,8 +67,8 @@ def test_claw_short_completed_answer_preserves_text_exactly(monkeypatch):
 
 def test_claw_history_remains_owner_scoped_and_fails_closed(monkeypatch):
     store = CaptureHistory()
-    monkeypatch.setattr(routes, "auth_ready", lambda _request: False)
-    monkeypatch.setattr(routes, "current_user_id", lambda _request: None)
+    patch_bound(monkeypatch, "auth_ready", lambda _request: False)
+    patch_bound(monkeypatch, "current_user_id", lambda _request: None)
     cid = asyncio.run(routes._save_claw_exchange(
         request_with_store(store), conversation_id=None,
         user_text="valid", answer="valid",

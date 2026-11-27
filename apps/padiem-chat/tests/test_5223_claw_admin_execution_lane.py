@@ -297,9 +297,15 @@ def test_both_claw_lanes_call_the_shared_grade_authority() -> None:
     """Neither lane may parse the browser grade on its own again."""
     from pathlib import Path
 
+    from _support.claw_general_modules import sources as claw_general_sources
+
     app_dir = Path(__file__).resolve().parents[1] / "app"
-    for name in ("claw_routes.py", "claw_general_routes.py"):
-        source = (app_dir / name).read_text(encoding="utf-8")
+    # The general lane is every claw_general module, wherever its code lives.
+    lanes = (
+        ("claw_routes.py", (app_dir / "claw_routes.py").read_text(encoding="utf-8")),
+        ("claw_general_*.py", claw_general_sources()),
+    )
+    for name, source in lanes:
         assert "resolve_claw_execution_grade(" in source, name
         # No lane keeps a private grade map.
         assert "_BROWSER_TIER_MAP: dict[" not in source, name

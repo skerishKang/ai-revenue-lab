@@ -35,6 +35,7 @@ from padiem_control_plane import product_tier_routes
 from padiem_control_plane import product_tier_routes_private
 
 import test_b54_claw_general_p01_routing as base
+from _support.claw_general_modules import patch_bound
 
 GENERAL_ROUTE_PATH = "/api/claw/general"
 
@@ -212,9 +213,7 @@ def test_each_stage_reports_only_its_own_read(
     def _capture(*, stage, outcome, duration_ms, **extra):
         events.append({"stage": stage, "duration_ms": duration_ms, **extra})
 
-    monkeypatch.setattr(
-        "app.claw_general_routes.emit_stage_event", _capture
-    )
+    patch_bound(monkeypatch, "emit_stage_event", _capture)
 
     read_delay = 0.12
 

@@ -19,6 +19,7 @@ from types import SimpleNamespace
 from app import claw_general_routes as g
 from app import claw_memory_routes
 import test_7814_claw_general_tail_table as tail
+from _support.claw_general_modules import patch_bound
 
 GOLDEN_PATH = (
     Path(__file__).resolve().parent
@@ -58,7 +59,7 @@ def _catalog(monkeypatch, mode):
         coro = {"ok": ok, "not_eligible": other, "bad": bad}[mode]()
         return asyncio.get_running_loop().create_task(coro), False
 
-    monkeypatch.setattr(g, "_start_selectable_model_read", start)
+    patch_bound(monkeypatch, "_start_selectable_model_read", start)
 
 
 def _pc_branch(monkeypatch, *, staged=False):
@@ -76,7 +77,7 @@ def _pc_branch(monkeypatch, *, staged=False):
             "initial_pc_drive_query": False,
         }
 
-    monkeypatch.setattr(g, "_claw_general_pc_branch", fake)
+    patch_bound(monkeypatch, "_claw_general_pc_branch", fake)
 
 
 class _History:

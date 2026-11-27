@@ -6,6 +6,7 @@ from __future__ import annotations
 
 # #8060: shipped reads live in _support; assertions stay here.
 from _support.final_share_source import locale_source, read
+from _support.claw_general_modules import patch_bound, sources as claw_general_sources
 
 import asyncio
 from types import SimpleNamespace
@@ -80,8 +81,6 @@ def test_other_claw_tasks_keep_12k_and_model_lane_cannot_be_reassigned():
 
 
 def test_claw_owned_saved_history_does_not_silently_keep_only_12_or_4k(monkeypatch):
-    import app.claw_general_routes as routes
-
     class OwnedStore:
         async def get_conversation(self, user_id, conversation_id, *, product_scope: str):
             assert product_scope == PRODUCT_SCOPE_CHAT
@@ -95,8 +94,8 @@ def test_claw_owned_saved_history_does_not_silently_keep_only_12_or_4k(monkeypat
                 ],
             }
 
-    monkeypatch.setattr(routes, "auth_ready", lambda _: True)
-    monkeypatch.setattr(routes, "current_user_id", lambda _: "owner")
+    patch_bound(monkeypatch, "auth_ready", lambda _: True)
+    patch_bound(monkeypatch, "current_user_id", lambda _: "owner")
     request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(history_store=OwnedStore())))
     owned = asyncio.run(_owner_claw_context(request, "chat_" + "a" * 32, "현재 요청"))
     assert "saved-0 " in owned and "saved-13 " in owned
@@ -107,7 +106,7 @@ def test_claw_owned_saved_history_does_not_silently_keep_only_12_or_4k(monkeypat
 def test_the_p01_context_is_not_cut_to_a_padiem_byte_total():
     # #4379: the owned prior context is not cut to a PADIEM byte total, so
     # the route declares no envelope ceiling of its own.
-    source = read(Path(__file__).resolve().parents[1] / "app/claw_general_routes.py")
+    source = claw_general_sources()
     assert "P01_ENGINE_REQUEST_ENVELOPE_BYTES: int | None = None" in source
     assert 'len(model_user_text.encode("utf-8")) > P01_ENGINE_REQUEST_ENVELOPE_BYTES' not in source
 

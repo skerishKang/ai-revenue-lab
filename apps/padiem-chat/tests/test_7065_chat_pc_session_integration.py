@@ -20,6 +20,7 @@ from test_7065_chat_pc_session import app_rig, opened, UID, DEVICE, CID
 from test_7065_pc_session_tools import rig
 from _support.connector_one_click import session as canonical_session
 from _support.confirmation_card import _fixture, UID as SQL_UID, WORKSPACE
+from _support.claw_general_modules import patch_bound
 
 REAL_OWNER_REQUEST = owner_routes._verified_owner_request
 
@@ -202,11 +203,11 @@ def test_real_entry_hooks_never_fall_through_to_command_or_model(app_rig, monkey
     monkeypatch.setattr(orchestration_routes, "_bridge", lambda request: state.orchestration_bridge)
     monkeypatch.setattr(orchestration_routes, "auth_ready", lambda request: True)
     monkeypatch.setattr(orchestration_routes, "current_user_id", lambda request: UID)
-    monkeypatch.setattr(claw_general_routes, "auth_ready", lambda request: True)
-    monkeypatch.setattr(claw_general_routes, "current_user_id", lambda request: UID)
+    patch_bound(monkeypatch, "auth_ready", lambda request: True)
+    patch_bound(monkeypatch, "current_user_id", lambda request: UID)
     async def forbidden(*args, **kwargs):
         raise AssertionError("session syntax reached the ordinary command lane")
-    monkeypatch.setattr(claw_general_routes, "_dispatch_user_command_request", forbidden)
+    patch_bound(monkeypatch, "_dispatch_user_command_request", forbidden)
     from app import chat_pc_command
     monkeypatch.setattr(chat_pc_command, "dispatch_chat_pc_command", forbidden)
     response = asyncio.run(orchestration_routes.api_orchestration(request) if surface == "chat"

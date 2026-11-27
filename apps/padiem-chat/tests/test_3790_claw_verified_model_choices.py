@@ -3,6 +3,7 @@ from starlette.applications import Starlette
 from starlette.routing import Route
 from starlette.testclient import TestClient
 
+from _support.claw_general_modules import server_facts as claw_general_server_facts
 from _support.verified_model_choices import (
     choice_guard_facts,
     index_ids_and_scripts,
@@ -195,7 +196,7 @@ def test_admin_model_choices_require_server_verified_admin(monkeypatch):
 
 
 def test_claw_admin_exact_model_is_server_owned():
-    routes = server_facts("claw_general_routes")
+    routes = claw_general_server_facts()
     # #5223: the administrator lane and its denial are resolved by the ONE
     # shared grade authority, so the lane's own copy of the admin comparison
     # and the admin denial moved to that authority.  The ownership properties

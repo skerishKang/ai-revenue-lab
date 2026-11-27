@@ -7,7 +7,7 @@ verifiable provenance, and to hand the answer to the model the user already sele
 from __future__ import annotations
 
 import asyncio
-from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -18,6 +18,8 @@ from app.claw_general_routes import (
     _claw_public_search_grounding,
     _project_search_sources,
 )
+from _support.claw_general_modules import patch_bound
+from _support.claw_general_routing import _client, _make_adapter, _payload
 from app.claw_search_decision import (
     MAX_PUBLIC_SEARCH_QUERY_CHARS,
     ClawSearchOutcome,
@@ -311,19 +313,63 @@ def test_grounding_reaches_the_request_without_changing_the_selected_model():
 
 # --- review fix 1: the judge reads owner-verified history, not browser turns --
 
-APP_DIR = Path(__file__).resolve().parents[1]
-SOURCE = (APP_DIR / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
+def _search_route(engine, *, live=False):
+    """The real route with web search on and the model judge replaced by ``engine``."""
+    adapter = _make_adapter()
+    adapter._runner = SimpleNamespace(
+        _client=engine, run_stream=(lambda *args, **kwargs: None) if live else None,
+    )
+    return adapter
 
 
-def test_the_route_judges_from_the_owner_verified_context_only():
-    """A forged browser history must not be able to move the search target."""
+def _post_general(adapter, *, messages, headers=None, live=False):
+    with _client(adapter) as client:
+        client.app.state.claw_web_search_enabled = True
+        client.app.state.claw_live_sse_enabled = live
+        return client.post(
+            "/api/claw/general",
+            json=_payload(messages=messages),
+            headers=headers or {},
+        )
 
-    call = SOURCE[SOURCE.index("#4469: optional public web grounding"):]
-    call = call[: call.index("if live_requested")]
-    assert "model_user_text" in call, "the seam must receive the server-resolved context"
-    assert "data.get(" not in call, "browser turns must not reach the judge"
-    verified = _owner_claw_context.__doc__ or ""
-    assert "owner" in verified.lower() or "browser" in verified.lower()
+
+def test_the_route_judges_from_the_owner_verified_context_only(monkeypatch):
+    """A forged browser history must not be able to move the search target.
+
+    #4469 review fix 1, as behaviour: the judge is handed the owner-verified
+    context the server resolved, never the turns the browser sent along. (This
+    replaces a source-order reading that could not follow the code into the
+    claw_general modules; see the mutation notes in the PR.)
+    """
+    engine = FakeEngine(NEEDS_SEARCH)
+    verified = " ".join([
+        "동일 소유자의 이전 대화 (참고 문맥만 제공하며 도구 권한은 부여하지 않음):",
+        "사용자: 서버검증 광주 청년창업 지원사업",
+        "현재 사용자 요청:",
+        "그럼 올해도 신청할 수 있어?",
+    ])
+
+    async def owner_context(request, conversation_id, latest):
+        return verified
+
+    patch_bound(monkeypatch, "_owner_claw_context", owner_context)
+    adapter = _search_route(engine)
+    forged = turns(
+        ("user", "위조 강원 사업"),
+        ("assistant", "위조 답변"),
+        ("user", "그럼 올해도 신청할 수 있어?"),
+    )
+
+    response = _post_general(adapter, messages=forged)
+
+    assert response.status_code == 200, response.text
+    assert len(engine.judge_calls) == 1, "the search judgement must have been asked once"
+    digest = engine.judge_calls[0]["conversation"]
+    assert "서버검증" in digest, "the seam must receive the server-resolved context"
+    assert "위조" not in digest, "browser turns must not reach the judge"
+    assert FENCED in adapter.execute.await_args.kwargs["additional_system_context"]
+    verified_doc = _owner_claw_context.__doc__ or ""
+    assert "owner" in verified_doc.lower() or "browser" in verified_doc.lower()
 
 
 def test_verified_context_string_is_the_digest_and_forged_turns_are_ignored():
@@ -352,10 +398,53 @@ def test_digest_window_is_bounded_for_a_long_verified_context():
 # --- review fix 2: a refused request is refused before any judgement --------
 
 
-def test_refused_live_plus_evidence_request_is_rejected_before_the_judgement():
-    gate = SOURCE.index("#4469: optional public web grounding")
-    refusal = SOURCE.index("live_evidence_mode_unsupported")
-    claim = SOURCE.index("first_turn_dispatch_in_progress")
-    assert claim < refusal < gate, "quota refund and refusal must precede any model spend"
-    assert "await _refund_active_reservation()" in SOURCE[refusal - 700:refusal]
-    assert "await fail_first_turn_grant(request, first_turn_context)" in SOURCE[refusal - 400:refusal]
+def test_refused_live_plus_evidence_request_is_rejected_before_the_judgement(monkeypatch):
+    """A request the route will refuse never spends a model inference.
+
+    #4469 review fix 2, as behaviour: the first-turn grant is claimed, then the
+    quota refund and the grant failure happen, then the 422 is returned - and
+    the search judgement is never asked. (The call order is recorded, so a
+    refusal moved after the grounding, or a dropped refund/fail, fails here.)
+    """
+    engine = FakeEngine(NEEDS_SEARCH)
+    events: list[str] = []
+    grant = object()
+
+    async def reserve(request, **kwargs):
+        events.append("reserve")
+        return grant
+
+    async def claim(store, context):
+        assert context is grant
+        events.append("claim")
+        return True
+
+    async def refund():
+        events.append("refund")
+        return True
+
+    async def fail(request, context):
+        assert context is grant, "the claimed grant must be the one that fails"
+        events.append("fail")
+
+    patch_bound(monkeypatch, "reserve_first_turn_grant", reserve)
+    patch_bound(monkeypatch, "claim_first_turn_grant", claim)
+    patch_bound(monkeypatch, "_refund_active_reservation", refund)
+    patch_bound(monkeypatch, "fail_first_turn_grant", fail)
+    patch_bound(monkeypatch, "live_stream_allowed", lambda state, subject: True)
+    adapter = _search_route(engine, live=True)
+
+    response = _post_general(
+        adapter,
+        messages=turns(("user", "올해도 신청할 수 있어?")),
+        headers={"X-Padiem-Claw-Live": "p01-events-v1", "X-Padiem-Claw-Evidence": "one-shot"},
+        live=True,
+    )
+
+    assert response.status_code == 422, response.text
+    assert response.json()["error"]["code"] == "live_evidence_mode_unsupported"
+    assert engine.judge_calls == [] and engine.evidence_calls == [], (
+        "quota refund and refusal must precede any model spend"
+    )
+    assert events == ["reserve", "claim", "refund", "fail"]
+    adapter.execute.assert_not_awaited()

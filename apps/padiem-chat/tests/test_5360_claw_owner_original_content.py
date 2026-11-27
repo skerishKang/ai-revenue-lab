@@ -29,14 +29,13 @@ from kagent.claw_memory import (
     InMemoryClawMemoryStore,
     sha256_text,
 )
+from _support.claw_general_modules import patch_bound
 OWNER_TITLE = "삼성상사 30A 케이블 재주문 승인: Authorization: Bearer " + "a" * 24
 OWNER_BODY = "삼성상사 견적 요청: 케이블 30A 100개, 납기 9월 20일"
 
 
 def test_the_owners_own_conversation_text_reaches_the_model_unchanged(monkeypatch):
     """The AI context carries the owner's original text, not a masked copy."""
-    import app.claw_general_routes as routes
-
     class OwnedStore:
         async def get_conversation(self, user_id, conversation_id, *, product_scope):
             return {
@@ -47,8 +46,8 @@ def test_the_owners_own_conversation_text_reaches_the_model_unchanged(monkeypatc
                 ],
             }
 
-    monkeypatch.setattr(routes, "auth_ready", lambda _: True)
-    monkeypatch.setattr(routes, "current_user_id", lambda _: "owner")
+    patch_bound(monkeypatch, "auth_ready", lambda _: True)
+    patch_bound(monkeypatch, "current_user_id", lambda _: "owner")
     request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(history_store=OwnedStore())))
 
     context = asyncio.run(_owner_claw_context(request, "chat_" + "a" * 32, "최신 요청"))

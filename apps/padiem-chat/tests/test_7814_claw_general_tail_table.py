@@ -21,6 +21,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from app import claw_general_routes as g
+from _support.claw_general_modules import patch_bound
 
 GOLDEN_PATH = (
     Path(__file__).resolve().parent
@@ -190,29 +191,27 @@ def _setup(monkeypatch, calls, *, quota=None, adapter=None, no_adapter=False,
         calls.append(["record", {k: v for k, v in kwargs.items() if k != "request"}])
         return "conv_tail_fixture"
 
-    monkeypatch.setattr(g, "_claw_general_intake", fake_intake)
-    monkeypatch.setattr(g, "_claw_general_session_custom", fake_session_custom)
-    monkeypatch.setattr(g, "_claw_general_pc_branch", fake_pc_branch)
-    monkeypatch.setattr(g, "_claw_general_pc_work_context", fake_work_context)
-    monkeypatch.setattr(g, "_claw_general_route_preflight", fake_preflight)
-    monkeypatch.setattr(g, "_start_selectable_model_read", lambda request, mid: (None, False))
-    monkeypatch.setattr(g, "live_stream_allowed", lambda state, subject: live_allowed)
-    monkeypatch.setattr(g, "auth_ready", lambda request: True)
-    monkeypatch.setattr(g, "current_user_id", lambda request: "owner_fixture")
-    monkeypatch.setattr(g, "reserve_first_turn_grant", fake_reserve)
-    monkeypatch.setattr(g, "_usage_gate_denial", fake_usage)
-    monkeypatch.setattr(g, "_refund_active_reservation", fake_refund)
-    monkeypatch.setattr(g, "fail_first_turn_grant", fake_fail)
-    monkeypatch.setattr(g, "_clear_reservation", fake_clear)
-    monkeypatch.setattr(g, "claim_first_turn_grant", fake_claim)
-    monkeypatch.setattr(g, "parse_native_calendar_intent",
-                        lambda user_text, *, timezone_name: native_plan or {"op": "none"})
-    monkeypatch.setattr(g, "create_claw_run",
-                        lambda *args, **kwargs: SimpleNamespace(run_id="run_tail_fixture"))
-    monkeypatch.setattr(g, "_claw_public_search_grounding", fake_grounding)
-    monkeypatch.setattr(g, "execute_native_calendar_plan", fake_calendar)
-    monkeypatch.setattr(g, "_record_completed_claw_result", fake_record)
-    monkeypatch.setattr(g, "_claw_stage", lambda *args, **kwargs: None)
+    patch_bound(monkeypatch, "_claw_general_intake", fake_intake)
+    patch_bound(monkeypatch, "_claw_general_session_custom", fake_session_custom)
+    patch_bound(monkeypatch, "_claw_general_pc_branch", fake_pc_branch)
+    patch_bound(monkeypatch, "_claw_general_pc_work_context", fake_work_context)
+    patch_bound(monkeypatch, "_claw_general_route_preflight", fake_preflight)
+    patch_bound(monkeypatch, "_start_selectable_model_read", lambda request, mid: (None, False))
+    patch_bound(monkeypatch, "live_stream_allowed", lambda state, subject: live_allowed)
+    patch_bound(monkeypatch, "auth_ready", lambda request: True)
+    patch_bound(monkeypatch, "current_user_id", lambda request: "owner_fixture")
+    patch_bound(monkeypatch, "reserve_first_turn_grant", fake_reserve)
+    patch_bound(monkeypatch, "_usage_gate_denial", fake_usage)
+    patch_bound(monkeypatch, "_refund_active_reservation", fake_refund)
+    patch_bound(monkeypatch, "fail_first_turn_grant", fake_fail)
+    patch_bound(monkeypatch, "_clear_reservation", fake_clear)
+    patch_bound(monkeypatch, "claim_first_turn_grant", fake_claim)
+    patch_bound(monkeypatch, "parse_native_calendar_intent", lambda user_text, *, timezone_name: native_plan or {"op": "none"})
+    patch_bound(monkeypatch, "create_claw_run", lambda *args, **kwargs: SimpleNamespace(run_id="run_tail_fixture"))
+    patch_bound(monkeypatch, "_claw_public_search_grounding", fake_grounding)
+    patch_bound(monkeypatch, "execute_native_calendar_plan", fake_calendar)
+    patch_bound(monkeypatch, "_record_completed_claw_result", fake_record)
+    patch_bound(monkeypatch, "_claw_stage", lambda *args, **kwargs: None)
     return _req(payload, live=live, evidence=evidence)
 
 

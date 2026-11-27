@@ -30,6 +30,7 @@ from kagent.p01_adapter import P01_AGENT_ID, P01_APP_ID, P01CoreOrchestrationAda
 from kagent.p01_orchestration_client import P01EngineOrchestrationClient
 from app.worker_orchestration import CloudflareEngineServiceTransport
 from _support.claw_general_routing import _client, _payload
+from _support.claw_general_modules import bound_patch
 from test_3930_engine_ndjson_stream_port import FakeRequest, FakeReader
 
 # #8060: this file never opens a shipped static file; the async reader below is
@@ -244,8 +245,7 @@ class TestRealP01StreamBridge(unittest.TestCase):
         ))
         with patch("app.b54_canonical_session.resolve_current_b54_canonical_session",
                    new=AsyncMock(return_value=session)):
-            with patch("app.claw_general_routes._usage_gate_denial",
-                       new=AsyncMock(return_value=JSONResponse(
+            with bound_patch("_usage_gate_denial", new=AsyncMock(return_value=JSONResponse(
                            {"error": {"code": "rate_limited"}}, status_code=429))):
                 with _client(adapter) as client:
                     client.app.state.claw_live_sse_enabled = True
@@ -277,7 +277,7 @@ class TestRealP01StreamBridge(unittest.TestCase):
         self.assertEqual(engine.readers[0].released, 1)
 
     def test_real_engine_binding_stream_cancel_releases_reader(self):
-        from app.claw_general_routes import create_claw_run
+        from kagent.p01_run_flow import create_claw_run
         from app.claw_live_events import live_claw_sse
         from padiem_control_plane.product_tier_routes import ProductTierLabel
 
