@@ -18,6 +18,7 @@ an operator opts in.
 from __future__ import annotations
 
 import os
+import re
 import sys
 import threading
 import time
@@ -40,6 +41,9 @@ MAX_WORKERS_CEILING = 16
 #: A gate ticket whose owner never advances is skipped after this long, so one
 #: dead worker cannot wedge every later command aimed at the same PC.
 GATE_WAIT_SECONDS = 300.0
+#: A claim that waited longer than this for its PC's turn writes one journal line
+#: (#8727): a healthy gate is nearly instant, so a long wait is a leaked ticket.
+GATE_WAIT_LOG_SECONDS = 10.0
 
 
 def concurrency_config(env: Any = None) -> tuple[bool, int]:
@@ -60,18 +64,45 @@ def concurrency_config(env: Any = None) -> tuple[bool, int]:
     return True, min(count, MAX_WORKERS_CEILING)
 
 
+def _log_gate_wait(waited: float, skipped: bool, label: str, ticket: int) -> None:
+    """One journal line for a claim that waited long for its PC's turn (#8727).
+
+    Counts and a dispatch id only: no PC reference, path, command or secret.
+    Logging is observational, so a broken stderr never changes the outcome.
+    """
+
+    try:
+        safe = re.sub(r"[^A-Za-z0-9_.:-]", "?", str(label or ""))[:64] or "-"
+        print(
+            "oracle-mesh-gate waited_ms=%d skipped=%d ticket=%d dispatch_id=%s"
+            % (int(waited * 1000), 1 if skipped else 0, ticket, safe),
+            file=sys.stderr, flush=True,
+        )
+    except Exception:
+        pass
+
+
 class _GateHandle:
     """A re-entrant-safe handle on a per-PC gate, acquired in claim order."""
 
-    def __init__(self, gate: "_PcGate", ticket: int) -> None:
+    def __init__(
+        self, gate: "_PcGate", ticket: int, label: str = "",
+        clock: Optional[Callable[[], float]] = None,
+    ) -> None:
         self._gate = gate
         self._ticket = ticket
+        self._label = label
+        self._clock = clock or time.monotonic
         self._held = False
 
     def acquire(self, blocking: bool = True, timeout: float = -1) -> bool:
         del blocking, timeout
-        self._gate._await_turn(self._ticket)
+        started = self._clock()
+        skipped = self._gate._await_turn(self._ticket)
         self._held = True
+        waited = self._clock() - started
+        if waited > GATE_WAIT_LOG_SECONDS:
+            _log_gate_wait(waited, skipped, self._label, self._ticket)
         return True
 
     def release(self) -> None:
@@ -95,10 +126,16 @@ class _PcGate:
         self._serving = 0  # per-PC tickets start at zero and are served in order
         self._wait = wait_seconds
 
-    def handle(self, ticket: int) -> _GateHandle:
-        return _GateHandle(self, ticket)
+    def handle(
+        self, ticket: int, label: str = "",
+        clock: Optional[Callable[[], float]] = None,
+    ) -> _GateHandle:
+        return _GateHandle(self, ticket, label, clock)
 
-    def _await_turn(self, ticket: int) -> None:
+    def _await_turn(self, ticket: int) -> bool:
+        """Wait for this ticket's turn; True when a dead ticket had to be skipped."""
+
+        skipped = False
         with self._cond:
             while ticket > self._serving:
                 if not self._cond.wait(timeout=self._wait):
@@ -107,6 +144,8 @@ class _PcGate:
                     if ticket > self._serving:
                         self._serving = ticket
                         self._cond.notify_all()
+                        skipped = True
+        return skipped
 
     def _advance(self, ticket: int) -> None:
         with self._cond:
@@ -152,30 +191,73 @@ def install_thread_hooks(executor: Any) -> None:
     ``poll_once`` is wrapped so a claim is stamped while the global claim lock
     is still held: a dispatch claimed first is always served first on its PC.
     ``run_once`` is expected to consult ``_concurrency_gate`` around execution.
+
+    A background claim (``pc_shell`` and friends) is never stamped (#8727):
+    ``run_once`` hands it to the background manager and returns before the gate,
+    so its ticket would never be served or released and the next ordinary
+    command on that PC would wait out the whole ``GATE_WAIT_SECONDS`` for it.
+    Background work keeps running outside this gate exactly as before.
     """
 
     original_poll = executor.poll_once
 
     def stamped_poll_once():
         dispatch = original_poll()
-        _stamp_claim(dispatch)
+        if not getattr(dispatch, "background", False):
+            _stamp_claim(dispatch)
         return dispatch
 
     executor.poll_once = stamped_poll_once
     executor._concurrency_gate = lambda dispatch: pc_gate(
-        dispatch.node_ref).handle(_claimed_ticket(dispatch))
+        dispatch.node_ref).handle(
+            _claimed_ticket(dispatch), label=getattr(dispatch, "dispatch_id", ""))
+
+
+def _is_channel_refusal(exc: BaseException) -> bool:
+    """True for an ``OracleMeshChannelRefused`` from either copy of its module.
+
+    The service runs as ``python -m kagent.local_agent_oracle_mesh_executor``,
+    so worker 0 is built from the ``__main__`` copy of that module while this
+    module imports the ``kagent.`` copy: the two classes share a name but not
+    an identity, and ``isinstance`` misses the refusal worker 0 raises (#8727).
+    The executor already tells its own refusals apart by class name elsewhere.
+    """
+
+    return isinstance(exc, OracleMeshChannelRefused) or any(
+        cls.__name__ == "OracleMeshChannelRefused" for cls in type(exc).__mro__)
+
+
+def loop_failure_line(exc: BaseException) -> str:
+    """The journal line for a round that raised: the refusal line, or a class name.
+
+    A refusal keeps its established wording. Any other exception prints its
+    class only, never the message, which may carry a path or a value.
+    """
+
+    if _is_channel_refusal(exc):
+        return channel_refusal_line(exc)
+    return "oracle-mesh-executor round error type=%s" % type(exc).__name__
 
 
 def _serial_round(executor: Any, idle: float) -> None:
-    """The original service loop, kept verbatim for the flag-off path."""
+    """The original service loop for the flag-off path.
+
+    Its cadence is unchanged, and so is its contract: an unexpected exception
+    ends the service so systemd restarts it (the entrypoint tests stop this loop
+    that way). Only a channel refusal is retried after ``idle`` — from either
+    copy of the executor module (#8727: the ``__main__`` copy's class was not
+    the one caught here, so every refused poll ended the service).
+    """
 
     gap = IDLE_POLL_BASE_SECONDS
     idle_reported_at = None
     while True:
         try:
             result = executor.run_once()
-        except OracleMeshChannelRefused as exc:
-            print(channel_refusal_line(exc), file=sys.stderr)
+        except Exception as exc:
+            if not _is_channel_refusal(exc):
+                raise
+            print(loop_failure_line(exc), file=sys.stderr)
             gap = IDLE_POLL_BASE_SECONDS
             time.sleep(idle)
             continue
@@ -215,6 +297,11 @@ def _worker_round(
     ``stop.wait`` replaces ``time.sleep`` so a stopped worker need not finish a
     backoff before exiting. The registered clock drives the idle heartbeat so
     a test can advance time without sleeping.
+
+    A round that raises never ends the worker (#8727): a channel refusal from
+    either copy of the executor module, or any other exception, is logged and
+    the worker retries after ``idle``. A dead worker thread left its watchdog
+    to restart the whole service 300 s later, cutting every PC's running work.
     """
 
     gap = IDLE_POLL_BASE_SECONDS
@@ -222,8 +309,8 @@ def _worker_round(
     while not stop.is_set():
         try:
             result = executor.run_once()
-        except OracleMeshChannelRefused as exc:
-            print(channel_refusal_line(exc), file=sys.stderr)
+        except Exception as exc:
+            print(loop_failure_line(exc), file=sys.stderr)
             gap = IDLE_POLL_BASE_SECONDS
             stop.wait(idle)
             continue
@@ -340,6 +427,7 @@ __all__ = [
     "MAX_WORKERS_CEILING",
     "concurrency_config",
     "install_thread_hooks",
+    "loop_failure_line",
     "pc_gate",
     "run_concurrent",
     "run_service_loop",

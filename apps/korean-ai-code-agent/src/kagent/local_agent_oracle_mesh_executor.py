@@ -2853,7 +2853,11 @@ try {@@ARGUMENTS_SOURCE@@
         try:
             gate = getattr(self, "_concurrency_gate", None)
             with (gate(dispatch) if gate is not None else self._node_execution_lock(dispatch)):
-                outcome = self.execute(dispatch)
+                started = time.monotonic()
+                try:
+                    outcome = self.execute(dispatch)
+                except Exception as exc:
+                    outcome = self._fail_this_dispatch_only(dispatch, exc, started)
         finally:
             # The PC owns its console again the moment the console has answered,
             # not when the result is finally accepted: a held result is bytes this
@@ -2863,6 +2867,20 @@ try {@@ARGUMENTS_SOURCE@@
             if renewer is not None:
                 renewer.set()
         return self._with_line_observations(self.submit(dispatch, outcome))
+
+    def _fail_this_dispatch_only(
+        self, dispatch: OracleMeshDispatch, exc: Exception, started: float,
+    ) -> OracleMeshExecutionOutcome:
+        """#8727: an exception out of ``execute`` ends this dispatch, not the worker.
+
+        The lane's own failure shape is submitted, so the server settles the
+        dispatch now instead of waiting out a lease. Only the class name is traced.
+        """
+        self._trace_command(dispatch, phases.ERROR, started, error_type=type(exc).__name__)
+        from .local_agent_mesh_unexpected_failure import unexpected_failure_outcome
+        return unexpected_failure_outcome(
+            dispatch.kind, exc, outcome_type=OracleMeshExecutionOutcome,
+            read_failed_body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"))
 
     def _with_line_observations(self, report: Any) -> Any:
         """Put the line-blockage counts on the round's own report.
