@@ -56,7 +56,7 @@ const c=P.create();c.observe("run_started");c.observe("run_cancelled");
 assert(c.state()==="cancelled"&&!c.completionAllowed(),"cancellation terminal");
 assert(P.copy("unknown","en").includes("may already have executed"),"safe uncertainty");
 assert(!P.copy("failed","ko").includes("PASSWORD"),"no external body");
-const app=read("app.js");
+const app=read("chat-conversation-module.js");
 const stream=read("chat-streaming-module.js");
 const start=stream.indexOf("  async function requestStreamingAnswer(");
 const end=stream.indexOf("\n  function cancelActiveStream(",start);
@@ -106,6 +106,7 @@ const fake={
 const helperStart=app.indexOf("  const CLAW_BOUNDED_REFUSAL_COPY");
 const helperEnd=app.indexOf("\n  function buildRetryBox(",helperStart);
 assert(helperStart>=0&&helperEnd>helperStart,"#3936 failure-copy helper located");
+fake.deps=fake;
 const scope=vm.createContext(fake);
 vm.runInContext(app.slice(helperStart,helperEnd),scope);
 const fn=vm.runInContext("("+stream.slice(start,end).replace(/deps\./g,"")+")",scope);
@@ -185,7 +186,7 @@ def test_actual_renderer_terminal_and_raw_body_with_node_vm():
 def test_separate_generic_chat_retry_policy_preserved():
     # R5 0단계(R-01): buildRetryBox의 실제 정의는 app.js든 모듈이든 도우미로 찾는다.
     assert "function buildRetryBox(" in definition_source("buildRetryBox")
-    assert "if (clawGeneralRequest)" in APP
-    assert 'hint.textContent = coreModule().uiT("claw-general-check-runs")' in APP
-    assert 'requestAnswer(retryMessages, retrySkill' in APP
+    assert "if (clawGeneralRequest)" in definition_source("buildRetryBox")
+    assert 'hint.textContent = deps.uiT("claw-general-check-runs")' in definition_source("buildRetryBox")
+    assert 'requestAnswer(retryMessages, retrySkill' in definition_source('buildRetryBox')
     assert "runClawExecution" in APP

@@ -410,7 +410,7 @@ def test_grounding_notice_crosses_synthetic_sse_and_renders_once_above_answer():
     notice_source = definition_source("renderWebGroundingNotice")
     # B7 19차: the renderAnswer forwarder is gone from app.js; the next shipped
     # statement after renderWebGroundingNotice is the bounded-refusal copy const.
-    render = notice_source[notice_source.index("  function renderWebGroundingNotice("):notice_source.index("  const CLAW_BOUNDED_REFUSAL_COPY =")]
+    render = notice_source[notice_source.index("  function renderWebGroundingNotice("):notice_source.index("\n  }", notice_source.index("  function renderWebGroundingNotice(")) + 4]
     synthetic = transport[transport.index("  function syntheticSseResponse("):transport.index("  async function tryOrchestration(")]
     script = render + synthetic + r"""
 (async () => {
@@ -419,7 +419,7 @@ def test_grounding_notice_crosses_synthetic_sse_and_renders_once_above_answer():
   const metadata = {web_grounding_error:'web_grounding_auth_error'};
   global.uiT = key => key === 'web-grounding-unavailable-notice' ? notice : '웹 근거를 찾지 못해 근거 없이 답변합니다';
   // B7 (12차, core 등록부): notice text resolves through coreModule().uiT.
-  global.coreModule = () => ({ uiT: global.uiT });
+  global.deps = { uiT: global.uiT };
   const response = syntheticSseResponse({answer:'answer',notice,metadata});
   const text = await response.text();
   const done = JSON.parse(text.split('event: done\n'+'data: ')[1].trim());

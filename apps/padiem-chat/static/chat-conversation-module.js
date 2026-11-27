@@ -478,7 +478,205 @@
     if (code === "approved_memory_not_found" || status === 404) return deps.clawT("claw-memory-error-not-found");
     return deps.clawT("claw-memory-error-generic");
   }
+  function lifecycleForError(error) {
+    return error && error.code === "upstream_timeout" ? deps.MESSAGE_LIFECYCLE.TIMED_OUT : deps.MESSAGE_LIFECYCLE.FAILED;
+  }
+  function addAssistantShell(label, runtimeState) {
+    const fragment = document.getElementById("assistantMessageTemplate").content.cloneNode(true);
+    const article = fragment.querySelector(".assistant-message");
+    // #3931: identify the product whose conversation is currently rendered.
+    // The shared deps.shell is not evidence that a Claw run came from Chat.
+    const productLabel = article.querySelector("[data-assistant-product]");
+    if (productLabel) productLabel.textContent = deps.shell.dataset.state === "claw" ? "Padiem Claw" : "Padiem Chat";
+    article.querySelector("[data-runtime-label]").textContent = label;
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, label, runtimeState || "preparing");
+    deps.messageList.appendChild(fragment);
+    PadiemChatLifecycle.set(article, deps.MESSAGE_LIFECYCLE.STREAMING);
+    return article;
+  }
+  function renderStoredAssistant(text, stored) {
+    const article = addAssistantShell(deps.uiT("stored-conversation"), "status");
+    // 11-03 audit: the chip named what it is without saying why it is there.
+    // The hint rides the shared tooltip, so a hover, a keyboard focus and a
+    // tap all read the same one line.
+    const chip = article.querySelector("[data-runtime-label]");
+    if (chip) {
+      chip.dataset.localeTitle = "stored-conversation-hint";
+      window.PadiemSharedTooltip?.label?.(chip, deps.uiT("stored-conversation-hint"));
+    }
+    // A restored turn shows a time only when the store actually carries one.
+    // Older records have no per-message time, and none is invented for them.
+    const storedAt = stored && typeof stored.completed_at === "string" ? stored.completed_at : "";
+    if (storedAt) article.dataset.completedAt = storedAt;
+    const content = article.querySelector(".assistant-content");
+    const paragraph = document.createElement("p");
+    paragraph.textContent = text;
+    content.appendChild(paragraph);
+    PadiemChatLifecycle.set(article, deps.MESSAGE_LIFECYCLE.COMPLETED);
+  }
+  function renderWebGroundingNotice(content, notice, metadata) {
+    const code = metadata && metadata.web_grounding_error;
+    const key = code === "web_grounding_no_evidence" ? "web-grounding-no-evidence-notice"
+      : ["web_grounding_auth_error", "web_grounding_unavailable"].includes(code) ? "web-grounding-unavailable-notice" : null;
+    if (!key || typeof notice !== "string") return;
+    let note = content.querySelector(".web-grounding-notice");
+    if (!note) {
+      note = document.createElement("p");
+      note.className = "web-grounding-notice reference-note";
+      note.setAttribute("role", "status");
+      content.prepend(note);
+    }
+    note.dataset.localeKey = key;
+    note.textContent = deps.uiT(key);
+  }
+  const CLAW_BOUNDED_REFUSAL_COPY = Object.freeze({
+    // Owner decision 2026-11-05: a guest Claw request is refused with 401
+    // login_required; the UI names the login step instead of a generic error.
+    tier_unavailable: Object.freeze({ message: "claw-general-model-unavailable", hint: "claw-general-model-unavailable-note" }),
+    login_required: Object.freeze({ message: "claw-error-auth-needed", hint: "claw-login-required-note" }),
+    // #7960: the Chat session is live but the shared B54 canonical session has
+    // expired, so a PC command cannot resolve its owner; the copy keeps the same
+    // re-login walk the server message states instead of a generic retry sentence.
+    chat_pc_b54_session_expired: Object.freeze({ message: "claw-b54-session-expired", hint: "claw-b54-session-expired-note" }),
+  });
+  function clawBoundedRefusalCopy(code) {
+    const entry = typeof code === "string" && Object.hasOwn(CLAW_BOUNDED_REFUSAL_COPY, code)
+      ? CLAW_BOUNDED_REFUSAL_COPY[code]
+      : null;
+    if (!entry) return null;
+    return Object.freeze({ message: deps.uiT(entry.message), hint: deps.uiT(entry.hint) });
+  }
+  function clawGeneralFailure(code) {
+    const bounded = clawBoundedRefusalCopy(code);
+    if (bounded) return bounded;
+    return Object.freeze({
+      message: window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang)
+        || deps.uiT("claw-general-check-runs"),
+      hint: deps.uiT("claw-general-check-runs"),
+    });
+  }
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = deps.uiT("retry"), clawFailure = null) {
+    const box = document.createElement("div");
+    box.className = "error-box";
+    const strong = document.createElement("strong");
+    strong.textContent = deps.uiT("answer-load-failed");
+    const p = document.createElement("p");
+    p.textContent = message || deps.uiT("try-again");
+    const retry = document.createElement("button");
+    retry.type = "button";
+    retry.className = "retry-button";
+    retry.textContent = actionLabel;
+    // #3566: the general Claw P01 lane may already have dispatched before a
+    // terminal Engine error. Do not offer a one-click replay (even manual)
+    // until the operator checks existing results. Ordinary Chat retains its
+    // established retry behavior; this guard is Claw-general only.
+    if (clawGeneralRequest) {
+      const hint = document.createElement("p");
+      hint.textContent = deps.uiT("claw-general-check-runs");
+      // A provable pre-dispatch refusal has no run to check, so its next step is
+      // a different model rather than the existing run-history guidance.
+      if (clawFailure && clawFailure.hint) hint.textContent = clawFailure.hint;
+      // #3935: navigation only. This button opens the existing owner-scoped
+      // GET /api/claw/runs history and never replays the failed P01 POST.
+      const openRuns = document.createElement("button");
+      openRuns.type = "button";
+      openRuns.className = "claw-inbox-retry claw-check-runs-button";
+      openRuns.textContent = deps.uiT("claw-general-open-runs");
+      openRuns.disabled = deps.authState.authenticated !== true;
+      openRuns.addEventListener("click", () => {
+        if (deps.authState.authenticated !== true) return;
+        deps.openClawWorkspace(); // refresh is handled by existing owner-scoped history UI
+        const history = document.getElementById("clawRunHistory");
+        if (!history || history.hidden) return;
+        // #4488 Phase A: the panel is progressive disclosure; open it so the
+        // navigation target is actually visible and focusable.
+        const historyDisclosure = document.getElementById("clawRunHistoryDisclosure");
+        if (historyDisclosure) historyDisclosure.open = true;
+        history.scrollIntoView?.({ block: "start", behavior: "smooth" });
+        history.querySelector?.("#clawRunHistoryRefresh")?.focus?.();
+      });
+      box.append(strong, p, hint, openRuns);
+      return box;
+    }
+    retry.addEventListener("click", async () => {
+      article.remove();
+      // #2505: the retry replays the request on the product that made it, with
+      // the one shared conversation id.
+      deps.conversationState.setProduct?.(retryContext.product || deps.conversationProduct);
+      deps.conversationState.setConversationId(retryContext.conversationId);
+      deps.activeProject = retryContext.project;
+      deps.renderProjectState();
+      const success = await deps.requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, true);
+      if (success && deps.selectedAttachments === retryAttachment) deps.clearAttachment();
+    }, { once: true });
+    box.append(strong, p, retry);
+    return box;
+  }
+  function revealErrorState(article) {
+    article.scrollIntoView({ block: "center", behavior: "auto" });
+  }
+  const FAILURE_CODE_PATTERN = /^[a-z][a-z0-9_]{0,63}$/;
+  function failureCodeNote(errorCode, label) {
+    if (typeof errorCode !== "string" || !FAILURE_CODE_PATTERN.test(errorCode)) return null;
+    const note = document.createElement("small");
+    note.className = "error-code";
+    note.textContent = deps.uiT("error-code-reference") + ": " + errorCode;
+    return note;
+  }
+  function failureStatusLabel(lifecycle) {
+    return lifecycle === deps.MESSAGE_LIFECYCLE.TIMED_OUT ? deps.uiT("timeout") : deps.uiT("connection-error");
+  }
+  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = deps.MESSAGE_LIFECYCLE.FAILED, clawFailure = null, errorCode = "") {
+    const content = article.querySelector(".assistant-content");
+    content.replaceChildren();
+    const statusLabel = failureStatusLabel(lifecycle);
+    article.querySelector("[data-runtime-label]").textContent = statusLabel;
+    // A failure is a real status: the chip stays visible with its own copy.
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, statusLabel, "status");
+    const box = buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, undefined, clawFailure);
+    const codeNote = clawGeneralRequest ? null : failureCodeNote(errorCode, statusLabel);
+    if (codeNote) box.appendChild(codeNote);
+    content.appendChild(box);
+    PadiemChatLifecycle.set(article, lifecycle);
+    revealErrorState(article);
+  }
+  function renderCancelled(article, retryMessages, retrySkill, retryContext, clawGeneralRequest = false) {
+    const content = article.querySelector(".assistant-content");
+    const typing = content.querySelector(".typing");
+    if (typing) typing.remove();
+    article.querySelector("[data-runtime-label]").textContent = deps.uiT("generation-cancelled");
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, deps.uiT("generation-cancelled"), "status");
+    content.appendChild(buildRetryBox(deps.uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, deps.uiT("regenerate")));
+    PadiemChatLifecycle.set(article, deps.MESSAGE_LIFECYCLE.CANCELLED);
+    revealErrorState(article);
+  }
+  const CUSTOM_AUTH_FAILURE_CODE = "custom_provider_auth_failed";
+  function handleCustomRequestFailure(error) {
+    const code = error && typeof error.code === "string" ? error.code : "";
+    if (code === "custom_credential_required" || code === CUSTOM_AUTH_FAILURE_CODE) {
+      window.PadiemCustomSelection?.open?.();
+      void window.PadiemCustomSelection?.refresh?.();
+      return;
+    }
+    if (code === "unauthorized" && window.PadiemCustomSelection?.get?.()) {
+      window.PadiemCustomSelection?.open?.();
+      void deps.loadAuthStatus();
+    }
+  }
       return {
+        lifecycleForError,
+        addAssistantShell,
+        renderStoredAssistant,
+        renderWebGroundingNotice,
+        clawBoundedRefusalCopy,
+        clawGeneralFailure,
+        buildRetryBox,
+        revealErrorState,
+        failureCodeNote,
+        failureStatusLabel,
+        renderError,
+        renderCancelled,
+        handleCustomRequestFailure,
         wireDocumentFormats,
         attachmentCopy,
         showComposerInlineHint,

@@ -26,6 +26,7 @@ import threading
 
 import pytest
 
+from _r5_function_source import definition_source
 from _support.turn_meta_row import (
     answer_css,
     app_js,
@@ -116,7 +117,7 @@ def _defining_body(header: str) -> str:
     name = header.split()[1].split("(")[0]
     forwarder = f"{{ return pcRunModule().{name}(...a); }}"
     bodies = []
-    for source in (_app(), _pc_run()):
+    for source in (definition_source(name),):
         if header in source:
             body = _function_body(source, header)
             if forwarder not in body:
@@ -196,7 +197,7 @@ def test_the_runtime_chip_has_one_owner() -> None:
 
 
 def test_every_completion_path_releases_the_preparing_chip() -> None:
-    app = _app()
+    app = _app() + "\n" + _defining_body("function renderError(") + "\n" + _defining_body("function failureStatusLabel(") + "\n" + _defining_body("function renderCancelled(") + "\n" + _defining_body("function renderStoredAssistant(")
     stream = streaming_js()
     # The answering shell starts in the preparing state.
     assert 'deps.addAssistantShell(deps.uiT("answer-preparing"), "preparing")' in stream
@@ -211,12 +212,12 @@ def test_every_completion_path_releases_the_preparing_chip() -> None:
     # A real status is never removed by the release.
     assert 'applyRuntimeLabel?.(article, label, "status");' in stream
     # A failure keeps its own status and stays visible.
-    assert 'return lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? coreModule().uiT("timeout") : coreModule().uiT("connection-error");' in app
+    assert 'return lifecycle === deps.MESSAGE_LIFECYCLE.TIMED_OUT ? deps.uiT("timeout") : deps.uiT("connection-error");' in app
     assert "const statusLabel = failureStatusLabel(lifecycle);" in app
     assert 'applyRuntimeLabel?.(article, statusLabel, "status");' in app
-    assert 'applyRuntimeLabel?.(article, coreModule().uiT("generation-cancelled"), "status");' in app
+    assert 'applyRuntimeLabel?.(article, deps.uiT("generation-cancelled"), "status");' in app
     # A restored turn is a real status, not a preparing chip.
-    assert 'addAssistantShell(coreModule().uiT("stored-conversation"), "status")' in app
+    assert 'addAssistantShell(deps.uiT("stored-conversation"), "status")' in app
 
 
 def test_the_orchestration_completion_path_releases_the_chip() -> None:

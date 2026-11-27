@@ -163,6 +163,7 @@ HARNESS_MID = """
   function setClawStatus(message, state) { notes.push([message, state]); }
   function setClawAreaState(state) { areaStates.push(state); }
   function setClawButtonsBusy(busy) { clawInFlight = busy; }
+  const conversationModule = () => ({ clawBoundedRefusalCopy, failureCodeNote });
   function clawBoundedRefusalCopy(code) {
     return code === "tier_unavailable" ? { message: "bounded-message", hint: "bounded-hint" } : null;
   }
