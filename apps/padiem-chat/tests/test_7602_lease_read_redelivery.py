@@ -12,6 +12,8 @@ that predates the column (NULL) keeps the old ``kind`` rule exactly.
 """
 from __future__ import annotations
 
+from app import oracle_mesh_dispatch as mesh_dispatch
+
 import asyncio
 import hashlib
 from types import SimpleNamespace
@@ -165,7 +167,9 @@ def test_a_request_that_says_read_cannot_turn_a_write_into_a_read(monkeypatch):
         routes, "_channel_source",
         lambda request: SimpleNamespace(execution_mode=routes.EXECUTION_MODE_MESH),
     )
+    monkeypatch.setattr(mesh_dispatch, '_channel_source', lambda request: SimpleNamespace(execution_mode=routes.EXECUTION_MODE_MESH))
     monkeypatch.setattr(routes, "_owner_command_target", _target)
+    monkeypatch.setattr(mesh_dispatch, "_owner_command_target", _target)
     request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
         control_plane_identity_authority=_Identity(), history_store=_History(),
     )))

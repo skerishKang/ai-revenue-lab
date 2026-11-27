@@ -6,6 +6,8 @@ tests exercise the real route wiring and the real result projection.
 """
 from __future__ import annotations
 
+from app import oracle_mesh_dispatch as mesh_dispatch
+
 import asyncio
 import hashlib
 import json
@@ -74,8 +76,11 @@ async def _workspace(request, uid):
 
 def setup_auth(monkeypatch):
     monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+    monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
     monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+    monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", _verified)
     monkeypatch.setattr(routes, "_resolve_memory_workspace", _workspace)
+    monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", _workspace)
 
 
 class Identity:
@@ -705,9 +710,11 @@ def test_original_retrieval_refuses_foreign_and_unknown_ids(monkeypatch):
     status, payload, _ = _submit(state, row, termination="exited", exit_code=0, body=body)
     assert status == 200, payload
     monkeypatch.setattr(routes, "current_user_id", lambda request: "foreign-user")
+    monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: "foreign-user")
     status, _, _ = _retrieve(state, row["dispatch_id"])
     assert status == 404
     monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+    monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
     status, _, _ = _retrieve(state, "dsp-unknown")
     assert status == 404
 
@@ -827,3 +834,48 @@ def test_no_reply_short_body_is_kept_as_the_readable_original(monkeypatch):
     assert state.history_store.originals[dispatch_id] == body
     assert row["result_sha256"] == hashlib.sha256(body).hexdigest()
     assert state.history_store.finished[-1][1] == "failed"
+
+
+@pytest.mark.parametrize("denial_at", [None, "owner", "target", "helper"])
+def test_dispatch_extraction_preserves_authority_order_and_fingerprint(monkeypatch, denial_at):
+    from app import pc_helper_update_routes
+
+    events = []
+    history = History()
+    original_create = history.create_oracle_mesh_dispatch
+    async def create(**fields):
+        events.append("dispatch")
+        return await original_create(**fields)
+    async def owner(*args, **kwargs):
+        events.append("owner")
+        return None if denial_at == "owner" else {"account_ref": ACCOUNT, "workspace_ref": WORKSPACE}
+    async def target(*args, **kwargs):
+        events.append("target")
+        return None if denial_at == "target" else _mapping()[0]
+    async def helper(*args, **kwargs):
+        events.append("helper")
+        return (409, "helper_update_required") if denial_at == "helper" else None
+    monkeypatch.setattr(history, "create_oracle_mesh_dispatch", create)
+    monkeypatch.setattr(mesh_dispatch, "mode_connector_read", owner)
+    monkeypatch.setattr(mesh_dispatch, "_owner_command_target", target)
+    monkeypatch.setattr(pc_helper_update_routes, "command_update_denial", helper)
+    source = routes.build_oracle_mesh_return_source(_mapping(), SECRET, routes.EXECUTION_MODE_MESH)
+    state = SimpleNamespace(oracle_mesh_return_source=source, history_store=history,
+                            control_plane_identity_authority=Identity())
+    session = SimpleNamespace(session_id="session.owner", tenant_id=TENANT_WS)
+    assert routes.dispatch_oracle_mesh_command_intent is mesh_dispatch.dispatch_oracle_mesh_command_intent
+    response = asyncio.run(routes.dispatch_oracle_mesh_command_intent(
+        Request({}, state), command=COMMAND, wire={"run_id": RUN, "device_id": DEVICE},
+        trusted_owner=(session, OWNER, TENANT_WS), tool_call_ref="call-order-1"))
+    expected = ["owner", "target", "helper", "dispatch"]
+    if denial_at:
+        assert events == expected[:expected.index(denial_at) + 1]
+        assert response.status_code in (403, 409, 503)
+        assert not history.rows
+    else:
+        assert events == expected
+        assert response.status_code == 200
+        row, = history.rows.values()
+        assert row["request_fingerprint"] == hashlib.sha256(
+            (ACCOUNT + "|" + NODE + "|" + COMMAND).encode("utf-8")).hexdigest()
+        assert row["tool_request_ref"] == "call-order-1"

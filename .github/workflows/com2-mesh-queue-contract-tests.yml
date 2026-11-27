@@ -33,6 +33,7 @@ on:
       - "apps/padiem-chat/app/oracle_mesh_pc_paths.py"
       - "apps/padiem-chat/app/oracle_mesh_desktop_ops.py"
       - "apps/padiem-chat/app/oracle_mesh_source.py"
+      - "apps/padiem-chat/app/oracle_mesh_dispatch.py"
       - "apps/padiem-chat/app/oracle_mesh_log.py"
       - "apps/padiem-chat/app/pc_device_pairing_store.py"
       - "apps/padiem-chat/app/queue_store_proxy.py"

@@ -1,6 +1,8 @@
 """App session authority, confirmation and one-shot inputs without a real PC."""
 from __future__ import annotations
 
+from app import oracle_mesh_dispatch as mesh_dispatch
+
 import asyncio
 import base64
 import hashlib
@@ -86,6 +88,7 @@ def app_rig(rig, monkeypatch):
     monkeypatch.setattr(claw_connector_enrollment_routes, "_verified_owner_request", verify)
     monkeypatch.setattr(auth_routes, "current_user_id", lambda req: req.app.state.fixture_user)
     monkeypatch.setattr(oracle_mesh_read_return_routes, "_dispatch_workspace_id", workspace)
+    monkeypatch.setattr(mesh_dispatch, "_dispatch_workspace_id", workspace)
     monkeypatch.setattr(history, "record_chat_pc_drive_run", stage)
     monkeypatch.setattr(history, "get_conversation", conversation, raising=False)
     monkeypatch.setattr(history, "get_claw_run", run, raising=False)

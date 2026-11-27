@@ -3,6 +3,8 @@
 Real routes, migrations and D1HistoryStore; Identity/Mesh configuration is
 synthetic. No provider, executor or production database call.
 """
+
+from app import oracle_mesh_dispatch as mesh_dispatch
 from datetime import datetime, timedelta, timezone
 
 import json
@@ -85,6 +87,7 @@ def test_every_pc_endpoint_accepts_a_pending_chat_tool_turn(
         app.state.claw_engine_desktop_secret = _CHAT_SECRET
         app.state.connector_txt_read_source = None
         monkeypatch.setattr(routes, "_resolve_memory_workspace", workspace)
+        monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", workspace)
         payload = {"subject_id": _CHAT_SUBJECT, "run_id": db.RUN,
                    "device_id": DEVICE, "mode": mode}
         claim = None

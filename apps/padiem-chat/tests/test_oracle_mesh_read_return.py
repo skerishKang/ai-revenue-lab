@@ -7,6 +7,8 @@ real executor loop rather than a stand-in.
 """
 from __future__ import annotations
 
+from app import oracle_mesh_dispatch as mesh_dispatch
+
 import asyncio
 import hashlib
 import hmac
@@ -83,8 +85,11 @@ async def _workspace(request, uid):
 
 def setup_auth(monkeypatch, user: str = OWNER):
     monkeypatch.setattr(routes, "current_user_id", lambda request: user)
+    monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: user)
     monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+    monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", _verified)
     monkeypatch.setattr(routes, "_resolve_memory_workspace", _workspace)
+    monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", _workspace)
 
 
 def consent(device: str = DEVICE, account: str = ACCOUNT) -> dict:
@@ -891,6 +896,7 @@ class TestScopeRefusalTelemetry:
         monkeypatch.setattr(
             routes, "emit_stage_event", lambda **entry: emitted.append(entry)
         )
+        monkeypatch.setattr(mesh_dispatch, 'emit_stage_event', lambda **entry: emitted.append(entry))
 
         class _RefusingIdentity:
             async def resolve_connector_owner_scope(self, *, session_id):
@@ -901,7 +907,9 @@ class TestScopeRefusalTelemetry:
                 )
 
         monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+        monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
         monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+        monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", _verified)
 
         target, denial = asyncio.run(routes.resolve_oracle_mesh_execution(
             Request({}, state(identity=_RefusingIdentity())),
@@ -923,6 +931,7 @@ class TestScopeRefusalTelemetry:
         monkeypatch.setattr(
             routes, "emit_stage_event", lambda **entry: emitted.append(entry)
         )
+        monkeypatch.setattr(mesh_dispatch, 'emit_stage_event', lambda **entry: emitted.append(entry))
 
         class _OpaqueIdentity:
             async def resolve_connector_owner_scope(self, *, session_id):
@@ -930,7 +939,9 @@ class TestScopeRefusalTelemetry:
                 raise RuntimeError("raw backend text must never be projected")
 
         monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+        monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
         monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+        monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", _verified)
 
         target, denial = asyncio.run(routes.resolve_oracle_mesh_execution(
             Request({}, state(identity=_OpaqueIdentity())),
@@ -950,8 +961,11 @@ class TestScopeRefusalTelemetry:
         monkeypatch.setattr(
             routes, "emit_stage_event", lambda **entry: emitted.append(entry)
         )
+        monkeypatch.setattr(mesh_dispatch, 'emit_stage_event', lambda **entry: emitted.append(entry))
         monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+        monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
         monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+        monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", _verified)
 
         target, denial = asyncio.run(routes.resolve_oracle_mesh_execution(
             Request({}, state(identity=Identity(consent(account=ACCOUNT)))),
