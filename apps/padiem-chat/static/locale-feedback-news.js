@@ -20,7 +20,7 @@
       "feedback-send": "의견 보내기",
       "feedback-consent": "현재 화면 정보도 함께 보내기 (선택): 화면 URL, 화면 크기, 앱 버전만 포함하며 대화 내용과 계정 정보는 포함하지 않습니다.",
       "feedback-count": "{count} / {limit}자",
-      "feedback-limit": "하루 {count}회까지 보낼 수 있습니다. 횟수는 UTC 자정에 처음으로 되돌아갑니다.",
+      "feedback-limit": "하루 {count}회까지 보낼 수 있습니다. 횟수는 UTC 자정에 다시 채워집니다.",
       "feedback-refresh": "새로 보기",
       "feedback-more": "더 보기",
       "feedback-filter": "상태별 보기",

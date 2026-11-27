@@ -2,7 +2,7 @@
 
 **The production failure.** On 2026-10-24 a member clicked ``비밀번호 설정하기``
 on the reset-confirm screen and the screen showed
-``로그인하는 데 실패했습니다. 다시 시도해 주세요.`` The Chat Worker tail for the
+``로그인하지 못했습니다. 다시 시도해 주세요.`` The Chat Worker tail for the
 same request recorded, on ``POST /api/auth/password/reset/confirm``:
 
 * ``outcome=exception`` with ``cpuTime=1`` and ``wallTime=2`` (milliseconds),
