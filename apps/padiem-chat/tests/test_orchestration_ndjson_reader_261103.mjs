@@ -173,7 +173,7 @@ test("fake NDJSON server streams each delta and maps status, tool and completion
 
 test("a mid-stream error maps to the existing Korean timeout and error copy", async () => {
   for (const [code, expected] of [
-    ["upstream_timeout", "응답 시간이 초과되었습니다. 다시 시도해 주세요."],
+    ["upstream_timeout", "답이 정해진 시간 안에 오지 않았습니다. 다시 시도해 주세요."],
     ["invalid_engine_stream", "요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요."],
   ]) {
     const response = streamResponse([
