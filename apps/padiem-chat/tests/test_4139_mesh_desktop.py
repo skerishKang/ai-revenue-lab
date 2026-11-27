@@ -19,6 +19,7 @@ from types import SimpleNamespace
 import pytest
 
 from app import oracle_mesh_read_return_routes as routes
+from app import oracle_mesh_result_routes as mesh_result_routes
 from app.history import HistoryError, HistoryForbidden, MAX_MESH_ROW_BYTES
 
 OWNER = "usr_" + "a" * 32
@@ -96,6 +97,7 @@ async def _workspace(request, uid):
 
 def setup_auth(monkeypatch):
     monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+    monkeypatch.setattr(mesh_result_routes, "current_user_id", lambda request: OWNER)
     monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
     monkeypatch.setattr(routes, "_verified_owner_request", _verified)
     monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", _verified)
@@ -602,10 +604,12 @@ def test_capture_retrieval_refuses_foreign_and_unknown_ids(monkeypatch):
     status, payload, _ = _submit(state, row, termination="captured", note=NOTE, blob=JPEG)
     assert status == 200, payload
     monkeypatch.setattr(routes, "current_user_id", lambda request: "foreign-user")
+    monkeypatch.setattr(mesh_result_routes, "current_user_id", lambda request: "foreign-user")
     monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: "foreign-user")
     status, _, _ = _retrieve(state, row["dispatch_id"])
     assert status == 404
     monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+    monkeypatch.setattr(mesh_result_routes, "current_user_id", lambda request: OWNER)
     monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
     status, _, _ = _retrieve(state, "dsp-unknown")
     assert status == 404
