@@ -208,9 +208,23 @@ def test_shared_chat_visuals_are_not_duplicated_for_claw_landing():
 
 
 def test_first_use_claw_retains_chat_alignment_and_input_tools():
-    assert "display: grid !important;" in CSS  # The shared hero is never right-shifted by flex.
-    assert ".composer-tools {\n  display: flex !important;" in CSS
-    assert "#clawManualEntryBar {\n  display: none !important;" in CSS
+    from _support import theme_sheets
+
+    parsed_rules = theme_sheets.rules("claw-focus-layout.css")
+
+    def values_for(selector_suffix: str, prop: str) -> list[str]:
+        return [
+            decl.value
+            for rule in parsed_rules
+            if rule.selector.strip().endswith(selector_suffix)
+            for decl in rule.decls
+            if decl.prop == prop
+        ]
+
+    # Keep the layout contract without coupling it to CSS priority syntax.
+    assert "grid" in values_for(".empty-state:not([hidden]) .starter-grid", "display")
+    assert "flex" in values_for(".composer-tools", "display")
+    assert "none" in values_for("#clawManualEntryBar", "display")
     assert HTML.count('class="claw-connection-track"') == 3
     assert HTML.count('class="claw-state-on">ON') == 3
     assert HTML.count('class="claw-state-off">OFF') == 3
