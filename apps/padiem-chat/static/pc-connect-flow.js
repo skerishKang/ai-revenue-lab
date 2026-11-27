@@ -780,7 +780,7 @@
       offline: ["오프라인", "Offline"],
       paused: ["멈춤", "Paused"],
       pending_verification: ["확인 대기 중", "Waiting"],
-      revoked: ["연결 해제", "Revoked"],
+      revoked: ["연결 끊기", "Revoked"],
     };
     const stateKey = link.state === "active" && link.online !== true ? "offline" : link.state;
     const pair = labels[stateKey];

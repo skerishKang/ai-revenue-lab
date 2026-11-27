@@ -171,7 +171,7 @@ const assert = require("node:assert/strict");
   assert.equal(calls[1].options.body,JSON.stringify({size_bytes:10_000_000}));
   global.fetch=async()=>({ok:false,json:async()=>({ok:false,error:{code:"invalid_request",message:"SECRET stack trace"}})});
   await assert.rejects(api.upload(file), error =>
-    error.message === "첨부할 파일을 확인한 뒤 다시 시도해 주세요." &&
+    error.message === "붙일 파일을 확인한 뒤 다시 시도해 주세요." &&
     error.code === "invalid_request" && !error.message.includes("SECRET"));
   global.fetch=async()=>({ok:false,json:async()=>({ok:false,error:{code:"unexpected_failure",message:"SECRET stack trace"}})});
   await assert.rejects(api.upload(file), error =>

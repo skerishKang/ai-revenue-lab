@@ -31,7 +31,7 @@ ENGINE_SERVICE = claw_static.repo_source(
     "apps/padiem-ai-engine/app/orchestration_service.py"
 )
 
-LONG_WAIT_COPY = "오래 걸리고 있어요 — 계속 진행 중입니다"
+LONG_WAIT_COPY = "오래 걸리고 있어요 — 아직 하고 있어요"
 
 
 def _function_source(source: str, name: str) -> str:

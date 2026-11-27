@@ -161,7 +161,7 @@
     request_accepted: Object.freeze({ ko: "요청을 접수했어요.", en: "Request accepted." }),
     question_checked: Object.freeze({ ko: "질문을 확인했어요.", en: "Question checked." }),
     reference_context: Object.freeze({ ko: "참고 정보를 확인했어요.", en: "Reference context checked." }),
-    planning: Object.freeze({ ko: "응답 방향을 정리했어요.", en: "Response plan prepared." }),
+    planning: Object.freeze({ ko: "답 방향을 정리했어요.", en: "Response plan prepared." }),
     tool_check: Object.freeze({ ko: "도구를 확인했어요.", en: "Tool availability checked." }),
     tool_started: Object.freeze({ ko: "도구 작업을 시작했어요.", en: "Tool work started." }),
     tool_completed: Object.freeze({ ko: "도구 작업을 마쳤어요.", en: "Tool work completed." }),
@@ -181,7 +181,7 @@
     tool_completed: ["웹 확인 완료", "PC 작업 완료", "도구 작업 완료"],
     tool_failed: ["웹 확인이 필요해요", "PC 작업 확인이 필요해요", "도구 작업 확인이 필요해요"],
     pc_progress: ["PC 요청 접수", "PC 작업 인계", "PC 작업 중", "PC 결과 확인 중"],
-    heartbeat: ["작업 진행 중"],
+    heartbeat: ["작업 중"],
   });
   const progressKindSet = new Set(Object.keys(progressLabelCatalog));
   const progressStageSet = new Set(["accepted", "picked_up", "executing", "result"]);
@@ -541,7 +541,7 @@
     return Object.freeze({
       valid: true,
       events,
-      statusText: publicCopy[latest.kind] || "작업을 진행하고 있어요.",
+      statusText: publicCopy[latest.kind] || "작업을 하고 있어요.",
       evidenceAvailable: events.some((event) => event.kind === orchestrationKinds.EVIDENCE_ATTACHED),
       terminal,
       approval: approvalView(orchestration, events),
@@ -576,7 +576,7 @@
     run_started: Object.freeze({ group: "agent", state: "active", ko: "AI 작업 시작", en: "AI task started" }),
     context_prepared: Object.freeze({ group: "context", state: "ready", ko: "대화 맥락 준비", en: "Context prepared" }),
     memory_read: Object.freeze({ group: "context", state: "ready", ko: "참고 정보 준비", en: "Reference context prepared" }),
-    plan_created: Object.freeze({ group: "agent", state: "active", ko: "응답 계획 정리", en: "Response plan prepared" }),
+    plan_created: Object.freeze({ group: "agent", state: "active", ko: "답 계획 정리", en: "Response plan prepared" }),
     skill_resolved: Object.freeze({ group: "agent", state: "active", ko: "필요 기능 준비", en: "Capability prepared" }),
     tool_resolution: Object.freeze({ group: "tool", state: "active", ko: "도구 확인 중", en: "Checking tool availability" }),
     tool_started: Object.freeze({ group: "tool", state: "active", ko: "도구 작업 중", en: "Tool in progress" }),
@@ -599,7 +599,7 @@
     completed: Object.freeze({ state: "success", ko: "작업을 완료했습니다.", en: "Task completed." }),
     failed: Object.freeze({ state: "failed", ko: "작업을 완료하지 못했습니다.", en: "Task could not be completed." }),
     cancelled: Object.freeze({ state: "cancelled", ko: "작업이 취소되었습니다.", en: "Task cancelled." }),
-    timed_out: Object.freeze({ state: "timed_out", ko: "응답 시간이 지나 작업을 마치지 못했습니다.", en: "The task timed out before completion." }),
+    timed_out: Object.freeze({ state: "timed_out", ko: "답이 늦어 작업을 마치지 못했습니다.", en: "The task timed out before completion." }),
   });
 
   function presentationModel(model, lifecycleState = null, preview = false) {
@@ -826,7 +826,7 @@
       longWait.setAttribute("role", "status");
       longWait.hidden = true;
       longWait.textContent = text(
-        "오래 걸리고 있어요 — 계속 진행 중입니다",
+        "오래 걸리고 있어요 — 아직 하고 있어요",
         "This is taking a while — still working",
       );
       disclosure.appendChild(longWait);
@@ -856,7 +856,7 @@
       const truth = document.createElement("p");
       truth.className = "capability-preview-truth";
       truth.textContent = text(
-        "이 화면은 UI 검증용 결정적 합성 상태입니다. 실제 Agent·Tool·Memory 실행이나 승인 권한을 나타내지 않습니다.",
+        "이 화면은 UI 확인용 결정적 합성 상태입니다. 실제 Agent·Tool·Memory 실행이나 승인 권한을 나타내지 않습니다.",
         "This is a deterministic synthetic UI state. It does not represent a live Agent, Tool, Memory run, or approval authority."
       );
       section.appendChild(truth);
@@ -989,7 +989,7 @@
 
   function applyCompletedOrchestration(article, requestPayload, data) {
     if (!article || !data || typeof data.answer !== "string" || !data.answer) {
-      throw new Error("AI 작업 완료 응답을 확인할 수 없습니다.");
+      throw new Error("AI 작업이 끝났는지 확인하지 못했어요.");
     }
     if (data.orchestration) orchestrationUi.render(article, data.orchestration, {});
     const content = article.querySelector(".assistant-content");
@@ -1023,7 +1023,7 @@
     content.appendChild(paragraph);
     const label = article.querySelector("[data-runtime-label]");
     if (label) {
-      label.textContent = state === "approval_denied" ? "진행하지 않음" : "작업 취소됨";
+      label.textContent = state === "approval_denied" ? "하지 않음" : "작업 취소됨";
       applyRuntimeLabel(article, label.textContent, RUNTIME_LABEL_STATE.STATUS);
     }
     if (state === "orchestration_cancelled") {
@@ -1159,7 +1159,7 @@
       heading.className = "capability-preview-fixture-title";
       heading.textContent = document.documentElement.lang.toLowerCase().startsWith("en") ? fixture.titleEn : fixture.titleKo;
       const copy = document.createElement("p");
-      copy.textContent = text("UI 검증용 고정 상태입니다. 실제 실행 결과가 아닙니다.", "Fixed UI verification state. Not a live execution result.");
+      copy.textContent = text("UI 확인용 고정 상태입니다. 실제 실행 결과가 아닙니다.", "Fixed UI verification state. Not a live execution result.");
       content.append(heading, copy);
     }
     orchestrationUi.render(article, syntheticOrchestration(fixture.kinds, fixture.approval || null), {});

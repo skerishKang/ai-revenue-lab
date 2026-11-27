@@ -137,7 +137,7 @@
     // composer does not repeat it under the input.
     if (next === phases.PREPARING) return "";
     if (next === phases.STREAMING) return copy("답변을 전달하고 있습니다. 필요하면 취소할 수 있습니다.", "Delivering the response. You can cancel if needed.");
-    if (next === phases.CANCELLING) return copy("답변 생성을 취소하고 있습니다.", "Cancelling response generation.");
+    if (next === phases.CANCELLING) return copy("답변 만들기를 취소하고 있습니다.", "Cancelling response generation.");
     return "";
   }
 
@@ -196,9 +196,9 @@
     if (!box) return;
     const heading = box.querySelector("strong");
     const body = box.querySelector("p");
-    if (heading) heading.textContent = copy("응답 시간이 지났습니다.", "The response timed out.");
+    if (heading) heading.textContent = copy("답이 늦었습니다.", "The response timed out.");
     if (body) body.textContent = copy(
-      "정해진 시간 안에 응답이 완료되지 않았습니다. 다시 시도할 수 있습니다.",
+      "정해진 시간 안에 답이 완료되지 않았습니다. 다시 시도할 수 있습니다.",
       "The response did not finish in time. You can try again."
     );
   }

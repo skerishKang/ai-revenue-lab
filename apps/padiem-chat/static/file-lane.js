@@ -37,8 +37,8 @@
   function uploadError(data, fallback) {
     const code = data?.error?.code;
     const messages = {
-      unauthorized: "로그인한 뒤 다시 첨부해 주세요.",
-      invalid_request: "첨부할 파일을 확인한 뒤 다시 시도해 주세요.",
+      unauthorized: "로그인한 뒤 다시 붙여 주세요.",
+      invalid_request: "붙일 파일을 확인한 뒤 다시 시도해 주세요.",
       request_too_large: "파일이 너무 큽니다. 더 작은 파일을 선택해 주세요.",
     };
     const error = new Error(Object.hasOwn(messages, code) ? messages[code] : fallback);
@@ -58,7 +58,7 @@
       body: file, signal}); // Native File body; never FileReader, arrayBuffer or base64.
     const data = await response.json().catch(() => null);
     if (!response.ok || !data?.ok || !/^file_[a-f0-9]{32}$/.test(data.file_id || "") || data.size_bytes !== file.size) {
-      throw uploadError(data, "파일 서버에 첨부를 저장하지 못했습니다. 다시 시도해 주세요.");
+      throw uploadError(data, "붙인 파일을 파일 서버에 저장하지 못했습니다. 다시 시도해 주세요.");
     }
     return {fileId: data.file_id};
   }
@@ -75,7 +75,7 @@
     });
     const fileId = body?.file?.file_id;
     if (!/^file_[a-f0-9]{32}$/.test(fileId || "") || body.file.size_bytes !== file.size) {
-      throw uploadError(body, "첨부를 서버에 저장하지 못했습니다. 다시 시도해 주세요.");
+      throw uploadError(body, "붙인 파일을 서버에 저장하지 못했습니다. 다시 시도해 주세요.");
     }
     return {fileId};
   }

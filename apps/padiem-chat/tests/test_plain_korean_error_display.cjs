@@ -41,7 +41,7 @@ for (const [code, status, expected] of [
   ["custom_provider_auth_failed", 400, "API 키를 확인해 주세요."],
   ["byok_auth_failed", 400, "API 키를 확인해 주세요."],
   ["entitlement_unavailable", 503, "지금은 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요."],
-  ["invalid_request", 400, "요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요."],
+  ["invalid_request", 400, "보낸 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요."],
   ["chat_pc_b54_session_expired", 401, "로그인이 오래돼 PC 연결 확인이 필요합니다. 로그아웃 후 다시 로그인해 주세요."],
   ["unknown_failure", 500, "요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요."],
 ]) {
@@ -73,7 +73,7 @@ for (const [code, status, expected] of [
   }
 }
 // Only a known attachment refusal is mapped; arbitrary suffixes stay hidden.
-const encrypted = "암호화된 DOCX는 현재 첨부할 수 없습니다.";
+const encrypted = "암호화된 DOCX는 현재 붙일 수 없습니다.";
 const encryptedError = PadiemChatTransport.errorFor({error: {code: "invalid_request", message: encrypted}}, "", 422);
 assert.equal(encryptedError.message, encrypted);
 const content = {children: [], replaceChildren() {this.children = [];}, querySelector() {return null;}, appendChild(box) {this.children.push(box);}};
@@ -82,7 +82,7 @@ render.renderError(article, encryptedError.message, [], null, null, null, false,
 assert.equal(content.children[0].message, encrypted);
 assert.equal(content.children[0].children[0].textContent, "참고 코드: invalid_request");
 assert.equal(PadiemChatTransport.streamErrorMessage({error: {code: "invalid_request", message: encrypted + " private details"}}, 422),
-  "요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.");
+  "보낸 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.");
 // Stream messages must use the closed mapping, even before the first token.
 const streamMod = fs.readFileSync(path.join(staticDir, "chat-streaming-module.js"), "utf8");
 const streamStart = streamMod.indexOf("  async function requestStreamingAnswer(");

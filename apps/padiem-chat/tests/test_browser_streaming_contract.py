@@ -352,7 +352,7 @@ def test_cancel_control_has_mobile_safe_target_and_accessibility_contract() -> N
     source = _source()
     html = sheet("index.html")
     css = sheet("padiem-cinematic-chat.css")
-    assert 'aria-label="답변 생성 취소"' in html
+    assert 'aria-label="답변 만들기 취소"' in html
     assert 'deps.cancelStreamButton.hidden = !deps.inFlight' in _conv_source()
     assert 'min-width: 64px' in css
     assert 'min-height: 42px' in css
@@ -423,7 +423,7 @@ const renderEnd = conv.indexOf("\n  function clearAttachment(", renderStart);
       assert.equal(state,"failed");
       assert.equal(typing.removed,true);
       assert.equal(label,"연결 오류");
-      assert.equal(rendered.textContent,"요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.");
+      assert.equal(rendered.textContent,"보낸 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.");
       assert.equal(released,true);
       if (!wire.endsWith("eof")) assert.equal(cancelled,true);
     }
@@ -433,9 +433,9 @@ const renderEnd = conv.indexOf("\n  function clearAttachment(", renderStart);
     : {ok:true,headers:new Headers({"content-type":"application/json"}),
        json:async()=>({ok:false,error:{code:"input_schema_rejected",message:"입력이 거부되었습니다."}})};
   await assert.rejects(PadiemChatTransport.requestStreaming({},null), error =>
-    error.terminalRecord === true && error.code === "input_schema_rejected" && error.message === "요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.");
+    error.terminalRecord === true && error.code === "input_schema_rejected" && error.message === "보낸 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.");
   assert.equal(PadiemChatTransport.streamErrorMessage({error:{code:"upstream_timeout"}}),
-    "응답 시간이 초과되었습니다. 다시 시도해 주세요.");
+    "답이 정해진 시간 안에 오지 않았습니다. 다시 시도해 주세요.");
   console.log("terminal error records displayed; pending recovery not entered");
 })().catch(error=>{console.error(error);process.exit(1);});
 '''

@@ -68,11 +68,11 @@ def test_composer_does_not_hard_code_format_truth_in_html():
     assert "documentFormatsPanel" in ids
     assert index_forbidden_tokens() == []
     button = attrs["attachmentButton"]
-    assert button["data-padiem-tooltip"] == "파일 첨부"
-    assert button["aria-label"] == "파일 첨부"
+    assert button["data-padiem-tooltip"] == "파일 붙이기"
+    assert button["aria-label"] == "파일 붙이기"
     assert "title" not in button
     assert "shared-tooltip.js" in facts["script_sources"]
-    assert "파일 첨부 형식을 확인하는 중입니다." in index_text()
+    assert "붙일 파일 형식을 확인하는 중입니다." in index_text()
 
 
 def test_locale_derives_attachment_copy_without_clobbering_runtime_state():
