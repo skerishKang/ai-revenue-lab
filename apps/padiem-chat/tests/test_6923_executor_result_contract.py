@@ -317,5 +317,46 @@ async def test_the_cancel_check_names_its_rule_too(caplog):
 
 def test_no_refusal_site_is_left_unnamed():
     import inspect
-    source = inspect.getsource(routes)
+    from app import oracle_mesh_http
+
+    source = inspect.getsource(routes) + inspect.getsource(oracle_mesh_http)
     assert source.count('_error(400, "oracle_mesh_invalid_body")') == 1   # inside _invalid_body only
+
+
+@pytest.mark.asyncio
+async def test_http_refusal_context_is_shared_and_task_local(monkeypatch):
+    import asyncio
+    from app import oracle_mesh_http as http
+
+    assert routes._BODY_REFUSAL is http._BODY_REFUSAL
+    assert routes._invalid_body is http._invalid_body
+    events = []
+    monkeypatch.setattr(http, "emit_stage_event", lambda **entry: events.append(
+        (entry["code"], http._BODY_REFUSAL.get())))
+    ready = asyncio.Event()
+    other_ready = asyncio.Event()
+
+    async def first():
+        assert http._read_json(b"{", frozenset()) is None
+        ready.set()
+        await other_ready.wait()
+        assert routes._BODY_REFUSAL.get() == "json_decode"
+        assert routes._invalid_body("result").status_code == 400
+        assert http._BODY_REFUSAL.get() == ""
+
+    async def second():
+        await ready.wait()
+        assert http._BODY_REFUSAL.get() == ""
+        assert http._read_json(b"[]", frozenset()) is None
+        other_ready.set()
+        assert routes._BODY_REFUSAL.get() == "body_shape"
+        assert routes._invalid_body("result").status_code == 400
+        assert http._BODY_REFUSAL.get() == ""
+
+    token = http._BODY_REFUSAL.set("")
+    try:
+        await asyncio.gather(first(), second())
+        assert http._BODY_REFUSAL.get() == ""
+        assert sorted(events) == [("body_shape", ""), ("json_decode", "")]
+    finally:
+        http._BODY_REFUSAL.reset(token)
