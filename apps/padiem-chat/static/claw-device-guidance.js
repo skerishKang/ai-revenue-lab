@@ -52,7 +52,7 @@
       summaryRevoked: "연결 해제",
       summaryAction: "확인 필요",
       recoveryTitle: "다시 연결하는 방법",
-      recoveryOffline: "PC 전원과 Padiem 데스크톱 실행 상태를 확인한 뒤 ‘연결 상태 새로고침’을 눌러 주세요.",
+      recoveryOffline: "PC 전원과 Padiem 데스크톱이 켜져 있는지 확인한 뒤 ‘연결 상태 새로고침’을 눌러 주세요.",
       recoveryRevoked: "해당 PC에서 Padiem 데스크톱을 열고 같은 계정으로 연결을 다시 허락해 주세요.",
       recoveryAction: "해당 PC에서 Padiem 데스크톱을 열고 연결 상태를 다시 확인해 주세요.",
       troubleTitle: "연결이 계속 확인되지 않을 때",
