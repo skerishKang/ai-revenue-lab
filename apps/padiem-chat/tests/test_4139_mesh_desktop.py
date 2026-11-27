@@ -8,6 +8,8 @@ executor-side tests and the live relay probe, never here.
 """
 from __future__ import annotations
 
+from app import oracle_mesh_dispatch as mesh_dispatch
+
 import asyncio
 import base64
 import hashlib
@@ -94,8 +96,11 @@ async def _workspace(request, uid):
 
 def setup_auth(monkeypatch):
     monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+    monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
     monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+    monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", _verified)
     monkeypatch.setattr(routes, "_resolve_memory_workspace", _workspace)
+    monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", _workspace)
 
 
 class Identity:
@@ -597,9 +602,11 @@ def test_capture_retrieval_refuses_foreign_and_unknown_ids(monkeypatch):
     status, payload, _ = _submit(state, row, termination="captured", note=NOTE, blob=JPEG)
     assert status == 200, payload
     monkeypatch.setattr(routes, "current_user_id", lambda request: "foreign-user")
+    monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: "foreign-user")
     status, _, _ = _retrieve(state, row["dispatch_id"])
     assert status == 404
     monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+    monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
     status, _, _ = _retrieve(state, "dsp-unknown")
     assert status == 404
 

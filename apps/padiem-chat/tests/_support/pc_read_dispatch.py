@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from app import oracle_mesh_dispatch as mesh_dispatch
+
 import asyncio
 import hashlib
 import hmac
@@ -238,6 +240,7 @@ def _state(monkeypatch, history=None, *, mapping=None, links=None):
 
     monkeypatch.setattr(bridge, "resolve_current_b54_canonical_session", fake_bridge)
     monkeypatch.setattr(routes, "_resolve_memory_workspace", _workspace)
+    monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", _workspace)
     source = routes.build_oracle_mesh_return_source(
         mapping if mapping is not None else _mapping(),
         CHANNEL_SECRET, routes.EXECUTION_MODE_MESH,

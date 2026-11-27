@@ -1,6 +1,8 @@
 """#4139 narrow Claw conversation entry and canonical pending history checks."""
 from __future__ import annotations
 
+from app import oracle_mesh_dispatch as mesh_dispatch
+
 import asyncio
 from types import SimpleNamespace
 from starlette.responses import JSONResponse
@@ -239,8 +241,11 @@ def test_claw_txt_entry_runs_mesh_mode_without_any_native_registration(monkeypat
         return "conv.txt", None
 
     monkeypatch.setattr(mesh, "_verified_owner_request", auth)
+    monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", auth)
     monkeypatch.setattr(mesh, "_resolve_memory_workspace", tenant)
+    monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", tenant)
     monkeypatch.setattr(mesh, "current_user_id", lambda r: "owner1")
+    monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda r: "owner1")
     monkeypatch.setattr(native, "_verified_owner_request", auth)
     monkeypatch.setattr(native, "_resolve_memory_workspace", tenant)
     monkeypatch.setattr(native, "current_user_id", lambda r: "owner1")
@@ -342,7 +347,7 @@ def test_mesh_mode_still_refuses_withdrawn_consent_and_foreign_account(monkeypat
     async def authorized_session(request, data):
         return "conv.txt", None
 
-    for module in (mesh, native):
+    for module in (mesh, mesh_dispatch, native):
         monkeypatch.setattr(module, "_verified_owner_request", auth)
         monkeypatch.setattr(module, "_resolve_memory_workspace", tenant)
         monkeypatch.setattr(module, "current_user_id", lambda r: "owner1")
@@ -423,7 +428,7 @@ def test_an_incomplete_mesh_target_never_strands_the_staged_run_as_pending(monke
     async def authorized_session(request, data):
         return "conv.txt", None
 
-    for module in (mesh, native):
+    for module in (mesh, mesh_dispatch, native):
         monkeypatch.setattr(module, "_verified_owner_request", auth)
         monkeypatch.setattr(module, "_resolve_memory_workspace", tenant)
         monkeypatch.setattr(module, "current_user_id", lambda r: "owner1")

@@ -13,6 +13,8 @@ injected fakes only and never touches a real PC.
 
 from __future__ import annotations
 
+from app import oracle_mesh_dispatch as mesh_dispatch
+
 import asyncio
 import hashlib
 import json
@@ -130,8 +132,11 @@ def _run_route(monkeypatch, state, question=QUESTION):
         return SimpleNamespace(session_id="session.canonical.owner.1"), None
 
     monkeypatch.setattr(routes, "_verified_owner_request", verified)
+    monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", verified)
     monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+    monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
     monkeypatch.setattr(routes, "_resolve_memory_workspace", workspace)
+    monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", workspace)
     monkeypatch.setattr(general, "auth_ready", auth_ready)
     monkeypatch.setattr(general, "current_user_id", current_user_id)
     monkeypatch.setattr(general, "_resolve_intake_session_reference", intake)

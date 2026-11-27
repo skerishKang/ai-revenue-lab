@@ -1,6 +1,8 @@
 """Chat-host integration with a real local SQLite journal and fake queue/PC."""
 from __future__ import annotations
 
+from app import oracle_mesh_dispatch as mesh_dispatch
+
 import asyncio
 import json
 from contextlib import asynccontextmanager
@@ -199,6 +201,7 @@ def rig(monkeypatch):
     monkeypatch.setattr(host, "maintenance_owner_context", owner)
     monkeypatch.setattr(host, "mode_connector_read", read)
     monkeypatch.setattr(routes, "mode_connector_read", route_read)
+    monkeypatch.setattr(mesh_dispatch, "mode_connector_read", route_read)
     monkeypatch.setattr(routes, "_engine_pc_files_target", target)
     monkeypatch.setattr(host, "platform_authority_for", lambda req: SimpleNamespace(is_global_model_admin=admin))
     monkeypatch.setattr(host, "load_plan", rollout)

@@ -14,6 +14,8 @@
 """
 from __future__ import annotations
 
+from app import oracle_mesh_dispatch as mesh_dispatch
+
 import json
 import re
 import sys
@@ -160,6 +162,7 @@ class _FrozenDateTime(_real_datetime):
 
 def snapshot(case: str, monkeypatch) -> dict:
     monkeypatch.setattr(routes, "datetime", _FrozenDateTime)
+    monkeypatch.setattr(mesh_dispatch, "datetime", _FrozenDateTime)
     history = RecordingHistory(run_workspace=seam.MEMORY_WORKSPACE)
     session = seam._session(tenant_id=seam.WORKSPACE)
     state = seam._state(monkeypatch, session, history, seam.MEMORY_WORKSPACE)
@@ -248,6 +251,7 @@ def snapshot(case: str, monkeypatch) -> dict:
         payload = seam._payload(tool_call_ref="bad ref!")
     elif case == "dispatch_workspace_unavailable":
         monkeypatch.setattr(routes, "_dispatch_workspace_id", _no_workspace)
+        monkeypatch.setattr(mesh_dispatch, "_dispatch_workspace_id", _no_workspace)
     elif case == "dispatch_content_invalid":
         payload = seam._payload(op="write", path="notes.txt", content=123)
     elif case == "dispatch_append_type_invalid":

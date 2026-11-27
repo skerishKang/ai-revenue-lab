@@ -8,6 +8,8 @@ the Chat/Claw product separation.
 """
 from __future__ import annotations
 
+from app import oracle_mesh_dispatch as mesh_dispatch
+
 import asyncio
 import hashlib
 import json
@@ -503,6 +505,7 @@ def test_chat_drive_dispatch_uses_connector_session_with_history_only_run(monkey
         state.history_store = db._store(connection)
         state.control_plane_identity_authority = Identity()
         monkeypatch.setattr(routes, "_resolve_memory_workspace", workspace)
+        monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", workspace)
         monkeypatch.setattr(lane, "promote_chat_pc_stream_run", no_promotion)
         status, body = _signed_chat_call(state, routes, {
             "subject_id": _CHAT_SUBJECT, "run_id": db.RUN, "device_id": None,
@@ -683,6 +686,7 @@ async def _chat_workspace(request, uid):
 def test_chat_signed_dispatch_status_result_loop(monkeypatch):
     state, routes = _chat_state()
     monkeypatch.setattr(routes, "_resolve_memory_workspace", _chat_workspace)
+    monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", _chat_workspace)
 
     status, body = _signed_chat_call(state, routes, {
         "subject_id": _CHAT_SUBJECT, "run_id": _CHAT_RUN, "device_id": None,
@@ -745,6 +749,7 @@ def test_chat_signed_dispatch_status_result_loop(monkeypatch):
 def test_chat_signed_endpoint_rejects_claw_product_and_wrong_command(monkeypatch):
     state, routes = _chat_state()
     monkeypatch.setattr(routes, "_resolve_memory_workspace", _chat_workspace)
+    monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", _chat_workspace)
 
     status, body = _signed_chat_call(state, routes, {
         "subject_id": _CHAT_SUBJECT, "run_id": _CHAT_RUN,

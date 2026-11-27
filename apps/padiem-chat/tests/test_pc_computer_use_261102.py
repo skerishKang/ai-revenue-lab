@@ -15,6 +15,8 @@ destruction and anything that sends outside the PC.
 
 from __future__ import annotations
 
+from app import oracle_mesh_dispatch as mesh_dispatch
+
 import asyncio
 import json
 from types import SimpleNamespace
@@ -128,8 +130,11 @@ def _run(monkeypatch, state, question):
     monkeypatch.setattr(general, "_resolve_intake_session_reference", intake)
     monkeypatch.setattr(claw_memory_routes, "_resolve_memory_workspace", workspace)
     monkeypatch.setattr(routes, "_verified_owner_request", verified)
+    monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", verified)
     monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+    monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
     monkeypatch.setattr(routes, "_resolve_memory_workspace", workspace)
+    monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", workspace)
 
     from starlette.requests import Request
 
