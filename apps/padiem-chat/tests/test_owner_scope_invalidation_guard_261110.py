@@ -12,12 +12,11 @@ half is re-pinned at the unit level).
 from __future__ import annotations
 
 import ast
-import pathlib
 import textwrap
 
 import pytest
+from _support.owner_scope_static import handler_sources as _handler_sources
 
-APP = pathlib.Path(__file__).resolve().parents[1] / "app"
 
 # Mutation call sites: functions in route modules that call these STORE/CTRL
 # mutations must also drop the cached owner scope before answering.
@@ -42,17 +41,6 @@ INVALIDATORS = {
 _PRESENT_OR_EXEMPT = set()  # handlers currently missing wiring will be added before this test lands
 
 
-def _handler_sources(module: str) -> dict[str, str]:
-    path = APP / module
-    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-    out = {}
-    for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            try:
-                out[node.name] = ast.get_source_segment(path.read_text(encoding="utf-8"), node) or ""
-            except Exception:
-                out[node.name] = ""
-    return out
 
 
 @pytest.mark.parametrize("module", _ROUTES_SCANNED)
