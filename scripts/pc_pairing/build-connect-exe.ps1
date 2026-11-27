@@ -103,15 +103,11 @@ function Invoke-Compile {
   $resource = Join-Path $Directory "helper-updater.ps1"
   & $Python.Source -c "import pathlib,runpy,sys; m=runpy.run_path(sys.argv[1]); pathlib.Path(sys.argv[2]).write_bytes(m['render_helper_updater_command']().encode('utf-8'))" $UpdaterSource $resource
   if ($LASTEXITCODE -ne 0) { throw "helper_updater_resource_failed" }
-  $selfHeal = Join-Path $Directory "self-heal-watcher.ps1"
-  & $Python.Source -c "import pathlib,runpy,sys; m=runpy.run_path(sys.argv[1]); pathlib.Path(sys.argv[2]).write_bytes(m['render_watcher_command']().encode('utf-8'))" $SelfHealSource $selfHeal
-  if ($LASTEXITCODE -ne 0) { throw "self_heal_watcher_resource_failed" }
   $selfHealOff = Join-Path $Directory "self-heal-watcher-unregister.ps1"
   & $Python.Source -c "import pathlib,runpy,sys; m=runpy.run_path(sys.argv[1]); pathlib.Path(sys.argv[2]).write_bytes(m['render_watcher_command'](unregister=True).encode('utf-8'))" $SelfHealSource $selfHealOff
   if ($LASTEXITCODE -ne 0) { throw "self_heal_watcher_unregister_resource_failed" }
   $arguments = @(
     "/resource:helper-updater.ps1,PadiemHelperUpdater",
-    "/resource:self-heal-watcher.ps1,PadiemSelfHealWatcher",
     "/resource:self-heal-watcher-unregister.ps1,PadiemSelfHealWatcherUnregister",
     "/nologo", "/noconfig", "/target:exe", "/optimize+", "/platform:anycpu", "/debug-",
     "/codepage:65001", "/reference:System.dll", "/reference:System.Management.dll",

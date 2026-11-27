@@ -76,6 +76,16 @@ $PadiemAgentServiceName = "Mesh Agent"
 $PadiemAgentDurableDir = if ($env:ProgramFiles) { Join-Path $env:ProgramFiles "PADIEM" } else { $null }
 $PadiemAgentDurableExe = if ($PadiemAgentDurableDir) { Join-Path $PadiemAgentDurableDir "MeshAgent.exe" } else { $null }
 
+function Set-PadiemAgentServiceRecovery {
+  # Windows SCM restarts the existing service on unexpected termination.
+  $sc = Join-Path $env:SystemRoot 'System32\sc.exe'
+  if (-not (Test-Path -LiteralPath $sc -PathType Leaf)) { return $false }
+  try {
+    & $sc failure $PadiemAgentServiceName 'reset=' '86400' 'actions=' 'restart/5000/restart/5000/restart/5000' | Out-Null
+    return ($LASTEXITCODE -eq 0)
+  } catch { return $false }
+}
+
 function Install-PadiemAgentService {
   # Stops an existing service through the binary its own record names, copies
   # the downloaded agent into the durable folder, registers the same single
@@ -128,6 +138,9 @@ function Install-PadiemAgentService {
     Start-Process -FilePath $PadiemAgentDurableExe -ArgumentList "-start" -Wait -WindowStyle Hidden | Out-Null
   } catch { }
   $service = Get-Service -Name $PadiemAgentServiceName -ErrorAction SilentlyContinue
+  if ($service -and -not (Set-PadiemAgentServiceRecovery)) {
+    Write-Warning "PC 연결 서비스의 Windows 복구 설정을 적용하지 못했습니다."
+  }
   return ($null -ne $service)
 }
 """

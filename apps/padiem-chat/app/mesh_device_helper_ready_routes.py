@@ -39,6 +39,8 @@ async def mesh_device_helper_ready_report(request: Request) -> JSONResponse:
         return _error(400, "mesh_helper_ready_invalid_body")
     try:
         state = validate_helper_ready(wire["helper"])
+        # Accept legacy agents but never retain obsolete watcher evidence.
+        state.pop("self_heal_task_present", None)
     except HelperReadyError:
         return _error(400, "mesh_helper_ready_invalid_body")
     pairing = getattr(request.app.state, "pc_device_pairing_store", None)

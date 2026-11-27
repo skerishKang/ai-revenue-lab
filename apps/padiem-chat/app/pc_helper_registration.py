@@ -1,10 +1,6 @@
 """One release-pinned refresh using the existing owner-authorized SYSTEM lane.
 
-#8359 F7: the refresh also keeps the SYSTEM self-heal watcher (#8193) registered.
-The watcher payload is the same fixed, offline bytes both installers embed; the
-only thing the PC contributes is where its Python interpreter lives, read the
-way the installer reads it (``PADIEM_PYTHON`` or ``python.exe`` on PATH). A PC
-without an interpreter still gets its updater refreshed and says so.
+#8895: refresh only the updater. The retired watcher is not read or changed.
 """
 from __future__ import annotations
 
@@ -12,7 +8,6 @@ import hashlib
 import re
 from datetime import datetime, timedelta
 
-from kagent.pc_self_heal_task import TASK_NAME as SELF_HEAL_TASK_NAME, render_watcher_command
 
 from .pc_helper_update import helper_update_script, render_helper_updater_command
 
@@ -57,10 +52,6 @@ def plan_registration(row, *, system_allowed, now):
             and not state.get("updater_source_sha256")) or state.get("updater_task_present") is None:
         return {"action": "failed", "reason": "digest_unverified"}
     if state.get("updater_source_sha256") == SOURCE_SHA256 and state["updater_task_present"]:
-        # #8359 F7: an observed absence of the self-heal watcher is a refresh
-        # too; an executor that does not report the key (older build) is not.
-        if state.get("self_heal_task_present") is False:
-            return {"action": "refresh", "reason": "watcher_missing"}
         return {"action": "skipped", "reason": "already_current"}
     return {"action": "refresh", "reason": "source_changed"}
 
@@ -84,24 +75,14 @@ def registration_command():
         r"try{$task=Get-ScheduledTask -TaskPath '\Padiem\' -TaskName PadiemUserHelperUpdater -ErrorAction SilentlyContinue;"
         "$same=(Test-Path -LiteralPath $scriptFile -PathType Leaf) -and "
         "((Get-FileHash -LiteralPath $scriptFile -Algorithm SHA256).Hash -eq '" + SOURCE_SHA256 + "');"
-        # #8359 F7: the watcher task and the interpreter it needs, read the
-        # installer's way. No interpreter means nothing to register, not a failure.
-        r"$watcher=Get-ScheduledTask -TaskPath '\Padiem\' -TaskName " + SELF_HEAL_TASK_NAME + " -ErrorAction SilentlyContinue;"
-        "$py=$env:PADIEM_PYTHON;if(-not $py){$pyCommand=Get-Command python.exe -ErrorAction SilentlyContinue;"
-        "if($pyCommand){$py=$pyCommand.Source}};"
-        "if($same -and $task -and ($watcher -or -not $py)){Write-Output 'PADIEM_HELPER_REFRESH:skipped:already_current';return};"
+        "if($same -and $task){Write-Output 'PADIEM_HELPER_REFRESH:skipped:already_current';return};"
         "if($task -and $task.State -eq 'Running'){Write-Output 'PADIEM_HELPER_REFRESH:failed:updater_running';return};"
         "if(-not($same -and $task)){"
         + render_helper_updater_command() + ";"
         "if((Get-FileHash -LiteralPath $scriptFile -Algorithm SHA256).Hash -ne '" + SOURCE_SHA256 + "' -or "
         r"-not(Get-ScheduledTask -TaskPath '\Padiem\' -TaskName PadiemUserHelperUpdater)){"
         "Write-Output 'PADIEM_HELPER_REFRESH:failed:digest_unverified';return}};"
-        "if($py -and -not $watcher){$PythonExecutable=$py;"
-        + render_watcher_command() + ";"
-        r"if(-not(Get-ScheduledTask -TaskPath '\Padiem\' -TaskName " + SELF_HEAL_TASK_NAME + " -ErrorAction SilentlyContinue)){"
-        "Write-Output 'PADIEM_HELPER_REFRESH:failed:watcher_unregistered';return}};"
-        "if($py){Write-Output 'PADIEM_HELPER_REFRESH:updated:registered'}"
-        "else{Write-Output 'PADIEM_HELPER_REFRESH:updated:watcher_python_missing'}"
+        "Write-Output 'PADIEM_HELPER_REFRESH:updated:registered'"
         "}catch{Write-Output 'PADIEM_HELPER_REFRESH:failed:registration_failed';"
         # #8359 후속2: 원인 토큰 뒤에 던진 위치를 붙인다. 원인은 업데이트 스크립트의
         # [a-z_] 코드 또는 예외 형식 이름, 줄번호는 ScriptLineNumber, 명령이름은

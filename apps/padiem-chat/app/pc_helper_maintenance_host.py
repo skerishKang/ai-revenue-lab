@@ -283,7 +283,7 @@ async def _notify_stale_probe(state, device, first_seen):
     source_id = _key(fingerprint, first_seen, "probe_needed_24h")
     alert_id = await state.ops_alert_store.enqueue_event({
         "site": "pc", "kind": "pc_maintenance", "audience": "real",
-        "title": "관리 PC 감시 상태 24시간 이상 확인 불가 (" + fingerprint[-6:] + ")",
+        "title": "관리 PC 업데이트 확인 상태 24시간 이상 불명 (" + fingerprint[-6:] + ")",
         "source_id": source_id,
     })
     # A replay of an already-persisted alert returns None: it is still
@@ -298,7 +298,7 @@ def _diagnostic():
     # text. The ordinal is local to the round, not a durable identifier.
     return dict.fromkeys(("managed", "owner_link", "manager_admin", "online",
                           "observation", "helper_status", "helper_digest",
-                          "updater_source", "updater_digest", "updater_task", "watcher_task", "rollout",
+                          "updater_source", "updater_digest", "updater_task", "rollout",
                           "maintenance_candidate", "owner_session", "owner_authority",
                           "outcome"),
                          "not_checked")
@@ -360,7 +360,6 @@ def _observation_diagnostic(report, observation, device, now):
     report["updater_digest"] = (
         "matches" if digest == SOURCE_SHA256 else "different" if digest else "missing")
     report["updater_task"] = _known_flag(state.get("updater_task_present"))
-    report["watcher_task"] = _known_flag(state.get("self_heal_task_present"))
 
 
 async def _facts(request, device, now, report=None):
@@ -742,7 +741,6 @@ async def reconcile(app, store, now):
                     and observed.get("helper_status_present") is True
                     and observed.get("updater_source_sha256") == SOURCE_SHA256
                     and observed.get("updater_task_present") is True
-                    and observed.get("self_heal_task_present") is True
                     and (job["action"] != "install" or observed.get("helper_sha256") == job["release_sha256"])):
                 await store.finish(claim, "verified", now=now)
         except Exception:

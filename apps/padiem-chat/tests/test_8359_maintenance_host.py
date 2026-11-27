@@ -291,8 +291,7 @@ def test_candidate_diagnostics_are_bounded_and_cover_general_pc(rig, caplog, mon
 
 def test_file_only_observation_requires_probe_until_real_mismatch(rig, monkeypatch, caplog):
     app, queue, history, flags, store, db = rig
-    for key in ("updater_source_present", "updater_source_sha256", "updater_task_present",
-                "self_heal_task_present"):
+    for key in ("updater_source_present", "updater_source_sha256", "updater_task_present"):
         queue.state.pop(key)
 
     async def original(*args, **kw):
@@ -323,7 +322,7 @@ def test_file_only_observation_requires_probe_until_real_mismatch(rig, monkeypat
         await host.maintenance_round(app, ENV, store)
         assert db.execute("SELECT status FROM pc_helper_maintenance_jobs").fetchone()[0] == "queued"
         queue.state.update(updater_source_present=True, updater_source_sha256=SOURCE_SHA256,
-                           updater_task_present=True, self_heal_task_present=True)
+                           updater_task_present=True)
         queue.now += timedelta(seconds=60)
         await host.maintenance_round(app, ENV, store)
         assert db.execute("SELECT outcome FROM pc_helper_maintenance_jobs").fetchone()[0] == "verified"
@@ -331,22 +330,24 @@ def test_file_only_observation_requires_probe_until_real_mismatch(rig, monkeypat
 
     asyncio.run(run())
 
-def test_watcher_unknown_only_is_probe_needed_without_owner_or_pc_attempt(rig, caplog):
+def test_absent_watcher_does_not_claim_pc_or_alert_even_after_25_hours(rig, caplog):
     app, queue, history, flags, store, db = rig
-    queue.state["updater_source_sha256"] = SOURCE_SHA256
-    queue.state["helper_version"] = RELEASE["version"]
-    queue.state.pop("self_heal_task_present")
+    queue.state.update(updater_source_sha256=SOURCE_SHA256,
+                       updater_task_present=True, helper_version=RELEASE["version"],
+                       self_heal_task_present=False)
 
     async def check():
-        await host.maintenance_round(app, ENV, store)
-        assert not history.rows and not history.runs
-        assert not flags["reads"]
-        assert db.execute("SELECT count(*) FROM pc_helper_auto_attempts").fetchone()[0] == 0
-        assert db.execute("SELECT count(*) FROM pc_helper_maintenance_jobs").fetchone()[0] == 0
-        assert any("watcher_task=unknown" in r.getMessage()
-                   and "maintenance_candidate=probe_needed" in r.getMessage()
-                   and "outcome=probe_needed" in r.getMessage()
-                   for r in caplog.records)
+        initial = queue.now
+        for i in range(25 * 4 + 1):
+            queue.now = initial + timedelta(minutes=15 * i)
+            await host.maintenance_round(app, ENV, store)
+        assert not history.rows and not history.runs and not flags["reads"]
+        assert db.execute("SELECT COUNT(*) FROM ops_alert_outbox").fetchone()[0] == 0
+        assert db.execute("SELECT COUNT(*) FROM pc_maintenance_probe_needed").fetchone()[0] == 0
+        assert db.execute("SELECT COUNT(*) FROM pc_helper_auto_attempts").fetchone()[0] == 0
+        assert any("maintenance_candidate=already_current" in line.getMessage()
+                   for line in caplog.records)
+        assert all("watcher_task=" not in line.getMessage() for line in caplog.records)
     asyncio.run(check())
 
 
@@ -1062,16 +1063,18 @@ def test_unnotified_terminal_job_and_unknown_state_stay_fast_8772(rig, monkeypat
     asyncio.run(run())
 
 
-def _make_watcher_probe_unknown(queue):
-    queue.state["updater_source_sha256"] = SOURCE_SHA256
+def _make_updater_probe_unknown(queue):
+    queue.state["updater_source_present"] = True
+    queue.state["updater_source_sha256"] = None
     queue.state["updater_task_present"] = True
     queue.state["helper_version"] = RELEASE["version"]
+    # The watcher field can be present or absent: neither makes a new probe.
     queue.state.pop("self_heal_task_present", None)
 
 
 def test_probe_needed_24h_ops_notice_once_no_raw_pc_or_reservation(rig, caplog):
     app, queue, history, flags, store, db = rig
-    _make_watcher_probe_unknown(queue)
+    _make_updater_probe_unknown(queue)
 
     async def run():
         initial = queue.now
@@ -1099,14 +1102,14 @@ def test_probe_needed_24h_ops_notice_once_no_raw_pc_or_reservation(rig, caplog):
         await host.maintenance_round(app, ENV, store)
         assert db.execute("SELECT COUNT(*) FROM ops_alert_outbox").fetchone()[0] == 1
 
-        # Verified watcher resolves the episode and removes its pending row.
-        queue.state["self_heal_task_present"] = True
+        # Verified updater evidence resolves the episode.
+        queue.state["updater_source_sha256"] = SOURCE_SHA256
         queue.now += timedelta(minutes=15)
         await host.maintenance_round(app, ENV, store)
         assert db.execute("SELECT COUNT(*) FROM pc_maintenance_probe_needed").fetchone()[0] == 0
 
         # A new unknown episode must not inherit yesterday's timer.
-        queue.state.pop("self_heal_task_present", None)
+        queue.state["updater_source_sha256"] = None
         queue.now += timedelta(minutes=15)
         await host.maintenance_round(app, ENV, store)
         assert db.execute("SELECT COUNT(*) FROM ops_alert_outbox").fetchone()[0] == 1
@@ -1116,7 +1119,7 @@ def test_probe_needed_24h_ops_notice_once_no_raw_pc_or_reservation(rig, caplog):
 
 def test_probe_needed_gap_resets_continuity_not_alerted(rig):
     app, queue, history, flags, store, db = rig
-    _make_watcher_probe_unknown(queue)
+    _make_updater_probe_unknown(queue)
 
     async def run():
         initial = queue.now
@@ -1132,7 +1135,7 @@ def test_probe_needed_gap_resets_continuity_not_alerted(rig):
 
 def test_probe_needed_outbox_failure_retries_once(rig, monkeypatch):
     app, queue, history, flags, store, db = rig
-    _make_watcher_probe_unknown(queue)
+    _make_updater_probe_unknown(queue)
     sent = []
     real_enqueue = app.state.ops_alert_store.enqueue_event
 

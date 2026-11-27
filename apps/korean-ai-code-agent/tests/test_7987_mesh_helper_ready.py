@@ -241,8 +241,7 @@ const seen = run({files: installed(), pipes: SYSTEM_PIPES.concat([HELPER_PIPE]),
 assert.deepEqual(seen.result, {protocol: 'padiem-helper-ready-v1', request_id: 'nonce-7', ok: true,
     task_present: true, install_dir_present: true, pipe_open: true,
     interactive_session: true, helper_build: '9f2acb5916c0', helper_sha256: SHA.toLowerCase(),
-    helper_status_present: true, updater_source_present: false, updater_task_present: false,
-    self_heal_task_present: false});
+    helper_status_present: true, updater_source_present: false, updater_task_present: false});
 for (const secret of ['PRIVATE', 'Padiem', 'C:\\\\', 'Console', 'Services', HELPER_PIPE]) {
     assert.equal(seen.text.includes(secret), false, secret);
 }
@@ -260,16 +259,9 @@ assert.equal(seen.result.updater_source_sha256, require('node:crypto').createHas
 assert.equal(seen.result.updater_task_present, true);
 assert.equal(seen.result.helper_status_present, true);
 assert.equal(seen.text.includes('fixture-source'), false);
-// #8359 F7: the SYSTEM self-heal watcher task (#8193) is observed the same way,
-// under both the native and the 32-bit view of the task folder.
-assert.equal(seen.result.self_heal_task_present, false);
-const watcher = 'C:\\Windows\\System32\\Tasks\\Padiem\\PadiemPcSelfHeal';
-const withWatcher = run({files: installed({[watcher]: true}), pipes: SYSTEM_PIPES, sessions: {0: SERVICES}});
-assert.equal(withWatcher.result.self_heal_task_present, true);
-const wowWatcher = 'C:\\Windows\\Sysnative\\Tasks\\Padiem\\PadiemPcSelfHeal';
-const underWow = run({files: installed({[wowWatcher]: true}), pipes: SYSTEM_PIPES, sessions: {0: SERVICES}});
-assert.equal(underWow.result.self_heal_task_present, true);
-assert.equal(withWatcher.text.includes('PadiemPcSelfHeal'), false);
+// #8895: do not probe or disclose the retired SYSTEM watcher on any PC.
+assert.equal(seen.result.self_heal_task_present, undefined);
+assert.equal(seen.calls.some(call => String(call[1]).includes('PadiemPcSelfHeal')), false);
 files[updater].size = 131073;
 const large = run({files, pipes: SYSTEM_PIPES, sessions: {0: SERVICES}});
 assert.equal(large.result.updater_source_sha256, undefined);
@@ -737,7 +729,7 @@ def test_switch_on_attaches_the_fixed_expression_to_the_drive_round():
     assert isinstance(reporter, MeshHelperReadyReporter)
     source.observe_helper_ready.assert_called_once_with(
         reporter.observe, source=AGENT_HELPER_READY_JS, protocol=HELPER_READY_PROTOCOL,
-        keys=sorted(HELPER_READY_KEYS | HELPER_READY_OPTIONAL_KEYS))
+        keys=sorted((HELPER_READY_KEYS | HELPER_READY_OPTIONAL_KEYS) - {"self_heal_task_present"}))
 
 
 def executor(**kwargs):
@@ -917,14 +909,14 @@ def test_file_fallback_observes_updater_hash_and_tasks_without_console(probe_ok,
     import hashlib
     from kagent.local_agent_mesh_helper_ready import (
         HELPER_STATUS_READ_PATH, _UPDATER_SOURCE_READ_PATH, _UPDATER_TASK_READ_PATH,
-        _WATCHER_TASK_READ_PATH, _MESH_AGENT_VERSION_READ_LIMIT,
+        _MESH_AGENT_VERSION_READ_LIMIT,
     )
     raw = json.dumps({"status": "installed", "sha256": "a" * 64,
                       "version": "0.3.0-rc2"}).encode()
     source = b"PRIVATE-FIXTURE-SOURCE"
     task = b"PRIVATE-FIXTURE-TASK"
     files = {HELPER_STATUS_READ_PATH: raw, _UPDATER_SOURCE_READ_PATH: source,
-             _UPDATER_TASK_READ_PATH: task, _WATCHER_TASK_READ_PATH: task,
+             _UPDATER_TASK_READ_PATH: task,
              _MESH_AGENT_VERSION_READ_PATHS[0]: version_resource_exe()}
 
     def read_bytes(*, node_ref, file_path, max_bytes, timeout_seconds):
@@ -945,54 +937,39 @@ def test_file_fallback_observes_updater_hash_and_tasks_without_console(probe_ok,
         assert state["updater_source_present"] is True
         assert state["updater_source_sha256"] == hashlib.sha256(source).hexdigest()
         assert state["updater_task_present"] is True
-        assert state["self_heal_task_present"] is True
+        assert "self_heal_task_present" not in state
     else:
         assert not any(k in state for k in ("updater_source_present", "updater_source_sha256",
                                             "updater_task_present", "self_heal_task_present"))
-    assert port.read_bytes.call_count == (5 if probe_ok else 6)
+    assert port.read_bytes.call_count == (4 if probe_ok else 5)
     assert state.get("mesh_agent_version") == ("2026-02-16T00:43:44.000Z" if probe_ok else None)
     assert "PRIVATE-FIXTURE" not in repr(state)
     assert "PRIVATE-FIXTURE" not in capsys.readouterr().out
 
 
-@pytest.mark.parametrize("alias_ok", [True, False])
-def test_task_probe_tries_sysnative_after_no_staged_file_without_inventing_absence(alias_ok, capsys):
+def test_retired_watcher_file_is_never_requested_even_if_missing(capsys):
     from kagent.local_agent_mesh_helper_ready import (
         HELPER_STATUS_READ_PATH, _UPDATER_SOURCE_READ_PATH, _UPDATER_TASK_READ_PATH,
-        _WATCHER_TASK_READ_PATH,
     )
-    from kagent.local_agent_meshcentral_private_reader import MeshCentralReadRefused
-
-    raw = json.dumps({"status": "installed", "sha256": "a" * 64, "version": "0.3.0-rc2"}).encode()
-    watcher_alias = _WATCHER_TASK_READ_PATH.replace("System32", "Sysnative")
+    raw = json.dumps({"status": "installed", "sha256": "a" * 64,
+                      "version": "0.3.0-rc2"}).encode()
     seen = []
 
     def read_bytes(*, node_ref, file_path, max_bytes, timeout_seconds):
-        seen.append((file_path, timeout_seconds))
+        seen.append(file_path)
+        assert "PadiemPcSelfHeal" not in file_path
         if file_path == HELPER_STATUS_READ_PATH:
             return raw
         if file_path in (_UPDATER_SOURCE_READ_PATH, _UPDATER_TASK_READ_PATH):
             return b"fixture"
-        if file_path == watcher_alias and alias_ok:
-            return b"task"
-        assert file_path in (_WATCHER_TASK_READ_PATH, watcher_alias)
-        raise MeshCentralReadRefused("official client wrote no staged read PRIVATE-FIXTURE")
+        raise FileNotFoundError(file_path)
 
     port = Mock(read_bytes=Mock(side_effect=read_bytes))
     post = Mock(return_value=(200, {"ok": True}))
     assert HelperStatusReadFallback(post=post, read_port=port).observe([], [NODE]) == 1
     state = post.call_args.args[1]["helper"]
-    assert validate_helper_ready(state) == state
-    if alias_ok:
-        assert state["self_heal_task_present"] is True
-    else:
-        assert "self_heal_task_present" not in state
-    assert seen.count((_WATCHER_TASK_READ_PATH, 15)) == 1
-    budgets = [budget for path, budget in seen if path == watcher_alias]
-    assert len(budgets) == 1 and 1 <= budgets[0] <= 15
-    log = capsys.readouterr().out
-    assert "self_heal_task reason=" + ("observed" if alias_ok else "no_staged_read") + " attempts=2" in log
-    assert "PRIVATE-FIXTURE" not in log
+    assert "self_heal_task_present" not in state
+    assert all("self_heal_task" not in line for line in capsys.readouterr().out.splitlines())
 
 
 @needs_node
@@ -1041,7 +1018,7 @@ def test_three_pcs_missing_file_legacy_record_and_current_record_each_report(cap
     # #8359 F7: a valid console round's watcher fact survives the file read.
     console = [{"device_id": current, "helper": {**READY, "self_heal_task_present": False}}]
     assert fallback.observe(console, [current]) == 1
-    assert sent[-1]["helper"]["self_heal_task_present"] is False
+    assert "self_heal_task_present" not in sent[-1]["helper"]
     assert sent[-1]["helper"]["helper_version"] == "1.2.3"
     sent.clear()
     assert records[legacy]["helper_status_present"] is True
@@ -1401,11 +1378,3 @@ def test_diagnostic_throttle_is_one_line_per_ref_per_hour(capsys):
     logs = capsys.readouterr().out
     assert logs.count("helper_ready_agent_version read=cached") == 1
     assert logs.count("helper_ready_agent_version read=not_target") == 1
-
-def test_watcher_file_probe_path_matches_registered_task():
-    from kagent.local_agent_mesh_helper_ready import _WATCHER_TASK_READ_PATH
-    from kagent.pc_self_heal_task import TASK_FOLDER, TASK_NAME
-
-    assert _WATCHER_TASK_READ_PATH == (
-        r"C:\Windows\System32\Tasks" + TASK_FOLDER + TASK_NAME
-    )

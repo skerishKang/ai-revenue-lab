@@ -427,13 +427,11 @@ namespace Padiem.Connect
                 try { File.Delete(temp); }
                 catch (Exception) { }
             }
-            // #8193: the SYSTEM watcher is installed beside the agent through
-            // the same fixed-payload, -Force-overwrite, best-effort path as the
-            // updater. There is deliberately no computer-name exception.
-            string selfHealError = RegisterSelfHealWatcher();
-            if (selfHealError.Length != 0)
+            // #8895: Windows SCM recovers the agent; no watcher task is added.
+            // An existing watcher task is not touched by installation.
+            if (!SetAgentServiceRecovery())
             {
-                Say("자가 복구 감시기 등록 실패: " + selfHealError);
+                Say("PC 연결 서비스의 Windows 복구 설정을 적용하지 못했습니다.");
             }
             bool helperConfigured = !string.IsNullOrEmpty(CleanHttps(Value(KeyHelperUrl)))
                 && IsSha256((Value(KeyHelperSha256) ?? "").Trim().ToLowerInvariant());
@@ -1390,20 +1388,6 @@ namespace Padiem.Connect
             catch (Exception) { return null; }
         }
 
-        static string SelfHealPythonExecutable()
-        {
-            string configured = Environment.GetEnvironmentVariable("PADIEM_PYTHON");
-            if (!string.IsNullOrEmpty(configured)) return configured.Trim();
-            string search = Environment.GetEnvironmentVariable("PATH") ?? "";
-            foreach (string entry in search.Split(Path.PathSeparator))
-            {
-                if (string.IsNullOrEmpty(entry)) continue;
-                string candidate = Path.Combine(entry.Trim('"'), "python.exe");
-                if (File.Exists(candidate)) return candidate;
-            }
-            return null;
-        }
-
         internal static string RunSelfHealWatcherCommand(string fixedCommand, string pythonExecutable)
         {
             if (string.IsNullOrEmpty(fixedCommand)) return "missing_fixed_source";
@@ -1433,13 +1417,6 @@ namespace Padiem.Connect
                 }
             }
             catch (Exception) { return "task_process_start_failed"; }
-        }
-
-        static string RegisterSelfHealWatcher()
-        {
-            string python = SelfHealPythonExecutable();
-            if (string.IsNullOrEmpty(python)) return "python_missing";
-            return RunSelfHealWatcherCommand(SelfHealWatcherResource("PadiemSelfHealWatcher"), python);
         }
 
         static string UnregisterSelfHealWatcher()
@@ -2279,6 +2256,16 @@ namespace Padiem.Connect
                 value.Append(character);
             }
             return value.ToString();
+        }
+
+        static bool SetAgentServiceRecovery()
+        {
+            // Only adjust failure actions on the service already installed.
+            string sc = Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.System), "sc.exe");
+            if (!File.Exists(sc)) return false;
+            return StartInstaller(sc, "failure \"" + AgentServiceName
+                + "\" reset= 86400 actions= restart/5000/restart/5000/restart/5000");
         }
 
         static bool StartInstaller(string path, string arguments)
