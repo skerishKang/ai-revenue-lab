@@ -314,7 +314,7 @@ def test_custom_failures_reopen_the_existing_model_card() -> None:
     assert "function handleCustomRequestFailure(error)" in definition_source(
         "handleCustomRequestFailure"
     )
-    app = _app()
+    app = definition_source("handleCustomRequestFailure")
     assert 'const CUSTOM_AUTH_FAILURE_CODE = "custom_provider_auth_failed";' in app
     assert 'code === "custom_credential_required" || code === CUSTOM_AUTH_FAILURE_CODE' in app
     assert "window.PadiemCustomSelection?.open?.();" in app

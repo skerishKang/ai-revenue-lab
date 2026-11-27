@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from _r5_function_source import definition_source
+
 from _support.frontend_ownership import (
     app_js,
     conversation_state_js,
@@ -105,4 +107,5 @@ def test_app_no_longer_controls_rich_render_readiness_via_composer_state() -> No
     assert "messageInput.disabled" not in RICH
     assert "canEnhanceAnswers" not in RICH
     assert 'event.detail.state !== api.states.COMPLETED' in RICH
-    assert 'PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED)' in APP
+    conv = definition_source("renderStoredAssistant")
+    assert 'PadiemChatLifecycle.set(article, deps.MESSAGE_LIFECYCLE.COMPLETED)' in conv

@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from _r5_function_source import definition_source
+
 import re
 
 # #8060: shipped reads live in _support; the copy contracts stay here.
@@ -83,8 +85,9 @@ def test_the_retry_action_is_a_korean_word_not_retry():
 def test_upstream_timeout_reaches_the_screen_as_a_korean_sentence():
     # The code is classified, the classification chooses the copy, and the copy
     # key exists in the Korean table.
-    assert 'error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT' in APP_JS
-    assert 'lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? coreModule().uiT("timeout")' in APP_JS
+    conv = definition_source("lifecycleForError") + "\n" + definition_source("failureStatusLabel")
+    assert 'error && error.code === "upstream_timeout" ? deps.MESSAGE_LIFECYCLE.TIMED_OUT' in conv
+    assert 'lifecycle === deps.MESSAGE_LIFECYCLE.TIMED_OUT ? deps.uiT("timeout")' in conv
     assert re.search(r'"timeout":\s*"[^"]*[가-힣][^"]*"', LOCALE)
 
 

@@ -91,7 +91,8 @@ def test_user_actions_are_always_visible_without_hover():
 
 
 def test_answer_carries_a_completion_time_and_restored_turns_invent_none():
-    assert "article.dataset.completedAt" in APP
+    conv = sheets.sheet("chat-conversation-module.js")
+    assert "article.dataset.completedAt" in conv
     assert 'clock.className = "answer-action-time"' in OUTPUTS
     assert "const completedAt = article.dataset.completedAt" in OUTPUTS
     # A restored conversation is rendered without a live stamp.

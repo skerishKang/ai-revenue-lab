@@ -26,7 +26,7 @@ const fs = require("fs");
 const vm = require("vm");
 const path = require("path");
 const root = process.argv[1];
-const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
+const app = fs.readFileSync(path.join(root, "chat-conversation-module.js"), "utf8");
 const stream = fs.readFileSync(path.join(root, "chat-streaming-module.js"), "utf8");
 const transport = fs.readFileSync(path.join(root, "chat-transport.js"), "utf8");
 
@@ -63,6 +63,7 @@ const context = {
   selectedAttachment: null,
   clearAttachment() {},
 };
+context.deps = Object.assign(context, {openClawWorkspace: context.navModuleInstance.openClawWorkspace, renderProjectState: context.projectModule.renderProjectState});
 const build = vm.runInNewContext("(" + app.slice(start, end) + ")", context);
 const args = ["engine failed", {remove() {}}, [], "auto", null,
               {conversationId:null,project:null}];

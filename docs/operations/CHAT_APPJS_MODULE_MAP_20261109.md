@@ -907,3 +907,10 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - **CI 정적 계약 적응**: 전체 pytest에서 드러난 7개 실패는 프로젝트·네비·Claw 상태 모듈로 읽기 대상과 레지스트리 스텁을 옮겨 복구했다. route inventory에는 프로젝트 모듈을 추가했다. main에서도 동일하게 실패하는 council entry 계약 1건은 이 변경의 범위 밖이다.
 - **구조 래칫**: exact main 기준 13 passed, 늘어난 비교 수치 0.
 - **부팅 장부**: 외부 Windows 측정 호스트가 Tailscale 오프라인이라 1440·390 재측정은 미실행이다. 측정 완료 전에는 통과로 보고하지 않는다.
+
+### #7809 T2 stage 2 (2026-11-27)
+
+- app.js: 1783 -> 1598 lines. Existing conversation registry owns 13 additional functions: lifecycleForError, addAssistantShell, renderStoredAssistant, renderWebGroundingNotice, clawBoundedRefusalCopy, clawGeneralFailure, buildRetryBox, revealErrorState, failureCodeNote, failureStatusLabel, renderError, renderCancelled, handleCustomRequestFailure.
+- Constants moved with their consumers: CLAW_BOUNDED_REFUSAL_COPY, CUSTOM_AUTH_FAILURE_CODE, FAILURE_CODE_PATTERN.
+- Existing live app context getter/setter for activeProject is reused; the retry test verifies the original closure state and project rendering observe retryContext.project. No new global.
+- tools/verify_7809_t2_stage2.py compares all 13 definitions with the base after only explicit dependency-reference substitutions, plus exact constant comparisons.

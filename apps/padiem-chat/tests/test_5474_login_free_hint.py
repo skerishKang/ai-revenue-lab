@@ -105,7 +105,7 @@ def test_the_chat_routes_refuse_a_guest_with_login_required():
 
 
 def test_the_claw_ui_maps_login_required_to_the_login_guidance():
-    client = read_static("app.js")
+    client = read_static("chat-conversation-module.js")
     assert "login_required: Object.freeze({" in client
     assert '"claw-login-required-note"' in client
     locale = sheets.locale_source()

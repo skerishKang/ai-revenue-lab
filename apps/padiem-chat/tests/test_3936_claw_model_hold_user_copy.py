@@ -43,7 +43,7 @@ const fs = require("fs");
 const vm = require("vm");
 const path = require("path");
 const root = process.argv[1];
-const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
+const app = fs.readFileSync(path.join(root, "chat-conversation-module.js"), "utf8");
 const stream = fs.readFileSync(path.join(root, "chat-streaming-module.js"), "utf8");
 
 function assert(condition, label) { if (!condition) throw Error(label); }
@@ -84,6 +84,7 @@ const context = {
   selectedAttachment: null,
   clearAttachment() {},
 };
+context.deps = Object.assign(context, { openClawWorkspace: context.navModuleInstance.openClawWorkspace, renderProjectState: context.projectModule.renderProjectState });
 const api = vm.runInNewContext(
   "(function(){" + app.slice(start, end) + "\nreturn { clawGeneralFailure, buildRetryBox };\n})()",
   context,
@@ -199,7 +200,7 @@ def test_hold_copy_locale_parity_and_single_wording_authority():
 def test_bounded_copy_is_applied_at_every_claw_failure_surface():
     # Live SSE error frame, streamed-partial catch, and the caller catch are the
     # three places that previously collapsed every Claw failure to unknown.
-    assert APP.count("clawGeneralFailure(") == 2  # 1 definition + 1 streamingModule deps getter in app.js
+    assert APP.count("clawGeneralFailure(") == 1  # 1 definition + 1 streamingModule deps getter in app.js
     assert STREAM.count("deps.clawGeneralFailure(") == 3  # 3 call sites in chat-streaming-module.js
     assert "const terminalFailure = deps.chatTransport.errorFor(data, message);" in STREAM
     assert "deps.renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, deps.lifecycleForError(terminalFailure), clawFailure, terminalFailure.code)" in STREAM
@@ -237,7 +238,7 @@ NODE_RENDERER = r"""
 const vm=require("vm"),fs=require("fs"),path=require("path");
 const dir=process.argv[1];
 const read=n=>fs.readFileSync(path.join(dir,n),"utf8");
-const app=read("app.js");
+const app=read("chat-conversation-module.js");
 function assert(v,m){if(!v)throw Error(m)}
 function element(type){
   return {tagName:type.toUpperCase(),textContent:"",children:[],dataset:{},className:"",handlers:{},
@@ -264,7 +265,7 @@ const lifeStart=app.indexOf("  function lifecycleForError(");
 // R5 B2-4: `setNavActive` is now a one-line forwarder and the Nav creation block
 // (immediate create) sits before it; stop at that block so the slice is only the
 // lifecycle mapper this harness evaluates.
-const lifeEnd=app.indexOf("\n  const navModuleInstance = app.provide(\"nav\", window.PadiemChatNavModule.create(",lifeStart);
+const lifeEnd=app.indexOf("\n  }",lifeStart)+4;
 assert(lifeStart>=0&&lifeEnd>lifeStart,"lifecycle mapper located");
 vm.runInContext(app.slice(lifeStart,lifeEnd),ctx);
 
@@ -281,6 +282,7 @@ ctx.chatTransport=Object.assign({},win.PadiemChatTransport,{
   readSseEvents:async(_r,fn)=>{for(const f of sent){if(await fn(f))break}},
 });
 ctx.uiT=k=>k;
+ctx.deps=ctx;
 // B7 (12차, core 등록부): sliced failure helpers reach copy through it.
 ctx.coreModule=()=>({uiT:k=>k});
 ctx.MESSAGE_LIFECYCLE={FAILED:"failed",COMPLETED:"completed",TIMED_OUT:"timed_out",

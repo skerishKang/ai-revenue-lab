@@ -19,7 +19,7 @@
     get mappedUiError() { return coreModule().mappedUiError; },
     get approvedMemoryErrorMessage() { return conversationModule().approvedMemoryErrorMessage; },
     get safeLocalUiMessage() { return conversationModule().safeLocalUiMessage; },
-    get failureCodeNote() { return failureCodeNote; },
+    get failureCodeNote() { return conversationModule().failureCodeNote; },
     get openSavedConversation() { return openSavedConversation; },
     get downloadClawArtifact() { return clawRun.downloadClawArtifact; },
     get clawRunHistoryPdfControllers() { return clawRunHistoryPdfControllers; },
@@ -126,9 +126,9 @@
     get profileToggle() { return profileToggle; },
     get renderProjectState() { return projectModule.renderProjectState; },
     get renderStreamError() { return conversationModule().renderStreamError; },
-    get renderWebGroundingNotice() { return renderWebGroundingNotice; },
+    get renderWebGroundingNotice() { return conversationModule().renderWebGroundingNotice; },
     get resetConversationView() { return conversationModule().resetConversationView; },
-    get revealErrorState() { return revealErrorState; },
+    get revealErrorState() { return conversationModule().revealErrorState; },
     get reviewedGoogleAuthorizationUrl() { return authModule().reviewedGoogleAuthorizationUrl; },
     get selectedProductTier() { return settings.selectedProductTier; },
     get setAuthFormError() { return loginDialogModule().setAuthFormError; },
@@ -294,11 +294,11 @@
         get attachmentCountLimit() { return conversationModule().attachmentCountLimit; },
         get attachmentFileInput() { return attachmentFileInput; },
         get binaryDocuments() { return binaryDocuments; },
-        get buildRetryBox() { return buildRetryBox; },
+        get buildRetryBox() { return conversationModule().buildRetryBox; },
         get cancelStreamButton() { return cancelStreamButton; },
         get clearAttachment() { return conversationModule().clearAttachment; },
         get extensionOf() { return coreModule().extensionOf; },
-        get failureStatusLabel() { return failureStatusLabel; },
+        get failureStatusLabel() { return conversationModule().failureStatusLabel; },
         get form() { return form; },
         get formatBytes() { return coreModule().formatBytes; },
         get formatClockTime() { return coreModule().formatClockTime; },
@@ -323,17 +323,17 @@
   const streaming = app.provide("streaming",
     window.PadiemChatStreamingModule.create(Object.setPrototypeOf({
 
-      get addAssistantShell() { return addAssistantShell; },
+      get addAssistantShell() { return conversationModule().addAssistantShell; },
       get applyStreamDone() { return streaming.applyStreamDone; },
       get attachmentPayload() { return conversationModule().attachmentPayload; },
-      get clawGeneralFailure() { return clawGeneralFailure; },
-      get handleCustomRequestFailure() { return handleCustomRequestFailure; },
+      get clawGeneralFailure() { return conversationModule().clawGeneralFailure; },
+      get handleCustomRequestFailure() { return conversationModule().handleCustomRequestFailure; },
       get invalidateClawRunsRead() { return app.invalidateClawRunsRead; },
-      get lifecycleForError() { return lifecycleForError; },
+      get lifecycleForError() { return conversationModule().lifecycleForError; },
       get recoverStoredPcResult() { return pcRunModuleInstance.recoverStoredPcResult; },
       get renderAnswer() { return conversationModule().renderAnswer; },
-      get renderCancelled() { return renderCancelled; },
-      get renderError() { return renderError; },
+      get renderCancelled() { return conversationModule().renderCancelled; },
+      get renderError() { return conversationModule().renderError; },
       get renderTyping() { return historyModule().renderTyping; },
       get requestCompletedAnswer() { return streaming.requestCompletedAnswer; },
       get requestStreamingAnswer() { return streaming.requestStreamingAnswer; },
@@ -466,7 +466,7 @@
     window.PadiemChatProjectModule.create(Object.setPrototypeOf({
 
       get binaryDocuments() { return binaryDocuments; },
-      get failureCodeNote() { return failureCodeNote; },
+      get failureCodeNote() { return conversationModule().failureCodeNote; },
       get fetch() { return fetch.bind(window); },
       get selectedAttachments() { return selectedAttachments; },
 
@@ -551,9 +551,6 @@
     if (!input.value.trim() && !inFlight) conversationModule().showComposerInlineHint("composer-empty-message");
   });
 
-  function lifecycleForError(error) {
-    return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
-  }
   // #4862: Claw is a restorable product route, exactly like Automation.
   // The fragment names the destination only. It never carries a user id,
   // session token or conversation id, so a reload after logout or an account
@@ -613,191 +610,21 @@
   // stage, a failure) is never removed by accident. The calls go through the
   // global because a single-function harness evaluates this file's function in
   // a bare scope.
-  function addAssistantShell(label, runtimeState) {
-    const fragment = document.getElementById("assistantMessageTemplate").content.cloneNode(true);
-    const article = fragment.querySelector(".assistant-message");
-    // #3931: identify the product whose conversation is currently rendered.
-    // The shared shell is not evidence that a Claw run came from Chat.
-    const productLabel = article.querySelector("[data-assistant-product]");
-    if (productLabel) productLabel.textContent = shell.dataset.state === "claw" ? "Padiem Claw" : "Padiem Chat";
-    article.querySelector("[data-runtime-label]").textContent = label;
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, label, runtimeState || "preparing");
-    messageList.appendChild(fragment);
-    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
-    return article;
-  }
-  function renderStoredAssistant(text, stored) {
-    const article = addAssistantShell(coreModule().uiT("stored-conversation"), "status");
-    // 11-03 audit: the chip named what it is without saying why it is there.
-    // The hint rides the shared tooltip, so a hover, a keyboard focus and a
-    // tap all read the same one line.
-    const chip = article.querySelector("[data-runtime-label]");
-    if (chip) {
-      chip.dataset.localeTitle = "stored-conversation-hint";
-      window.PadiemSharedTooltip?.label?.(chip, coreModule().uiT("stored-conversation-hint"));
-    }
-    // A restored turn shows a time only when the store actually carries one.
-    // Older records have no per-message time, and none is invented for them.
-    const storedAt = stored && typeof stored.completed_at === "string" ? stored.completed_at : "";
-    if (storedAt) article.dataset.completedAt = storedAt;
-    const content = article.querySelector(".assistant-content");
-    const paragraph = document.createElement("p");
-    paragraph.textContent = text;
-    content.appendChild(paragraph);
-    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
-  }
-  function renderWebGroundingNotice(content, notice, metadata) {
-    const code = metadata && metadata.web_grounding_error;
-    const key = code === "web_grounding_no_evidence" ? "web-grounding-no-evidence-notice"
-      : ["web_grounding_auth_error", "web_grounding_unavailable"].includes(code) ? "web-grounding-unavailable-notice" : null;
-    if (!key || typeof notice !== "string") return;
-    let note = content.querySelector(".web-grounding-notice");
-    if (!note) {
-      note = document.createElement("p");
-      note.className = "web-grounding-notice reference-note";
-      note.setAttribute("role", "status");
-      content.prepend(note);
-    }
-    note.dataset.localeKey = key;
-    note.textContent = coreModule().uiT(key);
-  }
   // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
   // must not wear the generic "this run may already have started" state. Closed
   // code→copy map only: a raw server, Engine or provider string is never shown.
-  const CLAW_BOUNDED_REFUSAL_COPY = Object.freeze({
-    // Owner decision 2026-11-05: a guest Claw request is refused with 401
-    // login_required; the UI names the login step instead of a generic error.
-    tier_unavailable: Object.freeze({ message: "claw-general-model-unavailable", hint: "claw-general-model-unavailable-note" }),
-    login_required: Object.freeze({ message: "claw-error-auth-needed", hint: "claw-login-required-note" }),
-    // #7960: the Chat session is live but the shared B54 canonical session has
-    // expired, so a PC command cannot resolve its owner; the copy keeps the same
-    // re-login walk the server message states instead of a generic retry sentence.
-    chat_pc_b54_session_expired: Object.freeze({ message: "claw-b54-session-expired", hint: "claw-b54-session-expired-note" }),
-  });
   // Closed server code for a rejected customer-owned key. Named here so the
   // streaming answer region keeps no provider vocabulary of its own.
-  const CUSTOM_AUTH_FAILURE_CODE = "custom_provider_auth_failed";
   // #3933: ONE lookup for every Claw failure surface. The composer lane, the live
   // SSE lane and the manual-intake lane all resolve the same server code through
   // this function, so a bounded refusal can never render two different sentences
   // or drift into a second invented copy. `Object.hasOwn` only: an inherited or
   // spoofed key never selects copy, and an unlisted code returns null so each
   // caller keeps its own existing fallback.
-  function clawBoundedRefusalCopy(code) {
-    const entry = typeof code === "string" && Object.hasOwn(CLAW_BOUNDED_REFUSAL_COPY, code)
-      ? CLAW_BOUNDED_REFUSAL_COPY[code]
-      : null;
-    if (!entry) return null;
-    return Object.freeze({ message: coreModule().uiT(entry.message), hint: coreModule().uiT(entry.hint) });
-  }
-  function clawGeneralFailure(code) {
-    const bounded = clawBoundedRefusalCopy(code);
-    if (bounded) return bounded;
-    return Object.freeze({
-      message: window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang)
-        || coreModule().uiT("claw-general-check-runs"),
-      hint: coreModule().uiT("claw-general-check-runs"),
-    });
-  }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = coreModule().uiT("retry"), clawFailure = null) {
-    const box = document.createElement("div");
-    box.className = "error-box";
-    const strong = document.createElement("strong");
-    strong.textContent = coreModule().uiT("answer-load-failed");
-    const p = document.createElement("p");
-    p.textContent = message || coreModule().uiT("try-again");
-    const retry = document.createElement("button");
-    retry.type = "button";
-    retry.className = "retry-button";
-    retry.textContent = actionLabel;
-    // #3566: the general Claw P01 lane may already have dispatched before a
-    // terminal Engine error. Do not offer a one-click replay (even manual)
-    // until the operator checks existing results. Ordinary Chat retains its
-    // established retry behavior; this guard is Claw-general only.
-    if (clawGeneralRequest) {
-      const hint = document.createElement("p");
-      hint.textContent = coreModule().uiT("claw-general-check-runs");
-      // A provable pre-dispatch refusal has no run to check, so its next step is
-      // a different model rather than the existing run-history guidance.
-      if (clawFailure && clawFailure.hint) hint.textContent = clawFailure.hint;
-      // #3935: navigation only. This button opens the existing owner-scoped
-      // GET /api/claw/runs history and never replays the failed P01 POST.
-      const openRuns = document.createElement("button");
-      openRuns.type = "button";
-      openRuns.className = "claw-inbox-retry claw-check-runs-button";
-      openRuns.textContent = coreModule().uiT("claw-general-open-runs");
-      openRuns.disabled = authState.authenticated !== true;
-      openRuns.addEventListener("click", () => {
-        if (authState.authenticated !== true) return;
-        navModuleInstance.openClawWorkspace(); // refresh is handled by existing owner-scoped history UI
-        const history = document.getElementById("clawRunHistory");
-        if (!history || history.hidden) return;
-        // #4488 Phase A: the panel is progressive disclosure; open it so the
-        // navigation target is actually visible and focusable.
-        const historyDisclosure = document.getElementById("clawRunHistoryDisclosure");
-        if (historyDisclosure) historyDisclosure.open = true;
-        history.scrollIntoView?.({ block: "start", behavior: "smooth" });
-        history.querySelector?.("#clawRunHistoryRefresh")?.focus?.();
-      });
-      box.append(strong, p, hint, openRuns);
-      return box;
-    }
-    retry.addEventListener("click", async () => {
-      article.remove();
-      // #2505: the retry replays the request on the product that made it, with
-      // the one shared conversation id.
-      conversationState.setProduct?.(retryContext.product || conversationProduct);
-      conversationState.setConversationId(retryContext.conversationId);
-      activeProject = retryContext.project;
-      projectModule.renderProjectState();
-      const success = await streaming.requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, true);
-      if (success && selectedAttachments === retryAttachment) conversationModule().clearAttachment();
-    }, { once: true });
-    box.append(strong, p, retry);
-    return box;
-  }
-  function revealErrorState(article) {
-    article.scrollIntoView({ block: "center", behavior: "auto" });
-  }
   // #5568: one bounded reason line under a Chat failure. Only the server's
   // compact code identifier is rendered; the message copy stays server/locale
   // authored. Claw keeps its existing refusal/recovery presentation, and an
   // unexpected string is never echoed into the notice.
-  const FAILURE_CODE_PATTERN = /^[a-z][a-z0-9_]{0,63}$/;
-  function failureCodeNote(errorCode, label) {
-    if (typeof errorCode !== "string" || !FAILURE_CODE_PATTERN.test(errorCode)) return null;
-    const note = document.createElement("small");
-    note.className = "error-code";
-    note.textContent = coreModule().uiT("error-code-reference") + ": " + errorCode;
-    return note;
-  }
-  function failureStatusLabel(lifecycle) {
-    return lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? coreModule().uiT("timeout") : coreModule().uiT("connection-error");
-  }
-  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null, errorCode = "") {
-    const content = article.querySelector(".assistant-content");
-    content.replaceChildren();
-    const statusLabel = failureStatusLabel(lifecycle);
-    article.querySelector("[data-runtime-label]").textContent = statusLabel;
-    // A failure is a real status: the chip stays visible with its own copy.
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, statusLabel, "status");
-    const box = buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, undefined, clawFailure);
-    const codeNote = clawGeneralRequest ? null : failureCodeNote(errorCode, statusLabel);
-    if (codeNote) box.appendChild(codeNote);
-    content.appendChild(box);
-    PadiemChatLifecycle.set(article, lifecycle);
-    revealErrorState(article);
-  }
-  function renderCancelled(article, retryMessages, retrySkill, retryContext, clawGeneralRequest = false) {
-    const content = article.querySelector(".assistant-content");
-    const typing = content.querySelector(".typing");
-    if (typing) typing.remove();
-    article.querySelector("[data-runtime-label]").textContent = coreModule().uiT("generation-cancelled");
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, coreModule().uiT("generation-cancelled"), "status");
-    content.appendChild(buildRetryBox(coreModule().uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, coreModule().uiT("regenerate")));
-    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
-    revealErrorState(article);
-  }
 
   // #5479: one presentation rule for every session state, so the sign-in entry
   // point can never disappear just because the session state could not be read.
@@ -1023,7 +850,7 @@
       data.conversation.messages.forEach((item) => {
         if (!item || typeof item.content !== "string") return;
         if (item.role === "user") conversationModule().addUserMessage(item.content, null, { restored: true });
-        if (item.role === "assistant") renderStoredAssistant(item.content, item);
+        if (item.role === "assistant") conversationModule().renderStoredAssistant(item.content, item);
         if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content }, targetProduct);
       });
       // #5895: keep showing a PC turn that is still running on the server, and
@@ -1127,18 +954,6 @@
   // A failed PADIEM Custom request that needs the customer's key reopens the
   // existing model card. No second dialog and no generic fallback to a PADIEM
   // tier: the server's error message stays in the answer bubble.
-  function handleCustomRequestFailure(error) {
-    const code = error && typeof error.code === "string" ? error.code : "";
-    if (code === "custom_credential_required" || code === CUSTOM_AUTH_FAILURE_CODE) {
-      window.PadiemCustomSelection?.open?.();
-      void window.PadiemCustomSelection?.refresh?.();
-      return;
-    }
-    if (code === "unauthorized" && window.PadiemCustomSelection?.get?.()) {
-      window.PadiemCustomSelection?.open?.();
-      void authModule().loadAuthStatus();
-    }
-  }
 
   // R5 B7: requestAnswer is on the registry (provide("streaming")).
   // #3539: the generic B54 Claw composer runs on the canonical P01 Engine lane.
@@ -1370,7 +1185,7 @@
     window.PadiemChatClawRunModule.create(Object.setPrototypeOf({
 
     get clawResultBadge() { return clawResultBadge; },
-    get clawBoundedRefusalCopy() { return clawBoundedRefusalCopy; },
+    get clawBoundedRefusalCopy() { return conversationModule().clawBoundedRefusalCopy; },
     get approvalDecisionErrorMessage() { return conversationModule().approvalDecisionErrorMessage; },
         get loadClawRunHistory() { return runHistory.loadClawRunHistory; },
     get clawRetryRemaining() { return clawStatusModule().clawRetryRemaining; },

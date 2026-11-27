@@ -39,6 +39,8 @@ backend change; fail-closed backend behavior and Chat streaming stay untouched.
 """
 
 from __future__ import annotations
+
+from _r5_function_source import definition_source
 import locale_bundle
 
 from functools import lru_cache
@@ -212,7 +214,8 @@ def test_chat_conversation_path_is_unchanged() -> None:
     app = _app_source()
     stream = claw_lane_source.streaming_source()
     assert stream.count("deps.conversationState.setConversationId(data.conversation_id);") == 2
-    assert app.count("conversationState.setConversationId(retryContext.conversationId);") == 1
+    conv = definition_source("buildRetryBox")
+    assert conv.count("deps.conversationState.setConversationId(retryContext.conversationId);") == 1
     # Chat still owns its streaming/completed echo; Claw gained a parallel
     # gated write without touching these.
     assert 'if (typeof data.conversation_id === "string") deps.conversationState.setConversationId(data.conversation_id);' in stream

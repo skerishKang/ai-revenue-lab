@@ -6,7 +6,7 @@ const vm = require("node:vm");
 const staticDir = path.join(__dirname, "..", "static");
 global.window = globalThis;
 vm.runInThisContext(fs.readFileSync(path.join(staticDir, "chat-transport.js"), "utf8"));
-const app = fs.readFileSync(path.join(staticDir, "app.js"), "utf8");
+const app = fs.readFileSync(path.join(staticDir, "chat-conversation-module.js"), "utf8");
 const start = app.indexOf("  const FAILURE_CODE_PATTERN =");
 // B7 18차+19차: the renderStreamError forwarder is gone from app.js; the
 // app-owned error renderers end at renderCancelled.
@@ -30,6 +30,7 @@ const context = {
   buildRetryBox: (message) => ({message, children: [], appendChild(child) {this.children.push(child);}}),
   revealErrorState: () => {},
 };
+context.deps=context;
 const render = vm.runInNewContext("(function(){" + app.slice(start, end) +
   "\n" + conv.slice(convStart, convEnd).replace(/deps\./g, "") +
   "\nreturn {renderError, renderStreamError};})()", context);

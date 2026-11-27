@@ -266,7 +266,7 @@ def test_stream_error_guard_and_completed_paths_remain_present() -> None:
     assert "deps.renderStreamError(article, message" in stream
     assert "deps.renderStreamError(article, error instanceof Error" in stream
     assert 'paragraph.textContent = result.answer;' in conv
-    assert 'paragraph.textContent = text;' in app
+    assert 'paragraph.textContent = text;' in conv
 
 
 def test_slice21_tool_transport_contract_is_not_reimplemented_here() -> None:

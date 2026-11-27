@@ -102,7 +102,7 @@ def _harness() -> str:
     extracted = "\n\n".join(
         [SOURCE[product_start:product_end]]
         + [_nav_function("switchConversationProduct")]
-        + [SOURCE[map_start:map_end]]
+        + [SOURCE[map_start:map_end].replace("deps.", "")]
         + [_conv_function(name) if name == "showConversation"
            else _stream_function(name) if name in ("requestAnswer", "requestStreamingAnswer")
            else _js_function(AUTH_SOURCE if name == "requireSessionForModelUse" else SOURCE, name)
