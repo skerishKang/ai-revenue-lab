@@ -148,7 +148,7 @@ def rig(monkeypatch):
     conn = sqlite3.connect(":memory:")
     conn.row_factory = sqlite3.Row
     migrations = Path(__file__).resolve().parents[1] / "migrations"
-    for num in (128, 130, 131, 132, 137, 139):
+    for num in (128, 130, 131, 132, 137, 139, 143):
         conn.executescript(next(migrations.glob(str(num) + "_*.sql")).read_text())
     db = SqliteD1(conn)
     queue, history = Queue(), History()
@@ -1057,4 +1057,103 @@ def test_unnotified_terminal_job_and_unknown_state_stay_fast_8772(rig, monkeypat
             async def in_flight(self):
                 raise RuntimeError("db unavailable")
         assert await host.next_delay(Broken()) == 60
+    asyncio.run(run())
+
+
+def _make_watcher_probe_unknown(queue):
+    queue.state["updater_source_sha256"] = SOURCE_SHA256
+    queue.state["updater_task_present"] = True
+    queue.state["helper_version"] = RELEASE["version"]
+    queue.state.pop("self_heal_task_present", None)
+
+
+def test_probe_needed_24h_ops_notice_once_no_raw_pc_or_reservation(rig, caplog):
+    app, queue, history, flags, store, db = rig
+    _make_watcher_probe_unknown(queue)
+
+    async def run():
+        initial = queue.now
+        # Preserve a continuous 15-minute cadence for a full day.
+        for quarter in range(24 * 4 + 1):
+            queue.now = initial + timedelta(minutes=15 * quarter)
+            await host.maintenance_round(app, ENV, store)
+        assert db.execute("SELECT COUNT(*) FROM ops_alert_outbox").fetchone()[0] == 0
+        queue.now = initial + timedelta(hours=24, minutes=15)
+        await host.maintenance_round(app, ENV, store)
+        assert not history.rows and not history.runs and not flags["reads"]
+        assert db.execute("SELECT COUNT(*) FROM pc_helper_auto_attempts").fetchone()[0] == 0
+        rows = list(db.execute(
+            "SELECT notify_title,notify_source_id,target_id FROM ops_alert_outbox "
+            "WHERE notify_kind='pc_maintenance'"))
+        assert len(rows) == 1
+        assert all(DEVICE not in str(column) and UID not in str(column)
+                   for column in rows[0])
+        assert "24시간" in rows[0]["notify_title"]
+        episode = db.execute(
+            "SELECT first_seen_at,last_seen_at,notified_at FROM pc_maintenance_probe_needed"
+        ).fetchone()
+        assert episode["notified_at"] is not None
+        queue.now += timedelta(minutes=15)
+        await host.maintenance_round(app, ENV, store)
+        assert db.execute("SELECT COUNT(*) FROM ops_alert_outbox").fetchone()[0] == 1
+
+        # Verified watcher resolves the episode and removes its pending row.
+        queue.state["self_heal_task_present"] = True
+        queue.now += timedelta(minutes=15)
+        await host.maintenance_round(app, ENV, store)
+        assert db.execute("SELECT COUNT(*) FROM pc_maintenance_probe_needed").fetchone()[0] == 0
+
+        # A new unknown episode must not inherit yesterday's timer.
+        queue.state.pop("self_heal_task_present", None)
+        queue.now += timedelta(minutes=15)
+        await host.maintenance_round(app, ENV, store)
+        assert db.execute("SELECT COUNT(*) FROM ops_alert_outbox").fetchone()[0] == 1
+    asyncio.run(run())
+    assert DEVICE not in caplog.text and UID not in caplog.text
+
+
+def test_probe_needed_gap_resets_continuity_not_alerted(rig):
+    app, queue, history, flags, store, db = rig
+    _make_watcher_probe_unknown(queue)
+
+    async def run():
+        initial = queue.now
+        await host.maintenance_round(app, ENV, store)
+        queue.now = initial + timedelta(hours=24, minutes=15)
+        await host.maintenance_round(app, ENV, store)
+        # No fresh evidence in the intervening 24 hours: new episode.
+        assert db.execute("SELECT COUNT(*) FROM ops_alert_outbox").fetchone()[0] == 0
+        row = db.execute("SELECT first_seen_at FROM pc_maintenance_probe_needed").fetchone()
+        assert host._time(row[0]) == queue.now
+    asyncio.run(run())
+
+
+def test_probe_needed_outbox_failure_retries_once(rig, monkeypatch):
+    app, queue, history, flags, store, db = rig
+    _make_watcher_probe_unknown(queue)
+    sent = []
+    real_enqueue = app.state.ops_alert_store.enqueue_event
+
+    async def flaky(event):
+        sent.append(event)
+        if len(sent) == 1:
+            raise RuntimeError("test outbox outage")
+        return await real_enqueue(event)
+
+    monkeypatch.setattr(app.state.ops_alert_store, "enqueue_event", flaky)
+
+    async def run():
+        start = queue.now
+        for quarter in range(24 * 4 + 2):
+            queue.now = start + timedelta(minutes=15 * quarter)
+            await host.maintenance_round(app, ENV, store)
+        assert len(sent) == 1
+        assert db.execute("SELECT notified_at FROM pc_maintenance_probe_needed").fetchone()[0] is None
+        queue.now += timedelta(minutes=15)
+        await host.maintenance_round(app, ENV, store)
+        assert len(sent) == 2
+        assert db.execute("SELECT COUNT(*) FROM ops_alert_outbox").fetchone()[0] == 1
+        queue.now += timedelta(minutes=15)
+        await host.maintenance_round(app, ENV, store)
+        assert len(sent) == 2
     asyncio.run(run())

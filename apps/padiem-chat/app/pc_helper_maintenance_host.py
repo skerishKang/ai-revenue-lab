@@ -37,6 +37,10 @@ logger = logging.getLogger(__name__)
 #: its receipt/observation keeps the old 60 s cadence, because TTL,
 #: VERIFY_SECONDS and the 180 s observation window below are tuned to it.
 IDLE_INTERVAL = 900
+# An unanswered authenticated watcher/updater probe is tracked without
+# reserving or contacting a PC. A missed/failed observation breaks continuity.
+PROBE_ALERT_AFTER = timedelta(hours=24)
+PROBE_MAX_GAP = timedelta(seconds=IDLE_INTERVAL * 3)
 INTERVAL = 60  # active cadence (unchanged)
 TTL = 300
 VERIFY_SECONDS = 600
@@ -128,6 +132,44 @@ class HostMaintenanceStore(MaintenanceAttemptStore):
         if rows:
             await self.settle(claim, now=_stamp(now), verified=result == "verified", proof=proof)
 
+    async def observe_probe_needed(self, device, now):
+        """Record consecutive unknown observations; return due episode once.
+
+        Only the digest of the verified device is persisted; an observation
+        interrupted by 45 minutes or clock rollback starts a new episode.
+        """
+        fingerprint = _key(device)
+        stamp = _stamp(now)
+        cutoff = _stamp(now - PROBE_MAX_GAP)
+        rows = await self.rows(
+            "INSERT INTO pc_maintenance_probe_needed "
+            "(device_hash,first_seen_at,last_seen_at,notified_at) "
+            "VALUES (?,?,?,NULL) "
+            "ON CONFLICT(device_hash) DO UPDATE SET "
+            "first_seen_at=CASE WHEN last_seen_at<? OR last_seen_at>? "
+            "THEN excluded.first_seen_at ELSE first_seen_at END, "
+            "notified_at=CASE WHEN last_seen_at<? OR last_seen_at>? "
+            "THEN NULL ELSE notified_at END, "
+            "last_seen_at=excluded.last_seen_at "
+            "RETURNING first_seen_at,notified_at",
+            fingerprint, stamp, stamp, cutoff, stamp, cutoff, stamp)
+        if not rows or rows[0]["notified_at"] is not None:
+            return None
+        first = _time(rows[0]["first_seen_at"])
+        if first is None or now - first <= PROBE_ALERT_AFTER:
+            return None
+        return rows[0]["first_seen_at"]
+
+    async def mark_probe_notified(self, device, first_seen, now):
+        return bool(await self.rows(
+            "UPDATE pc_maintenance_probe_needed SET notified_at=? "
+            "WHERE device_hash=? AND first_seen_at=? AND notified_at IS NULL "
+            "RETURNING device_hash", _stamp(now), _key(device), first_seen))
+
+    async def clear_probe_needed(self, device):
+        await self.rows(
+            "DELETE FROM pc_maintenance_probe_needed WHERE device_hash=?", _key(device))
+
     async def in_flight(self):
         """True while any attempt still needs the fast cadence (read-only).
 
@@ -192,6 +234,22 @@ async def _notice(state, device, token, outcome, *, failure=True):
             from .ops_alert_delivery import schedule_event_delivery
             schedule_event_delivery(state, alert_id=alert)
     return True
+
+
+async def _notify_stale_probe(state, device, first_seen):
+    """Use the established #8105 ops outbox, never the raw PC name/ID."""
+    fingerprint = _key(device)
+    source_id = _key(fingerprint, first_seen, "probe_needed_24h")
+    alert_id = await state.ops_alert_store.enqueue_event({
+        "site": "pc", "kind": "pc_maintenance", "audience": "real",
+        "title": "관리 PC 감시 상태 24시간 이상 확인 불가 (" + fingerprint[-6:] + ")",
+        "source_id": source_id,
+    })
+    # A replay of an already-persisted alert returns None: it is still
+    # safe to mark the episode notified, without creating a second alert.
+    if alert_id:
+        from .ops_alert_delivery import schedule_event_delivery
+        schedule_event_delivery(state, alert_id=alert_id)
 
 
 def _diagnostic():
@@ -444,6 +502,11 @@ async def consider_device(app, env, store, device, *, now=None, report=None):
     if digest is None:
         report["outcome"] = ("probe_needed" if report["maintenance_candidate"] == "probe_needed"
                              else "candidate_denied")
+        if report["outcome"] == "probe_needed":
+            first_seen = await store.observe_probe_needed(device, now)
+            if first_seen is not None:
+                await _notify_stale_probe(state, device, first_seen)
+                await store.mark_probe_notified(device, first_seen, now)
         return
     # #8772: a PC whose attempt for this exact source is stopped, in flight or
     # over the shared limit cannot be claimed this round whatever the owner
@@ -676,6 +739,10 @@ async def maintenance_round(app, env, store):
             else:
                 report["managed"] = "listed"
                 await consider_device(app, env, store, device, report=report)
+            # A healthy/mismatched/offline/unmanaged observation breaks the
+            # unresolved-probe streak. Never reuse yesterday's first_seen.
+            if report["outcome"] != "probe_needed":
+                await store.clear_probe_needed(device)
         except Exception:
             report["outcome"] = "error_" + report["outcome"]
         finally:
