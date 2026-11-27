@@ -612,6 +612,7 @@ def _run_stage2_harness() -> dict:
                 sheets.static_path("util-tools.js"),
                 sheets.static_path("util-quote.js"),
                 sheets.static_path("util-pdfmd-pages.js"),
+                sheets.static_path("util-pdfmd-recovery.js"),
                 sheets.static_path("util-pdfmd.js"),
                 sheets.static_path("util-app.js"),
             ],

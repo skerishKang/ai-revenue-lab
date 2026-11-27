@@ -96,7 +96,8 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 
 const pagesPath = process.argv[2];
-const pdfmdPath = process.argv[3];
+const recoveryPath = process.argv[3];
+const pdfmdPath = process.argv[4];
 
 class N {
   constructor(tag) {
@@ -135,6 +136,13 @@ class N {
   appendChild(child) { this.children.push(child); child.parentNode = this; return child; }
   append(...children) { children.forEach((child) => this.appendChild(child)); }
   replaceChildren(...children) { this.children = []; this.append(...children); }
+  insertBefore(node, ref) {
+    const at = ref ? this.children.indexOf(ref) : -1;
+    if (at === -1) return this.appendChild(node);
+    this.children.splice(at, 0, node);
+    node.parentNode = this;
+    return node;
+  }
   addEventListener(type, fn) { (this._listeners[type] = this._listeners[type] || []).push(fn); }
   removeEventListener() {}
   async dispatch(type, event) {
@@ -269,6 +277,7 @@ const ctx = {
 vm.createContext(ctx);
 // #7834: page numbering and the original pane live in their own module.
 vm.runInContext(fs.readFileSync(pagesPath, "utf8"), ctx, { filename: "util-pdfmd-pages.js" });
+vm.runInContext(fs.readFileSync(recoveryPath, "utf8"), ctx, { filename: "util-pdfmd-recovery.js" });
 vm.runInContext(fs.readFileSync(pdfmdPath, "utf8"), ctx, { filename: "util-pdfmd.js" });
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -365,6 +374,7 @@ def _run_harness() -> dict:
     try:
         result = subprocess.run(
             [node, str(harness_path), sheets.static_path("util-pdfmd-pages.js"),
+             sheets.static_path("util-pdfmd-recovery.js"),
              sheets.static_path("util-pdfmd.js")],
             capture_output=True,
             text=True,

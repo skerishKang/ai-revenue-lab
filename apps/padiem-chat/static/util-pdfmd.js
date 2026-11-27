@@ -280,16 +280,10 @@
     // Everything that refuses an action: an answer or a promise refuses, an
     // unknown never refuses but still cannot act.
     const workBlocked = PDFMD_NEW_WORK_DISABLED || PDFMD_LOGIN_REQUIRED || PDFMD_CHECKING;
-    /* #8812 D5·D6: once the day's conversion allowance reads 0 (the run route
-       answers 429 with conversion.remaining = 0), the picker must stop
-       offering what cannot start. The state arrives with the refusal, so it
-       is carried by a flag, not by workState. */
+    /* #8812 D5·D6: 하루 한도 0(429 remaining 0)이면 올리기를 멈춘다 —
+       상태는 답과 함께 오므로 workState 가 아니라 이 깃발이 운반한다. */
     let quotaExhausted = false;
-    const LIMIT_NOTICE_CODES = new Set([
-      "conversion_quota_exhausted", "document_page_limit", "document_size_limit", "document_too_large",
-    ]);
-    const isQuotaExhausted = (e) => e && (e.code === "conversion_quota_exhausted" ||
-      Boolean(e.body && e.body.conversion && Number(e.body.conversion.remaining) === 0));
+    const Recovery = window.PadiemPdfMdRecovery;
     panel.replaceChildren();
     panel.classList.add("pdfmd-shell");
 
@@ -311,9 +305,7 @@
     if (PDFMD_NEW_WORK_DISABLED) {
       pauseNote.textContent = "지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
     } else if (PDFMD_LOGIN_REQUIRED) {
-      /* #8812 D6·D7: the notice line keeps its sentence only — the one login
-         button is the drop box's own CTA (#8812 대표 확인), so the same action
-         is never offered twice. */
+      /* #8812 D6·D7 대표 확인: 안내 줄은 문장만 — 로그인 단추는 상자 CTA 하나. */
       pauseNote.textContent = "로그인 후 PDF 변환을 이용할 수 있습니다.";
     } else if (PDFMD_CHECKING) {
       pauseNote.textContent = "새 변환을 열 수 있는지 확인 중…";
@@ -378,9 +370,7 @@
       } else if (PDFMD_LOGIN_REQUIRED) {
         dropTitle.textContent = "로그인이 필요합니다";
         dropSub.textContent = "로그인 후 PDF를 올려 변환할 수 있습니다.";
-        /* #8812 D6·D7 대표 확인: the center button names the action — 로그인 —
-           and does what the old top-line button did. */
-        dropCta.textContent = "로그인";
+        dropCta.textContent = "로그인"; /* #8812 대표 확인: 단추는 동작을 말한다 */
       } else {
         dropTitle.textContent = "PDF 파일을 선택하세요";
         dropSub.textContent = "방금 연 화면 · 잠시 후 자동으로 정해집니다.";
@@ -399,56 +389,11 @@
 
     formWrap.appendChild(drop);
 
-    /* #8812 D5: the per-file progress list and the one limit-warning box sit
-       directly under the drop box — no scroll, no second summary line. The
-       warning box shows only while the progress list is empty, so whichever
-       is visible reads as the box right under the drop zone. */
+    /* #8812 D5: 진행 목록과 경고 상자는 끌어다 놓기 상자 바로 아래다. */
     const uploadProgress = el("ol", "pdfmd-upload-progress");
     uploadProgress.hidden = true;
     uploadProgress.setAttribute("aria-label", "파일별 업로드 진행 상태");
     formWrap.appendChild(uploadProgress);
-
-    const limitNote = el("div", "pdfmd-limit-note");
-    limitNote.id = "pdfmdLimitNote";
-    limitNote.hidden = true;
-    limitNote.setAttribute("role", "alert");
-    limitNote.appendChild(el("span", "pdfmd-limit-icon", "!"));
-    const limitTitle = el("strong", "pdfmd-limit-title", "");
-    limitNote.appendChild(limitTitle);
-    const limitDesc = el("span", "pdfmd-limit-desc", "");
-    limitNote.appendChild(limitDesc);
-    formWrap.appendChild(limitNote);
-
-    function showLimitNotice(code) {
-      const sentence = describeError({ code: code });
-      // The confirmed quota sentence is two sentences: the first is the box
-      // title, the second is the explanation under it.
-      const cut = code === "conversion_quota_exhausted" ? sentence.indexOf(". ") + 1 : sentence.length;
-      limitTitle.textContent = sentence.slice(0, cut).trim();
-      limitDesc.textContent = cut < sentence.length ? sentence.slice(cut).trim() : "";
-      limitDesc.hidden = !limitDesc.textContent;
-      limitNote.hidden = false;
-    }
-
-    function hideLimitNotice() {
-      limitNote.hidden = true;
-    }
-
-    /* #8812 D6: with the day's allowance at 0 the picker stops being a
-       control — the CTA is disabled, the box loses its button role, and the
-       one warning box under it says why. */
-    function enterQuotaExhausted() {
-      if (quotaExhausted) return;
-      quotaExhausted = true;
-      fileInput.disabled = true;
-      dropCta.disabled = true;
-      drop.removeAttribute("role");
-      drop.removeAttribute("tabindex");
-      drop.removeAttribute("aria-label");
-      drop.classList.add("pdfmd-paused");
-      drop.style.cursor = "not-allowed";
-      showLimitNotice("conversion_quota_exhausted");
-    }
 
     // #6012: the same documents, taken straight from the owner's own PC — a
     // text link under the upload box (#7865), not a second big button.
@@ -527,6 +472,23 @@
     uploadStatus.id = "pdfmdStatus";
     uploadStatus.setAttribute("role", "status");
     uploadStatus.setAttribute("aria-live", "polite");
+
+    /* #8812·#8814 수리 모듈: 경고 상자는 진행 목록 다음, PC 링크 줄 앞. */
+    const recovery = Recovery.create({
+      el, api, describeError, loadJob, pollItemUntilTerminal,
+      uploadStatus, quotaNote, currentJobId: () => currentJobId,
+      onExhausted: () => {
+        quotaExhausted = true;
+        fileInput.disabled = true;
+        dropCta.disabled = true;
+        drop.removeAttribute("role");
+        drop.removeAttribute("tabindex");
+        drop.removeAttribute("aria-label");
+        drop.classList.add("pdfmd-paused");
+        drop.style.cursor = "not-allowed";
+      },
+    });
+    formWrap.insertBefore(recovery.note, pcLinkRow);
     if (!window.PadiemUtilChatMode || typeof window.PadiemUtilChatMode.bindPdfmd !== "function") {
       inputCol.appendChild(formWrap);
     }
@@ -751,9 +713,7 @@
           await loadHistory();
           if (status === "failed") {
             const code = (data.item && data.item.error_code) || "convert_failed";
-            /* #8812 D5: a size/page/day-limit refusal is the one warning box
-               under the drop box, not a gray line at the bottom of the card. */
-            if (LIMIT_NOTICE_CODES.has(code)) showLimitNotice(code);
+            if (Recovery.LIMIT_NOTICE_CODES.has(code)) recovery.show(code); /* #8812 D5: 한도 안내는 경고 상자로 */
             else uploadStatus.textContent = item.name + " 변환 실패. " + describeError({ code: code });
           } else if (status === "reviewed" || status === "done") {
             uploadStatus.textContent = item.name + " 변환 완료. 결과 카드에서 받을 수 있습니다.";
@@ -814,8 +774,7 @@
     async function createJob() {
       if (workBlocked) return;
       const mode = modeSel.value;
-      /* #8812 D5: while the per-file rows are up the summary line stays quiet
-         — the same words must not appear twice on one screen. */
+      /* #8812 D5: 진행 행이 있는 동안 요약 줄은 조용히 한다. */
       if (!uploadRowsActive) uploadStatus.textContent = "작업을 준비하는 중...";
       try {
         const data = await api("/api/document-conversions", {
@@ -860,8 +819,7 @@
     async function uploadFile(file, onProgress) {
       if (workBlocked || quotaExhausted) return false;
       const update = (message) => {
-        /* #8812 D5: with the progress list open the row is the only place the
-           step is written; without it the summary line carries the message. */
+        /* #8812 D5: 진행 행이 있으면 행만 쓰고, 없으면 요약 줄이 쓴다. */
         if (typeof onProgress === "function") onProgress(message);
         else uploadStatus.textContent = message;
       };
@@ -910,7 +868,7 @@
       chatBridge.recordFiles(files);
       uploadProgress.replaceChildren();
       uploadProgress.hidden = false;
-      hideLimitNotice();
+      recovery.hide();
       uploadRowsActive = true;
       uploadStatus.textContent = "";
       const rows = files.map((file) => {
@@ -949,9 +907,7 @@
       fileInput.click();
     }
     drop.addEventListener("click", () => {
-      /* #8812 D6·D7: in the logged-out state the drop box's own CTA is the
-         one 로그인 button — the same action the removed top-line button did. */
-      if (PDFMD_LOGIN_REQUIRED) { openExistingLogin(); return; }
+      if (PDFMD_LOGIN_REQUIRED) { openExistingLogin(); return; } /* #8812 D6·D7: 로그인 단추 하나 */
       openPicker();
     });
     drop.addEventListener("keydown", (e) => {
@@ -1016,13 +972,10 @@
             void pollItemUntilTerminal(currentJobId, data.item);
           }
         } catch (e) {
-          /* #8812 D5·D6: a 429 with remaining 0 is the day's allowance being
-             gone — the confirmed sentence goes to the warning box and the
-             picker stops offering 파일 고르기. Other refusals keep the row's
-             own failure line. */
-          if (isQuotaExhausted(e)) {
+          /* #8812 D5·D6: 429 remaining 0 — 확인된 문장은 경고 상자로, 올리기는 멈춘다. */
+          if (Recovery.isQuotaExhausted(e)) {
             quotaNote.textContent = "오늘 0건 더 바꿀 수 있어요.";
-            enterQuotaExhausted();
+            recovery.exhaust();
           } else {
             uploadStatus.textContent = item.name + " 변환 실패. " + describeError(e);
           }
@@ -1048,36 +1001,6 @@
       } catch (e) {
         uploadStatus.textContent = "파일을 삭제하지 못했습니다. " + describeError(e);
       }
-    }
-
-    /* #8814 D6·D7: the failed card's first action is 다시 하기 — the same
-       file, the same mode, one run POST (the stored original is re-read
-       server-side). 지우기 stays as the secondary action. A scan with no
-       text cannot succeed by running again, so it keeps guidance only. */
-    async function rerunItem(item) {
-      try {
-        const data = await api("/api/document-conversions/items/" + item.id + "/run", { method: "POST" });
-        hideLimitNotice();
-        if (data && data.item && data.item.status === "working") {
-          void pollItemUntilTerminal(currentJobId, data.item);
-        }
-        await loadJob();
-      } catch (e) {
-        if (isQuotaExhausted(e)) {
-          quotaNote.textContent = "오늘 0건 더 바꿀 수 있어요.";
-          enterQuotaExhausted();
-        } else {
-          uploadStatus.textContent = describeError(e);
-        }
-      }
-    }
-
-    function retryButton(item) {
-      const btn = el("button", "pdfmd-btn pdfmd-btn-primary", "다시 하기");
-      btn.type = "button";
-      btn.setAttribute("aria-label", item.name + " 같은 파일로 다시 하기");
-      btn.addEventListener("click", () => { void rerunItem(item); });
-      return btn;
     }
 
     function deleteButton(item) {
@@ -1204,20 +1127,17 @@
         card.appendChild(head);
 
         const meta = el("div", "pdfmd-item-meta");
-        /* #8814 D7: a count chip needs a result — failed and 바꾸는 중 cards
-           stay without one. */
-        if (item.has_markdown && item.character_count) {
+        if (item.has_markdown && item.character_count) { /* #8814 D7: 결과가 있을 때만 글자 수 */
           meta.appendChild(el("span", "pdfmd-item-count", Number(item.character_count).toLocaleString("ko-KR") + "자"));
         }
         card.appendChild(meta);
 
         if (item.status === "failed") {
-          /* 실패 카드(#8814): 이유 한 줄 + [다시 하기](주) · [지우기](보조).
-             글자 없는 스캔본은 다시 실행해도 같은 결과라 안내만 남는다. */
+          /* 실패 카드(#8814): [다시 하기](주)·[지우기](보조), 스캔본은 안내만. */
           const reason = el("div", "pdfmd-warn", describeError({ code: item.error_code }, "바꾸지 못했어요."));
           card.appendChild(reason);
           const actions = el("div", "pdfmd-item-actions");
-          if (item.error_code !== "pdf_scanned_no_text") actions.appendChild(retryButton(item));
+          if (item.error_code !== "pdf_scanned_no_text") actions.appendChild(recovery.retryButton(item));
           actions.appendChild(deleteButton(item));
           card.appendChild(actions);
           list.appendChild(card);

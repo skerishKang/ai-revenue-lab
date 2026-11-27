@@ -325,6 +325,7 @@ _BAND_HTML = """<!DOCTYPE html>
 <link rel="stylesheet" href="./sidebar-utility.css">
 <link rel="stylesheet" href="./standalone-views.css">
 <link rel="stylesheet" href="./util-menu.css">
+<link rel="stylesheet" href="./util-pdfmd-recovery.css">
 <link rel="stylesheet" href="./util-app.css">
 <link rel="stylesheet" href="./util-chat-mode.css">
 </head><body>
@@ -335,6 +336,7 @@ _BAND_HTML = """<!DOCTYPE html>
 <script src="./util-manifest.js"></script>
 <script src="./util-chat-mode.js"></script>
 <script src="./util-pdfmd-pages.js"></script>
+<script src="./util-pdfmd-recovery.js"></script>
 <script src="./util-pdfmd.js"></script>
 <script>
   const panel = document.createElement("div");

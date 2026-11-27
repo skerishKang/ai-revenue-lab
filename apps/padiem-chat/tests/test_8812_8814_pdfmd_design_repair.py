@@ -49,8 +49,10 @@ CHROME_CANDIDATES = [__import__("os").environ.get("B61_CHROME_PATH"),
 CHROME = next((c for c in CHROME_CANDIDATES if c and Path(c).is_file()), None)
 
 PDFMD = sheet("util-pdfmd.js")
+RECOVERY_JS = sheet("util-pdfmd-recovery.js")
 UTIL_MENU = sheet("util-menu.css")
 HISTORY_CSS = sheet("history.css")
+RECOVERY_CSS = sheet("util-pdfmd-recovery.css")
 LOCALE_UTILITY = sheet("locale-utility.js")
 MANIFEST = sheet("util-manifest.js")
 
@@ -73,9 +75,9 @@ def test_sidebar_failed_row_stacks_the_retry_button_below_the_text() -> None:
 
 
 def test_daily_quota_zero_disables_the_file_picker() -> None:
-    assert "function enterQuotaExhausted" in PDFMD, "한도 0 상태로 들어가는 길이 없다"
-    body = PDFMD[PDFMD.index("function enterQuotaExhausted"):]
-    body = body[: body.index("\n  }")]
+    assert "function exhaust" in RECOVERY_JS, "한도 0 상태로 들어가는 길이 없다"
+    body = PDFMD[PDFMD.index("onExhausted: () => {"):] 
+    body = body[: body.index("},")]
     assert "dropCta.disabled = true" in body, "[파일 고르기]가 눌린 채로 남는다"
     assert "fileInput.disabled = true" in body, "숨은 파일 입력이 남아 있다"
     assert 'drop.removeAttribute("role")' in body
@@ -85,7 +87,7 @@ def test_daily_quota_zero_disables_the_file_picker() -> None:
 
 
 def test_limit_notices_are_one_warning_box_below_the_drop_box() -> None:
-    rules = parse_rules(UTIL_MENU)
+    rules = parse_rules(RECOVERY_CSS)
     box = find_rules_with_selector(rules, ".pdfmd-limit-note")
     assert box, "경고 상자 규칙이 없다"
     assert "var(--gold)" in (declaration(box[0], "border") or ""), "경고 색 토큰이 아니다"
@@ -100,12 +102,12 @@ def test_limit_notices_are_one_warning_box_below_the_drop_box() -> None:
         surface = _over(resolve(theme, "var(--gold-soft)"), resolve(theme, "var(--panel)"))
         painted = contrast(ink, surface)
         assert painted >= 4.5, (theme, round(painted, 2))
-    # 위치: 끌어다 놓기 상자와 PC 링크 줄 사이(진행 목록 다음).
+    # 위치: 진행 목록 다음, PC 링크 줄 바로 앞 — DOM에서는 끌어다 놓기 상자 바로 아래.
     drop_at = PDFMD.index("formWrap.appendChild(drop);")
     progress_at = PDFMD.index("formWrap.appendChild(uploadProgress);")
-    note_at = PDFMD.index("formWrap.appendChild(limitNote);")
-    foot_at = PDFMD.index("const pcLinkRow = el(")
-    assert drop_at < progress_at < note_at < foot_at, "경고 상자가 끌어다 놓기 상자 바로 아래가 아니다"
+    assert 'formWrap.insertBefore(recovery.note, pcLinkRow)' in PDFMD, \
+        "경고 상자가 끌어다 놓기 상자 바로 아래가 아니다"
+    assert drop_at < progress_at
 
 
 def _over(top, bottom):
@@ -148,21 +150,21 @@ def test_the_logout_screen_has_one_login_button_and_it_is_the_drop_box_cta() -> 
 def test_a_failed_card_has_retry_as_primary_and_delete_as_secondary() -> None:
     failed = PDFMD[PDFMD.index('if (item.status === "failed") {'):]
     failed = failed[: failed.index("list.appendChild(card);")]
-    assert "retryButton(item)" in failed, "실패 카드에 [다시 하기]가 없다"
+    assert "recovery.retryButton(item)" in failed, "실패 카드에 [다시 하기]가 없다"
     assert "deleteButton(item)" in failed
-    assert failed.index("retryButton(item)") < failed.index("deleteButton(item)"), \
+    assert failed.index("recovery.retryButton(item)") < failed.index("deleteButton(item)"), \
         "[다시 하기]가 주 단추로 먼저 놓여야 한다"
-    assert 'el("button", "pdfmd-btn pdfmd-btn-primary", "다시 하기")' in PDFMD
+    assert 'el("button", "pdfmd-btn pdfmd-btn-primary", "다시 하기")' in RECOVERY_JS
     # 글자 없는 스캔본: 다시 하기 대신 안내만.
     guard = PDFMD[PDFMD.index('if (item.error_code !== "pdf_scanned_no_text")'):]
     guard = guard[: guard.index("\n")]
     assert "retryButton" in guard
-    assert "다시 하기" in PDFMD and "지우기" in PDFMD
+    assert "다시 하기" in RECOVERY_JS and "지우기" in PDFMD
 
 
 def test_retry_reruns_the_same_item_the_same_way() -> None:
-    rerun = PDFMD[PDFMD.index("async function rerunItem"):]
-    rerun = rerun[: rerun.index("\n    }\n")]
+    rerun = RECOVERY_JS[RECOVERY_JS.index("async function rerun(item)"):]
+    rerun = rerun[: rerun.index("\n      }")]
     assert '"/api/document-conversions/items/" + item.id + "/run"' in rerun, \
         "같은 파일을 다시 실행하는 요청이 아니다"
     assert 'method: "POST"' in rerun
@@ -204,12 +206,12 @@ def test_the_character_count_chip_needs_a_result() -> None:
 
 
 def test_the_working_chip_carries_a_movement_marker_that_stops_without_motion() -> None:
-    rules = parse_rules(UTIL_MENU)
+    rules = parse_rules(RECOVERY_CSS)
     marker = [r for r in find_rules_with_selector(rules, '.pdfmd-status-chip[data-status="working"]::before')
               if r.media is None]
     assert marker, "칩 앞의 진행 표시가 없다"
     assert declaration(marker[0], "animation") is not None
-    reduced = [r for r in parse_rules(UTIL_MENU)
+    reduced = [r for r in parse_rules(RECOVERY_CSS)
                if r.media and "prefers-reduced-motion" in r.media
                and '.pdfmd-status-chip[data-status="working"]::before' in ",".join(r.selectors)]
     assert reduced and declaration(reduced[0], "animation") == "none", \
@@ -313,6 +315,7 @@ BAND_PAGE = """<!DOCTYPE html>
 <link rel="stylesheet" href="./sidebar-utility.css">
 <link rel="stylesheet" href="./standalone-views.css">
 <link rel="stylesheet" href="./util-menu.css">
+<link rel="stylesheet" href="./util-pdfmd-recovery.css">
 <link rel="stylesheet" href="./util-app.css">
 <link rel="stylesheet" href="./util-chat-mode.css">
 </head><body>
@@ -323,6 +326,7 @@ BAND_PAGE = """<!DOCTYPE html>
 <script src="./util-manifest.js"></script>
 <script src="./util-chat-mode.js"></script>
 <script src="./util-pdfmd-pages.js"></script>
+<script src="./util-pdfmd-recovery.js"></script>
 <script src="./util-pdfmd.js"></script>
 <script>
   window.__loginClicks = 0;
