@@ -428,6 +428,15 @@ async def consider_device(app, env, store, device, *, now=None, report=None):
     if digest is None:
         report["outcome"] = "candidate_denied"
         return
+    # #8772: a PC whose attempt for this exact source is stopped, in flight or
+    # over the shared limit cannot be claimed this round whatever the owner
+    # check says. Skip the live identity reads (each one a signed RPC and a
+    # replay row in the identity Durable Object) instead of repeating them
+    # every minute. Nothing is granted or cached here: a claimable PC still
+    # resolves its owner live, and dispatch rechecks it live before writing.
+    if not await store.reservable(device_id=device, source_sha256=digest):
+        report["outcome"] = "reservation_denied"
+        return
     try:
         report["outcome"] = "resolve_owner_session"
         async with maintenance_owner_context(app, uid) as session:
