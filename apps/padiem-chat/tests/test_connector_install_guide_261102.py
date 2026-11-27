@@ -53,7 +53,7 @@ GROUNDED = {
     "Win32_Service": "docs/operations/PC_CONNECT_EXE_20261028.md",
     "Windows 앱 목록": "scripts/pc_pairing/connect-exe/PadiemPcConnect.cs",
     "Padiem PC 연결 제거 (관리자 승인)": "apps/claw-connect/claw_connect/menu_model.py",
-    ".padiem-backup": "apps/padiem-chat/app/oracle_mesh_read_return_routes.py",
+    ".padiem-backup": "apps/padiem-chat/app/oracle_mesh_pc_write.py",
     "로그 폴더 열기": "apps/claw-connect/claw_connect/menu_model.py",
     "다시 연결": "apps/claw-connect/claw_connect/menu_model.py",
     "일시중지": "apps/claw-connect/claw_connect/menu_model.py",
