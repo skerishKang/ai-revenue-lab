@@ -176,7 +176,7 @@ async def _open_compare(page) -> None:
     await _expand_history(page)
     await page.locator(".pdfmd-history-item").first.click()
     await page.wait_for_timeout(1200)
-    await page.locator('button[aria-label$="원본과 변환본 비교"]').first.click()
+    await page.locator('button[aria-label$="원본과 바꾼 결과 비교"]').first.click()
     await page.locator(".pdfmd-preview").wait_for(state="visible", timeout=8_000)
     await page.wait_for_timeout(1500)
 
