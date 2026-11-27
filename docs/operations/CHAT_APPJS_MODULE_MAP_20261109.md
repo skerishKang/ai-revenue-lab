@@ -926,7 +926,7 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 
 ### #7809 T2 stage 5 (2026-11-27)
 
-- Mode-chip click wiring moves to `chat-claw-form-module.js` via `wireModeChips()` at the original registration position. Four existing buttons, one registration site. app.js: 1490 -> 1477 lines. The original `clawLastAction` initialization stays in app.js and the module writes through a live setter.
+- Mode-chip click wiring moves to `chat-claw-form-module.js` via `wireModeChips()` at the original registration position. Four existing buttons, one registration site. app.js: 1490 -> 1476 lines. The original `clawLastAction` initialization stays in app.js and the module writes through the callback setter provided at the original wire position (no new deps field).
 - All eight DOM refs remain shared: manual form (nav/entry), channel/action/sender (status), result area (nav/status), preview/card/empty (run). The window localechange listener remains at its original position.
-- Exact normalized event body and reconstructed app.js match the base; Android storage and window assignments unchanged. Existing A5b contract verifies all four chip handlers, pressed states, selected action, focus, setter and registration order. Focused/structure/file size checks: 21 passed.
+- Exact normalized event body and reconstructed app.js match the base; Android storage and window assignments unchanged. Existing A5b contract verifies all four chip handlers, pressed states, selected action, focus, setter and registration order. The #2322 accessibility source assertion follows its moved aria-pressed implementation in the Claw Form module. Focused/structure/file size checks: 21 passed.
 - Boot ledger: 1440 exact; 390 asynchronous registration order and DOMContentLoaded count vary on both base and head. All 18 repeated 390 runs retain the same Claw listener block (positions 149-171). No timing rule or audit changed.

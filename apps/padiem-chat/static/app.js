@@ -1234,7 +1234,6 @@
         get revealClawCard() { return clawRun.revealClawCard; },
         get runClawExecution() { return clawRun.runClawExecution; },
         get noteClawContentEdited() { return clawStatusModule().noteClawContentEdited; },
-        set clawLastAction(value) { clawLastAction = value; },
         get app() { return app; },
       
   }, app));
@@ -1325,7 +1324,7 @@
   // entry bar (#3531 keeps the workspace canvas hidden in general/manual
   // views, so the entry lives beside the manual-entry control instead).
   // In-conversation run status/results are unchanged.
-  clawFormModule().wireModeChips();
+  clawFormModule().wireModeChips({ set clawLastAction(value) { clawLastAction = value; } });
   navModuleInstance.setNavActive();
 
 

@@ -8,7 +8,7 @@
     create(deps) {
       // Manual submit is the only path that posts the preview request; the
       // execute and retry buttons share the single run entry point.
-      function wireModeChips() {
+      function wireModeChips(state) {
         if (deps.clawManualForm) {
           const modeChips = deps.clawManualForm.querySelectorAll(".claw-chip[data-claw-action]");
           modeChips.forEach((chip) => {
@@ -18,7 +18,7 @@
               modeChips.forEach((other) => {
                 other.setAttribute("aria-pressed", other === chip ? "true" : "false");
               });
-              deps.clawLastAction = action || null;
+              state.clawLastAction = action || null;
               deps.input.focus();
             });
           });
