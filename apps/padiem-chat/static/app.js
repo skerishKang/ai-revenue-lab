@@ -936,7 +936,7 @@
   // The full page opens on top of the screen the user came from (home, chat or
   // claw). Its back entry must return there instead of assuming home.
   // #7812 R5 B5 (rule (b)): settings module registers this at the original spot.
-  settings.wireTierChange();
+  settingsModule().wireTierChange();
   input.addEventListener("input", (event) => conversationModule().updateComposer(event));
   // #3084: Korean IME regression protection. While a Hangul/IME composition is
   // active the browser still reports key === "Enter" for the candidate-confirm
@@ -1003,8 +1003,8 @@
   authModule().wireLoginButton();
   // #7812 R5 B5 (rule (b)): the settings module registers the advanced-settings
   // click/Escape listeners at this original block.
-  settings.wireAdvancedSettings();
-  settings.wireAdvancedMenuListeners();
+  settingsModule().wireAdvancedSettings();
+  settingsModule().wireAdvancedMenuListeners();
   authModule().wireLogoutButton();
   loginDialogModule().wireDialogClose();
   loginDialogModule().wireGoogleLogin();
@@ -1022,14 +1022,7 @@
   loginDialogModule().wireProfileToggle();
   loginDialogModule().wireProfileSettings();
   loginDialogModule().wireProfileDismiss();
-  settingsButton.addEventListener("click", () => { authModule().closeProfilePanel(); settings.openSettings(); });
-  settingsDialog.addEventListener("close", () => {
-    settingsButton.setAttribute("aria-expanded", "false");
-    profileToggle.setAttribute("aria-expanded", "false");
-  });
-  // #7812 R5 B5 (rule (b)): settings dialog then sidebar clicks register at the
-  // original block, keeping their document order.
-  settings.wireSettingsDialog();
+  settingsModule().wireSettingsDialog();
   sidebar.wireSidebarListeners();
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !loginDialogModule().profilePanelElement().hidden) {
