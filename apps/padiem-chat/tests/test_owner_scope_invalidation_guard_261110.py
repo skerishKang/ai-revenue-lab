@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import ast
 import pathlib
-import re
+import textwrap
 
 import pytest
 
@@ -60,14 +60,24 @@ def test_every_owner_mutating_handler_drops_the_cached_owner_scope(module):
     srcs = _handler_sources(module)
     mutating = {}
     for fname, body in srcs.items():
-        names = {m.group() for m in re.finditer(r"\.\s*([A-Za-z_][A-Za-z0-9_]*)\(", body)}
+        names = {
+            node.func.attr for node in ast.walk(ast.parse(textwrap.dedent(body)))
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+        }
         hit = names & MUTATIONS
         if hit:
             mutating[fname] = hit
+    if module == "oracle_mesh_read_return_routes.py":
+        assert mutating.get("_record_mesh_presence") == {"complete_claim_from_observation"}
     missing = []
     for fname, hits in mutating.items():
         body = srcs[fname]
-        if not any(name in body for name in INVALIDATORS) and fname not in _PRESENT_OR_EXEMPT:
+        calls = {
+            node.func.id if isinstance(node.func, ast.Name) else node.func.attr
+            for node in ast.walk(ast.parse(textwrap.dedent(body)))
+            if isinstance(node, ast.Call) and isinstance(node.func, (ast.Name, ast.Attribute))
+        }
+        if not calls & INVALIDATORS and fname not in _PRESENT_OR_EXEMPT:
             missing.append((fname, sorted(hits)))
     assert not missing, (
         f"{module}: owner-mutating handler(s) without owner-scope invalidation "

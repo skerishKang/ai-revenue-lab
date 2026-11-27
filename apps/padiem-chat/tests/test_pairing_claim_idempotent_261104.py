@@ -198,3 +198,18 @@ def test_an_unexpected_failure_logs_only_the_exception_type(caplog) -> None:
     assert "reason=RuntimeError" in caplog.text
     assert "secret" not in caplog.text
     assert "C:/x" not in caplog.text
+
+
+def test_successful_presence_claim_invalidates_only_own_owner_scope(monkeypatch):
+    from app import auth_validation_cache
+    store = pairing.store()
+    issued, name = _issued(store)
+    state = _beat_state(store)
+    dropped = []
+    monkeypatch.setattr(auth_validation_cache, "drop_cached_owner_scope_of", lambda request, uid: dropped.append((request.app.state, uid)))
+    beat = _tagged_beat(name)
+    assert projection._poll(state, beat)[0] == 200
+    assert dropped == [(state, lane.OWNER)]
+    assert projection._poll(state, beat)[0] == 200
+    assert projection._poll(state, _tagged_beat("pd-unknown [C D]"))[0] == 200
+    assert dropped == [(state, lane.OWNER)]
