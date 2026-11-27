@@ -39,7 +39,7 @@ SCAN_JOB = "dcj78340000000000000000000000000b1"
 STALE_JOB = "dcj78340000000000000000000000000c1"
 
 SCAN_SENTENCE = "스캔본이라 글자가 없어 지금은 읽을 수 없습니다."
-STALE_SENTENCE = "시간이 오래 걸려 변환이 끝나지 않았습니다."
+STALE_SENTENCE = "시간이 오래 걸려 바꾸기가 끝나지 않았습니다."
 DONE_SENTENCE = "변환 완료 — 원본과 변환본을 비교해 보세요."
 
 MARKDOWN = "\n".join(
