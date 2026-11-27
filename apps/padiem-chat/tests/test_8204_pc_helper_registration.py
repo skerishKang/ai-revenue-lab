@@ -175,6 +175,36 @@ def test_refresh_command_registers_the_fixed_watcher_after_the_updater():
     assert "http" not in command.replace("FromBase64String", "")
 
 
+def test_dispatched_terminal_attempt_records_reason_and_then_takes_over():
+    """#8359 배포 후 관찰: 디스패치를 받은 시도도 끝나면 reason이 남아야 한다."""
+
+    async def run():
+        db, _ = database(full=True)
+        try:
+            store = D1MeshDeviceDriveStore(SqliteD1(db))
+            device = "node//dispatched"
+            observed = "e" * 64
+            first, second = "a" * 64, "b" * 64
+            assert await store.reserve_updater_registration(
+                device_id=device, sha256=observed, actor=OWNER, attempt_id=first, now=NOW)
+            await store.record_updater_registration(
+                device_id=device, sha256=observed, attempt_id=first, dispatch_id="disp-1")
+            row = await store.load_updater_registration(device_id=device, sha256=observed)
+            assert row["dispatch_id"] == "disp-1" and row["reason"] is None
+            await store.record_updater_registration(
+                device_id=device, sha256=observed, attempt_id=first, reason="registration_failed")
+            row = await store.load_updater_registration(device_id=device, sha256=observed)
+            assert row["reason"] == "registration_failed"
+            assert await store.reserve_updater_registration(
+                device_id=device, sha256=observed, actor=OTHER, attempt_id=second, now=NOW)
+            row = await store.load_updater_registration(device_id=device, sha256=observed)
+            assert row["attempt_id"] == second and row["reason"] is None
+        finally:
+            db.close()
+
+    asyncio.run(run())
+
+
 def test_reservation_is_taken_over_only_after_a_terminal_attempt():
     """#8359 후속3: 끝난 시도는 새 원본의 시도가 이어받고, 진행 중은 막는다."""
 
