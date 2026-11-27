@@ -389,4 +389,3 @@ def _pc_write_command(
         statements, body=body, link_refusal=link_refusal, append=append,
     )
     return "; ".join(statements)
-

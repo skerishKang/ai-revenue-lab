@@ -303,5 +303,3 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         " | ConvertTo-Json -Compress -Depth 3"
         + " }"
     )
-
-
