@@ -367,13 +367,13 @@
     const pcNote = $("clawWebXlsxPcNote");
     const workcopyLink = root.createElement("a");
     workcopyLink.hidden = true;
-    workcopyLink.textContent = "승인된 작업 사본 다운로드 (XLSX)";
+    workcopyLink.textContent = "허락된 작업 사본 다운로드 (XLSX)";
     workcopyLink.setAttribute("download", "");
     approvalPanel?.appendChild(workcopyLink);
     const openReadWorkConversation = root.createElement("button");
     openReadWorkConversation.type = "button";
     openReadWorkConversation.hidden = true;
-    openReadWorkConversation.textContent = "승인된 작업 대화 열기 (다음 작업)";
+    openReadWorkConversation.textContent = "허락된 작업 대화 열기 (다음 작업)";
     approvalPanel?.appendChild(openReadWorkConversation);
     const editPreviewPanel = root.createElement("div");
     editPreviewPanel.className = "claw-web-quote-edit-preview";
@@ -398,7 +398,7 @@
     editPreviewButton.textContent = "수정 결과 미리보기 (저장되지 않음)";
     const editCommitButton = root.createElement("button");
     editCommitButton.type = "button";
-    editCommitButton.textContent = "별도 P01 쓰기 승인 후 XLSX 저장";
+    editCommitButton.textContent = "별도 P01 쓰기 허락 후 XLSX 저장";
     editCommitButton.hidden = true;
     editCommitButton.disabled = true;
     const editedLink = root.createElement("a");
@@ -408,12 +408,12 @@
     revisedPdfLink.setAttribute("download", "");
     const pdfPreviewButton = root.createElement("button");
     pdfPreviewButton.type = "button";
-    pdfPreviewButton.textContent = "승인된 표준 견적 PDF 미리보기";
+    pdfPreviewButton.textContent = "허락된 표준 견적 PDF 미리보기";
     pdfPreviewButton.hidden = true;
     const pdfPreviewRegion = root.createElement("section");
     pdfPreviewRegion.hidden = true;
     pdfPreviewRegion.setAttribute("role", "region");
-    pdfPreviewRegion.setAttribute("aria-label", "승인된 견적 PDF 미리보기");
+    pdfPreviewRegion.setAttribute("aria-label", "허락된 견적 PDF 미리보기");
     const pdfPreviewClose = root.createElement("button");
     pdfPreviewClose.type = "button";
     pdfPreviewClose.textContent = "PDF 미리보기 닫기";
@@ -435,10 +435,10 @@
     editedLink.setAttribute("download", "");
     const editPreviewResult = root.createElement("p");
     editPreviewResult.setAttribute("aria-live", "polite");
-    editPreviewResult.textContent = "수정한 XLSX를 PDF로 변환하는 기능은 별도 P01 쓰기 승인 뒤에 열립니다.";
+    editPreviewResult.textContent = "수정한 XLSX를 PDF로 변환하는 기능은 별도 P01 쓰기 허락 뒤에 열립니다.";
     const writeApprove = root.createElement("button");
     writeApprove.type = "button";
-    writeApprove.textContent = "수정된 XLSX 저장 승인";
+    writeApprove.textContent = "수정된 XLSX 저장 허락";
     writeApprove.hidden = true;
     const writeDeny = root.createElement("button");
     writeDeny.type = "button";
@@ -507,7 +507,7 @@
       pdfPreviewButton.disabled = true;
       pdfPreviewRegion.hidden = false;
       pdfPreviewFrame.hidden = true;
-      pdfPreviewStatus.textContent = "승인된 PDF를 서버에서 확인하고 있습니다.";
+      pdfPreviewStatus.textContent = "허락된 PDF를 서버에서 확인하고 있습니다.";
       try {
         // No PDF or paid Browser Rendering call until the signed-in owner clicks.
         const result = await fetch(SELECTIONS + "/" + encodeURIComponent(ref)
@@ -538,7 +538,7 @@
         pdfPreviewClose.focus?.();
       } catch (_error) {
         if (token === pdfPreviewToken && ref === selectedSelectionRef) {
-          pdfPreviewStatus.textContent = "PDF 미리보기를 표시할 수 없습니다. 승인 상태를 확인하거나 XLSX를 다운로드하세요.";
+          pdfPreviewStatus.textContent = "PDF 미리보기를 표시할 수 없습니다. 허락 상태를 확인하거나 XLSX를 다운로드하세요.";
         }
       } finally {
         if (token === pdfPreviewToken) {
@@ -574,7 +574,7 @@
       workConversationHandle = null;
       editPreviewPanel.hidden = true;
       hideRevision();
-      editPreviewResult.textContent = "수정 파일을 저장하지 않았습니다. 별도 P01 쓰기 승인이 필요합니다.";
+      editPreviewResult.textContent = "수정 파일을 저장하지 않았습니다. 별도 P01 쓰기 허락이 필요합니다.";
     };
     async function readRevisionStatus(selectionRef) {
       try {
@@ -602,7 +602,7 @@
           writeDeny.hidden = false;
           editCommitButton.hidden = true;
           editPreviewResult.textContent =
-            "수정 내용 확인 후 별도의 P01 쓰기 승인을 선택하세요. PDF는 아직 지원되지 않습니다.";
+            "수정 내용 확인 후 별도의 P01 쓰기 허락을 선택하세요. PDF는 아직 지원되지 않습니다.";
         }
       } catch (_error) {
         // No authority or unknown result may never expose an approval button.
@@ -680,7 +680,7 @@
         }));
       } catch (_error) {
         editPreviewResult.textContent =
-          "승인된 작업 대화·파일 참조를 확인할 수 없습니다. 파일 수정은 다시 실행하지 않았습니다.";
+          "허락된 작업 대화·파일 참조를 확인할 수 없습니다. 파일 수정은 다시 작업하지 않았습니다.";
       } finally {
         setBusy(false);
       }
@@ -769,7 +769,7 @@
           + "원. 아직 파일은 수정·저장되지 않았으며 PDF도 생성되지 않았습니다.";
       } catch (_error) {
         if (ref === selectedSelectionRef) {
-          editPreviewResult.textContent = "이 XLSX는 해당 견적서 수정 형식을 지원하지 않거나 승인·파일 검증에 실패했습니다. 변경 사항을 저장하지 않았습니다.";
+          editPreviewResult.textContent = "이 XLSX는 해당 견적서 수정 형식을 지원하지 않거나 허락·파일 검증에 실패했습니다. 변경 사항을 저장하지 않았습니다.";
         }
       } finally {
         setBusy(false);
@@ -786,7 +786,7 @@
       commitAttemptedRefs.add(plan.ref);
       hideRevision();
       setBusy(true);
-      editPreviewResult.textContent = "별도 P01 쓰기 승인을 요청하고 있습니다.";
+      editPreviewResult.textContent = "별도 P01 쓰기 허락을 요청하고 있습니다.";
       try {
         const result = await jsonRequest(
           SELECTIONS + "/" + encodeURIComponent(plan.ref) + "/quote-edit/request",
@@ -809,17 +809,17 @@
             && result.revised_xlsx_created === false
             && result.pdf_exported === false
             && result.original_overwritten === false)) {
-          throw safeUiError("별도 쓰기 승인 요청을 확인하지 못했습니다.");
+          throw safeUiError("별도 쓰기 허락 요청을 확인하지 못했습니다.");
         }
         pendingWrite = plan;
         writeApprove.hidden = false;
         writeDeny.hidden = false;
         editPreviewResult.textContent =
-          "변경안을 다시 확인한 후 '수정된 XLSX 저장 승인' 또는 '파일 수정 거절'을 선택하세요.";
+          "변경안을 다시 확인한 후 '수정된 XLSX 저장 허락' 또는 '파일 수정 거절'을 선택하세요.";
       } catch (_error) {
         if (plan.ref === selectedSelectionRef) {
           editPreviewResult.textContent =
-            "승인 요청 결과를 확정할 수 없습니다. 자동 재시도하지 않고 기록을 확인해야 합니다.";
+            "허락 요청 결과를 확정할 수 없습니다. 자동 재시도하지 않고 기록을 확인해야 합니다.";
         }
       } finally {
         setBusy(false);
@@ -835,7 +835,7 @@
       writeApprove.hidden = true;
       writeDeny.hidden = true;
       setBusy(true);
-      editPreviewResult.textContent = "별도 Core 쓰기 승인 결과를 검증하고 있습니다.";
+      editPreviewResult.textContent = "별도 Core 쓰기 허락 결과를 검증하고 있습니다.";
       try {
         const result = await jsonRequest(
           SELECTIONS + "/" + encodeURIComponent(plan.ref) + "/quote-edit/decision",
@@ -882,7 +882,7 @@
       } catch (_error) {
         if (plan.ref === selectedSelectionRef) {
           editPreviewResult.textContent =
-            "쓰기 승인·저장 결과 불명확: 자동 재시도하지 않습니다. 상태를 확인하세요.";
+            "쓰기 허락·저장 결과 불명확: 자동 재시도하지 않습니다. 상태를 확인하세요.";
         }
       } finally {
         pendingWrite = null;
@@ -921,14 +921,14 @@
     };
 
     const P01_MESSAGES = Object.freeze({
-      not_requested: "원본을 선택했습니다. 서버에서 P01 승인 요청을 시작할 수 있습니다.",
-      request_unknown: "P01 승인 요청 결과가 불확실합니다. 자동 재시도하지 않습니다.",
-      waiting_p01: "원본 확인 승인을 기다리고 있습니다. 승인 또는 거절을 직접 선택하세요.",
-      decision_unknown: "승인 결정 전달 결과가 불확실합니다. 다시 제출하지 마세요.",
-      confirmed: "원본 읽기 의도가 승인되었습니다. 수정 작업과 PDF 생성은 별도 승인이 필요합니다.",
+      not_requested: "원본을 선택했습니다. 서버에서 P01 허락 요청을 시작할 수 있습니다.",
+      request_unknown: "P01 허락 요청 결과가 불확실합니다. 자동 재시도하지 않습니다.",
+      waiting_p01: "원본 확인 허락을 기다리고 있습니다. 허락 또는 거절을 직접 선택하세요.",
+      decision_unknown: "허락 여부 전달 결과가 불확실합니다. 다시 제출하지 마세요.",
+      confirmed: "원본 읽기 의도가 허락되었습니다. 수정 작업과 PDF 생성은 별도 허락이 필요합니다.",
       denied: "원본 확인을 거절했습니다. 파일은 처리되지 않았습니다.",
-      expired: "원본 선택 또는 승인 대기 기한이 만료됐습니다.",
-      manual_review: "승인 상태를 검증할 수 없습니다. 운영 확인이 필요합니다.",
+      expired: "원본 선택 또는 허락 대기 기한이 만료됐습니다.",
+      manual_review: "허락 상태를 검증할 수 없습니다. 운영 확인이 필요합니다.",
     });
 
     function hideRequest() {
@@ -952,13 +952,13 @@
       hideDecisions();
       hideRequest();
       hideWorkcopy();
-      approvalStatus.textContent = "서버에 기록된 P01 승인 상태를 확인하고 있습니다.";
+      approvalStatus.textContent = "서버에 기록된 P01 허락 상태를 확인하고 있습니다.";
       const status = await jsonRequest(
         SELECTIONS + "/" + encodeURIComponent(selectionRef) + "/p01-status",
       );
       if (selectedSelectionRef !== selectionRef || selectedSource !== source) return;
       if (!validateP01Status(status, source, selectionRef)) {
-        throw safeUiError("소유자별 P01 승인 상태를 확인할 수 없습니다.");
+        throw safeUiError("소유자별 P01 허락 상태를 확인할 수 없습니다.");
       }
       ownerRequestReady = status.status === "not_requested"
         && status.owner_request_enabled === true && !requestAttempted;
@@ -973,7 +973,7 @@
       approvalStatus.textContent = P01_MESSAGES[status.status];
       if (status.status === "confirmed" && status.workcopy_created) {
         showWorkcopy(selectionRef, status.workcopy_document_id);
-        approvalStatus.textContent = "승인된 원본의 XLSX 작업 사본을 내려받을 수 있습니다. 수정은 별도 승인이 필요하고, 수정한 XLSX를 PDF로 변환하는 기능은 별도 P01 쓰기 승인 뒤에 열립니다.";
+        approvalStatus.textContent = "허락된 원본의 XLSX 작업 사본을 내려받을 수 있습니다. 수정은 별도 허락이 필요하고, 수정한 XLSX를 PDF로 변환하는 기능은 별도 P01 쓰기 허락 뒤에 열립니다.";
         const handle = status.work_conversation;
         if (handle && CHAT_ID.test(handle.conversation_id)) {
           workConversationHandle = {
@@ -987,7 +987,7 @@
         approvalStatus.textContent = "선택한 원본은 안전하게 보관됐습니다. 웹 P01 요청 시작 기능은 아직 연결되지 않았습니다.";
       }
       if (status.status === "waiting_p01" && !status.owner_decision_enabled) {
-        approvalStatus.textContent = "P01 승인 대기는 있지만 웹 승인 기능이 아직 연결되지 않았습니다.";
+        approvalStatus.textContent = "P01 허락 대기는 있지만 웹 허락 기능이 아직 연결되지 않았습니다.";
       }
     }
 
@@ -1008,7 +1008,7 @@
       } catch (_error) {
         hideDecisions();
         hideRequest();
-        approvalStatus.textContent = "승인 상태를 안전하게 확인하지 못했습니다. 상태 확인을 눌러 다시 조회하세요.";
+        approvalStatus.textContent = "허락 상태를 안전하게 확인하지 못했습니다. 상태 확인을 눌러 다시 조회하세요.";
       }
       approvalRefresh.disabled = busy;
     }
@@ -1021,7 +1021,7 @@
       } catch (_error) {
         hideDecisions();
         hideRequest();
-        approvalStatus.textContent = "서버의 승인 상태를 확인하지 못했습니다. 결정을 보내지 않았습니다.";
+        approvalStatus.textContent = "서버의 허락 상태를 확인하지 못했습니다. 결정을 보내지 않았습니다.";
       } finally {
         setBusy(false);
       }
@@ -1036,7 +1036,7 @@
       hideRequest();
       hideDecisions();
       setBusy(true);
-      approvalStatus.textContent = "P01 승인 대기 요청을 한 번만 전송하고 있습니다.";
+      approvalStatus.textContent = "P01 허락 대기 요청을 한 번만 전송하고 있습니다.";
       try {
         const body = await jsonRequest(
           SELECTIONS + "/" + encodeURIComponent(ref) + "/start-p01",
@@ -1044,7 +1044,7 @@
             body: "{}" },
         );
         if (!validateP01Start(body, ref)) throw safeUiError("P01 시작 결과를 검증할 수 없습니다.");
-        report("P01 승인 요청이 시작됐습니다. 파일 내용은 아직 처리하지 않았습니다.");
+        report("P01 허락 요청이 시작됐습니다. 파일 내용은 아직 처리하지 않았습니다.");
       } catch (_error) {
         approvalStatus.textContent = "시작 요청 결과가 불확실합니다. 재전송하지 말고 상태를 확인하세요.";
         report("P01 시작을 재시도하지 않습니다. 안전한 상태 조회만 가능합니다.");
@@ -1089,7 +1089,7 @@
           hideWorkcopy();
         }
         approvalStatus.textContent = body.workcopy_created
-          ? "승인된 원본으로 XLSX 작업 사본을 만들었습니다. 수정·PDF는 별도 절차가 필요합니다."
+          ? "허락된 원본으로 XLSX 작업 사본을 만들었습니다. 수정·PDF는 별도 절차가 필요합니다."
           : (decision === "approve" ? P01_MESSAGES.confirmed : P01_MESSAGES.denied);
         report(body.workcopy_created
           ? "작업 사본을 내려받을 수 있습니다. 원본은 변경되지 않았습니다."
@@ -1103,10 +1103,10 @@
           attemptedRefs.delete(ref);
           approvalStatus.textContent =
             "결정이 서버에 적용되지 않았습니다. 상태 확인 후 다시 선택할 수 있습니다.";
-          report("결정은 처리되지 않았습니다. 상태를 확인한 뒤 승인 또는 거절을 다시 선택하세요.");
+          report("결정은 처리되지 않았습니다. 상태를 확인한 뒤 허락 또는 거절을 다시 선택하세요.");
         } else {
           approvalStatus.textContent = "결정 전송 결과가 불확실합니다. 재전송하지 말고 상태를 조회하세요.";
-          report("P01 결정 결과가 확인되지 않았습니다. 중복 승인·거절을 보내지 않습니다.");
+          report("P01 결정 결과가 확인되지 않았습니다. 중복 허락·거절을 보내지 않습니다.");
         }
       } finally {
         setBusy(false);
@@ -1138,7 +1138,7 @@
         if (stored) {
           const existing = root.createElement("button");
           existing.type = "button";
-          existing.textContent = "기존 선택·승인 상태";
+          existing.textContent = "기존 선택·허락 상태";
           existing.addEventListener("click", () => {
             if (busy) return;
             void showSelection(item, stored.selection_ref);
@@ -1176,7 +1176,7 @@
             || selectedSelectionRef !== body.selection.selection_ref) {
           throw safeUiError("파일 선택 기록이 현재 선택으로 반영되지 않았습니다.");
         }
-        report("'" + item.filename + "' 원본 선택이 서버에 저장됐습니다. 별도의 P01 승인 대기 상태가 있어야 승인·거절할 수 있습니다.");
+        report("'" + item.filename + "' 원본 선택이 서버에 저장됐습니다. 별도의 P01 허락 대기 상태가 있어야 허락·거절할 수 있습니다.");
         return true;
       } catch (error) {
         reportError(error);
@@ -1202,7 +1202,7 @@
       // Showing the panel is navigation only; it reads no bytes by itself.
       panel.open = true;
       setBusy(true);
-      report("이전 완료 파일을 새 원본으로 불러오고 있습니다. 이전 승인은 재사용되지 않습니다.");
+      report("이전 완료 파일을 새 원본으로 불러오고 있습니다. 이전 허락은 재사용되지 않습니다.");
       try {
         const body = await jsonRequest(ADOPT(conversationId), {
           method: "POST",
@@ -1227,11 +1227,11 @@
             || selectedDocumentId !== body.file.document_id
             || !SELECTION_ID.test(String(selectedSelectionRef))) {
           throw safeUiError("'" + item.filename + "' 파일은 새 원본으로 등록됐을 수 있지만 "
-            + "새 선택 기록과 P01 읽기 승인이 시작되지 않았습니다. "
+            + "새 선택 기록과 P01 읽기 허락이 시작되지 않았습니다. "
             + "자동으로 다시 시도하지 않습니다. 보관 목록에서 직접 선택해 주세요.");
         }
         report("'" + item.filename + "' 파일을 새 원본으로 불러왔습니다. "
-          + "이전 승인은 재사용되지 않았으며, 처리를 시작하려면 새 P01 읽기 승인이 필요합니다.");
+          + "이전 허락은 재사용되지 않았으며, 처리를 시작하려면 새 P01 읽기 허락이 필요합니다.");
         return true;
       } catch (error) {
         reportError(error);
@@ -1331,8 +1331,8 @@
         lastFiles = files;
         loaded = true;
         report(files.length
-          ? files.length + "개 원본이 보관되어 있습니다. 처리에는 별도 P01 승인이 필요합니다."
-            + (historyAvailable ? "" : " 기존 승인 이력은 현재 조회할 수 없습니다.")
+          ? files.length + "개 원본이 보관되어 있습니다. 처리에는 별도 P01 허락이 필요합니다."
+            + (historyAvailable ? "" : " 기존 허락 이력은 현재 조회할 수 없습니다.")
           : "보관된 Excel 원본이 없습니다. 파일을 직접 선택해 보관할 수 있습니다.");
       } catch (error) {
         list.replaceChildren();
@@ -1406,7 +1406,7 @@
         approvalPanel.hidden = true;
         hideDecisions();
         hideRequest();
-        report("원본 XLSX 보관 완료. 수정·PDF 변환은 시작되지 않았으며 별도 승인이 필요합니다.");
+        report("원본 XLSX 보관 완료. 수정·PDF 변환은 시작되지 않았으며 별도 허락이 필요합니다.");
       } catch (error) {
         reportError(error);
       } finally {

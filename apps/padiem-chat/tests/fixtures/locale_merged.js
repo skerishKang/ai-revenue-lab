@@ -319,7 +319,7 @@
       "automation-rule-setting": "규칙 설정",
       "automation-rule-on": "켜짐",
       "automation-rule-off": "꺼짐",
-      "automation-rule-quarantined": "안전을 위해 자동 작업을 멈췄어요",
+      "automation-rule-quarantined": "안전을 위해 자동 작업을 멈췄습니다",
       "claw-automation-rule-turn-off": "규칙 끄기",
       "claw-automation-rule-turn-on": "규칙 켜기",
       "claw-automation-toggle-saved": "규칙 설정을 변경했습니다. ‘규칙 설정’은 자동으로 작업하기 기능이 이미 켜졌다는 뜻이 아닙니다.",
