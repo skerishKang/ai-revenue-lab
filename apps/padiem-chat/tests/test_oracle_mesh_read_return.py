@@ -1094,7 +1094,7 @@ def test_5015_mesh_source_startup_reason_does_not_log_secrets(caplog):
         async def get(self):
             raise RuntimeError("PRIVATE_SECRET_FETCH_ERROR_DO_NOT_LOG")
 
-    caplog.set_level("WARNING", logger="app.oracle_mesh_read_return_routes")
+    caplog.set_level("WARNING", logger="app.oracle_mesh_source")
     env = _deployment_env()
     env[routes.ORACLE_MESH_CHANNEL_SECRET_ENV] = FailedSecret()
     result = asyncio.run(routes.build_oracle_mesh_return_source_from_env(env))
@@ -1572,3 +1572,23 @@ def test_a_dollar_node_ref_is_bounded_text() -> None:
     assert routes._ref("$D62t1", 256) == "$D62t1"
     for bad in ("bad node", "noderef", "", "x" * 257):
         assert routes._ref(bad, 256) is None
+
+
+def test_source_extraction_preserves_class_and_instance_state():
+    from app import oracle_mesh_source as moved
+
+    assert routes.OracleMeshReturnSource is moved.OracleMeshReturnSource
+    assert routes.UnconfiguredOracleMeshReturnSource is moved.UnconfiguredOracleMeshReturnSource
+    assert routes.build_oracle_mesh_return_source is moved.build_oracle_mesh_return_source
+    assert routes.build_oracle_mesh_return_source_from_env is moved.build_oracle_mesh_return_source_from_env
+    source = routes.build_oracle_mesh_return_source(
+        _mapping(), SECRET, routes.EXECUTION_MODE_MESH, WATCH_SECRET,
+    )
+    assert type(source) is moved.OracleMeshReturnSource
+    before = tuple(getattr(source, key) for key in ("_rows", "_secret", "_watch_secret", "_mode"))
+    assert moved.OracleMeshReturnSource.check_channel_secret(source, SECRET)
+    assert routes.OracleMeshReturnSource.check_watch_secret(source, WATCH_SECRET)
+    assert source.execution_mode == routes.EXECUTION_MODE_MESH
+    assert all(getattr(source, key) is value for key, value in zip(
+        ("_rows", "_secret", "_watch_secret", "_mode"), before,
+    ))
