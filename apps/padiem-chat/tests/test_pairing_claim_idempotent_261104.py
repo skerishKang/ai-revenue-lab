@@ -198,3 +198,28 @@ def test_an_unexpected_failure_logs_only_the_exception_type(caplog) -> None:
     assert "reason=RuntimeError" in caplog.text
     assert "secret" not in caplog.text
     assert "C:/x" not in caplog.text
+
+
+def test_presence_extraction_keeps_one_tracker_and_invalidates_only_completed_owner(monkeypatch):
+    from types import SimpleNamespace
+    from app import oracle_mesh_presence as presence, auth_validation_cache
+    assert routes._PairingRefusalLog is presence._PairingRefusalLog
+    assert routes._pairing_refusal_log is presence._pairing_refusal_log
+    store = pairing.store()
+    issued, name = _issued(store)
+    state = _beat_state(store)
+    request = SimpleNamespace(app=SimpleNamespace(state=state))
+    tracker = routes._pairing_refusal_log(request)
+    windows = tracker._windows
+    drops = []
+    monkeypatch.setattr(auth_validation_cache, "drop_cached_owner_scope_of", lambda req, uid: drops.append((req.app.state, uid)))
+    assert projection._poll(state, _tagged_beat(name))[0] == 200
+    assert drops == [(state, lane.OWNER)]
+    assert projection._poll(state, _tagged_beat(name))[0] == 200
+    assert projection._poll(state, _tagged_beat("pd-deadbeef [C D]"))[0] == 200
+    assert drops == [(state, lane.OWNER)]
+    assert presence._pairing_refusal_log(request) is tracker
+    assert state.pairing_refusal_log is tracker
+    assert tracker._windows is windows
+    other = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace()))
+    assert presence._pairing_refusal_log(other) is not tracker

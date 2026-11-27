@@ -12,7 +12,7 @@ from __future__ import annotations
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CHAT_POLL = ROOT / "app/oracle_mesh_read_return_routes.py"
+CHAT_POLL = ROOT / "app/oracle_mesh_poll.py"
 EXECUTOR = ROOT.parent / "korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py"
 # #8212 moved the service loop (the bounded wait between asks) into its own
 # module; the contract pins the loop wherever the executor runs it.
@@ -43,3 +43,64 @@ def test_the_executor_asks_for_the_short_wait_and_keeps_re_requesting() -> None:
     assert "time.sleep(max(1, min(wait, 300)))" in service_loop
     assert "stop.wait(max(1, min(wait, 300)))" in service_loop
     assert 'self._post(POLL_PATH, payload)' in source
+
+
+def test_actual_poll_wait_and_cancel_contract(monkeypatch):
+    import asyncio
+    import json
+    import time
+    from types import SimpleNamespace
+    from app import oracle_mesh_poll as poll, oracle_mesh_read_return_routes as routes
+    from _support.mesh_online_projection import _PollRequest, _poll_state, _PresenceStore, POLL_SECRET
+
+    assert routes.oracle_mesh_read_poll is poll.oracle_mesh_read_poll
+    for header, expected in [(None, []), ("5", [2, 2, 1]), ("20", [2, 2, 1]), ("999", [])]:
+        async def run():
+            elapsed = [0.0]
+            sleeps = []
+            reads = []
+            async def sleep(seconds):
+                sleeps.append(seconds)
+                elapsed[0] += seconds
+            async def read():
+                reads.append(elapsed[0])
+                return None
+            async def claim(**kwargs):
+                raise AssertionError("empty queue must not be claimed")
+            state = _poll_state(_PresenceStore())
+            state.history_store = SimpleNamespace(oldest_pending_oracle_mesh_dispatch=read, claim_oracle_mesh_dispatch=claim)
+            request = _PollRequest({}, state, secret=POLL_SECRET)
+            if header is not None:
+                request.headers["x-oracle-mesh-wait"] = header
+            with monkeypatch.context() as m:
+                m.setattr(time, "monotonic", lambda: elapsed[0])
+                m.setattr(asyncio, "sleep", sleep)
+                response = await poll.oracle_mesh_read_poll(request)
+                assert response.status_code == 200
+                assert json.loads(response.body) == {"ok": True, "dispatch": None}
+                assert sleeps == expected
+                assert len(reads) == len(expected) + 1
+                assert elapsed[0] == sum(expected)
+        asyncio.run(run())
+
+    async def cancel_during_wait():
+        state = _poll_state(_PresenceStore())
+        request = _PollRequest({}, state, secret=POLL_SECRET)
+        request.headers["x-oracle-mesh-wait"] = "20"
+        reads = []
+        async def read():
+            reads.append(True)
+            return None
+        async def stop(seconds):
+            assert 0 < seconds <= 2
+            raise asyncio.CancelledError
+        async def claim(**kwargs):
+            raise AssertionError("cancelled poll must not claim")
+        state.history_store = SimpleNamespace(oldest_pending_oracle_mesh_dispatch=read, claim_oracle_mesh_dispatch=claim)
+        import pytest
+        with monkeypatch.context() as m:
+            m.setattr(asyncio, "sleep", stop)
+            with pytest.raises(asyncio.CancelledError):
+                await poll.oracle_mesh_read_poll(request)
+        assert reads == [True]
+    asyncio.run(cancel_during_wait())
