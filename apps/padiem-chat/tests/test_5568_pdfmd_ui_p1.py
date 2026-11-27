@@ -102,8 +102,8 @@ def test_empty_states_guide_the_next_action() -> None:
     js = pdfmd_js_source()
     assert '"첫 PDF를 바꿔 보세요."' in js
     assert '"이 작업에는 아직 파일이 없습니다."' in js
-    assert '"아직 작업 이력이 없습니다."' in js
-    assert '"로그인하면 작업 이력을 볼 수 있습니다."' in js
+    assert '"아직 작업 기록이 없습니다."' in js
+    assert '"로그인하면 작업 기록을 볼 수 있습니다."' in js
     # #7865: uploads start their own conversion — the step says so.
     assert '"올리면 바로 바꾸기 시작해요."' in js
 
@@ -357,7 +357,7 @@ function buttonByText(label) {
   // server has answered that new work is paused (this fixture answers without
   // the flag, which is the paused answer).
   const noticeText = root.findAll(".pdfmd-status").map(text).join(" ");
-  if (!noticeText.includes("지금은 새 바꾸기를 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.")) fail("PAUSE_NOTICE_MISSING", noticeText);
+  if (!noticeText.includes("지금은 새 바꾸기를 시작할 수 없습니다. 기존 작업 기록과 결과 내려받기는 그대로 이용할 수 있습니다.")) fail("PAUSE_NOTICE_MISSING", noticeText);
   const drop = root.findAll(".pdfmd-drop")[0];
   if (!drop) fail("DROP_ZONE_MISSING");
   if (drop.getAttribute("role") !== null) fail("PAUSED_DROP_STILL_BUTTON");
@@ -428,7 +428,7 @@ function buttonByText(label) {
   await flush();
   await flush();
   const historyText = text(panel.querySelector(".pdfmd-history"));
-  if (!historyText.includes("로그인하면 작업 이력을 볼 수 있습니다.")) fail("GUEST_STATE_MISSING", historyText);
+  if (!historyText.includes("로그인하면 작업 기록을 볼 수 있습니다.")) fail("GUEST_STATE_MISSING", historyText);
   if (historyText.includes("unauthorized")) fail("RAW_UNAUTHORIZED_LEAKED", historyText);
   // A 401 says the session is missing, not that the work stopped: the panel
   // asks for login and never paints the pause copy.
@@ -454,7 +454,7 @@ function buttonByText(label) {
   await flush();
   await flush();
   const serverErrorNotices = root.findAll(".pdfmd-status").map(text).join(" ");
-  if (!serverErrorNotices.includes("지금은 새 바꾸기를 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.")) fail("SERVER_ERROR_PAUSE_MISSING", serverErrorNotices);
+  if (!serverErrorNotices.includes("지금은 새 바꾸기를 시작할 수 없습니다. 기존 작업 기록과 결과 내려받기는 그대로 이용할 수 있습니다.")) fail("SERVER_ERROR_PAUSE_MISSING", serverErrorNotices);
 
   // 7) #6597 follow-up: the opened answer paints a usable uploader, and no
   // pause sentence is left anywhere on it.
@@ -546,7 +546,7 @@ def test_item_cards_show_friendly_errors_and_correct_actions() -> None:
     # #5711: retry is paused; only the existing delete action remains.
     assert "다시 변환" not in payload["itemActions"][1]
     assert "지우기" in payload["itemActions"][1]
-    assert "기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다." in payload["pauseNotice"]
+    assert "기존 작업 기록과 결과 내려받기는 그대로 이용할 수 있습니다." in payload["pauseNotice"]
     assert "업로드 일시 중단" in payload["dropCta"]
     assert payload["newJobAbsent"] is True
 
@@ -560,7 +560,7 @@ def test_preview_labels_markdown_and_guest_state() -> None:
     payload = _run_harness()
     assert payload["paneLabels"] == ["원본 PDF", "Markdown 바꾼 결과"]
     assert payload["markdownLoaded"] is True
-    assert "로그인하면 작업 이력을 볼 수 있습니다." in payload["guestState"]
+    assert "로그인하면 작업 기록을 볼 수 있습니다." in payload["guestState"]
 
 
 def test_guest_401_asks_for_login_and_a_server_error_keeps_the_pause() -> None:
@@ -570,4 +570,4 @@ def test_guest_401_asks_for_login_and_a_server_error_keeps_the_pause() -> None:
     assert "준비 중" not in payload["guestNotice"]
     assert payload["guestDropCta"] == "로그인"
     assert payload["guestLoginEntry"] is False
-    assert "기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다." in payload["serverErrorNotice"]
+    assert "기존 작업 기록과 결과 내려받기는 그대로 이용할 수 있습니다." in payload["serverErrorNotice"]

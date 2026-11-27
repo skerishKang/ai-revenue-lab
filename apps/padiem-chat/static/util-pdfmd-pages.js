@@ -166,7 +166,7 @@
    */
   const OUTCOME_ORDER = [
     ["done", "완료"],
-    ["working", "변환중"],
+    ["working", "바꾸는 중"],
     ["failed", "실패"],
   ];
 

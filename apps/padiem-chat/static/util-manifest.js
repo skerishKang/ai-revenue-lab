@@ -62,7 +62,7 @@
 
   const CATEGORIES = deepFreeze([
     { id: "writing", label: { ko: "문서·홍보 작성", en: "Writing & promo" } },
-    { id: "document", label: { ko: "기록·문서 변환", en: "Notes & conversion" } },
+    { id: "document", label: { ko: "기록·문서 바꾸기", en: "Notes & conversion" } },
     { id: "business", label: { ko: "견적·실무 문서", en: "Quotes & spreadsheets" } },
   ]);
 
@@ -76,7 +76,7 @@
       slashCommand: "/축사",
       name: { ko: "축사·인사말", en: "Congratulatory address" },
       chip: { ko: "축사·인사말", en: "Address" },
-      desc: { ko: "행사 축사·인사말 초안 생성·저장", en: "Draft and save an address for an event" },
+      desc: { ko: "행사 축사·인사말 초안 만들기·저장", en: "Draft and save an address for an event" },
       fields: [
         fld("event", "text", true, false, "행사명", "Event name",
           "예: 제78주년 광복절 기념식", "e.g. 78th Liberation Day Ceremony",
@@ -155,7 +155,7 @@
       slashCommand: "/회의정리",
       name: { ko: "회의정리·활동집", en: "Meeting notes" },
       chip: { ko: "회의정리", en: "Meeting" },
-      desc: { ko: "회의 요약·책/활동집 누적 생성", en: "Summaries and an accumulating activity book" },
+      desc: { ko: "회의 요약·책/활동집 누적 만들기", en: "Summaries and an accumulating activity book" },
       fields: [
         fld("title", "text", true, false, "회의명", "Meeting title",
           "예: 10월 주민 민원 회의", "e.g. October community review",
@@ -183,10 +183,10 @@
       fields: [
         fld("files", "file", true, false, "PDF 또는 ZIP 파일", "PDF or ZIP file",
           "PDF 파일을 선택하세요", "Choose a PDF or ZIP file",
-          "Markdown으로 바꿀 PDF 또는 ZIP 파일을 첨부해 주세요.", "Please attach the PDF or ZIP file to convert to Markdown.",
+          "Markdown으로 바꿀 PDF 또는 ZIP 파일을 붙여 주세요.", "Please attach the PDF or ZIP file to convert to Markdown.",
           { accept: ".pdf,.zip,application/pdf,application/zip" }),
         fld("mode", "select", false, false, "바꾸기 방식", "Conversion mode", "", "",
-          "빠르게 바꾸기와 꼼꼼히 바꾸기 중 어떤 방식으로 진행할까요?", "Would you like fast conversion or verified conversion?",
+          "빠르게 바꾸기와 꼼꼼히 바꾸기 중 어떤 방식으로 할까요?", "Would you like fast conversion or verified conversion?",
           { defaultValue: "fast", options: [["fast", "빠르게 바꾸기", "Fast conversion"], ["verify", "꼼꼼히 바꾸기", "Verified conversion"]] }),
       ],
     }),
@@ -199,19 +199,19 @@
       slashCommand: "/견적서",
       name: { ko: "견적서 초안", en: "Quote draft" },
       chip: { ko: "견적서", en: "Quote" },
-      desc: { ko: "요청을 붙이면 견적서·발주서·답장 초안 — 서버에서 생성", en: "Draft a quotation, purchase order and reply from a request" },
+      desc: { ko: "요청을 붙이면 견적서·발주서·답장 초안을 서버에서 만듭니다", en: "Draft a quotation, purchase order and reply from a request" },
       fields: [
-        fld("content", "textarea", true, false, "요청 원문", "Request",
-          "받은 요청이나 메시지를 그대로 붙여넣어 주세요. 견적서·발주서·답장 초안을 만듭니다.",
+        fld("content", "textarea", true, false, "받은 원문", "Request",
+          "받은 메시지를 그대로 붙여넣어 주세요. 견적서·발주서·답장 초안을 만듭니다.",
           "Paste the request or message as received. This drafts a quotation, purchase order or reply.",
-          "견적서·발주서·답장 초안을 만들 요청 원문을 알려 주세요.", "Please paste the request text you want turned into a draft.",
+          "견적서·발주서·답장 초안을 만들 원문을 알려 주세요.", "Please paste the request text you want turned into a draft.",
           { rows: 6, maxLength: 12000 }),
         fld("channel", "select", false, false, "채널", "Channel", "", "",
-          "요청을 받은 채널(이메일·카카오톡·문자 등)은 어디인가요?", "Which channel did the request arrive on?",
+          "메시지를 받은 채널(이메일·카카오톡·문자 등)은 어디인가요?", "Which channel did the request arrive on?",
           { defaultValue: "other", options: [["other", "기타", "Other"], ["kakao", "카카오톡", "KakaoTalk"], ["sms", "문자", "SMS"], ["email", "이메일", "Email"], ["telegram", "텔레그램", "Telegram"], ["discord", "디스코드", "Discord"]] }),
         fld("action", "select", false, false, "작업", "Action", "", "",
           "견적서·발주서·답장·항목 정리 중 어떤 초안을 만들까요?", "Which draft should we build: quotation, purchase order, reply, or summary?",
-          { defaultValue: "quote", options: [["quote", "견적서 초안", "Quote draft"], ["order", "발주서 초안", "Purchase order draft"], ["reply", "답장 초안", "Reply draft"], ["summary", "요청 항목 정리", "Summarize the request"], ["extract_candidates", "후보 추출", "Extract candidates"]] }),
+          { defaultValue: "quote", options: [["quote", "견적서 초안", "Quote draft"], ["order", "발주서 초안", "Purchase order draft"], ["reply", "답장 초안", "Reply draft"], ["summary", "받은 항목 정리", "Summarize the request"], ["extract_candidates", "후보 추출", "Extract candidates"]] }),
         fld("sender_hint", "text", false, false, "발신자 힌트 (선택)", "Sender hint (optional)",
           "예: A상사 담당자", "e.g. the contact at Company A",
           "발신자 이름이나 거래처 힌트가 있다면 알려 주세요.", "Is there a sender or company name hint to include?",
@@ -231,7 +231,7 @@
       fields: [
         fld("file", "file", true, false, "XLSX 원본 파일", "XLSX file",
           "검토할 .xlsx 파일 선택", "Choose an .xlsx file to review",
-          "열어 검토할 Excel(.xlsx) 파일을 첨부해 주세요.", "Please attach the Excel (.xlsx) file you want to review.",
+          "열어 검토할 Excel(.xlsx) 파일을 붙여 주세요.", "Please attach the Excel (.xlsx) file you want to review.",
           { accept: ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
         fld("goal", "textarea", false, false, "검토 메모 (선택)", "Review note (optional)",
           "예: 합계 수식과 단가 누락 여부 확인", "e.g. Check totals and missing unit prices",

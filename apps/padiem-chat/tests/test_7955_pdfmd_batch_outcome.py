@@ -288,8 +288,8 @@ def test_counts_are_ordered_completed_running_failed() -> None:
     ])
 
     assert [row["label"] for row in rows] == [
-        "2개 완료 · 3개 변환중 · 1개 실패",
-        "2개 변환중",
+        "2개 완료 · 3개 바꾸는 중 · 1개 실패",
+        "2개 바꾸는 중",
         "4개 완료",
     ]
     assert [row["status"] for row in rows] == ["failed", "working", "done"]
