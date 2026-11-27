@@ -7,7 +7,12 @@ padiem-tokens.css의 --composer-home-shadow 하나로 옮긴다.
 값은 치환 전 사용처 리터럴 그대로다. 이 그림자는 모든 테마에서 같은 값이라
 :root에만 두고, dark·glass·시스템 다크 블록은 덮지 않는다. glass에서는
 padiem-glass-brand-polish.css의 같은 값 핀이 실제로 칠해지므로, 이 토큰은
-light·dark·cinematic·padiem-home의 홈 입력창을 소유한다.
+light·dark·padiem-home의 홈 입력창을 소유한다.
+
+#7811 C3(bright-readability): cinematic의 홈 입력창은 그동안
+padiem-bright-readability.css의 !important 테두리·그림자가 칠했다. 그 값이
+cinematic 블록의 --composer-home-edge/--composer-home-shadow 값이 되고,
+테두리도 --composer-home-edge(:root는 var(--line-veil-faint))로 읽는다.
 """
 from __future__ import annotations
 
@@ -52,12 +57,30 @@ def test_root_token_holds_the_pre_change_shadow() -> None:
     assert _norm(root.get(TOKEN, "")) == _norm(VALUE)
 
 
+#: The one theme block allowed to give the home composer its own values: the
+#: cinematic film tokens the readability sheet used to force with !important.
+CINEMATIC = 'html[data-theme="cinematic"]'
+CINEMATIC_VALUES = {
+    TOKEN: "var(--composer-film-glow)",
+    "--composer-home-edge": "var(--composer-film-edge)",
+}
+
+
 def test_no_theme_block_overrides_the_home_shadow() -> None:
     rules = _rules(TOKENS)
     for rule in rules:
         if rule.selectors == [":root"] and rule.media is None:
             continue
-        assert TOKEN not in rule.declarations, rule.selectors
+        for token, value in CINEMATIC_VALUES.items():
+            if rule.selectors == [CINEMATIC] and rule.media is None:
+                assert _norm(rule.declarations.get(token, "")) == value, token
+            else:
+                assert token not in rule.declarations, (token, rule.selectors)
+
+
+def test_root_home_edge_is_the_former_border_token() -> None:
+    root = _root(_rules(TOKENS))
+    assert root.get("--composer-home-edge") == "var(--line-veil-faint)"
 
 
 def test_first_use_composer_consumes_only_the_token() -> None:
@@ -69,7 +92,7 @@ def test_first_use_composer_consumes_only_the_token() -> None:
     assert len(matches) == 1
     rule = matches[0]
     assert declaration(rule, "box-shadow") == f"var({TOKEN})"
-    assert declaration(rule, "border-color") == "var(--line-veil-faint)"
+    assert declaration(rule, "border-color") == "var(--composer-home-edge)"
 
 
 def test_first_use_has_no_color_literals_left_for_the_home_composer() -> None:

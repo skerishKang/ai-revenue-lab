@@ -18,6 +18,10 @@
   --accent: #004884;
   --accent-2: #00609c;
   --accent-soft: rgba(0, 72, 132, 0.08);
+  /* #8805 D3: 글자·링크·아이콘·선택 표시 전용. 바탕·테두리는 --accent/--accent-2를 그대로 쓴다.
+     :root 기본값이 어둡게라 밝은 파랑, 밝게는 아래에서 수리 전과 같은 값으로 되돌린다. */
+  --accent-text: #7cc0ea;
+  --accent-2-text: #7cc0ea;
   --ivory: #f5f1e8;
   --ivory-soft: #ebe5d6;
   --paper: #ffffff;
@@ -50,6 +54,8 @@
   --text: #0b1a2e;
   --muted: #546078;
   --border: rgba(11, 26, 46, 0.12);
+  --accent-text: #004884;
+  --accent-2-text: #00609c;
 }
 /* #8740: one place changes every reading size; the base sizes stay untouched. */
 html[data-text-size="large"] {
@@ -64,6 +70,9 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.7;
+  /* #8805 D2: 한글은 낱말 단위로 줄을 바꾸고, 칸보다 긴 낱말만 쪼갠다. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   /* The page is a column that always reaches the viewport bottom: on short pages the
@@ -92,7 +101,7 @@ main { flex: 1 0 auto; }
 }
 [data-theme="dark"] .topbar { background: var(--navy-soft); border-bottom-color: var(--border); }
 .brand { display: flex; align-items: center; gap: 10px; min-height: var(--tap); min-width: 0; color: inherit; text-decoration: none; border-radius: var(--radius-sm); }
-.brand:hover .brand-name { color: var(--accent-2); }
+.brand:hover .brand-name { color: var(--accent-2-text); }
 .brand-mark {
   display: inline-flex; align-items: center; justify-content: center;
   width: 30px; height: 30px; border-radius: 50%;
@@ -111,8 +120,8 @@ main { flex: 1 0 auto; }
   border-bottom: 2px solid transparent;
   transition: opacity 0.18s, border-color 0.18s, color 0.18s;
 }
-.top-nav a:hover { opacity: 1; color: var(--accent-2); }
-.top-nav a.active { opacity: 1; font-weight: 700; border-bottom-color: var(--accent); }
+.top-nav a:hover { opacity: 1; color: var(--accent-2-text); }
+.top-nav a.active { opacity: 1; font-weight: 700; border-bottom-color: var(--accent-text); }
 .top-actions { display: flex; align-items: center; gap: 10px; }
 .ghost {
   display: inline-flex; align-items: center; justify-content: center; min-height: var(--tap);
@@ -120,7 +129,7 @@ main { flex: 1 0 auto; }
   padding: 8px 14px; border-radius: 999px; cursor: pointer;
   font: inherit; font-size: var(--fs-label); letter-spacing: 0.02em;
 }
-.ghost:hover { border-color: var(--accent-2); color: var(--accent-2); }
+.ghost:hover { border-color: var(--accent-2); color: var(--accent-2-text); }
 /* #8740b: header controls keep their own type scale so large text cannot grow
    the bar, and narrow screens swap the words for 44px icon buttons. */
 .topbar .ghost { font-size: 14px; white-space: nowrap; word-break: keep-all; }
@@ -210,7 +219,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
   margin: 0 0 10px;
   font-size: var(--fs-label); font-weight: 700;
   letter-spacing: 0.12em;
-  color: var(--accent-2);
+  color: var(--accent-2-text);
 }
 .hero-name {
   margin: 0 0 14px;
@@ -221,8 +230,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 }
 [data-theme="dark"] .hero-name { color: #f2f6fa; }
 .hero-name-line, .hero-name-sub { display: block; }
-.hero-name-sub { color: var(--accent-2); }
-[data-theme="dark"] .hero-name-sub { color: #7cc0ea; }
+.hero-name-sub { color: var(--accent-2-text); }
 .hero-lead {
   margin: 0 0 20px; max-width: 44ch;
   font-size: var(--fs-body); line-height: 1.62;
@@ -256,7 +264,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 .btn.primary { background: var(--accent); color: var(--paper); }
 .btn.primary:hover { background: var(--accent-2); }
 .btn.secondary { background: var(--paper); border-color: rgba(11, 26, 46, 0.22); color: var(--navy-deep); }
-.btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn.secondary:hover { border-color: var(--accent); color: var(--accent-text); }
 [data-theme="dark"] .btn.secondary { background: transparent; border-color: var(--border); color: var(--text); }
 /* ── 3-item guide strip under the hero (reference y 417..500) ──────────── */.hero-strip { background: var(--paper); border-bottom: 1px solid rgba(11, 26, 46, 0.08); }
 [data-theme="dark"] .hero-strip { background: var(--navy-soft); border-bottom-color: var(--border); }
@@ -270,14 +278,14 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 .strip-icon {
   flex: none; width: 34px; height: 34px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
-  background: var(--accent-soft); color: var(--accent);
+  background: var(--accent-soft); color: var(--accent-text);
   font-size: 16px; font-weight: 700;
 }
 /* The reference marks each strip item with its own icon, not an ordinal number. */.strip-icon svg { width: 18px; height: 18px; display: block; }
 .strip-title { margin: 0; font-size: var(--fs-body); font-weight: 700; color: var(--text); line-height: 1.35; }
 .strip-desc { margin: 2px 0 0; font-size: var(--fs-label); color: var(--muted); line-height: 1.45; }
-.strip-link { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2); text-decoration: none; font-size: var(--fs-body); font-weight: 600; white-space: nowrap; }
-.strip-link:hover { color: var(--accent); text-decoration: underline; }
+.strip-link { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2-text); text-decoration: none; font-size: var(--fs-body); font-weight: 600; white-space: nowrap; }
+.strip-link:hover { color: var(--accent-text); text-decoration: underline; }
 /* ── sections ─────────────────────────────────────────────────────────── */.section { padding: 32px var(--gutter); background: var(--bg); }
 .section-inner { max-width: var(--maxw); margin: 0 auto; }
 /* One compact row: title left, note and link right (reference spends ~63px here). */.section-head {
@@ -289,7 +297,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 /* inner pages place .section-lead directly under .section-inner */.section-inner > .section-lead { margin: 0 0 28px; }
 .section-eyebrow {
   margin: 0 0 8px; font-size: var(--fs-label); font-weight: 700; line-height: 1.2;
-  letter-spacing: 0.12em; color: var(--accent-2);
+  letter-spacing: 0.12em; color: var(--accent-2-text);
 }
 /* Headings must not inherit the body's 1.7 leading — the mockup's titles sit in a
    tight box (its 4-card heading measured 59px tall, ours was 84.5px). */.section-title {
@@ -298,8 +306,8 @@ html[data-text-size="large"] .icon-text-large { display: none; }
   letter-spacing: -0.01em; color: var(--text);
 }
 .section-lead { margin: 0; font-size: var(--fs-body); color: var(--muted); max-width: 62ch; }
-.section-more { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2); text-decoration: none; font-size: var(--fs-body); font-weight: 600; white-space: nowrap; }
-.section-more:hover { color: var(--accent); text-decoration: underline; }
+.section-more { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2-text); text-decoration: none; font-size: var(--fs-body); font-weight: 600; white-space: nowrap; }
+.section-more:hover { color: var(--accent-text); text-decoration: underline; }
 /* ── 4-card content grid (reference: 4 photo cards with icon badge) ────── */.key-activity-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .key-activity-card {
   display: flex; flex-direction: column;
@@ -313,7 +321,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 /* A record the council did not photograph renders without a media block at all —
    the same shape as the summary card — rather than borrowing another meeting's photo. *//* Tighter than the first pass: the reference card is 183px tall and its text block sits
    close to the photo. Every verified field (date, title, note, source link) is kept. */.ka-body { padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.ka-date { font-size: var(--fs-label); color: var(--accent-2); font-weight: 700; letter-spacing: 0.04em; line-height: 1.35; }
+.ka-date { font-size: var(--fs-label); color: var(--accent-2-text); font-weight: 700; letter-spacing: 0.04em; line-height: 1.35; }
 .ka-title {
   margin: 0; font-size: var(--fs-body); font-weight: 700; line-height: 1.45;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
@@ -322,7 +330,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
   margin: 0; font-size: var(--fs-label); color: var(--muted); line-height: 1.45;
   display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
 }
-.ka-foot { margin-top: auto; padding-top: 8px; color: var(--accent-2); font-size: var(--fs-label); font-weight: 600; line-height: 1.35; }
+.ka-foot { margin-top: auto; padding-top: 8px; color: var(--accent-2-text); font-size: var(--fs-label); font-weight: 600; line-height: 1.35; }
 .key-activity-card.is-summary { justify-content: center; }
 .key-activity-card.is-summary .ka-body { padding: 22px 18px; }
 /* ── navy info band (reference y 736..860) ────────────────────────────── *//* ── 2-column media / links (reference y 860..1035) ──────────────────── */.col-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
@@ -330,7 +338,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 .col-title { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.35; color: var(--text); font-family: var(--font-serif); }
 .col-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .col-item { display: flex; gap: 12px; align-items: flex-start; min-height: var(--tap); text-decoration: none; color: var(--text); }
-.col-item:hover .col-item-title { color: var(--accent-2); }
+.col-item:hover .col-item-title { color: var(--accent-2-text); }
 .col-thumb { flex: none; width: 60px; height: 45px; border-radius: var(--radius-sm); object-fit: cover; background: var(--bg-soft); }
 [data-theme="light"] .col-thumb { background: var(--ivory-soft); }
 .col-item-title {
@@ -351,7 +359,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 }
 [data-theme="dark"] .col-tile { background: var(--navy-soft); border-color: var(--border); }
 .col-tile:hover { border-color: var(--accent-2); }
-.col-tile-icon { color: var(--accent-2); font-size: 16px; }
+.col-tile-icon { color: var(--accent-2-text); font-size: 16px; }
 .col-tile-label { font-size: var(--fs-label); font-weight: 700; line-height: 1.35; }
 @media (min-width: 721px) {
 .col-tile-grid { display: flex; flex-wrap: wrap; gap: 6px 10px; }
@@ -390,9 +398,9 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 .intro-bio p { color: var(--muted); margin: 0 0 16px; font-size: var(--fs-body); }
 .profile-list { margin: 0; padding: 0; }
 .profile-list > div { padding: 12px 0; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 130px 1fr; gap: 12px; }
-.profile-list dt { font-size: var(--fs-label); color: var(--accent-2); margin: 0; font-weight: 700; letter-spacing: 0.04em; }
+.profile-list dt { font-size: var(--fs-label); color: var(--accent-2-text); margin: 0; font-weight: 700; letter-spacing: 0.04em; }
 .profile-list dd { margin: 0; font-size: var(--fs-body); }
-.profile-list dd a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2); font-weight: 600; }
+.profile-list dd a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2-text); font-weight: 600; }
 .intro-video { margin-top: 32px; }
 .intro-video video { width: 100%; aspect-ratio: 16 / 9; display: block; border-radius: var(--radius-sm); background: #000; }
 .intro-video-title { font-family: var(--font-serif); font-size: 18px; margin: 10px 0 0; }
@@ -405,7 +413,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 }
 .activity-toolbar input { flex: 1; min-width: 220px; }
 .activity-status {
-  margin: 8px 0 0; color: var(--accent-2);
+  margin: 8px 0 0; color: var(--accent-2-text);
   font-size: var(--fs-label); font-weight: 600;
 }
 .activity-legend {
@@ -413,7 +421,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
   margin: 0 0 14px; color: color-mix(in srgb, var(--muted) 80%, var(--text));
   font-size: var(--fs-body); line-height: 1.4;
 }
-.activity-legend b { color: var(--accent-2); font-weight: 700; }
+.activity-legend b { color: var(--accent-2-text); font-weight: 700; }
 [data-theme="dark"] .activity-legend b { color: var(--text); }
 .activity-list {
   list-style: none; margin: 0; padding: 0;
@@ -433,11 +441,11 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 
 
 }
-.activity-item .item-date { font-size: var(--fs-label); color: var(--accent-2); font-weight: 700; }
+.activity-item .item-date { font-size: var(--fs-label); color: var(--accent-2-text); font-weight: 700; }
 .activity-item .item-tag {
   display: inline-block; margin-left: 8px; padding: 2px 8px;
   font-size: var(--fs-label); border-radius: 4px;
-  background: var(--accent-soft); color: var(--accent);
+  background: var(--accent-soft); color: var(--accent-text);
 }
 [data-theme="dark"] .activity-item .item-tag { color: #9fd0ee; background: rgba(0, 96, 156, 0.24); }
 .activity-item .item-title {
@@ -446,28 +454,28 @@ html[data-text-size="large"] .icon-text-large { display: none; }
   font-size: var(--fs-body); font-weight: 600;
 }
 .activity-item .item-more {
-  color: var(--accent-2); font-size: var(--fs-label);
+  color: var(--accent-2-text); font-size: var(--fs-label);
   font-weight: 700; white-space: nowrap;
 }
 .activity-detail {
   background: var(--bg-soft); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 28px; margin-top: 24px;
 }
-.back-btn { display: inline-flex; align-items: center; min-height: var(--tap); background: none; border: 0; color: var(--accent-2); cursor: pointer; font: inherit; font-size: var(--fs-body); font-weight: 600; padding: 0; margin-bottom: 12px; }
+.back-btn { display: inline-flex; align-items: center; min-height: var(--tap); background: none; border: 0; color: var(--accent-2-text); cursor: pointer; font: inherit; font-size: var(--fs-body); font-weight: 600; padding: 0; margin-bottom: 12px; }
 .detail-date { color: var(--muted); font-size: var(--fs-label); margin: 0 0 14px; }
 .detail-body { color: var(--text); font-size: var(--fs-body); line-height: 1.8; margin: 0; }
 .detail-body p { margin: 0 0 16px; }
 .detail-body p:last-child { margin-bottom: 0; }
 .detail-link {
-  display: inline-flex; align-items: center; min-height: var(--tap); margin-top: 16px; color: var(--accent-2);
+  display: inline-flex; align-items: center; min-height: var(--tap); margin-top: 16px; color: var(--accent-2-text);
   text-decoration: none; font-weight: 600; font-size: var(--fs-body);
-  border-bottom: 1px solid var(--accent-2); padding-bottom: 2px;
+  border-bottom: 1px solid var(--accent-2-text); padding-bottom: 2px;
 }
 .share-btn {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: var(--tap); margin-top: 16px; margin-left: 12px;
   padding: 8px 18px; border: 1px solid var(--accent); border-radius: 999px;
-  background: transparent; color: var(--accent-2); cursor: pointer;
+  background: transparent; color: var(--accent-2-text); cursor: pointer;
   font: inherit; font-size: var(--fs-body); font-weight: 600;
 }
 .share-btn:hover { border-color: var(--accent-2); background: var(--accent-soft); }
@@ -482,15 +490,15 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 .info-card:hover, .policy-card:hover { border-color: var(--accent-2); transform: translateY(-2px); }
 .info-card .card-num, .policy-card .card-num {
   font-family: var(--font-serif); font-size: 30px; font-weight: 700;
-  color: var(--accent-2); line-height: 1; margin-bottom: 12px;
+  color: var(--accent-2-text); line-height: 1; margin-bottom: 12px;
 }
 .info-card h3, .policy-card h3 { margin: 0 0 8px; font-size: 18px; }
 .info-card p, .policy-card p { color: var(--muted); font-size: var(--fs-body); margin: 0 0 16px; line-height: 1.65; }
 .policy-block { margin-top: 34px; }
 .policy-block[hidden] { display: none; }
 .policy-heading { font-family: var(--font-serif); font-size: clamp(18px, 1.6vw, 22px); margin: 0 0 14px; }
-.policy-meta { color: var(--accent-2); font-weight: 700; font-size: var(--fs-label); margin: 0 0 6px !important; }
-.card-link { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2); text-decoration: none; font-weight: 600; font-size: var(--fs-body); }
+.policy-meta { color: var(--accent-2-text); font-weight: 700; font-size: var(--fs-label); margin: 0 0 6px !important; }
+.card-link { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2-text); text-decoration: none; font-weight: 600; font-size: var(--fs-body); }
 .card-link:hover { text-decoration: underline; }
 .policy-note { color: var(--muted); font-size: var(--fs-label); margin: -6px 0 0; }
 .policy-jump { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
@@ -523,11 +531,11 @@ html[data-text-size="large"] .icon-text-large { display: none; }
   align-items: center; min-height: var(--tap); padding: 10px 0;
   color: var(--text); text-decoration: none; font-size: var(--fs-body);
 }
-.bill-row a:hover .bill-title { color: var(--accent-2); text-decoration: underline; }
-.bill-number { color: var(--accent-2); font-weight: 700; font-size: var(--fs-label); white-space: nowrap; }
+.bill-row a:hover .bill-title { color: var(--accent-2-text); text-decoration: underline; }
+.bill-number { color: var(--accent-2-text); font-weight: 700; font-size: var(--fs-label); white-space: nowrap; }
 .bill-title { min-width: 0; }
 .bill-date { color: var(--muted); font-size: var(--fs-label); white-space: nowrap; }
-.bill-result { color: var(--accent-2); font-weight: 700; font-size: var(--fs-label); white-space: nowrap; }
+.bill-result { color: var(--accent-2-text); font-weight: 700; font-size: var(--fs-label); white-space: nowrap; }
 @media (max-width: 760px) {
 .bill-row a {
     grid-template-columns: auto 1fr auto;
@@ -553,7 +561,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 .tile-thumb { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-sm); margin-bottom: 10px; background: var(--ivory-soft); }
 [data-theme="dark"] .tile-thumb { background: var(--navy-soft); }
 /* Tiles without a picture of their own (video, external link) show the kind instead of
-   reusing one poster across every card. */.tile-kind { display: block; font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.06em; color: var(--accent-2); }
+   reusing one poster across every card. */.tile-kind { display: block; font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.06em; color: var(--accent-2-text); }
 .tile-title { display: block; font-size: var(--fs-body); font-weight: 600; margin: 6px 0 8px; }
 .tile-notes { list-style: none; margin: 0; padding: 0; font-size: var(--fs-label); color: var(--muted); }
 .tile-notes li { padding: 1px 0; }
@@ -566,7 +574,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
   min-height: var(--tap); padding: 10px 0; color: var(--text);
   text-decoration: none; font-size: var(--fs-body);
 }
-.link-list a:hover { color: var(--accent-2); text-decoration: underline; }
+.link-list a:hover { color: var(--accent-2-text); text-decoration: underline; }
 .link-kind { color: var(--muted); font-size: var(--fs-label); font-weight: 700; white-space: nowrap; }
 /* A headline is still a tap target when it is the only link in a row. */.col-item-title a, .news-title a { display: inline-flex; align-items: center; min-height: var(--tap); }
 .media-video { margin-top: 28px; }
@@ -593,7 +601,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
     text-align: center; text-decoration: none; color: var(--muted);
     border-top: 2px solid transparent;
   }
-.mobile-tabbar a.active { color: var(--accent-2); border-top-color: var(--accent); font-weight: 700; }
+.mobile-tabbar a.active { color: var(--accent-2-text); border-top-color: var(--accent-text); font-weight: 700; }
 /* The fixed bar must not cover the footer's last line. The band below the footer
      reserves one tab stop; the bar's own hairline top border can still overlap the
      footer's bottom padding edge by 1px, which leaves the note text ~19px clear. */body { padding-bottom: calc(var(--tap) + env(safe-area-inset-bottom, 0px)); }
@@ -857,7 +865,8 @@ body.lightbox-open .mobile-tabbar { visibility: hidden; }
    the existing activity/policy search screens without scripts (formaction only
    swaps the destination). Kept short so the mobile hero does not grow tall. */.home-search { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; max-width: 560px; }
 .home-search-input {
-  flex: 1 1 200px; min-height: var(--tap); padding: 10px 14px;
+  /* #8805 D1: 기본 최소 폭(글자 20자)이 글씨 크게에서 단추를 아랫줄로 밀었다. 0이면 단추 옆에 남는다. */
+  flex: 1 1 200px; min-width: 0; min-height: var(--tap); padding: 10px 14px;
   border-radius: var(--radius-sm); border: 1px solid rgba(11, 26, 46, 0.22);
   background: var(--paper); color: var(--navy-deep); font: inherit; font-size: var(--fs-body);
 }
@@ -873,7 +882,7 @@ body.lightbox-open .mobile-tabbar { visibility: hidden; }
 .home-search-go:hover { background: var(--accent); border-color: var(--accent); color: var(--paper); }
 /* A photo trigger and its source link are independent targets. */.media-card { position: relative; display: flex; flex-direction: column; min-width: 0; }
 .media-card .media-tile { flex: 1; padding-bottom: 54px; min-width: 0; }
-.media-source { display: inline-flex; align-items: center; justify-content: center; min-width: var(--tap); min-height: var(--tap); color: var(--accent-2); text-decoration: none; font-weight: 700; }
+.media-source { display: inline-flex; align-items: center; justify-content: center; min-width: var(--tap); min-height: var(--tap); color: var(--accent-2-text); text-decoration: none; font-weight: 700; }
 .media-card .media-source { position: absolute; right: 8px; bottom: 4px; }
 .home-media-card { display: flex; align-items: flex-start; gap: 4px; min-width: 0; }
 .home-media-card .col-item { flex: 1; min-width: 0; }

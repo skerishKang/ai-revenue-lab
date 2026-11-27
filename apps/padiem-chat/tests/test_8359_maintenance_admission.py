@@ -199,3 +199,46 @@ def test_unknown_contact_stops_and_global_concurrency_limit():
         finally:
             db.close()
     asyncio.run(run())
+
+
+
+@pytest.mark.parametrize("state", [
+    "empty", "owner_unresolved", "retryable", "retry_limit", "stopped", "verified",
+    "null_reason", "stopped_reopenable_reason", "same_device_in_flight", "global_limit"])
+def test_reservable_mirrors_reserve_8772(state):
+    """The read-only precheck answers exactly what the atomic claim would."""
+    async def run():
+        db = _db()
+        try:
+            store = MaintenanceAttemptStore(SqliteD1(db))
+            digest = "c" * 64
+            insert = ("INSERT INTO pc_helper_auto_attempts (device_id,source_sha256,attempts,"
+                      "stopped,last_reason,updated_at) VALUES (?,?,?,?,?,?)")
+            rows = {
+                "owner_unresolved": [(DEVICE, digest, 0, 0, "owner_unresolved")],
+                "retryable": [(DEVICE, digest, 2, 0, "retryable_precontact")],
+                "retry_limit": [(DEVICE, digest, 3, 0, "retryable_precontact")],
+                "stopped": [(DEVICE, digest, 1, 1, "stopped_contact_or_unknown")],
+                "verified": [(DEVICE, digest, 0, 1, "verified")],
+                "null_reason": [(DEVICE, digest, 0, 0, None)],
+                "stopped_reopenable_reason": [(DEVICE, digest, 1, 1, "retryable_precontact")],
+                "same_device_in_flight": [(DEVICE, "d" * 64, 0, 0, "reserved:" + "e" * 32)],
+                "global_limit": [(f"node//pc-{n}", digest, 0, 0, "reserved:" + str(n) * 32)
+                                 for n in range(3)],
+            }.get(state, [])
+            for row in rows:
+                db.execute(insert, (*row, STAMP))
+            db.commit()
+            key = dict(device_id=DEVICE, source_sha256=digest)
+            predicted = await store.reservable(**key)
+            claimed = await store.reserve(**key, now=STAMP)
+            assert predicted is (claimed is not None)
+            # Read-only: the precheck alone never changes a row.
+            if claimed is None:
+                before = db.execute("SELECT * FROM pc_helper_auto_attempts ORDER BY device_id").fetchall()
+                assert await store.reservable(**key) is False
+                after = db.execute("SELECT * FROM pc_helper_auto_attempts ORDER BY device_id").fetchall()
+                assert [tuple(r) for r in before] == [tuple(r) for r in after]
+        finally:
+            db.close()
+    asyncio.run(run())
