@@ -15,10 +15,11 @@
 * .composer 테두리·그림자 — home 상태 padiem-first-use.css, chat 상태
   padiem-rich.css.
 
-.starter의 !important 3개는 남는다: 폰 폭 Claw 일반 화면에서
-connector-pages.css가 카드를 지우는 규칙(투명·테두리 0·그림자 없음)을 이긴다.
-토큰으로 옮기면 토큰 하나가 네 테마에서는 "카드 없음", 시네마틱에서는 "카드"를
-뜻하게 되어 이번 정리에서 뺐다.
+.starter의 !important 3개는 #7811 C3 후속 결정(261127)으로 뗐다: 폰 폭 Claw
+일반 화면에서 connector-pages.css가 카드를 지우는 규칙(투명·테두리 0·그림자
+없음)이 특이도로 이기게 하다 — 다른 네 테마에서 이미 그렇다. 넓은 폭에서는
+bright-readability의 시네마틱 .starter 규칙이 claw-focus-layout.css의 지움
+규칙보다 특이도가 높아 그대로 칠한다.
 """
 from __future__ import annotations
 
@@ -75,12 +76,8 @@ RIVALS = {
     },
 }
 
-#: 남는 !important(위 docstring의 .starter 사유).
-KEPT_FLAGS = {
-    (f"{CIN} .starter", "background"),
-    (f"{CIN} .starter", "border-color"),
-    (f"{CIN} .starter", "box-shadow"),
-}
+# 남는 !important — 없다. (.starter 3개는 261127 결정으로 뗐다. 위 docstring.)
+KEPT_FLAGS: set[tuple[str, str]] = set()
 
 
 def _norm(value: str) -> str:
@@ -146,7 +143,7 @@ def test_the_readability_sheet_keeps_only_the_starter_and_composer_boxes():
     assert composer["box-shadow"] == "var(--composer-film-glow)"
 
 
-def test_only_the_starter_flags_remain_on_the_cinematic_boxes():
+def test_no_flags_remain_on_the_cinematic_boxes():
     flagged = set()
     for sheet_name in (BRIGHT, THEME_SHEET):
         for rule in sheets.rules(sheet_name):
