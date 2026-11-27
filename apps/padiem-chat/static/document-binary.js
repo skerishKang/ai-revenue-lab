@@ -63,7 +63,7 @@
       ? hint.mediaType
       : canonicalMediaType(file);
     if (!mediaType) throw new Error(attachmentCapabilities.copy(document.documentElement.lang).unsupportedFormat);
-    if (!file || file.size < 1) throw new Error("빈 문서는 첨부할 수 없습니다.");
+    if (!file || file.size < 1) throw new Error("빈 문서는 붙일 수 없습니다.");
 
     return Object.freeze({
       type: "document",

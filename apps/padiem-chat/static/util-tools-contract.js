@@ -232,7 +232,7 @@
 
   function errorMessage(err) {
     if (err && err.empty) return emptyCopy();
-    if (err && err.timeout) return localeText("timeout", "응답 시간 초과");
+    if (err && err.timeout) return localeText("timeout", "답이 늦어요");
     if (err && err.offline) return localeText("connection-error", "연결 오류");
     const status = err && err.status;
     if (status === 401 || status === 403) {

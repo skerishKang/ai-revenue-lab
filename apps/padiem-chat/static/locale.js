@@ -25,8 +25,8 @@
 
   const exactPairs = [
     ["프로젝트 삭제", "Delete project"], ["관리", "Manage"], ["삭제", "Delete"], ["저장", "Save"], ["복사", "Copy"], ["다운로드", "Download"],
-    ["답변 준비 중", "Preparing answer"], ["저장된 대화", "Saved conversation"], ["모의 응답 · 실제 모델 호출 없음", "Preview response · no live model call"], ["AI 응답", "AI response"],
-    ["어떤 AI가 답했나요?", "Which AI answered?"], ["다시 시도", "Try again"], ["응답 시간 초과", "Response timed out"], ["연결 오류", "Connection error"],
+    ["답변 준비 중", "Preparing answer"], ["저장된 대화", "Saved conversation"], ["모의 답 · 실제 모델 호출 없음", "Preview response · no live model call"], ["AI 답", "AI response"],
+    ["어떤 AI가 답했나요?", "Which AI answered?"], ["다시 시도", "Try again"], ["답이 늦어요", "Response timed out"], ["연결 오류", "Connection error"],
     ["설정 필요", "Setup needed"], ["로그인 후", "Log in first"], ["확인 중", "Checking"], ["새로 만들기", "Create new"], ["비어 있음", "Empty"],
     ["프로젝트 지침·파일", "Project instructions & files"], ["새 프로젝트", "New project"], ["복사됨", "Copied"], ["복사 실패", "Copy failed"], ["저장됨", "Saved"], ["저장 실패", "Save failed"],
     ["코드", "Code"], ["표", "Table"], ["CSV 다운로드", "Download CSV"], ["출처", "Sources"], ["대화 내보내기", "Export conversation"], ["답변 작업", "Answer actions"]

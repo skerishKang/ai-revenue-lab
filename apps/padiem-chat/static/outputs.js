@@ -475,11 +475,11 @@
 
     const regen = regenerateApi();
     if (regen) {
-      const again = iconButton("answer-action answer-regenerate", "↻", "answer-regenerate", "다시 생성");
+      const again = iconButton("answer-action answer-regenerate", "↻", "answer-regenerate", "다시 만들기");
       again.addEventListener("click", () => {
         if (!lifecycleApi().isCompleted(article)) return;
         if (!regen.regenerate(article)) {
-          flashTitle(again, "answer-regenerating", "답변 생성 중");
+          flashTitle(again, "answer-regenerating", "답변 만드는 중");
         }
       });
       actions.appendChild(again);
