@@ -57,7 +57,7 @@ console.log(JSON.stringify({
     assert result["four"]["terminal"] is True
     assert result["after"]["reason"] == "already_terminal"
     assert result["snap"] == {"runId": "run.1", "traceId": "trace.1", "appId": "claw", "sequence": 4, "terminal": True}
-    assert result["ko"] == "도구가 실행 중입니다"
+    assert result["ko"] == "도구가 작업 중입니다"
     assert result["en"] == "Tool running"
     assert result["unknown"] is None
     assert "SECRET_TOKEN" not in json.dumps(result)

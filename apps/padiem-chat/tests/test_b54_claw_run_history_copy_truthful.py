@@ -117,7 +117,7 @@ def test_both_taglines_describe_downloading_a_past_document() -> None:
 def test_taglines_state_the_same_three_facts_in_both_languages() -> None:
     table = _locale_table()
     facts = {
-        "ko": ("실제 실행", "요약", "문서", "다운로드"),
+        "ko": ("실제 작업", "요약", "문서", "다운로드"),
         "en": ("real executions", "summary", "document", "download"),
     }
     for language, tokens in facts.items():

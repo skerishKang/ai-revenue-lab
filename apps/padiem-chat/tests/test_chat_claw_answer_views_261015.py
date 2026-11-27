@@ -163,7 +163,7 @@ def test_automation_nav_opens_standalone_page_reusing_panel() -> None:
     assert element_attrs("automationViewSignedOut") is not None
     assert element_attrs("clawAutomationSchedulerNote") is not None
     # The scheduler note still refuses to claim the scheduler is running.
-    assert "자동 실행이 이미 활성화되어 있다는 뜻이 아닙니다" in sheet("index.html")
+    assert "자동으로 작업하기 기능이 이미 켜졌다는 뜻이 아닙니다" in sheet("index.html")
     rules = rules_for_sheet("standalone-views.css")
     assert find_rules_with_selector(rules, '.app-shell[data-state="automation"] .conversation')
 

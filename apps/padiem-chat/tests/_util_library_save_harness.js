@@ -144,7 +144,7 @@ const windowObj = {
       if (key === "connection-error") return "연결 오류";
       if (key === "claw-error-auth-needed") return "로그인이 필요합니다. 다시 로그인한 뒤 시도해 주세요.";
       if (key === "claw-error-rate-limited") return "요청이 잠시 많습니다. 잠시 후 다시 시도해 주세요.";
-      if (key === "claw-error-generic") return "실행 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+      if (key === "claw-error-generic") return "작업 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.";
       return key;
     },
   },

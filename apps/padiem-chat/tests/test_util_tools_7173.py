@@ -270,7 +270,7 @@ const windowObj = {
   __padiemLocale: { text: (key) => ({ timeout: "답이 늦어요", "connection-error": "연결 오류",
     "claw-error-auth-needed": "로그인이 필요합니다. 다시 로그인한 뒤 시도해 주세요.",
     "claw-error-rate-limited": "요청이 잠시 많습니다. 잠시 후 다시 시도해 주세요.",
-    "claw-error-generic": "실행 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요." }[key] || key) },
+    "claw-error-generic": "작업 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요." }[key] || key) },
 };
 const sandbox = { document: document, window: windowObj, console: console, setTimeout: () => 0, clearTimeout: () => {} };
 sandbox.globalThis = sandbox;
@@ -481,7 +481,7 @@ def test_behaviour_signed_out_shows_the_login_gate() -> None:
 
 
 def test_behaviour_refusals_read_as_chat_sentences() -> None:
-    for status, sentence in ((401, "로그인이 필요합니다"), (429, "요청이 잠시 많습니다"), (500, "실행 중 오류")):
+    for status, sentence in ((401, "로그인이 필요합니다"), (429, "요청이 잠시 많습니다"), (500, "작업 중 문제")):
         result = _run_harness({"tool": "speech", "errorStatus": status,
                                "responses": [{"status": status, "ok": False}]})
         _assert_checks(result, ("error_has_no_status_token", "error_is_a_korean_sentence"))
