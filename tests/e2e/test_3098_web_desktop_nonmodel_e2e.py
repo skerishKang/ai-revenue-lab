@@ -873,9 +873,6 @@ function article() {
   return { root, content, label };
 }
 
-const start = app.indexOf("  const CLAW_BOUNDED_REFUSAL_COPY");
-const end = app.indexOf("\n  function renderCancelled(", start);
-assert(start >= 0 && end > start, "source locator");
 const copy = {
   "answer-load-failed": "답변을 불러오지 못했습니다.",
   "try-again": "다시 시도",
@@ -905,27 +902,28 @@ const context = {
   MESSAGE_LIFECYCLE: { FAILED: "failed", TIMED_OUT: "timed_out", CANCELLED: "cancelled" },
   PadiemChatLifecycle: { set(target, lifecycle) { target.dataset.lifecycle = lifecycle; } },
 };
-const api = vm.runInNewContext(
-  "(function(){" + app.slice(start, end) +
-  "\n// Mirror of the app.js factory narrowed to the deps the failure-render" +
-  "\n// path touches; the module itself is the real chat-conversation-module.js." +
-  "\nconst conversationDeps = {" +
-  " get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; }," +
-  " get buildRetryBox() { return buildRetryBox; }," +
-  " get failureCodeNote() { return failureCodeNote; }," +
-  " get failureStatusLabel() { return failureStatusLabel; }," +
-  " get revealErrorState() { return revealErrorState; } };" +
-  "\nlet conversationModuleInstance = null;" +
-  "\nfunction conversationModule() { if (!conversationModuleInstance) conversationModuleInstance = window.PadiemChatConversationModule.create(conversationDeps); return conversationModuleInstance; }" +
-  "\n// B7 18차+19차: the app.js renderStreamError forwarder is gone; mirror the" +
-  "\n// same registry path locally so the sliced renderer stays callable." +
-  "\nfunction renderStreamError(...a) { return conversationModule().renderStreamError(...a); }" +
-  "\nreturn { renderError, renderStreamError };\n})()",
-  context,
-);
-// index.html loads the conversation module ahead of app.js; the sandbox does
-// the same so the renderStreamError forwarder resolves conversationModule().
+// Execute the shipped module itself; no app.js source slice or test forwarder.
+context.PadiemChatLifecycle = context.PadiemChatLifecycle;
+context.window.PadiemChatLifecycle = { applyRuntimeLabel() {} };
+context.deps = {
+  uiT: context.uiT,
+  MESSAGE_LIFECYCLE: context.MESSAGE_LIFECYCLE,
+  authState: context.authState,
+  conversationState: context.conversationState,
+  conversationProduct: context.conversationProduct,
+  get activeProject() { return context.activeProject; },
+  set activeProject(v) { context.activeProject = v; },
+  renderProjectState: context.renderProjectState,
+  requestAnswer: context.requestAnswer,
+  selectedAttachments: [],
+  clearAttachment: context.clearAttachment,
+  get buildRetryBox() { return api.buildRetryBox; },
+  get failureCodeNote() { return api.failureCodeNote; },
+  get failureStatusLabel() { return api.failureStatusLabel; },
+  get revealErrorState() { return api.revealErrorState; },
+};
 vm.runInNewContext(conversationModuleSource, context);
+const api = context.window.PadiemChatConversationModule.create(context.deps);
 const contextArg = { conversationId: null, project: null };
 function codeLine(entry) {
   const box = entry.content.children[0];
