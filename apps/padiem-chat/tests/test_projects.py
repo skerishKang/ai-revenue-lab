@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from _r5_function_source import definition_source
+
 import json
 from pathlib import Path
 
@@ -491,7 +493,7 @@ def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     assert 'projectDeleteButton.addEventListener("click", deleteProject)' in project_js
     assert 'manage.addEventListener("click", () => openProjectDialog(project))' in project_js
     assert 'method: "DELETE"' in project_js
-    assert 'data.conversation.project_id' in js
+    assert 'data.conversation.project_id' in definition_source('openSavedConversation')
     assert 'fetch("/api/projects"' in project_js
     assert "innerHTML" not in js
     assert "innerHTML" not in project_js

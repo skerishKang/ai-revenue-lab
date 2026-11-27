@@ -1,6 +1,8 @@
 """#3933 previous-work context: owner-scoped GET index only, no grant, no guess."""
 from __future__ import annotations
 
+from _r5_function_source import definition_source
+
 import json
 from pathlib import Path
 import shutil
@@ -74,7 +76,7 @@ def test_context_module_is_get_only_and_uses_no_dom_sink():
 
 def test_app_shell_mounts_and_clears_the_context_for_the_open_conversation():
     assert has("app", "PadiemClawConversationArtifactContext?.init?.")
-    assert has("app", "conversationArtifactContext?.show?.(data.conversation.id)")
+    assert "deps.conversationArtifactContext?.show?.(data.conversation.id)" in definition_source("openSavedConversation")
     # R5 A10: the clear call moved to the nav module.
     assert has("nav", "deps.conversationArtifactContext?.clear?.()")
     assert script_src_count("./claw-conversation-artifact-context.js") == 1
