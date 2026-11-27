@@ -35,4 +35,4 @@ def test_claw_modules_do_not_display_raw_caught_errors():
         assert "reportError = " in source
         assert 'createElement("small")' in source
         assert '"error-code"' in source
-    assert "승인 대기" in office
+    assert "허락 대기" in office

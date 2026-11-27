@@ -133,7 +133,7 @@ def test_guidance_visible_before_connection_without_any_read(browser, server, wi
     # Registration steps and the state legend are present.
     assert "Padiem 데스크톱을 설치" in panel
     assert "같은 계정으로 로그인" in panel
-    assert "컴퓨터 연결을 승인" in panel
+    assert "컴퓨터 연결을 허락" in panel
     assert "연결됨" in panel and "오프라인" in panel and "연결 해제" in panel
     # Opening the guide performs no directory read at all.
     assert requests == []
@@ -189,7 +189,7 @@ def test_summary_and_recovery_follow_server_evidence(browser, server):
         '#clawDeviceManagerList .claw-device-manager-state[data-state="REVOKED"]');
       return chips.length === 1;
     }""")
-    assert "다시 승인" in recovery.inner_text()
+    assert "다시 허락" in recovery.inner_text()
     assert not errors, errors
     page.close()
 
@@ -258,6 +258,7 @@ def test_korean_copy_never_implies_execution_authority(browser, server):
     # The false per-task approval claim is gone: work runs inside the
     # registered folder scope, and only an outward send asks once.
     assert "별도의 승인" not in guide
+    assert "별도의 허락" not in guide
     assert "작업마다" not in guide
     assert "등록한 폴더 범위" in guide
     assert "보내기 전에 한 번 확인" in guide

@@ -139,7 +139,7 @@
     const resumeAction = (context) => {
       const button = doc.createElement("button");
       button.type = "button";
-      button.textContent = "이 파일로 이어서 작업 (새 읽기 승인 필요)";
+      button.textContent = "이 파일로 이어서 작업 (새 읽기 허락 필요)";
       button.addEventListener("click", () => {
         const sources = typeof window === "object"
           ? window.PadiemClawWebXlsxSources : null;
@@ -190,8 +190,8 @@
       const note = doc.createElement("p");
       note.className = "claw-conversation-artifact-note";
       note.textContent = "확인된 참조일 뿐 파일 내용 권한이 아닙니다. "
-        + "계속 수정하거나 새 버전을 만들려면 별도의 읽기·쓰기 승인이 필요합니다. "
-        + "이어서 작업해도 이전 승인은 재사용되지 않습니다.";
+        + "계속 수정하거나 새 버전을 만들려면 별도의 읽기·쓰기 허락이 필요합니다. "
+        + "이어서 작업해도 이전 허락은 재사용되지 않습니다.";
       host.append(title, detail, note, resumeAction(context));
       const action = panelAction();
       if (action) host.append(action);
@@ -210,7 +210,7 @@
       const note = doc.createElement("p");
       note.className = "claw-conversation-artifact-note";
       note.textContent = "자동으로 추측하지 않습니다. 이어서 작업할 파일을 직접 선택하세요. "
-        + "선택 후에도 새 승인이 필요합니다.";
+        + "선택 후에도 새 허락이 필요합니다.";
       const list = doc.createElement("ul");
       list.className = "claw-conversation-artifact-choices";
       for (const choice of context.choices) {

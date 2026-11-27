@@ -11,7 +11,7 @@
     tool_completed: ["도구 실행이 끝났습니다", "Tool step finished"],
     tool_failed: ["도구 실행에 실패했습니다", "Tool step failed"],
     verification_completed: ["결과 검증 단계가 끝났습니다", "Verification step finished"],
-    approval_paused: ["사용자 승인을 기다리고 있습니다", "Awaiting user approval"],
+    approval_paused: ["사용자 허락을 기다리고 있습니다", "Awaiting user approval"],
     run_resumed: ["작업이 재개되었습니다", "Task resumed"],
     run_cancelled: ["작업이 취소되었습니다", "Task cancelled"],
     pc_read_failed: ["PC에서 파일을 읽지 못했어요.", "The PC could not read the file."],

@@ -215,12 +215,12 @@ const sandbox = {
   location: { href: "http://localhost/", assign() {} },
   addEventListener() {},
   __padiemLocale: { text: (k) => ({
-    "claw-memory-review-title": "메모리 저장 후보 (승인 필요)",
-    "claw-memory-approve": "승인",
+    "claw-memory-review-title": "메모리 저장 후보 (허락 필요)",
+    "claw-memory-approve": "허락",
     "claw-memory-reject": "거절",
     "claw-memory-detail": "상세",
     "claw-memory-close": "닫기",
-    "claw-memory-error-generic": "승인 메모리 처리에 실패했습니다.",
+    "claw-memory-error-generic": "허락된 메모리 처리에 실패했습니다.",
   }[k] || k) },
   PadiemChatLifecycle: { states: { IDLE: "idle", STREAMING: "streaming", COMPLETED: "completed", FAILED: "failed", CANCELLED: "cancelled", TIMED_OUT: "timed_out" }, set() {} },
   PadiemConfirmDialog: { confirm: async () => true },
@@ -278,7 +278,7 @@ function collectText(root) {
   byId.messageInput.value = "A업체 견적 요청 품목 20개";
   byId.clawManualForm.requestSubmit();
   await tick(60);
-  const approveBtn = findButton(byId.clawMemoryReview, "승인");
+  const approveBtn = findButton(byId.clawMemoryReview, "허락");
   const rejectBtn = findButton(byId.clawMemoryReview, "거절");
   if (!approveBtn || !rejectBtn) fail("PROPOSAL_REVIEW_BUTTONS_MISSING");
   if (approveCalls() !== 0) fail("APPROVE_POST_BEFORE_EXPLICIT_CLICK_AFTER_RENDER");
