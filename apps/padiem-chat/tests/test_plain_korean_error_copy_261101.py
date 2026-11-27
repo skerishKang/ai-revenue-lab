@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from _r5_function_source import definition_source
+
 import re
 
 # #8060: shipped reads live in _support; the copy contracts stay here.
@@ -83,8 +85,7 @@ def test_the_retry_action_is_a_korean_word_not_retry():
 def test_upstream_timeout_reaches_the_screen_as_a_korean_sentence():
     # The code is classified, the classification chooses the copy, and the copy
     # key exists in the Korean table.
-    from pathlib import Path
-    conv = (Path(__file__).resolve().parents[1] / "static" / "chat-conversation-module.js").read_text(encoding="utf-8")
+    conv = definition_source("lifecycleForError") + "\n" + definition_source("failureStatusLabel")
     assert 'error && error.code === "upstream_timeout" ? deps.MESSAGE_LIFECYCLE.TIMED_OUT' in conv
     assert 'lifecycle === deps.MESSAGE_LIFECYCLE.TIMED_OUT ? deps.uiT("timeout")' in conv
     assert re.search(r'"timeout":\s*"[^"]*[가-힣][^"]*"', LOCALE)
