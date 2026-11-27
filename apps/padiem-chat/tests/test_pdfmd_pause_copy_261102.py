@@ -80,18 +80,22 @@ def test_the_real_gate_is_still_the_server_answer_not_the_copy() -> None:
     assert "const workBlocked = PDFMD_NEW_WORK_DISABLED || PDFMD_LOGIN_REQUIRED || PDFMD_CHECKING;" in PDFMD
     assert "modeSel.disabled = workBlocked;" in PDFMD
     assert "fileInput.disabled = workBlocked;" in PDFMD
-    assert 'if (workBlocked) return false;' in PDFMD
+    assert 'if (workBlocked || quotaExhausted) return false;' in PDFMD
 
 
 def test_a_guest_401_asks_for_login_instead_of_claiming_a_pause() -> None:
     # A 401 says the session is missing, not that the work stopped. It has its
     # own state, its own sentence and the app's existing login entry.
+    # #8812 D6·D7 대표 확인: the one 로그인 button is the drop box's own CTA —
+    # the notice line keeps the sentence only, so the action is never offered
+    # twice on one screen.
     assert 'const PDFMD_LOGIN_REQUIRED = workState === "login_required";' in PDFMD
     assert 'window.initPdfMdUtility(panel, "login_required");' in PDFMD
     assert "로그인 후 PDF 변환을 이용할 수 있습니다." in PDFMD
     assert "로그인이 필요합니다" in PDFMD
-    assert "로그인 필요" in PDFMD
-    assert 'loginEntry.id = "pdfmdLoginEntry";' in PDFMD
+    assert 'dropCta.textContent = "로그인";' in PDFMD
+    assert 'if (PDFMD_LOGIN_REQUIRED) { openExistingLogin(); return; }' in PDFMD
+    assert 'loginEntry.id = "pdfmdLoginEntry";' not in PDFMD
     assert 'document.getElementById("loginButton")' in PDFMD
     # The 401 branch is decided before the no-answer branch, so a guest never
     # falls through to the pause sentence.

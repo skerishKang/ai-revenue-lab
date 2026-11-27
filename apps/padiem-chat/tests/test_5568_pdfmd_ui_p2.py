@@ -328,7 +328,7 @@ async function search(value) {
   if (JSON.stringify(headings()) !== JSON.stringify(["EN today"])) fail("FILTERED_GROUP_WRONG", headings());
 
   // 5) Status, mode, date and id search work without any extra API call.
-  await search("검증");
+  await search("꼼꼼");
   if (rows().length !== 1 || rows()[0].dataset.jobId !== "dcj_yesterd2") fail("MODE_SEARCH_FAILED", rows().map((r) => r.dataset.jobId));
   await search("실패");
   if (rows().length !== 1 || rows()[0].dataset.jobId !== "dcj_earlier3") fail("STATUS_SEARCH_FAILED", rows().map((r) => r.dataset.jobId));

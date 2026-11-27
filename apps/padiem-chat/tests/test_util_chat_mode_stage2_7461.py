@@ -691,7 +691,7 @@ def test_stage2_all_four_tools_question_order_gate_sync_and_library_save() -> No
     pdfmd = out["pdfmd"]
     assert pdfmd["asked"] == ["files"]
     assert pdfmd["hasFileTrigger"] is True
-    assert "검증 변환" in pdfmd["summaryBefore"]
+    assert "꼼꼼히 바꾸기" in pdfmd["summaryBefore"]
     assert pdfmd["postsBefore"] == 0
     assert pdfmd["postsAfterNoFile"] == 0
     # #7865: the upload starts its own conversion — the run POST follows the

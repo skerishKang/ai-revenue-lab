@@ -123,7 +123,7 @@ def test_the_all_zip_bar_sits_above_results_and_only_when_many() -> None:
 def test_the_history_folds_into_one_line() -> None:
     js = sheets.pdfmd_js()
     assert 'el("details", "pdfmd-history-fold")' in js
-    assert '"지난 변환 "' in js
+    assert '"지난 기록 "' in js
     css = sheets.util_menu_css()
     rules = parse_rules(css)
     fold = find_rules_with_selector(rules, ".pdfmd-history-summary")[0]

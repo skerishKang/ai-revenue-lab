@@ -128,6 +128,40 @@
 }
 .pdfmd-status { min-height: 0; margin: 8px 0 10px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .pdfmd-status:empty { display: none; }
+
+/* ── #8812 D5 · #8814 D5: the one limit-warning box (제목 한 줄 + 설명) sits
+   directly under the drop box, and the 바꾸는 중 chip carries a small
+   movement marker. 토큰만 — 새 색 숫자는 없다. ─ */
+.pdfmd-limit-note {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin: 10px 0 0; padding: 12px 14px;
+  border: 1px solid var(--gold); border-radius: var(--radius-sm);
+  background: var(--gold-soft); color: var(--text);
+  font-size: 13px; line-height: 1.5;
+}
+.pdfmd-limit-note[hidden] { display: none; }
+.pdfmd-limit-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px;
+  border: 1.5px solid var(--util-menu-pdfmd-warn-ink); border-radius: 50%;
+  color: var(--util-menu-pdfmd-warn-ink);
+  font-size: 12px; font-weight: 750; line-height: 1;
+}
+.pdfmd-limit-title { color: var(--util-menu-pdfmd-warn-ink); font-weight: 750; overflow-wrap: anywhere; }
+.pdfmd-limit-desc { color: var(--text); overflow-wrap: anywhere; }
+
+/* #8814 D5: the working chip's small movement marker — a ring spun by
+   currentColor, stopped when the owner asks for less motion. */
+.pdfmd-status-chip[data-status="working"]::before {
+  content: ""; flex: 0 0 auto; width: 10px; height: 10px; margin-right: 5px;
+  border: 2px solid currentColor; border-top-color: transparent;
+  border-radius: 50%;
+  animation: pdfmd-working-spin .9s linear infinite;
+}
+@keyframes pdfmd-working-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .pdfmd-status-chip[data-status="working"]::before { animation: none; }
+}
 .pdfmd-quota { margin: 0 0 10px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .pdfmd-quota:empty,
 .pdfmd-empty { color: var(--muted); font-size: 13px; line-height: 1.6; }
@@ -153,12 +187,21 @@
 }
 .pdfmd-status-chip[data-status="working"] { background: var(--gold-soft); color: var(--text); border-color: var(--gold); }
 .pdfmd-status-chip[data-status="done"] { background: var(--success-surface); color: var(--success); border-color: var(--success-border); }
-.pdfmd-status-chip[data-status="failed"],
+/* #8814 D3: the failed badge reads as an error in every theme — the same
+   danger token family the 시간 초과 badge already rides, so no new color
+   numbers enter here. */
+.pdfmd-status-chip[data-status="failed"] {
+  background: var(--danger-surface); color: var(--danger); border-color: var(--danger-border);
+}
 .pdfmd-item-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .pdfmd-agreement { margin-top: 8px; color: var(--success); font-size: 12px; font-weight: 650; }
 .pdfmd-warn { margin-top: 4px; color: var(--util-menu-pdfmd-warn-ink); font-size: 12px; line-height: 1.5; }
 html[data-theme="dark"] .pdfmd-warn,
 html[data-theme="cinematic"] .pdfmd-warn,
+html[data-theme="dark"] .pdfmd-limit-title,
+html[data-theme="cinematic"] .pdfmd-limit-title,
+html[data-theme="dark"] .pdfmd-limit-icon,
+html[data-theme="cinematic"] .pdfmd-limit-icon,
 html[data-theme="dark"] .pdfmd-page-review-badge,
 html[data-theme="cinematic"] .pdfmd-page-review-badge,
 html[data-theme="dark"] .pdfmd-page-review-flag[data-review="true"],

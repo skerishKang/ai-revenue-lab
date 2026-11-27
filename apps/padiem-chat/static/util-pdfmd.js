@@ -28,14 +28,14 @@
     pdf_page_geometry_unavailable: "파일을 끝까지 읽지 못했습니다. 다시 확인해 주세요.",
     original_object_missing: "원본 파일을 찾을 수 없습니다. 파일을 다시 올려 주세요.",
     convert_interrupted: "변환이 중단되었습니다. 다시 시도해 주세요.",
-    convert_failed: "변환에 실패했습니다. 다시 시도해 주세요.",
+    convert_failed: "바꾸지 못했어요. 다시 해 주세요.",
     invalid_archive: "ZIP 파일을 열 수 없습니다.",
     empty_archive: "ZIP 파일 안에 변환할 PDF가 없습니다.",
     invalid_document: "PDF 또는 ZIP 파일만 올릴 수 있습니다.",
     document_too_large: "파일이 너무 큽니다.",
     document_size_limit: "회원 등급의 변환 크기 상한을 넘었습니다.",
     document_page_limit: "회원 등급의 페이지 상한을 넘어 변환하지 못했습니다.",
-    conversion_quota_exhausted: "오늘 변환 한도를 다 썼어요. 내일 다시 이용해 주세요.",
+    conversion_quota_exhausted: "오늘 바꿀 수 있는 양을 다 썼어요. 내일 다시 해 주세요.",
     pdf_magic_mismatch: "PDF 형식이 아니거나 손상된 파일입니다.",
     pdf_scanned_no_text: SCAN_MESSAGE,
     convert_timed_out: "시간이 오래 걸려 변환이 끝나지 않았습니다. 다시 시도해 주세요.",
@@ -84,7 +84,7 @@
   }
 
   function modeLabel(mode) {
-    return mode === "verify" ? "검증 변환" : "빠른 변환";
+    return mode === "verify" ? "꼼꼼히 바꾸기" : "빠르게 바꾸기";
   }
 
   const HISTORY_GROUPS = [
@@ -180,6 +180,7 @@
       const err = new Error("http_" + res.status);
       err.status = res.status;
       if (data && data.error && data.error.code) err.code = data.error.code;
+      if (data) err.body = data; // #8812: the 429 answer carries conversion.remaining.
       throw err;
     }
     return data;
@@ -279,6 +280,16 @@
     // Everything that refuses an action: an answer or a promise refuses, an
     // unknown never refuses but still cannot act.
     const workBlocked = PDFMD_NEW_WORK_DISABLED || PDFMD_LOGIN_REQUIRED || PDFMD_CHECKING;
+    /* #8812 D5·D6: once the day's conversion allowance reads 0 (the run route
+       answers 429 with conversion.remaining = 0), the picker must stop
+       offering what cannot start. The state arrives with the refusal, so it
+       is carried by a flag, not by workState. */
+    let quotaExhausted = false;
+    const LIMIT_NOTICE_CODES = new Set([
+      "conversion_quota_exhausted", "document_page_limit", "document_size_limit", "document_too_large",
+    ]);
+    const isQuotaExhausted = (e) => e && (e.code === "conversion_quota_exhausted" ||
+      Boolean(e.body && e.body.conversion && Number(e.body.conversion.remaining) === 0));
     panel.replaceChildren();
     panel.classList.add("pdfmd-shell");
 
@@ -300,13 +311,10 @@
     if (PDFMD_NEW_WORK_DISABLED) {
       pauseNote.textContent = "지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
     } else if (PDFMD_LOGIN_REQUIRED) {
-      pauseNote.textContent = "";
-      pauseNote.appendChild(el("span", null, "로그인 후 PDF 변환을 이용할 수 있습니다. "));
-      const loginEntry = el("button", "pdfmd-link", "로그인");
-      loginEntry.type = "button";
-      loginEntry.id = "pdfmdLoginEntry";
-      loginEntry.addEventListener("click", openExistingLogin);
-      pauseNote.appendChild(loginEntry);
+      /* #8812 D6·D7: the notice line keeps its sentence only — the one login
+         button is the drop box's own CTA (#8812 대표 확인), so the same action
+         is never offered twice. */
+      pauseNote.textContent = "로그인 후 PDF 변환을 이용할 수 있습니다.";
     } else if (PDFMD_CHECKING) {
       pauseNote.textContent = "새 변환을 열 수 있는지 확인 중…";
     }
@@ -329,11 +337,11 @@
     const modeSel = document.createElement("select");
     modeSel.id = "pdfmdMode";
     /* #7865: the always-visible 변환 방식 field is gone and the choice is one
-       quiet line. 검증 변환 stays reachable — the server accepts both modes
+       quiet line. 꼼꼼히 바꾸기 stays reachable — the server accepts both modes
        and the per-page agreement report depends on it, so removing the select
        entirely would lose a working feature (the issue's 하나뿐인 premise does
        not hold). */
-    [["fast", "빠른 변환"], ["verify", "검증 변환"]].forEach(([v, t]) => {
+    [["fast", "빠르게 바꾸기"], ["verify", "꼼꼼히 바꾸기"]].forEach(([v, t]) => {
       const o = document.createElement("option");
       o.value = v; o.textContent = t;
       if (v === "fast") o.selected = true;
@@ -370,14 +378,16 @@
       } else if (PDFMD_LOGIN_REQUIRED) {
         dropTitle.textContent = "로그인이 필요합니다";
         dropSub.textContent = "로그인 후 PDF를 올려 변환할 수 있습니다.";
-        dropCta.textContent = "로그인 필요";
+        /* #8812 D6·D7 대표 확인: the center button names the action — 로그인 —
+           and does what the old top-line button did. */
+        dropCta.textContent = "로그인";
       } else {
         dropTitle.textContent = "PDF 파일을 선택하세요";
         dropSub.textContent = "방금 연 화면 · 잠시 후 자동으로 정해집니다.";
         dropCta.textContent = "확인 중";
       }
     }
-    if (PDFMD_NEW_WORK_DISABLED || PDFMD_LOGIN_REQUIRED) drop.style.cursor = "not-allowed";
+    if (PDFMD_NEW_WORK_DISABLED) drop.style.cursor = "not-allowed";
 
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -388,6 +398,57 @@
     formWrap.appendChild(fileInput);
 
     formWrap.appendChild(drop);
+
+    /* #8812 D5: the per-file progress list and the one limit-warning box sit
+       directly under the drop box — no scroll, no second summary line. The
+       warning box shows only while the progress list is empty, so whichever
+       is visible reads as the box right under the drop zone. */
+    const uploadProgress = el("ol", "pdfmd-upload-progress");
+    uploadProgress.hidden = true;
+    uploadProgress.setAttribute("aria-label", "파일별 업로드 진행 상태");
+    formWrap.appendChild(uploadProgress);
+
+    const limitNote = el("div", "pdfmd-limit-note");
+    limitNote.id = "pdfmdLimitNote";
+    limitNote.hidden = true;
+    limitNote.setAttribute("role", "alert");
+    limitNote.appendChild(el("span", "pdfmd-limit-icon", "!"));
+    const limitTitle = el("strong", "pdfmd-limit-title", "");
+    limitNote.appendChild(limitTitle);
+    const limitDesc = el("span", "pdfmd-limit-desc", "");
+    limitNote.appendChild(limitDesc);
+    formWrap.appendChild(limitNote);
+
+    function showLimitNotice(code) {
+      const sentence = describeError({ code: code });
+      // The confirmed quota sentence is two sentences: the first is the box
+      // title, the second is the explanation under it.
+      const cut = code === "conversion_quota_exhausted" ? sentence.indexOf(". ") + 1 : sentence.length;
+      limitTitle.textContent = sentence.slice(0, cut).trim();
+      limitDesc.textContent = cut < sentence.length ? sentence.slice(cut).trim() : "";
+      limitDesc.hidden = !limitDesc.textContent;
+      limitNote.hidden = false;
+    }
+
+    function hideLimitNotice() {
+      limitNote.hidden = true;
+    }
+
+    /* #8812 D6: with the day's allowance at 0 the picker stops being a
+       control — the CTA is disabled, the box loses its button role, and the
+       one warning box under it says why. */
+    function enterQuotaExhausted() {
+      if (quotaExhausted) return;
+      quotaExhausted = true;
+      fileInput.disabled = true;
+      dropCta.disabled = true;
+      drop.removeAttribute("role");
+      drop.removeAttribute("tabindex");
+      drop.removeAttribute("aria-label");
+      drop.classList.add("pdfmd-paused");
+      drop.style.cursor = "not-allowed";
+      showLimitNotice("conversion_quota_exhausted");
+    }
 
     // #6012: the same documents, taken straight from the owner's own PC — a
     // text link under the upload box (#7865), not a second big button.
@@ -440,7 +501,7 @@
       "pdfmd-retention-note",
       copy(
         "pdfmd-retention-note",
-        "올린 원본과 변환 결과는 사용자가 지울 때까지 보관됩니다. 항목을 지우면 그 항목의 원본과 변환 결과가 함께 지워집니다."
+        "올린 원본과 바꾼 결과는 사용자가 지울 때까지 보관됩니다. 항목을 지우면 그 항목의 원본과 바꾼 결과가 함께 지워집니다."
       )
     );
     retentionNote.dataset.localeKey = "pdfmd-retention-note";
@@ -470,10 +531,6 @@
       inputCol.appendChild(formWrap);
     }
     inputCol.appendChild(uploadStatus);
-    const uploadProgress = el("ol", "pdfmd-upload-progress");
-    uploadProgress.hidden = true;
-    uploadProgress.setAttribute("aria-label", "파일별 업로드 진행 상태");
-    inputCol.appendChild(uploadProgress);
 
     // 모두 ZIP (#7865 바꿀 모양 4): 결과 위에, 여러 파일일 때만 나온다.
     const zipBar = el("div", "pdfmd-zipbar");
@@ -490,7 +547,7 @@
     // Preview
     const previewWrap = el("div", "pdfmd-preview");
     previewWrap.hidden = true;
-    const previewTitle = el("h4", null, "원본과 변환본 비교");
+    const previewTitle = el("h4", null, "원본과 바꾼 결과 비교");
     previewWrap.appendChild(previewTitle);
     const reviewSummary = el("p", "pdfmd-review-summary", "");
     reviewSummary.setAttribute("role", "status");
@@ -528,11 +585,11 @@
     const origPane = original.pane;
 
     const mdPane = el("div", "pdfmd-pane");
-    mdPane.appendChild(el("span", "pdfmd-pane-label", "Markdown 변환본"));
+    mdPane.appendChild(el("span", "pdfmd-pane-label", "Markdown 바꾼 결과"));
     const mdView = el("div", "pdfmd-md");
     mdView.tabIndex = 0;
     mdView.setAttribute("role", "region");
-    mdView.setAttribute("aria-label", "Markdown 변환본");
+    mdView.setAttribute("aria-label", "Markdown 바꾼 결과");
     mdPane.appendChild(mdView);
 
     previewGrid.appendChild(origPane);
@@ -540,11 +597,11 @@
     previewWrap.appendChild(previewGrid);
     panel.appendChild(previewWrap);
 
-    /* 지난 변환(#7865 바꿀 모양 5): 접힌 한 줄, 펼치면 날짜·파일 이름·배지 목록. */
+    /* 지난 기록(#8814 D7 대표 확인): 접힌 한 줄, 펼치면 날짜·파일 이름·배지 목록. */
     const histFold = el("details", "pdfmd-history-fold");
     histFold.open = true;
-    const histSummary = el("summary", "pdfmd-history-summary", "지난 변환");
-    histSummary.setAttribute("aria-label", "지난 변환 펼치기");
+    const histSummary = el("summary", "pdfmd-history-summary", "지난 기록");
+    histSummary.setAttribute("aria-label", "지난 기록 펼치기");
     histFold.appendChild(histSummary);
     const histBody = el("div", "pdfmd-history-body");
     const histTools = el("div", "pdfmd-history-tools");
@@ -693,7 +750,11 @@
           if (jobId === currentJobId) await loadJob();
           await loadHistory();
           if (status === "failed") {
-            uploadStatus.textContent = item.name + " 변환 실패. " + describeError({ code: (data.item && data.item.error_code) || "convert_failed" });
+            const code = (data.item && data.item.error_code) || "convert_failed";
+            /* #8812 D5: a size/page/day-limit refusal is the one warning box
+               under the drop box, not a gray line at the bottom of the card. */
+            if (LIMIT_NOTICE_CODES.has(code)) showLimitNotice(code);
+            else uploadStatus.textContent = item.name + " 변환 실패. " + describeError({ code: code });
           } else if (status === "reviewed" || status === "done") {
             uploadStatus.textContent = item.name + " 변환 완료. 결과 카드에서 받을 수 있습니다.";
           }
@@ -753,7 +814,9 @@
     async function createJob() {
       if (workBlocked) return;
       const mode = modeSel.value;
-      uploadStatus.textContent = "작업을 준비하는 중...";
+      /* #8812 D5: while the per-file rows are up the summary line stays quiet
+         — the same words must not appear twice on one screen. */
+      if (!uploadRowsActive) uploadStatus.textContent = "작업을 준비하는 중...";
       try {
         const data = await api("/api/document-conversions", {
           method: "POST",
@@ -792,11 +855,15 @@
       if (await uploadFile(file)) pcOrigin.set(name, picked.folder || ".");
     }
 
+    let uploadRowsActive = false;
+
     async function uploadFile(file, onProgress) {
-      if (workBlocked) return false;
+      if (workBlocked || quotaExhausted) return false;
       const update = (message) => {
-        uploadStatus.textContent = message;
+        /* #8812 D5: with the progress list open the row is the only place the
+           step is written; without it the summary line carries the message. */
         if (typeof onProgress === "function") onProgress(message);
+        else uploadStatus.textContent = message;
       };
       lastUploadError = "";
       if (!currentJobId) {
@@ -838,11 +905,14 @@
 
     let chatBridge = { recordFiles() {}, sync() {}, enterChat() {} };
     async function uploadFiles(files) {
-      if (workBlocked) return;
+      if (workBlocked || quotaExhausted) return;
       if (!files.length) return;
       chatBridge.recordFiles(files);
       uploadProgress.replaceChildren();
       uploadProgress.hidden = false;
+      hideLimitNotice();
+      uploadRowsActive = true;
+      uploadStatus.textContent = "";
       const rows = files.map((file) => {
         const row = el("li", "pdfmd-upload-progress-row");
         row.appendChild(el("span", "pdfmd-upload-progress-name", file.name));
@@ -870,25 +940,32 @@
       } else if (failed) {
         uploadStatus.textContent = failed + "개 파일을 처리하지 못했습니다. " + (lastUploadError || "파일 형식을 확인해 주세요.");
       }
+      uploadRowsActive = false;
       if (uploaded) await loadHistory();
     }
 
     function openPicker() {
-      if (workBlocked) return;
+      if (workBlocked || quotaExhausted) return;
       fileInput.click();
     }
-    drop.addEventListener("click", openPicker);
+    drop.addEventListener("click", () => {
+      /* #8812 D6·D7: in the logged-out state the drop box's own CTA is the
+         one 로그인 button — the same action the removed top-line button did. */
+      if (PDFMD_LOGIN_REQUIRED) { openExistingLogin(); return; }
+      openPicker();
+    });
     drop.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
+        if (PDFMD_LOGIN_REQUIRED) { openExistingLogin(); return; }
         openPicker();
       }
     });
-    drop.addEventListener("dragover", (e) => { e.preventDefault(); if (!workBlocked) drop.classList.add("dragover"); });
+    drop.addEventListener("dragover", (e) => { e.preventDefault(); if (!workBlocked && !quotaExhausted) drop.classList.add("dragover"); });
     drop.addEventListener("dragleave", () => drop.classList.remove("dragover"));
     drop.addEventListener("drop", (e) => {
       e.preventDefault();
-      if (workBlocked) return;
+      if (workBlocked || quotaExhausted) return;
       drop.classList.remove("dragover");
       if (e.dataTransfer && e.dataTransfer.files) uploadFiles(Array.from(e.dataTransfer.files));
     });
@@ -923,7 +1000,7 @@
        a reopened job the owner came back for) claims itself once; the poller
        repaints when the row reaches a terminal state. */
     async function runQueuedItems() {
-      if (workBlocked) return;
+      if (workBlocked || quotaExhausted) return;
       const queued = currentItems.filter((item) => item.status === "queued" && !item.has_markdown);
       let started = 0;
       for (const item of queued) {
@@ -939,7 +1016,16 @@
             void pollItemUntilTerminal(currentJobId, data.item);
           }
         } catch (e) {
-          uploadStatus.textContent = item.name + " 변환 시작 실패. " + describeError(e);
+          /* #8812 D5·D6: a 429 with remaining 0 is the day's allowance being
+             gone — the confirmed sentence goes to the warning box and the
+             picker stops offering 파일 고르기. Other refusals keep the row's
+             own failure line. */
+          if (isQuotaExhausted(e)) {
+            quotaNote.textContent = "오늘 0건 더 바꿀 수 있어요.";
+            enterQuotaExhausted();
+          } else {
+            uploadStatus.textContent = item.name + " 변환 실패. " + describeError(e);
+          }
         }
       }
       /* 한 번 실제로 시작했을 때만 다시 읽는다 — 서버가 계속 queued를 돌려주는
@@ -964,8 +1050,38 @@
       }
     }
 
+    /* #8814 D6·D7: the failed card's first action is 다시 하기 — the same
+       file, the same mode, one run POST (the stored original is re-read
+       server-side). 지우기 stays as the secondary action. A scan with no
+       text cannot succeed by running again, so it keeps guidance only. */
+    async function rerunItem(item) {
+      try {
+        const data = await api("/api/document-conversions/items/" + item.id + "/run", { method: "POST" });
+        hideLimitNotice();
+        if (data && data.item && data.item.status === "working") {
+          void pollItemUntilTerminal(currentJobId, data.item);
+        }
+        await loadJob();
+      } catch (e) {
+        if (isQuotaExhausted(e)) {
+          quotaNote.textContent = "오늘 0건 더 바꿀 수 있어요.";
+          enterQuotaExhausted();
+        } else {
+          uploadStatus.textContent = describeError(e);
+        }
+      }
+    }
+
+    function retryButton(item) {
+      const btn = el("button", "pdfmd-btn pdfmd-btn-primary", "다시 하기");
+      btn.type = "button";
+      btn.setAttribute("aria-label", item.name + " 같은 파일로 다시 하기");
+      btn.addEventListener("click", () => { void rerunItem(item); });
+      return btn;
+    }
+
     function deleteButton(item) {
-      /* 실패 카드의 유일한 단추(#7865): 이유 한 줄 + 지우기. */
+      /* 실패 카드의 보조 단추(#8814): 이유 한 줄 + 보조 지우기. */
       const delBtn = el("button", "pdfmd-btn", "지우기");
       delBtn.type = "button";
       delBtn.setAttribute("aria-label", item.name + " 삭제");
@@ -1067,7 +1183,7 @@
       itemsWrap.replaceChildren();
       syncZipBar();
       if (!currentJobId) {
-        itemsWrap.appendChild(emptyBlock("첫 PDF를 변환해 보세요.", null, [
+        itemsWrap.appendChild(emptyBlock("첫 PDF를 바꿔 보세요.", null, [
           "PDF 또는 ZIP 파일을 고릅니다.",
           "올리면 바로 변환이 시작됩니다.",
           "원본과 Markdown을 비교하고 내려받습니다.",
@@ -1088,17 +1204,20 @@
         card.appendChild(head);
 
         const meta = el("div", "pdfmd-item-meta");
-        if (item.character_count) {
+        /* #8814 D7: a count chip needs a result — failed and 바꾸는 중 cards
+           stay without one. */
+        if (item.has_markdown && item.character_count) {
           meta.appendChild(el("span", "pdfmd-item-count", Number(item.character_count).toLocaleString("ko-KR") + "자"));
         }
         card.appendChild(meta);
 
         if (item.status === "failed") {
-          /* 실패 카드(#7865): 이유 한 줄 + [지우기]만. 스캔본 같은 긴 안내도
-             이유 줄에서 한 번만 보인다. */
-          const reason = el("div", "pdfmd-warn", describeError({ code: item.error_code }, "변환에 실패했습니다."));
+          /* 실패 카드(#8814): 이유 한 줄 + [다시 하기](주) · [지우기](보조).
+             글자 없는 스캔본은 다시 실행해도 같은 결과라 안내만 남는다. */
+          const reason = el("div", "pdfmd-warn", describeError({ code: item.error_code }, "바꾸지 못했어요."));
           card.appendChild(reason);
           const actions = el("div", "pdfmd-item-actions");
+          if (item.error_code !== "pdf_scanned_no_text") actions.appendChild(retryButton(item));
           actions.appendChild(deleteButton(item));
           card.appendChild(actions);
           list.appendChild(card);
@@ -1120,7 +1239,7 @@
 
           const previewBtn = el("button", "pdfmd-btn", "원본과 비교");
           previewBtn.type = "button";
-          previewBtn.setAttribute("aria-label", item.name + " 원본과 변환본 비교");
+          previewBtn.setAttribute("aria-label", item.name + " 원본과 바꾼 결과 비교");
           previewBtn.addEventListener("click", async () => {
             previewWrap.hidden = false;
             previewWrap.scrollIntoView({ block: "nearest" });
@@ -1286,7 +1405,7 @@
     }
 
     function syncHistoryFold() {
-      histSummary.textContent = "지난 변환 " + historyJobs.length + "건";
+      histSummary.textContent = "지난 기록 " + historyJobs.length + "건";
       histTools.hidden = !historyJobs.length;
     }
 

@@ -89,7 +89,7 @@ def test_error_codes_map_to_friendly_korean_messages() -> None:
         ("pdf_magic_mismatch", "PDF 형식이 아니거나 손상된 파일입니다."),
         ("invalid_archive", "ZIP 파일을 열 수 없습니다."),
         ("document_too_large", "파일이 너무 큽니다."),
-        ("convert_failed", "변환에 실패했습니다. 다시 시도해 주세요."),
+        ("convert_failed", "바꾸지 못했어요. 다시 해 주세요."),
     ):
         assert f'{code}: "{message}"' in js
     assert "이력 조회 실패" not in js
@@ -99,7 +99,7 @@ def test_error_codes_map_to_friendly_korean_messages() -> None:
 
 def test_empty_states_guide_the_next_action() -> None:
     js = pdfmd_js_source()
-    assert '"첫 PDF를 변환해 보세요."' in js
+    assert '"첫 PDF를 바꿔 보세요."' in js
     assert '"이 작업에는 아직 파일이 없습니다."' in js
     assert '"아직 작업 이력이 없습니다."' in js
     assert '"로그인하면 작업 이력을 볼 수 있습니다."' in js
@@ -114,7 +114,7 @@ def test_preview_panes_are_labelled_and_tall_enough_on_mobile() -> None:
     # #7834: the original pane (label plus its rendered page) moved into the
     # page module; the labels themselves are still both present, once each.
     assert 'el("span", "pdfmd-pane-label", "원본 PDF")' in pages_js
-    assert 'el("span", "pdfmd-pane-label", "Markdown 변환본")' in js
+    assert 'el("span", "pdfmd-pane-label", "Markdown 바꾼 결과")' in js
     assert "mdView.tabIndex = 0" in js
     assert "height: clamp(480px, 62vh, 760px)" in css
     assert "height: 70vh; min-height: 420px; max-height: 720px" in css
@@ -362,12 +362,12 @@ function buttonByText(label) {
   const expected = ["done:완료", "done:완료", "failed:실패", "working:바꾸는 중", "working:바꾸는 중"];
   if (JSON.stringify(chipPairs) !== JSON.stringify(expected)) fail("STATUS_CHIP_MISMATCH", chipPairs);
   const meta = root.findAll(".pdfmd-history-meta").map(text);
-  if (meta[0] !== "2개 파일 · 빠른 변환") fail("HISTORY_META_MISMATCH", meta[0]);
+  if (meta[0] !== "2개 파일 · 빠르게 바꾸기") fail("HISTORY_META_MISMATCH", meta[0]);
   if (!rows[0].getAttribute("aria-label").includes("상태 완료")) fail("HISTORY_ARIA_MISSING_STATUS");
 
   // 2) First screen explains the next action instead of showing nothing.
   const onboarding = text(panel.querySelector(".pdfmd-items"));
-  if (!onboarding.includes("첫 PDF를 변환해 보세요.")) fail("ONBOARDING_MISSING");
+  if (!onboarding.includes("첫 PDF를 바꿔 보세요.")) fail("ONBOARDING_MISSING");
   if (!onboarding.includes("올리면 바로 변환이 시작됩니다.")) fail("ONBOARDING_MISSING_STEP");
 
   // 3) Selecting a job renders item chips, friendly failure copy, retry label.
@@ -396,7 +396,7 @@ function buttonByText(label) {
   await flush();
   if (panel.querySelector(".pdfmd-preview").hidden !== false) fail("PREVIEW_NOT_SHOWN");
   const labels = root.findAll(".pdfmd-pane-label").map(text);
-  if (JSON.stringify(labels) !== JSON.stringify(["원본 PDF", "Markdown 변환본"])) fail("PANE_LABELS_WRONG", labels);
+  if (JSON.stringify(labels) !== JSON.stringify(["원본 PDF", "Markdown 바꾼 결과"])) fail("PANE_LABELS_WRONG", labels);
   const md = panel.querySelector(".pdfmd-md");
   if (!text(md).includes("변환 결과")) fail("MARKDOWN_NOT_LOADED", text(md));
   if (md.tabIndex !== 0) fail("MARKDOWN_NOT_FOCUSABLE");
@@ -427,13 +427,15 @@ function buttonByText(label) {
   if (guestNotices.includes("일시 중단") || guestNotices.includes("준비 중")) fail("GUEST_CLAIMS_PAUSE", guestNotices);
   const guestDrop = root.findAll(".pdfmd-drop")[0];
   const guestCta = guestDrop && guestDrop.querySelector(".pdfmd-drop-cta");
-  if (!guestCta || text(guestCta) !== "로그인 필요") fail("GUEST_DROP_CTA_WRONG", guestCta && text(guestCta));
+  if (!guestCta || text(guestCta) !== "로그인") fail("GUEST_DROP_CTA_WRONG", guestCta && text(guestCta));
   if (root.querySelector("#pdfmdMode").disabled !== true) fail("GUEST_MODE_ENABLED");
   const guestPick = root.querySelector(".pdfmd-pc-pick");
   if (!guestPick || guestPick.disabled !== true) fail("GUEST_PC_PICK_ENABLED");
   if (text(guestPick).includes("준비 중")) fail("GUEST_PC_PICK_CLAIMS_READY", text(guestPick));
+  // #8812 D6·D7: the top-line login button is gone — the drop box's own CTA
+  // is the one 로그인 button.
   const guestLoginEntryPresent = Boolean(panel.querySelector("#pdfmdLoginEntry"));
-  if (!guestLoginEntryPresent) fail("GUEST_LOGIN_ENTRY_MISSING");
+  if (guestLoginEntryPresent) fail("GUEST_LOGIN_ENTRY_STILL_THERE");
 
   // 6b) A server failure keeps the previous behavior: no answer still may not
   // claim a pause from the open answer, so a 5xx lands on the pause sentence.
@@ -477,8 +479,7 @@ function buttonByText(label) {
     guestState: historyText.trim(),
     guestNotice: guestNotices.trim(),
     guestDropCta: guestCta ? text(guestCta) : "",
-    guestLoginEntry: guestLoginEntryPresent,
-    serverErrorNotice: serverErrorNotices.trim(),
+    guestLoginEntry: guestLoginEntryPresent,    serverErrorNotice: serverErrorNotices.trim(),
   }));
 })().catch((error) => {
   console.log(JSON.stringify({ ok: false, error: String((error && error.stack) || error) }));
@@ -522,7 +523,7 @@ def test_history_renders_every_status_chip() -> None:
         "working:바꾸는 중",
         "working:바꾸는 중",
     ]
-    assert payload["meta"] == "2개 파일 · 빠른 변환"
+    assert payload["meta"] == "2개 파일 · 빠르게 바꾸기"
 
 
 def test_item_cards_show_friendly_errors_and_correct_actions() -> None:
@@ -547,7 +548,7 @@ def test_the_opened_answer_paints_a_usable_uploader() -> None:
 
 def test_preview_labels_markdown_and_guest_state() -> None:
     payload = _run_harness()
-    assert payload["paneLabels"] == ["원본 PDF", "Markdown 변환본"]
+    assert payload["paneLabels"] == ["원본 PDF", "Markdown 바꾼 결과"]
     assert payload["markdownLoaded"] is True
     assert "로그인하면 작업 이력을 볼 수 있습니다." in payload["guestState"]
 
@@ -557,6 +558,6 @@ def test_guest_401_asks_for_login_and_a_server_error_keeps_the_pause() -> None:
     assert "로그인 후 PDF 변환을 이용할 수 있습니다." in payload["guestNotice"]
     assert "일시 중단" not in payload["guestNotice"]
     assert "준비 중" not in payload["guestNotice"]
-    assert payload["guestDropCta"] == "로그인 필요"
-    assert payload["guestLoginEntry"] is True
+    assert payload["guestDropCta"] == "로그인"
+    assert payload["guestLoginEntry"] is False
     assert "기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다." in payload["serverErrorNotice"]

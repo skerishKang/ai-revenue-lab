@@ -186,8 +186,8 @@
           "Markdown으로 변환할 PDF 또는 ZIP 파일을 첨부해 주세요.", "Please attach the PDF or ZIP file to convert to Markdown.",
           { accept: ".pdf,.zip,application/pdf,application/zip" }),
         fld("mode", "select", false, false, "변환 방식", "Conversion mode", "", "",
-          "빠른 변환과 검증 변환 중 어떤 방식으로 진행할까요?", "Would you like fast conversion or verified conversion?",
-          { defaultValue: "fast", options: [["fast", "빠른 변환", "Fast conversion"], ["verify", "검증 변환", "Verified conversion"]] }),
+          "빠르게 바꾸기와 꼼꼼히 바꾸기 중 어떤 방식으로 진행할까요?", "Would you like fast conversion or verified conversion?",
+          { defaultValue: "fast", options: [["fast", "빠르게 바꾸기", "Fast conversion"], ["verify", "꼼꼼히 바꾸기", "Verified conversion"]] }),
       ],
     }),
     makeTool({

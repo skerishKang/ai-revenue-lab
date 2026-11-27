@@ -724,7 +724,7 @@
       toolId: "pdfmd",
       copy: {
         ko: {
-          refinePlaceholder: "변환 방식을 바꾸려면 입력해 주세요 (예: 검증 변환, 빠른 변환)",
+          refinePlaceholder: "변환 방식을 바꾸려면 입력해 주세요 (예: 꼼꼼히 바꾸기, 빠르게 바꾸기)",
           allReadyIdle: "첨부 파일이 준비되었습니다. 바로 업로드하거나 변환 방식을 입력해 주세요.",
           allReadyWithDraft: "첨부 파일과 변환 설정을 유지하고 있습니다. 변환 방식을 바꾸려면 입력해 주세요.",
           generatingTurn: "첨부한 파일을 기존 변환 경로로 올리고 있습니다…",
