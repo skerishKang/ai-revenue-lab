@@ -37,8 +37,7 @@ def test_powershell_installer_uses_scm_recovery_without_registering_watcher():
 
 
 def test_connect_exe_installer_uses_scm_and_keeps_old_task_removal():
-    source = (ROOT / "scripts/pc_pairing/connect-exe/PadiemPcConnect.cs").read_text(
-        encoding="utf-8")
+    source = (ROOT / "scripts/pc_pairing/connect-exe/PadiemPcConnect.cs").read_bytes().decode("utf-8")
     assert "RegisterSelfHealWatcher();" not in source
     assert "static string RegisterSelfHealWatcher()" not in source
     assert "static string SelfHealPythonExecutable()" not in source
