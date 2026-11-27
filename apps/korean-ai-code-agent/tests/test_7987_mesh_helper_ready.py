@@ -1401,3 +1401,11 @@ def test_diagnostic_throttle_is_one_line_per_ref_per_hour(capsys):
     logs = capsys.readouterr().out
     assert logs.count("helper_ready_agent_version read=cached") == 1
     assert logs.count("helper_ready_agent_version read=not_target") == 1
+
+def test_watcher_file_probe_path_matches_registered_task():
+    from kagent.local_agent_mesh_helper_ready import _WATCHER_TASK_READ_PATH
+    from kagent.pc_self_heal_task import TASK_FOLDER, TASK_NAME
+
+    assert _WATCHER_TASK_READ_PATH == (
+        r"C:\Windows\System32\Tasks" + TASK_FOLDER + TASK_NAME
+    )
