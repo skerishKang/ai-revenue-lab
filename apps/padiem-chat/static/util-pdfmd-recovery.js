@@ -30,9 +30,13 @@
       note.id = "pdfmdLimitNote";
       note.hidden = true;
       note.setAttribute("role", "alert");
-      note.appendChild(el("span", "pdfmd-limit-icon", "!"));
+      /* #8812 D1·D2 (CTO 검토): 아이콘+제목은 한 줄, 설명은 그 아래 줄 —
+         판이 좁아도 두 칸으로 갈라지지 않는다. */
+      const head = el("span", "pdfmd-limit-head");
+      head.appendChild(el("span", "pdfmd-limit-icon", "!"));
       const title = el("strong", "pdfmd-limit-title", "");
-      note.appendChild(title);
+      head.appendChild(title);
+      note.appendChild(head);
       const desc = el("span", "pdfmd-limit-desc", "");
       note.appendChild(desc);
 

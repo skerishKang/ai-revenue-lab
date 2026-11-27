@@ -21,24 +21,24 @@
     convert_store_unavailable: "작업 기록을 저장하지 못했습니다. 잠시 후(5분 뒤) 다시 시도해 주세요.",
     live_abuse_gate_unavailable: "일시적인 오류입니다. 잠시 후(5분 뒤) 다시 시도해 주세요.",
     conversion_failed: "일시적인 오류입니다. 잠시 후(5분 뒤) 다시 시도해 주세요.",
-    pdf_encrypted: "암호가 있는 PDF는 변환할 수 없습니다. 암호를 제거한 뒤 다시 올려 주세요.",
+    pdf_encrypted: "암호가 있는 PDF는 바꿀 수 없습니다. 암호를 제거한 뒤 다시 올려 주세요.",
     pdf_invalid: "PDF 형식이 아니거나 손상된 파일입니다.", pdf_no_pages: "파일에 읽을 페이지가 없습니다. 다시 확인해 주세요.",
     pdf_page_text_invalid: "파일을 끝까지 읽지 못했습니다. 다시 확인해 주세요.",
     invalid_binary_payload: "PDF 형식이 아니거나 손상된 파일입니다.", unsupported_binary_media_type: "PDF 또는 ZIP 파일만 올릴 수 있습니다.",
     pdf_page_geometry_unavailable: "파일을 끝까지 읽지 못했습니다. 다시 확인해 주세요.",
     original_object_missing: "원본 파일을 찾을 수 없습니다. 파일을 다시 올려 주세요.",
-    convert_interrupted: "변환이 중단되었습니다. 다시 시도해 주세요.",
+    convert_interrupted: "바꾸기가 중단되었습니다. 다시 시도해 주세요.",
     convert_failed: "바꾸지 못했어요. 다시 해 주세요.",
     invalid_archive: "ZIP 파일을 열 수 없습니다.",
-    empty_archive: "ZIP 파일 안에 변환할 PDF가 없습니다.",
+    empty_archive: "ZIP 파일 안에 바꿀 PDF가 없습니다.",
     invalid_document: "PDF 또는 ZIP 파일만 올릴 수 있습니다.",
     document_too_large: "파일이 너무 큽니다.",
-    document_size_limit: "회원 등급의 변환 크기 상한을 넘었습니다.",
-    document_page_limit: "회원 등급의 페이지 상한을 넘어 변환하지 못했습니다.",
+    document_size_limit: "회원 등급의 파일 크기 상한을 넘었습니다.",
+    document_page_limit: "회원 등급의 페이지 상한을 넘어 바꾸지 못했습니다.",
     conversion_quota_exhausted: "오늘 바꿀 수 있는 양을 다 썼어요. 내일 다시 해 주세요.",
     pdf_magic_mismatch: "PDF 형식이 아니거나 손상된 파일입니다.",
     pdf_scanned_no_text: SCAN_MESSAGE,
-    convert_timed_out: "시간이 오래 걸려 변환이 끝나지 않았습니다. 다시 시도해 주세요.",
+    convert_timed_out: "시간이 오래 걸려 바꾸기가 끝나지 않았습니다. 다시 시도해 주세요.",
   };
 
   function el(tag, cls, text) {
@@ -303,12 +303,12 @@
     const pauseNote = el("p", "pdfmd-status", "");
     pauseNote.setAttribute("role", "status");
     if (PDFMD_NEW_WORK_DISABLED) {
-      pauseNote.textContent = "지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
+      pauseNote.textContent = "지금은 새 바꾸기를 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
     } else if (PDFMD_LOGIN_REQUIRED) {
       /* #8812 D6·D7 대표 확인: 안내 줄은 문장만 — 로그인 단추는 상자 CTA 하나. */
-      pauseNote.textContent = "로그인 후 PDF 변환을 이용할 수 있습니다.";
+      pauseNote.textContent = "로그인하면 PDF를 바꿀 수 있어요.";
     } else if (PDFMD_CHECKING) {
-      pauseNote.textContent = "새 변환을 열 수 있는지 확인 중…";
+      pauseNote.textContent = "새 바꾸기를 열 수 있는지 확인 중…";
     }
     if (!pauseNote.firstChild) pauseNote.hidden = true;
     if (!pauseNote.firstChild) pauseNote.hidden = true;
@@ -340,7 +340,7 @@
       modeSel.appendChild(o);
     });
     modeSel.disabled = workBlocked;
-    modeSel.setAttribute("aria-label", "변환 방식");
+    modeSel.setAttribute("aria-label", "바꾸기 방식");
     controls.appendChild(modeSel);
     formWrap.appendChild(controls);
 
@@ -369,7 +369,7 @@
         dropCta.textContent = "업로드 일시 중단";
       } else if (PDFMD_LOGIN_REQUIRED) {
         dropTitle.textContent = "로그인이 필요합니다";
-        dropSub.textContent = "로그인 후 PDF를 올려 변환할 수 있습니다.";
+        dropSub.textContent = "로그인한 뒤 PDF를 올려 바꿀 수 있어요.";
         dropCta.textContent = "로그인"; /* #8812 대표 확인: 단추는 동작을 말한다 */
       } else {
         dropTitle.textContent = "PDF 파일을 선택하세요";
@@ -714,9 +714,9 @@
           if (status === "failed") {
             const code = (data.item && data.item.error_code) || "convert_failed";
             if (Recovery.LIMIT_NOTICE_CODES.has(code)) recovery.show(code); /* #8812 D5: 한도 안내는 경고 상자로 */
-            else uploadStatus.textContent = item.name + " 변환 실패. " + describeError({ code: code });
+            else uploadStatus.textContent = item.name + " 바꾸기 실패. " + describeError({ code: code });
           } else if (status === "reviewed" || status === "done") {
-            uploadStatus.textContent = item.name + " 변환 완료. 결과 카드에서 받을 수 있습니다.";
+            uploadStatus.textContent = item.name + " 바꾸기 완료. 결과 카드에서 받을 수 있습니다.";
           }
           return;
         }
@@ -892,7 +892,7 @@
         else failed += 1;
       }
       if (uploaded && !failed) {
-        uploadStatus.textContent = uploaded + "개 파일을 올렸습니다. 변환이 곧 시작됩니다.";
+        uploadStatus.textContent = uploaded + "개 파일을 올렸습니다. 곧 바꾸기가 시작됩니다.";
       } else if (uploaded && failed) {
         uploadStatus.textContent = uploaded + "개 파일 처리 완료, " + failed + "개 실패. " + (lastUploadError || "파일 형식을 확인해 주세요.");
       } else if (failed) {
@@ -977,7 +977,7 @@
             quotaNote.textContent = "오늘 0건 더 바꿀 수 있어요.";
             recovery.exhaust();
           } else {
-            uploadStatus.textContent = item.name + " 변환 실패. " + describeError(e);
+            uploadStatus.textContent = item.name + " 바꾸기 실패. " + describeError(e);
           }
         }
       }
@@ -1108,7 +1108,7 @@
       if (!currentJobId) {
         itemsWrap.appendChild(emptyBlock("첫 PDF를 바꿔 보세요.", null, [
           "PDF 또는 ZIP 파일을 고릅니다.",
-          "올리면 바로 변환이 시작됩니다.",
+          "올리면 바로 바꾸기 시작해요.",
           "원본과 Markdown을 비교하고 내려받습니다.",
         ]));
         return;
@@ -1290,7 +1290,7 @@
     function renderHistory() {
       histList.replaceChildren();
       if (!historyJobs.length) {
-        histList.appendChild(emptyBlock("아직 작업 이력이 없습니다.", "첫 파일을 변환하면 여기에 기록됩니다.", null));
+        histList.appendChild(emptyBlock("아직 작업 이력이 없습니다.", "첫 파일을 바꾸면 여기에 기록됩니다.", null));
         return;
       }
       const query = historyQuery.trim().toLowerCase();

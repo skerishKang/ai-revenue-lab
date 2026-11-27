@@ -59,7 +59,7 @@ def test_single_choice_mode_field_is_hidden_but_kept() -> None:
     """변환 방식은 한 줄로 숨겨 둔다 — 서버가 빠른·검증 두 방식을 모두 받으므로
     선택지를 완전히 없애면 검증 변환(페이지별 일치도 보고)이 사라진다."""
     js = sheets.pdfmd_js()
-    assert 'modeSel.setAttribute("aria-label", "변환 방식")' in js
+    assert 'modeSel.setAttribute("aria-label", "바꾸기 방식")' in js
     assert "pdfmd-mode-help" not in js, "긴 도움말 문단이 돌아왔다"
 
 

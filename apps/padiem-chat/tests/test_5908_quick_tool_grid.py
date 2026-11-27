@@ -30,7 +30,7 @@ TOOLS = (
     ("speech", "축사·인사말", "행사 축사·인사말 초안 생성·저장"),
     ("sns", "SNS 홍보", "블로그·페이스북·인스타그램 초안"),
     ("meeting", "회의정리·활동집", "회의 요약·책/활동집 누적 생성"),
-    ("pdfmd", "PDF → Markdown", "PDF·ZIP을 Markdown으로 변환·비교·다운로드"),
+    ("pdfmd", "PDF → Markdown", "PDF·ZIP을 Markdown으로 바꾸고, 비교하고, 내려받아요"),
     ("quote", "견적서 초안", "요청을 붙이면 견적서·발주서·답장 초안"),
     ("excel", "Excel 열기/검토", "XLSX 원본을 이 화면에서 열어 검토·작업"),
 )

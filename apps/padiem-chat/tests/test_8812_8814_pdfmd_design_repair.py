@@ -94,6 +94,11 @@ def test_limit_notices_are_one_warning_box_below_the_drop_box() -> None:
     assert declaration(box[0], "background") == "var(--gold-soft)"
     title = find_rules_with_selector(rules, ".pdfmd-limit-title")
     assert title and declaration(title[0], "color") == "var(--util-menu-pdfmd-warn-ink)"
+    # CTO 검토 D1·D2: 머리(아이콘+제목)와 설명은 세로로 쌓인다 — 판이 좁아도
+    # 두 칸으로 갈라지지 않는다.
+    assert declaration(box[0], "flex-direction") == "column", "경고 상자가 가로 두 칸으로 갈라진다"
+    head = find_rules_with_selector(rules, ".pdfmd-limit-head")
+    assert head and declaration(head[0], "display") == "flex", "아이콘+제목 한 줄이 없다"
     # 밝은 판 테마에서 제목 잉크가 읽히는지 — 토큰 값으로 잰다(본문 4.5:1).
     # 어두운 판 테마(dark·cinematic)는 기존 #f0c48a 덮기 규칙을 타므로 아래
     # 브라우저 시험이 실제로 칠해진 픽셀로 잰다.
@@ -140,7 +145,7 @@ def test_the_logout_screen_has_one_login_button_and_it_is_the_drop_box_cta() -> 
     # 안내 줄은 문장만 남는다.
     notice = PDFMD[PDFMD.index("} else if (PDFMD_LOGIN_REQUIRED) {"):]
     notice = notice[: notice.index("} else if (PDFMD_CHECKING) {")]
-    assert "로그인 후 PDF 변환을 이용할 수 있습니다." in notice
+    assert "로그인하면 PDF를 바꿀 수 있어요." in notice
     assert "appendChild(loginEntry)" not in notice
 
 
@@ -218,6 +223,16 @@ def test_the_working_chip_carries_a_movement_marker_that_stops_without_motion() 
         "움직임 줄이기에서 진행 표시가 멈추지 않는다"
 
 
+def test_the_working_stage_line_wraps_inside_the_card() -> None:
+    """CTO 검토 D4: "바꾸는 중 — …" 안내 줄이 카드 오른쪽 끝을 넘지 않는다."""
+    rules = parse_rules(RECOVERY_CSS)
+    stage = find_rules_with_selector(rules, ".pdfmd-stage")
+    assert stage, "안내 줄 규칙이 없다"
+    assert declaration(stage[0], "white-space") == "normal", "안내 줄이 한 줄로 민려 나간다"
+    assert declaration(stage[0], "word-break") == "keep-all"
+    assert declaration(stage[0], "max-width") == "100%"
+
+
 # ── 낱말(대표 확인) — PDF→MD 화면 안에서만 ────────────────────────────────────
 
 
@@ -229,14 +244,24 @@ def test_the_screen_speaks_the_confirmed_words() -> None:
         "바꾸지 못했어요. 다시 해 주세요.",
         "오늘 바꿀 수 있는 양을 다 썼어요. 내일 다시 해 주세요.",
         '"Markdown 받기"',
+        # CTO 검토(261127) 3번 — 화면 안 남은 낱말
+        "PDF·ZIP을 Markdown으로 바꾸고, 비교하고, 내려받아요",
+        "로그인하면 PDF를 바꿀 수 있어요.",
+        "로그인한 뒤 PDF를 올려 바꿀 수 있어요.",
+        "올리면 바로 바꾸기 시작해요.",
+        "지금은 새 바꾸기를 시작할 수 없습니다",
+        '"바꾸기 방식"',
     ):
-        assert present in PDFMD, f"확인된 문구가 없다: {present}"
+        assert present in PDFMD or present in MANIFEST, f"확인된 문구가 없다: {present}"
     for gone in (
         "빠른 변환", "검증 변환", "변환본", "변환 결과", "지난 변환",
         "변환에 실패했습니다", "변환 시작 실패", "오늘 변환 한도",
         "첫 PDF를 변환해 보세요",
+        # CTO 검토(261127) 3번 — 고치기 전 문구
+        "변환·비교·다운로드", "로그인 후 PDF 변환을", "로그인 후 PDF를 올려 변환할",
+        "올리면 바로 변환이", "새 변환을", '"변환 방식"',
     ):
-        assert gone not in PDFMD, f"고치기 전 낱말이 남아 있다: {gone}"
+        assert gone not in PDFMD and gone not in MANIFEST, f"고치기 전 낱말이 남아 있다: {gone}"
     # locale 키(이 화면 전용)와 대화 전환 문구도 같은 낱말로.
     assert "빠르게 바꾸기:" in LOCALE_UTILITY and "꼼꼼히 바꾸기:" in LOCALE_UTILITY
     assert "빠른 변환:" not in LOCALE_UTILITY and "검증 변환:" not in LOCALE_UTILITY

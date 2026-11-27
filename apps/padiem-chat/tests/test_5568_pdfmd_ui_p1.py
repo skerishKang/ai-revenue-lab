@@ -105,7 +105,7 @@ def test_empty_states_guide_the_next_action() -> None:
     assert '"아직 작업 이력이 없습니다."' in js
     assert '"로그인하면 작업 이력을 볼 수 있습니다."' in js
     # #7865: uploads start their own conversion — the step says so.
-    assert '"올리면 바로 변환이 시작됩니다."' in js
+    assert '"올리면 바로 바꾸기 시작해요."' in js
 
 
 def test_preview_panes_are_labelled_and_tall_enough_on_mobile() -> None:
@@ -357,7 +357,7 @@ function buttonByText(label) {
   // server has answered that new work is paused (this fixture answers without
   // the flag, which is the paused answer).
   const noticeText = root.findAll(".pdfmd-status").map(text).join(" ");
-  if (!noticeText.includes("지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.")) fail("PAUSE_NOTICE_MISSING", noticeText);
+  if (!noticeText.includes("지금은 새 바꾸기를 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.")) fail("PAUSE_NOTICE_MISSING", noticeText);
   const drop = root.findAll(".pdfmd-drop")[0];
   if (!drop) fail("DROP_ZONE_MISSING");
   if (drop.getAttribute("role") !== null) fail("PAUSED_DROP_STILL_BUTTON");
@@ -378,7 +378,7 @@ function buttonByText(label) {
   // 2) First screen explains the next action instead of showing nothing.
   const onboarding = text(panel.querySelector(".pdfmd-items"));
   if (!onboarding.includes("첫 PDF를 바꿔 보세요.")) fail("ONBOARDING_MISSING");
-  if (!onboarding.includes("올리면 바로 변환이 시작됩니다.")) fail("ONBOARDING_MISSING_STEP");
+  if (!onboarding.includes("올리면 바로 바꾸기 시작해요.")) fail("ONBOARDING_MISSING_STEP");
 
   // 3) Selecting a job renders item chips, friendly failure copy, retry label.
   await rows[0].dispatch("click");
@@ -433,7 +433,7 @@ function buttonByText(label) {
   // A 401 says the session is missing, not that the work stopped: the panel
   // asks for login and never paints the pause copy.
   const guestNotices = root.findAll(".pdfmd-status").map(text).join(" ");
-  if (!guestNotices.includes("로그인 후 PDF 변환을 이용할 수 있습니다.")) fail("GUEST_LOGIN_REQUIRED_MISSING", guestNotices);
+  if (!guestNotices.includes("로그인하면 PDF를 바꿀 수 있어요.")) fail("GUEST_LOGIN_REQUIRED_MISSING", guestNotices);
   if (guestNotices.includes("일시 중단") || guestNotices.includes("준비 중")) fail("GUEST_CLAIMS_PAUSE", guestNotices);
   const guestDrop = root.findAll(".pdfmd-drop")[0];
   const guestCta = guestDrop && guestDrop.querySelector(".pdfmd-drop-cta");
@@ -454,7 +454,7 @@ function buttonByText(label) {
   await flush();
   await flush();
   const serverErrorNotices = root.findAll(".pdfmd-status").map(text).join(" ");
-  if (!serverErrorNotices.includes("지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.")) fail("SERVER_ERROR_PAUSE_MISSING", serverErrorNotices);
+  if (!serverErrorNotices.includes("지금은 새 바꾸기를 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.")) fail("SERVER_ERROR_PAUSE_MISSING", serverErrorNotices);
 
   // 7) #6597 follow-up: the opened answer paints a usable uploader, and no
   // pause sentence is left anywhere on it.
@@ -565,7 +565,7 @@ def test_preview_labels_markdown_and_guest_state() -> None:
 
 def test_guest_401_asks_for_login_and_a_server_error_keeps_the_pause() -> None:
     payload = _run_harness()
-    assert "로그인 후 PDF 변환을 이용할 수 있습니다." in payload["guestNotice"]
+    assert "로그인하면 PDF를 바꿀 수 있어요." in payload["guestNotice"]
     assert "일시 중단" not in payload["guestNotice"]
     assert "준비 중" not in payload["guestNotice"]
     assert payload["guestDropCta"] == "로그인"

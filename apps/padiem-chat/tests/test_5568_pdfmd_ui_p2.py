@@ -51,7 +51,7 @@ LOCALE_KEYS = (
 # locale-key contracts that belonged to the removed paragraph went with it.
 def test_the_mode_select_names_itself_without_the_help_paragraph() -> None:
     js = sheets.pdfmd_js()
-    assert 'modeSel.setAttribute("aria-label", "변환 방식")' in js
+    assert 'modeSel.setAttribute("aria-label", "바꾸기 방식")' in js
     assert 'const modeHelp = el("p", "pdfmd-mode-help")' not in js
     assert 'MODE_HELP = {' not in js
     assert 'pdfmd-mode-help' not in js
@@ -307,7 +307,7 @@ async function search(value) {
   //    field; the one quiet select still names itself for the owner.
   const mode = panel.querySelector("#pdfmdMode");
   if (!mode) fail("MODE_SELECT_MISSING");
-  if (mode.getAttribute("aria-label") !== "변환 방식") fail("MODE_ARIA_MISSING", mode.getAttribute("aria-label"));
+  if (mode.getAttribute("aria-label") !== "바꾸기 방식") fail("MODE_ARIA_MISSING", mode.getAttribute("aria-label"));
 
   // 2) Search input is localized and history is grouped by date.
   const input = panel.querySelector("#pdfmdHistorySearch");

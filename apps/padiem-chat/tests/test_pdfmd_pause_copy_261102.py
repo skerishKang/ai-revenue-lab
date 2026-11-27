@@ -43,7 +43,7 @@ def test_the_internal_channel_name_is_gone_from_the_screen() -> None:
 def test_the_pause_still_says_what_is_and_is_not_possible() -> None:
     # The panel states the absence and states what still works, in plain words —
     # painted only when the server actually answers that the work is paused.
-    assert "지금은 새 변환을 시작할 수 없습니다" in PDFMD
+    assert "지금은 새 바꾸기를 시작할 수 없습니다" in PDFMD
     assert "기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다" in PDFMD
     assert "곧 다시 이용할 수 있어요" in PDFMD
     # The static card no longer claims a pause on first paint: new work is
@@ -52,7 +52,7 @@ def test_the_pause_still_says_what_is_and_is_not_possible() -> None:
     assert "일시 중단" not in INDEX
     # #7173 / #7460: the card copy lives in the unified util manifest.
     manifest = util_manifest_js()
-    assert "PDF·ZIP을 Markdown으로 변환·비교·다운로드" in manifest
+    assert "PDF·ZIP을 Markdown으로 바꾸고, 비교하고, 내려받아요" in manifest
 
 
 def test_the_owner_pause_contract_is_untouched() -> None:
@@ -60,7 +60,7 @@ def test_the_owner_pause_contract_is_untouched() -> None:
     # they may be painted — the harness in test_5568_pdfmd_ui_p1.py now asserts
     # them after a paused answer instead of on the first paint.
     # #7865: the notice lives on the head status line with the same promise.
-    assert '"지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다."' in PDFMD
+    assert '"지금은 새 바꾸기를 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다."' in PDFMD
     assert '"업로드 일시 중단"' in PDFMD
     assert 'workState = "checking"' in PDFMD, "the first paint must start as unknown, not as paused"
 
@@ -91,7 +91,7 @@ def test_a_guest_401_asks_for_login_instead_of_claiming_a_pause() -> None:
     # twice on one screen.
     assert 'const PDFMD_LOGIN_REQUIRED = workState === "login_required";' in PDFMD
     assert 'window.initPdfMdUtility(panel, "login_required");' in PDFMD
-    assert "로그인 후 PDF 변환을 이용할 수 있습니다." in PDFMD
+    assert "로그인하면 PDF를 바꿀 수 있어요." in PDFMD
     assert "로그인이 필요합니다" in PDFMD
     assert 'dropCta.textContent = "로그인";' in PDFMD
     assert 'if (PDFMD_LOGIN_REQUIRED) { openExistingLogin(); return; }' in PDFMD

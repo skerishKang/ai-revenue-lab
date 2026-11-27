@@ -3,25 +3,47 @@
    시트에 규칙을 얹지 않고 새 시트로 둔다. 덮어쓰기가 아니다: 새 클래스만
    정의하고 !important·새 색 숫자는 없다(토큰과 기존 덮기 규칙의 값만). */
 
-/* ── #8812 D5: 한도 경고 상자 하나(제목 한 줄 + 설명) — 끌어다 놓기 상자
-   바로 아래. 경고 색은 util-menu 의 잉크 토큰과 gold 토큰. ─ */
+/* ── #8812 D5: 한도 경고 상자 하나 — 끌어다 놓기 상자 바로 아래.
+   #8812 D1·D2(CTO 검토): 머리(아이콘+제목)와 설명은 세로로 쌓는다 — 판이
+   좁아도 제목과 설명이 좌우 두 칸으로 갈라지지 않는다. 경고 색은 util-menu 의
+   잉크 토큰과 gold 토큰. ─ */
 .pdfmd-limit-note {
-  display: flex; align-items: flex-start; gap: 10px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
   margin: 10px 0 0; padding: 12px 14px;
   border: 1px solid var(--gold); border-radius: var(--radius-sm);
   background: var(--gold-soft); color: var(--text);
   font-size: 13px; line-height: 1.5;
 }
 .pdfmd-limit-note[hidden] { display: none; }
+.pdfmd-limit-head {
+  display: flex; align-items: center; gap: 8px;
+  max-width: 100%;
+}
 .pdfmd-limit-icon {
   display: inline-flex; align-items: center; justify-content: center;
-  flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px;
+  flex: 0 0 auto; width: 20px; height: 20px;
   border: 1.5px solid var(--util-menu-pdfmd-warn-ink); border-radius: 50%;
   color: var(--util-menu-pdfmd-warn-ink);
   font-size: 12px; font-weight: 750; line-height: 1;
 }
-.pdfmd-limit-title { color: var(--util-menu-pdfmd-warn-ink); font-weight: 750; overflow-wrap: anywhere; }
-.pdfmd-limit-desc { color: var(--text); overflow-wrap: anywhere; }
+.pdfmd-limit-title {
+  color: var(--util-menu-pdfmd-warn-ink); font-weight: 750;
+  word-break: keep-all; overflow-wrap: anywhere;
+}
+.pdfmd-limit-desc {
+  color: var(--text);
+  word-break: keep-all; overflow-wrap: anywhere;
+}
+
+/* #8812 D4(CTO 검토): "바꾸는 중 — …" 안내 줄은 카드 안에서 줄바꿈한다 —
+   칩의 기본 nowrap이 한 줄을 카드 밖으로 밀어 내지 않게 한다. */
+.pdfmd-stage {
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  text-align: left;
+}
 
 /* #8814 D5: [바꾸는 중] 칩 앞의 작은 진행 표시 — currentColor 링.
    움직임 줄이기에서는 멈춘 링으로 보인다. */
