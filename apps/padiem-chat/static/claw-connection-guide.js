@@ -36,7 +36,7 @@
       headline: tr("컴퓨터 연결 상태를 확인해 주세요", "Check this computer"),
       copy: tr("서버에서 PC 상태를 확인하지 못했습니다. 아직 설치 전이라면 Connector를 설치해 주세요.",
                "The PC status is unavailable. Install Connector if you have not already."),
-      foot: tr("설치 후 자동 실행·연결됩니다. 설치 파일은 받은 뒤 10분 안에 실행해야 합니다.",
+      foot: tr("설치 후 자동으로 켜지고 연결됩니다. 설치 파일은 받은 뒤 10분 안에 열어야 합니다.",
                "It starts and connects automatically after install. Run the install file within 10 minutes of downloading it."),
       button: tr("설치·연결 안내", "Installation & connection"), intent: "manage"
     };
@@ -75,7 +75,7 @@
     } : {
       headline: tr(labels[id] + " 연결됨", labels[id] + " connected"),
       copy: tr(id === "pc" ?
-        "설치된 Connector는 기본적으로 자동 실행하고 다시 연결합니다." :
+        "설치된 Connector는 기본적으로 자동으로 켜지고 다시 연결합니다." :
         "GitHub 연결이 확인됐습니다. 연결 관리에서 권한을 확인할 수 있습니다.",
         id === "pc" ? "The installed Connector starts and reconnects automatically." :
         "GitHub access is verified. Manage permissions in connection settings."),
@@ -85,7 +85,7 @@
     };
     if (id === "pc") return {
       headline: tr("컴퓨터에 Connector를 설치해 주세요", "Install Padiem Connector"),
-      copy: tr("설치가 끝나면 자동으로 실행되어 CLAW와 연결됩니다. 설치 파일은 받은 뒤 10분 안에 실행해야 합니다.",
+      copy: tr("설치가 끝나면 자동으로 켜져 CLAW와 연결됩니다. 설치 파일은 받은 뒤 10분 안에 열어야 합니다.",
                "Once installed, Connector starts and connects to CLAW automatically. Run the install file within 10 minutes of downloading it."),
       foot: tr("별도 로그인이나 '프로그램 켜기' 단계는 필요하지 않습니다. 시간이 지나면 새 파일을 받아 주세요.",
                "No extra sign-in or start step. If the window passes, download a fresh file."),

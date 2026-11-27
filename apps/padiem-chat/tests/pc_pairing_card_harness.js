@@ -284,7 +284,7 @@ async function main() {
   const deadlineLine = section.ids().find((n) => n.matchesClass("pc-pairing-deadline"));
   check("the downloaded file shows the server's 10-minute window and the remaining time",
     deadlineLine && deadlineLine.hidden === false
-    && deadlineLine.allText().includes("10분 안에 실행")
+    && deadlineLine.allText().includes("10분 안에 여세요")
     && deadlineLine.allText().includes("남은 시간"),
     deadlineLine ? deadlineLine.allText() : "no deadline");
   check("the download is said, not the code",
@@ -339,7 +339,7 @@ async function main() {
   check("an expired code stops the wait with the recovery sentence and 다시 받기",
     expiredBox && expiredBox.hidden === false
     && expiredBox.allText().includes("설치 파일 시간이 지났어요")
-    && expiredBox.allText().includes("10분 안에 다시 실행")
+    && expiredBox.allText().includes("10분 안에 다시 열어")
     && redownload && redownload.hidden === false,
     expiredSection.allText());
   // CTO review: the expired card must not keep the green "downloaded" line beside

@@ -263,7 +263,7 @@ def test_korean_copy_never_implies_execution_authority(browser, server):
     assert "등록한 폴더 범위" in guide
     assert "보내기 전에 한 번 확인" in guide
     assert "자동으로 백업" in guide
-    assert "실행 권한을 부여하지 않습니다" in guide
+    assert "작업 권한을 부여하지 않습니다" in guide
     # The desktop install/registration path is not advertised as available now.
     assert "정식 공개 전" in guide
     assert not errors, errors
@@ -306,7 +306,7 @@ def test_language_switch_keeps_zero_network_and_no_authority(browser, server):
     page.evaluate("() => { document.documentElement.lang = 'ko'; }")
     page.wait_for_function(
         "() => document.querySelector('#clawDeviceGuidancePanel')"
-        ".innerText.includes('실행 권한을 부여하지 않습니다')"
+        ".innerText.includes('작업 권한을 부여하지 않습니다')"
     )
     # Still exactly the one directory read, no selection, nothing persisted.
     assert requests == ["GET"]

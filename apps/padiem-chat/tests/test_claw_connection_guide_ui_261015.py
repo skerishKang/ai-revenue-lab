@@ -31,9 +31,9 @@ def test_guide_keeps_canonical_state_and_no_fake_install_or_oauth():
 
 
 def test_installation_defaults_are_shown_without_second_login_step():
-    assert "설치가 끝나면 자동으로 실행되어 CLAW와 연결됩니다." in SCRIPT
+    assert "설치가 끝나면 자동으로 켜져 CLAW와 연결됩니다." in SCRIPT
     assert "별도 로그인이나 '프로그램 켜기' 단계는 필요하지 않습니다." in SCRIPT
-    assert "설치 후 자동 실행·연결됩니다." in SCRIPT
+    assert "설치 후 자동으로 켜지고 연결됩니다." in SCRIPT
 
 
 def test_drive_off_does_not_revoke_stored_oauth():
