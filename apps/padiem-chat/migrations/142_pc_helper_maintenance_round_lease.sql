@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS pc_helper_maintenance_rounds (
   round_id TEXT NOT NULL,
   last_round_at TEXT NOT NULL,
   lease_expires_at TEXT NOT NULL,
-  completed_at TEXT
+  completed_at TEXT,
+  outcome TEXT CHECK (outcome IN ('completed','failed'))
 );

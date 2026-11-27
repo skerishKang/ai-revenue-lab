@@ -145,12 +145,12 @@ class HostMaintenanceStore(MaintenanceAttemptStore):
         stamp = _stamp(now)
         rows = await self.rows(
             "INSERT INTO pc_helper_maintenance_rounds "
-            "(cadence_seconds, window_id, round_id, last_round_at, lease_expires_at, completed_at) "
-            "VALUES (?,?,?,?,?,NULL) "
+            "(cadence_seconds, window_id, round_id, last_round_at, lease_expires_at, completed_at, outcome) "
+            "VALUES (?,?,?,?,?,NULL,NULL) "
             "ON CONFLICT(cadence_seconds) DO UPDATE SET "
             "window_id=excluded.window_id, round_id=excluded.round_id, "
             "last_round_at=excluded.last_round_at, lease_expires_at=excluded.lease_expires_at, "
-            "completed_at=NULL "
+            "completed_at=NULL, outcome=NULL "
             "WHERE excluded.window_id > pc_helper_maintenance_rounds.window_id "
             "OR (excluded.window_id = pc_helper_maintenance_rounds.window_id "
             "AND pc_helper_maintenance_rounds.completed_at IS NULL "
@@ -160,12 +160,14 @@ class HostMaintenanceStore(MaintenanceAttemptStore):
             _stamp(now + timedelta(seconds=ROUND_LEASE_SECONDS)))
         return round_id if any(row["round_id"] == round_id for row in rows) else None
 
-    async def complete_round(self, cadence, round_id, now):
-        """A stale owner cannot finish a lease recovered by another worker."""
+    async def complete_round(self, cadence, round_id, now, *, outcome="completed"):
+        """Persist success OR handled failure; only a crashed worker leaves a lease."""
+        if outcome not in ("completed", "failed"):
+            raise ValueError("invalid maintenance round outcome")
         rows = await self.rows(
-            "UPDATE pc_helper_maintenance_rounds SET completed_at=? "
+            "UPDATE pc_helper_maintenance_rounds SET completed_at=?, outcome=? "
             "WHERE cadence_seconds=? AND round_id=? AND completed_at IS NULL "
-            "RETURNING round_id", _stamp(now), cadence, round_id)
+            "RETURNING round_id", _stamp(now), outcome, cadence, round_id)
         return bool(rows)
 
     async def in_flight(self):
@@ -742,16 +744,19 @@ async def maintenance_tick(app, env, store, process_lock):
         round_id = await store.claim_round(cadence, _now())
         if round_id is None:
             return "already_run"
+        outcome = "completed"
         try:
             await maintenance_round(app, env, store)
         except Exception:
-            # Leave the lease incomplete so another worker can recover it.
+            # A handled failure is NOT a worker crash. Mark this cadence
+            # window as spent, so an identity outage cannot cause seven
+            # retries inside 15 minutes. Only a dead worker leaves no finish.
+            outcome = "failed"
             logger.warning("pc_maintenance_round_failed")
-            return "failed"
-        if not await store.complete_round(cadence, round_id, _now()):
+        if not await store.complete_round(cadence, round_id, _now(), outcome=outcome):
             logger.warning("pc_maintenance_round lease_lost")
             return "lease_lost"
-        return "completed"
+        return outcome
     except Exception:
         logger.warning("pc_maintenance_round_gate_failed")
         return "failed"

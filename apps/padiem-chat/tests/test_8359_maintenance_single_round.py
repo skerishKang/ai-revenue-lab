@@ -57,6 +57,44 @@ def test_two_workers_one_idle_window_even_after_lease_expires(tmp_path, monkeypa
     b[2].close()
 
 
+def test_handled_round_failure_is_completed_once_per_window(tmp_path, monkeypatch, caplog):
+    """Identity/PC errors do not hammer the same 15-minute window."""
+    a, b = _workers(tmp_path)
+    now = [BASE]
+    calls = []
+    monkeypatch.setattr(host, "_now", lambda: now[0])
+
+    async def idle(_store):
+        return host.IDLE_INTERVAL
+
+    async def fail_then_succeed(*args):
+        calls.append(now[0])
+        if len(calls) == 1:
+            raise RuntimeError("fixture identity service unavailable")
+
+    monkeypatch.setattr(host, "next_delay", idle)
+    monkeypatch.setattr(host, "maintenance_round", fail_then_succeed)
+
+    async def check():
+        assert await host.maintenance_tick(None, {}, a[0], a[1]) == "failed"
+        row = a[2].execute("SELECT completed_at, outcome FROM "
+                           "pc_helper_maintenance_rounds").fetchone()
+        assert row["completed_at"] is not None and row["outcome"] == "failed"
+        assert "pc_maintenance_round_failed" in caplog.text
+        assert await host.maintenance_tick(None, {}, b[0], b[1]) == "already_run"
+        now[0] += timedelta(seconds=host.ROUND_LEASE_SECONDS + 1)
+        assert await host.maintenance_tick(None, {}, b[0], b[1]) == "already_run"
+        assert len(calls) == 1
+        now[0] = BASE + timedelta(seconds=900)
+        assert await host.maintenance_tick(None, {}, b[0], b[1]) == "completed"
+        row = a[2].execute("SELECT outcome FROM pc_helper_maintenance_rounds").fetchone()
+        assert row["outcome"] == "completed"
+        assert len(calls) == 2
+    asyncio.run(check())
+    a[2].close()
+    b[2].close()
+
+
 def test_unfinished_worker_lease_expires_and_other_worker_recovers(tmp_path, monkeypatch):
     a, b = _workers(tmp_path)
     now = [BASE]
@@ -79,6 +117,10 @@ def test_unfinished_worker_lease_expires_and_other_worker_recovers(tmp_path, mon
         assert await host.maintenance_tick(None, {}, b[0], b[1]) == "completed"
         assert calls == ["recovered"]
         assert not await a[0].complete_round(900, stale, now[0])
+        row = a[2].execute("SELECT completed_at, outcome, round_id "
+                           "FROM pc_helper_maintenance_rounds").fetchone()
+        assert row["completed_at"] is not None and row["outcome"] == "completed"
+        assert row["round_id"] != stale
         assert await host.maintenance_tick(None, {}, a[0], a[1]) == "already_run"
     asyncio.run(check())
     a[2].close()
