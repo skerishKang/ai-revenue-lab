@@ -34,6 +34,9 @@ ENTRY_MODULE = "claw_general_routes"
 # 영역 파일을 옮기는 PR 은 이 튜플에 새 모듈 이름을 한 줄 더한다.
 CLAW_GENERAL_MODULES: tuple[str, ...] = (
     ENTRY_MODULE,
+    "claw_general_contract",
+    "claw_general_stage",
+    "claw_general_response",
 )
 
 # ``claw_general_`` 접두사를 쓰지만 이 나누기와 무관한 app 파일.
@@ -43,6 +46,55 @@ NOT_PART_OF_SPLIT = frozenset({"claw_general_run_history"})
 # 영역을 옮기는 PR 이 그 모듈을 가져오는 파일을 바꾸면 여기도 같이 고친다.
 FIRST_TURN_AUTHORITY_IMPORTERS: tuple[str, ...] = (
     "claw_general_routes.py",
+)
+
+# 다른 파일(운영 코드 3곳·시험)이 claw_general_routes 에서 가져오거나 읽는 이름 44개.
+# 영역 파일로 옮겨져도 진입점이 계속 내보내야 한다(가드가 본다).
+ENTRY_EXPORTS: tuple[str, ...] = (
+    "claw_general_capabilities",
+    "_claw_general_pc_work_context",
+    "_start_selectable_model_read",
+    "_combine_system_context",
+    "_MODEL_HOLD_ERROR_CODES",
+    "_MODEL_HOLD_USER_MESSAGE",
+    "CLAW_LIVE_REQUEST_HEADER",
+    "CLAW_LIVE_REQUEST_MARKER",
+    "MAX_CLAW_GENERAL_BODY_BYTES",
+    "P01_ENGINE_REQUEST_ENVELOPE_BYTES",
+    "claw_general_execute",
+    "_owner_claw_context",
+    "_record_completed_claw_result",
+    "_save_claw_exchange",
+    "_claw_custom_direct",
+    "_claw_general_intake",
+    "_claw_general_session_custom",
+    "_claw_general_user_text",
+    "_desktop_exception_question",
+    "_requested_desktop_control",
+    "_requested_desktop_task",
+    "_requested_local_command",
+    "_requested_local_desktop",
+    "_requested_local_txt_path",
+    "_requested_natural_pc_files",
+    "_requested_natural_pc_query",
+    "_requested_read_only_screen_view",
+    "_claw_general_pc_branch",
+    "_confirmed_staged_desktop_type",
+    "_confirmed_staged_pc_command",
+    "_dispatch_user_command_request",
+    "_dispatch_user_desktop_request",
+    "_dispatch_user_txt_request",
+    "_stage_desktop_type_confirmation",
+    "_stage_pc_command_confirmation",
+    "_claw_general_quota_gate",
+    "_claw_general_sse",
+    "CLAW_EVIDENCE_MARKER",
+    "CLAW_EVIDENCE_REQUEST_HEADER",
+    "_claw_general_route_preflight",
+    "_claw_public_search_grounding",
+    "_project_search_sources",
+    "CLAW_PUBLIC_SEARCH_STATE_FLAG",
+    "_claw_stage",
 )
 
 # 낮은 단계만 가져올 수 있다(같은 단계끼리도 금지). 진입점은 맨 위.

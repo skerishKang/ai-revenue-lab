@@ -19,7 +19,7 @@ from kagent.p01_adapter import (
 )
 from padiem_ai_core.orchestration_events import OrchestrationEvent
 
-from .claw_general_routes import _MODEL_HOLD_ERROR_CODES, _MODEL_HOLD_USER_MESSAGE
+from .claw_general_contract import _MODEL_HOLD_ERROR_CODES, _MODEL_HOLD_USER_MESSAGE
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
 _ALLOWED_FIELDS = (

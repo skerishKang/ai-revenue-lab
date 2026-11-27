@@ -53,6 +53,36 @@ def test_every_registered_module_has_a_level_and_the_entry_is_the_highest():
     assert cg.MODULE_LEVELS[cg.ENTRY_MODULE] == max(cg.MODULE_LEVELS.values())
 
 
+def test_the_entry_keeps_exporting_every_name_other_files_use():
+    entry = cg.modules([cg.ENTRY_MODULE])[0]
+    assert len(cg.ENTRY_EXPORTS) == len(set(cg.ENTRY_EXPORTS))
+    assert [name for name in cg.ENTRY_EXPORTS if not hasattr(entry, name)] == []
+
+
+def test_no_name_is_defined_in_two_area_modules():
+    owners: dict[str, str] = {}
+    duplicates = []
+    for module in cg.modules():
+        for name in cg.defined_names(module):
+            if name in owners:
+                duplicates.append(f"{name}: {owners[name]} and {cg.short_name(module)}")
+            owners[name] = cg.short_name(module)
+    assert duplicates == []
+
+
+def test_reexported_names_are_the_same_objects_as_their_definitions():
+    """A copy left behind in the entry would make patches and identity checks diverge."""
+    entry = cg.modules([cg.ENTRY_MODULE])[0]
+    different = []
+    for module in cg.modules():
+        if module is entry:
+            continue
+        for name in cg.defined_names(module):
+            if hasattr(entry, name) and getattr(entry, name) is not getattr(module, name):
+                different.append(f"{name}: {cg.short_name(module)}")
+    assert different == []
+
+
 def test_first_turn_authority_importer_list_names_registered_files_only():
     registered = {name + ".py" for name in cg.CLAW_GENERAL_MODULES}
     assert set(cg.FIRST_TURN_AUTHORITY_IMPORTERS) <= registered
