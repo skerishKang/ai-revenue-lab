@@ -15,10 +15,15 @@ import sys
 from pathlib import Path
 
 from app import oracle_mesh_read_return_routes as routes
+from app import oracle_mesh_result_projection as projection
 
 ROUTE_SOURCE = (
     Path(__file__).resolve().parents[1] / "app" / "oracle_mesh_read_return_routes.py"
 ).read_text(encoding="utf-8")
+PROJECTION_SOURCE = (
+    Path(__file__).resolve().parents[1] / "app" / "oracle_mesh_result_projection.py"
+).read_text(encoding="utf-8")
+RESULT_SOURCE = ROUTE_SOURCE + PROJECTION_SOURCE
 
 
 def _cleared():
@@ -81,25 +86,30 @@ def test_every_result_ingest_log_site_shares_the_hooked_logger():
     ``pc_result`` line flows through the hooked module logger."""
     hook_call = ROUTE_SOURCE.index("    ensure_result_log_host_visible()")
     route_def = ROUTE_SOURCE.index("async def oracle_mesh_read_result(")
-    first_log = ROUTE_SOURCE.index('result_log.info("pc_result stage=received')
+    first_log = ROUTE_SOURCE.index('await _oracle_mesh_read_result_verify(request)')
+    verify_def = PROJECTION_SOURCE.index('async def _oracle_mesh_read_result_verify(')
+    received_log = PROJECTION_SOURCE.index('result_log.info("pc_result stage=received')
+    assert verify_def < received_log
+    assert routes._oracle_mesh_read_result_verify is projection._oracle_mesh_read_result_verify
+    assert routes._RESULT_LOG is projection._RESULT_LOG
     assert route_def < hook_call < first_log, "the hook must run before the first log"
     # The local alias points at the hooked logger, not a second one.
-    assert "result_log = _RESULT_LOG" in ROUTE_SOURCE
-    assert ROUTE_SOURCE.count('result_log = logging.getLogger') == 0
+    assert "result_log = _RESULT_LOG" in RESULT_SOURCE
+    assert RESULT_SOURCE.count('result_log = logging.getLogger') == 0
     # Every logged pc_result stage keeps the bounded field grammar.
     for stage in ("received", "queue_finish_error"):
-        assert f'pc_result stage={stage}' in ROUTE_SOURCE
+        assert f'pc_result stage={stage}' in RESULT_SOURCE
 
 
 def test_the_result_stage_names_stay_bounded():
     """Only reviewed stage words may cross the journal (no request material)."""
     import re
 
-    logged = set(re.findall(r'pc_result stage=([A-Za-z_=%s"]+?)[ "]', ROUTE_SOURCE))
+    logged = set(re.findall(r'pc_result stage=([A-Za-z_=%s"]+?)[ "]', RESULT_SOURCE))
     # Literal stages written into the format strings:
-    literals = set(re.findall(r'stage=([a-z_]+)', ROUTE_SOURCE))
+    literals = set(re.findall(r'stage=([a-z_]+)', RESULT_SOURCE))
     assert {"received", "queue_finish_error"} <= literals
     # The computed stages come from these exact fixed words in the code.
     for stage in ("stored", "not_appended", "queue_finished", "queue_not_finished"):
-        assert f'"{stage}"' in ROUTE_SOURCE
+        assert f'"{stage}"' in RESULT_SOURCE
     assert logged or literals  # the marker family exists at all

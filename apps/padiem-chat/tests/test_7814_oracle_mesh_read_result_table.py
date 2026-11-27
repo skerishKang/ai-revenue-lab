@@ -23,6 +23,7 @@ from types import SimpleNamespace
 import pytest
 
 from app import oracle_mesh_read_return_routes as routes
+from app import oracle_mesh_result_projection as projection
 from app.history import HistoryForbidden
 from test_oracle_mesh_read_return import Request, call, result_body
 
@@ -138,6 +139,7 @@ def snapshot(case: str, monkeypatch, caplog) -> dict:
         body = {"not": "a result"}
         # force the body reader to refuse
         monkeypatch.setattr(routes, "_read_result_body", _bad_body)
+        monkeypatch.setattr(projection, "_read_result_body", _bad_body)
     elif case == "bad_dispatch_id":
         body = result_body("", NONCE)
     elif case == "bad_nonce":
@@ -153,6 +155,7 @@ def snapshot(case: str, monkeypatch, caplog) -> dict:
     elif case == "mesh_unconfigured":
         source_present = False
         monkeypatch.setattr(routes, "_channel_source", lambda request: None)
+        monkeypatch.setattr(projection, "_channel_source", lambda request: None)
     elif case == "channel_rejected":
         secret = "wrong-channel-secret"
         proof_ok = False
@@ -194,7 +197,9 @@ def snapshot(case: str, monkeypatch, caplog) -> dict:
 
     if source_present and case not in ("mesh_unconfigured",):
         monkeypatch.setattr(routes, "_channel_source", lambda request: object())
+        monkeypatch.setattr(projection, "_channel_source", lambda request: object())
     monkeypatch.setattr(routes, "_channel_proof", lambda request, source: proof_ok)
+    monkeypatch.setattr(projection, "_channel_proof", lambda request, source: proof_ok)
 
     caplog.set_level(__import__("logging").INFO, logger=LOG_NAME)
     caplog.clear()
