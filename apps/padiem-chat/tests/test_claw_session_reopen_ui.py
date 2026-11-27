@@ -212,7 +212,8 @@ def test_chat_conversation_path_is_unchanged() -> None:
     app = _app_source()
     stream = claw_lane_source.streaming_source()
     assert stream.count("deps.conversationState.setConversationId(data.conversation_id);") == 2
-    assert app.count("conversationState.setConversationId(retryContext.conversationId);") == 1
+    conv = (Path(__file__).resolve().parents[1] / "static" / "chat-conversation-module.js").read_text(encoding="utf-8")
+    assert conv.count("deps.conversationState.setConversationId(retryContext.conversationId);") == 1
     # Chat still owns its streaming/completed echo; Claw gained a parallel
     # gated write without touching these.
     assert 'if (typeof data.conversation_id === "string") deps.conversationState.setConversationId(data.conversation_id);' in stream

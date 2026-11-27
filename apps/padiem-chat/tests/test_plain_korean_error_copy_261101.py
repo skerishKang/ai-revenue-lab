@@ -83,8 +83,10 @@ def test_the_retry_action_is_a_korean_word_not_retry():
 def test_upstream_timeout_reaches_the_screen_as_a_korean_sentence():
     # The code is classified, the classification chooses the copy, and the copy
     # key exists in the Korean table.
-    assert 'error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT' in APP_JS
-    assert 'lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? coreModule().uiT("timeout")' in APP_JS
+    from pathlib import Path
+    conv = (Path(__file__).resolve().parents[1] / "static" / "chat-conversation-module.js").read_text(encoding="utf-8")
+    assert 'error && error.code === "upstream_timeout" ? deps.MESSAGE_LIFECYCLE.TIMED_OUT' in conv
+    assert 'lifecycle === deps.MESSAGE_LIFECYCLE.TIMED_OUT ? deps.uiT("timeout")' in conv
     assert re.search(r'"timeout":\s*"[^"]*[가-힣][^"]*"', LOCALE)
 
 

@@ -39,7 +39,7 @@ def test_app_delegates_conversation_data_but_keeps_request_lifecycle() -> None:
     assert 'conversationState.outboundWithUser(prompt)' in source
     assert 'deps.conversationState.commitAssistant(outboundMessages, data.answer);' in stream
     assert 'deps.conversationState.commitAssistant(outboundMessages, answer);' in stream
-    assert 'conversationState.setConversationId(retryContext.conversationId);' in source
+    assert 'deps.conversationState.setConversationId(retryContext.conversationId);' in conv
 
 
 def test_conversation_state_preserves_all_model_turns_and_id_skill_contract() -> None:
