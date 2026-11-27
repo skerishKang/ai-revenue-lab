@@ -73,7 +73,9 @@ def test_profile_reuses_existing_login_settings_contract():
     assert has_any(("app", "auth"), 'deps.loginButton.addEventListener("click", async () => {')
     assert has_any(("app", "dialog"), 'profileSettingsAction.addEventListener("click"')
     assert has_any(("app", "dialog"), "if (deps.accountContainer?.hidden) return;")
-    assert has("app", "closeProfilePanel();")
+    # The existing settings entry closes the shared Auth profile panel through deps.
+    assert has("settings", "deps.closeProfilePanel();")
+    assert has("app", "settingsModule().wireSettingsDialog();")
     assert has("app", "closeProfilePanel(true)")
     assert css_value(".sidebar-account .account-profile-toggle", "min-height") == "44px"
     assert css_value(".sidebar-account .account-profile-settings", "min-height") == "44px"
