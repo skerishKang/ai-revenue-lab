@@ -333,7 +333,7 @@ async function main() {
   const deadlineLine = modal.querySelector(".pc-connect-deadline");
   check("the downloaded file shows the server's 10-minute window and the remaining time",
     deadlineLine && deadlineLine.hidden === false
-    && deadlineLine.allText().includes("10분 안에 실행")
+    && deadlineLine.allText().includes("10분 안에 여세요")
     && deadlineLine.allText().includes("남은 시간"),
     deadlineLine ? deadlineLine.allText() : "no deadline");
 
@@ -377,7 +377,7 @@ async function main() {
   check("an expired code replaces the wait with the recovery sentence and 다시 받기",
     expiredBox && expiredBox.hidden === false
     && expiredBox.allText().includes("설치 파일 시간이 지났어요")
-    && expiredBox.allText().includes("10분 안에 다시 실행")
+    && expiredBox.allText().includes("10분 안에 다시 열어")
     && redownload && redownload.hidden === false,
     expiredModal.allText());
   const downloadsBeforeRetry = expired.downloads.length;
@@ -411,7 +411,7 @@ async function main() {
   check("fake clock: after 3 minutes the wait still shows the remaining time and no expiry",
     waitingWaitLine && waitingWaitLine.hidden === false
     && waitingDeadlineLine && waitingDeadlineLine.hidden === false
-    && waitingDeadlineLine.allText().includes("10분 안에 실행")
+    && waitingDeadlineLine.allText().includes("10분 안에 여세요")
     && waitingDeadlineLine.allText().includes("남은 시간")
     && waitingExpired && waitingExpired.hidden === true,
     waitingModal.allText());
@@ -429,7 +429,7 @@ async function main() {
   check("fake clock: at 10 minutes the wait becomes the expiry sentence and 다시 받기",
     waitingExpiredBox && waitingExpiredBox.hidden === false
     && waitingExpiredBox.allText().includes("설치 파일 시간이 지났어요")
-    && waitingExpiredBox.allText().includes("10분 안에 다시 실행")
+    && waitingExpiredBox.allText().includes("10분 안에 다시 열어")
     && waitingRedownload && waitingRedownload.hidden === false,
     waitingModal.allText());
 

@@ -90,7 +90,7 @@ async function main() {
     const css = fs.readFileSync(require("node:path").join(dir, "pc-delegation-empty-guidance.css"), "utf8");
     for (const copy of [
       "연결된 PC가 없어요.",
-      "PC를 연결하면 Claw가 그 PC의 파일을 읽고 정리하거나, 프로그램을 대신 실행할 수 있어요.",
+      "PC를 연결하면 Claw가 그 PC의 파일을 읽고 정리하거나, 프로그램을 대신 열 수 있어요.",
       "PC 연결하기",
       "PC 연결 없이도 대화와 유틸은 그대로 쓸 수 있어요.",
     ]) {
