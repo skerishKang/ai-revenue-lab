@@ -90,7 +90,7 @@ def test_approved_memory_dynamic_controls_do_not_use_hardcoded_korean() -> None:
     start = memory_mod.index("function renderMemoryProposalReview")
     end = memory_mod.index("function proposalBody", start)
     review_source = memory_mod[start:end]
-    for phrase in ("메모리 저장 후보", "승인", "거절", "상세", "닫기"):
+    for phrase in ("메모리 저장 후보", "승인", "허락", "거절", "상세", "닫기"):
         assert f'"{phrase}"' not in review_source
 
     detail_start = memory_mod.index("function renderApprovedMemoryDetail")

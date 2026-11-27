@@ -142,7 +142,7 @@ async function settle() {
     const text = textOf({ textContent: "", children: lab.host.children });
     assert.match(text, /완료된 XLSX 작업 결과/);
     assert.match(text, new RegExp(NAME.replace(".", "\\.")));
-    assert.match(text, /별도의 읽기·쓰기 승인이 필요/);
+    assert.match(text, /별도의 읽기·쓰기 허락이 필요/);
     assert.equal(lab.client.getState().status, "resolved");
     assert.equal(lab.client.getState().hidden, false);
     assert.equal(
@@ -370,7 +370,7 @@ async function settle() {
     const action = host.children.find((node) => node.tag === "button");
     assert.ok(action, "Verified context must offer the existing approval panel");
     assert.match(action.textContent, /이어서 작업/);
-    assert.match(action.textContent, /새 읽기 승인 필요/);
+    assert.match(action.textContent, /새 읽기 허락 필요/);
     action.handlers.click();
     assert.equal(panel.open, true);
     assert.equal(panel.scrolled, true);

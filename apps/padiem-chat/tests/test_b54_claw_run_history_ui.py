@@ -412,14 +412,14 @@ const sandbox = {
     "claw-runs-error": "실행 기록을 불러오지 못했습니다. 다시 시도해 주세요.",
     "claw-runs-empty": "최근 실행 기록이 없습니다.",
     "claw-runs-status-completed": "완료",
-    "claw-runs-status-waiting_approval": "승인 필요",
-    "claw-approval-actions-aria": "승인 결정",
-    "claw-approval-required": "이 실행은 사용자의 승인을 기다리고 있습니다.",
-    "claw-approval-approve": "승인",
+    "claw-runs-status-waiting_approval": "허락 필요",
+    "claw-approval-actions-aria": "허락 여부 선택",
+    "claw-approval-required": "이 작업은 사용자의 허락을 기다리고 있습니다.",
+    "claw-approval-approve": "허락",
     "claw-approval-deny": "거절",
-    "claw-approval-processing": "승인 결정을 처리하고 있습니다…",
-    "claw-approval-error": "승인 결정을 처리하지 못했습니다. 자동으로 다시 시도하지 않았습니다.",
-    "claw-approval-not-available": "이 승인 요청은 더 이상 사용할 수 없습니다.",
+    "claw-approval-processing": "허락 여부를 처리하고 있습니다…",
+    "claw-approval-error": "허락 여부를 처리하지 못했습니다. 자동으로 다시 시도하지 않았습니다.",
+    "claw-approval-not-available": "이 허락 요청은 더 이상 사용할 수 없습니다.",
     "claw-error-auth-needed": "다시 로그인해 주세요.",
   }[k] || k) },
   PadiemChatLifecycle: { states: { IDLE: "idle", STREAMING: "streaming", COMPLETED: "completed", FAILED: "failed", CANCELLED: "cancelled", TIMED_OUT: "timed_out" }, set() {} },
@@ -556,9 +556,9 @@ function collectText(root) {
   ] };
   byId.clawRunHistoryRefresh.click();
   await tick(50);
-  const approve = findButton(byId.clawRunHistoryList, "승인");
+  const approve = findButton(byId.clawRunHistoryList, "허락");
   const deny = findButton(byId.clawRunHistoryList, "거절");
-  checks.RUN_HISTORY_WAITING_APPROVAL_UI = !!approve && !!deny && collectText(byId.clawRunHistoryList).indexOf("승인 필요") >= 0;
+  checks.RUN_HISTORY_WAITING_APPROVAL_UI = !!approve && !!deny && collectText(byId.clawRunHistoryList).indexOf("허락 필요") >= 0;
   if (!checks.RUN_HISTORY_WAITING_APPROVAL_UI) fail("RUN_HISTORY_WAITING_APPROVAL_UI");
 
   // 13) Explicit click sends exactly run_id + decision and then refreshes canonical history.
@@ -574,7 +574,7 @@ function collectText(root) {
     && approvalBody.decision === "approve";
   if (!checks.APPROVAL_DECISION_BODY_BOUNDED) fail("APPROVAL_DECISION_BODY_BOUNDED");
   checks.APPROVAL_TERMINAL_REFRESH =
-    findButton(byId.clawRunHistoryList, "승인") === null
+    findButton(byId.clawRunHistoryList, "허락") === null
     && collectText(byId.clawRunHistoryList).indexOf("승인 후 완료") >= 0;
   if (!checks.APPROVAL_TERMINAL_REFRESH) fail("APPROVAL_TERMINAL_REFRESH");
 

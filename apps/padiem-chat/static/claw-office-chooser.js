@@ -48,7 +48,7 @@
           ? "PC 파일 선택 기능이 아직 연결되지 않았습니다."
           : code === "unauthorized"
             ? "로그인 후 다시 시도해 주세요."
-            : "승인된 파일 요청을 확인하지 못했습니다.",
+            : "허락된 파일 요청을 확인하지 못했습니다.",
         code
       );
     }
@@ -111,7 +111,7 @@
         return;
       }
       setBusy(true);
-      setMessage("승인된 견적서 후보를 조회하고 있습니다.");
+      setMessage("허락된 견적서 후보를 조회하고 있습니다.");
       try {
         const body = await readJson("/api/claw/office/candidates?run_id=" + encodeURIComponent(runId));
         const candidates = parseCandidates(body, runId);
@@ -129,8 +129,8 @@
           list.appendChild(item);
         }
         setMessage(candidates.length
-          ? (candidates.length + "개 발견. 읽을 파일을 선택하면 별도의 승인을 요청합니다.")
-          : "승인된 폴더에 지원하는 견적서가 없습니다.");
+          ? (candidates.length + "개 발견. 읽을 파일을 선택하면 별도의 허락을 요청합니다.")
+          : "허락된 폴더에 지원하는 견적서가 없습니다.");
       } catch (error) {
         reportError(error);
       } finally {
@@ -144,7 +144,7 @@
           || currentRun() !== active.runId) return;
       setBusy(true);
       group.hidden = true;
-      setMessage("선택한 파일의 P01 승인 요청을 확인하고 있습니다.");
+      setMessage("선택한 파일의 P01 허락 요청을 확인하고 있습니다.");
       try {
         const body = await readJson("/api/claw/office/candidates/select", {
           method: "POST",
@@ -154,15 +154,15 @@
         if (body.run_id !== active.runId || body.status !== "awaiting_approval"
             || body.approval_required !== true || body.processing_started !== false
             || body.file_read_authorized !== false || typeof body.engine_run_id !== "string"
-            || !RUN.test(body.engine_run_id)) throw safeError("승인 대기 상태를 확인하지 못했습니다.");
+            || !RUN.test(body.engine_run_id)) throw safeError("허락 대기 상태를 확인하지 못했습니다.");
         // B62 decision endpoint is keyed to the owner-scoped Hark run, NOT
         // the Engine-internal P01 run. Its durable handoff resolves P01 run
         // and canonical continuation server-side. Do not send Engine IDs.
         pending = { runId: active.runId, candidateRef };
         const selected = active.candidates.find((c) => c.candidate_ref === candidateRef);
-        label.textContent = "선택 파일: " + selected.filename + " · 파일 읽기를 승인하시겠습니까?";
+        label.textContent = "선택 파일: " + selected.filename + " · 파일 읽기를 허락하시겠습니까?";
         group.hidden = false;
-        setMessage("승인 전에는 파일을 읽거나 실행하지 않습니다.");
+        setMessage("허락하기 전에는 파일을 읽거나 작업을 시작하지 않습니다.");
       } catch (error) {
         reportError(error);
       } finally {
@@ -174,7 +174,7 @@
       if (busy || !pending || currentRun() !== pending.runId) return;
       setBusy(true);
       const submitted = pending;
-      setMessage("P01 Engine 승인 결과를 확인하고 있습니다.");
+      setMessage("P01 Engine 허락 여부를 확인하고 있습니다.");
       try {
         const body = await readJson("/api/claw/approvals/decision", {
           method: "POST",
@@ -182,7 +182,7 @@
           body: JSON.stringify({ run_id: submitted.runId, decision }),
         });
         if (body.result?.run_id !== submitted.runId) {
-          throw safeError("다른 실행의 승인 결과는 적용할 수 없습니다.");
+          throw safeError("다른 실행의 허락 여부는 적용할 수 없습니다.");
         }
         pending = null;
         group.hidden = true;
@@ -190,8 +190,8 @@
         if (pdfPreview) pdfPreview.hidden = true;
         if (xlsxDownload) xlsxDownload.hidden = true;
         setMessage(decision === "deny"
-          ? "승인이 거절되었습니다. 파일을 읽지 않았습니다."
-          : "Engine 승인 처리가 완료됐습니다. 실제 파일 처리 결과는 실행 이력에서 확인해 주세요.");
+          ? "요청이 거절되었습니다. 파일을 읽지 않았습니다."
+          : "Engine 허락 처리가 완료됐습니다. 실제 파일 처리 결과는 작업 기록에서 확인해 주세요.");
       } catch (error) {
         reportError(error);
       } finally {
@@ -234,7 +234,7 @@
       if (busy || !active || currentRun() !== active.runId) return;
       setBusy(true);
       if (pdfPreview) pdfPreview.hidden = true;
-      setMessage("승인된 PC 작업의 완료 여부를 확인합니다.");
+      setMessage("허락된 PC 작업의 완료 여부를 확인합니다.");
       try {
         const body = await readJson("/api/claw/runs/" + encodeURIComponent(active.runId) + "/local-result", {
           method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },

@@ -865,7 +865,7 @@
             </div>
             <div id="mcpGatewayApprovalsBlock" hidden>
               <h4 data-locale-key="mcp-settings-approvals">확인이 필요한 작업</h4>
-              <p data-locale-key="mcp-settings-approval-help">아래 PC와 파일 경로, 저장할 내용 등 작업 전체를 확인해 주세요. 승인은 표시된 작업 한 번에만 적용됩니다.</p>
+              <p data-locale-key="mcp-settings-approval-help">아래 PC와 파일 경로, 저장할 내용 등 작업 전체를 확인해 주세요. 허락은 표시된 작업 한 번에만 적용됩니다.</p>
               <ul class="mcp-settings-list" id="mcpGatewayApprovals" data-locale-aria-label="mcp-settings-approvals" aria-label="확인이 필요한 작업"></ul>
             </div>
             <div id="mcpGatewayManagedBlock" hidden>
@@ -997,12 +997,12 @@
             <p class="claw-workspace-kicker">Padiem Claw · Web <span class="claw-agent-badge" data-locale-key="claw-agent-badge">AI 에이전트</span></p>
             <h2 id="clawTaskHubTitle" data-locale-key="claw-focus-heading">무슨 일을 도와드릴까요?</h2>
             <p class="claw-agent-line" data-locale-key="claw-agent-line">AI와 대화하고, 파일 작성·수정 등 실제 작업까지 맡길 수 있습니다.</p>
-            <p data-locale-key="claw-focus-description">아래 예시를 선택하거나 입력창에 직접 요청하세요. 파일 읽기·수정은 별도 승인이 필요합니다.</p>
+            <p data-locale-key="claw-focus-description">아래 예시를 선택하거나 입력창에 직접 요청하세요. 파일 읽기·수정은 별도 허락이 필요합니다.</p>
           </div>
           <div class="claw-task-hub-grid">
             <button type="button" class="claw-task-option claw-task-option-primary" id="clawExcelStartButton" aria-controls="clawWebOfficeDetails">
               <strong>Excel 파일 작업 <span class="claw-task-tag">WEB-FIRST</span></strong>
-              <span>XLSX 업로드와 파일 선택부터 시작합니다. 파일 읽기·수정에는 별도 승인이 필요합니다.</span>
+              <span>XLSX 업로드와 파일 선택부터 시작합니다. 파일 읽기·수정에는 별도 허락이 필요합니다.</span>
               <small>파일 선택 시작 →</small>
             </button>
             <button type="button" class="claw-task-option" id="clawCompareStartButton" aria-controls="clawQuoteCompare" aria-expanded="false">
@@ -1022,11 +1022,11 @@
             <summary id="clawWebOfficeTitle">웹에서 Excel 원본 보관 · 컴퓨터 연결 불필요</summary>
             <details class="settings-guide" id="settingsExcelGuide">
               <summary data-locale-key="settings-help-excel">Excel 원본 보관 방법</summary>
-              <p data-locale-key="settings-help-excel-description">Claw의 Excel 파일 작업에서 파일을 선택하고 원본 보관을 누르세요. 원본은 24시간 보관되며, 읽기·수정은 별도 승인이 필요합니다.</p>
+              <p data-locale-key="settings-help-excel-description">Claw의 Excel 파일 작업에서 파일을 선택하고 원본 보관을 누르세요. 원본은 24시간 보관되며, 읽기·수정은 별도 허락이 필요합니다.</p>
               <ol>
                 <li data-locale-key="settings-help-excel-step1">왼쪽 메뉴에서 Claw를 선택한 후 Excel 파일 작업을 엽니다.</li>
                 <li data-locale-key="settings-help-excel-step2">XLSX 파일을 선택하고 원본 보관을 누릅니다(최대 1 MiB).</li>
-                <li data-locale-key="settings-help-excel-step3">파일을 읽거나 수정하려면 별도의 승인을 진행합니다.</li>
+                <li data-locale-key="settings-help-excel-step3">파일을 읽거나 수정하려면 따로 허락해야 합니다.</li>
               </ol>
             </details>
             <p>웹에서 XLSX를 직접 선택해 원본 그대로 보관합니다(최대 1 MiB, 24시간). 이 단계는 파일을 수정하거나 PDF로 변환하지 않습니다. 실제 처리는 별도의 P01 승인이 필요합니다.</p>
@@ -1069,18 +1069,18 @@
           <p class="claw-local-note" id="clawLocalOpenNote" data-locale-key="claw-local-open-note">Padiem 데스크톱을 열면 연결이 이어집니다. 이 대화는 그대로 유지됩니다.</p>
           <p class="claw-local-identity" id="clawLocalIdentity" data-locale-key="claw-local-identity-note">이 대화가 그대로 이어집니다.</p>
           <div class="claw-local-block" id="clawLocalApproval" hidden>
-            <p class="claw-local-block-title" id="clawLocalApprovalTitle" data-locale-key="claw-local-approval-title">승인이 필요합니다</p>
-            <p class="claw-local-block-body" id="clawLocalApprovalBody" data-locale-key="claw-local-approval-pending">이 작업을 진행하려면 먼저 승인이 필요합니다.</p>
+            <p class="claw-local-block-title" id="clawLocalApprovalTitle" data-locale-key="claw-local-approval-title">허락이 필요합니다</p>
+            <p class="claw-local-block-body" id="clawLocalApprovalBody" data-locale-key="claw-local-approval-pending">이 작업을 진행하려면 먼저 허락이 필요합니다.</p>
           </div>
           <section class="claw-local-block" id="clawOfficeChooser" aria-labelledby="clawOfficeChooserTitle">
             <p class="claw-local-block-title" id="clawOfficeChooserTitle">로컬 견적서 찾기</p>
-            <p class="claw-local-block-body">현재 작업의 승인된 폴더에서 Excel 견적서 후보만 조회합니다. 파일을 읽거나 업로드하려면 별도의 승인이 필요합니다.</p>
+            <p class="claw-local-block-body">현재 작업의 허락된 폴더에서 Excel 견적서 후보만 조회합니다. 파일을 읽거나 업로드하려면 별도의 허락이 필요합니다.</p>
             <button type="button" id="clawOfficeFind" class="claw-local-cta">견적서 후보 조회</button>
-            <p id="clawOfficeNotice" role="status" aria-live="polite">컴퓨터 연결과 파일 목록 조회 승인이 필요합니다.</p>
+            <p id="clawOfficeNotice" role="status" aria-live="polite">컴퓨터 연결과 파일 목록 조회 허락이 필요합니다.</p>
             <ul id="clawOfficeCandidates" class="claw-office-list" aria-label="견적서 후보 목록"></ul>
             <div id="clawOfficeDecision" hidden>
               <p id="clawOfficeDecisionLabel" role="status"></p>
-              <button type="button" id="clawOfficeApprove" class="claw-local-cta">파일 읽기 승인</button>
+              <button type="button" id="clawOfficeApprove" class="claw-local-cta">파일 읽기 허락</button>
               <button type="button" id="clawOfficeDeny">거절</button>
             </div>
             <div id="clawOfficeResult" hidden>
@@ -1118,7 +1118,7 @@
             </div>
             <div class="claw-result-actions">
               <button type="button" id="clawResultDocx" class="claw-result-action" disabled aria-disabled="true"><span aria-hidden="true">↓</span><span data-locale-key="claw-result-docx">DOCX 다운로드</span></button>
-              <div class="claw-approval-actions" id="clawApprovalActions" role="group" data-locale-aria-label="claw-approval-actions-aria" aria-label="승인 결정" hidden></div>
+              <div class="claw-approval-actions" id="clawApprovalActions" role="group" data-locale-aria-label="claw-approval-actions-aria" aria-label="허락 여부 선택" hidden></div>
             </div>
             <p class="claw-result-note" data-locale-key="claw-result-note">미리보기는 저장되지 않습니다. 실제 실행 결과에는 문서가 포함될 수 있습니다.</p>
             <p class="claw-result-success-note" id="clawResultSuccessNote" hidden data-locale-key="claw-artifact-ready">문서가 준비되었습니다. 아래에서 다운로드할 수 있습니다.</p>
@@ -1126,20 +1126,20 @@
         </section>
         <section class="claw-memory-review" id="clawMemoryReview" data-locale-aria-label="claw-memory-review-aria" aria-label="메모리 저장 검토" hidden></section>
         <details class="claw-disclosure" id="clawApprovedDisclosure" hidden>
-          <summary class="claw-disclosure-summary"><span class="claw-disclosure-caret" aria-hidden="true">▸</span><span class="claw-disclosure-label" data-locale-key="claw-approved-title">승인된 메모리</span></summary>
+          <summary class="claw-disclosure-summary"><span class="claw-disclosure-caret" aria-hidden="true">▸</span><span class="claw-disclosure-label" data-locale-key="claw-approved-title">허락된 메모리</span></summary>
         <section class="claw-approved-memory" id="clawApprovedMemory" aria-labelledby="clawApprovedMemoryTitle" hidden>
           <header class="claw-approved-memory-header">
             <div class="claw-workspace-identity">
               <p class="claw-workspace-kicker" data-locale-key="claw-approved-kicker">Padiem Claw</p>
-              <h2 class="claw-workspace-title" id="clawApprovedMemoryTitle" data-locale-key="claw-approved-title">승인된 메모리</h2>
+              <h2 class="claw-workspace-title" id="clawApprovedMemoryTitle" data-locale-key="claw-approved-title">허락된 메모리</h2>
             </div>
             <button type="button" class="claw-refresh-button" id="clawApprovedRefresh" data-locale-aria-label="claw-approved-refresh-aria" aria-label="목록 새로고침">↻</button>
           </header>
-          <p class="claw-workspace-tagline" data-locale-key="claw-approved-tagline">명시적으로 승인한 메모리만 표시됩니다. 거절한 제안은 저장되지 않습니다.</p>
+          <p class="claw-workspace-tagline" data-locale-key="claw-approved-tagline">직접 저장을 허락한 메모리만 표시됩니다. 거절한 제안은 저장되지 않습니다.</p>
           <div class="claw-approved-loading" id="clawApprovedLoading" data-locale-key="claw-approved-loading" role="status" aria-live="polite" hidden>불러오는 중…</div>
           <p class="claw-approved-error" id="clawApprovedError" role="alert" hidden></p>
           <div class="claw-approved-list" id="clawApprovedList" hidden></div>
-          <p class="claw-approved-empty" id="clawApprovedEmpty" data-locale-key="claw-approved-empty" hidden>승인된 메모리가 없습니다.</p>
+          <p class="claw-approved-empty" id="clawApprovedEmpty" data-locale-key="claw-approved-empty" hidden>허락된 메모리가 없습니다.</p>
         </section>
         </details>
         <details class="claw-disclosure" id="clawRunHistoryDisclosure" hidden>
