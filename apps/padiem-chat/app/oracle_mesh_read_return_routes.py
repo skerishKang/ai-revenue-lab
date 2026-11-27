@@ -564,6 +564,9 @@ async def _record_mesh_presence(
                 )
             else:
                 if completed is not None:
+                    from .auth_validation_cache import drop_cached_owner_scope_of
+
+                    drop_cached_owner_scope_of(request, completed.get("user_id"))
                     from .claw_pc_device_selection_store import sync_superseded_device_selections
 
                     selection_store = getattr(
