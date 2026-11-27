@@ -97,18 +97,20 @@ html[data-theme="cinematic"] .sidebar .section-heading-row h2 {
  * 칠한다(여기 있던 선언은 그 규칙에 늘 졌거나 폰 폭에서 interaction-polish.css에
  * 졌다).
  *
- * .starter의 !important는 남긴다: 폰 폭 Claw 일반 화면에서 connector-pages.css가
- * 카드를 지우는 규칙(배경 투명·테두리 0·그림자 없음)을 이 값이 이기고 있어, 토큰으로
- * 옮기면 토큰 하나가 네 테마에서는 "카드 없음", 시네마틱에서는 "카드"를 뜻하게 된다. */
+ * .starter의 !important는 #7811 C3 후속 결정(261127)으로 뗐다: 폰 폭 Claw 일반
+ * 화면에서 connector-pages.css가 카드를 지우는 규칙(배경 투명·테두리 0·그림자
+ * 없음)이 특이도로 이기게 하다 — 다른 네 테마에서 이미 그렇다. 넓은 폭에서는
+ * 이 규칙이 claw-focus-layout.css의 `.claw-home-card > .claw-workspace-starter`
+ * 지움 규칙보다 특이도가 높아 그대로 칠한다. */
 
 html[data-theme="cinematic"] .starter {
   background:
     linear-gradient(145deg, rgba(224,242,255,.10), rgba(255,255,255,.024)),
-    rgba(7,11,18,.62) !important;
-  border-color: rgba(136,201,255,.24) !important;
+    rgba(7,11,18,.62);
+  border-color: rgba(136,201,255,.24);
   box-shadow:
     0 0 26px rgba(96,178,242,.10),
-    inset 0 1px 0 rgba(255,255,255,.08) !important;
+    inset 0 1px 0 rgba(255,255,255,.08);
 }
 
 html[data-theme="cinematic"] .composer {

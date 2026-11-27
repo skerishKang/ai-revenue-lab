@@ -178,11 +178,13 @@ def test_the_icon_border_stays_in_the_theme_sheet_while_the_even_card_selector_o
 def test_the_cinematic_card_is_painted_by_the_readability_sheet_and_the_base_rule():
     # No cinematic starter rule is left in the theme sheet.
     assert [selector for selector in _theme_sheet_starter() if "cinematic" in selector] == []
-    # Surface, edge and glow: flagged in the readability sheet, so neither the
-    # removed resting values nor the removed hover values ever outranked them.
+    # Surface, edge and glow: the readability rule keeps the values but carries
+    # no flag since the 261127 decision (the phone-width Claw strip rule in
+    # connector-pages.css wins on specificity now, like in the other themes).
     box = _declared("padiem-bright-readability.css", 'html[data-theme="cinematic"] .starter')
     for prop in ("background", "border-color", "box-shadow"):
-        assert box[prop].endswith("!important"), prop
+        assert prop in box, prop
+        assert "!important" not in box[prop], prop
     # Text colour and blur: the removed values repeated the base rule's own.
     base = _declared("padiem-surfaces.css", ".starter")
     assert base["color"] == "var(--surfaces-starter-text)"
