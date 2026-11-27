@@ -124,7 +124,7 @@ async def _run_view(
         raise AssertionError("image byte size must be visible")
     if attachment_kind != "IMG":
         raise AssertionError(f"image chip must show its IMG type marker: {attachment_kind!r}")
-    if "한 번만 전송" not in note:
+    if "한 번만 보내" not in note:
         raise AssertionError(f"image one-request note is unclear: {note!r}")
 
     await _assert_no_horizontal_overflow(page, f"{name}-attachment")
@@ -148,7 +148,7 @@ async def _run_view(
         raise AssertionError(f"plain preview image-analysis truth boundary missing: {answer_text!r}")
     if "모의" in answer_text or "모델" in answer_text:
         raise AssertionError(f"technical mock/runtime jargon leaked into visible image answer: {answer_text!r}")
-    if "모의 응답" not in runtime_label or "실제 모델 호출 없음" not in runtime_label:
+    if "모의 답" not in runtime_label or "실제 모델 호출 없음" not in runtime_label:
         raise AssertionError(f"mock truth label missing: {runtime_label!r}")
 
     user_message = page.locator("#messageList .user-message").last

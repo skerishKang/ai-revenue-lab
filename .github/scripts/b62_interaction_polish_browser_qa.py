@@ -193,9 +193,9 @@ async def _run(page: Page, *, label: str) -> dict[str, Any]:
     cancelled = page.locator("#messageList .assistant-message:last-child")
     if await cancelled.get_attribute("data-terminal-actions-safe") != "false":
         raise AssertionError(f"cancelled answer incorrectly marked safe at {label}")
-    if "생성 취소됨" not in await cancelled.inner_text():
+    if "만들기 취소됨" not in await cancelled.inner_text():
         raise AssertionError(f"cancelled copy missing at {label}")
-    await cancelled.locator(".retry-button", has_text="다시 생성").wait_for(state="visible")
+    await cancelled.locator(".retry-button", has_text="다시 만들기").wait_for(state="visible")
     cancelled_export_state = await page.evaluate(
         """() => {
           const button = document.getElementById('conversationExportButton');
