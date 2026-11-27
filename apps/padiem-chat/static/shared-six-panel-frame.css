@@ -89,20 +89,6 @@ html[data-theme="padiem-glass"] body .app-shell {
     overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
   }
-/* #8812 D1·D4: the shared lane reserves the first-screen artwork column
- * (clamp(360px, 32vw, 560px)) for every view in the list above, but the PDF→MD
- * tool screen has no artwork — at 1440 the reserved lane left the util panel
- * ~620px wide and crushed its two-column workbench (input plate + right guide
- * card) that every other theme keeps at the 960px cap. This exception is
- * scoped to the pdfmd tool screen only: every other view keeps the shared
- * lane, and the artwork reservation stays for Chat/Claw first screens. */
-@media (min-width: 921px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="util"]
-    .util-view:has(.util-tool-screen[data-util-tool="pdfmd"]) {
-    width: min(960px,
-      calc(100vw - var(--workspace-rail, 252px) - var(--padiem-six-panel-left) - 48px));
-  }
-}
 /* #5661: past 1920px the freed lane width must not pile up on one side. The
  * panel keeps its cap and is centred in the space between the workspace rail
  * and the reserved artwork column, so the breathing room splits evenly instead
