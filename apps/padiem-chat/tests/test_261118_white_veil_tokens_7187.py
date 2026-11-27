@@ -144,9 +144,9 @@ CHANGED = {
         ("background", "rgba(255, 255, 255, .05)", "var(--surface-veil-faint)"),
         ("background", "rgba(255, 255, 255, .035)", "var(--surface-veil-ghost)"),
     ],
-    "padiem-first-use.css": [
-        ("border-color", "rgba(255, 255, 255, .22)", "var(--line-veil-faint)"),
-    ],
+    # #7811 C3(bright-readability): home 입력창 테두리는 --composer-home-edge
+    # (:root 값 var(--line-veil-faint))를 읽어 이 계약에서 빠졌다.
+    # 값은 test_261118_first_use_composer_shadow_7811.py가 고정한다.
     "padiem-foundation.css": [
         ("background", "rgba(255, 255, 255, .05)", "var(--surface-veil-faint)"),
     ],
@@ -364,8 +364,9 @@ def test_changed_sheets_are_only_consumed_by_pages_that_load_tokens() -> None:
 def test_this_round_replaced_exactly_44_declarations() -> None:
     """1차 44선언은 그대로이고, 3차 10·4차 11·5차 10·7차 11·8차 표면·테두리 4선언을 더했다.
     (7차 1선언은 #8001에서 --card-bg 한 판 토큰으로 바뀌며 계약에서 빠졌다.
-    4차 1선언은 #7811 C3에서 칠하지 못하던 줄로 지워지며 계약에서 빠졌다.)"""
-    assert sum(len(items) for items in CHANGED.values()) == 88
+    4차 1선언은 #7811 C3에서 칠하지 못하던 줄로 지워지며 계약에서 빠졌다.
+    first-use 1선언은 #7811 C3(bright-readability)에서 --composer-home-edge를 읽게 되며 빠졌다.)"""
+    assert sum(len(items) for items in CHANGED.values()) == 87
     ghost = sum(
         1
         for items in CHANGED.values()

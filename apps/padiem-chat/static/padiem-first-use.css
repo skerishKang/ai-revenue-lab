@@ -69,7 +69,7 @@
  * input. This rule stays scoped to the home state so the other themes keep
  * their own first-use treatment. */
 .app-shell[data-state="home"] .composer {
-  border-color: var(--line-veil-faint);
+  border-color: var(--composer-home-edge);
   box-shadow: var(--composer-home-shadow);
 }
 

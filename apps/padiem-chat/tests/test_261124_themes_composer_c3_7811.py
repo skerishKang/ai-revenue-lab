@@ -80,10 +80,14 @@ THEME_VALUES = {
     "--rich-composer-border": {
         "light": "var(--composer-border)",
         "padiem-home": "rgba(26,34,48,.10)",
+        # #7811 C3 (bright-readability): the readability sheet's cinematic
+        # composer edge used to beat this rule with !important.
+        "cinematic": "var(--composer-film-edge)",
     },
     "--rich-composer-shadow": {
         "light": "var(--composer-shadow)",
         "padiem-home": HOME_COMPOSER_SHADOW,
+        "cinematic": "var(--composer-film-glow)",
     },
     "--rich-composer-note": {"light": "var(--muted)", "padiem-home": "var(--muted)"},
     "--surfaces-composer-text": {
@@ -235,11 +239,15 @@ def test_the_dark_composer_box_and_text_are_painted_by_the_dark_contrast_sheet()
 
 def test_the_cinematic_composer_box_is_painted_by_the_readability_sheet():
     box = _declared("padiem-bright-readability.css", 'html[data-theme="cinematic"] .composer')
-    # Same gradient the theme sheet used to repeat; border and shadow outrank
-    # any theme-sheet value through their flag.
-    assert box["background"] == "linear-gradient(145deg, rgba(18,30,46,.8), rgba(8,11,17,.76))"
-    assert box["border-color"].endswith("!important")
-    assert box["box-shadow"].endswith("!important")
+    # Same gradient the theme sheet used to repeat. Border and shadow read the
+    # cinematic film tokens (#7811 C3, bright-readability pass); the home and
+    # chat state rules that used to lose to an !important read the same tokens
+    # through --composer-home-edge/-shadow and --rich-composer-border/-shadow.
+    assert box == {
+        "background": "linear-gradient(145deg, rgba(18,30,46,.8), rgba(8,11,17,.76))",
+        "border-color": "var(--composer-film-edge)",
+        "box-shadow": "var(--composer-film-glow)",
+    }
 
 
 def test_the_note_colour_outside_the_chat_state_is_painted_by_a_later_sheet():
