@@ -511,8 +511,13 @@ html body .app-shell .sidebar .history-row.history-skeleton {
   .history-row.history-skeleton { animation: none; }
 }
 
+/* #8812 D4: the failed row stacks — the message gets the full width to wrap,
+   and [다시 시도] sits on its own line below it, so the two can never paint
+   over each other no matter how narrow the sidebar is. */
 .history-row.history-load-failed {
-  gap: 8px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
   min-height: 44px;
   padding: 6px 10px;
   font-size: 13px;
@@ -522,10 +527,12 @@ html body .app-shell .sidebar .history-row.history-skeleton {
 .history-row.history-load-failed .history-load-failed-text {
   flex: 1 1 auto;
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .history-row.history-load-failed .history-retry {
   flex: 0 0 auto;
+  align-self: flex-start;
   min-height: 44px;
   padding: 6px 14px;
   border: 1px solid var(--input-border-strong);

@@ -456,6 +456,6 @@ async def test_rerun_of_finished_item_does_not_take_again():
 
 def test_static_shell_announces_quota_and_remaining():
     assert sheet_has("util-pdfmd.js", "conversion_quota_exhausted")
-    assert sheet_has("util-pdfmd.js", "오늘 변환 한도를 다 썼어요")
+    assert sheet_has("util-pdfmd.js", "오늘 바꿀 수 있는 양을 다 썼어요")
     assert sheet_has("util-pdfmd.js", "conversion.remaining")
     assert sheet_has("util-pdfmd.js", "pdfmd-quota") and sheet_has("util-menu.css", "pdfmd-quota")

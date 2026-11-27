@@ -146,6 +146,16 @@ class RealPowerShellTriggerTests(unittest.TestCase):
         self.assertEqual(out.returncode, 0, out.stderr)
         self.assertEqual(out.stdout.strip(), "PT%dM" % INTERVAL_MINUTES)
 
+    def test_watcher_settings_time_limit_is_a_timespan(self):
+        line = next(line for line in watcher_script().splitlines()
+                    if line.startswith("$settings = New-ScheduledTaskSettingsSet"))
+        command = ("$ErrorActionPreference='Stop'; " + line
+                   + "; $settings.ExecutionTimeLimit")
+        out = subprocess.run([_SHELL, "-NoProfile", "-NonInteractive", "-Command", command],
+                             capture_output=True, text=True, timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(out.stdout.strip(), "PT0S")
+
     def test_definition_register_trigger_interval_is_a_timespan(self):
         line = next(line for line in register_script(task_definition(
             launch=build_launch(python_executable=r"C:\Python311\python.exe"))).splitlines()

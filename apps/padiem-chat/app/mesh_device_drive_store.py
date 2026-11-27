@@ -136,10 +136,19 @@ class D1MeshDeviceDriveStore:
 
     async def record_updater_registration(self, *, device_id: str, sha256: str, attempt_id: str,
                                           dispatch_id: str | None = None, reason: str | None = None) -> None:
+        if reason is not None:
+            # #8359 배포 후 관찰: 디스패치를 받은 시도가 terminal이 되어도 reason을
+            # 못 썼다. reason은 dispatch_id가 있어도 한 번 쓸 수 있어야 다음 원본이
+            # 이 행을 이어받는다. 이미 끝난 행은 덮어쓰지 않는다.
+            await self.db.prepare(
+                "UPDATE pc_helper_registration SET reason=? WHERE device_id=? "
+                "AND source_sha256=? AND attempt_id=? AND reason IS NULL"
+            ).bind(reason, _device(device_id), sha256, attempt_id).run()
+            return
         await self.db.prepare(
-            "UPDATE pc_helper_registration SET dispatch_id=?, reason=? WHERE device_id=? "
+            "UPDATE pc_helper_registration SET dispatch_id=? WHERE device_id=? "
             "AND source_sha256=? AND attempt_id=? AND dispatch_id IS NULL AND reason IS NULL"
-        ).bind(dispatch_id, reason, _device(device_id), sha256, attempt_id).run()
+        ).bind(dispatch_id, _device(device_id), sha256, attempt_id).run()
 
     async def load_rollout_outcomes(self, *, sha256: str) -> dict[str, str]:
         result = await self.db.prepare(

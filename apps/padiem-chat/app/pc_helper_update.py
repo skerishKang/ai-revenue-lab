@@ -84,7 +84,16 @@ function Move-Atomic($source,$target,$expectedHash) {
         if ($digest -ne $expectedHash -or $digest -ne (Get-UpdateDigest $source)) {
             throw 'staged_digest_mismatch'
         }
-        Move-Item -LiteralPath $staged -Destination $target -Force
+        # #8359 배포 후 관찰: 대상이 실행 중이거나 다른 프로세스에 잠기면
+        # Move-Item이 IOException으로 실패한다(update.new가 남고 update.ps1은
+        # 옛 날짜). 이름 변경이 거절되면 같은 볼륨에서 내용만 덮어쓴 뒤 아래에서
+        # 해시와 ACL을 다시 확인한다.
+        try {
+            Move-Item -LiteralPath $staged -Destination $target -Force
+        } catch {
+            Copy-Item -LiteralPath $staged -Destination $target -Force
+        }
+        if ((Get-UpdateDigest $target) -ne $expectedHash) { throw 'replacement_digest_mismatch' }
         if (-not (Test-UpdateAcl $target $acl)) { throw 'replacement_acl_changed' }
     } finally {
         if (Test-Path -LiteralPath $staged) { Remove-Item -LiteralPath $staged -Force }

@@ -98,7 +98,14 @@ class Queue:
 
     async def record_updater_registration(self, *, device_id, sha256, attempt_id, **result):
         row = self.registration.get((device_id, sha256))
-        if row and row["attempt_id"] == attempt_id and not row["dispatch_id"] and not row["reason"]:
+        if not row or row["attempt_id"] != attempt_id:
+            return
+        if result.get("reason") is not None:
+            # A terminal verdict may follow a dispatch; reason is writable once.
+            if row["reason"] is None:
+                row["reason"] = result["reason"]
+            return
+        if not row["dispatch_id"] and not row["reason"]:
             row.update(result)
 
 

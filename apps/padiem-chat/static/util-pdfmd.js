@@ -21,24 +21,24 @@
     convert_store_unavailable: "작업 기록을 저장하지 못했습니다. 잠시 후(5분 뒤) 다시 시도해 주세요.",
     live_abuse_gate_unavailable: "일시적인 오류입니다. 잠시 후(5분 뒤) 다시 시도해 주세요.",
     conversion_failed: "일시적인 오류입니다. 잠시 후(5분 뒤) 다시 시도해 주세요.",
-    pdf_encrypted: "암호가 있는 PDF는 변환할 수 없습니다. 암호를 제거한 뒤 다시 올려 주세요.",
+    pdf_encrypted: "암호가 있는 PDF는 바꿀 수 없습니다. 암호를 제거한 뒤 다시 올려 주세요.",
     pdf_invalid: "PDF 형식이 아니거나 손상된 파일입니다.", pdf_no_pages: "파일에 읽을 페이지가 없습니다. 다시 확인해 주세요.",
     pdf_page_text_invalid: "파일을 끝까지 읽지 못했습니다. 다시 확인해 주세요.",
     invalid_binary_payload: "PDF 형식이 아니거나 손상된 파일입니다.", unsupported_binary_media_type: "PDF 또는 ZIP 파일만 올릴 수 있습니다.",
     pdf_page_geometry_unavailable: "파일을 끝까지 읽지 못했습니다. 다시 확인해 주세요.",
     original_object_missing: "원본 파일을 찾을 수 없습니다. 파일을 다시 올려 주세요.",
-    convert_interrupted: "변환이 중단되었습니다. 다시 시도해 주세요.",
-    convert_failed: "변환에 실패했습니다. 다시 시도해 주세요.",
+    convert_interrupted: "바꾸기가 중단되었습니다. 다시 시도해 주세요.",
+    convert_failed: "바꾸지 못했어요. 다시 해 주세요.",
     invalid_archive: "ZIP 파일을 열 수 없습니다.",
-    empty_archive: "ZIP 파일 안에 변환할 PDF가 없습니다.",
+    empty_archive: "ZIP 파일 안에 바꿀 PDF가 없습니다.",
     invalid_document: "PDF 또는 ZIP 파일만 올릴 수 있습니다.",
     document_too_large: "파일이 너무 큽니다.",
-    document_size_limit: "회원 등급의 변환 크기 상한을 넘었습니다.",
-    document_page_limit: "회원 등급의 페이지 상한을 넘어 변환하지 못했습니다.",
-    conversion_quota_exhausted: "오늘 변환 한도를 다 썼어요. 내일 다시 이용해 주세요.",
+    document_size_limit: "회원 등급의 파일 크기 상한을 넘었습니다.",
+    document_page_limit: "회원 등급의 페이지 상한을 넘어 바꾸지 못했습니다.",
+    conversion_quota_exhausted: "오늘 바꿀 수 있는 양을 다 썼어요. 내일 다시 해 주세요.",
     pdf_magic_mismatch: "PDF 형식이 아니거나 손상된 파일입니다.",
     pdf_scanned_no_text: SCAN_MESSAGE,
-    convert_timed_out: "시간이 오래 걸려 변환이 끝나지 않았습니다. 다시 시도해 주세요.",
+    convert_timed_out: "시간이 오래 걸려 바꾸기가 끝나지 않았습니다. 다시 시도해 주세요.",
   };
 
   function el(tag, cls, text) {
@@ -84,7 +84,7 @@
   }
 
   function modeLabel(mode) {
-    return mode === "verify" ? "검증 변환" : "빠른 변환";
+    return mode === "verify" ? "꼼꼼히 바꾸기" : "빠르게 바꾸기";
   }
 
   const HISTORY_GROUPS = [
@@ -180,6 +180,7 @@
       const err = new Error("http_" + res.status);
       err.status = res.status;
       if (data && data.error && data.error.code) err.code = data.error.code;
+      if (data) err.body = data; // #8812: the 429 answer carries conversion.remaining.
       throw err;
     }
     return data;
@@ -279,6 +280,10 @@
     // Everything that refuses an action: an answer or a promise refuses, an
     // unknown never refuses but still cannot act.
     const workBlocked = PDFMD_NEW_WORK_DISABLED || PDFMD_LOGIN_REQUIRED || PDFMD_CHECKING;
+    /* #8812 D5·D6: 하루 한도 0(429 remaining 0)이면 올리기를 멈춘다 —
+       상태는 답과 함께 오므로 workState 가 아니라 이 깃발이 운반한다. */
+    let quotaExhausted = false;
+    const Recovery = window.PadiemPdfMdRecovery;
     panel.replaceChildren();
     panel.classList.add("pdfmd-shell");
 
@@ -298,17 +303,12 @@
     const pauseNote = el("p", "pdfmd-status", "");
     pauseNote.setAttribute("role", "status");
     if (PDFMD_NEW_WORK_DISABLED) {
-      pauseNote.textContent = "지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
+      pauseNote.textContent = "지금은 새 바꾸기를 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
     } else if (PDFMD_LOGIN_REQUIRED) {
-      pauseNote.textContent = "";
-      pauseNote.appendChild(el("span", null, "로그인 후 PDF 변환을 이용할 수 있습니다. "));
-      const loginEntry = el("button", "pdfmd-link", "로그인");
-      loginEntry.type = "button";
-      loginEntry.id = "pdfmdLoginEntry";
-      loginEntry.addEventListener("click", openExistingLogin);
-      pauseNote.appendChild(loginEntry);
+      /* #8812 D6·D7 대표 확인: 안내 줄은 문장만 — 로그인 단추는 상자 CTA 하나. */
+      pauseNote.textContent = "로그인하면 PDF를 바꿀 수 있어요.";
     } else if (PDFMD_CHECKING) {
-      pauseNote.textContent = "새 변환을 열 수 있는지 확인 중…";
+      pauseNote.textContent = "새 바꾸기를 열 수 있는지 확인 중…";
     }
     if (!pauseNote.firstChild) pauseNote.hidden = true;
     if (!pauseNote.firstChild) pauseNote.hidden = true;
@@ -329,18 +329,18 @@
     const modeSel = document.createElement("select");
     modeSel.id = "pdfmdMode";
     /* #7865: the always-visible 변환 방식 field is gone and the choice is one
-       quiet line. 검증 변환 stays reachable — the server accepts both modes
+       quiet line. 꼼꼼히 바꾸기 stays reachable — the server accepts both modes
        and the per-page agreement report depends on it, so removing the select
        entirely would lose a working feature (the issue's 하나뿐인 premise does
        not hold). */
-    [["fast", "빠른 변환"], ["verify", "검증 변환"]].forEach(([v, t]) => {
+    [["fast", "빠르게 바꾸기"], ["verify", "꼼꼼히 바꾸기"]].forEach(([v, t]) => {
       const o = document.createElement("option");
       o.value = v; o.textContent = t;
       if (v === "fast") o.selected = true;
       modeSel.appendChild(o);
     });
     modeSel.disabled = workBlocked;
-    modeSel.setAttribute("aria-label", "변환 방식");
+    modeSel.setAttribute("aria-label", "바꾸기 방식");
     controls.appendChild(modeSel);
     formWrap.appendChild(controls);
 
@@ -369,15 +369,15 @@
         dropCta.textContent = "업로드 일시 중단";
       } else if (PDFMD_LOGIN_REQUIRED) {
         dropTitle.textContent = "로그인이 필요합니다";
-        dropSub.textContent = "로그인 후 PDF를 올려 변환할 수 있습니다.";
-        dropCta.textContent = "로그인 필요";
+        dropSub.textContent = "로그인한 뒤 PDF를 올려 바꿀 수 있어요.";
+        dropCta.textContent = "로그인"; /* #8812 대표 확인: 단추는 동작을 말한다 */
       } else {
         dropTitle.textContent = "PDF 파일을 선택하세요";
         dropSub.textContent = "방금 연 화면 · 잠시 후 자동으로 정해집니다.";
         dropCta.textContent = "확인 중";
       }
     }
-    if (PDFMD_NEW_WORK_DISABLED || PDFMD_LOGIN_REQUIRED) drop.style.cursor = "not-allowed";
+    if (PDFMD_NEW_WORK_DISABLED) drop.style.cursor = "not-allowed";
 
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -388,6 +388,12 @@
     formWrap.appendChild(fileInput);
 
     formWrap.appendChild(drop);
+
+    /* #8812 D5: 진행 목록과 경고 상자는 끌어다 놓기 상자 바로 아래다. */
+    const uploadProgress = el("ol", "pdfmd-upload-progress");
+    uploadProgress.hidden = true;
+    uploadProgress.setAttribute("aria-label", "파일별 업로드 진행 상태");
+    formWrap.appendChild(uploadProgress);
 
     // #6012: the same documents, taken straight from the owner's own PC — a
     // text link under the upload box (#7865), not a second big button.
@@ -440,7 +446,7 @@
       "pdfmd-retention-note",
       copy(
         "pdfmd-retention-note",
-        "올린 원본과 변환 결과는 사용자가 지울 때까지 보관됩니다. 항목을 지우면 그 항목의 원본과 변환 결과가 함께 지워집니다."
+        "올린 원본과 바꾼 결과는 사용자가 지울 때까지 보관됩니다. 항목을 지우면 그 항목의 원본과 바꾼 결과가 함께 지워집니다."
       )
     );
     retentionNote.dataset.localeKey = "pdfmd-retention-note";
@@ -466,14 +472,27 @@
     uploadStatus.id = "pdfmdStatus";
     uploadStatus.setAttribute("role", "status");
     uploadStatus.setAttribute("aria-live", "polite");
+
+    /* #8812·#8814 수리 모듈: 경고 상자는 진행 목록 다음, PC 링크 줄 앞. */
+    const recovery = Recovery.create({
+      el, api, describeError, loadJob, pollItemUntilTerminal,
+      uploadStatus, quotaNote, currentJobId: () => currentJobId,
+      onExhausted: () => {
+        quotaExhausted = true;
+        fileInput.disabled = true;
+        dropCta.disabled = true;
+        drop.removeAttribute("role");
+        drop.removeAttribute("tabindex");
+        drop.removeAttribute("aria-label");
+        drop.classList.add("pdfmd-paused");
+        drop.style.cursor = "not-allowed";
+      },
+    });
+    formWrap.insertBefore(recovery.note, pcLinkRow);
     if (!window.PadiemUtilChatMode || typeof window.PadiemUtilChatMode.bindPdfmd !== "function") {
       inputCol.appendChild(formWrap);
     }
     inputCol.appendChild(uploadStatus);
-    const uploadProgress = el("ol", "pdfmd-upload-progress");
-    uploadProgress.hidden = true;
-    uploadProgress.setAttribute("aria-label", "파일별 업로드 진행 상태");
-    inputCol.appendChild(uploadProgress);
 
     // 모두 ZIP (#7865 바꿀 모양 4): 결과 위에, 여러 파일일 때만 나온다.
     const zipBar = el("div", "pdfmd-zipbar");
@@ -490,7 +509,7 @@
     // Preview
     const previewWrap = el("div", "pdfmd-preview");
     previewWrap.hidden = true;
-    const previewTitle = el("h4", null, "원본과 변환본 비교");
+    const previewTitle = el("h4", null, "원본과 바꾼 결과 비교");
     previewWrap.appendChild(previewTitle);
     const reviewSummary = el("p", "pdfmd-review-summary", "");
     reviewSummary.setAttribute("role", "status");
@@ -528,11 +547,11 @@
     const origPane = original.pane;
 
     const mdPane = el("div", "pdfmd-pane");
-    mdPane.appendChild(el("span", "pdfmd-pane-label", "Markdown 변환본"));
+    mdPane.appendChild(el("span", "pdfmd-pane-label", "Markdown 바꾼 결과"));
     const mdView = el("div", "pdfmd-md");
     mdView.tabIndex = 0;
     mdView.setAttribute("role", "region");
-    mdView.setAttribute("aria-label", "Markdown 변환본");
+    mdView.setAttribute("aria-label", "Markdown 바꾼 결과");
     mdPane.appendChild(mdView);
 
     previewGrid.appendChild(origPane);
@@ -540,11 +559,11 @@
     previewWrap.appendChild(previewGrid);
     panel.appendChild(previewWrap);
 
-    /* 지난 변환(#7865 바꿀 모양 5): 접힌 한 줄, 펼치면 날짜·파일 이름·배지 목록. */
+    /* 지난 기록(#8814 D7 대표 확인): 접힌 한 줄, 펼치면 날짜·파일 이름·배지 목록. */
     const histFold = el("details", "pdfmd-history-fold");
     histFold.open = true;
-    const histSummary = el("summary", "pdfmd-history-summary", "지난 변환");
-    histSummary.setAttribute("aria-label", "지난 변환 펼치기");
+    const histSummary = el("summary", "pdfmd-history-summary", "지난 기록");
+    histSummary.setAttribute("aria-label", "지난 기록 펼치기");
     histFold.appendChild(histSummary);
     const histBody = el("div", "pdfmd-history-body");
     const histTools = el("div", "pdfmd-history-tools");
@@ -693,9 +712,11 @@
           if (jobId === currentJobId) await loadJob();
           await loadHistory();
           if (status === "failed") {
-            uploadStatus.textContent = item.name + " 변환 실패. " + describeError({ code: (data.item && data.item.error_code) || "convert_failed" });
+            const code = (data.item && data.item.error_code) || "convert_failed";
+            if (Recovery.LIMIT_NOTICE_CODES.has(code)) recovery.show(code); /* #8812 D5: 한도 안내는 경고 상자로 */
+            else uploadStatus.textContent = item.name + " 바꾸기 실패. " + describeError({ code: code });
           } else if (status === "reviewed" || status === "done") {
-            uploadStatus.textContent = item.name + " 변환 완료. 결과 카드에서 받을 수 있습니다.";
+            uploadStatus.textContent = item.name + " 바꾸기 완료. 결과 카드에서 받을 수 있습니다.";
           }
           return;
         }
@@ -753,7 +774,8 @@
     async function createJob() {
       if (workBlocked) return;
       const mode = modeSel.value;
-      uploadStatus.textContent = "작업을 준비하는 중...";
+      /* #8812 D5: 진행 행이 있는 동안 요약 줄은 조용히 한다. */
+      if (!uploadRowsActive) uploadStatus.textContent = "작업을 준비하는 중...";
       try {
         const data = await api("/api/document-conversions", {
           method: "POST",
@@ -792,11 +814,14 @@
       if (await uploadFile(file)) pcOrigin.set(name, picked.folder || ".");
     }
 
+    let uploadRowsActive = false;
+
     async function uploadFile(file, onProgress) {
-      if (workBlocked) return false;
+      if (workBlocked || quotaExhausted) return false;
       const update = (message) => {
-        uploadStatus.textContent = message;
+        /* #8812 D5: 진행 행이 있으면 행만 쓰고, 없으면 요약 줄이 쓴다. */
         if (typeof onProgress === "function") onProgress(message);
+        else uploadStatus.textContent = message;
       };
       lastUploadError = "";
       if (!currentJobId) {
@@ -838,11 +863,14 @@
 
     let chatBridge = { recordFiles() {}, sync() {}, enterChat() {} };
     async function uploadFiles(files) {
-      if (workBlocked) return;
+      if (workBlocked || quotaExhausted) return;
       if (!files.length) return;
       chatBridge.recordFiles(files);
       uploadProgress.replaceChildren();
       uploadProgress.hidden = false;
+      recovery.hide();
+      uploadRowsActive = true;
+      uploadStatus.textContent = "";
       const rows = files.map((file) => {
         const row = el("li", "pdfmd-upload-progress-row");
         row.appendChild(el("span", "pdfmd-upload-progress-name", file.name));
@@ -864,31 +892,36 @@
         else failed += 1;
       }
       if (uploaded && !failed) {
-        uploadStatus.textContent = uploaded + "개 파일을 올렸습니다. 변환이 곧 시작됩니다.";
+        uploadStatus.textContent = uploaded + "개 파일을 올렸습니다. 곧 바꾸기가 시작됩니다.";
       } else if (uploaded && failed) {
         uploadStatus.textContent = uploaded + "개 파일 처리 완료, " + failed + "개 실패. " + (lastUploadError || "파일 형식을 확인해 주세요.");
       } else if (failed) {
         uploadStatus.textContent = failed + "개 파일을 처리하지 못했습니다. " + (lastUploadError || "파일 형식을 확인해 주세요.");
       }
+      uploadRowsActive = false;
       if (uploaded) await loadHistory();
     }
 
     function openPicker() {
-      if (workBlocked) return;
+      if (workBlocked || quotaExhausted) return;
       fileInput.click();
     }
-    drop.addEventListener("click", openPicker);
+    drop.addEventListener("click", () => {
+      if (PDFMD_LOGIN_REQUIRED) { openExistingLogin(); return; } /* #8812 D6·D7: 로그인 단추 하나 */
+      openPicker();
+    });
     drop.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
+        if (PDFMD_LOGIN_REQUIRED) { openExistingLogin(); return; }
         openPicker();
       }
     });
-    drop.addEventListener("dragover", (e) => { e.preventDefault(); if (!workBlocked) drop.classList.add("dragover"); });
+    drop.addEventListener("dragover", (e) => { e.preventDefault(); if (!workBlocked && !quotaExhausted) drop.classList.add("dragover"); });
     drop.addEventListener("dragleave", () => drop.classList.remove("dragover"));
     drop.addEventListener("drop", (e) => {
       e.preventDefault();
-      if (workBlocked) return;
+      if (workBlocked || quotaExhausted) return;
       drop.classList.remove("dragover");
       if (e.dataTransfer && e.dataTransfer.files) uploadFiles(Array.from(e.dataTransfer.files));
     });
@@ -923,7 +956,7 @@
        a reopened job the owner came back for) claims itself once; the poller
        repaints when the row reaches a terminal state. */
     async function runQueuedItems() {
-      if (workBlocked) return;
+      if (workBlocked || quotaExhausted) return;
       const queued = currentItems.filter((item) => item.status === "queued" && !item.has_markdown);
       let started = 0;
       for (const item of queued) {
@@ -939,7 +972,13 @@
             void pollItemUntilTerminal(currentJobId, data.item);
           }
         } catch (e) {
-          uploadStatus.textContent = item.name + " 변환 시작 실패. " + describeError(e);
+          /* #8812 D5·D6: 429 remaining 0 — 확인된 문장은 경고 상자로, 올리기는 멈춘다. */
+          if (Recovery.isQuotaExhausted(e)) {
+            quotaNote.textContent = "오늘 0건 더 바꿀 수 있어요.";
+            recovery.exhaust();
+          } else {
+            uploadStatus.textContent = item.name + " 바꾸기 실패. " + describeError(e);
+          }
         }
       }
       /* 한 번 실제로 시작했을 때만 다시 읽는다 — 서버가 계속 queued를 돌려주는
@@ -965,7 +1004,7 @@
     }
 
     function deleteButton(item) {
-      /* 실패 카드의 유일한 단추(#7865): 이유 한 줄 + 지우기. */
+      /* 실패 카드의 보조 단추(#8814): 이유 한 줄 + 보조 지우기. */
       const delBtn = el("button", "pdfmd-btn", "지우기");
       delBtn.type = "button";
       delBtn.setAttribute("aria-label", item.name + " 삭제");
@@ -1067,9 +1106,9 @@
       itemsWrap.replaceChildren();
       syncZipBar();
       if (!currentJobId) {
-        itemsWrap.appendChild(emptyBlock("첫 PDF를 변환해 보세요.", null, [
+        itemsWrap.appendChild(emptyBlock("첫 PDF를 바꿔 보세요.", null, [
           "PDF 또는 ZIP 파일을 고릅니다.",
-          "올리면 바로 변환이 시작됩니다.",
+          "올리면 바로 바꾸기 시작해요.",
           "원본과 Markdown을 비교하고 내려받습니다.",
         ]));
         return;
@@ -1088,17 +1127,17 @@
         card.appendChild(head);
 
         const meta = el("div", "pdfmd-item-meta");
-        if (item.character_count) {
+        if (item.has_markdown && item.character_count) { /* #8814 D7: 결과가 있을 때만 글자 수 */
           meta.appendChild(el("span", "pdfmd-item-count", Number(item.character_count).toLocaleString("ko-KR") + "자"));
         }
         card.appendChild(meta);
 
         if (item.status === "failed") {
-          /* 실패 카드(#7865): 이유 한 줄 + [지우기]만. 스캔본 같은 긴 안내도
-             이유 줄에서 한 번만 보인다. */
-          const reason = el("div", "pdfmd-warn", describeError({ code: item.error_code }, "변환에 실패했습니다."));
+          /* 실패 카드(#8814): [다시 하기](주)·[지우기](보조), 스캔본은 안내만. */
+          const reason = el("div", "pdfmd-warn", describeError({ code: item.error_code }, "바꾸지 못했어요."));
           card.appendChild(reason);
           const actions = el("div", "pdfmd-item-actions");
+          if (item.error_code !== "pdf_scanned_no_text") actions.appendChild(recovery.retryButton(item));
           actions.appendChild(deleteButton(item));
           card.appendChild(actions);
           list.appendChild(card);
@@ -1120,7 +1159,7 @@
 
           const previewBtn = el("button", "pdfmd-btn", "원본과 비교");
           previewBtn.type = "button";
-          previewBtn.setAttribute("aria-label", item.name + " 원본과 변환본 비교");
+          previewBtn.setAttribute("aria-label", item.name + " 원본과 바꾼 결과 비교");
           previewBtn.addEventListener("click", async () => {
             previewWrap.hidden = false;
             previewWrap.scrollIntoView({ block: "nearest" });
@@ -1251,7 +1290,7 @@
     function renderHistory() {
       histList.replaceChildren();
       if (!historyJobs.length) {
-        histList.appendChild(emptyBlock("아직 작업 이력이 없습니다.", "첫 파일을 변환하면 여기에 기록됩니다.", null));
+        histList.appendChild(emptyBlock("아직 작업 이력이 없습니다.", "첫 파일을 바꾸면 여기에 기록됩니다.", null));
         return;
       }
       const query = historyQuery.trim().toLowerCase();
@@ -1286,7 +1325,7 @@
     }
 
     function syncHistoryFold() {
-      histSummary.textContent = "지난 변환 " + historyJobs.length + "건";
+      histSummary.textContent = "지난 기록 " + historyJobs.length + "건";
       histTools.hidden = !historyJobs.length;
     }
 

@@ -57,7 +57,8 @@ def test_profile_toggle_menu_aria_and_settings_connectors_entries_kept() -> None
     assert 'profileToggle.setAttribute("aria-controls", "profileMenu")' in pm.MODULE
     assert 'profileToggle.setAttribute("aria-haspopup", "menu")' in pm.MODULE
     # B7: the settings API is reached through the registry (app.provide("settings")).
-    assert 'settingsButton.addEventListener("click", () => { authModule().closeProfilePanel(); settings.openSettings(); })' in pm.APP
+    assert 'deps.settingsButton.addEventListener("click", () => { deps.closeProfilePanel(); openSettings(); })' in pm.SETTINGS
+    assert "settingsModule().wireSettingsDialog();" in pm.APP
     connectors = pm.CONNECTORS
     assert 'connectorsNavButton.addEventListener("click", openConnectorsView)' in connectors
     assert 'settingsLogoutButton' in pm.HTML

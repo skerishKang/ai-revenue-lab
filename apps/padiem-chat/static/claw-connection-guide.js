@@ -93,7 +93,7 @@
     };
     if (id === "drive") return {
       headline: tr("Google Drive를 연결해 주세요", "Connect Google Drive"),
-      copy: tr("Google 계정으로 로그인하고 드라이브 접근을 승인해 주세요.",
+      copy: tr("Google 계정으로 로그인하고 드라이브 접근을 허락해 주세요.",
                "Sign in with Google and authorize Drive access."),
       foot: tr("연결이 실제 확인된 후에만 ON으로 바뀝니다.",
                "ON appears only after the connection is verified."),
@@ -103,7 +103,7 @@
       headline: tr("GitHub를 연결해 주세요", "Connect GitHub"),
       copy: tr("GitHub 계정으로 연결하고 사용할 저장소 접근을 허용해 주세요.",
                "Connect your GitHub account and authorize repository access."),
-      foot: tr("저장소는 기본적으로 전체를 선택하며, 원하면 일부만 제한할 수 있습니다. GitHub 로그인 화면에서 연결을 승인해 주세요.",
+      foot: tr("저장소는 기본적으로 전체를 선택하며, 원하면 일부만 제한할 수 있습니다. GitHub 로그인 화면에서 연결을 허락해 주세요.",
                "All repositories is the default; you may restrict it at GitHub."),
       button: tr("GitHub 로그인", "Sign in with GitHub"), intent: "connect-github"
     };
