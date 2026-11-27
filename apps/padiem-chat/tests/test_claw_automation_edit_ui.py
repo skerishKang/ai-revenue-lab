@@ -352,7 +352,7 @@ const COPY = {
     "claw-automation-toggle-forbidden": "워크스페이스 소유자만 변경할 수 있습니다.",
     "claw-automation-toggle-not-found": "해당 자동화 규칙을 사용할 수 없습니다.",
     "claw-automation-toggle-not-mutable": "이 규칙은 변경할 수 없습니다.",
-    "claw-automation-toggle-not-ready": "이 규칙은 실행 준비가 되지 않아 켤 수 없습니다.",
+    "claw-automation-toggle-not-ready": "이 규칙은 자동으로 작업할 준비가 되지 않아 켤 수 없습니다.",
     "claw-automation-toggle-invalid": "요청을 확인해 주세요. 변경되지 않았습니다.",
     "claw-automation-toggle-failed": "규칙 상태를 변경하지 못했습니다.",
     "claw-automation-edit-saved": "규칙을 수정했습니다.",

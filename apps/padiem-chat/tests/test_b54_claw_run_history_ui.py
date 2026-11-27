@@ -409,8 +409,8 @@ const sandbox = {
   addEventListener() {},
   __padiemLocale: { text: (k) => ({
     "claw-runs-download": "문서 다시 받기",
-    "claw-runs-error": "실행 기록을 불러오지 못했습니다. 다시 시도해 주세요.",
-    "claw-runs-empty": "최근 실행 기록이 없습니다.",
+    "claw-runs-error": "작업 기록을 불러오지 못했습니다. 다시 시도해 주세요.",
+    "claw-runs-empty": "최근 작업 기록이 없습니다.",
     "claw-runs-status-completed": "완료",
     "claw-runs-status-waiting_approval": "허락 필요",
     "claw-approval-actions-aria": "허락 여부 선택",

@@ -233,7 +233,7 @@
   const pcStageNames = {
     accepted: ["PC 요청 접수", "PC request accepted"],
     picked_up: ["PC 집기", "PC picked up"],
-    executing: ["PC 실행 중", "PC executing"],
+    executing: ["PC에서 작업 중", "PC executing"],
     result: ["PC 결과 확인", "PC result received"],
   };
   function exactFields(value, fields) {

@@ -534,17 +534,17 @@ const COPY = {
     "claw-btn-retry": "다시 시도",
     "claw-retry-waiting": "요청이 잠시 제한되었습니다. {seconds}초 후 다시 시도할 수 있습니다. 자동으로 전송되지는 않습니다.",
     "claw-retry-ready": "지금 다시 시도할 수 있습니다. 전송되는 내용은 현재 양식에 보이는 값입니다.",
-    "claw-error-check-runs": "이미 실행이 시작되었을 수 있습니다. 자동으로 다시 실행하지 않았습니다. ‘최근 실행 기록’에서 결과를 먼저 확인해 주세요.",
+    "claw-error-check-runs": "이미 작업이 시작됐을 수 있습니다. 자동으로 다시 작업하지 않았습니다. ‘최근 작업 기록’에서 결과를 먼저 확인해 주세요.",
     "claw-error-rate-limited": "요청이 잠시 많습니다. 잠시 후 다시 시도해 주세요.",
     "claw-error-auth-needed": "다시 로그인해 주세요.",
     "claw-error-auth-unavailable": "이 워크스페이스에서는 로그인 상태를 확인할 수 없어 기능을 사용할 수 없습니다.",
-    "claw-status-execute-running": "실행 중...",
-    "claw-status-execute-success": "실행이 완료되었습니다.",
-    "claw-error-generic": "실행 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+    "claw-status-execute-running": "작업 중...",
+    "claw-status-execute-success": "작업이 완료되었습니다.",
+    "claw-error-generic": "작업 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.",
     // #3933: the bounded pre-dispatch model-unavailable copy, mirrored from
     // static/locale.js. Reused verbatim — this slice invents no second wording.
     "claw-general-model-unavailable": "선택한 AI 모델을 현재 사용할 수 없습니다. 다른 모델을 선택해 주세요.",
-    "claw-general-model-unavailable-note": "이 요청은 실행되지 않았습니다. 자동으로 다시 실행하지 않으며, 다른 모델을 선택해 새로 요청하면 그 결과가 표시됩니다.",
+    "claw-general-model-unavailable-note": "이 요청은 처리되지 않았습니다. 자동으로 다시 작업하지 않으며, 다른 모델을 선택해 새로 요청하면 그 결과가 표시됩니다.",
   },
   en: {
     "claw-btn-retry": "Try again",
@@ -887,7 +887,7 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   const after502 = execPosts().length;
   checks.AMBIGUOUS_FAILURE_SAFE_RETRY_CLAIM =
     byId.clawRetryHint.hidden === false &&
-    byId.clawRetryHint.textContent.indexOf("최근 실행 기록") >= 0 &&
+    byId.clawRetryHint.textContent.indexOf("최근 작업 기록") >= 0 &&
     byId.clawRetryBox.hidden === true &&
     byId.clawRetryButton.disabled === true &&
     byId.messageInput.value === "다시 로그인 확인";

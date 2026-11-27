@@ -107,11 +107,11 @@
       list.replaceChildren();
       const runId = currentRun();
       if (!runId) {
-        setMessage("먼저 이 작업에 연결된 컴퓨터와 실행 정보를 확인해 주세요.");
+        setMessage("먼저 이 작업에 연결된 컴퓨터와 작업 정보를 확인해 주세요.");
         return;
       }
       setBusy(true);
-      setMessage("허락된 견적서 후보를 조회하고 있습니다.");
+      setMessage("허락된 견적서 후보를 찾고 있습니다.");
       try {
         const body = await readJson("/api/claw/office/candidates?run_id=" + encodeURIComponent(runId));
         const candidates = parseCandidates(body, runId);
@@ -182,7 +182,7 @@
           body: JSON.stringify({ run_id: submitted.runId, decision }),
         });
         if (body.result?.run_id !== submitted.runId) {
-          throw safeError("다른 실행의 허락 여부는 적용할 수 없습니다.");
+          throw safeError("다른 작업의 허락 여부는 적용할 수 없습니다.");
         }
         pending = null;
         group.hidden = true;
@@ -257,8 +257,8 @@
           xlsxDownload.hidden = !xlsx;
         }
         setMessage(pdf || xlsx
-          ? "실행이 끝났고 결과 파일을 열 수 있습니다."
-          : "실행은 끝났지만 지금 꺼낼 수 있는 결과 파일이 없습니다.");
+          ? "작업이 끝났고 결과 파일을 열 수 있습니다."
+          : "작업은 끝났지만 지금 꺼낼 수 있는 결과 파일이 없습니다.");
       } catch (error) {
         reportError(error);
       } finally {

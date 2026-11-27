@@ -188,7 +188,7 @@ function el(tag) {
 
 const COPY = {
   "claw-runs-download": "문서 다시 받기",
-  "claw-runs-artifact-unverified": "실행이 완료 상태가 아닙니다.",
+  "claw-runs-artifact-unverified": "작업이 완료된 상태가 아닙니다.",
   "claw-runs-kind-aria": "파일 형식 {kind}",
   "claw-runs-download-only": "이 형식은 다운로드 전용입니다. 파일을 내려받아 확인하세요.",
 };
