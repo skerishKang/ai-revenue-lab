@@ -914,3 +914,12 @@ B2 카드 순서(위 → 아래)대로 쓴다. 리스너 블록: 7모듈 모두 
 - Constants moved with their consumers: CLAW_BOUNDED_REFUSAL_COPY, CUSTOM_AUTH_FAILURE_CODE, FAILURE_CODE_PATTERN.
 - Existing live app context getter/setter for activeProject is reused; the retry test verifies the original closure state and project rendering observe retryContext.project. No new global.
 - tools/verify_7809_t2_stage2.py compares all 13 definitions with the base after only explicit dependency-reference substitutions, plus exact constant comparisons.
+
+
+### #7809 T2 stage 3 (2026-11-27)
+
+- Entry module: `chat-entry-module.js` owns `openSavedConversation` (57 lines), `clawGeneralRequestActive` (3), `storedRegenerateRequest` (11), and `submitPrompt` (37), as specified in R5 A10. app.js: 1598 -> 1490 lines.
+- `app.provide("entry", window.PadiemChatEntryModule.create(app))` registers without reading deps or wiring listeners; existing public conversation opener and regenerate handles remain in app.js. The canonical submit-time routing predicate remains inside the submit function.
+- Existing state remains in app.js; the existing four live setters for conversationProduct, activeProject, activeProjectFileCount, and clawArtifactShownFor are reused. Shared accessors for clawConversationIds, clawConversationLabelsRead, and selectedAttachments are consolidated into the common context.
+- `tools/verify_7809_t2_stage3.py` verifies exact bodies after explicit dependency-reference substitution (4/4), all three Android storage functions unchanged, and no change in app.js window assignments. R-06 and R-11 unchanged; no audit or rule changes.
+- Focused regression: 241 passed after relocating source assertions and harness wiring; new live-state regression uses shipped context accessors and registry to verify all four restored state values and project render observation. Structure and file-size checks: 16 passed.

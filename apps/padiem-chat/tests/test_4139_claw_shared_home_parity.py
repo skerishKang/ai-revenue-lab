@@ -6,6 +6,8 @@ No deployment or live PC/GitHub write access asserted.
 """
 from __future__ import annotations
 
+from _r5_function_source import definition_source
+
 from html.parser import HTMLParser
 
 from _support.claw_static import locale_source, sheet
@@ -155,7 +157,7 @@ def test_claw_previous_conversations_reuses_owner_scoped_history():
     assert 'history.focus?' in ACTIONS
     assert 'openSavedConversation' in APP
     assert "clawConversationIds.has(conversation.id)" in MODULE
-    assert "isVerifiedClawThread" in APP
+    assert "isVerifiedClawThread" in definition_source("openSavedConversation")
     assert ".claw-history-shortcut" in CSS
     assert 'claw-runs-title' in LOCALE
     assert 'fetch("/api/claw/runs"' not in ACTIONS

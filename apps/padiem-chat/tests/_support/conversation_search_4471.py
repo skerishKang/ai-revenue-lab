@@ -310,7 +310,7 @@ def app_opener_facts() -> dict:
         raise AssertionError("PadiemChatConversationOpener assignment not found in app.js")
     block = _balanced_block(text, text.index("{", match.start() + len("window.PadiemChatConversationOpener")))
     open_match = re.search(
-        rf"\bopen\s*:\s*\(([^)]*)\)\s*=>\s*({_IDENT})\s*\(([^)]*)\)", block
+        rf"\bopen\s*:\s*\(([^)]*)\)\s*=>\s*({_IDENT}(?:\.{_IDENT})*)\s*\(([^)]*)\)", block
     )
     facts = _facts(block)
     facts["open_param"] = open_match.group(1).strip() if open_match else None

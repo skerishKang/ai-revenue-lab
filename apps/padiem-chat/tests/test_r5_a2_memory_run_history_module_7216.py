@@ -15,6 +15,8 @@ B1 시범(#7439)에서 확정한 보강 4가지를 A2(승인된 기억 + 실행 
 """
 from __future__ import annotations
 
+from _r5_function_source import definition_source
+
 # #8060: shipped reads live in _support; assertions stay here.
 from _support.frame_council_memory_source import (
     app_factory_source, app_js, chat_app_context_js, claw_form_module_js,
@@ -181,7 +183,7 @@ def test_registry_replaces_one_line_forwarders_and_modules_fit_budget() -> None:
     # (deps.app.renderMemoryProposalReview) and stays exactly one call.
     form_module = claw_form_module_js()
     for call in REGISTRY_CALLS:
-        assert call in APP + form_module, call
+        assert call in APP + form_module or call.replace("app.", "deps.", 1) in definition_source("openSavedConversation"), call
     run_module = claw_run_module_js()
     for call in RUN_MODULE_REGISTRY_CALLS:
         assert call in run_module, call
@@ -214,6 +216,9 @@ def test_registry_replaces_one_line_forwarders_and_modules_fit_budget() -> None:
             assert run_form in APP, name
         elif name in _conversation_shared:
             assert conversation_form in APP, name
+        elif name == "openSavedConversation":
+            assert 'app.provide("entry", window.PadiemChatEntryModule.create(app))' in APP
+            assert "return { openSavedConversation," in definition_source(name)
         else:
             assert bare in APP, name
     assert "set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; }" in APP
