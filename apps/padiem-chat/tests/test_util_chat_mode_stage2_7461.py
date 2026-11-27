@@ -53,7 +53,7 @@ NODE_HARNESS = r'''
 const fs = require("node:fs");
 const vm = require("node:vm");
 
-const [manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdPagesFile, pdfmdFile, appFile] = process.argv.slice(2);
+const [manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdPagesFile, pdfmdRecoveryFile, pdfmdFile, appFile] = process.argv.slice(2);
 
 const registry = [];
 function El(tag) {
@@ -343,7 +343,7 @@ const ctx = {
 };
 ctx.globalThis = ctx;
 vm.createContext(ctx);
-[manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdPagesFile, pdfmdFile, appFile].forEach((file) => {
+[manifestFile, markdownFile, contractFile, chatModeFile, toolsFile, quoteFile, pdfmdPagesFile, pdfmdRecoveryFile, pdfmdFile, appFile].forEach((file) => {
   vm.runInContext(fs.readFileSync(file, "utf8"), ctx, { filename: file });
 });
 
