@@ -964,13 +964,17 @@ class CanaryEvidenceSeamTests(unittest.TestCase):
                 "x-padiem-fallback-used",
             },
         )
-        route_source = (
-            Path(__file__).parents[2]
-            / "apps"
-            / "padiem-chat"
-            / "app"
-            / "claw_general_routes.py"
-        ).read_text(encoding="utf-8")
+        # #7809: claw_general_routes.py is being split into claw_general_*.py area
+        # modules, so the evidence headers and the marker are read from the whole
+        # area (every claw_general_*.py except the unrelated run-history module),
+        # not from one file.
+        app_dir = Path(__file__).parents[2] / "apps" / "padiem-chat" / "app"
+        area_files = sorted(
+            path for path in app_dir.glob("claw_general_*.py")
+            if path.stem != "claw_general_run_history"
+        )
+        self.assertIn("claw_general_routes.py", [path.name for path in area_files])
+        route_source = "\n".join(path.read_text(encoding="utf-8") for path in area_files)
         for header in module.CLAW_EVIDENCE_RESPONSE_HEADERS:
             canonical = "-".join(word.capitalize() for word in header.split("-"))
             self.assertIn(canonical, route_source)
