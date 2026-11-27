@@ -13,7 +13,7 @@ QUOTE = ROOT / "reference" / "business-66-padiem-quote-v1"
 def test_visible_error_copy_has_no_embedded_technical_code():
     patterns = {
         CHAT / "calendar.js": [
-            r"일정 보기에 실패했습니다 \(HTTP",
+            r"일정을 불러오지 못했어요 \(HTTP",
             r"캘린더 서버 오류가 발생했습니다 \(HTTP",
         ],
         CHAT / "admin-models.js": [

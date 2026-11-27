@@ -989,7 +989,7 @@
 
   function applyCompletedOrchestration(article, requestPayload, data) {
     if (!article || !data || typeof data.answer !== "string" || !data.answer) {
-      throw new Error("AI 작업 완료 답을 확인할 수 없습니다.");
+      throw new Error("AI 작업이 끝났는지 확인하지 못했어요.");
     }
     if (data.orchestration) orchestrationUi.render(article, data.orchestration, {});
     const content = article.querySelector(".assistant-content");

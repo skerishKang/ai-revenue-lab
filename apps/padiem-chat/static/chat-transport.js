@@ -138,7 +138,7 @@
   }
 
   async function readSseEvents(response, onEvent) {
-    if (!response.body || typeof response.body.getReader !== "function") throw new Error("스트리밍 답을 읽을 수 없습니다.");
+    if (!response.body || typeof response.body.getReader !== "function") throw new Error("AI 답을 읽지 못했어요.");
     const reader = response.body.getReader();
     const decoder = new TextDecoder("utf-8");
     const ndjson = /application\/(?:x-)?ndjson/i.test(response.headers?.get("content-type") || "");
@@ -229,7 +229,7 @@
         await consume(parseRecord(buffer));
         buffer = "";
       }
-      if (buffer.trim()) throw new Error("AI 스트리밍 답이 완전히 끝나지 않았습니다.");
+      if (buffer.trim()) throw new Error("AI 답을 받다가 끊겼어요.");
     } finally {
       if (!reachedEof || stoppedEarly) {
         try { await reader.cancel(); } catch (_) { /* no-op */ }
@@ -549,7 +549,7 @@
       throw paused;
     }
     if (typeof data.answer !== "string" || !data.answer) {
-      throw new Error("AI 작업 답을 확인할 수 없습니다.");
+      throw new Error("AI 작업 결과를 확인하지 못했어요.");
     }
     return syntheticSseResponse(data);
   }
@@ -642,7 +642,7 @@
   // #6742: server NDJSON line reader kept as a small testable transport helper.
   async function readOrchestrationNdjson(response, onFrame) {
     if (!response || !response.body || typeof response.body.getReader !== "function") {
-      throw new Error("스트림 답을 읽을 수 없습니다.");
+      throw new Error("AI 답을 읽지 못했어요.");
     }
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
@@ -724,7 +724,7 @@
       throw paused;
     }
     if (typeof data.answer !== "string" || !data.answer) {
-      throw new Error("AI 작업 답을 확인할 수 없습니다.");
+      throw new Error("AI 작업 결과를 확인하지 못했어요.");
     }
     return syntheticSseResponse(data);
   }

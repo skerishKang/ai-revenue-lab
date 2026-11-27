@@ -58,7 +58,7 @@
       body: file, signal}); // Native File body; never FileReader, arrayBuffer or base64.
     const data = await response.json().catch(() => null);
     if (!response.ok || !data?.ok || !/^file_[a-f0-9]{32}$/.test(data.file_id || "") || data.size_bytes !== file.size) {
-      throw uploadError(data, "파일 서버에 붙인 파일을 저장하지 못했습니다. 다시 시도해 주세요.");
+      throw uploadError(data, "붙인 파일을 파일 서버에 저장하지 못했습니다. 다시 시도해 주세요.");
     }
     return {fileId: data.file_id};
   }
