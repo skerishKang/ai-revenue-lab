@@ -37,6 +37,7 @@ on:
       - "apps/padiem-chat/app/oracle_mesh_result_routes.py"
       - "apps/padiem-chat/app/oracle_mesh_engine_auth.py"
       - "apps/padiem-chat/app/oracle_mesh_engine_output.py"
+      - "apps/padiem-chat/app/oracle_mesh_engine_files.py"
       - "apps/padiem-chat/app/oracle_mesh_desktop_ops.py"
       - "apps/padiem-chat/app/oracle_mesh_source.py"
       - "apps/padiem-chat/app/oracle_mesh_dispatch.py"

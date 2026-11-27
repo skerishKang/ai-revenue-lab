@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 from app import oracle_mesh_dispatch as mesh_dispatch
+from app import oracle_mesh_engine_files as engine_files
 
 import json
 import re
@@ -161,7 +162,7 @@ class _FrozenDateTime(_real_datetime):
 
 
 def snapshot(case: str, monkeypatch) -> dict:
-    monkeypatch.setattr(routes, "datetime", _FrozenDateTime)
+    monkeypatch.setattr(engine_files, "datetime", _FrozenDateTime)
     monkeypatch.setattr(mesh_dispatch, "datetime", _FrozenDateTime)
     history = RecordingHistory(run_workspace=seam.MEMORY_WORKSPACE)
     session = seam._session(tenant_id=seam.WORKSPACE)
@@ -169,13 +170,13 @@ def snapshot(case: str, monkeypatch) -> dict:
     payload = seam._payload()
 
     if case == "proof_denied":
-        monkeypatch.setattr(routes, "_verify_engine_proof", _proof_denied)
+        monkeypatch.setattr(engine_files, "_verify_engine_proof", _proof_denied)
     elif case == "scope_proof_denied":
-        monkeypatch.setattr(routes, "_engine_pc_scope_claim", _claim_denied)
+        monkeypatch.setattr(engine_files, "_engine_pc_scope_claim", _claim_denied)
     elif case == "invalid_body":
-        monkeypatch.setattr(routes, "_verify_engine_proof", _proof_raw(b"{not json"))
+        monkeypatch.setattr(engine_files, "_verify_engine_proof", _proof_raw(b"{not json"))
     elif case == "non_dict_body":
-        monkeypatch.setattr(routes, "_verify_engine_proof", _proof_raw(b"[]"))
+        monkeypatch.setattr(engine_files, "_verify_engine_proof", _proof_raw(b"[]"))
     elif case == "invalid_mode":
         payload = seam._payload(mode="bogus")
     elif case == "field_mismatch":
@@ -195,10 +196,10 @@ def snapshot(case: str, monkeypatch) -> dict:
     elif case == "scope_required":
         payload = _job_payload()
     elif case == "device_invalid_new_mode":
-        monkeypatch.setattr(routes, "_engine_pc_scope_claim", _claim)
+        monkeypatch.setattr(engine_files, "_engine_pc_scope_claim", _claim)
         payload = _job_payload(device_id=None)
     elif case == "output_range_invalid":
-        monkeypatch.setattr(routes, "_engine_pc_scope_claim", _claim)
+        monkeypatch.setattr(engine_files, "_engine_pc_scope_claim", _claim)
         payload = {
             "subject_id": seam.SUBJECT, "run_id": seam.RUN,
             "device_id": seam.DEVICE, "mode": "job_output",
@@ -207,7 +208,7 @@ def snapshot(case: str, monkeypatch) -> dict:
     elif case == "selected_device_invalid":
         payload = _context_payload(device_id="")
     elif case == "owner_denied":
-        monkeypatch.setattr(routes, "_engine_pc_files_owner", _owner_denied)
+        monkeypatch.setattr(engine_files, "_engine_pc_files_owner", _owner_denied)
     elif case == "history_unconfigured":
         del state.history_store
     elif case == "run_unavailable":
@@ -223,18 +224,18 @@ def snapshot(case: str, monkeypatch) -> dict:
             raise RuntimeError("store down")
         monkeypatch.setattr(history, "get_pc_run_scope", raise_scope)
     elif case == "scope_frozen":
-        monkeypatch.setattr(routes, "_engine_pc_scope_claim", _claim)
+        monkeypatch.setattr(engine_files, "_engine_pc_scope_claim", _claim)
         async def other_scope(*args, **kwargs):
             history.calls.append("get_pc_run_scope")
             return {"ops": ["read"]}
         monkeypatch.setattr(history, "get_pc_run_scope", other_scope)
     elif case == "target_denied":
-        monkeypatch.setattr(routes, "_engine_pc_files_target", _target_denied)
+        monkeypatch.setattr(engine_files, "_engine_pc_files_target", _target_denied)
     elif case == "no_pc_context":
-        monkeypatch.setattr(routes, "_engine_pc_files_target", _target_none)
+        monkeypatch.setattr(engine_files, "_engine_pc_files_target", _target_none)
         payload = _context_payload()
     elif case == "no_pc_dispatch":
-        monkeypatch.setattr(routes, "_engine_pc_files_target", _target_none)
+        monkeypatch.setattr(engine_files, "_engine_pc_files_target", _target_none)
     elif case == "normal_read":
         payload = seam._payload(
             op="read", path="notes.txt", tool_call_ref=seam.READ_CALL,
@@ -244,20 +245,20 @@ def snapshot(case: str, monkeypatch) -> dict:
     elif case == "dispatch_op_invalid":
         payload = seam._payload(op="bogus")
     elif case == "dispatch_scope_denied":
-        monkeypatch.setattr(routes, "_engine_pc_scope_claim", _claim_read_only)
+        monkeypatch.setattr(engine_files, "_engine_pc_scope_claim", _claim_read_only)
     elif case == "dispatch_path_invalid":
         payload = seam._payload(path="../escape")
     elif case == "dispatch_call_ref_invalid":
         payload = seam._payload(tool_call_ref="bad ref!")
     elif case == "dispatch_workspace_unavailable":
-        monkeypatch.setattr(routes, "_dispatch_workspace_id", _no_workspace)
+        monkeypatch.setattr(engine_files, "_dispatch_workspace_id", _no_workspace)
         monkeypatch.setattr(mesh_dispatch, "_dispatch_workspace_id", _no_workspace)
     elif case == "dispatch_content_invalid":
         payload = seam._payload(op="write", path="notes.txt", content=123)
     elif case == "dispatch_append_type_invalid":
         payload = seam._payload(op="write", path="notes.txt", content="x", append="yes")
     elif case == "dispatch_edit_invalid":
-        monkeypatch.setattr(routes, "_engine_pc_scope_claim", _claim_all)
+        monkeypatch.setattr(engine_files, "_engine_pc_scope_claim", _claim_all)
         payload = _job_payload(operation={
             "op": "edit", "path": "notes.txt", "old_text": 123,
             "new_text": "x", "replace_all": False,
@@ -346,3 +347,48 @@ def test_golden_is_the_pre_refactor_verify_table():
 def test_verify_snapshot_matches_the_pre_refactor_golden(case, monkeypatch):
     golden = json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))[case]
     assert snapshot(case, monkeypatch) == golden
+
+
+@pytest.mark.parametrize("allowed", [False, True], ids=["write-denied", "write-allowed"])
+def test_engine_write_admission_order_and_denial_zero_dispatch_889(allowed, monkeypatch):
+    """Scope pin precedes workspace lookup, which precedes dispatch creation."""
+    history = RecordingHistory(run_workspace=seam.MEMORY_WORKSPACE)
+    session = seam._session(tenant_id=seam.WORKSPACE)
+    state = seam._state(monkeypatch, session, history, seam.MEMORY_WORKSPACE)
+    payload = seam._payload(op="write", path="notes.txt", content="hello")
+    monkeypatch.setattr(engine_files, "_engine_pc_scope_claim",
+                        _claim_all if allowed else _claim_read_only)
+    events = []
+    original_pin = history.pin_pc_run_scope
+    original_workspace = engine_files._dispatch_workspace_id
+    original_dispatch = engine_files.dispatch_oracle_mesh_command_intent
+
+    async def pin(**kwargs):
+        events.append("scope_pin")
+        return await original_pin(**kwargs)
+
+    async def workspace(*args, **kwargs):
+        events.append("workspace")
+        return await original_workspace(*args, **kwargs)
+
+    async def dispatch(*args, **kwargs):
+        events.append("dispatch")
+        return await original_dispatch(*args, **kwargs)
+
+    monkeypatch.setattr(history, "pin_pc_run_scope", pin)
+    monkeypatch.setattr(engine_files, "_dispatch_workspace_id", workspace)
+    monkeypatch.setattr(engine_files, "dispatch_oracle_mesh_command_intent", dispatch)
+    status, body = seam._dispatch(state, payload)
+    if allowed:
+        assert status == 200
+        assert events == ["scope_pin", "workspace", "dispatch"]
+        assert history.dispatch_args is not None
+        assert history.calls.index("pin_pc_run_scope") < history.calls.index(
+            "create_oracle_mesh_dispatch")
+    else:
+        assert status == 403
+        assert body["error"]["code"] == "pc_scope_denied"
+        assert events == ["scope_pin"]
+        assert history.dispatch_args is None
+        assert "create_oracle_mesh_dispatch" not in history.calls
+        assert not history.rows
