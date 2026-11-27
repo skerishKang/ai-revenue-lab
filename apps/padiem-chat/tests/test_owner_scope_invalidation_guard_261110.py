@@ -27,6 +27,8 @@ _ROUTES_SCANNED = [
     "claw_connector_enrollment_routes.py",
     "android_device_enrollment_routes.py",
     "oracle_mesh_read_return_routes.py",
+    "oracle_mesh_presence.py",
+    "oracle_mesh_poll.py",
 ]
 MUTATIONS = {
     "redeem_code", "adopt_link", "revoke_link", "pause_link", "resume_link",
@@ -55,7 +57,7 @@ def test_every_owner_mutating_handler_drops_the_cached_owner_scope(module):
         hit = names & MUTATIONS
         if hit:
             mutating[fname] = hit
-    if module == "oracle_mesh_read_return_routes.py":
+    if module == "oracle_mesh_presence.py":
         assert mutating.get("_record_mesh_presence") == {"complete_claim_from_observation"}
     missing = []
     for fname, hits in mutating.items():
