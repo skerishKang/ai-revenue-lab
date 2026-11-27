@@ -92,7 +92,7 @@ def _progress_label(kind: str, *, stage: str | None = None, tool_name: Any = Non
             "executing": "PC 작업 중",
             "result": "PC 결과 확인 중",
         }[stage or ""]
-    return "작업 진행 중"
+    return "작업 중"
 
 
 class ProgressFrameBuilder:

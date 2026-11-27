@@ -18,7 +18,7 @@ def test_interaction_polish_is_presentation_only_and_public_safe() -> None:
     assert "요청을 준비하고 있습니다." not in source
     assert 'if (next === phases.PREPARING) return "";' in source
     assert "답변을 전달하고 있습니다." in source
-    assert "답변 생성을 취소하고 있습니다." in source
+    assert "답변 만들기를 취소하고 있습니다." in source
     assert "파일을 안전하게 확인하고 있습니다." in source
 
     forbidden = (
@@ -40,8 +40,8 @@ def test_terminal_copy_and_focus_recovery_are_distinct_without_new_execution_sem
     source = interaction_js()
     assert 'state === "completed" ? "true" : "false"' in source
     assert 'state !== "timed_out"' in source
-    assert "응답 시간이 지났습니다." in source
-    assert "정해진 시간 안에 응답이 완료되지 않았습니다." in source
+    assert "답이 늦었습니다." in source
+    assert "정해진 시간 안에 답이 완료되지 않았습니다." in source
     assert "focusComposer" in source
     assert 'cancelButton.setAttribute("aria-busy", "true")' in source
     assert 'retry.setAttribute("aria-busy", "true")' in source

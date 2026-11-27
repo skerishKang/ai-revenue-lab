@@ -145,7 +145,7 @@ def test_heartbeat_projection_is_rate_limited_to_five_seconds():
     second = builder.from_engine_record(heartbeat)
 
     assert first == {"type": "progress", "kind": "heartbeat", "sequence": 1,
-                    "label": "작업 진행 중", "elapsed_ms": 10000}
+                    "label": "작업 중", "elapsed_ms": 10000}
     assert suppressed is None
     assert second["sequence"] == 2
 
@@ -180,7 +180,7 @@ def test_ndjson_answer_forwards_sanitized_progress_before_deltas_and_done():
     ]
     assert [frame["label"] for frame in progress] == [
         "질문 확인 중", "질문 확인 중", "답변 방향 확인", "웹 확인 중", "PC 요청 접수",
-        "PC 작업 중", "작업 진행 중", "웹 확인 완료",
+        "PC 작업 중", "작업 중", "웹 확인 완료",
     ]
     serialized = json.dumps(frames, ensure_ascii=False)
     for private_value in ("raw prompt", "private-run", "private-trace", "private-pc", "private-dispatch"):

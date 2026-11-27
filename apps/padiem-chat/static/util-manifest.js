@@ -76,7 +76,7 @@
       slashCommand: "/축사",
       name: { ko: "축사·인사말", en: "Congratulatory address" },
       chip: { ko: "축사·인사말", en: "Address" },
-      desc: { ko: "행사 축사·인사말 초안 생성·저장", en: "Draft and save an address for an event" },
+      desc: { ko: "행사 축사·인사말 초안 만들기·저장", en: "Draft and save an address for an event" },
       fields: [
         fld("event", "text", true, false, "행사명", "Event name",
           "예: 제78주년 광복절 기념식", "e.g. 78th Liberation Day Ceremony",
@@ -155,7 +155,7 @@
       slashCommand: "/회의정리",
       name: { ko: "회의정리·활동집", en: "Meeting notes" },
       chip: { ko: "회의정리", en: "Meeting" },
-      desc: { ko: "회의 요약·책/활동집 누적 생성", en: "Summaries and an accumulating activity book" },
+      desc: { ko: "회의 요약·책/활동집 누적 만들기", en: "Summaries and an accumulating activity book" },
       fields: [
         fld("title", "text", true, false, "회의명", "Meeting title",
           "예: 10월 주민 민원 회의", "e.g. October community review",

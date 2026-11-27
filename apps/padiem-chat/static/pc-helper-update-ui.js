@@ -19,7 +19,7 @@
   function language() { return document.documentElement.lang?.startsWith("en") ? "en" : "ko"; }
   const copy = {
     ko: {auto: "자동 업데이트", newVersion: "PC 연결 새 버전이 있어요", now: "지금 업데이트",
-      required: "업데이트 후 사용할 수 있어요", close: "닫기", failed: "요청을 완료하지 못했어요. PC 연결을 확인해 주세요.",
+      required: "업데이트 후 사용할 수 있어요", close: "닫기", failed: "보내지 못했어요. PC 연결을 확인해 주세요.",
       sent: "PC에 요청을 보냈어요.", install: "자동 업데이트 포함(설정에서 끌 수 있음)", pending: "PC에 적용 중"},
     en: {auto: "Automatic updates", newVersion: "A new PC Connect version is available", now: "Update now",
       required: "Update to use PC commands", close: "Dismiss", failed: "Couldn't complete the request. Check the PC connection.",
