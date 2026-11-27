@@ -55,7 +55,7 @@
         // session expired; the server's own message says the walk.
         return "로그인이 오래돼 PC 연결 확인이 필요합니다. 로그아웃 후 다시 로그인해 주세요.";
       case "upstream_timeout":
-        return "응답 시간이 초과되었습니다. 다시 시도해 주세요.";
+        return "답이 정해진 시간 안에 오지 않았습니다. 다시 시도해 주세요.";
       case "custom_credential_required":
         return "먼저 API 키를 등록해 주세요.";
       case "custom_key_invalid":
@@ -74,19 +74,19 @@
             return "HWPX 파일 형식을 확인해 주세요.";
           case "암호화된 문서라 열 수 없습니다. 암호를 풀고 다시 올려 주세요.":
             return "암호화된 문서라 열 수 없습니다. 암호를 풀고 다시 올려 주세요.";
-          case "암호화된 DOCX는 현재 첨부할 수 없습니다.":
-            return "암호화된 DOCX는 현재 첨부할 수 없습니다.";
-          case "암호화된 PDF는 현재 첨부할 수 없습니다.":
-            return "암호화된 PDF는 현재 첨부할 수 없습니다.";
-          case "암호화된 PPTX는 현재 첨부할 수 없습니다.":
-            return "암호화된 PPTX는 현재 첨부할 수 없습니다.";
-          case "암호화된 XLSX는 현재 첨부할 수 없습니다.":
-            return "암호화된 XLSX는 현재 첨부할 수 없습니다.";
-          case "암호화된 문서는 현재 첨부할 수 없습니다.":
-            return "암호화된 문서는 현재 첨부할 수 없습니다.";
+          case "암호화된 DOCX는 현재 붙일 수 없습니다.":
+            return "암호화된 DOCX는 현재 붙일 수 없습니다.";
+          case "암호화된 PDF는 현재 붙일 수 없습니다.":
+            return "암호화된 PDF는 현재 붙일 수 없습니다.";
+          case "암호화된 PPTX는 현재 붙일 수 없습니다.":
+            return "암호화된 PPTX는 현재 붙일 수 없습니다.";
+          case "암호화된 XLSX는 현재 붙일 수 없습니다.":
+            return "암호화된 XLSX는 현재 붙일 수 없습니다.";
+          case "암호화된 문서는 현재 붙일 수 없습니다.":
+            return "암호화된 문서는 현재 붙일 수 없습니다.";
         }
       case "input_schema_rejected":
-        return "요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.";
+        return "보낸 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.";
       case "orchestration_not_applicable":
         // The lane handed the turn back (connector-tool routing) or the
         // fallback could not finish. The user copy stays one general retry
@@ -138,7 +138,7 @@
   }
 
   async function readSseEvents(response, onEvent) {
-    if (!response.body || typeof response.body.getReader !== "function") throw new Error("스트리밍 응답을 읽을 수 없습니다.");
+    if (!response.body || typeof response.body.getReader !== "function") throw new Error("스트리밍 답을 읽을 수 없습니다.");
     const reader = response.body.getReader();
     const decoder = new TextDecoder("utf-8");
     const ndjson = /application\/(?:x-)?ndjson/i.test(response.headers?.get("content-type") || "");
@@ -229,7 +229,7 @@
         await consume(parseRecord(buffer));
         buffer = "";
       }
-      if (buffer.trim()) throw new Error("AI 스트리밍 응답이 완전히 끝나지 않았습니다.");
+      if (buffer.trim()) throw new Error("AI 스트리밍 답이 완전히 끝나지 않았습니다.");
     } finally {
       if (!reachedEof || stoppedEarly) {
         try { await reader.cancel(); } catch (_) { /* no-op */ }
@@ -353,7 +353,7 @@
     if (!binary) return { body: JSON.stringify(wire), contentType: "application/json" };
     const metadata = { ...wire, attachments: [{ type: attachment.type, name: attachment.name, media_type: attachment.media_type }] };
     const header = new TextEncoder().encode(JSON.stringify(metadata));
-    if (header.byteLength > 65536) throw new Error("첨부 메타데이터가 너무 큽니다.");
+    if (header.byteLength > 65536) throw new Error("붙인 파일 정보가 너무 큽니다.");
     const prefix = new Uint8Array(4);
     new DataView(prefix.buffer).setUint32(0, header.byteLength, false);
     return {
@@ -549,7 +549,7 @@
       throw paused;
     }
     if (typeof data.answer !== "string" || !data.answer) {
-      throw new Error("AI 작업 응답을 확인할 수 없습니다.");
+      throw new Error("AI 작업 답을 확인할 수 없습니다.");
     }
     return syntheticSseResponse(data);
   }
@@ -595,7 +595,7 @@
     const contentType = (response.headers.get("content-type") || "").toLowerCase();
     if (!response.ok || !contentType.startsWith("text/event-stream")) {
       const data = await response.json().catch(() => null);
-      const error = errorFor(data, "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요.");
+      const error = errorFor(data, "AI 작업을 하지 못했습니다. 다시 시도해 주세요.");
       // #3566: preserve ONLY the closed, source-owned rate-limit classification
       // for Claw presentation. Never trust a provider message as the category.
       if (response.status === 502 && data?.error?.code === "engine_execution_failed" &&
@@ -642,7 +642,7 @@
   // #6742: server NDJSON line reader kept as a small testable transport helper.
   async function readOrchestrationNdjson(response, onFrame) {
     if (!response || !response.body || typeof response.body.getReader !== "function") {
-      throw new Error("스트림 응답을 읽을 수 없습니다.");
+      throw new Error("스트림 답을 읽을 수 없습니다.");
     }
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
@@ -724,7 +724,7 @@
       throw paused;
     }
     if (typeof data.answer !== "string" || !data.answer) {
-      throw new Error("AI 작업 응답을 확인할 수 없습니다.");
+      throw new Error("AI 작업 답을 확인할 수 없습니다.");
     }
     return syntheticSseResponse(data);
   }

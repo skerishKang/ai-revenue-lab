@@ -842,7 +842,7 @@ def test_engine_progress_ndjson_frames_render_in_status_order(browser, server):
         wire,
     )
     assert rendered == [
-        "질문 확인 중", "질문 확인 중", "웹 확인 중", "PC 작업 중", "작업 진행 중", "PC 작업 완료",
+        "질문 확인 중", "질문 확인 중", "웹 확인 중", "PC 작업 중", "작업 중", "PC 작업 완료",
     ]
     assert not errors, errors
     page.close()

@@ -98,7 +98,7 @@ console.log(JSON.stringify({preview, terminals:PadiemChatCapabilityPresentation.
     assert preview["terminal"] == {
         "key": "timed_out",
         "state": "timed_out",
-        "label": "응답 시간이 지나 작업을 마치지 못했습니다.",
+        "label": "답이 늦어 작업을 마치지 못했습니다.",
     }
     assert set(result["terminals"]) == {"completed", "failed", "cancelled", "timed_out"}
 

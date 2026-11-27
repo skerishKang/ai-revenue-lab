@@ -116,14 +116,14 @@ def test_hover_hints_use_the_shared_chip_tooltip_not_the_native_title():
     assert 'button.setAttribute("data-padiem-tooltip", label);' in OUTPUTS
     assert "button.title = label;" not in OUTPUTS
     # The composer action icons moved to the same chip.
-    assert 'data-padiem-tooltip="파일 첨부"' in HTML
+    assert 'data-padiem-tooltip="파일 붙이기"' in HTML
     # #6783 removed the composer's manual search controls, so the search
     # button — and with it its chip tooltip — no longer exists anywhere in
     # the composer HTML; the remaining actions keep theirs.
     assert 'data-padiem-tooltip="웹 검색"' not in HTML
     assert "웹 검색" not in HTML
     assert 'data-padiem-tooltip="모델 선택"' in HTML
-    assert 'data-padiem-tooltip="메시지 전송"' in HTML
+    assert 'data-padiem-tooltip="메시지 보내기"' in HTML
 
 
 def test_static_reference_mirror_stays_byte_pinned():
