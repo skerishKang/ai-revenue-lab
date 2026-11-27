@@ -102,64 +102,47 @@ from .claw_routes import (
     _resolve_intake_session_reference,
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
-from .request_telemetry import default_emitter, emit_stage_event
+from .request_telemetry import default_emitter
 from .auth_routes import auth_ready, current_user_id
 from .history import HISTORY_PREVIEW_SUFFIX, HistoryContextIncomplete, validate_conversation_id, PRODUCT_SCOPE_CHAT
 
-# This is the existing Chat HTTP resource envelope, not a provider/model cap.
-# The separate P01 Engine ingress guard remains in force until #4383 is resolved.
-# #4379: the Claw request body carries no PADIEM byte total. The reader
-# stays incremental.
-MAX_CLAW_GENERAL_BODY_BYTES: int | None = None
-# Kept importable for older clients; None means no Claw-general pilot text cap.
-MAX_CLAW_GENERAL_MESSAGE_CHARS: int | None = None
-MAX_CLAW_GENERAL_MESSAGES: int | None = None
-# #4379: the owned prior context is not cut to a PADIEM transport envelope.
-# The Engine applies its own request contract; nothing is silently truncated.
-P01_ENGINE_REQUEST_ENVELOPE_BYTES: int | None = None
-CLAW_LIVE_REQUEST_HEADER = "X-Padiem-Claw-Live"
-CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
+# #7809: the shared contract constants, the stage timing and the terminal response
+# assembly live in their own modules; every name other code imports is re-exported
+# here, so importers (and the tests that patch these names) keep working unchanged.
+from .claw_general_contract import (
+    MAX_CLAW_GENERAL_BODY_BYTES,
+    MAX_CLAW_GENERAL_MESSAGE_CHARS,
+    MAX_CLAW_GENERAL_MESSAGES,
+    P01_ENGINE_REQUEST_ENVELOPE_BYTES,
+    CLAW_LIVE_REQUEST_HEADER,
+    CLAW_LIVE_REQUEST_MARKER,
+    _MODEL_HOLD_ERROR_CODES,
+    _MODEL_HOLD_USER_MESSAGE,
+)
+from .claw_general_stage import (
+    CLAW_STAGE_ROUTE,
+    CLAW_STAGE_HISTORY,
+    CLAW_STAGE_SESSION,
+    CLAW_STAGE_DRIVE,
+    CLAW_STAGE_PC_CONTEXT,
+    CLAW_STAGE_CATALOG,
+    CLAW_STAGE_QUOTA,
+    CLAW_STAGE_JUDGEMENT,
+    CLAW_STAGE_ANSWER,
+    CLAW_STAGE_PERSIST,
+    _claw_stage,
+    _claw_timed,
+)
+from .claw_general_response import (
+    CLAW_EVIDENCE_REQUEST_HEADER,
+    CLAW_EVIDENCE_MARKER,
+    _claw_evidence_response_headers,
+    _claw_general_sse,
+)
+
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
 # Same canonical device identity grammar the Broker device directory and the
 # saved PC preference expose, including the composed Mesh node identity.
-
-
-# #5554: bounded per-stage timing for the Claw turn. The route already had a
-# whole-request duration, which cannot say which of the (many) serial Engine,
-# D1 and provider steps actually held the answer. These stage events use the
-# existing request telemetry contract: a fixed stage name, a duration and the
-# request id only - never the message, model response, session or file text.
-CLAW_STAGE_ROUTE = "claw.route"
-CLAW_STAGE_HISTORY = "claw.history"
-CLAW_STAGE_SESSION = "claw.b54_session"
-CLAW_STAGE_DRIVE = "claw.drive"
-CLAW_STAGE_PC_CONTEXT = "claw.pc_context"
-CLAW_STAGE_CATALOG = "claw.catalog"
-CLAW_STAGE_QUOTA = "claw.quota"
-CLAW_STAGE_JUDGEMENT = "claw.search_judgement"
-CLAW_STAGE_ANSWER = "claw.answer"
-CLAW_STAGE_PERSIST = "claw.persist"
-
-
-def _claw_stage(stage: str, started: float, *, outcome: str = "ok") -> None:
-    """Emit one bounded stage duration; telemetry never fails the turn."""
-    try:
-        emit_stage_event(
-            stage=stage,
-            outcome=outcome,
-            duration_ms=(time.perf_counter() - started) * 1000.0,
-        )
-    except Exception:
-        pass
-
-
-async def _claw_timed(stage: str, awaitable: Any) -> Any:
-    """Await one preflight read and record its own duration."""
-    started = time.perf_counter()
-    try:
-        return await awaitable
-    finally:
-        _claw_stage(stage, started)
 
 
 async def _no_session_read() -> None:
@@ -226,126 +209,6 @@ def _combine_system_context(*parts: str | None) -> str | None:
     """
     blocks = [part for part in parts if isinstance(part, str) and part]
     return "\n\n".join(blocks) if blocks else None
-
-
-# NO_EXECUTABLE_ROUTE product HOLD (#3568/#3566): these adapter codes mean the
-# run was refused before any Engine/B14/provider dispatch because the selected
-# tier has no executable route yet. They are product states, not engine
-# failures, so they must not surface as a generic 502 engine error.
-_MODEL_HOLD_ERROR_CODES = frozenset({"tier_hold", "max_tier_hold"})
-_MODEL_HOLD_USER_MESSAGE = (
-    "선택한 AI 모델을 현재 사용할 수 없습니다. 다른 모델을 선택해 주세요."
-)
-
-# #3655 one-shot canary evidence seam. The final Production canary needs the
-# existing correlation/route refs projected to the caller, but the normal user
-# surface must stay unchanged. Evidence headers are therefore emitted ONLY when
-# the request carries the exact opt-in marker below (the owner one-shot harness
-# sets it); every value is grammar-checked and omitted when it does not match.
-# Values are opaque refs/counts from existing P01/B14 metadata seams — never
-# prompts, answers, credentials, or free text.
-CLAW_EVIDENCE_REQUEST_HEADER = "X-Padiem-Claw-Evidence"
-CLAW_EVIDENCE_MARKER = "one-shot"
-_CLAW_RUN_ID_RE = re.compile(r"^run_[0-9a-f]{24}$")
-_EVIDENCE_VALUE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$")
-# B14 reports its selected route as `platform:<provider>/<model>`, so the
-# route header keeps the same bounded grammar plus `/`. Rejecting it dropped
-# the header for every real B14 route and left the canary without its
-# selected-route evidence (#5484).
-_CLAW_SELECTED_ROUTE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_./:-]{0,79}$")
-
-
-def _evidence_header(
-    name: str,
-    value: Any,
-    pattern: re.Pattern[str] = _EVIDENCE_VALUE_RE,
-) -> tuple[str, str] | None:
-    if not isinstance(value, str) or not pattern.fullmatch(value):
-        return None
-    return name, value
-
-
-def _claw_evidence_response_headers(claw_run_id: str | None, outcome: Any) -> dict[str, str]:
-    """Bounded opt-in canary evidence headers (#3655).
-
-    Emitted only in evidence mode. A value that fails its grammar is omitted
-    rather than degraded, so the canary can never record a fabricated ref.
-    """
-    headers: dict[str, str] = {}
-    run_pair = _evidence_header("X-Padiem-Claw-Run-Id", claw_run_id, _CLAW_RUN_ID_RE)
-    if run_pair is not None:
-        headers[run_pair[0]] = run_pair[1]
-    if outcome is None:
-        return headers
-    orch_pair = _evidence_header(
-        "X-Padiem-Orchestration-Run-Id", getattr(outcome, "p01_run_id", None)
-    )
-    if orch_pair is not None:
-        headers[orch_pair[0]] = orch_pair[1]
-    route_pair = _evidence_header(
-        "X-Padiem-Selected-Route-Id",
-        getattr(outcome, "selected_route_id", None),
-        _CLAW_SELECTED_ROUTE_ID_RE,
-    )
-    if route_pair is not None:
-        headers[route_pair[0]] = route_pair[1]
-    attempts = getattr(outcome, "provider_attempt_count", None)
-    if isinstance(attempts, int) and not isinstance(attempts, bool) and 0 <= attempts <= 99:
-        headers["X-Padiem-Provider-Attempts"] = str(attempts)
-    fallback_used = getattr(outcome, "fallback_used", None)
-    if isinstance(fallback_used, bool):
-        headers["X-Padiem-Fallback-Used"] = "true" if fallback_used else "false"
-    return headers
-
-
-def _sse_frame(event: str, payload: dict[str, Any]) -> bytes:
-    data = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    return f"event: {event}\ndata: {data}\n\n".encode("utf-8")
-
-
-def _claw_general_sse(
-    answer: str,
-    evidence_headers: dict[str, str] | None = None,
-    *,
-    history: tuple[dict[str, object], ...] = (),
-    conversation_id: str | None = None,
-    sources: tuple[dict[str, str], ...] = (),
-    pending_run_id: str | None = None,
-) -> Response:
-    """Bounded terminal SSE, optionally preceded by real *post-execution* history.
-
-    The current Engine client is synchronous: all P01 events are only available
-    AFTER the run. Never misrepresent this event history as live progress.
-    Legacy clients still see their canonical delta + done frames unchanged.
-    """
-    headers = {"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"}
-    if evidence_headers:
-        headers.update(evidence_headers)
-    frames = b""
-    if isinstance(history, tuple) and len(history) <= 128:
-        # Fixed public fields only: no free-form message/metadata/tool input.
-        keys = ("event_id", "run_id", "trace_id", "app_id", "kind", "sequence", "timestamp_iso")
-        for event in history:
-            if not isinstance(event, dict) or any(key not in event for key in keys):
-                frames = b""  # fail closed on malformed provider/history data
-                break
-            frames += _sse_frame("p01_event", {
-                **{key: event[key] for key in keys}, "delivery": "post_execution",
-            })
-    terminal = {"done": True}
-    if pending_run_id is not None:
-        terminal.update({"pc_pending": True, "run_id": pending_run_id})
-    if conversation_id is not None:
-        terminal["conversation_id"] = conversation_id
-    if sources:
-        terminal["sources"] = list(sources)
-    frames += _sse_frame("delta", {"delta": answer}) + _sse_frame("done", terminal)
-    return Response(
-        frames,
-        status_code=200,
-        media_type="text/event-stream",
-        headers=headers,
-    )
 
 
 def _claw_general_user_text(data: dict[str, Any]) -> tuple[str | None, JSONResponse | None]:
