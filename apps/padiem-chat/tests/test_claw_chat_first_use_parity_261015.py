@@ -1,3 +1,4 @@
+from _r5_function_source import definition_source
 """Owner-approved Chat/Claw one composer / card frame boundary."""
 # #8060: shipped reads live in _support; the markup and CSS checks stay.
 from _support import claw_chat_first_use_source as sheets
@@ -57,5 +58,5 @@ def test_approved_memory_stays_out_of_first_screen_without_deleting_owner_data()
     assert 'const onLanding = deps.clawWorkspace?.dataset.view === "general"' in memory_mod
     assert '&& !onLanding;' in memory_mod
     assert 'loadApprovedMemoryList()' in memory_mod
-    assert 'app.syncApprovedMemoryVisibility()' in APP
+    assert 'deps.syncApprovedMemoryVisibility()' in definition_source('openSavedConversation')
     assert 'id="clawApprovedMemory"' in HTML

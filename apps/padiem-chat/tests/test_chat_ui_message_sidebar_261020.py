@@ -1,3 +1,4 @@
+from _r5_function_source import definition_source
 """Chat message UI + sidebar single-cell regression guard (2026-10-20).
 
 Owner decision (2026-10-20) covered three surfaces in one change:
@@ -91,11 +92,12 @@ def test_user_actions_are_always_visible_without_hover():
 
 
 def test_answer_carries_a_completion_time_and_restored_turns_invent_none():
-    assert "article.dataset.completedAt" in APP
+    conv = sheets.sheet("chat-conversation-module.js")
+    assert "article.dataset.completedAt" in conv
     assert 'clock.className = "answer-action-time"' in OUTPUTS
     assert "const completedAt = article.dataset.completedAt" in OUTPUTS
     # A restored conversation is rendered without a live stamp.
-    assert "addUserMessage(item.content, null, { restored: true })" in APP
+    assert "deps.addUserMessage(item.content, null, { restored: true })" in definition_source("openSavedConversation")
     conv = sheets.sheet("chat-conversation-module.js")  # #7216 R5 step 5a
     assert "if (restored) {" in conv
 

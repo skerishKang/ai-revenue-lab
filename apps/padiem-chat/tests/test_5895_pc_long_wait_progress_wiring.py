@@ -242,8 +242,8 @@ function makeHarness(waitOutcome) {
     # the restore does not wait on the unfinished run.
     shipped = combined_source()
     restore = shipped[shipped.index("async function openSavedConversation("):]
-    restore = restore[:restore.index("  // #4471:")]
-    call = restore.index("void pcRunModuleInstance.resumeUnfinishedPcRun(data.conversation.id);")
+    restore = restore[:restore.index("\n  }")]
+    call = restore.index("void deps.resumeUnfinishedPcRun(data.conversation.id);")
     assert restore.index("data.conversation.messages.forEach") < call
     assert call < restore.index("window.__padiemConversationMotion?.resume?.()")
 

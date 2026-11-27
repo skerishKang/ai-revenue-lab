@@ -1044,7 +1044,7 @@ def test_the_terminal_outcome_stays_in_the_badge(browser, server):
           const duringBadge = article.querySelector('[data-runtime-label]');
           const during = {hidden: duringBadge.hidden, text: duringBadge.textContent.trim()};
           // The turn ends with its own outcome copy.
-          lifecycle.applyRuntimeLabel(article, '생성 취소됨', 'status');
+          lifecycle.applyRuntimeLabel(article, '만들기 취소됨', 'status');
           lifecycle.set(article, 'cancelled');
           const afterBadge = article.querySelector('[data-runtime-label]');
           const card = article.querySelector('.capability-kit');
@@ -1064,7 +1064,7 @@ def test_the_terminal_outcome_stays_in_the_badge(browser, server):
     assert state["during"]["hidden"] is True, state
     # When the turn ends the badge carries the outcome exactly once.
     assert state["afterHidden"] is False, state
-    assert state["afterText"] == "생성 취소됨", state
+    assert state["afterText"] == "만들기 취소됨", state
     # The plain lane's card does not repeat the outcome.
     assert state["cardTerminal"] is False, state
     assert not errors, errors

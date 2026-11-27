@@ -894,3 +894,136 @@ def test_failed_refresh_logs_its_bounded_cause(rig, monkeypatch, caplog):
     _run_to_receipt(app, queue, history, store, exit_code=None, termination="no_exit_code")
     assert db.execute("SELECT outcome FROM pc_helper_maintenance_jobs").fetchone()[0] == "registration_failed"
     assert "reason=registration_failed detail=unexpected_helper_task_12_getitem" in caplog.text
+
+
+
+# --- #8772: identity Durable Object writes from the maintenance round --------
+
+
+def _count_owner_checks(monkeypatch):
+    calls = []
+    inner = host.maintenance_owner_context
+
+    def counting(app, uid):
+        calls.append(uid)
+        return inner(app, uid)
+
+    monkeypatch.setattr(host, "maintenance_owner_context", counting)
+    return calls
+
+
+def test_unclaimable_pc_skips_live_owner_reads_8772(rig, monkeypatch, caplog):
+    """A stopped attempt cannot be claimed, so no owner/identity read runs."""
+    app, queue, history, flags, store, db = rig
+    history.failed = True  # lost write response: terminal, never retried
+
+    async def run():
+        await host.maintenance_round(app, ENV, store)
+        assert len(history.rows) == 1
+        assert db.execute("SELECT stopped FROM pc_helper_auto_attempts").fetchone()[0] == 1
+        calls = _count_owner_checks(monkeypatch)
+        flags["reads"].clear()
+        caplog.clear()
+        for _ in range(5):
+            queue.now += timedelta(seconds=60)
+            await host.maintenance_round(app, ENV, store)
+        assert calls == [] and flags["reads"] == []
+        assert len(history.rows) == 1
+        lines = [r.getMessage() for r in caplog.records
+                 if r.getMessage().startswith("pc_maintenance_candidate ")
+                 and "managed=yes" in r.getMessage()]
+        assert len(lines) == 5
+        assert all("outcome=reservation_denied" in line and "owner_session=not_checked" in line
+                   for line in lines)
+    asyncio.run(run())
+
+
+def test_claimable_pc_still_checks_owner_live_every_round_8772(rig, monkeypatch):
+    """The skip never caches an owner answer: revocation is seen at once."""
+    app, queue, history, flags, store, db = rig
+    calls = _count_owner_checks(monkeypatch)
+    flags["session"] = False
+
+    async def run():
+        for _ in range(3):
+            await host.maintenance_round(app, ENV, store)
+        # Deferred for a missing owner, still claimable: checked every round.
+        assert len(calls) == 3 and not history.rows
+        flags["session"] = True
+        await host.maintenance_round(app, ENV, store)
+        # Owner back: the very next round dispatches, with the live rechecks.
+        assert len(history.rows) == 1 and len(calls) >= 4 + 2
+    asyncio.run(run())
+
+
+def test_revoked_owner_is_refused_before_write_after_precheck_8772(rig, monkeypatch):
+    """Reservable is only a filter; the dispatch recheck still refuses."""
+    app, queue, history, flags, store, db = rig
+    flags["revoked_after_run"] = True
+
+    async def run():
+        await host.maintenance_round(app, ENV, store)
+        assert not history.rows
+    asyncio.run(run())
+
+
+
+# --- #8772: two-speed cadence -------------------------------------------------
+
+
+def test_cadence_idle_fast_while_in_flight_then_idle_again_8772(rig, monkeypatch):
+    app, queue, history, flags, store, db = rig
+
+    async def original(*args, **kw):
+        return "PADIEM_HELPER_REFRESH:updated:registered"
+
+    monkeypatch.setattr("app.mcp_gateway_shell._read_original", original)
+    assert (host.IDLE_INTERVAL, host.INTERVAL) == (900, 60)
+    # The values the command lifetime and observation window are tuned to.
+    assert host.TTL == 300 and host.VERIFY_SECONDS == 600
+
+    async def run():
+        # Nothing reserved or queued: slow cadence.
+        flags["session"] = False  # owner deferred, no attempt in flight
+        await host.maintenance_round(app, ENV, store)
+        assert await host.next_delay(store) == 900
+        flags["session"] = True
+        start = queue.now
+        await host.maintenance_round(app, ENV, store)
+        assert len(history.rows) == 1
+        assert await host.next_delay(store) == 60
+        # Drive the real loop timing: every wait is what next_delay returns.
+        history.done = True
+        steps = 0
+        while await host.next_delay(store) == 60:
+            queue.now += timedelta(seconds=60)
+            queue.state["updater_source_sha256"] = SOURCE_SHA256
+            await host.maintenance_round(app, ENV, store)
+            steps += 1
+            assert steps < 10
+        outcome = db.execute("SELECT outcome FROM pc_helper_maintenance_jobs").fetchone()[0]
+        assert outcome == "verified"
+        # Verified inside the 600 s deadline, then back to the slow cadence.
+        assert (queue.now - start).total_seconds() <= host.VERIFY_SECONDS
+        assert await host.next_delay(store) == 900
+    asyncio.run(run())
+
+
+def test_unnotified_terminal_job_and_unknown_state_stay_fast_8772(rig, monkeypatch):
+    app, queue, history, flags, store, db = rig
+    history.failed = True  # terminal dispatch_unconfirmed
+
+    async def run():
+        await host.maintenance_round(app, ENV, store)
+        db.execute("UPDATE pc_helper_maintenance_jobs SET notified=0")
+        db.commit()
+        assert await host.next_delay(store) == 60
+        db.execute("UPDATE pc_helper_maintenance_jobs SET notified=1")
+        db.commit()
+        assert await host.next_delay(store) == 900
+
+        class Broken:
+            async def in_flight(self):
+                raise RuntimeError("db unavailable")
+        assert await host.next_delay(Broken()) == 60
+    asyncio.run(run())

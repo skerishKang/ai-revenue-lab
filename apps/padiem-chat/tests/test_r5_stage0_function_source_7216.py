@@ -25,10 +25,14 @@ from _r5_function_source import (
 
 # A1~A7에서 옮겨질 app.js 구역 함수(이동 전)와 이미 분리된 모듈 함수(이동 후).
 APP_SIDE_NAMES = (
-    "submitPrompt",
-    "buildRetryBox",
-)
+    "resumeAndroidHandoff",
+ )
 MODULE_SIDE_NAMES = (
+    "submitPrompt",
+    "openSavedConversation",
+    "clawGeneralRequestActive",
+    "storedRegenerateRequest",
+    "buildRetryBox",
     "openClawAutomation",       # chat-automation-module.js (R5 A1)
     "loadClawAutomationRules",  # chat-automation-module.js (R5 A1)
     "renderClawRunCard",        # chat-run-history-module.js (R5 A2)

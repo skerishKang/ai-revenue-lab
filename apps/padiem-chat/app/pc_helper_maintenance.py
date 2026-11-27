@@ -210,6 +210,28 @@ class MaintenanceAttemptStore:
             device_id, source_sha256, now)
         return bool(rows)
 
+    async def reservable(self, *, device_id, source_sha256):
+        """Read-only mirror of ``reserve``'s predicate (#8772).
+
+        True when ``reserve`` could claim this PC/source right now. The round
+        uses it to skip the live owner authority reads for a PC that cannot be
+        claimed anyway; it never grants anything. ``reserve`` remains the only
+        atomic claim, and a claimed PC still gets the full live owner check.
+        """
+        if not self._valid(device_id, source_sha256):
+            return False
+        rows = await self._rows(
+            "SELECT 1 AS reservable WHERE (SELECT count(*) FROM pc_helper_auto_attempts "
+            "WHERE stopped=0 AND last_reason LIKE 'reserved:%') < ? "
+            "AND NOT EXISTS (SELECT 1 FROM pc_helper_auto_attempts WHERE device_id=? "
+            "AND stopped=0 AND last_reason LIKE 'reserved:%') "
+            "AND NOT EXISTS (SELECT 1 FROM pc_helper_auto_attempts WHERE device_id=? "
+            "AND source_sha256=? AND NOT (stopped=0 "
+            "AND COALESCE(last_reason,'') IN ('owner_unresolved','retryable_precontact') "
+            "AND attempts<=?))",
+            MAX_ACTIVE, device_id, device_id, source_sha256, MAX_PRECONTACT_RETRIES)
+        return bool(rows)
+
     async def reserve(self, *, device_id, source_sha256, now):
         if not self._valid(device_id, source_sha256):
             return None

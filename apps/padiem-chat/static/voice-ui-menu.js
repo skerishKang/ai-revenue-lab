@@ -40,7 +40,7 @@
     return localeText(entry.key, ko() ? entry.ko : entry.en);
   }
   const pickerTitle = () => localeText("voice-mode", ko() ? "음성 모드" : "Voice mode");
-  const sendTitle = () => localeText("send-tooltip", ko() ? "메시지 전송" : "Send message");
+  const sendTitle = () => localeText("send-tooltip", ko() ? "메시지 보내기" : "Send message");
   const sendLabel = () => localeText("send", ko() ? "메시지 보내기" : "Send message");
 
   let menu = null;

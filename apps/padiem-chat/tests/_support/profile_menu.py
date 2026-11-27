@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 HTML = sheet("index.html")
 APP = sheet("app.js")
+SETTINGS = sheet("chat-settings-module.js")
 MODULE = sheet("chat-profile-menu-module.js")
 CSS = sheet("sidebar-utility.css")
 TOKENS = sheet("padiem-tokens.css")

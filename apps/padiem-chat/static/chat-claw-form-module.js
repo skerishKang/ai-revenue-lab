@@ -8,6 +8,24 @@
     create(deps) {
       // Manual submit is the only path that posts the preview request; the
       // execute and retry buttons share the single run entry point.
+      function wireModeChips(state) {
+        if (deps.clawManualForm) {
+          const modeChips = deps.clawManualForm.querySelectorAll(".claw-chip[data-claw-action]");
+          modeChips.forEach((chip) => {
+            chip.addEventListener("click", () => {
+              const action = chip.dataset.clawAction;
+              if (deps.clawAction && action) deps.clawAction.value = action;
+              modeChips.forEach((other) => {
+                other.setAttribute("aria-pressed", other === chip ? "true" : "false");
+              });
+              state.clawLastAction = action || null;
+              deps.input.focus();
+            });
+          });
+          // Keyboard: chips are buttons so Enter/Space already work; ensure roving focus stays visible.
+        }
+      }
+
       function wireManualForm() {
         // Single artifact handler: reads the current dataset at click time (no
         // per-result listener leak), and is the only control wired to the download.
@@ -124,7 +142,7 @@
         });
       }
 
-      return { wireManualForm, wireExecuteControls };
+      return { wireModeChips, wireManualForm, wireExecuteControls };
     },
   };
 })();

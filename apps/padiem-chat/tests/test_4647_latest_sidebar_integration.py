@@ -83,7 +83,7 @@ def test_meeting_interception_does_not_fork_the_shared_composer_submit():
     # with no shell-state branch. The meeting module owns the interception with
     # its own capture-phase listener.
     handler = handler_view("app.js", 'form.addEventListener("submit"')
-    assert ("submitPrompt", "input.value") in handler["call_args"]
+    assert ("entry.submitPrompt", "input.value") in handler["call_args"]
     assert "dataset.state" not in handler["member_chains"]
     assert "PadiemMeetingCapture" not in handler["identifiers"]
     capture = js_view("meeting-capture.js")

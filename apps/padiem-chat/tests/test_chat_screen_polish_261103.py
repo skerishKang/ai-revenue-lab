@@ -683,8 +683,8 @@ def test_copy_corrections_live_in_locale_keys() -> None:
 
 
 def test_stored_conversation_hint_is_a_key_not_a_literal() -> None:
-    app = claw_static.sheet("app.js")
-    assert 'uiT("stored-conversation-hint")' in app
+    app = claw_static.sheet("chat-conversation-module.js")
+    assert 'deps.uiT("stored-conversation-hint")' in app
     assert 'chip.dataset.localeTitle = "stored-conversation-hint"' in app
     assert "이전에 저장한 대화를 불러왔습니다" not in app
 

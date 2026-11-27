@@ -18,7 +18,8 @@ def css() -> str:
 
 def app() -> str:
     return (claw_static.sheet("app.js") + "\n"
-            + claw_static.sheet("chat-history-module.js"))
+            + claw_static.sheet("chat-history-module.js") + "\n"
+            + claw_static.sheet("chat-project-module.js"))
 
 
 def search() -> str:

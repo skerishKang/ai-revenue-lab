@@ -133,7 +133,7 @@ html[data-theme="padiem-glass"] .project-file-card,
 html[data-theme="padiem-glass"] .rich-response:not(.assistant-content > .rich-response),
 html[data-theme="padiem-glass"] .route-details,
 html[data-theme="padiem-glass"] .reference-note {
-  background-color: var(--glass-card-surface) !important;
+  background-color: var(--glass-card-surface);
   backdrop-filter: blur(26px) saturate(104%);
   -webkit-backdrop-filter: blur(26px) saturate(104%);
 }
@@ -453,8 +453,8 @@ html[data-theme="padiem-glass"] .assistant-content > .rich-response {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 html[data-theme="padiem-glass"] .answer-actions {
@@ -826,7 +826,7 @@ html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-
   border: 0;
   border-radius: 6px;
   background: none;
-  color: #53606c !important;
+  color: var(--glass-portrait-answer-action-ink);
   font-size: 13px;
 }
 /* The answer meta row follows the user turn row: the same 4px row gap and the

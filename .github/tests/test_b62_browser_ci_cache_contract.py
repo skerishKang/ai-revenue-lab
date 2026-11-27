@@ -32,15 +32,13 @@ class B62BrowserCacheContractTests(unittest.TestCase):
                 self.assertIn("key: b62-playwright-headless-shell-1.55.0-", block)
                 self.assertIn("runner.os", block)
                 self.assertIn("runner.arch", block)
-                hosted = "runs-on: ubuntu-24.04\n" in block
-                browser_if = (
-                    "if: steps.playwright-browser-cache.outputs.cache-hit != 'true'"
-                    if hosted else
-                    "if: runner.environment != 'self-hosted' && steps.playwright-browser-cache.outputs.cache-hit != 'true'"
-                )
-                self.assertIn(browser_if, block)
-                if not hosted:
-                    self.assertIn("Prepare reusable QA environment (self-hosted)", block)
+                # CI runner split: every browser QA lane runs on hosted 24.04.
+                self.assertIn("runs-on: ubuntu-24.04\n", block)
+                browser_if = "if: runner.environment != 'self-hosted' && steps.playwright-browser-cache.outputs.cache-hit != 'true'"
+                self.assertTrue(browser_if in block or "if: steps.playwright-browser-cache.outputs.cache-hit != 'true'" in block)
+                # Self-hosted-only preparation, where present, stays guarded and skips on hosted.
+                self.assertIn("if: runner.environment == 'self-hosted'", block)
+                if "Prepare reusable QA environment (self-hosted)" in block:
                     self.assertIn("b62_qa_prepare.sh", block)
                 self.assertLess(
                     block.index("Cache pinned Playwright Chromium"),

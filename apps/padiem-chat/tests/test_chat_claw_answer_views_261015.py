@@ -62,11 +62,12 @@ def test_regenerate_replays_through_the_guarded_request_path() -> None:
     assert app.count("window.PadiemChatRegenerate = Object.freeze") == 1
     assert "lastCompletedAnswerRequest" in app
     # Latest-completed-only, still connected, lifecycle-completed, no overlap.
-    assert "stored.article !== article" in app
-    assert "article.isConnected" in app
-    assert "isCompleted(article)" in app
-    assert "if (inFlight) return null;" in app
-    assert 'querySelectorAll(".assistant-message")' in app
+    guard = definition_source("storedRegenerateRequest")
+    assert "stored.article !== article" in guard
+    assert "article.isConnected" in guard
+    assert "isCompleted(article)" in guard
+    assert "if (deps.inFlight) return null;" in guard
+    assert 'querySelectorAll(".assistant-message")' in guard
     # Same guarded path as a fresh submit; no duplicate user bubble.
     # B7: requestAnswer is reached through the module registry
     # (app.provide("streaming")) — the app.js one-line forwarder is gone.

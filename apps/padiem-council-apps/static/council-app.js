@@ -394,17 +394,21 @@
       options.pid, options.name, options.text, "text/plain", options.kind,
     );
     if (first.failure) return first;
-    if (!first.conflict) return { file: first.file };
+    if (!first.conflict) { markSaved(); return { file: first.file }; }
     const files = await listProjectFiles(options.pid);
     const suggested = nextFreeName(options.name, files.map((f) => f.name));
     const choice = await askSaveChoice(options.anchor, options.name, suggested);
     if (choice === "overwrite") {
       const replaced = await overwriteProjectFile(options.pid, first.conflict.id, options.text, options.kind);
-      return replaced.failure ? replaced : { file: replaced.file };
+      if (replaced.failure) return replaced;
+      markSaved();
+      return { file: replaced.file };
     }
     if (choice === "new") {
       const second = await saveProjectFile(options.pid, suggested, options.text, "text/plain", options.kind);
-      return second.failure ? second : { file: second.file };
+      if (second.failure) return second;
+      markSaved();
+      return { file: second.file };
     }
     return { none: true };
   }
@@ -446,9 +450,9 @@
     documentExportLoading = new Promise((resolve, reject) => {
       const head = document.head || document.body;
       const script = document.createElement("script");
-      script.src = "./static/document-export.js";
       // ?v=<content hash> from the served map; the bare URL stays the fallback.
-      script.src = versionedAsset(script.src);
+      // Version the relative string first: reading script.src back is absolute.
+      script.src = versionedAsset("./static/document-export.js");
       script.addEventListener("load", () => {
         if (window.PadiemDocumentExport) resolve(window.PadiemDocumentExport);
         else reject(new Error("document-export-unavailable"));
@@ -474,22 +478,18 @@
   }
 
   function resultExportBlocks(kind, text, meta) {
+    // #7575: every download rides the same markdown-to-document conversion in
+    // document-export.js. The book keeps its first-line-title contract; the
+    // other three results take the title from their form.
     const lib = window.PadiemDocumentExport;
-    if (kind === "book") {
-      // 활동집: 첫 줄이 제목(북 파일명 규칙과 같은 줄), "N."·"제N장" 줄은
-      // 소제목으로, 나머지는 문단으로 — 초안의 구조를 살린다.
-      return lib.blocksFromText(text, { firstLineTitle: true, headings: true });
-    }
-    const blocks = [{ kind: "title", text: meta.title }];
-    String(text || "").replace(/\r\n?/g, "\n").split("\n").forEach((line) => {
-      const trimmed = line.trim();
-      if (!trimmed) {
-        if (blocks.length && blocks[blocks.length - 1].kind !== "blank") blocks.push({ kind: "blank" });
-        return;
+    if (lib && typeof lib.blocksFromText === "function") {
+      const blocks = lib.blocksFromText(text, { firstLineTitle: kind === "book", headings: true });
+      if (kind !== "book" && meta && meta.title && (!blocks.length || blocks[0].kind !== "title")) {
+        blocks.unshift({ kind: "title", text: meta.title });
       }
-      blocks.push({ kind: "para", text: trimmed });
-    });
-    return blocks;
+      return blocks;
+    }
+    return [{ kind: "para", text: String(text || "") }];
   }
 
   function wireResultDownloads(options) {
@@ -617,12 +617,26 @@
     return isTextDocument(file)
       && (hasDocKind(file, "book") || (!(file && file.doc_kind) && isStoredBook(file)));
   }
-  /** The book file name comes from the draft's own first line, so an edited
-   *  title re-saves under the edited name; unsafe characters are dropped. */
+  /** Strip markdown markers, a leading number and heading words such as
+   *  '제목 후보' from the draft's first line. What remains is the title the
+   *  writer actually sees; the document title and the file name share it. */
+  function bookTitleFromDraft(text) {
+    return String(text || "").split("\n", 1)[0].trim()
+      .replace(/^#{1,6}\s*/, "")
+      .replace(/^[-*+]\s+/, "")
+      .replace(/^[0-9]+\.\s*/, "")
+      .replace(/^(?:책\s*\/\s*)?(?:활동집\s*)?(?:책\s*)?제목\s*후보\s*[:：]?\s*/i, "")
+      .replace(/[\\/:*?"<>|]/g, "")
+      .trim();
+  }
   function bookBaseName(text) {
-    const firstLine = String(text || "").split("\n", 1)[0].replace(/^[0-9]+\.\s*/, "").trim();
-    const safe = firstLine.replace(/[\\/:*?"<>|]/g, "").replace(/\.*$/, "").slice(0, 40).trim();
-    return BOOK_PREFIX + (safe || "제목 미정");
+    const safe = fileNamePart(bookTitleFromDraft(text)).replace(/\.*$/, "").slice(0, 40).trim();
+    if (safe.length < 2) {
+      const from = document.getElementById("councilBookStart")?.value || "";
+      const to = document.getElementById("councilBookEnd")?.value || "";
+      return "활동집_" + (from && to ? from + "~" + to : "기간미정") + "_" + todayStamp();
+    }
+    return BOOK_PREFIX + safe;
   }
   function bookFileName(text) {
     return bookBaseName(text) + ".txt";
@@ -640,6 +654,65 @@
     line.setAttribute("aria-live", "polite");
     return line;
   }
+  // #7575: unfinished results must survive an accidental reload, and the
+  // visitor must see that generation actually finished.
+  let councilUnsaved = false;
+  function markUnsaved() { councilUnsaved = true; }
+  function markSaved() { councilUnsaved = false; }
+  function finishGeneration(line, result) {
+    markUnsaved();
+    if (line) setNotice(line, "초안이 준비됐습니다", "success");
+    if (result && typeof result.scrollIntoView === "function" && window.innerWidth && window.innerWidth <= 768) {
+      try { result.scrollIntoView({ block: "start" }); } catch (_) {}
+    }
+  }
+
+  function markRequiredFields() {
+    document.querySelectorAll(".council-form label").forEach((label) => {
+      const input = label.querySelector("input[required], textarea[required], select[required]");
+      if (!input) return;
+      const old = label.querySelector(".council-required");
+      if (old) old.remove();
+      // The label is a grid: a bare text node, the input and the marker would each
+      // become their own row. Wrap the label text and the marker in one inline item
+      // so "(필수)" sits on the same line as the label, above the input.
+      const textNodes = Array.from(label.childNodes)
+        .filter((node) => node.nodeType === 3 && node.textContent.trim());
+      const words = textNodes.map((node) => node.textContent.trim()).join(" ");
+      if (!words) return;
+      textNodes.forEach((node) => node.remove());
+      const wrap = el("span", "council-label-text", words + " ");
+      wrap.appendChild(el("span", "council-required", "(필수)"));
+      label.insertBefore(wrap, input);
+    });
+  }
+
+  function autoGrowResult(field) {
+    if (!field || typeof field.style === "undefined") return;
+    const grow = () => {
+      field.style.height = "auto";
+      field.style.height = Math.max(160, field.scrollHeight || 0) + "px";
+    };
+    field.addEventListener("input", grow);
+    field.__growResult = grow;
+    grow();
+    return grow;
+  }
+
+  /** Assign generated/restored text and immediately resize its result box. */
+  function setResultValue(field, text) {
+    field.value = text;
+    const grow = field.__growResult;
+    if (typeof grow === "function") {
+      grow();
+      // The result panel may still be hidden at this instant (a saved draft
+      // being opened, the first stream chunk). Re-measure once it is laid out.
+      if (typeof requestAnimationFrame === "function") requestAnimationFrame(grow);
+      else setTimeout(grow, 0);
+    }
+    return field.value;
+  }
+
   function setNotice(line, text, tone) {
     if (!line) return;
     line.textContent = text || "";
@@ -658,6 +731,7 @@
     output.id = options.outputId;
     output.rows = options.rows || 12;
     result.appendChild(output);
+    autoGrowResult(output);
     // The SNS preview sits between the draft and its action row.
     if (options.afterOutput) result.appendChild(options.afterOutput);
     const actions = el("div", "council-actions");
@@ -730,9 +804,9 @@
     photoResizeLoading = new Promise((resolve, reject) => {
       const head = document.head || document.body;
       const script = document.createElement("script");
-      script.src = "./static/photo-resize.js";
       // ?v=<content hash> from the served map; the bare URL stays the fallback.
-      script.src = versionedAsset(script.src);
+      // Version the relative string first: reading script.src back is absolute.
+      script.src = versionedAsset("./static/photo-resize.js");
       script.addEventListener("load", () => {
         if (window.PadiemPhotoResize) resolve(window.PadiemPhotoResize);
         else reject(new Error("photo-resize-unavailable"));
@@ -858,16 +932,15 @@
       if (head && !document.querySelector("link[data-council-pc-exchange]")) {
         const css = document.createElement("link");
         css.rel = "stylesheet";
-        css.href = "./static/pc-file-exchange.css";
         // ?v=<content hash> from the served map; the bare URL stays the fallback.
-        css.href = versionedAsset(css.href);
+        css.href = versionedAsset("./static/pc-file-exchange.css");
         css.setAttribute("data-council-pc-exchange", "1");
         head.appendChild(css);
       }
       const script = document.createElement("script");
-      script.src = "./static/pc-file-exchange.js";
       // ?v=<content hash> from the served map; the bare URL stays the fallback.
-      script.src = versionedAsset(script.src);
+      // Version the relative string first: reading script.src back is absolute.
+      script.src = versionedAsset("./static/pc-file-exchange.js");
       script.addEventListener("load", () => {
         if (window.PadiemPcFileExchange) resolve(window.PadiemPcFileExchange);
         else reject(new Error("pc-exchange-unavailable"));
@@ -890,9 +963,8 @@
       const head = document.head || document.body;
       const load = (src) => new Promise((done, fail) => {
         const script = document.createElement("script");
-        script.src = src;
         // ?v=<content hash> from the served map; the bare URL stays the fallback.
-        script.src = versionedAsset(script.src);
+        script.src = versionedAsset(src);
         script.addEventListener("load", done, { once: true });
         script.addEventListener("error", () => fail(new Error("project-upload-unavailable")), { once: true });
         head.appendChild(script);
@@ -1167,12 +1239,24 @@
 
   function wirePcSave(button, output, notice, baseName, document) {
     if (!button) return;
+    const hint = el("span", "council-pc-save-hint");
+    hint.id = (button.id || "pc-save") + "Hint";
+    hint.setAttribute("role", "status");
+    hint.hidden = true;
+    if (button.parentElement && typeof button.parentElement.appendChild === "function") {
+      button.parentElement.appendChild(hint);
+    }
+    const noPc = () => {
+      hint.textContent = PC_REF_COPY.saveNoPc;
+      hint.hidden = false;
+      setNoticeWithLink(notice, PC_REF_COPY.saveNoPc, PC_REF_COPY.connect, COMPUTER_CONNECT_HREF);
+    };
     button.addEventListener("click", async () => {
       if (!document) {
         // 텍스트: #5895의 원래 흐름 그대로.
         const outcome = await saveTextToPc(output.value, baseName(), () => setNotice(notice, PC_REF_COPY.saved, "info"));
         if (outcome === "no-pc") {
-          setNoticeWithLink(notice, PC_REF_COPY.saveNoPc, PC_REF_COPY.connect, COMPUTER_CONNECT_HREF);
+          noPc();
         } else if (outcome === "unavailable") {
           setNotice(notice, PC_REF_COPY.saveUnavailable, "error");
         }
@@ -1182,7 +1266,7 @@
       // 올리지 않고 안내하고, 형식을 고르게 한다(기본은 한글, 첫 버튼).
       const linked = await pcLinked();
       if (linked !== true) {
-        setNoticeWithLink(notice, PC_REF_COPY.saveNoPc, PC_REF_COPY.connect, COMPUTER_CONNECT_HREF);
+        noPc();
         return;
       }
       pcSaveChooser(notice, {
@@ -1191,7 +1275,7 @@
         text: async () => {
           const outcome = await saveTextToPc(output.value, baseName(), () => setNotice(notice, PC_REF_COPY.saved, "info"));
           if (outcome === "no-pc") {
-            setNoticeWithLink(notice, PC_REF_COPY.saveNoPc, PC_REF_COPY.connect, COMPUTER_CONNECT_HREF);
+            noPc();
           } else if (outcome === "unavailable") {
             setNotice(notice, PC_REF_COPY.saveUnavailable, "error");
           }
@@ -1380,6 +1464,8 @@
       refFieldset.appendChild(el("legend", null, "참고 글"));
       pcSection = createPcReferenceSection();
       refFieldset.appendChild(pcSection.box);
+      refFieldset.appendChild(el("p", "council-pc-ref-help",
+        "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 예전 글을 가져옵니다."));
       form.appendChild(refFieldset);
 
       const primary = el("fieldset", "council-fieldset");
@@ -1506,7 +1592,7 @@
           btn.addEventListener("click", async () => {
             const content = await fetchProjectFile(pid, f.id);
             if (typeof content === "string") {
-              output.value = content;
+              setResultValue(output, content);
               result.hidden = false;
               failed = false;
               setNotice(notice, f.name + "를 열었습니다. 같은 이름으로 저장하면 새 이름/덮어쓰기를 묻습니다.", "info");
@@ -1549,14 +1635,14 @@
           const answer = await apiChat(
             buildSpeechPrompt(form, pcSection ? pcSection.read() : ""), "speech",
             (partial) => {
-              output.value = partial;
+              setResultValue(output, partial);
               result.hidden = false;
             },
           );
-          output.value = answer;
+          setResultValue(output, answer);
           result.hidden = false;
           failed = false;
-          setNotice(notice, "");
+          finishGeneration(notice, result);
         } catch (err) {
           failed = true;
           setNoticeWithRetry(notice, generationFailureText(err), runGeneration);
@@ -1600,8 +1686,8 @@
         },
       });
       saveBtn.addEventListener("click", async () => {
-        const text = output.value.trim();
-        if (!text || saveBtn.disabled) return;
+        const text = output.value;
+        if (!text.trim() || saveBtn.disabled) return;
         const pid = await councilProject.ensure();
         if (!pid) {
           setNotice(notice, "저장할 프로젝트를 찾지 못했습니다. 잠시 후 다시 시도해 주세요.", "error");
@@ -1691,6 +1777,8 @@
       refFieldset.appendChild(el("legend", null, "참고 글"));
       pcSection = createPcReferenceSection();
       refFieldset.appendChild(pcSection.box);
+      refFieldset.appendChild(el("p", "council-pc-ref-help",
+        "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 예전 글을 가져옵니다."));
       form.appendChild(refFieldset);
       const fields = [
         ["event", "행사명", "text", true, "예: 주민 정원 사업 설명회"],
@@ -1740,6 +1828,7 @@
         b.type = "button";
         b.dataset.platform = key;
         b.addEventListener("click", () => {
+          // 문체는 탭마다 두지 않는다. 폼은 그대로이므로 선택값은 자연스럽게 유지된다.
           tabDiv.querySelectorAll(".council-sns-tab").forEach((x) => x.classList.remove("active"));
           b.classList.add("active");
           platform = key;
@@ -1850,7 +1939,7 @@
           // The saved draft rides with the roster so re-entry restores the
           // text too; the last explicit 저장 wins.
           if (carriedDraft && carriedDraft.text) {
-            roster.draft = { text: carriedDraft.text, platform: carriedDraft.platform || platform };
+            roster.draft = { text: carriedDraft.text, platform: carriedDraft.platform || platform, tone: carriedDraft.tone || toneSel.value };
           }
           const existing = await listProjectFiles(pid);
           const previous = existing.find((f) => f.name === PHOTO_ROSTER_NAME);
@@ -2067,9 +2156,26 @@
       const previewBox = el("div", "council-sns-preview");
       previewBox.id = "councilSnsPreview";
       previewBox.hidden = true;
+      const editBtn = el("button", "council-sns-edit", "고치기");
+      editBtn.type = "button";
+      editBtn.id = "councilSnsEdit";
+      const snsView = el("div", "council-sns-view");
+      snsView.append(editBtn, previewBox);
+      let snsEditing = false;
+      const showSnsView = (editing) => {
+        snsEditing = !!editing;
+        output.hidden = !!editing === false;
+        previewBox.hidden = !!editing;
+        editBtn.textContent = editing ? "미리보기로" : "고치기";
+        // The textarea is hidden while the preview shows, so its scrollHeight
+        // was 0 when the answer arrived. Resize once it becomes visible.
+        if (editing && typeof output.__growResult === "function") output.__growResult();
+        if (!editing) renderPreview();
+      };
+      editBtn.addEventListener("click", () => showSnsView(!snsEditing));
       const panel = resultPanel({
         id: "councilSnsResult", outputId: "councilSnsOutput", rows: 12,
-        titleNode: title, afterOutput: previewBox, copyId: "councilSnsCopy",
+        titleNode: title, afterOutput: snsView, copyId: "councilSnsCopy",
         saveId: "councilSnsSave", downloadId: "councilSnsDownload",
         downloadHwpxId: "councilSnsDownloadHwpx", downloadDocxId: "councilSnsDownloadDocx",
         pcSaveId: "councilSnsPcSave",
@@ -2106,7 +2212,7 @@
               setNotice(notice, "저장된 SNS 글의 본문을 읽을 수 없습니다.", "error");
               return;
             }
-            output.value = content;
+            setResultValue(output, content);
             result.hidden = false;
             failed = false;
             refreshSave();
@@ -2157,9 +2263,13 @@
             // rides future roster rewrites, so a later photo change never
             // silently drops the saved text.
             lastSavedDraft = savedDraft;
+            if (savedDraft.tone) {
+              const toneOptions = Array.from(toneSel.querySelectorAll("option")).map((o) => o.value);
+              if (toneOptions.indexOf(savedDraft.tone) >= 0) toneSel.value = savedDraft.tone;
+            }
             result.hidden = false;
-            output.value = savedDraft.text;
-            previewBox.hidden = false;
+            setResultValue(output, savedDraft.text);
+            showSnsView(false);
             failed = false;
             refreshSave();
             if (savedDraft.platform && savedDraft.platform !== platform) {
@@ -2168,7 +2278,7 @@
               else { platform = savedDraft.platform; title.textContent = ({ blog: "블로그", facebook: "페이스북", instagram: "인스타그램" })[savedDraft.platform] + " 게시글"; }
             }
           }
-          if (savedDraft) renderPreview();
+          if (savedDraft) showSnsView(false);
           // Only the photos the roster names come back. A stale image file the
           // owner removed from the composition never resurrects itself just
           // because it is still stored in the project.
@@ -2205,24 +2315,22 @@
           const answer = await apiChat(
             buildSnsPrompt(form, platform, photos, pcSection ? pcSection.read() : ""), "sns",
             (partial) => {
-              output.value = partial;
+              setResultValue(output, partial);
               result.hidden = false;
-              previewBox.hidden = false;
-              renderPreview();
+              showSnsView(false);
             },
           );
-          output.value = answer;
+          setResultValue(output, answer);
           result.hidden = false;
-          previewBox.hidden = false;
+          showSnsView(false);
           failed = false;
-          setNotice(notice, "");
-          renderPreview();
+          finishGeneration(notice, result);
         } catch (err) {
           failed = true;
           setNoticeWithRetry(notice, generationFailureText(err), runGeneration);
           if (!String(output.value || "").trim()) {
             result.hidden = true;
-            previewBox.hidden = true;
+            showSnsView(true);
           }
         } finally {
           busy = false;
@@ -2238,7 +2346,7 @@
       /** SNS_행사명_날짜 (행사명이 비면 플랫폼 게시글 이름) — 저장·내려받기·PC 저장이 같은 줄기를 쓴다. */
       function snsStoredName() {
         const event = form.querySelector("[name=event]");
-        return "SNS_" + (fileNamePart(event ? event.value : "") || title.textContent || "게시글") + "_" + todayStamp();
+        return "SNS_" + tabNames[platform] + "_" + (fileNamePart(event ? event.value : "") || title.textContent || "게시글") + "_" + todayStamp();
       }
       dlB.addEventListener("click", () => {
         const text = String(output.value || "").trim();
@@ -2246,7 +2354,7 @@
       });
       wireResultDownloads({
         hwpxBtn: dlHwpxB, docxBtn: dlDocxB, kind: "sns",
-        baseName: () => "SNS_" + (title.textContent || "게시글") + "_" + todayStamp(),
+        baseName: () => "SNS_" + tabNames[platform] + "_" + (title.textContent || "게시글") + "_" + todayStamp(),
         title: () => title.textContent || "게시글",
         text: () => String(output.value || "").trim(),
       });
@@ -2286,7 +2394,7 @@
           setNotice(notice, "");
           // The saved draft rides in the roster so re-entry restores the
           // text and its platform, not only the photos.
-          lastSavedDraft = { text: text, platform: platform };
+          lastSavedDraft = { text: text, platform: platform, tone: toneSel.value };
           await writePhotoRoster(pid, lastSavedDraft);
           await refreshSnsList();
         } else if (outcome.failure) {
@@ -2339,7 +2447,21 @@
     prompt += "3. 각 장별 원고 초안 (200-400자)\n";
     prompt += "4. 마무리 인사\n\n";
     prompt += "목차, 월별 활동, 주요 발언, 성과 요약을 각각 포함하세요. 발언과 성과는 기록에 근거가 있을 때만 작성하세요.\n\n";
-    prompt += "주의: 원본 기록에 없는 사건, 날짜, 발언을 사실처럼 추가하지 마세요. 근거가 있는 내용과 제안/해석을 구분하세요. 각 장 끝에 근거가 된 기록 파일명을 표시하세요.";
+    prompt += "주의: 원본 기록에 없는 사건, 날짜, 발언을 사실처럼 추가하지 마세요. 근거가 있는 내용과 제안/해석을 구분하세요. 각 장 끝에 근거가 된 기록 파일명을 표시하세요.\n";
+    prompt += "선택한 기록에 있는 사실만 쓸 것. '검토·예정'은 '검토·예정'으로 그대로 쓸 것. 기간·횟수·성과를 부풀리지 말 것.";
+    return prompt;
+  }
+
+  function buildBookFactCheckPrompt(contents, draft) {
+    let prompt = "아래는 사용자가 선택한 회의 기록 원문과, 그 기록으로 만든 활동집 초안입니다.\n\n";
+    prompt += "[원문]\n" + contents.join("\n\n") + "\n\n";
+    prompt += "[초안]\n" + draft + "\n\n";
+    prompt += "초안의 각 문장이 원문에 근거가 있는지 확인하라.\n";
+    prompt += "근거가 없거나 원문보다 강한 표현(계획→완료, 검토→결정, 날짜·기간·횟수 추가)은 원문 수준으로 고쳐라.\n";
+    prompt += "원문이 '확인한다'면 '수리한다·완료'로 바꾸지 마라. 원문이 '다시 정하기로 했다'면 '예고·확정'으로 바꾸지 마라.\n";
+    prompt += "원문에 없는 끝 날짜·기간(예: ~11월 말까지)을 만들지 마라. '계획·검토·예정·확인 예정'은 그 낱말 그대로 둘 것.\n";
+    prompt += "고친 초안 전체를 먼저 쓰고, 마지막 줄에 '고친 곳: N' 을 쓴다.\n";
+    prompt += "그 밖의 말은 쓰지 마라.";
     return prompt;
   }
 
@@ -2367,6 +2489,8 @@
         },
       });
       refFieldset.appendChild(pcSection.box);
+      refFieldset.appendChild(el("p", "council-pc-ref-help",
+        "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 회의 메모를 가져옵니다."));
       form.appendChild(refFieldset);
       const fields = [
         ["title", "회의명", "text", true, "예: 10월 주민 민원 회의"],
@@ -2429,13 +2553,13 @@
         setNotice(notice, "생성 중…", "busy");
         try {
           const answer = await apiChat(buildMeetingPrompt(form), "meeting", (partial) => {
-            output.value = partial;
+            setResultValue(output, partial);
             result.hidden = false;
           });
-          output.value = answer;
+          setResultValue(output, answer);
           result.hidden = false;
           failed = false;
-          setNotice(notice, "");
+          finishGeneration(notice, result);
         } catch (err) {
           failed = true;
           setNoticeWithRetry(notice, generationFailureText(err), runGeneration);
@@ -2500,6 +2624,7 @@
         if (outcome.file) {
           formSaveB.textContent = "저장됨";
           setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
+          markSaved();
           setNotice(notice, "");
           await refreshArchive(archive);
         } else if (outcome.failure) {
@@ -2517,17 +2642,36 @@
         // family; documents from before kinds existed keep the name rule.
         const meetingFiles = files.filter(isMeetingFile).filter(sameCountry);
         const bookFiles = files.filter(isBookFile);
+        const meetingMeta = {};
+        for (const file of meetingFiles) {
+          const content = await fetchProjectFile(pid, file.id);
+          const text = typeof content === "string" ? content : "";
+          const date = (text.match(/(?:^|\n)\s*회의\s*일시\s*[:：]\s*(\d{4}-\d{2}-\d{2})/m) || [])[1] || "";
+          meetingMeta[file.id] = {
+            name: storedName(file).replace(/\.txt$/i, ""),
+            date: date,
+          };
+        }
 
         // The book editor is built before the lists are drawn: a stored book has
         // to reopen into it even when no record exists in this project yet.
         const bookResult = el("div", "council-result");
         bookResult.id = "councilBookResult";
         bookResult.hidden = true;
+        const factCheck = el("p", "council-fact-check", "선택한 기록에 없는 내용이 없는지 사실관계를 확인해 주세요.");
+        factCheck.id = "councilBookFactCheck";
+        factCheck.setAttribute("role", "note");
+        const factResult = el("p", "council-book-fact-result");
+        factResult.id = "councilBookFactResult";
+        factResult.setAttribute("role", "status");
+        factResult.hidden = true;
+        bookResult.append(factCheck, factResult);
         bookResult.appendChild(el("h3", null, "활동집 초안"));
         const bookOutput = document.createElement("textarea");
         bookOutput.id = "councilBookOutput";
         bookOutput.rows = 16;
         bookResult.appendChild(bookOutput);
+        autoGrowResult(bookOutput);
         const bookNotice = noticeLine("councilBookNotice");
         const bookActions = el("div", "council-actions");
         const bookCopy = el("button", "council-primary", "복사");
@@ -2580,6 +2724,34 @@
           periodStatus.id = "councilBookPeriodStatus";
           periodStatus.setAttribute("role", "status");
           range.append(startLabel, endLabel, selectPeriod);
+          // One awaited selection path for the button and the quick pills.
+          // The dates were already read into meetingMeta while the archive was
+          // built, so a quick pill must not race a fresh file read.
+          let periodRun = Promise.resolve();
+          async function applyPeriod() {
+            if (!start.value || !end.value || start.value > end.value) {
+              periodStatus.textContent = "시작일과 종료일을 올바르게 선택해 주세요.";
+              return;
+            }
+            selectPeriod.disabled = true;
+            periodStatus.textContent = "회의 날짜를 확인하는 중입니다.";
+            try {
+              const selected = [];
+              let undated = 0;
+              for (const file of meetingFiles) {
+                const date = (meetingMeta[file.id] && meetingMeta[file.id].date) || "";
+                if (!date) { undated += 1; continue; }
+                if (date >= start.value && date <= end.value) selected.push(file.id);
+              }
+              ul.querySelectorAll(".council-book-check").forEach((cb) => { cb.checked = selected.includes(cb.value); });
+              periodStatus.textContent = selected.length + "건을 선택했습니다. 날짜를 확인할 수 없는 " + undated + "건은 직접 확인해 선택해 주세요.";
+            } catch (_) {
+              periodStatus.textContent = "회의 기록을 읽지 못해 기간을 적용하지 못했습니다. 다시 시도해 주세요.";
+            } finally {
+              selectPeriod.disabled = false;
+            }
+          }
+          const runPeriod = () => { periodRun = periodRun.then(applyPeriod); return periodRun; };
           // 기간 빠른 선택 — 시작/종료를 채우고 같은 선택 동작을 누른다.
           const iso = (d) => {
             const pad = (n) => String(n).padStart(2, "0");
@@ -2595,7 +2767,7 @@
               const [from, to] = pick(new Date());
               start.value = iso(from);
               end.value = iso(to);
-              void selectPeriod.click();
+              void runPeriod();
             });
             range.appendChild(quick);
           });
@@ -2622,22 +2794,22 @@
             // 좁은 화면에서 이름이 글자 중간에서 끊기지 않도록 이름과 글자 수를 나눈다.
             // 이름은 한 줄 말줄임, 글자 수는 오른쪽 고정 — 전체 이름은 버튼의
             // 텍스트와 aria-label 에 그대로 남아 화면 낭독기와 조사관이 읽는다.
-            const nameSpan = el("span", "council-archive-name", f.name + " ");
-            const countSpan = el("span", "council-archive-count",
-                                 "(" + (f.content_chars || 0) + "자)");
-            btn.append(nameSpan, countSpan);
-            btn.setAttribute("aria-label",
-                             f.name + " (" + (f.content_chars || 0) + "자)");
+            const meta = meetingMeta[f.id] || { name: storedName(f), date: "" };
+            const nameSpan = el("span", "council-archive-name", meta.name + " ");
+            const dateSpan = el("span", "council-archive-count",
+                                meta.date ? "(" + meta.date + ")" : "(일시 없음)");
+            btn.append(nameSpan, dateSpan);
+            btn.setAttribute("aria-label", meta.name + " " + (meta.date || "일시 없음"));
             btn.addEventListener("click", async () => {
               const content = await fetchProjectFile(pid, f.id);
               if (typeof content === "string") {
                 const savedDate = content.match(/^회의 일시: (\d{4}-\d{2}-\d{2}T\d{2}:\d{2})\n\n/);
                 if (savedDate) {
                   form.querySelector("[name=when]").value = savedDate[1];
-                  output.value = content.slice(savedDate[0].length);
+                  setResultValue(output, content.slice(savedDate[0].length));
                 } else {
                   form.querySelector("[name=when]").value = "";
-                  output.value = content;
+                  setResultValue(output, content);
                 }
                 // 다시 열기는 본문만이 아니라 회의명까지 되돌린다. 제목 칸을 비워 두면
                 // 내보내기 기본 이름이 "회의_회의_날짜"가 되고, 이어서 저장하면 이미 있는
@@ -2668,37 +2840,13 @@
               const next = li.nextElementSibling;
               if (next) ul.insertBefore(next, li);
             });
-            li.append(moveUp, moveDown);
+            const moves = el("span", "council-record-moves");
+            moves.append(moveUp, moveDown);
+            li.appendChild(moves);
             ul.appendChild(li);
           });
           arc.appendChild(ul);
-          selectPeriod.addEventListener("click", async () => {
-            if (!start.value || !end.value || start.value > end.value) {
-              periodStatus.textContent = "시작일과 종료일을 올바르게 선택해 주세요.";
-              return;
-            }
-            selectPeriod.disabled = true;
-            periodStatus.textContent = "회의 날짜를 확인하는 중입니다.";
-            try {
-              const selected = [];
-              let undated = 0;
-              for (const file of meetingFiles) {
-                const content = await fetchProjectFile(pid, file.id);
-                if (typeof content !== "string") throw new Error("읽기 실패");
-                // Only an explicit meeting date counts; upload time and dates
-                // in a filename or discussion do not establish the meeting date.
-                const match = content.match(/(?:^|\n)\s*회의\s*일시\s*[:：]\s*(\d{4}-\d{2}-\d{2})/m);
-                if (!match) { undated += 1; continue; }
-                if (match[1] >= start.value && match[1] <= end.value) selected.push(file.id);
-              }
-              ul.querySelectorAll(".council-book-check").forEach((cb) => { cb.checked = selected.includes(cb.value); });
-              periodStatus.textContent = selected.length + "건을 선택했습니다. 날짜를 확인할 수 없는 " + undated + "건은 직접 확인해 선택해 주세요.";
-            } catch (_) {
-              periodStatus.textContent = "회의 기록을 읽지 못해 기간을 적용하지 못했습니다. 다시 시도해 주세요.";
-            } finally {
-              selectPeriod.disabled = false;
-            }
-          });
+          selectPeriod.addEventListener("click", () => { void runPeriod(); });
         }
         arc.appendChild(bookNotice);
         arc.appendChild(bookResult);
@@ -2712,7 +2860,13 @@
 
         bookBtn.addEventListener("click", async () => {
           const checked = Array.from(document.querySelectorAll(".council-book-check:checked"));
-          if (!checked.length) { alert("선택된 기록이 없습니다."); return; }
+          if (!checked.length) {
+            setNotice(bookNotice, "기록을 하나 이상 골라 주세요.", "error");
+            if (typeof bookNotice.scrollIntoView === "function") {
+              try { bookNotice.scrollIntoView({ block: "nearest" }); } catch (_) {}
+            }
+            return;
+          }
           if (bookBusy) return;
           bookBusy = true;
           bookBtn.disabled = true;
@@ -2732,15 +2886,33 @@
               contents.push("[기록: " + data.file.name + "]\n" + data.file.content);
             }
             setNotice(bookNotice, "활동집 초안을 만드는 중…", "busy");
+            factResult.textContent = "";
+            factResult.hidden = true;
             stage = "generate";
             const answer = await apiChat(buildBookPrompt(contents), "meeting", (partial) => {
-              bookOutput.value = partial;
+              setResultValue(bookOutput, partial);
               bookResult.hidden = false;
             });
-            bookOutput.value = answer;
+            // Same stream route and util scope as the generation call: a second
+            // pass brings overstated sentences back to the source level.
+            let final = answer;
+            let factMessage = "";
+            try {
+              const checked = await apiChat(buildBookFactCheckPrompt(contents, answer), "meeting");
+              const countMatch = /(?:^|\n)\s*고친\s*곳\s*:\s*(\d+)\s*$/.exec(checked);
+              const count = countMatch ? Number(countMatch[1]) : 0;
+              final = (countMatch ? checked.slice(0, countMatch.index) : checked).replace(/\s+$/, "");
+              factMessage = count > 0 ? "원문과 대조해 " + count + "곳을 고쳤습니다" : "원문과 대조했습니다";
+            } catch (_) {
+              // Keep the first draft; only the notice tells the writer to check.
+              factMessage = "원문 대조를 하지 못했습니다. 사실관계를 직접 확인해 주세요";
+            }
+            setResultValue(bookOutput, final);
+            factResult.textContent = factMessage;
+            factResult.hidden = !factMessage;
             bookResult.hidden = false;
             bookFailed = false;
-            setNotice(bookNotice, "");
+            finishGeneration(bookNotice, bookResult);
           } catch (e) {
             // A record that could not be read is a concrete sentence; a
             // generation failure uses the shared Korean copy.
@@ -2767,7 +2939,7 @@
             const firstLine = String(bookOutput.value || "").split("\n", 1)[0].trim();
             return "활동집_" + (fileNamePart(firstLine.replace(/^[0-9]+\.\s*/, "")) || "초안");
           },
-          title: () => fileNamePart(String(bookOutput.value || "").split("\n", 1)[0].replace(/^[0-9]+\.\s*/, "")) || "활동집",
+          title: () => fileNamePart(bookTitleFromDraft(bookOutput.value)) || "활동집",
         });
         bookDl.addEventListener("click", () => {
           const text = String(bookOutput.value || "").trim();
@@ -2786,8 +2958,8 @@
         // flight and the list is refreshed from the server afterwards.
         let bookSaving = false;
         bookSave.addEventListener("click", async () => {
-          const text = bookOutput.value.trim();
-          if (!text || bookSaving || bookSave.disabled) return;
+          const text = bookOutput.value;
+          if (!text.trim() || bookSaving || bookSave.disabled) return;
           bookSaving = true;
           bookSave.disabled = true;
           bookSave.textContent = "저장 중…";
@@ -2840,7 +3012,7 @@
                 return;
               }
               bookResult.hidden = false;
-              bookOutput.value = content;
+              setResultValue(bookOutput, content);
               bookFailed = false;
               setNotice(bookNotice, "");
               refreshBookSave();
@@ -3108,9 +3280,13 @@
     } catch (_) { return {}; }
   })();
   function versionedAsset(url) {
-    const match = /^(?:\.\/|\/)?static\/(.+)$/.exec(url);
+    const raw = String(url || "");
+    // A script/link .src setter resolves the string to an absolute URL in a real
+    // browser (…/apps/council/static/x.js). Accept both that form and the local
+    // ./static/x.js form the loaders pass in.
+    const match = /(?:^|\/)static\/([^?#]+)/.exec(raw);
     const digest = match && ASSET_VERSIONS[match[1]];
-    return digest ? url.split("?")[0] + "?v=" + digest : url;
+    return digest ? raw.split("?")[0] + "?v=" + digest : raw;
   }
   function setBadge(text) { const node = host("councilAuthBadge"); if (node) node.textContent = text; }
   function setStatus(text) {
@@ -3123,7 +3299,7 @@
     const panel = host("councilAuthPanel");
     if (panel) panel.hidden = false;
     const action = host("councilAuthAction");
-    if (action) action.hidden = false;
+    if (action) { action.hidden = false; action.textContent = "로그인"; }
     setBadge(badge || "로그인 필요");
     if (message) setStatus(message);
   }
@@ -3131,7 +3307,7 @@
     const panel = host("councilAuthPanel");
     if (panel) panel.hidden = true;
     const action = host("councilAuthAction");
-    if (action) action.hidden = true;
+    if (action) { action.hidden = false; action.textContent = "로그인"; }
     setStatus("");
   }
 
@@ -3177,8 +3353,18 @@
     }
   }
 
+  function paintNavCurrent(tool) {
+    document.querySelectorAll("[data-nav]").forEach((item) => {
+      const active = item.getAttribute("data-nav") === tool;
+      if (typeof item.setAttribute !== "function") return;
+      if (active) item.setAttribute("aria-current", "page");
+      else if (typeof item.removeAttribute === "function") item.removeAttribute("aria-current");
+    });
+  }
+
   function applySelection(tool, moveFocus) {
     session.selected = tool;
+    paintNavCurrent(tool);
     TOOLS.forEach((key) => {
       const body = bodies[key];
       if (body) body.hidden = key !== tool;
@@ -3224,6 +3410,22 @@
 
   function bindCards() {
     if (session.bound) return;
+    document.querySelectorAll(".council-card").forEach((card) => {
+      card.addEventListener("click", (event) => {
+        const tool = card.dataset.tool || (card.id || "").replace(/^council-/, "");
+        if (TOOLS.indexOf(tool) < 0 || session.selected === tool) return;
+        let node = event && event.target;
+        const tags = ["BUTTON", "A", "INPUT", "TEXTAREA", "SELECT", "LABEL"];
+        while (node && node !== card) {
+          const cls = typeof node.className === "string" ? node.className : "";
+          if (cls.indexOf("council-card-body") >= 0) return;
+          if (tags.indexOf(String(node.tagName || "").toUpperCase()) >= 0) return;
+          node = node.parentElement;
+        }
+        if (!session.signedIn) { openLoginHere(tool); return; }
+        applySelection(tool, true);
+      });
+    });
     cardButtons().forEach((button) => {
       button.addEventListener("click", () => {
         const tool = button.dataset.tool;
@@ -3485,6 +3687,13 @@
   }
   function leaveWorkspace() {
     applySelection(null, false);
+    try { if (store()) store().removeItem("padiem-council-tool"); } catch (_) {}
+    try {
+      const loc = window.location;
+      if (loc && window.history && typeof window.history.replaceState === "function") {
+        window.history.replaceState(null, "", (loc.pathname || "/") + (loc.search || ""));
+      }
+    } catch (_) {}
     const first = cardButtons()[0];
     if (first && typeof first.focus === "function") first.focus();
     if (typeof window.scrollTo === "function") { try { window.scrollTo(0, 0); } catch (_) {} }
@@ -3587,6 +3796,16 @@
   }
 
   async function init() {
+    if (!session.unloadBound && typeof window.addEventListener === "function") {
+      session.unloadBound = true;
+      window.addEventListener("beforeunload", (event) => {
+        if (!councilUnsaved) return undefined;
+        const message = "저장하지 않은 결과가 있습니다. 페이지를 떠나시겠습니까?";
+        if (event && typeof event.preventDefault === "function") event.preventDefault();
+        if (event) event.returnValue = message;
+        return message;
+      });
+    }
     bodies = {
       speech: host("councilSpeechBody"),
       sns: host("councilSnsBody"),
@@ -3629,6 +3848,7 @@
     applyTheme(selectedCountry(), theme.style);
     await loadTierSelection(auth.memberGrade);
     buildToolPanels();
+    markRequiredFields();
     const tool = toolFromUrl() || rememberedTool();
     applySelection(TOOLS.indexOf(tool) >= 0 ? tool : null, false);
     return {
@@ -3658,6 +3878,15 @@
     speech: speechModule,
     sns: snsModule,
     meeting: meetingModule,
+    // Test seam: lets a harness call each dynamic loader and inspect the
+    // versioned src actually attached to the injected node.
+    _loaders: {
+      document: loadDocumentExport,
+      photo: loadPhotoResize,
+      pc: loadPcExchange,
+      project: loadProjectUpload,
+    },
+    _versionedAsset: versionedAsset,
   };
 
   if (document.readyState === "loading") {

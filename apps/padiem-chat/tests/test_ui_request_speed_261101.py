@@ -1,6 +1,8 @@
 """Real JS controlled-delay regressions; these are not production timings."""
 from __future__ import annotations
 
+from _r5_function_source import definition_source
+
 # #8060: shipped reads live in _support; assertions stay here.
 from _support.final_share_source import locale_source, read
 
@@ -28,7 +30,7 @@ def literal(path, name):
 
 def function(name, source=None):
     if source is None:
-        source = read(STATIC / "app.js")
+        source = definition_source(name)
     start = source.index("async function " + name + "(")
     depth = 0
     for index in range(source.index("{", start), len(source)):
@@ -175,6 +177,7 @@ const PRODUCT_CLAW='claw',PRODUCT_CHAT='chat';
 const conversationState={resetProduct(){},setProduct(){},setConversationId(){},appendMessage(){}};
 const messageList={replaceChildren(){}};const conversationArtifactContext=null;
 const clearAttachment=()=>{},renderProjectState=()=>{},refreshActiveProjectFileCount=()=>{};
+const projectModule={renderProjectState,refreshActiveProjectFileCount};
 const openClawWorkspace=()=>{},showConversation=()=>{},resumeUnfinishedPcRun=()=>{};
 // B7 18차+19차: the conversation piece is reached through the registry; this
 // harness mirrors the same path with the same stubs (clearAttachment,
@@ -197,6 +200,7 @@ const uiT=x=>x,setNote=message=>{throw Error(message)};
 // through it (success path does not call them, but the stub keeps the slice
 // executable).
 const coreModule=()=>({uiT,setNote, idleNote:()=>"idle"});
+const deps = {authState, inFlight, authViewEpoch, clawConversationLabelsRead, clawConversationIds, PRODUCT_CLAW, PRODUCT_CHAT, conversationState, messageList, conversationArtifactContext, clearAttachment, renderProjectState, refreshActiveProjectFileCount, openClawWorkspace, showConversation, resumeUnfinishedPcRun, syncApprovedMemoryVisibility, syncClawRunHistoryVisibility, input, closeSidebar, uiT, setNote, get conversationProduct(){return conversationProduct}, set conversationProduct(v){conversationProduct=v}, get activeProject(){return activeProject}, set activeProject(v){activeProject=v}, get activeProjectFileCount(){return activeProjectFileCount}, set activeProjectFileCount(v){activeProjectFileCount=v}, get clawArtifactShownFor(){return clawArtifactShownFor}, set clawArtifactShownFor(v){clawArtifactShownFor=v}};
 (async()=>{
 const pending=openSavedConversation(id);await flush();assert.equal(conversationProduct,'');
 clawConversationIds.add(id);labels.resolve();assert.equal(await pending,true);
@@ -268,3 +272,44 @@ console.log(JSON.stringify({deadlineMs:3000,keptPreviousDisplay:true,noAutomatic
                       "noAutomaticRetry": True, "denialClears": True}
 
 
+
+
+def test_entry_restores_all_four_app_closure_states():
+    # Execute the shipped accessors and actual registry, not copied setters.
+    from _r5_b6_wiring import create_block
+    from _r5_function_source import app_source
+    source = app_source()
+    shared = create_block(source, source.index("window.PadiemChatAppContext.create("))
+    result = run_node(PRELUDE + """
+const window = {};
+const document = {getElementById(){return null}};
+let authState={authenticated:true}, inFlight=false, authViewEpoch=1;
+let conversationProduct='chat', activeProject=null, activeProjectFileCount=17, clawArtifactShownFor='';
+const PRODUCT_CLAW='claw', PRODUCT_CHAT='chat', id='saved';
+const clawConversationIds=new Set([id]); let clawConversationLabelsRead=null;
+const project={id:'project'}, calls=[];
+const messageList={replaceChildren(){}}, input={focus(){}};
+const conversationArtifactContext=null;
+const conversationState={resetProduct(){},setProduct(){},setConversationId(){},appendMessage(){}};
+const fetch=async()=>({ok:true,json:async()=>({conversation:{id,project_id:project.id,messages:[]}})});
+const projectModule={renderProjectState(){calls.push([activeProject,activeProjectFileCount])},ensureProject:async()=>project,refreshActiveProjectFileCount(){}};
+const coreModule=()=>({uiT:x=>x,setNote:x=>{throw Error(x)}});
+const sidebar={closeSidebar(){}};
+const runHistory={syncClawRunHistoryVisibility(){}};
+""" + read(STATIC / "chat-app-context.js") + """
+const app=window.PadiemChatAppContext.create(""" + shared + """);
+app.provide('fixture', {ensureProject:projectModule.ensureProject,refreshActiveProjectFileCount:projectModule.refreshActiveProjectFileCount,clearAttachment(){},openClawWorkspace(){},showConversation(){},syncApprovedMemoryVisibility(){},resumeUnfinishedPcRun(){}});
+""" + read(STATIC / "chat-entry-module.js") + """
+const entry=app.provide('entry',window.PadiemChatEntryModule.create(app));
+(async()=>{
+assert.equal(await entry.openSavedConversation(id),true);
+assert.equal(conversationProduct,'claw');
+assert.equal(activeProject,project);
+assert.equal(activeProjectFileCount,0);
+assert.equal(clawArtifactShownFor,id);
+assert.deepEqual(calls,[[project,0]]);
+assert.equal(app.openSavedConversation,entry.openSavedConversation);
+console.log(JSON.stringify({ok:true}));
+})().catch(e=>{console.error(e);process.exitCode=1});
+""")
+    assert result == {"ok": True}

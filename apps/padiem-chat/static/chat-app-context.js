@@ -109,6 +109,14 @@
     "resetConversationView",
     "safeLocalUiMessage",
     "updateComposer",
+    // #7809 T2: conversation owns these existing shared accessors.
+    "failureCodeNote",
+    "renderWebGroundingNotice",
+    "revealErrorState",
+    // loadProjects / renderProjectState — the project module owns the project
+    // UI implementation; app.js accessors delegate to the same registry methods.
+    "loadProjects",
+    "renderProjectState",
   ]);
   window.PadiemChatAppContext = {
     create(shared) {

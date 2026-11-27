@@ -28,6 +28,7 @@ provider or Engine is contacted.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -108,13 +109,13 @@ def test_the_panel_no_longer_parks_one_screen_to_show_the_other() -> None:
 def test_a_claw_submit_carries_the_chat_conversation_id() -> None:
     submit = function_statements("submitPrompt", prefix="async function ")
     # The lane is still decided per submit…
-    assert "const product = clawGeneralRequest ? PRODUCT_CLAW : PRODUCT_CHAT;" in submit
+    assert "const product = clawGeneralRequest ? deps.PRODUCT_CLAW : deps.PRODUCT_CHAT;" in submit
     # …and the conversation comes from the one shared store.
     assert any("conversationState.getConversationId(product)" in statement for statement in submit)
     # A saved thread is loaded into that same store, whichever lane owns it.
     open_saved = function_statements("openSavedConversation")
-    assert "conversationState.resetProduct?.(targetProduct);" in open_saved
-    assert "conversationState.setConversationId(data.conversation.id, targetProduct);" in open_saved
+    assert "deps.conversationState.resetProduct?.(targetProduct);" in open_saved
+    assert "deps.conversationState.setConversationId(data.conversation.id, targetProduct);" in open_saved
 
 
 def test_the_server_still_keeps_one_scoped_record_for_both_lanes() -> None:
@@ -495,6 +496,15 @@ vm.runInContext(APP, sandbox, { filename: "app.js" });
 """
 
 
+def _node_env_with_module_preload() -> dict:
+    preload = Path(__file__).resolve().parents[1] / "tests" / "_node_appjs_modules_preload.js"
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    env = dict(os.environ)
+    if preload.as_posix() not in existing:
+        env["NODE_OPTIONS"] = f"{existing} --require {preload.as_posix()}".strip()
+    return env
+
+
 def _run_harness() -> dict:
     with tempfile.TemporaryDirectory() as tmp:
         harness = Path(tmp) / "harness.js"
@@ -503,6 +513,7 @@ def _run_harness() -> dict:
             ["node", str(harness), str(app_js_path()), str(state_js_path()), str(transport_js_path())],
             capture_output=True,
             text=True, encoding="utf-8",
+            env=_node_env_with_module_preload(),
         )
     assert completed.returncode == 0, completed.stdout + completed.stderr
     return json.loads(completed.stdout)

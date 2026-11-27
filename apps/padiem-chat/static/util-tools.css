@@ -194,7 +194,7 @@ textarea.util-input {
 .util-platform-tab[aria-pressed="true"] {
   background: var(--primary-bg);
   border-color: var(--primary-border);
-  color: #fff;
+  color: var(--util-tools-on-accent);
 }
 
 .util-platform-tab:focus-visible {
@@ -213,7 +213,7 @@ textarea.util-input {
   border: 1px solid var(--primary-border);
   border-radius: var(--radius-pill);
   background: var(--primary-bg);
-  color: #fff;
+  color: var(--util-tools-on-accent);
   font: inherit;
   font-size: 14px;
   font-weight: 700;
@@ -367,7 +367,7 @@ textarea.util-input {
 .util-result-generate {
   background: var(--primary-bg);
   border-color: var(--primary-border);
-  color: #fff;
+  color: var(--util-tools-on-accent);
 }
 
 .util-result-generate:hover:not(:disabled) {
@@ -399,7 +399,7 @@ textarea.util-input {
   border: 1px solid var(--primary-border);
   border-radius: var(--radius-pill);
   background: var(--primary-bg);
-  color: #fff;
+  color: var(--util-tools-on-accent);
   font: inherit;
   font-size: 14px;
   font-weight: 700;

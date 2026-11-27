@@ -182,7 +182,7 @@ const vm = require("vm");
 const path = require("path");
 const root = process.argv[1];
 // #7216 R5 A5a: safeClawErrorMessage 본문은 chat-claw-run-module.js로 옮겨졌다.
-const app = fs.readFileSync(path.join(root, "app.js"), "utf8") + "\n"
+const app = fs.readFileSync(path.join(root, "chat-conversation-module.js"), "utf8") + "\n"
   + fs.readFileSync(path.join(root, "chat-claw-run-module.js"), "utf8");
 
 function assert(condition, label) { if (!condition) throw Error(label); }
@@ -210,7 +210,7 @@ const mapperEnd = app.indexOf("\n        }", mapperStart) + 10;
 assert(mapperStart >= 0 && mapperEnd > mapperStart, "mapper located");
 const api = vm.runInNewContext(
   "(function(){" + app.slice(mapStart, mapEnd)
-    + "\nconst deps = { clawT, clawBoundedRefusalCopy };\n"
+    + "\nconst deps = { uiT, clawT, clawBoundedRefusalCopy };\n"
     + app.slice(mapperStart, mapperEnd)
     + "\nreturn { clawBoundedRefusalCopy, clawGeneralFailure, safeClawErrorMessage };\n})()",
   context,

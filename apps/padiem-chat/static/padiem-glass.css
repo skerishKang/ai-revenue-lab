@@ -55,7 +55,7 @@ html[data-theme="padiem-glass"] body::before {
 }
 
 html[data-theme="padiem-glass"] body::after {
-  opacity: .10;
+  opacity: var(--shared-six-panel-frame-grain-opacity);
   background-image:
     linear-gradient(rgba(255, 255, 255, .08) 1px, transparent 1px),
     linear-gradient(90deg, var(--surface-veil-faint) 1px, transparent 1px);

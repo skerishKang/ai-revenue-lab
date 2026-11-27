@@ -70,7 +70,11 @@ def css_facts() -> dict:
 
 
 def app_facts() -> dict:
-    source = _read("app.js") + _read("chat-history-module.js")
+    source = (
+        _read("app.js")
+        + _read("chat-history-module.js")
+        + _read("chat-project-module.js")
+    )
     return {
         "tokens": _present((
             'className = "history-actions-menu"',

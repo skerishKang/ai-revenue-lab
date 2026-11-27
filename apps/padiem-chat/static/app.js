@@ -6,6 +6,11 @@
   // keeps owning authState/shell/clawWorkspace and the shared functions
   // until R5 B6; they are mounted here as live accessors.
   const app = window.PadiemChatAppContext.create({
+    get clawConversationIds() { return clawConversationIds; },
+    get clawConversationLabelsRead() { return clawConversationLabelsRead; },
+    get selectedAttachments() { return selectedAttachments; },
+    set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; },
+    set selectedAttachments(value) { selectedAttachments = value; },
     get authState() { return authState; },
     set authState(value) { authState = value; },
     get shell() { return shell; },
@@ -19,8 +24,7 @@
     get mappedUiError() { return coreModule().mappedUiError; },
     get approvedMemoryErrorMessage() { return conversationModule().approvedMemoryErrorMessage; },
     get safeLocalUiMessage() { return conversationModule().safeLocalUiMessage; },
-    get failureCodeNote() { return failureCodeNote; },
-    get openSavedConversation() { return openSavedConversation; },
+    get failureCodeNote() { return conversationModule().failureCodeNote; },
     get downloadClawArtifact() { return clawRun.downloadClawArtifact; },
     get clawRunHistoryPdfControllers() { return clawRunHistoryPdfControllers; },
     get renderClawApprovalControls() { return clawRun.renderClawApprovalControls; },
@@ -43,6 +47,10 @@
     set activeClawRunId(value) { activeClawRunId = value; },
     get activeProject() { return activeProject; },
     set activeProject(value) { activeProject = value; },
+    get activeProjectFileCount() { return activeProjectFileCount; },
+    set activeProjectFileCount(value) { activeProjectFileCount = value; },
+    get projectsReady() { return projectsReady; },
+    set projectsReady(value) { projectsReady = value; },
     get activeRequestArticle() { return activeRequestArticle; },
     set activeRequestArticle(value) { activeRequestArticle = value; },
     get activeRequestCancelReason() { return activeRequestCancelReason; },
@@ -102,7 +110,7 @@
     get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
     set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
     get loadAuthStatus() { return authModule().loadAuthStatus; },
-    get loadProjects() { return loadProjects; },
+    get loadProjects() { return projectModule.loadProjects; },
     get loadRecentConversations() { return historyModule().loadRecentConversations; },
     get messageList() { return messageList; },
     get openAuthDialog() { return loginDialogModule().openAuthDialog; },
@@ -120,11 +128,11 @@
     get passwordResetToken() { return passwordResetToken; },
     set passwordResetToken(value) { passwordResetToken = value; },
     get profileToggle() { return profileToggle; },
-    get renderProjectState() { return renderProjectState; },
+    get renderProjectState() { return projectModule.renderProjectState; },
     get renderStreamError() { return conversationModule().renderStreamError; },
-    get renderWebGroundingNotice() { return renderWebGroundingNotice; },
+    get renderWebGroundingNotice() { return conversationModule().renderWebGroundingNotice; },
     get resetConversationView() { return conversationModule().resetConversationView; },
-    get revealErrorState() { return revealErrorState; },
+    get revealErrorState() { return conversationModule().revealErrorState; },
     get reviewedGoogleAuthorizationUrl() { return authModule().reviewedGoogleAuthorizationUrl; },
     get selectedProductTier() { return settings.selectedProductTier; },
     get setAuthFormError() { return loginDialogModule().setAuthFormError; },
@@ -204,11 +212,8 @@
     if (!historyModuleInstance) {
       historyModuleInstance = app.provide("history", window.PadiemChatHistoryModule.create(Object.setPrototypeOf({
 
-        get clawConversationIds() { return clawConversationIds; },
         get sidebarActionIcon() { return app.sidebarActionIcon; },
         get readClawRuns() { return app.readClawRuns; },
-        get clawConversationLabelsRead() { return clawConversationLabelsRead; },
-        set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; }
       
   }, app)));
     }
@@ -231,7 +236,6 @@
         get applyAuthState() { return authModule().applyAuthState; },
         get clawApprovalSessionToken() { return clawApprovalSessionToken; },
         set clawApprovalSessionToken(value) { clawApprovalSessionToken = value; },
-        get clearProjectsUI() { return clearProjectsUI; },
         get invalidateClawApprovalSession() { return authModule().invalidateClawApprovalSession; },
         get loginButton() { return loginButton; },
         get openClawRunTarget() { return navModuleInstance.openClawRunTarget; },
@@ -240,7 +244,6 @@
         get pendingNotificationRunId() { return pendingNotificationRunId; },
         set pendingNotificationRunId(value) { pendingNotificationRunId = value; },
         get profilePanel() { return loginDialogModule().profilePanelElement(); },
-        get projectsBadge() { return projectsBadge; },
         get resetAccountDeleteConfirm() { return accountModule().resetAccountDeleteConfirm; },
         get resolveSessionPresentation() { return authModule().resolveSessionPresentation; },
         get setLoginButtonCopy() { return authModule().setLoginButtonCopy; },
@@ -287,21 +290,16 @@
       conversationModuleInstance = app.provide("conversation", window.PadiemChatConversationModule.create(Object.setPrototypeOf({
 
         get accountInitial() { return authModule().accountInitial; },
-        get activeProjectFileCount() { return activeProjectFileCount; },
-        set activeProjectFileCount(value) { activeProjectFileCount = value; },
         get attachmentButton() { return attachmentButton; },
         get attachmentCapabilities() { return attachmentCapabilities; },
         get attachmentCountLimit() { return conversationModule().attachmentCountLimit; },
         get attachmentFileInput() { return attachmentFileInput; },
         get binaryDocuments() { return binaryDocuments; },
-        get buildRetryBox() { return buildRetryBox; },
+        get buildRetryBox() { return conversationModule().buildRetryBox; },
         get cancelStreamButton() { return cancelStreamButton; },
         get clearAttachment() { return conversationModule().clearAttachment; },
-        get editProjectButton() { return editProjectButton; },
-        get exitProject() { return exitProject; },
-        get exitProjectButton() { return exitProjectButton; },
         get extensionOf() { return coreModule().extensionOf; },
-        get failureStatusLabel() { return failureStatusLabel; },
+        get failureStatusLabel() { return conversationModule().failureStatusLabel; },
         get form() { return form; },
         get formatBytes() { return coreModule().formatBytes; },
         get formatClockTime() { return coreModule().formatClockTime; },
@@ -310,8 +308,6 @@
         get renderAttachmentChips() { return conversationModule().renderAttachmentChips; },
         get resetConversation() { return conversationModule().resetConversation; },
         get selectImage() { return coreModule().selectImage; },
-        get selectedAttachments() { return selectedAttachments; },
-        set selectedAttachments(value) { selectedAttachments = value; },
         get sendButton() { return sendButton; },
         get switchConversationProduct() { return navModuleInstance.switchConversationProduct; },
       
@@ -326,21 +322,17 @@
   const streaming = app.provide("streaming",
     window.PadiemChatStreamingModule.create(Object.setPrototypeOf({
 
-      get addAssistantShell() { return addAssistantShell; },
+      get addAssistantShell() { return conversationModule().addAssistantShell; },
       get applyStreamDone() { return streaming.applyStreamDone; },
       get attachmentPayload() { return conversationModule().attachmentPayload; },
-      get clawGeneralFailure() { return clawGeneralFailure; },
-      get handleCustomRequestFailure() { return handleCustomRequestFailure; },
+      get clawGeneralFailure() { return conversationModule().clawGeneralFailure; },
+      get handleCustomRequestFailure() { return conversationModule().handleCustomRequestFailure; },
       get invalidateClawRunsRead() { return app.invalidateClawRunsRead; },
-      get lifecycleForError() { return lifecycleForError; },
-      get projectById() { return projectById; },
-      get projectFileStatus() { return projectFileStatus; },
-      get projectsReady() { return projectsReady; },
-      set projectsReady(value) { projectsReady = value; },
+      get lifecycleForError() { return conversationModule().lifecycleForError; },
       get recoverStoredPcResult() { return pcRunModuleInstance.recoverStoredPcResult; },
       get renderAnswer() { return conversationModule().renderAnswer; },
-      get renderCancelled() { return renderCancelled; },
-      get renderError() { return renderError; },
+      get renderCancelled() { return conversationModule().renderCancelled; },
+      get renderError() { return conversationModule().renderError; },
       get renderTyping() { return historyModule().renderTyping; },
       get requestCompletedAnswer() { return streaming.requestCompletedAnswer; },
       get requestStreamingAnswer() { return streaming.requestStreamingAnswer; },
@@ -467,41 +459,17 @@
   const historyList = document.getElementById("historyList");
   const historyActionStatus = document.getElementById("historyActionStatus");
   const historyEmpty = document.getElementById("historyEmpty");
-  const projectsNavButton = document.getElementById("projectsNavButton");
-  const projectsBadge = document.getElementById("projectsBadge");
-  const projectsSection = document.getElementById("projectsSection");
-  const projectsList = document.getElementById("projectsList");
-  const projectsEmpty = document.getElementById("projectsEmpty");
-  const projectCreateButton = document.getElementById("projectCreateButton");
-  const projectBanner = document.getElementById("projectBanner");
-  const activeProjectName = document.getElementById("activeProjectName");
-  const activeProjectFiles = document.getElementById("activeProjectFiles");
-  const editProjectButton = document.getElementById("editProjectButton");
-  const exitProjectButton = document.getElementById("exitProjectButton");
-  const projectDialog = document.getElementById("projectDialog");
-  const projectForm = document.getElementById("projectForm");
-  const projectDialogTitle = document.getElementById("projectDialogTitle");
-  const projectDialogClose = document.getElementById("projectDialogClose");
-  const projectDialogCancel = document.getElementById("projectDialogCancel");
-  const projectNameInput = document.getElementById("projectNameInput");
-  const projectInstructionsInput = document.getElementById("projectInstructionsInput");
-  const projectFormError = document.getElementById("projectFormError");
-  const projectSaveButton = document.getElementById("projectSaveButton");
-  const projectFormActions = projectForm.querySelector(".project-form-actions");
-  const projectDeleteButton = document.createElement("button");
-  projectDeleteButton.id = "projectDeleteButton";
-  projectDeleteButton.type = "button";
-  projectDeleteButton.className = "project-danger";
-  projectDeleteButton.textContent = coreModule().uiT("project-delete");
-  projectDeleteButton.hidden = true;
-  projectDeleteButton.setAttribute("aria-label", coreModule().uiT("project-delete-aria"));
-  projectFormActions.prepend(projectDeleteButton);
-  const projectFilesPanel = document.getElementById("projectFilesPanel");
-  const projectFileInput = document.getElementById("projectFileInput");
-  const projectFilesList = document.getElementById("projectFilesList");
-  const projectFilesUsage = document.getElementById("projectFilesUsage");
-  const projectFilesEmpty = document.getElementById("projectFilesEmpty");
-  const projectFileStatus = document.getElementById("projectFileStatus");
+  // #7812 R5 B7: the project list, dialogs and project-file controls are created
+  // here at the original declaration position. Shared selection state stays in app.js.
+  const projectModule = app.provide("project",
+    window.PadiemChatProjectModule.create(Object.setPrototypeOf({
+
+      get binaryDocuments() { return binaryDocuments; },
+      get failureCodeNote() { return conversationModule().failureCodeNote; },
+      get fetch() { return fetch.bind(window); },
+
+    }, app)));
+  projectModule.mountProjectControls();
   const chatTransport = window.PadiemChatTransport;
   const conversationState = window.PadiemChatConversationState;
   // #2505: Chat(B62) and Claw(B54) are two screens of one product and share one
@@ -520,12 +488,6 @@
   const MESSAGE_LIFECYCLE = window.PadiemChatLifecycle.states;
   const attachmentCapabilities = window.PadiemAttachmentCapabilities;
   const binaryDocuments = window.PadiemBinaryDocuments;
-
-  const PROJECT_BINARY_EXTENSION_MEDIA = new Map([
-    [".pdf", "application/pdf"],
-    [".hwpx", "application/hwp+zip"],
-    [".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
-  ]);
 
   const ALLOWED_IMAGE_TYPES = new Set(attachmentCapabilities.images.flatMap((format) => format.mediaTypes));
   const ALLOWED_DOCUMENT_TYPES = new Set(attachmentCapabilities.textDocuments.flatMap((format) => format.mediaTypes));
@@ -559,16 +521,9 @@
   // Only the owner-scoped Claw run history can identify a Claw thread.
   const clawConversationIds = new Set();
   let clawConversationLabelsRead = null;
-  let projects = [];
   let projectsReady = false;
-  // #5882: next-page cursor from the server. When present a "load more" button is
-  // appended; on the last page there is none, so the list no longer stops silently at 50.
-  let projectsNextCursor = null;
-  let projectsLoadingMore = false;
   let activeProject = null;
   let activeProjectFileCount = 0;
-  let editingProjectId = null;
-  let dialogProjectFiles = [];
 
   // Android 1.0.0 keeps chat.padiem.net in a WebView and completes Google in a
   // Custom Tab whose cookies never reach the WebView. The WebView therefore
@@ -594,9 +549,6 @@
     if (!input.value.trim() && !inFlight) conversationModule().showComposerInlineHint("composer-empty-message");
   });
 
-  function lifecycleForError(error) {
-    return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
-  }
   // #4862: Claw is a restorable product route, exactly like Automation.
   // The fragment names the destination only. It never carries a user id,
   // session token or conversation id, so a reload after logout or an account
@@ -656,698 +608,21 @@
   // stage, a failure) is never removed by accident. The calls go through the
   // global because a single-function harness evaluates this file's function in
   // a bare scope.
-  function addAssistantShell(label, runtimeState) {
-    const fragment = document.getElementById("assistantMessageTemplate").content.cloneNode(true);
-    const article = fragment.querySelector(".assistant-message");
-    // #3931: identify the product whose conversation is currently rendered.
-    // The shared shell is not evidence that a Claw run came from Chat.
-    const productLabel = article.querySelector("[data-assistant-product]");
-    if (productLabel) productLabel.textContent = shell.dataset.state === "claw" ? "Padiem Claw" : "Padiem Chat";
-    article.querySelector("[data-runtime-label]").textContent = label;
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, label, runtimeState || "preparing");
-    messageList.appendChild(fragment);
-    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
-    return article;
-  }
-  function renderStoredAssistant(text, stored) {
-    const article = addAssistantShell(coreModule().uiT("stored-conversation"), "status");
-    // 11-03 audit: the chip named what it is without saying why it is there.
-    // The hint rides the shared tooltip, so a hover, a keyboard focus and a
-    // tap all read the same one line.
-    const chip = article.querySelector("[data-runtime-label]");
-    if (chip) {
-      chip.dataset.localeTitle = "stored-conversation-hint";
-      window.PadiemSharedTooltip?.label?.(chip, coreModule().uiT("stored-conversation-hint"));
-    }
-    // A restored turn shows a time only when the store actually carries one.
-    // Older records have no per-message time, and none is invented for them.
-    const storedAt = stored && typeof stored.completed_at === "string" ? stored.completed_at : "";
-    if (storedAt) article.dataset.completedAt = storedAt;
-    const content = article.querySelector(".assistant-content");
-    const paragraph = document.createElement("p");
-    paragraph.textContent = text;
-    content.appendChild(paragraph);
-    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
-  }
-  function renderWebGroundingNotice(content, notice, metadata) {
-    const code = metadata && metadata.web_grounding_error;
-    const key = code === "web_grounding_no_evidence" ? "web-grounding-no-evidence-notice"
-      : ["web_grounding_auth_error", "web_grounding_unavailable"].includes(code) ? "web-grounding-unavailable-notice" : null;
-    if (!key || typeof notice !== "string") return;
-    let note = content.querySelector(".web-grounding-notice");
-    if (!note) {
-      note = document.createElement("p");
-      note.className = "web-grounding-notice reference-note";
-      note.setAttribute("role", "status");
-      content.prepend(note);
-    }
-    note.dataset.localeKey = key;
-    note.textContent = coreModule().uiT(key);
-  }
   // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
   // must not wear the generic "this run may already have started" state. Closed
   // code→copy map only: a raw server, Engine or provider string is never shown.
-  const CLAW_BOUNDED_REFUSAL_COPY = Object.freeze({
-    // Owner decision 2026-11-05: a guest Claw request is refused with 401
-    // login_required; the UI names the login step instead of a generic error.
-    tier_unavailable: Object.freeze({ message: "claw-general-model-unavailable", hint: "claw-general-model-unavailable-note" }),
-    login_required: Object.freeze({ message: "claw-error-auth-needed", hint: "claw-login-required-note" }),
-    // #7960: the Chat session is live but the shared B54 canonical session has
-    // expired, so a PC command cannot resolve its owner; the copy keeps the same
-    // re-login walk the server message states instead of a generic retry sentence.
-    chat_pc_b54_session_expired: Object.freeze({ message: "claw-b54-session-expired", hint: "claw-b54-session-expired-note" }),
-  });
   // Closed server code for a rejected customer-owned key. Named here so the
   // streaming answer region keeps no provider vocabulary of its own.
-  const CUSTOM_AUTH_FAILURE_CODE = "custom_provider_auth_failed";
   // #3933: ONE lookup for every Claw failure surface. The composer lane, the live
   // SSE lane and the manual-intake lane all resolve the same server code through
   // this function, so a bounded refusal can never render two different sentences
   // or drift into a second invented copy. `Object.hasOwn` only: an inherited or
   // spoofed key never selects copy, and an unlisted code returns null so each
   // caller keeps its own existing fallback.
-  function clawBoundedRefusalCopy(code) {
-    const entry = typeof code === "string" && Object.hasOwn(CLAW_BOUNDED_REFUSAL_COPY, code)
-      ? CLAW_BOUNDED_REFUSAL_COPY[code]
-      : null;
-    if (!entry) return null;
-    return Object.freeze({ message: coreModule().uiT(entry.message), hint: coreModule().uiT(entry.hint) });
-  }
-  function clawGeneralFailure(code) {
-    const bounded = clawBoundedRefusalCopy(code);
-    if (bounded) return bounded;
-    return Object.freeze({
-      message: window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang)
-        || coreModule().uiT("claw-general-check-runs"),
-      hint: coreModule().uiT("claw-general-check-runs"),
-    });
-  }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = coreModule().uiT("retry"), clawFailure = null) {
-    const box = document.createElement("div");
-    box.className = "error-box";
-    const strong = document.createElement("strong");
-    strong.textContent = coreModule().uiT("answer-load-failed");
-    const p = document.createElement("p");
-    p.textContent = message || coreModule().uiT("try-again");
-    const retry = document.createElement("button");
-    retry.type = "button";
-    retry.className = "retry-button";
-    retry.textContent = actionLabel;
-    // #3566: the general Claw P01 lane may already have dispatched before a
-    // terminal Engine error. Do not offer a one-click replay (even manual)
-    // until the operator checks existing results. Ordinary Chat retains its
-    // established retry behavior; this guard is Claw-general only.
-    if (clawGeneralRequest) {
-      const hint = document.createElement("p");
-      hint.textContent = coreModule().uiT("claw-general-check-runs");
-      // A provable pre-dispatch refusal has no run to check, so its next step is
-      // a different model rather than the existing run-history guidance.
-      if (clawFailure && clawFailure.hint) hint.textContent = clawFailure.hint;
-      // #3935: navigation only. This button opens the existing owner-scoped
-      // GET /api/claw/runs history and never replays the failed P01 POST.
-      const openRuns = document.createElement("button");
-      openRuns.type = "button";
-      openRuns.className = "claw-inbox-retry claw-check-runs-button";
-      openRuns.textContent = coreModule().uiT("claw-general-open-runs");
-      openRuns.disabled = authState.authenticated !== true;
-      openRuns.addEventListener("click", () => {
-        if (authState.authenticated !== true) return;
-        navModuleInstance.openClawWorkspace(); // refresh is handled by existing owner-scoped history UI
-        const history = document.getElementById("clawRunHistory");
-        if (!history || history.hidden) return;
-        // #4488 Phase A: the panel is progressive disclosure; open it so the
-        // navigation target is actually visible and focusable.
-        const historyDisclosure = document.getElementById("clawRunHistoryDisclosure");
-        if (historyDisclosure) historyDisclosure.open = true;
-        history.scrollIntoView?.({ block: "start", behavior: "smooth" });
-        history.querySelector?.("#clawRunHistoryRefresh")?.focus?.();
-      });
-      box.append(strong, p, hint, openRuns);
-      return box;
-    }
-    retry.addEventListener("click", async () => {
-      article.remove();
-      // #2505: the retry replays the request on the product that made it, with
-      // the one shared conversation id.
-      conversationState.setProduct?.(retryContext.product || conversationProduct);
-      conversationState.setConversationId(retryContext.conversationId);
-      activeProject = retryContext.project;
-      renderProjectState();
-      const success = await streaming.requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, true);
-      if (success && selectedAttachments === retryAttachment) conversationModule().clearAttachment();
-    }, { once: true });
-    box.append(strong, p, retry);
-    return box;
-  }
-  function revealErrorState(article) {
-    article.scrollIntoView({ block: "center", behavior: "auto" });
-  }
   // #5568: one bounded reason line under a Chat failure. Only the server's
   // compact code identifier is rendered; the message copy stays server/locale
   // authored. Claw keeps its existing refusal/recovery presentation, and an
   // unexpected string is never echoed into the notice.
-  const FAILURE_CODE_PATTERN = /^[a-z][a-z0-9_]{0,63}$/;
-  function failureCodeNote(errorCode, label) {
-    if (typeof errorCode !== "string" || !FAILURE_CODE_PATTERN.test(errorCode)) return null;
-    const note = document.createElement("small");
-    note.className = "error-code";
-    note.textContent = coreModule().uiT("error-code-reference") + ": " + errorCode;
-    return note;
-  }
-  function failureStatusLabel(lifecycle) {
-    return lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? coreModule().uiT("timeout") : coreModule().uiT("connection-error");
-  }
-  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null, errorCode = "") {
-    const content = article.querySelector(".assistant-content");
-    content.replaceChildren();
-    const statusLabel = failureStatusLabel(lifecycle);
-    article.querySelector("[data-runtime-label]").textContent = statusLabel;
-    // A failure is a real status: the chip stays visible with its own copy.
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, statusLabel, "status");
-    const box = buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, undefined, clawFailure);
-    const codeNote = clawGeneralRequest ? null : failureCodeNote(errorCode, statusLabel);
-    if (codeNote) box.appendChild(codeNote);
-    content.appendChild(box);
-    PadiemChatLifecycle.set(article, lifecycle);
-    revealErrorState(article);
-  }
-  function renderCancelled(article, retryMessages, retrySkill, retryContext, clawGeneralRequest = false) {
-    const content = article.querySelector(".assistant-content");
-    const typing = content.querySelector(".typing");
-    if (typing) typing.remove();
-    article.querySelector("[data-runtime-label]").textContent = coreModule().uiT("generation-cancelled");
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, coreModule().uiT("generation-cancelled"), "status");
-    content.appendChild(buildRetryBox(coreModule().uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, coreModule().uiT("regenerate")));
-    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
-    revealErrorState(article);
-  }
-
-  // #4489: the Library entry is owned by static/library.js. The old
-  // filesNavAvailable()/syncFilesNav() gate that also required project-file
-  // storage was removed, because Library navigation must work for a signed-in
-  // owner even when that storage is not provisioned.
-  function clearProjectsUI() {
-    projects = [];
-    projectsReady = false;
-    activeProject = null;
-    activeProjectFileCount = 0;
-    projectsList.replaceChildren();
-    // #7365: the materials group (projects and recent conversations) stays
-    // visible even with nothing in it — the section heading and the
-    // empty-state note are the honest empty answer (a guest sees the same
-    // group a signed-in account sees).
-    projectsSection.hidden = false;
-    projectsEmpty.hidden = false;
-    setProjectsListNote("");
-    if (projectsNavButton) {
-      projectsNavButton.disabled = true;
-      projectsNavButton.setAttribute("aria-disabled", "true");
-    }
-    if (projectsBadge) projectsBadge.textContent = authState.authenticated ? coreModule().uiT("setup-needed") : coreModule().uiT("login-after");
-    renderProjectState();
-  }
-  function renderProjectState() {
-    projectBanner.hidden = !activeProject;
-    activeProjectName.textContent = activeProject ? activeProject.name : "";
-    activeProjectFiles.hidden = !activeProject || activeProjectFileCount < 1;
-    activeProjectFiles.textContent = activeProjectFileCount > 0 ? coreModule().uiT("project-files-count", { count: activeProjectFileCount }) : "";
-    projectsList.querySelectorAll(".project-item").forEach((button) => {
-      button.setAttribute("aria-current", activeProject && button.dataset.projectId === activeProject.id ? "true" : "false");
-    });
-    if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
-  }
-  // Static, accessible sidebar actions: keep the translated button text
-  // and ARIA labels; only replace the low-contrast visual affordance.
-  // R5 B7: the icon renderer lives in the sidebar module (registry-provided).
-  function renderProjects() {
-    projectsList.replaceChildren();
-    projectsSection.hidden = !projectsReady;
-    projectsEmpty.hidden = !projectsReady || projects.length !== 0;
-    projects.forEach((project) => {
-      const row = document.createElement("div");
-      row.className = "project-row";
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "recent-item project-item";
-      button.dataset.projectId = project.id;
-      button.textContent = project.name;
-      button.setAttribute("aria-current", activeProject && activeProject.id === project.id ? "true" : "false");
-      button.addEventListener("click", () => selectProject(project));
-      const manage = document.createElement("button");
-      manage.type = "button";
-      manage.className = "project-manage";
-      manage.textContent = coreModule().uiT("manage");
-      manage.prepend(sidebar.sidebarActionIcon("settings"));
-      manage.setAttribute("aria-label", coreModule().uiT("project-manage-aria", { name: project.name }));
-      window.PadiemSharedTooltip?.label?.(manage, coreModule().uiT("project-manage-aria", { name: project.name }));
-      manage.addEventListener("click", () => openProjectDialog(project));
-      row.append(button, manage);
-      projectsList.appendChild(row);
-    });
-    if (projectsNextCursor && projectsReady) {
-      const moreRow = document.createElement("div");
-      moreRow.className = "project-row project-more-row";
-      const more = document.createElement("button");
-      more.type = "button";
-      more.className = "recent-item project-more";
-      more.id = "projectsMore";
-      more.textContent = coreModule().uiT("projects-more");
-      more.setAttribute("aria-label", coreModule().uiT("projects-more-aria"));
-      more.disabled = projectsLoadingMore;
-      more.addEventListener("click", () => { void loadMoreProjects(); });
-      moreRow.appendChild(more);
-      projectsList.appendChild(moreRow);
-    }
-    if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : coreModule().uiT("create-new");
-  }
-  // #6645: a stale cursor used to report through the composer note, which the
-  // glass desktop frame hides (display: none). The notice belongs next to the
-  // list it is about, so it is always painted.
-  function setProjectsListNote(text) {
-    const note = document.getElementById("projectsListNote");
-    if (!note) return;
-    const copy = typeof text === "string" ? text : "";
-    note.textContent = copy;
-    note.hidden = !copy;
-  }
-  async function loadMoreProjects() {
-    if (!projectsNextCursor || projectsLoadingMore || !authState.authenticated) return false;
-    const epoch = authViewEpoch;
-    const cursor = projectsNextCursor;
-    projectsLoadingMore = true;
-    renderProjects();
-    try {
-      const response = await fetch(
-        `/api/projects?cursor=${encodeURIComponent(cursor)}`,
-        { headers: { "Accept": "application/json" }, cache: "no-store" },
-      );
-      const data = await response.json().catch(() => null);
-      if (epoch !== authViewEpoch || !authState.authenticated || !response.ok || !data || !Array.isArray(data.projects)) {
-        // A cursor this server no longer accepts is answered 400. Refuse to loop:
-        // drop it and show what is already on screen with a plain Korean notice.
-        if (response.status === 400) {
-          projectsNextCursor = null;
-          setProjectsListNote(coreModule().uiT("projects-more-stale"));
-        }
-        return false;
-      }
-      const seen = new Set(projects.map((item) => item.id));
-      const fresh = data.projects.filter((item) => item && typeof item.id === "string"
-        && typeof item.name === "string" && !seen.has(item.id));
-      projects = projects.concat(fresh);
-      projectsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
-      setProjectsListNote("");
-      return true;
-    } catch (_) {
-      return false;
-    } finally {
-      projectsLoadingMore = false;
-      if (epoch === authViewEpoch) renderProjects();
-    }
-  }
-  async function loadProjects() {
-    if (!authState.authenticated || !authState.history_ready) {
-      clearProjectsUI();
-      return false;
-    }
-    const epoch = authViewEpoch;
-    if (projectsNavButton) {
-      projectsNavButton.disabled = true;
-      projectsNavButton.setAttribute("aria-disabled", "true");
-    }
-    if (projectsBadge) projectsBadge.textContent = coreModule().uiT("checking");
-    try {
-      const response = await fetch("/api/projects", { headers: { "Accept": "application/json" }, cache: "no-store" });
-      const data = await response.json().catch(() => null);
-      if (epoch !== authViewEpoch || !authState.authenticated) return false;
-      if (!response.ok || !data || !Array.isArray(data.projects)) throw new Error("projects unavailable");
-      projects = data.projects.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
-      projectsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
-      projectsReady = true;
-      if (projectsNavButton) {
-        projectsNavButton.disabled = false;
-        projectsNavButton.setAttribute("aria-disabled", "false");
-      }
-      if (activeProject) activeProject = projects.find((item) => item.id === activeProject.id) || activeProject;
-      renderProjects();
-      return true;
-    } catch (_) {
-      if (epoch !== authViewEpoch || !authState.authenticated) return false;
-      clearProjectsUI();
-      return false;
-    }
-  }
-  function projectById(id) {
-    return projects.find((project) => project.id === id) || null;
-  }
-  async function ensureProject(id) {
-    if (!id) return null;
-    const known = projectById(id);
-    if (known) return known;
-    if (!authState.authenticated || !projectsReady) return null;
-    const requestAuth = authState;
-    try {
-      const response = await fetch(`/api/projects/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
-      const data = await response.json().catch(() => null);
-      if (authState !== requestAuth || !authState.authenticated || !response.ok || !data || !data.project || typeof data.project.id !== "string") return null;
-      projects.unshift(data.project);
-      renderProjects();
-      return data.project;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  // Only messages constructed by our own mapping may be shown to the user.
-  function showProjectError(error, fallback) {
-    projectFormError.textContent = conversationModule().safeLocalUiMessage(error, fallback);
-    const note = failureCodeNote(error?.code, "");
-    if (note) projectFormError.appendChild(note);
-    projectFormError.hidden = false;
-  }
-
-  async function fetchProjectFiles(projectId) {
-    if (!authState.authenticated || !authState.project_files_ready || !projectId) return [];
-    const response = await fetch(`/api/projects/${encodeURIComponent(projectId)}/files`, { headers: { "Accept": "application/json" }, cache: "no-store" });
-    const data = await response.json().catch(() => null);
-    if (!response.ok || !data || !Array.isArray(data.files)) throw coreModule().mappedUiError(coreModule().uiT("project-files-load-failed"), data);
-    return data.files.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
-  }
-  async function refreshActiveProjectFileCount() {
-    if (!activeProject || !authState.project_files_ready) {
-      activeProjectFileCount = 0;
-      renderProjectState();
-      return;
-    }
-    try {
-      const files = await fetchProjectFiles(activeProject.id);
-      activeProjectFileCount = files.length;
-    } catch (_) {
-      activeProjectFileCount = 0;
-    }
-    renderProjectState();
-  }
-  let highlightedProjectFileId = null;
-  function renderProjectFiles() {
-    projectFilesList.replaceChildren();
-    const totalChars = dialogProjectFiles.reduce((sum, file) => sum + Number(file.content_chars || 0), 0);
-    if (projectFilesUsage) {
-      projectFilesUsage.textContent = coreModule().uiT("project-files-usage", {
-        count: dialogProjectFiles.length,
-        chars: totalChars.toLocaleString(),
-      });
-      projectFilesUsage.hidden = false;
-    }
-    projectFilesEmpty.hidden = dialogProjectFiles.length !== 0;
-    dialogProjectFiles.forEach((file) => {
-      const row = document.createElement("div");
-      row.className = "project-file-row";
-      if (file.id === highlightedProjectFileId) {
-        row.classList.add("quick-selected-file");
-        row.tabIndex = -1;
-        requestAnimationFrame(() => {
-          if (projectDialog.open && editingProjectId && row.isConnected) {
-            row.scrollIntoView({ block: "nearest" });
-            row.focus({ preventScroll: true });
-          }
-        });
-      }
-      const copy = document.createElement("div");
-      const strong = document.createElement("strong");
-      strong.textContent = file.name;
-      const small = document.createElement("small");
-      small.textContent = `${file.media_type} · ${coreModule().uiT("character-count", { count: Number(file.content_chars || 0).toLocaleString() })}`;
-      copy.append(strong, small);
-      const remove = document.createElement("button");
-      remove.type = "button";
-      remove.textContent = coreModule().uiT("delete");
-      remove.addEventListener("click", () => deleteProjectFile(file.id, file.name));
-      row.append(copy, remove);
-      projectFilesList.appendChild(row);
-    });
-  }
-  async function loadProjectFilesForDialog(projectId) {
-    if (!projectId || !authState.project_files_ready) {
-      dialogProjectFiles = [];
-      renderProjectFiles();
-      return;
-    }
-    try {
-      const files = await fetchProjectFiles(projectId);
-      if (!projectDialog.open || editingProjectId !== projectId) return;
-      dialogProjectFiles = files;
-      renderProjectFiles();
-      if (activeProject && activeProject.id === projectId) {
-        activeProjectFileCount = dialogProjectFiles.length;
-        renderProjectState();
-      }
-    } catch (error) {
-      showProjectError(error, coreModule().uiT("project-files-load-failed"));
-    }
-  }
-  function projectBinaryMediaType(file) {
-    // Project-scoped subset preflight: PDF/DOCX only (the server allow-lists exactly these two
-    // binaries). Extension-driven to mirror document-binary.js canRead/canonicalMediaType, which
-    // are themselves extension-canonical. Everything else — PPTX/XLSX and unsupported text types —
-    // falls through to the text path and is rejected there BEFORE any request is made.
-    return PROJECT_BINARY_EXTENSION_MEDIA.get(coreModule().extensionOf(file && file.name)) || null;
-  }
-  let projectFileBusy = false;
-  function setProjectFileBusy(busy) {
-    projectFileBusy = busy;
-    if (busy) {
-      projectFilesPanel.setAttribute("aria-busy", "true");
-      projectFileInput.setAttribute("aria-disabled", "true");
-      if (projectFileStatus) { projectFileStatus.textContent = coreModule().uiT("document-saving"); projectFileStatus.hidden = false; }
-    } else {
-      projectFilesPanel.removeAttribute("aria-busy");
-      projectFileInput.removeAttribute("aria-disabled");
-      if (projectFileStatus) { projectFileStatus.hidden = true; projectFileStatus.textContent = ""; }
-    }
-  }
-  async function addProjectFile(file) {
-    if (!file || !editingProjectId || !authState.project_files_ready) return;
-    projectFileInput.value = "";
-    if (projectFileBusy) return;
-    // Clear any stale error so a successful retry never leaves the old message up.
-    projectFormError.hidden = true;
-    projectFormError.textContent = "";
-    // #6126: a project .hwp is judged by its own bytes. The older OLE2 binary
-    // Hangul format is never converted — the panel answers with the ordinary
-    // save-as-HWPX guidance as a status note (not the error row) — and a
-    // mislabeled file whose bytes are a real HWPX (ZIP) package keeps working
-    // as HWPX through the same binary upload the .hwpx extension uses.
-    const hwpFamily = coreModule().extensionOf(file.name) === ".hwp"
-      ? (await binaryDocuments?.headerFamily?.(file)) || null
-      : null;
-    if (hwpFamily === "ole") {
-      if (projectFileStatus) {
-        projectFileStatus.textContent = coreModule().hwpLegacyGuidance();
-        projectFileStatus.hidden = false;
-      }
-      return;
-    }
-    setProjectFileBusy(true);
-    try {
-      let projectBinary = projectBinaryMediaType(file);
-      if (!projectBinary && hwpFamily === "zip" && binaryDocuments?.hwpxMedia) {
-        projectBinary = binaryDocuments.hwpxMedia;
-      }
-      if (projectBinary) {
-        // #6579: every binary goes through the shared tus module, which owns the
-        // progress line, the resume policy and the first-party guidance copy.
-        if (!window.PadiemProjectFileUpload) throw coreModule().mappedUiError(coreModule().uiT("project-file-save-failed"), null);
-        const uploaded = await window.PadiemProjectFileUpload.upload({
-          file,
-          projectId: editingProjectId,
-          mediaType: projectBinary,
-          onProgress: (sent, total) => {
-            if (projectFileStatus && !projectFileStatus.hidden && total > 0) {
-              const percent = Math.min(100, Math.round((sent / total) * 100));
-              projectFileStatus.textContent = `${coreModule().uiT("document-saving")} ${percent}%`;
-            }
-          },
-        });
-        if (!uploaded || !uploaded.file) throw coreModule().mappedUiError(coreModule().uiT("project-file-save-failed"), null);
-      } else {
-        const documentFile = await coreModule().readDocumentFile(file);
-        const payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
-        const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
-          method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const data = await response.json().catch(() => null);
-        if (!response.ok || !data || !data.file) {
-          throw coreModule().mappedUiError(coreModule().uiT("project-file-save-failed"), data);
-        }
-      }
-      await loadProjectFilesForDialog(editingProjectId);
-    } catch (error) {
-      showProjectError(error, coreModule().uiT("project-file-save-failed"));
-    } finally {
-      setProjectFileBusy(false);
-    }
-  }
-  async function deleteProjectFile(fileId, name) {
-    if (!editingProjectId || !authState.project_files_ready) return;
-    const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: coreModule().uiT("project-file-delete-title"),
-      message: coreModule().uiT("project-file-delete-message", { name }),
-      cancelLabel: coreModule().uiT("cancel"),
-      confirmLabel: coreModule().uiT("delete"),
-    });
-    if (!confirmed) return;
-    try {
-      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files/${encodeURIComponent(fileId)}`, { method: "DELETE" });
-      if (!response.ok) throw coreModule().mappedUiError(coreModule().uiT("project-file-delete-failed"), await response.json().catch(() => null));
-      await loadProjectFilesForDialog(editingProjectId);
-    } catch (error) {
-      showProjectError(error, coreModule().uiT("project-file-delete-failed"));
-    }
-  }
-
-  // #2505: the sidebar Chat entry returns to the Chat lane while the user is in
-  // the Claw workspace. Inside the Chat state the same entry starts a new
-  // conversation. Every other caller resets the view directly, because a
-  // sign-out, a project change or a delete must clear the conversation no
-  // matter which product is on screen.
-  function selectProject(project) {
-    if (!projectsReady || !project || inFlight) return;
-    activeProject = project;
-    activeProjectFileCount = 0;
-    conversationModule().resetConversationView(true);
-    refreshActiveProjectFileCount();
-  }
-  function exitProject() {
-    if (inFlight) return;
-    activeProject = null;
-    activeProjectFileCount = 0;
-    conversationModule().resetConversationView(false);
-  }
-  function openProjectDialog(project = null, selectedFileId = null) {
-    if (!projectsReady || !authState.authenticated || inFlight) return;
-    editingProjectId = project ? project.id : null;
-    highlightedProjectFileId = selectedFileId;
-    projectDialogTitle.textContent = project ? coreModule().uiT("project-edit-title") : coreModule().uiT("project-new");
-    projectNameInput.value = project ? project.name : "";
-    projectInstructionsInput.value = project && typeof project.instructions === "string" ? project.instructions : "";
-    projectFormError.textContent = "";
-    projectFormError.hidden = true;
-    projectSaveButton.disabled = false;
-    projectDeleteButton.hidden = !project;
-    projectDeleteButton.disabled = false;
-    projectFilesPanel.hidden = !(project && authState.project_files_ready);
-    dialogProjectFiles = [];
-    renderProjectFiles();
-    projectDialog.showModal();
-  // #3190: an existing project loads its Drive case-folder status; a brand new
-  // project has no project_id yet, so the Drive section stays hidden.
-  const drivePanel = document.getElementById("projectDrivePanel");
-  if (window.padiemProjectDriveFolder) {
-    window.padiemProjectDriveFolder.reset();
-    if (project && project.id) {
-      if (drivePanel) drivePanel.hidden = false;
-      window.padiemProjectDriveFolder.loadStatus(project.id);
-    } else if (drivePanel) {
-      drivePanel.hidden = true;
-    }
-  }
-    if (project && authState.project_files_ready) loadProjectFilesForDialog(project.id);
-    projectNameInput.focus();
-  }
-  function closeProjectDialog() {
-    if (window.padiemProjectDriveFolder) window.padiemProjectDriveFolder.reset();
-  if (projectDialog.open && typeof projectDialog.close === "function") projectDialog.close();
-    editingProjectId = null;
-    dialogProjectFiles = [];
-    projectFileInput.value = "";
-    projectFormError.textContent = "";
-    projectFormError.hidden = true;
-  }
-  async function saveProject(event) {
-    event.preventDefault();
-    if (!projectsReady || !authState.authenticated) return;
-    const name = projectNameInput.value.trim();
-    const instructions = projectInstructionsInput.value.trim();
-    if (!name) {
-      projectFormError.textContent = coreModule().uiT("project-name-required");
-      projectFormError.hidden = false;
-      return;
-    }
-    projectSaveButton.disabled = true;
-    projectFormError.hidden = true;
-    try {
-      const editing = Boolean(editingProjectId);
-      const url = editing ? `/api/projects/${encodeURIComponent(editingProjectId)}` : "/api/projects";
-      const response = await fetch(url, {
-        method: editing ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ name, instructions }),
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.project) {
-        throw coreModule().mappedUiError(coreModule().uiT("project-save-failed"), data);
-      }
-      const saved = data.project;
-      const index = projects.findIndex((item) => item.id === saved.id);
-      if (index >= 0) projects[index] = saved; else projects.unshift(saved);
-      if (activeProject && activeProject.id === saved.id) activeProject = saved;
-      renderProjects();
-      renderProjectState();
-      closeProjectDialog();
-      if (!editing) selectProject(saved);
-    } catch (error) {
-      showProjectError(error, coreModule().uiT("project-save-failed"));
-      projectSaveButton.disabled = false;
-    }
-  }
-
-  async function deleteProject() {
-    if (!editingProjectId || !projectsReady || !authState.authenticated || inFlight) return;
-    const project = projectById(editingProjectId);
-    if (!project) return;
-    const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: coreModule().uiT("project-delete-title"),
-      message: coreModule().uiT("project-delete-message", { name: project.name }),
-      cancelLabel: coreModule().uiT("cancel"),
-      confirmLabel: coreModule().uiT("delete"),
-    });
-    if (!confirmed) return;
-    const deletingId = editingProjectId;
-    const deletingActiveProject = Boolean(activeProject && activeProject.id === deletingId);
-    projectDeleteButton.disabled = true;
-    projectSaveButton.disabled = true;
-    projectFormError.hidden = true;
-    try {
-      const response = await fetch(`/api/projects/${encodeURIComponent(deletingId)}`, {
-        method: "DELETE",
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || data.deleted !== true || data.project_id !== deletingId) {
-        throw coreModule().mappedUiError(coreModule().uiT("project-delete-failed"), data);
-      }
-      projects = projects.filter((item) => item.id !== deletingId);
-      if (deletingActiveProject) {
-        activeProject = null;
-        activeProjectFileCount = 0;
-      }
-      renderProjects();
-      renderProjectState();
-      closeProjectDialog();
-      await loadProjects();
-      if (deletingActiveProject) {
-        renderProjectState();
-        coreModule().setNote(coreModule().idleNote());
-      }
-      input.focus();
-    } catch (error) {
-      showProjectError(error, coreModule().uiT("project-delete-failed"));
-      projectDeleteButton.disabled = false;
-      projectSaveButton.disabled = false;
-    }
-  }
 
   // #5479: one presentation rule for every session state, so the sign-in entry
   // point can never disappear just because the session state could not be read.
@@ -1533,70 +808,15 @@
   // #7812 R5 B4-2 (rule (b)): the auth module registers the session-refresh
   // listener at this original position, keeping its document order.
   authModule().wireSessionRefresh();
-  async function openSavedConversation(id) {
-    if (!authState.authenticated || inFlight) return;
-    const epoch = authViewEpoch;
-    try {
-      const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.conversation || !Array.isArray(data.conversation.messages)) throw new Error(coreModule().uiT("conversation-load-failed"));
-      const savedProjectId = typeof data.conversation.project_id === "string" ? data.conversation.project_id : null;
-      const restoredProject = savedProjectId ? await ensureProject(savedProjectId) : null;
-      if (savedProjectId && !restoredProject) throw new Error(coreModule().uiT("conversation-project-load-failed"));
-      // Paint the list early, but preserve the existing canonical Claw lane
-      // classification when the user opens a row before its labels arrive.
-      const labels = clawConversationLabelsRead;
-      if (labels && labels.epoch === epoch) await labels.promise;
-      if (epoch !== authViewEpoch || !authState.authenticated) return false;
-      conversationModule().clearAttachment();
-      // #2505: the saved thread is the ONE conversation, so it is loaded into
-      // the shared store. A thread that has Claw turns still opens on the Claw
-      // screen (its last lane), and the other screen shows the same record.
-      const isVerifiedClawThread = clawConversationIds.has(data.conversation.id);
-      const targetProduct = isVerifiedClawThread ? PRODUCT_CLAW : PRODUCT_CHAT;
-      messageList.replaceChildren();
-      messageList.hidden = true;
-      conversationState.resetProduct?.(targetProduct);
-      conversationState.setProduct?.(targetProduct);
-      conversationProduct = targetProduct;
-      conversationState.setConversationId(data.conversation.id, targetProduct);
-      activeProject = restoredProject;
-      activeProjectFileCount = 0;
-      renderProjectState();
-      if (activeProject) refreshActiveProjectFileCount();
-      if (isVerifiedClawThread) navModuleInstance.openClawWorkspace();
-      conversationModule().showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
-      app.syncApprovedMemoryVisibility();
-      runHistory.syncClawRunHistoryVisibility();
-      conversationArtifactContext?.show?.(data.conversation.id);
-      if (isVerifiedClawThread) clawArtifactShownFor = data.conversation.id;
-      data.conversation.messages.forEach((item) => {
-        if (!item || typeof item.content !== "string") return;
-        if (item.role === "user") conversationModule().addUserMessage(item.content, null, { restored: true });
-        if (item.role === "assistant") renderStoredAssistant(item.content, item);
-        if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content }, targetProduct);
-      });
-      // #5895: keep showing a PC turn that is still running on the server, and
-      // restore the thread once its stored answer lands.
-      void pcRunModuleInstance.resumeUnfinishedPcRun(data.conversation.id);
-      // A restored conversation opens on its newest turn with follow resumed,
-      // on the same shared Chat/Claw control.
-      window.__padiemConversationMotion?.resume?.();
-      sidebar.closeSidebar();
-      input.focus();
-      return true;
-    } catch (error) {
-      coreModule().setNote(error instanceof Error ? error.message : coreModule().uiT("conversation-load-failed"), "error");
-      return false;
-    }
-  }
+
+  const entry = app.provide("entry", window.PadiemChatEntryModule.create(app));
 
   // #4471: the sidebar conversation search opens a hit through this loader
   // instead of a recent-list DOM row, so a hit outside the recent page still
   // restores with the same auth guard, inFlight lock, project restore and the
   // server-verified Claw set. Read-only handle: it grants no new authority.
   window.PadiemChatConversationOpener = Object.freeze({
-    open: (conversationId) => openSavedConversation(conversationId),
+    open: (conversationId) => entry.openSavedConversation(conversationId),
   });
 
   // #4489: the Library opens a stored project file through that file's owning
@@ -1605,21 +825,8 @@
   // resolves from the owner list or its existing authenticated project lookup;
   // a foreign or stale id opens nothing. This handle grants no new authority.
   window.PadiemChatProjectOpener = Object.freeze({
-    openFile: async (projectId, fileId) => {
-      if (!projectsReady || !authState.authenticated || inFlight) return false;
-      const requestAuth = authState;
-      const project = await ensureProject(projectId);
-      if (!project || authState !== requestAuth || !authState.authenticated || inFlight) return false;
-      openProjectDialog(project, fileId);
-      return true;
-    },
-    open: (projectId) => {
-      if (!projectsReady || !authState.authenticated || inFlight) return false;
-      const project = projects.find((item) => item && item.id === projectId);
-      if (!project) return false;
-      openProjectDialog(project);
-      return true;
-    },
+    openFile: projectModule.openFile,
+    open: projectModule.open,
   });
 
     // Hark's private web XLSX intake creates a separate trusted owner-owned
@@ -1647,7 +854,7 @@
     // confirmed the exact owner-scoped artifact GET before raising an
     // artifact-bearing event, and the owner workcopy status read for the
     // conversation-only one.
-    const opened = await openSavedConversation(detail.conversationId);
+    const opened = await entry.openSavedConversation(detail.conversationId);
     if (!opened) return;
     const notice = document.createElement("p");
     notice.className = "reference-note";
@@ -1690,27 +897,12 @@
   // A failed PADIEM Custom request that needs the customer's key reopens the
   // existing model card. No second dialog and no generic fallback to a PADIEM
   // tier: the server's error message stays in the answer bubble.
-  function handleCustomRequestFailure(error) {
-    const code = error && typeof error.code === "string" ? error.code : "";
-    if (code === "custom_credential_required" || code === CUSTOM_AUTH_FAILURE_CODE) {
-      window.PadiemCustomSelection?.open?.();
-      void window.PadiemCustomSelection?.refresh?.();
-      return;
-    }
-    if (code === "unauthorized" && window.PadiemCustomSelection?.get?.()) {
-      window.PadiemCustomSelection?.open?.();
-      void authModule().loadAuthStatus();
-    }
-  }
 
   // R5 B7: requestAnswer is on the registry (provide("streaming")).
   // #3539: the generic B54 Claw composer runs on the canonical P01 Engine lane.
   // This predicate documents the product state that selects the lane: the Claw
   // shell with the explicit manual form hidden. It must be read at submit time,
   // BEFORE any conversation presentation transition.
-  function clawGeneralRequestActive() {
-    return shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
-  }
 
   // One-click answer regenerate for the action bar (outputs.js). Only the
   // latest completed answer may regenerate: the stored article, lifecycle
@@ -1718,23 +910,12 @@
   // lock rejects any overlapping second call, so no duplicate or unintended
   // paid model call can fire. No user bubble is added; the same outbound
   // messages replay through the identical routing path.
-  function storedRegenerateRequest(article) {
-    const stored = lastCompletedAnswerRequest;
-    if (!stored || stored.article !== article) return null;
-    if (!article || !article.isConnected) return null;
-    if (!window.PadiemChatLifecycle || !window.PadiemChatLifecycle.isCompleted(article)) return null;
-    if (inFlight) return null;
-    const list = document.getElementById("messageList");
-    const items = list ? list.querySelectorAll(".assistant-message") : [];
-    if (!items.length || items[items.length - 1] !== article) return null;
-    return stored;
-  }
   window.PadiemChatRegenerate = Object.freeze({
     available(article) {
-      return storedRegenerateRequest(article) !== null;
+      return entry.storedRegenerateRequest(article) !== null;
     },
     regenerate(article) {
-      const stored = storedRegenerateRequest(article);
+      const stored = entry.storedRegenerateRequest(article);
       if (!stored) return false;
       void streaming.requestAnswer(stored.outboundMessages, stored.skill, stored.attachment, stored.contextSnapshot, stored.clawGeneralRequest);
       return true;
@@ -1748,43 +929,6 @@
   // login_required. A mock/preview deployment that cannot authenticate keeps
   // its CI harness behavior through the server-owned flag.
 
-  async function submitPrompt(text, selectedSkill) {
-    const prompt = text.trim();
-    if (!prompt || inFlight) return;
-    if (!authModule().requireSessionForModelUse()) return;
-    // #3539: snapshot the canonical lane before changing presentation;
-    // #3931: keep a general Claw request in the same Claw conversation.
-    // Neither UI state nor the selected model ID may authorize fallback.
-    const clawGeneralRequest = clawGeneralRequestActive();
-    // Chat/Claw separation: the lane decides the product. The conversation id, the turn
-    // store and the skill all come from that product's own slot, so a Claw
-    // request never carries the Chat conversation id and a Chat request never
-    // carries the Claw one. This is an immutable submit-time snapshot.
-    const product = clawGeneralRequest ? PRODUCT_CLAW : PRODUCT_CHAT;
-    conversationState.setProduct?.(product);
-    if (selectedSkill) conversationState.setSkill(selectedSkill);
-    const attachmentSnapshot = selectedAttachments;
-    const contextSnapshot = { product, conversationId: conversationState.getConversationId(product), project: activeProject };
-    // PADIEM Custom is text-only on both Chat and Claw. Refuse attachments
-    // here, with the typed prompt preserved.
-    const customSelected = Boolean(window.PadiemCustomSelection?.get?.());
-    if (customSelected && attachmentSnapshot.length) {
-      coreModule().setNote(coreModule().uiT("custom-text-only"), "error");
-      return;
-    }
-    // #6828: grade-only Claw execution. The grade travels as `tier` and the
-    // server resolves the grade route; no per-request model id is ever sent.
-    contextSnapshot.selectedModelId = "";
-    conversationModule().showConversation({ preserveClaw: clawGeneralRequest });
-    conversationModule().addUserMessage(prompt, attachmentSnapshot);
-    input.value = "";
-    // #5561: the composer is empty again, so the primary action slot returns
-    // to the voice waveform.
-    conversationModule().updateComposer();
-    const outbound = conversationState.outboundWithUser(prompt);
-    const success = await streaming.requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
-    if (success && selectedAttachments === attachmentSnapshot) conversationModule().clearAttachment();
-  }
 
   // R5 B7: openSettings·closeSettings·openAdvancedSettingsView·
   // closeAdvancedSettingsView are on the registry (provide("settings")).
@@ -1792,7 +936,7 @@
   // The full page opens on top of the screen the user came from (home, chat or
   // claw). Its back entry must return there instead of assuming home.
   // #7812 R5 B5 (rule (b)): settings module registers this at the original spot.
-  settings.wireTierChange();
+  settingsModule().wireTierChange();
   input.addEventListener("input", (event) => conversationModule().updateComposer(event));
   // #3084: Korean IME regression protection. While a Hangul/IME composition is
   // active the browser still reports key === "Enter" for the candidate-confirm
@@ -1826,25 +970,12 @@
     // #4647: the meeting workbench consumes its own explicit meeting-setup
     // command from its own capture-phase listener on this same form, so this
     // handler keeps no shell-state fork and every other prompt is unaffected.
-    submitPrompt(input.value);
+    entry.submitPrompt(input.value);
   });
   cancelStreamButton.addEventListener("click", streaming.cancelActiveStream);
   attachmentButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   documentStarterButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
-  const documentFormatsToggle = document.getElementById("documentFormatsToggle");
-  const documentFormatsPanel = document.getElementById("documentFormatsPanel");
-  if (documentFormatsToggle && documentFormatsPanel) {
-    documentFormatsToggle.addEventListener("click", () => {
-      const show = documentFormatsPanel.hidden;
-      documentFormatsPanel.hidden = !show;
-      documentFormatsToggle.setAttribute("aria-expanded", show ? "true" : "false");
-    });
-    document.addEventListener("click", (event) => {
-      if (documentFormatsPanel.hidden || (event.target.closest && event.target.closest(".document-starter-shell"))) return;
-      documentFormatsPanel.hidden = true;
-      documentFormatsToggle.setAttribute("aria-expanded", "false");
-    });
-  }
+  conversationModule().wireDocumentFormats();
   attachmentFileInput.addEventListener("change", () => {
     const files = Array.from(attachmentFileInput.files || []);
     if (files.length) void conversationModule().addAttachmentFiles(files);
@@ -1864,26 +995,7 @@
       if (files.length) void conversationModule().addAttachmentFiles(files);
     });
   }
-  if (projectsNavButton) projectsNavButton.addEventListener("click", () => {
-    if (!projectsReady) return;
-    if (projects.length === 0) openProjectDialog();
-    else projectsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  });
-  projectCreateButton.addEventListener("click", () => openProjectDialog());
-  editProjectButton.addEventListener("click", () => { if (activeProject) openProjectDialog(activeProject); });
-  exitProjectButton.addEventListener("click", exitProject);
-  projectDialogClose.addEventListener("click", closeProjectDialog);
-  projectDialogCancel.addEventListener("click", closeProjectDialog);
-  projectForm.addEventListener("submit", saveProject);
-  projectDeleteButton.addEventListener("click", deleteProject);
-  projectFileInput.addEventListener("change", () => {
-    const [file] = projectFileInput.files || [];
-    addProjectFile(file);
-  });
-  projectDialog.addEventListener("cancel", (event) => {
-    event.preventDefault();
-    closeProjectDialog();
-  });
+  projectModule.wireProjectListeners();
   // #5560: one sign-out implementation, reached from the sidebar session
   // button and from Settings > Account. The server session invalidation and
   // the local conversation reset are the same in both paths.
@@ -1891,8 +1003,8 @@
   authModule().wireLoginButton();
   // #7812 R5 B5 (rule (b)): the settings module registers the advanced-settings
   // click/Escape listeners at this original block.
-  settings.wireAdvancedSettings();
-  settings.wireAdvancedMenuListeners();
+  settingsModule().wireAdvancedSettings();
+  settingsModule().wireAdvancedMenuListeners();
   authModule().wireLogoutButton();
   loginDialogModule().wireDialogClose();
   loginDialogModule().wireGoogleLogin();
@@ -1901,7 +1013,7 @@
   // listeners at this original position, so their registration order is unchanged.
   accountModule().wireAccountControls();
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
-    submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
+    entry.submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
     sidebar.closeSidebar();
   }));
   newChatButton.addEventListener("click", () => conversationModule().resetConversation(true));
@@ -1910,14 +1022,7 @@
   loginDialogModule().wireProfileToggle();
   loginDialogModule().wireProfileSettings();
   loginDialogModule().wireProfileDismiss();
-  settingsButton.addEventListener("click", () => { authModule().closeProfilePanel(); settings.openSettings(); });
-  settingsDialog.addEventListener("close", () => {
-    settingsButton.setAttribute("aria-expanded", "false");
-    profileToggle.setAttribute("aria-expanded", "false");
-  });
-  // #7812 R5 B5 (rule (b)): settings dialog then sidebar clicks register at the
-  // original block, keeping their document order.
-  settings.wireSettingsDialog();
+  settingsModule().wireSettingsDialog();
   sidebar.wireSidebarListeners();
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !loginDialogModule().profilePanelElement().hidden) {
@@ -1930,8 +1035,8 @@
     authModule().applyAuthState(authState);
     androidHandoffModule().renderAndroidHandoff();
     navModuleInstance.setNavActive();
-    if (projectsReady) renderProjects();
-    renderProjectState();
+    if (projectsReady) projectModule.renderProjects();
+    projectModule.renderProjectState();
     if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
     clawStatusModule().syncComposerForClaw(shell.dataset.state === "claw");
       });
@@ -1965,7 +1070,7 @@
     window.PadiemChatClawRunModule.create(Object.setPrototypeOf({
 
     get clawResultBadge() { return clawResultBadge; },
-    get clawBoundedRefusalCopy() { return clawBoundedRefusalCopy; },
+    get clawBoundedRefusalCopy() { return conversationModule().clawBoundedRefusalCopy; },
     get approvalDecisionErrorMessage() { return conversationModule().approvalDecisionErrorMessage; },
         get loadClawRunHistory() { return runHistory.loadClawRunHistory; },
     get clawRetryRemaining() { return clawStatusModule().clawRetryRemaining; },
@@ -2212,21 +1317,7 @@
   // entry bar (#3531 keeps the workspace canvas hidden in general/manual
   // views, so the entry lives beside the manual-entry control instead).
   // In-conversation run status/results are unchanged.
-  if (clawManualForm) {
-    const modeChips = clawManualForm.querySelectorAll(".claw-chip[data-claw-action]");
-    modeChips.forEach((chip) => {
-      chip.addEventListener("click", () => {
-        const action = chip.dataset.clawAction;
-        if (clawAction && action) clawAction.value = action;
-        modeChips.forEach((other) => {
-          other.setAttribute("aria-pressed", other === chip ? "true" : "false");
-        });
-        clawLastAction = action || null;
-        input.focus();
-      });
-    });
-    // Keyboard: chips are buttons so Enter/Space already work; ensure roving focus stays visible.
-  }
+  clawFormModule().wireModeChips({ set clawLastAction(value) { clawLastAction = value; } });
   navModuleInstance.setNavActive();
 
 
@@ -2256,7 +1347,7 @@
   });
 
   coreModule().setNote(coreModule().idleNote());
-  renderProjectState();
+  projectModule.renderProjectState();
   conversationModule().updateComposer();
   // A guide example arrives as text only: it fills the composer, sends nothing,
   // and leaves no query in the address bar for the next refresh to replay.
@@ -2269,7 +1360,7 @@
     } catch (_) {}
   }
   window.PadiemChatSession.bind({
-    clearHistoryUI: historyModule().clearHistoryUI, clearProjectsUI, resetConversationView: conversationModule().resetConversationView, clearAndroidHandoff: androidHandoffModule().clearAndroidHandoff,
+    clearHistoryUI: historyModule().clearHistoryUI, clearProjectsUI: projectModule.clearProjectsUI, resetConversationView: conversationModule().resetConversationView, clearAndroidHandoff: androidHandoffModule().clearAndroidHandoff,
     hasAndroidHandoff: () => Boolean(androidHandoff),
     clearHandoffStorage: () => {
       try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}

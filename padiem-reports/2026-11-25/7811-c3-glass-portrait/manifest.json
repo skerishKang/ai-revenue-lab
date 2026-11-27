@@ -1,0 +1,50 @@
+{
+  "issue": 7811,
+  "track": "C3",
+  "sheet": "padiem-glass-portrait.css",
+  "base_main_sha": "4511eb8f1372786cbcdb5e994c28df6fc01a2947",
+  "themed_important_before": 4,
+  "themed_important_after": 0,
+  "root_token": "--glass-portrait-answer-action-ink",
+  "token_family_sha256": "cde5dcf0ef2e53ce5626830e8a25e28035899b8a364b792e674018138f447990",
+  "computed_cssom": {
+    "themes": 5,
+    "viewports": 2,
+    "combos": 10,
+    "differences": 0
+  },
+  "pixel_before_after": {
+    "themes": 5,
+    "viewports": 2,
+    "combos": 10,
+    "raw_nonzero": 0,
+    "noise_nonzero": 0,
+    "state_failures": 0
+  },
+  "pixel_control": {
+    "themes": 5,
+    "viewports": 2,
+    "combos": 10,
+    "raw_nonzero": 0,
+    "noise_nonzero": 0,
+    "state_failures": 0
+  },
+  "glass_reading_effects": {
+    "viewports": [
+      1440,
+      390
+    ],
+    "cssom_differences": 0
+  },
+  "token_tamper": {
+    "token": "--glass-portrait-answer-action-ink",
+    "original_computed_color": "rgb(83, 96, 108)",
+    "mutated_computed_color": "rgb(255, 0, 255)",
+    "mutation_detected": true
+  },
+  "captures": [
+    "glass-portrait-1440.png",
+    "glass-portrait-390.png"
+  ],
+  "capture_count": 2
+}

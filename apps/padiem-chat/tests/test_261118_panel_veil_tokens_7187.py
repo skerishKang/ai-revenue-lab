@@ -34,7 +34,8 @@ CHANGED = {
         ("background", "var(--surface-veil-panel)"): 1,
     },
     "padiem-cinematic-workspace.css": {
-        ("box-shadow", "inset 0 1px 0 var(--inset-veil-panel), 0 14px 38px var(--ws-banner-shadow)"): 1,
+        # 7811 C5: 프로젝트 배너의 바깥 그림자는 surfaces 공용 규칙에 늘 져서 지웠다.
+        ("box-shadow", "inset 0 1px 0 var(--inset-veil-panel)"): 1,
         ("background", "var(--surface-veil-panel)"): 1,
     },
     "padiem-rich.css": {

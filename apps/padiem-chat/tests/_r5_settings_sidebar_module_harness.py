@@ -50,7 +50,9 @@ function makeElement(id) {
     removeAttribute(k) { delete attrs[k]; },
     getAttribute(k) { return Object.prototype.hasOwnProperty.call(attrs, k) ? attrs[k] : null; },
     focus() { this.focused += 1; this.focusedId = this.id; },
-    addEventListener() {},
+    listeners: {},
+    addEventListener(type, fn) { (this.listeners[type] ||= []).push(fn); },
+    fire(type, event = {}) { for (const fn of this.listeners[type] || []) fn(event); },
     appendChild(child) { (this.children ||= []).push(child); return child; },
   };
 }
@@ -295,6 +297,36 @@ results.sidebar = { opened,
   closed: { classed: d.shell.classList.contains("sidebar-open"),
             aria: d.mobileMenu.getAttribute("aria-expanded"), scrim: d.sidebarScrim.hidden,
             profileClosed: d.profileClosed } };
+
+// T2 stage 6: register the existing dialog listeners and exercise real callbacks.
+d = deps();
+api = settingsApi(d);
+const wiredOrder = [];
+for (const el of [d.settingsButton, d.settingsDialog, d.settingsCloseButton]) {
+  const add = el.addEventListener;
+  el.addEventListener = function(type, fn) { wiredOrder.push(this.id + ":" + type); add.call(this, type, fn); };
+}
+api.wireSettingsDialog();
+d.settingsButton.fire("click");
+const wiredOpen = { open: d.settingsDialog.open, profileClosed: d.profileClosed,
+  button: d.settingsButton.getAttribute("aria-expanded"), profile: d.profileToggle.getAttribute("aria-expanded") };
+d.settingsDialog.close();
+d.settingsDialog.fire("close");
+const wiredClose = { open: d.settingsDialog.open, button: d.settingsButton.getAttribute("aria-expanded"),
+  profile: d.profileToggle.getAttribute("aria-expanded") };
+d.settingsButton.fire("click");
+let prevented = false;
+d.settingsDialog.fire("cancel", { preventDefault() { prevented = true; } });
+const wiredCancel = { prevented, open: d.settingsDialog.open };
+d.settingsButton.fire("click");
+d.settingsDialog.fire("click", { target: d.settingsButton });
+const insideOpen = d.settingsDialog.open;
+d.settingsDialog.fire("click", { target: d.settingsDialog });
+const backdropOpen = d.settingsDialog.open;
+d.settingsButton.fire("click");
+d.settingsCloseButton.fire("click");
+results.wiredDialog = { order: wiredOrder, opened: wiredOpen, closed: wiredClose, cancel: wiredCancel,
+  insideOpen, backdropOpen, closeButtonOpen: d.settingsDialog.open };
 
 // 11. Getter contract: change the closure value BEFORE create() and before the
 //     first call; the module must read the changed element, not a snapshot.

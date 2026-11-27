@@ -30,5 +30,9 @@ def chat_history_module_source() -> str:
     return (_STATIC / "chat-history-module.js").read_text(encoding="utf-8")
 
 
+def project_module_source() -> str:
+    return (_STATIC / "chat-project-module.js").read_text(encoding="utf-8")
+
+
 def glass_css() -> str:
     return (_STATIC / "padiem-glass.css").read_text(encoding="utf-8")

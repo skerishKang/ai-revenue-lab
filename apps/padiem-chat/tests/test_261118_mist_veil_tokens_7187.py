@@ -42,7 +42,8 @@ CHANGED = {
     "padiem-cinematic-workspace.css": {
         # #8340: 이 시트의 mist 캡을 제거했다(다른 시트 규칙이 이긴다).
         ("color", "var(--text-veil-mist)"): 2,
-        ("border-color", "var(--line-veil-mist)"): 1,
+        # 7811 C5: primary 단추 hover 테두리는 기본 규칙의 우선 표시에 늘 져서
+        # 칠해진 적이 없어 지웠다.
     },
     "padiem-glass-brand-polish.css": {
         # #8008 16차: 값만 단정한다. 중요도 캡은 계산값을 바꾸지 않는 구현 detail.
@@ -87,7 +88,7 @@ def test_the_twelve_declarations_consume_the_right_role() -> None:
                     actual[(prop, normalized)] += 1
         assert actual == Counter(expected), sheet
         total += sum(actual.values())
-    assert total == 12
+    assert total == 11  # 7811 C5: 죽은 hover 테두리 1건 삭제
 
 
 def test_swapping_the_tokens_back_returns_the_original_literal() -> None:

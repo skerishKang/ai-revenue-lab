@@ -164,7 +164,7 @@ def test_the_sheet_uses_tokens_only() -> None:
     rules = css["rules"]
     generate = [r for r in rules if any(s == ".util-generate" for s in r.selectors)]
     assert generate and declaration(generate[0], "background") == "var(--primary-bg)"
-    assert declaration(generate[0], "color") == "#fff"
+    assert declaration(generate[0], "color") == "var(--util-tools-on-accent)"
     focus = find_rules_with_selector(rules, ".util-generate:focus-visible")
     assert focus and declaration(focus[0], "outline") == "3px solid var(--primary-focus)"
     field_rules = find_rules_with_selector(rules, ".util-input")
@@ -267,7 +267,7 @@ const windowObj = {
   PadiemAuthSession: { get: () => authState },
   PadiemTierSelection: { get: () => scenario.tier || "free" },
   PadiemAnswerCopy: { copyText: (value) => { copies.push(value); return Promise.resolve(true); } },
-  __padiemLocale: { text: (key) => ({ timeout: "응답 시간 초과", "connection-error": "연결 오류",
+  __padiemLocale: { text: (key) => ({ timeout: "답이 늦어요", "connection-error": "연결 오류",
     "claw-error-auth-needed": "로그인이 필요합니다. 다시 로그인한 뒤 시도해 주세요.",
     "claw-error-rate-limited": "요청이 잠시 많습니다. 잠시 후 다시 시도해 주세요.",
     "claw-error-generic": "실행 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요." }[key] || key) },

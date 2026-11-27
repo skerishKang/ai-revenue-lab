@@ -53,8 +53,8 @@ def test_the_component_is_loaded_once_and_calls_only_the_new_routes():
     assert 'PC_EXCHANGE_SCRIPT = "./pc-file-exchange.js"' in quote_runtime
     assert 'PC_EXCHANGE_CSS = "./pc-file-exchange.css"' in quote_runtime
     council_source = sheets.council_source()
-    assert 'script.src = "./static/pc-file-exchange.js"' in council_source
-    assert 'css.href = "./static/pc-file-exchange.css"' in council_source
+    assert 'script.src = versionedAsset("./static/pc-file-exchange.js")' in council_source
+    assert 'css.href = versionedAsset("./static/pc-file-exchange.css")' in council_source
     assert Path(sheets.council_path("pc-file-exchange.js")).is_file()
     assert Path(sheets.council_path("pc-file-exchange.css")).is_file()
     # The part speaks only to the eight new owner routes: nothing older, nothing the

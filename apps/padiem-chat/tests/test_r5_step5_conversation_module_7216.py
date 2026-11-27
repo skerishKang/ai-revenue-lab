@@ -1176,3 +1176,48 @@ def test_add_attachment_files_refuse_per_chip(observed: dict) -> None:
     assert refusals["imageValid"] is True
     assert refusals["imageType"] == "image"
     assert refusals["fileInputCleared"] is True
+
+
+def test_t2_stage2_error_functions_have_one_owner():
+    names = (
+        "lifecycleForError", "addAssistantShell", "renderStoredAssistant",
+        "renderWebGroundingNotice", "clawBoundedRefusalCopy", "clawGeneralFailure",
+        "buildRetryBox", "revealErrorState", "failureCodeNote", "failureStatusLabel",
+        "renderError", "renderCancelled", "handleCustomRequestFailure",
+    )
+    for name in names:
+        assert function_counts(MODULE_SHEET).get(name) == 1, name
+        assert function_counts(APP_SHEET).get(name, 0) == 0, name
+    assert contains(MODULE_SHEET, "const CLAW_BOUNDED_REFUSAL_COPY")
+    assert not contains(APP_SHEET, "const CLAW_BOUNDED_REFUSAL_COPY")
+
+
+def test_t2_stage2_retry_writes_original_project_state():
+    static = Path(static_path(APP_SHEET)).parent
+    script = r"""
+const fs = require("node:fs"), vm = require("node:vm"), assert = require("node:assert/strict");
+const path = require("node:path"), root = process.argv[1];
+const source = name => fs.readFileSync(path.join(root, name), "utf8");
+const el = () => ({children: [], handlers: {}, append(...a) { this.children.push(...a); },
+  addEventListener(k, fn) { this.handlers[k] = fn; }});
+const document = {getElementById: () => null, createElement: el};
+const sandbox = {document, window: {}};
+vm.createContext(sandbox);
+vm.runInContext(source("chat-app-context.js"), sandbox);
+vm.runInContext(source("chat-conversation-module.js"), sandbox);
+const appSource = source("app.js");
+const getter = appSource.match(/get activeProject\(\) \{ return activeProject; \},/)[0];
+const setter = appSource.match(/set activeProject\(value\) \{ activeProject = value; \},/)[0];
+const execute = vm.runInContext("(async function(){let activeProject = 'before'; let observed; const target = {id: 'after'}; "
+  + "const app = window.PadiemChatAppContext.create({" + getter + setter
+  + "uiT: k=>k, conversationState:{setProduct(){},setConversationId(){}}, conversationProduct:'chat',"
+  + "renderProjectState(){ observed=activeProject; }, requestAnswer: async()=>false, selectedAttachments:[]});"
+  + "const api=app.provide('conversation',window.PadiemChatConversationModule.create(Object.setPrototypeOf({},app)));"
+  + "const box=api.buildRetryBox('error',{remove(){}},[],'auto',null,{product:'chat',conversationId:'id',project:target});"
+  + "await box.children[2].handlers.click(); return activeProject===target && observed===target;})", sandbox);
+execute().then(ok => {assert.equal(ok,true); console.log(JSON.stringify(ok));}).catch(e=>{console.error(e);process.exitCode=1;});
+"""
+    result = subprocess.run([shutil.which("node"), "-e", script, str(static)],
+                            capture_output=True, text=True, encoding="utf-8", timeout=30)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) is True

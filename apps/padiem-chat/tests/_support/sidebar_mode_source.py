@@ -21,6 +21,7 @@ _SOURCES = {
     "nav": "chat-nav-module.js",
     "profile_menu": "chat-profile-menu-module.js",
     "capability": "product-capabilities.js",
+    "settings": "chat-settings-module.js",
 }
 
 

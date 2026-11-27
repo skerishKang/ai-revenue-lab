@@ -39,11 +39,14 @@ backend change; fail-closed backend behavior and Chat streaming stay untouched.
 """
 
 from __future__ import annotations
+
+from _r5_function_source import definition_source
 import locale_bundle
 
 from functools import lru_cache
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -211,7 +214,8 @@ def test_chat_conversation_path_is_unchanged() -> None:
     app = _app_source()
     stream = claw_lane_source.streaming_source()
     assert stream.count("deps.conversationState.setConversationId(data.conversation_id);") == 2
-    assert app.count("conversationState.setConversationId(retryContext.conversationId);") == 1
+    conv = definition_source("buildRetryBox")
+    assert conv.count("deps.conversationState.setConversationId(retryContext.conversationId);") == 1
     # Chat still owns its streaming/completed echo; Claw gained a parallel
     # gated write without touching these.
     assert 'if (typeof data.conversation_id === "string") deps.conversationState.setConversationId(data.conversation_id);' in stream
@@ -272,7 +276,7 @@ def test_session_action_adds_no_new_route_or_second_store() -> None:
     # moved into chat-history-module.js (#7216 R5 step 3); the count spans the
     # two shipped sources so the "exactly three" contract keeps its strength.
     route = "api/conversations/${encodeURIComponent(id)}"
-    assert app.count(route) + module.count(route) == 3
+    assert app.count(route) + module.count(route) + definition_source("openSavedConversation").count(route) == 3
     create_at = app.index('sessionBtn = document.createElement("button");')
     append_at = app.index("if (sessionBtn) card.appendChild(sessionBtn);")
     session_block = app[create_at:append_at]
@@ -740,6 +744,15 @@ function cardWith(summary) {
 # All consumers assert read-only facts from the same completed real app.js
 # behavior journey. Reuse it once per Python module rather than respawning
 # Node for each test; separate pytest processes still run independent checks.
+def _node_env_with_module_preload() -> dict:
+    preload = Path(__file__).resolve().parents[1] / "tests" / "_node_appjs_modules_preload.js"
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    env = dict(os.environ)
+    if preload.as_posix() not in existing:
+        env["NODE_OPTIONS"] = f"{existing} --require {preload.as_posix()}".strip()
+    return env
+
+
 @lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
@@ -754,6 +767,7 @@ def _run_harness() -> dict:
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=120,
+            env=_node_env_with_module_preload(),
         )
     finally:
         harness_path.unlink(missing_ok=True)

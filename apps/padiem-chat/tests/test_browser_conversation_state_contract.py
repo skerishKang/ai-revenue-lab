@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from _r5_function_source import definition_source
+
 import json
 import subprocess
 
@@ -36,10 +38,10 @@ def test_app_delegates_conversation_data_but_keeps_request_lifecycle() -> None:
     assert 'let activeRequestController = null;' in source
     assert 'deps.activeRequestCancelReason = "user_cancel";' in stream
     assert 'deps.conversationState.reset();' in conv
-    assert 'conversationState.outboundWithUser(prompt)' in source
+    assert 'deps.conversationState.outboundWithUser(prompt)' in definition_source('submitPrompt')
     assert 'deps.conversationState.commitAssistant(outboundMessages, data.answer);' in stream
     assert 'deps.conversationState.commitAssistant(outboundMessages, answer);' in stream
-    assert 'conversationState.setConversationId(retryContext.conversationId);' in source
+    assert 'deps.conversationState.setConversationId(retryContext.conversationId);' in conv
 
 
 def test_conversation_state_preserves_all_model_turns_and_id_skill_contract() -> None:

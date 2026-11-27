@@ -229,11 +229,11 @@ def test_stream_state_commits_only_on_done_and_partial_error_is_preserved() -> N
     assert "project_files_used" in done_source
 
     # B7 18차+19차: the renderStreamError forwarder is gone from app.js; the
-    # app-owned retry-box code now lives in renderCancelled, ending at
-    # clearProjectsUI.
-    partial_start = _source().index("  function renderCancelled(")
-    partial_end = _source().index("  function clearProjectsUI(", partial_start)
-    partial_source = _source()[partial_start:partial_end]
+    # app-owned retry-box code stays in renderCancelled. Project functions moved
+    # out, so use the next function boundary instead of a project sentinel.
+    partial_start = conv.index("  function renderCancelled(")
+    partial_end = _next_fn_end(conv, partial_start)
+    partial_source = conv[partial_start:partial_end]
     conv_partial_start = conv.index("  function renderStreamError(")
     conv_partial = conv[conv_partial_start:_next_fn_end(conv, conv_partial_start)]
     assert "content.replaceChildren()" not in partial_source
@@ -284,7 +284,7 @@ def test_streamed_browser_path_never_renders_provider_route_details() -> None:
     # "AI 응답" line is not rendered. The locale key stays for compatibility.
     assert 'textContent = uiT("ai-response")' not in stream_source
     assert 'textContent = deps.uiT("ai-response")' not in stream_source
-    assert '"ai-response": "AI 응답"' in locale_source()
+    assert '"ai-response": "AI 답"' in locale_source()
 
 
 def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -> None:
@@ -325,12 +325,12 @@ def test_cancel_and_retry_are_product_surface_only_and_preserve_stream_boundary(
     assert "cancelActiveStream" in stream
     assert 'deps.activeRequestCancelReason = "user_cancel"' in stream
     assert "deps.renderCancelled(article" in stream
-    assert 'textContent = coreModule().uiT("generation-cancelled")' in source
-    assert 'uiT("regenerate")' in source
+    assert 'textContent = deps.uiT("generation-cancelled")' in _conv_source()
+    assert 'uiT("regenerate")' in _conv_source()
     locale = locale_source()
-    assert '"generation-cancelled": "생성 취소됨"' in locale
-    assert '"regenerate": "다시 생성"' in locale
-    assert 'retry.textContent = actionLabel' in source
+    assert '"generation-cancelled": "만들기 취소됨"' in locale
+    assert '"regenerate": "다시 만들기"' in locale
+    assert 'retry.textContent = actionLabel' in _conv_source()
     assert "deps.requestStreamingAnswer(\n        article" in stream
     assert "deps.chatTransport.requestStreaming(payload, signal)" in stream
     assert ("POST", "/api/chat/stream") in {
@@ -340,12 +340,12 @@ def test_cancel_and_retry_are_product_surface_only_and_preserve_stream_boundary(
 
 
 def test_timeout_error_keeps_incomplete_answer_in_fail_closed_states() -> None:
-    source = _source()
+    source = _conv_source()
     assert 'error && error.code === "upstream_timeout"' in source
     assert 'MESSAGE_LIFECYCLE.TIMED_OUT' in source
     assert 'lifecycleForError(error)' in source
     assert 'PadiemChatLifecycle.set(article, lifecycle)' in source
-    assert 'PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED)' in source
+    assert 'PadiemChatLifecycle.set(article, deps.MESSAGE_LIFECYCLE.COMPLETED)' in source
 
 
 def test_cancel_control_has_mobile_safe_target_and_accessibility_contract() -> None:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from _r5_function_source import definition_source
+
 import json
 from pathlib import Path
 
@@ -475,6 +477,7 @@ async def test_d1_project_values_are_bound_not_interpolated():
 def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     html = claw_static.sheet("index.html")
     js = claw_static.sheet("app.js")
+    project_js = claw_static.sheet("chat-project-module.js")
     stream_js = claw_static.sheet("chat-streaming-module.js")
     migration = claw_static.migration_source("002_projects.sql")
     # #4462: the duplicate sidebar Projects button is removed; the lower
@@ -486,13 +489,14 @@ def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     assert 'href="./projects.css"' in html
     assert 'payload.project_id = contextSnapshot.project.id' in stream_js
     assert 'newChatButton.addEventListener("click", () => conversationModule().resetConversation(true))' in js
-    assert 'exitProjectButton.addEventListener("click", exitProject)' in js
-    assert 'projectDeleteButton.addEventListener("click", deleteProject)' in js
-    assert 'manage.addEventListener("click", () => openProjectDialog(project))' in js
-    assert 'method: "DELETE"' in js
-    assert 'data.conversation.project_id' in js
-    assert 'fetch("/api/projects"' in js
+    assert 'exitProjectButton.addEventListener("click", exitProject)' in project_js
+    assert 'projectDeleteButton.addEventListener("click", deleteProject)' in project_js
+    assert 'manage.addEventListener("click", () => openProjectDialog(project))' in project_js
+    assert 'method: "DELETE"' in project_js
+    assert 'data.conversation.project_id' in definition_source('openSavedConversation')
+    assert 'fetch("/api/projects"' in project_js
     assert "innerHTML" not in js
+    assert "innerHTML" not in project_js
     assert "CREATE TABLE IF NOT EXISTS projects" in migration
     assert "ADD COLUMN project_id" in migration
     import tomllib

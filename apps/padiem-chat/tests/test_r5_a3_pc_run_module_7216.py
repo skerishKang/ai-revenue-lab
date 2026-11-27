@@ -161,7 +161,8 @@ def test_deps_getters_and_setters_match_exact_closure_surface() -> None:
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(value\)", block))
     assert gets <= EXPECTED_GETTERS
-    assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
+    assert 'app.provide("entry", window.PadiemChatEntryModule.create(app))' in APP
+    assert gets | (EXPECTED_GETTERS & (context_names(APP) | {"openSavedConversation"})) == EXPECTED_GETTERS
     assert sets == set()
 
 

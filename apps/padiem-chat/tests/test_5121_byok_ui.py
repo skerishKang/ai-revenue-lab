@@ -305,7 +305,7 @@ def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() 
     # #7297: Custom is shared between Chat and Claw; text-only refusal preserves the typed prompt.
     app = _app()
     assert 'setNote(uiT("custom-chat-only"), "error");' not in app
-    assert 'coreModule().setNote(coreModule().uiT("custom-text-only"), "error");' in app
+    assert 'deps.setNote(deps.uiT("custom-text-only"), "error");' in definition_source("submitPrompt")
     assert "custom-text-only" in locale_bundle.keys("ko")
     assert "custom-text-only" in locale_bundle.keys("en")
 
@@ -314,7 +314,7 @@ def test_custom_failures_reopen_the_existing_model_card() -> None:
     assert "function handleCustomRequestFailure(error)" in definition_source(
         "handleCustomRequestFailure"
     )
-    app = _app()
+    app = definition_source("handleCustomRequestFailure")
     assert 'const CUSTOM_AUTH_FAILURE_CODE = "custom_provider_auth_failed";' in app
     assert 'code === "custom_credential_required" || code === CUSTOM_AUTH_FAILURE_CODE' in app
     assert "window.PadiemCustomSelection?.open?.();" in app

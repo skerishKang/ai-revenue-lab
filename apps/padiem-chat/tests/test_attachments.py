@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from _r5_function_source import definition_source
+
 import base64
 import json
 from pathlib import Path
@@ -292,8 +294,9 @@ def test_frontend_exposes_generic_file_control_without_losing_image_support():
     assert "innerHTML" not in js
     # #261102: the selection is now a chip list; the pin keeps its intent —
     # the retry clears the composer only for its own unchanged snapshot.
-    assert "selectedAttachments === retryAttachment" in js
-    assert "clearAttachment();" in js
+    retry_source = definition_source("buildRetryBox")
+    assert "deps.selectedAttachments === retryAttachment" in retry_source
+    assert "deps.clearAttachment();" in retry_source
 
 
 def test_phase1_styles_remain_byte_equal_and_attachment_css_is_additive():

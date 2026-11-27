@@ -224,6 +224,16 @@
   --claw-local-border-strong: rgba(150,160,180,.45);
   --claw-local-border-soft: rgba(0,0,0,.14);
 
+  /* #7811 C2 pc-connect-flow(261125): 고정 딤·그림자·잉크·워시. 다른 화면 계열에서
+     빌려 쓰지 않고 이 시트의 값만 자기 계열 토큰으로 둔다. */
+  /* #7811 token-family --pc-connect-flow sha256=2dece9f81baebbaeba0c48a998480ad9a4f950f7bd6c74f1989b811f820a6ac2 */
+  --pc-connect-flow-backdrop: rgba(15, 16, 20, .44);
+  --pc-connect-flow-close-wash: rgba(127, 127, 127, .14);
+  --pc-connect-flow-ink-on-accent: #fff;
+  --pc-connect-flow-modal-shadow: 0 18px 48px rgba(0, 0, 0, .24);
+  --pc-connect-flow-note-shadow: 0 8px 24px rgba(0, 0, 0, .16);
+  --pc-connect-flow-popover-shadow: 0 12px 32px rgba(0, 0, 0, .18);
+
   /* #7811 C2 history.css(261118): 바탕 색. 값은 치환 전 사용처 리터럴 그대로다.
      5테마 실측(--computed)에서 모두 같은 값이라 :root 하나로 충분하고, 예외인
      --dialog-dim만 glass 블록이 덮는다(history.css의 glass 배경 선언은 그 값을
@@ -262,8 +272,10 @@
   --auth-primary-text: #fff;
 
   /* #7811 C2: 첫 화면(home) 입력창 그림자. 모든 테마에서 같은 값이다. */
-  /* #7811 token-family --composer sha256=bd0ae355acabda5e12dac699fdd94b833bc47d5ae79a5cffc831e241bcc29d9c */
+  /* #7811 token-family --composer sha256=6b3ef13df1cafcc89d5f29c7352d908cc57887cc239c3daecedde3fc7c67d55d */
   --composer-home-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 22px 64px rgba(0, 0, 0, .22), 0 0 0 1px rgba(136, 201, 255, .035);
+  /* #7811 C3: home 입력창 테두리(padiem-first-use.css). cinematic 값은 테마 블록. */
+  --composer-home-edge: var(--line-veil-faint);
 
   /* #7811 C2 calendar(261122): calendar.css의 고정 팔레트 색. 캘린더 화면은
      모든 테마에서 같은 값으로 칠해져 온 고정 팔레트라(5테마 실측 computed
@@ -934,6 +946,12 @@
   --util-menu-pdfmd-shell-wash: rgba(239, 243, 246, .48);
   --util-menu-pdfmd-warn-ink: #8a4b0f;
 
+  /* #7811 token-family --util-tools sha256=f114a67c0efeb1d6f25493712df51139b37cf776873a13c370aff542b1cafb4f */
+  /* #7811 C2 util-tools(261125): 도구 화면 강조 버튼·탭 위의 흰 글자. 값은 치환 전
+     선언마다 박혀 있던 #fff 그대로이고 :root에만 둔다. 다섯 테마 모두 같은
+     흰 글자라 테마 블록이 덮지 않는다. */
+  --util-tools-on-accent: #fff;
+
   /* 연결 카드 대비 수리(261124): 연결 화면 카드는 다섯 테마 모두 밝은 판이다
      (standalone-views.css의 #connectorsViewBody .capability-card). 카드 이름은
      글자색을 지정받지 못해 테마 글자색을 상속했고, 상태 줄은 테마 --muted를
@@ -1243,12 +1261,15 @@
   --admin-models-route-history-summary-text: #7b8b98;
   --admin-models-routeevents-source-card-bg: rgba(249,251,252,.55);
   --admin-models-routeevents-source-card-edge: rgba(255,255,255,.6);
-  /* #7811 token-family --shared-six-panel-frame sha256=d398a01055424ee8063a868a5c4635d38232ae48041788d1a4fe243a1fe748ac */
+  /* #7811 token-family --shared-six-panel-frame sha256=f2fd3668bb49ba29ab20bdc4a7395b4e3ddb095c0cd26d201915e557a59ddc20 */
   --shared-six-panel-frame-bg: linear-gradient(155deg, rgba(248,250,251,.88), rgba(233,238,241,.84));
   --shared-six-panel-frame-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72);
   --shared-six-panel-frame-edge: rgba(255,255,255,.70);
+  --shared-six-panel-frame-grain-opacity: .10;
   --shared-six-panel-frame-narrow-bg: rgba(242, 245, 247, .90);
   --shared-six-panel-frame-narrow-edge: rgba(255, 255, 255, .58);
+  /* #7811 token-family --glass-portrait sha256=cde5dcf0ef2e53ce5626830e8a25e28035899b8a364b792e674018138f447990 */
+  --glass-portrait-answer-action-ink: #53606c;
 }
 
 /* ---- 테마별 값 ---- */
@@ -1487,6 +1508,21 @@ html[data-theme="cinematic"] {
   --film-edge: rgba(136,201,255,.18);
   --film-vignette: inset 0 0 280px 110px rgba(0,0,0,.72);
   --film-grain: .22;
+  /* #7811 C3: padiem-bright-readability.css cinematic 규칙이 !important로 칠하던
+     값. 같은 대상을 다시 칠하던 규칙(padiem-themes.css cinematic 사이드바·
+     위 막대·앱 틀 위 테두리선, padiem-first-use.css home 입력창, padiem-rich.css
+     chat 입력창)이 이 토큰을 읽는다. 값은 그 리터럴 그대로다. */
+  --film-frame-edge: rgba(136,201,255,.20);
+  --film-rim-opacity: .58;
+  --film-rim-blue-glow: rgba(136,201,255,.18);
+  --topbar-film-bg: linear-gradient(180deg, rgba(7,11,19,.78), rgba(6,9,15,.16));
+  --topbar-film-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 10px 30px rgba(25,83,126,.12);
+  --composer-film-edge: rgba(136,201,255,.26);
+  --composer-film-glow: 0 0 40px rgba(93,178,246,.14), 0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08);
+  --composer-home-edge: var(--composer-film-edge);
+  --composer-home-shadow: var(--composer-film-glow);
+  --rich-composer-border: var(--composer-film-edge);
+  --rich-composer-shadow: var(--composer-film-glow);
 }
 
 html[data-theme="padiem-home"] {

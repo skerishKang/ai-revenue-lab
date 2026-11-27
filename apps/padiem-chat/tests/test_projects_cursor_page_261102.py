@@ -15,8 +15,9 @@ whole page contract on the real SQLite-shaped store and on the route:
 from __future__ import annotations
 
 # #8060: shipped reads live in _support; assertions stay here.
+from _support.r5_module_source_7216 import project_module_js
 from _support.turn_projects_calendar_source import (
-    app_js, calendar_module_js, chat_app_context_js, foundation_css, index_html,
+    calendar_module_js, chat_app_context_js, foundation_css, index_html,
     locale_source, read as _source_read, strict_deps_js,
 )
 
@@ -298,7 +299,7 @@ async def test_a_store_without_paging_still_answers_the_first_page():
 def test_the_screen_offers_one_more_page_at_a_time():
     """The list keeps its shape and grows only on demand: 44px, 14px copy."""
     static = Path(project_routes.__file__).resolve().parents[1] / "static"
-    script = app_js()
+    script = project_module_js()
     assert "projectsMore" in script
     assert "loadMoreProjects" in script
     assert "cursor=${encodeURIComponent(cursor)}" in script

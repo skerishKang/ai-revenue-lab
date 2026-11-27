@@ -320,3 +320,24 @@ def test_getters_read_the_value_changed_before_the_first_call(observed: dict) ->
     assert observed["getter"]["opened"] == 1
     assert observed["getter"]["overlay"] is False
     assert observed["getter"]["profileClosed"] is True
+
+
+def test_settings_wire_keeps_registration_order_and_dialog_callbacks(observed: dict) -> None:
+    assert observed["wiredDialog"] == {
+        "order": ["settingsButton:click", "settingsDialog:close", "settingsDialog:cancel",
+                  "settingsDialog:click", "settingsCloseButton:click"],
+        "opened": {"open": True, "profileClosed": 1, "button": "true", "profile": "true"},
+        "closed": {"open": False, "button": "false", "profile": "false"},
+        "cancel": {"prevented": True, "open": False},
+        "insideOpen": True, "backdropOpen": False, "closeButtonOpen": False,
+    }
+    for earlier, later in (
+        ("settingsModule().wireTierChange();", 'input.addEventListener("input"'),
+        ("authModule().wireLoginButton();", "settingsModule().wireAdvancedSettings();"),
+        ("settingsModule().wireAdvancedSettings();", "settingsModule().wireAdvancedMenuListeners();"),
+        ("settingsModule().wireAdvancedMenuListeners();", "authModule().wireLogoutButton();"),
+        ("loginDialogModule().wireProfileDismiss();", "settingsModule().wireSettingsDialog();"),
+        ("settingsModule().wireSettingsDialog();", "sidebar.wireSidebarListeners();"),
+    ):
+        assert APP.count(earlier) == APP.count(later) == 1
+        assert APP.index(earlier) < APP.index(later)

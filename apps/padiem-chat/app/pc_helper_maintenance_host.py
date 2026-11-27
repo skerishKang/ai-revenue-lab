@@ -32,7 +32,12 @@ from .connector_account_subject import maintenance_owner_context
 from .connector_account_shadow import mode_connector_read
 
 logger = logging.getLogger(__name__)
-INTERVAL = 60
+#: #8772: how often the round runs. Idle rounds only look for a new candidate,
+#: so they are slow; any attempt that is reserved, dispatched or waiting for
+#: its receipt/observation keeps the old 60 s cadence, because TTL,
+#: VERIFY_SECONDS and the 180 s observation window below are tuned to it.
+IDLE_INTERVAL = 900
+INTERVAL = 60  # active cadence (unchanged)
 TTL = 300
 VERIFY_SECONDS = 600
 ACTOR = "system:pc_maintenance"
@@ -122,6 +127,17 @@ class HostMaintenanceStore(MaintenanceAttemptStore):
             result, proof.value if isinstance(proof, PrecontactProof) else None, claim.token)
         if rows:
             await self.settle(claim, now=_stamp(now), verified=result == "verified", proof=proof)
+
+    async def in_flight(self):
+        """True while any attempt still needs the fast cadence (read-only).
+
+        A reserved claim, a job that is not terminal, or a terminal job whose
+        notice is not yet delivered. Ends when reconcile has finished them.
+        """
+        return bool(await self.rows(
+            "SELECT 1 AS busy FROM pc_helper_maintenance_jobs WHERE status!='terminal' OR notified=0 "
+            "UNION ALL SELECT 1 FROM pc_helper_auto_attempts "
+            "WHERE stopped=0 AND last_reason LIKE 'reserved:%' LIMIT 1"))
 
     async def active(self):
         return await self.rows(
@@ -428,6 +444,15 @@ async def consider_device(app, env, store, device, *, now=None, report=None):
     if digest is None:
         report["outcome"] = "candidate_denied"
         return
+    # #8772: a PC whose attempt for this exact source is stopped, in flight or
+    # over the shared limit cannot be claimed this round whatever the owner
+    # check says. Skip the live identity reads (each one a signed RPC and a
+    # replay row in the identity Durable Object) instead of repeating them
+    # every minute. Nothing is granted or cached here: a claimable PC still
+    # resolves its owner live, and dispatch rechecks it live before writing.
+    if not await store.reservable(device_id=device, source_sha256=digest):
+        report["outcome"] = "reservation_denied"
+        return
     try:
         report["outcome"] = "resolve_owner_session"
         async with maintenance_owner_context(app, uid) as session:
@@ -659,6 +684,14 @@ async def maintenance_round(app, env, store):
                            " ".join(f"{key}={value}" for key, value in report.items()))
 
 
+async def next_delay(store):
+    """Seconds to wait before the next round (#8772)."""
+    try:
+        return INTERVAL if await store.in_flight() else IDLE_INTERVAL
+    except Exception:
+        return INTERVAL  # unknown state: stay on the deadline-safe cadence
+
+
 def install_maintenance_timer(app, *, env, db, process_lock):
     """Only the CPython Chat host calls this, never Worker or Mesh queue."""
     if not auto_update_enabled(env):
@@ -677,7 +710,7 @@ def install_maintenance_timer(app, *, env, db, process_lock):
                     process_lock.release()
             else:
                 logger.warning("pc_maintenance_round lock=busy")
-            await asyncio.sleep(INTERVAL)
+            await asyncio.sleep(await next_delay(store))
 
     async def start():
         nonlocal task

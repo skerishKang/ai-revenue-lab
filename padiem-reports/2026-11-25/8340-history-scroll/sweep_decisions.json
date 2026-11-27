@@ -1,0 +1,64 @@
+{
+ "sheet": "sidebar-history-scroll.css",
+ "combos": 10,
+ "removed": [
+  {
+   "line": 15,
+   "prop": "overflow"
+  },
+  {
+   "line": 65,
+   "prop": "display"
+  },
+  {
+   "line": 76,
+   "prop": "background"
+  },
+  {
+   "line": 77,
+   "prop": "background-color"
+  },
+  {
+   "line": 78,
+   "prop": "border"
+  },
+  {
+   "line": 81,
+   "prop": "-webkit-backdrop-filter"
+  },
+  {
+   "line": 85,
+   "prop": "background"
+  },
+  {
+   "line": 89,
+   "prop": "background"
+  },
+  {
+   "line": 95,
+   "prop": "background"
+  },
+  {
+   "line": 96,
+   "prop": "background-color"
+  },
+  {
+   "line": 97,
+   "prop": "border"
+  },
+  {
+   "line": 98,
+   "prop": "box-shadow"
+  },
+  {
+   "line": 107,
+   "prop": "overflow-y"
+  }
+ ],
+ "kept": [
+  {
+   "line": 16,
+   "prop": "overflow-y"
+  }
+ ]
+}

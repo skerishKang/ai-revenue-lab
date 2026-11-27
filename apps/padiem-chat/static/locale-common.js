@@ -45,7 +45,7 @@
       "title": "제목",
       "download": "다운로드",
       "nav-util": "유틸",
-      "regenerate": "다시 생성",
+      "regenerate": "다시 만들기",
       "guest": "게스트",
       "glass-background": "Padiem Glass 배경",
       "glass-background-selection": "Padiem Glass 배경 선택",

@@ -1,3 +1,4 @@
+from _r5_function_source import definition_source
 """#4072/#3928: real B54 general P01 result → existing owner run-history port.
 
 Real TestClient route with provider-fake adapter; no Production D1, model,
@@ -339,7 +340,7 @@ def test_browser_history_bridge_requires_owner_run_link_not_title():
     # the owner-verified Claw bridge now also restores the saved transcript.
     # The contract asserted here is unchanged: the bridge keys on the owner run
     # link, never on a title, and it must preserve the Claw surface.
-    assert "showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });" in app
+    assert "deps.showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });" in definition_source("openSavedConversation")
 
 
 def test_real_d1_owner_conversation_created_only_after_completed_claw():

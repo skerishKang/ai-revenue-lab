@@ -121,12 +121,13 @@ def test_duplicate_submit_guard_and_bounded_states() -> None:
     # Single in-flight flag gates both actions
     assert "clawInFlight" in APP
     assert "setClawButtonsBusy" in APP
-    assert "aria-busy" in APP
+    assert "aria-busy" in CLAW_STATUS
     assert 'data-claw-state' in INDEX or 'clawStatus' in INDEX or 'claw-status' in WORKSPACE_CSS.lower()
     # Buttons disabled via JS when busy
     assert "clawGenerateBtn" in CLAW_STATUS
     assert "clawExecuteButton" in APP
-    assert ".disabled = busy" in APP or "disabled = true" in APP
+    assert "clawGenerateBtn.disabled = busy" in CLAW_STATUS
+    assert "clawExecuteButton.disabled = blocked" in CLAW_STATUS
     # CSS treats disabled/blocked state as not-allowed
     assert "cursor: not-allowed" in WORKSPACE_CSS
     # States: idle/submitting/success/failure must exist as data attributes/classes
@@ -134,7 +135,7 @@ def test_duplicate_submit_guard_and_bounded_states() -> None:
     assert '"idle"' in APP or "'idle'" in APP
     assert '"submitting"' in APP + CLAW_FORM or "'submitting'" in APP + CLAW_FORM
     assert '"success"' in APP + CLAW_FORM or "'success'" in APP + CLAW_FORM
-    assert '"error"' in APP or "'error'" in APP
+    assert '"error"' in CLAW_FORM or "'error'" in CLAW_FORM
 
 
 # ── 6 · Clear bounded states exist (idle/submitting/success/failure) ───────
@@ -185,7 +186,7 @@ def test_safe_artifact_action_without_raw_bytes_or_secrets() -> None:
     assert "/api/claw/manual-intake/artifact/" in CLAW_RUN
     assert "URL.createObjectURL" in CLAW_RUN
     assert "URL.revokeObjectURL" in CLAW_RUN
-    assert "encodeURIComponent(documentId)" in APP or "encodeURIComponent" in APP
+    assert "encodeURIComponent(documentId)" in CLAW_RUN
     # Only safe descriptor fields rendered in meta
     assert 'id="clawArtifactMeta"' in INDEX
     assert 'id="clawArtifactName"' in INDEX
@@ -324,4 +325,4 @@ def test_sidebar_and_shell_contracts_preserved() -> None:
     assert 'id="sidebar"' in INDEX
     assert 'class="app-shell"' in INDEX
     assert "setNavActive" in APP
-    assert 'setAttribute("aria-current"' in APP
+    assert 'setAttribute("aria-current"' in NAV

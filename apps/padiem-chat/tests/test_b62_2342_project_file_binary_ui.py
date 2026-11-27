@@ -31,12 +31,13 @@ from __future__ import annotations
 from functools import lru_cache
 
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
 
 from _support.project_file_binary_ui_source import (
-    index_html, licenses_html, app_js, tus_module_js, tus_upload_js,
+    index_html, licenses_html, app_js, project_module_js, tus_module_js, tus_upload_js,
     documents_css, polish_css,
 )
 
@@ -81,7 +82,8 @@ def test_tus_wiring_static_contracts() -> None:
     html = index_html()
     assert html.count('src="./tus-upload.js"') == 1
     assert '<script src="./project-file-upload.js"></script>' in html
-    assert html.index('src="./tus-upload.js"') < html.index("project-file-upload.js") < html.index('src="./app.js"')
+    assert (html.index('src="./tus-upload.js"') < html.index("project-file-upload.js")
+            < html.index("chat-project-module.js") < html.index('src="./app.js"'))
     # No vendored client ships: its resume fingerprint lives in localStorage,
     # which the browser persistence audit refuses outright.
     assert not (ROOT / "static/tus-js-client-4.3.1.min.js").exists()
@@ -91,16 +93,19 @@ def test_tus_wiring_static_contracts() -> None:
 
 
 def test_binary_uploads_only_through_the_shared_tus_module() -> None:
-    source = app_js()
+    sources = (app_js(), project_module_js())
+    source = "\n".join(sources)
     # The binary branch consumes the shared tus module; the text branch keeps
-    # the exact JSON contract on the collection endpoint.
+    # the exact JSON contract on the collection endpoint. Both app-owned and
+    # project-module source stay inside the retired-transport scan.
     assert "window.PadiemProjectFileUpload.upload({" in source
     assert 'payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };' in source
     assert '/api/projects/${encodeURIComponent(editingProjectId)}/files' in source
     # The old direct octet-stream binary POST is gone for good.
-    assert '"Content-Type": "application/octet-stream"' not in source
-    assert "X-Padiem-Filename" not in source
-    assert "body: file" not in source
+    for shipped in sources:
+        assert '"Content-Type": "application/octet-stream"' not in shipped
+        assert "X-Padiem-Filename" not in shipped
+        assert "body: file" not in shipped
 
     module = tus_module_js()
     assert "new tus.Upload(" not in module
@@ -119,9 +124,9 @@ def test_binary_uploads_only_through_the_shared_tus_module() -> None:
 
 
 def test_no_console_logging_and_no_leftover_removed_symbol() -> None:
-    source = app_js()
-    assert "console." not in source
-    assert "PROJECT_BINARY_MEDIA" not in source
+    for source in (app_js(), project_module_js()):
+        assert "console." not in source
+        assert "PROJECT_BINARY_MEDIA" not in source
 
 
 def test_status_line_css_and_accessibility_floor_present() -> None:
@@ -203,6 +208,7 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "editProjectButton","exitProjectButton","projectDialog","projectForm","projectDialogTitle","projectDialogClose",
   "projectDialogCancel","projectNameInput","projectInstructionsInput","projectFormError","projectSaveButton",
   "projectFilesPanel","projectFileInput","projectFilesList","projectFilesEmpty","projectFileStatus",
+  "projectFilesUsage","projectDrivePanel",
   "clawNavButton","clawWorkspace","clawManualForm","clawChannel","clawAction","clawSender","clawRequestText",
   "clawResultArea","clawResultPreview","clawResultCard","clawResultEmpty","clawResultKind","clawGenerateBtn",
   "clawExecuteButton","clawResultBadge","clawResultDocx","clawStatus","clawArtifactMeta",
@@ -575,6 +581,15 @@ function pickAndUpload(file) {
 """
 
 
+def _node_env_with_module_preload() -> dict:
+    preload = (ROOT / "tests" / "_node_appjs_modules_preload.js").resolve()
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    env = dict(os.environ)
+    if preload.as_posix() not in existing:
+        env["NODE_OPTIONS"] = f"{existing} --require {preload.as_posix()}".strip()
+    return env
+
+
 # All consumers assert read-only facts from the same completed real app.js
 # behavior journey. Reuse it once per Python module rather than respawning
 # Node for each test; separate pytest processes still run independent checks.
@@ -591,6 +606,7 @@ def _run_harness() -> dict:
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=60,
+            env=_node_env_with_module_preload(),
         )
     finally:
         harness_path.unlink(missing_ok=True)
