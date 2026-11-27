@@ -19,8 +19,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from app import claw_general_routes
+from app.request_telemetry import default_emitter
 from app.claw_general_routes import _claw_public_search_grounding
+from _support.claw_general_modules import patch_bound
 
 LOGGER_NAME = "padiem_chat.request"
 QUERY = "2026 광주 청년창업 지원사업 신청기간 모집 공고"
@@ -39,7 +40,7 @@ BASE_KEYS = {"event", "stage", "outcome", "sources", "duration_ms"}
 @pytest.fixture
 def recorded(monkeypatch):
     events: list[dict[str, object]] = []
-    monkeypatch.setattr(claw_general_routes, "default_emitter", events.append)
+    patch_bound(monkeypatch, "default_emitter", events.append)
     return events
 
 
@@ -192,7 +193,7 @@ def test_the_real_emitter_writes_one_json_line():
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
     try:
-        claw_general_routes.default_emitter({
+        default_emitter({
             "event": "claw_web_search", "stage": "decide", "outcome": "ok",
             "sources": 0, "duration_ms": 1.5,
         })

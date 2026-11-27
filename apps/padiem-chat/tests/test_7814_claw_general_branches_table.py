@@ -18,6 +18,7 @@ from app import claw_general_routes as g
 from app import chat_pc_session as sess
 from app import central_model_route_runtime as cmr
 from app.history import HistoryContextIncomplete
+from _support.claw_general_modules import patch_bound
 
 GOLDEN_PATH = (
     Path(__file__).resolve().parent
@@ -75,14 +76,14 @@ def _setup(monkeypatch, calls, *, session_ret=None, tier_model=None, conv=("conv
 
     monkeypatch.setattr(sess, "handle_owner_turn", fake_handle)
     monkeypatch.setattr(sess, "claw_response", fake_claw)
-    monkeypatch.setattr(g, "current_user_id", lambda request: uid)
-    monkeypatch.setattr(g, "auth_ready", lambda request: True)
+    patch_bound(monkeypatch, "current_user_id", lambda request: uid)
+    patch_bound(monkeypatch, "auth_ready", lambda request: True)
 
     async def fake_custom_direct(request, **kw):
         calls.append(("custom_direct", kw.get("uid"), kw.get("user_text")))
         return JSONResponse({"lane": "custom", "uid": kw.get("uid")}, status_code=200)
 
-    monkeypatch.setattr(g, "_claw_custom_direct", fake_custom_direct)
+    patch_bound(monkeypatch, "_claw_custom_direct", fake_custom_direct)
 
     async def fake_tier_model(request, tier):
         calls.append(("tier_model", tier))
@@ -95,13 +96,13 @@ def _setup(monkeypatch, calls, *, session_ret=None, tier_model=None, conv=("conv
         calls.append(("tier_denial", user_id, getattr(grade, "tier_id", None)))
         return None
 
-    monkeypatch.setattr(g, "claw_execution_tier_denial", fake_tier_denial)
+    patch_bound(monkeypatch, "claw_execution_tier_denial", fake_tier_denial)
 
     async def fake_ref(request, data):
         calls.append(("intake_ref", data.get("conversation_id")))
         return conv
 
-    monkeypatch.setattr(g, "_resolve_intake_session_reference", fake_ref)
+    patch_bound(monkeypatch, "_resolve_intake_session_reference", fake_ref)
 
     async def fake_hist(request, cid, text):
         calls.append(("owner_context", cid, text))
@@ -109,38 +110,38 @@ def _setup(monkeypatch, calls, *, session_ret=None, tier_model=None, conv=("conv
             raise hist
         return hist
 
-    monkeypatch.setattr(g, "_owner_claw_context", fake_hist)
+    patch_bound(monkeypatch, "_owner_claw_context", fake_hist)
 
     async def fake_drive(request, text):
         calls.append(("drive", text))
         return drive
 
-    monkeypatch.setattr(g, "drive_general_grounding", fake_drive)
+    patch_bound(monkeypatch, "drive_general_grounding", fake_drive)
 
     def fake_catalog(request, mid):
         calls.append(("catalog_start", mid))
         return catalog
 
-    monkeypatch.setattr(g, "_start_selectable_model_read", fake_catalog)
+    patch_bound(monkeypatch, "_start_selectable_model_read", fake_catalog)
 
     async def fake_usage(request):
         calls.append(("usage_gate",))
         return None
 
-    monkeypatch.setattr(g, "_usage_gate_denial", fake_usage)
+    patch_bound(monkeypatch, "_usage_gate_denial", fake_usage)
 
     async def noop(*a, **k):
         calls.append(("noop",))
         return None
 
-    monkeypatch.setattr(g, "_refund_active_reservation", noop)
-    monkeypatch.setattr(g, "fail_first_turn_grant", noop)
+    patch_bound(monkeypatch, "_refund_active_reservation", noop)
+    patch_bound(monkeypatch, "fail_first_turn_grant", noop)
     if hasattr(g, "reserve_first_turn_grant"):
         async def fake_reserve(request, **kw):
             calls.append(("reserve_first", kw.get("user_id")))
             return None
 
-        monkeypatch.setattr(g, "reserve_first_turn_grant", fake_reserve)
+        patch_bound(monkeypatch, "reserve_first_turn_grant", fake_reserve)
 
 
 def _txt_custom():

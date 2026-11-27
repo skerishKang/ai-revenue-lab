@@ -13,6 +13,7 @@ import app.claw_general_routes as routes
 from kagent.p01_adapter import P01AdapterError, P01RequestFactory
 from kagent.p01_orchestration_client import P01EngineOrchestrationClient
 from kagent.p01_run_flow import create_claw_run
+from _support.claw_general_modules import patch_bound
 
 CID = "chat_" + "a" * 32
 SUBJECT = "sub_" + "b" * 32
@@ -28,8 +29,8 @@ def _request(monkeypatch, prior):
         "type": "http", "method": "POST", "path": "/api/claw/general",
         "headers": [], "app": SimpleNamespace(state=SimpleNamespace(history_store=store)),
     })
-    monkeypatch.setattr(routes, "auth_ready", lambda request: True)
-    monkeypatch.setattr(routes, "current_user_id", lambda request: "owner")
+    patch_bound(monkeypatch, "auth_ready", lambda request: True)
+    patch_bound(monkeypatch, "current_user_id", lambda request: "owner")
     return request
 
 

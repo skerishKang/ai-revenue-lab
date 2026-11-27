@@ -16,7 +16,9 @@ def _shipped(relative: str) -> str:
 
 
 def claw_general_routes_source() -> str:
-    return _shipped("app/claw_general_routes.py")
+    from _support.claw_general_modules import sources
+
+    return sources()
 
 
 def app_factory_source() -> str:

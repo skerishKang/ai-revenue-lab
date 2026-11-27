@@ -151,7 +151,7 @@ def test_a_stream_closed_between_keepalives_cancels_the_read_nobody_receives():
     asyncio.run(scenario())
 
 
-def test_the_roster_read_started_early_dies_with_the_turn_that_left_it():
+def test_the_roster_read_started_early_dies_with_the_turn_that_left_it(monkeypatch):
     """#5479: the catalog read (#5614) is cancelled when the turn never awaits it.
 
     The read overlaps the PC work context, and the PC target checks may refuse
@@ -160,11 +160,97 @@ def test_the_roster_read_started_early_dies_with_the_turn_that_left_it():
     for nobody; a task the evaluation awaited is done, where the guard is a
     no-op.
     """
-    claw_general = claw_static.server_source("claw_general_routes")
-    start = claw_general.index(
-        "catalog_task, catalog_unavailable = _start_selectable_model_read("
-    )
-    span = claw_general[start:claw_general.index("    live_requested = (")]
-    assert span.count("    finally:") == 1
-    assert "if catalog_task is not None and not catalog_task.done():" in span
-    assert span.index("await catalog_task") < span.index("    finally:")
+    # As behaviour (the old reading cut the source between two markers that no
+    # longer sit in one file): run the real catalog gate against a roster read
+    # that never finishes, and leave the turn every way it can end.
+    import asyncio
+    from types import SimpleNamespace
+
+    from starlette.responses import JSONResponse
+
+    from _support.claw_general_modules import find_attr, patch_bound
+
+    gate = find_attr("_claw_general_catalog_gate")
+
+    class Roster:
+        def __init__(self, *, rows=None, hang=True, fail=False):
+            self.rows, self.hang, self.fail = rows, hang, fail
+            self.started = False
+            self.cancelled = False
+
+        async def list_selectable_models(self):
+            self.started = True
+            if self.fail:
+                raise RuntimeError("roster unavailable")
+            if not self.hang:
+                return self.rows
+            try:
+                await asyncio.Event().wait()
+            except asyncio.CancelledError:
+                self.cancelled = True
+                raise
+
+    def run_gate(roster, pc_context):
+        patch_bound(monkeypatch, "_claw_general_pc_work_context", pc_context)
+        request = SimpleNamespace(
+            app=SimpleNamespace(state=SimpleNamespace(b14_model_choice_resolver=roster)),
+            state=SimpleNamespace(),
+        )
+
+        async def scenario():
+            try:
+                result = await gate(
+                    request, "model-a", SimpleNamespace(fallback_model_id=None),
+                    False, False, False, None, None, None, None,
+                )
+            except BaseException as error:  # the turn left: error or client gone
+                result = error
+            for _ in range(3):
+                await asyncio.sleep(0)
+            # Read inside the loop: asyncio.run() would cancel a leftover task at
+            # shutdown and hide a read the turn failed to end.
+            return result, roster.cancelled
+
+        return asyncio.run(scenario())
+
+    async def refuse(request, **kwargs):
+        await asyncio.sleep(0)
+        return JSONResponse({"error": {"code": "pc_target_unavailable"}}, status_code=409), None
+
+    async def explode(request, **kwargs):
+        await asyncio.sleep(0)
+        raise RuntimeError("pc work context failed")
+
+    async def client_left(request, **kwargs):
+        await asyncio.sleep(0)
+        raise asyncio.CancelledError()
+
+    async def accept(request, **kwargs):
+        await asyncio.sleep(0)
+        return None, {
+            "pc_work_text": None, "desktop_device_id": None,
+            "pc_files_device_id": None, "pc_browser_device_id": None,
+        }
+
+    # A PC-target refusal, an exception and a vanished client all end the read.
+    for leave in (refuse, explode, client_left):
+        roster = Roster()
+        outcome, cancelled = run_gate(roster, leave)
+        assert roster.started, "the roster read must be in flight before the turn leaves"
+        assert cancelled, f"the read must end with the turn that left it ({leave.__name__})"
+        if leave is refuse:
+            assert outcome[0].status_code == 409 and outcome[1] is None
+        else:
+            assert isinstance(outcome, BaseException)
+
+    # A turn that awaited the roster leaves nothing to cancel, and the roster
+    # is still evaluated after the PC block (fail-closed 503 keeps its code).
+    ready = Roster(rows=[{"model_id": "model-a"}], hang=False)
+    (response, bundle), cancelled = run_gate(ready, accept)
+    assert response is None and bundle["central_route_model_id"] == "model-a"
+    assert ready.started and not cancelled
+
+    broken = Roster(fail=True)
+    (response, bundle), _cancelled = run_gate(broken, accept)
+    assert bundle is None and response.status_code == 503
+    assert b"model_catalog_unavailable" in response.body

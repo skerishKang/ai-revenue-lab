@@ -33,6 +33,7 @@ from unittest.mock import AsyncMock, patch
 
 from starlette.testclient import TestClient
 
+from _support.claw_general_modules import FIRST_TURN_AUTHORITY_IMPORTERS
 from _support.first_turn_grant import (
     app_files_containing,
     attribute_assignments,
@@ -998,7 +999,7 @@ class TestFirstTurnAuthorityBoundaries(unittest.TestCase):
     def test_route_imports_only_the_b54_private_surface(self):
         # An import boundary, not a prose boundary: #6727 named the module in
         # expired_purge.py's docstring and the old raw-text scan counted it.
-        assert _authority_importers() == ["claw_general_routes.py"]
+        assert _authority_importers() == sorted(FIRST_TURN_AUTHORITY_IMPORTERS)
 
     def test_a_docstring_mention_is_not_an_import(self):
         tree = ast.parse(

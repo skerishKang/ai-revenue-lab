@@ -37,17 +37,19 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from starlette.testclient import TestClient
 
-import app.claw_general_routes as general_routes_module
 import app.central_model_route_runtime as route_runtime_module
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
+from app.claw_routes import _usage_gate_denial as REAL_USAGE_GATE_DENIAL
+from kagent.p01_run_flow import create_claw_run as REAL_CREATE_CLAW_RUN
 from padiem_control_plane import product_tier_routes
 from padiem_control_plane import product_tier_routes_private
+from _support.claw_general_modules import patch_bound
 
-# Capture the route module's real mint entry point before any test patches it,
-# so the spy can delegate (the seam stays behavioural, not just a counter).
-REAL_CREATE_CLAW_RUN = general_routes_module.create_claw_run
+# The real mint entry point and usage gate, taken from where they are defined,
+# so the spies can delegate (the seam stays behavioural, not just a counter)
+# whichever claw_general module calls them.
 
 GENERAL_ROUTE_PATH = "/api/claw/general"
 SIGNED_IN_USER_ID = "usr_" + "7" * 32
@@ -144,14 +146,14 @@ def test_module_hold_resolver_reproduces_no_executable_route() -> None:
 
 def test_hold_never_evaluates_the_usage_gate(monkeypatch: pytest.MonkeyPatch) -> None:
     """A HOLD must not touch quota: the gate is ordered after the refusal (#2226)."""
-    real_gate = general_routes_module._usage_gate_denial
+    real_gate = REAL_USAGE_GATE_DENIAL
     calls: list[object] = []
 
     async def _spied_gate(request):
         calls.append(request)
         return await real_gate(request)
 
-    monkeypatch.setattr(general_routes_module, "_usage_gate_denial", _spied_gate)
+    patch_bound(monkeypatch, "_usage_gate_denial", _spied_gate)
 
     with _client(_stub_adapter()) as client:
         resp = client.post(GENERAL_ROUTE_PATH, json=_payload())
@@ -169,7 +171,7 @@ def test_hold_mints_no_claw_run(monkeypatch: pytest.MonkeyPatch) -> None:
         calls.append((args, kwargs))
         return REAL_CREATE_CLAW_RUN(*args, **kwargs)
 
-    monkeypatch.setattr(general_routes_module, "create_claw_run", _spied_create_claw_run)
+    patch_bound(monkeypatch, "create_claw_run", _spied_create_claw_run)
 
     with _client(_stub_adapter()) as client:
         resp = client.post(GENERAL_ROUTE_PATH, json=_payload())
@@ -189,7 +191,7 @@ def test_hold_under_one_shot_evidence_still_mints_no_run(
         calls.append((args, kwargs))
         return REAL_CREATE_CLAW_RUN(*args, **kwargs)
 
-    monkeypatch.setattr(general_routes_module, "create_claw_run", _spied_create_claw_run)
+    patch_bound(monkeypatch, "create_claw_run", _spied_create_claw_run)
 
     with _client(_stub_adapter()) as client:
         resp = client.post(

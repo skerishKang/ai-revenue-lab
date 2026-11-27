@@ -12,6 +12,7 @@ from app.auth import SESSION_COOKIE
 from app.b54_canonical_session import resolve_current_b54_canonical_session
 
 import test_b54_claw_general_p01_routing as base
+from _support.claw_general_modules import bound_patch
 
 
 CAPABILITY = "/api/claw/general/capabilities"
@@ -116,7 +117,7 @@ def test_readonly_capability_resolves_cp_at_most_once_with_live_flag():
     )
     resolver = AsyncMock(return_value=session)
     with patch("app.b54_canonical_session.resolve_current_b54_canonical_session", resolver):
-        with patch("app.claw_general_routes.live_stream_allowed", return_value=False) as allowed:
+        with bound_patch("live_stream_allowed", return_value=False) as allowed:
             with base._client(adapter) as client:
                 client.app.state.claw_live_sse_enabled = True
                 result = client.get(DIAGNOSTIC)

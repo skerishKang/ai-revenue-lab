@@ -508,6 +508,10 @@ def test_seam_is_not_wired_to_any_public_route():
                      "app/claw_general_routes.py", "app/chat_routes.py"):
         source = (root / relative).read_text(encoding="utf-8")
         assert module_name not in source, relative
+    # The same holds for every other claw_general module, wherever the code lives.
+    from _support.claw_general_modules import sources as claw_general_sources
+
+    assert module_name not in claw_general_sources()
     seam = (root / "app" / f"{module_name}.py").read_text(encoding="utf-8")
     assert "/api/" not in seam
     assert "add_route" not in seam

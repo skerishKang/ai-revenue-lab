@@ -24,6 +24,7 @@ import pytest
 
 from app import claw_general_routes as general
 from app import oracle_mesh_read_return_routes as routes
+from _support.claw_general_modules import patch_bound
 
 OWNER = "usr_" + "a" * 32
 ACCOUNT = "account-oracle-1"
@@ -137,9 +138,9 @@ def _run_route(monkeypatch, state, question=QUESTION):
     monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
     monkeypatch.setattr(routes, "_resolve_memory_workspace", workspace)
     monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", workspace)
-    monkeypatch.setattr(general, "auth_ready", auth_ready)
-    monkeypatch.setattr(general, "current_user_id", current_user_id)
-    monkeypatch.setattr(general, "_resolve_intake_session_reference", intake)
+    patch_bound(monkeypatch, "auth_ready", auth_ready)
+    patch_bound(monkeypatch, "current_user_id", current_user_id)
+    patch_bound(monkeypatch, "_resolve_intake_session_reference", intake)
     # The dispatch wrapper imports this helper inside the function.
     monkeypatch.setattr(claw_memory_routes, "_resolve_memory_workspace", workspace)
     from starlette.requests import Request

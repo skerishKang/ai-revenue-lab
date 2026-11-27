@@ -10,6 +10,7 @@ from app.history import (
     MAX_HISTORY_MESSAGE_CHARS,
 )
 from app.claw_general_routes import _owner_claw_context
+from _support.claw_general_modules import patch_bound
 
 CID = "chat_" + "a" * 32
 OWNER = "usr_" + "b" * 32
@@ -98,9 +99,8 @@ def test_full_long_exchange_r2_round_trip_and_owner_only(monkeypatch):
     assert asyncio.run(store.get_conversation_model_context("foreign", CID, product_scope=PRODUCT_SCOPE_CHAT)) is None
     assert bucket.reads == before
 
-    import app.claw_general_routes as routes
-    monkeypatch.setattr(routes, "auth_ready", lambda _: True)
-    monkeypatch.setattr(routes, "current_user_id", lambda _: OWNER)
+    patch_bound(monkeypatch, "auth_ready", lambda _: True)
+    patch_bound(monkeypatch, "current_user_id", lambda _: OWNER)
     req = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(history_store=store)))
     context = asyncio.run(_owner_claw_context(req, CID, "후속 질문"))
     assert "::USER_TAIL" in context and "::ANSWER_TAIL" in context
@@ -137,14 +137,13 @@ def test_old_legacy_preview_does_not_become_model_truth():
 
 
 def test_claw_legacy_preview_refuses_before_provider(monkeypatch):
-    import app.claw_general_routes as routes
     from app.history import HistoryContextIncomplete
     store, bucket, rows = fixture()
     rows.append({"id": "msg_" + "a" * 32, "role": "user", "sequence_number": 0,
                  "content": "x" * (8000 - len(HISTORY_PREVIEW_SUFFIX)) + HISTORY_PREVIEW_SUFFIX,
                  "created_at": "x"})
-    monkeypatch.setattr(routes, "auth_ready", lambda _: True)
-    monkeypatch.setattr(routes, "current_user_id", lambda _: OWNER)
+    patch_bound(monkeypatch, "auth_ready", lambda _: True)
+    patch_bound(monkeypatch, "current_user_id", lambda _: OWNER)
     req = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(history_store=store)))
     with pytest.raises(HistoryContextIncomplete):
         asyncio.run(_owner_claw_context(req, CID, "추가 질문"))

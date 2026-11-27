@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
+from _support.claw_general_modules import patch_bound
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -70,7 +71,7 @@ def _run_to_answer_lane(monkeypatch, state, text):
         del raw_tier
         raise ReachedAnswerLane
 
-    monkeypatch.setattr(general, "resolve_claw_execution_grade", reached)
+    patch_bound(monkeypatch, "resolve_claw_execution_grade", reached)
     return typing_lane._run(monkeypatch, state, text)
 
 

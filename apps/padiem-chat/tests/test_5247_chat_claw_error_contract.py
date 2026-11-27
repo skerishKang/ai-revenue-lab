@@ -25,12 +25,12 @@ from pathlib import Path
 import pytest
 from starlette.testclient import TestClient
 
+from _support.claw_general_modules import function_definitions
 from app.app_factory import create_app
 from app.config import Settings
 
 APP_DIR = Path(__file__).resolve().parents[1]
 CHAT_ROUTES = APP_DIR / "app" / "chat_routes.py"
-CLAW_GENERAL_ROUTES = APP_DIR / "app" / "claw_general_routes.py"
 CLAW_ROUTES = APP_DIR / "app" / "claw_routes.py"
 
 # A run of two or more "?" inside one message literal is the signature of a
@@ -151,13 +151,8 @@ def test_chat_stream_prep_helpers_are_called_in_order() -> None:
 
 
 def test_combine_system_context_is_defined_once() -> None:
-    tree = ast.parse(CLAW_GENERAL_ROUTES.read_text(encoding="utf-8"))
-    definitions = [
-        node
-        for node in tree.body
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-        and node.name == "_combine_system_context"
-    ]
+    # Across every claw_general module: it must still be defined exactly once.
+    definitions = function_definitions("_combine_system_context")
     assert len(definitions) == 1
 
 

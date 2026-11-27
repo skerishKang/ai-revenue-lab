@@ -33,7 +33,9 @@ def chat_routes() -> str:
 
 
 def claw_general_routes() -> str:
-    return (_ROOT / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
+    from _support.claw_general_modules import sources
+
+    return sources()
 
 
 def conversation_js() -> str:

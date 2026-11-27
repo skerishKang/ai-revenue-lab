@@ -30,6 +30,7 @@ from kagent.p01_adapter import P01AdapterError, P01DispatchClass
 from padiem_ai_core.orchestration_events import OrchestrationEventKind
 from _support.live_sse_relay import _event, _streaming_adapter
 from _support.claw_general_routing import _client, _make_outcome, _payload
+from _support.claw_general_modules import bound_patch
 
 PC_DRIVE_TEXT = "내 PC 드라이브 목록 알려줘"
 RUN_ID = "run_b0e1833620f7430d98c525d1"
@@ -80,16 +81,15 @@ OWNER = "usr_owner_1"
 
 def _drive_call(adapter, store, *, enabled=True):
     payload = _payload(messages=[{"role": "user", "content": PC_DRIVE_TEXT}])
-    with patch("app.claw_general_routes.auth_ready", lambda r: True), \
-         patch("app.claw_general_routes.current_user_id", lambda r: OWNER), \
+    with bound_patch("auth_ready", lambda r: True), \
+         bound_patch("current_user_id", lambda r: OWNER), \
          patch("app.b54_canonical_session.resolve_current_b54_canonical_session",
                new=AsyncMock(return_value=SimpleNamespace(
                    auth_session=SimpleNamespace(
                        subject=SimpleNamespace(subject_id="sub_" + "9" * 32))))):
         # Drive grounding is an external service and is not what is under test
         # here; the lane under test is staging -> Engine -> signed callback.
-        with patch("app.claw_general_routes.drive_general_grounding",
-                   new=AsyncMock(return_value=("drive ground", ()))):
+        with bound_patch("drive_general_grounding", new=AsyncMock(return_value=("drive ground", ()))):
             with _client(adapter) as client:
                 client.app.state.history_store = store
                 client.app.state.claw_live_sse_enabled = enabled

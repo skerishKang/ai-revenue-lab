@@ -28,13 +28,14 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from starlette.testclient import TestClient
 
+from _support.claw_general_modules import sources as claw_general_sources
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from kagent.p01_adapter import P01AdapterError, P01DispatchClass
 
 APP_DIR = Path(__file__).resolve().parents[1]
-GENERAL_ROUTE_SOURCE = (APP_DIR / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
+GENERAL_ROUTE_SOURCE = claw_general_sources()
 
 GENERAL_ROUTE_PATH = "/api/claw/general"
 SIGNED_IN_USER_ID = "usr_" + "8" * 32

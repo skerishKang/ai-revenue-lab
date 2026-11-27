@@ -24,6 +24,7 @@ from app import claw_memory_routes
 from app import pc_work_context as pc_ctx
 from app import pc_browser_intent
 from app import pc_command_confirmation
+from _support.claw_general_modules import patch_bound
 
 GOLDEN_PATH = (
     Path(__file__).resolve().parent
@@ -129,42 +130,42 @@ def _setup(monkeypatch, calls, *, mode="none", device=None, confirmed_command=No
         calls.append(["check_confirmed_type"])
         return confirmed_value
 
-    monkeypatch.setattr(g, "_claw_general_intake", fake_intake)
-    monkeypatch.setattr(g, "_claw_general_session_custom", fake_session_custom)
-    monkeypatch.setattr(g, "_dispatch_user_desktop_request", fake_desktop)
-    monkeypatch.setattr(g, "_stage_desktop_type_confirmation", fake_stage_desktop)
-    monkeypatch.setattr(g, "_dispatch_user_command_request", fake_command)
-    monkeypatch.setattr(g, "_stage_pc_command_confirmation", fake_stage_command)
-    monkeypatch.setattr(g, "_dispatch_user_txt_request", fake_txt)
-    monkeypatch.setattr(g, "_confirmed_staged_pc_command", fake_confirmed_command)
-    monkeypatch.setattr(g, "_confirmed_staged_desktop_type", fake_confirmed_type)
+    patch_bound(monkeypatch, "_claw_general_intake", fake_intake)
+    patch_bound(monkeypatch, "_claw_general_session_custom", fake_session_custom)
+    patch_bound(monkeypatch, "_dispatch_user_desktop_request", fake_desktop)
+    patch_bound(monkeypatch, "_stage_desktop_type_confirmation", fake_stage_desktop)
+    patch_bound(monkeypatch, "_dispatch_user_command_request", fake_command)
+    patch_bound(monkeypatch, "_stage_pc_command_confirmation", fake_stage_command)
+    patch_bound(monkeypatch, "_dispatch_user_txt_request", fake_txt)
+    patch_bound(monkeypatch, "_confirmed_staged_pc_command", fake_confirmed_command)
+    patch_bound(monkeypatch, "_confirmed_staged_desktop_type", fake_confirmed_type)
 
-    monkeypatch.setattr(g, "_requested_local_desktop", lambda text: (
+    patch_bound(monkeypatch, "_requested_local_desktop", lambda text: (
         mode in ("desktop", "desktop_type"), "desktop:type\nhello" if mode == "desktop_type" else "whoami"))
-    monkeypatch.setattr(g, "_requested_read_only_screen_view", lambda text: mode == "screen")
-    monkeypatch.setattr(g, "_requested_desktop_control", lambda text: (
+    patch_bound(monkeypatch, "_requested_read_only_screen_view", lambda text: mode == "screen")
+    patch_bound(monkeypatch, "_requested_desktop_control", lambda text: (
         mode in ("control", "control_type"), "desktop:type\nhello" if mode == "control_type" else "desktop:capture"))
-    monkeypatch.setattr(g, "_requested_desktop_task", lambda text: mode == "task")
-    monkeypatch.setattr(g, "explicit_pc_instruction", lambda text: mode == "screen")
-    monkeypatch.setattr(g, "_requested_local_command", lambda text: (
+    patch_bound(monkeypatch, "_requested_desktop_task", lambda text: mode == "task")
+    patch_bound(monkeypatch, "explicit_pc_instruction", lambda text: mode == "screen")
+    patch_bound(monkeypatch, "_requested_local_command", lambda text: (
         mode == "command", "whoami"))
-    monkeypatch.setattr(g, "_requested_natural_pc_files", lambda text: mode == "files")
-    monkeypatch.setattr(g, "_requested_natural_pc_query", lambda text: (
+    patch_bound(monkeypatch, "_requested_natural_pc_files", lambda text: mode == "files")
+    patch_bound(monkeypatch, "_requested_natural_pc_query", lambda text: (
         mode == "natural", "Get-PSDrive -PSProvider FileSystem"))
-    monkeypatch.setattr(g, "_requested_local_txt_path", lambda text: (
+    patch_bound(monkeypatch, "_requested_local_txt_path", lambda text: (
         mode == "txt", "notes/report.txt"))
-    monkeypatch.setattr(g, "direct_typing_eligible", lambda value: typing_eligible)
+    patch_bound(monkeypatch, "direct_typing_eligible", lambda value: typing_eligible)
     monkeypatch.setattr(pc_command_confirmation, "direct_command_eligible", lambda text, command: command_eligible)
     monkeypatch.setattr(pc_browser_intent, "requested_pc_browser", lambda text, records=(): mode == "browser")
-    monkeypatch.setattr(g, "_desktop_exception_question", lambda text: (
+    patch_bound(monkeypatch, "_desktop_exception_question", lambda text: (
         "정말 실행할까요?" if mode == "control" else None))
 
     async def fake_ref(request, data):
         calls.append(["intake_ref"])
         return "chat_fixture_conversation", None
 
-    monkeypatch.setattr(g, "_resolve_intake_session_reference", fake_ref)
-    monkeypatch.setattr(g, "_claw_stage", lambda *args, **kwargs: None)
+    patch_bound(monkeypatch, "_resolve_intake_session_reference", fake_ref)
+    patch_bound(monkeypatch, "_claw_stage", lambda *args, **kwargs: None)
 
     async def fake_preflight(request, data, user_text, turn_started):
         calls.append(["preflight"])
@@ -181,9 +182,9 @@ def _setup(monkeypatch, calls, *, mode="none", device=None, confirmed_command=No
             "b54_session": None, "drive_result": (None, []),
         }
 
-    monkeypatch.setattr(g, "_claw_general_route_preflight", fake_preflight)
-    monkeypatch.setattr(g, "current_user_id", lambda request: "owner_fixture")
-    monkeypatch.setattr(g, "auth_ready", lambda request: authenticated)
+    patch_bound(monkeypatch, "_claw_general_route_preflight", fake_preflight)
+    patch_bound(monkeypatch, "current_user_id", lambda request: "owner_fixture")
+    patch_bound(monkeypatch, "auth_ready", lambda request: authenticated)
 
     async def fake_workspace(request, uid):
         calls.append(["workspace", uid])
@@ -206,19 +207,19 @@ def _setup(monkeypatch, calls, *, mode="none", device=None, confirmed_command=No
     monkeypatch.setattr(pc_ctx, "read_saved_device_selection", fake_saved)
     monkeypatch.setattr(pc_ctx, "resolve_pc_work_context", fake_resolve)
     monkeypatch.setattr(pc_ctx, "render_pc_work_context", fake_render)
-    monkeypatch.setattr(g, "_start_selectable_model_read", lambda request, mid: (None, False))
+    patch_bound(monkeypatch, "_start_selectable_model_read", lambda request, mid: (None, False))
 
     async def fake_usage(request):
         calls.append(["usage_gate"])
         return JSONResponse({"stop": "quota"}, status_code=200)
 
-    monkeypatch.setattr(g, "_usage_gate_denial", fake_usage)
+    patch_bound(monkeypatch, "_usage_gate_denial", fake_usage)
 
     async def fake_reserve(request, **kwargs):
         calls.append(["reserve_first_turn"])
         return None
 
-    monkeypatch.setattr(g, "reserve_first_turn_grant", fake_reserve)
+    patch_bound(monkeypatch, "reserve_first_turn_grant", fake_reserve)
     return payload
 
 
@@ -310,7 +311,7 @@ def test_two_pc_context_consumers_receive_the_same_bundle(monkeypatch):
         seen.append(kwargs)
         return await real(request, **kwargs)
 
-    monkeypatch.setattr(g, "_claw_general_pc_work_context", capture)
+    patch_bound(monkeypatch, "_claw_general_pc_work_context", capture)
     for name, kwargs in (("files", {"mode": "files", "device": DEVICE}),
                          ("browser", {"mode": "browser", "device": DEVICE})):
         calls = []
@@ -340,12 +341,9 @@ def _real_confirmation_snapshot(monkeypatch):
     history = state.history_store
     calls = []
     run_numbers = iter(range(1, 20))
-    monkeypatch.setattr(
-        g, "create_claw_run",
-        lambda *args, **kwargs: SimpleNamespace(
+    patch_bound(monkeypatch, "create_claw_run", lambda *args, **kwargs: SimpleNamespace(
             run_id=f"run_fixture_{next(run_numbers)}"
-        ),
-    )
+        ))
     monkeypatch.setattr(
         mesh_routes.uuid, "uuid4", lambda: SimpleNamespace(hex="c" * 32),
     )

@@ -41,6 +41,7 @@ from app.pc_work_context import (
     render_pc_work_context,
     resolve_pc_work_context,
 )
+from _support.claw_general_modules import bound_patch
 
 OWNER = "usr_" + "7" * 32
 OTHER_OWNER = "usr_" + "8" * 32
@@ -625,10 +626,7 @@ def test_claw_general_refuses_a_selected_device_without_a_verified_target():
     with _claw_client(source, mesh=None, identity=Identity()) as (client, adapter):
         # "드라이브" also matches the Google Drive grounding intent; this test
         # isolates the PC target guard, not Drive grounding.
-        with patch(
-            "app.claw_general_routes.drive_general_grounding",
-            new=AsyncMock(return_value=(None, ())),
-        ):
+        with bound_patch("drive_general_grounding", new=AsyncMock(return_value=(None, ()))):
             response = client.post(
                 "/api/claw/general",
                 headers={"Origin": BASE},
@@ -1113,10 +1111,7 @@ def test_claw_drive_fails_closed_when_saved_selection_cannot_be_read():
         with patch(
             "app.claw_memory_routes._resolve_memory_workspace",
             new=AsyncMock(return_value=WORKSPACE),
-        ), patch(
-            "app.claw_general_routes.drive_general_grounding",
-            new=AsyncMock(return_value=(None, ())),
-        ):
+        ), bound_patch("drive_general_grounding", new=AsyncMock(return_value=(None, ()))):
             response = _drive_post(client)
     assert response.status_code == 503, response.text
     assert response.json()["error"]["code"] == "pc_selection_unavailable"
@@ -1132,10 +1127,7 @@ def test_claw_drive_refuses_a_stale_screen_selection_against_the_saved_target():
         with patch(
             "app.claw_memory_routes._resolve_memory_workspace",
             new=AsyncMock(return_value=WORKSPACE),
-        ), patch(
-            "app.claw_general_routes.drive_general_grounding",
-            new=AsyncMock(return_value=(None, ())),
-        ):
+        ), bound_patch("drive_general_grounding", new=AsyncMock(return_value=(None, ()))):
             response = _drive_post(client, device_id="home-pc")
     assert response.status_code == 409, response.text
     assert response.json()["error"]["code"] == "pc_selection_stale"
@@ -1151,10 +1143,7 @@ def test_claw_drive_uses_the_saved_target_and_fails_closed_without_a_mesh_scope(
         with patch(
             "app.claw_memory_routes._resolve_memory_workspace",
             new=AsyncMock(return_value=WORKSPACE),
-        ), patch(
-            "app.claw_general_routes.drive_general_grounding",
-            new=AsyncMock(return_value=(None, ())),
-        ):
+        ), bound_patch("drive_general_grounding", new=AsyncMock(return_value=(None, ()))):
             response = _drive_post(client)
     # The saved target was applied; with no canonical Mesh session it cannot
     # be verified, so the route refuses instead of using another default PC.

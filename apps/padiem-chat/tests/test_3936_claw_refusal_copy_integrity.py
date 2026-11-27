@@ -20,8 +20,9 @@ from pathlib import Path
 
 import pytest
 
+from _support.claw_general_modules import sources as claw_general_sources
+
 APP = Path(__file__).resolve().parents[1] / "app"
-GENERAL_ROUTES = APP / "claw_general_routes.py"
 
 # The canonical copy for each code, pinned so the two repaired sentences cannot
 # silently drift apart again. ``canonical_b54_session_unavailable`` is already
@@ -67,7 +68,7 @@ def test_no_refusal_message_ships_corrupted_question_marks():
 
 @pytest.mark.parametrize("code,expected", sorted(CANONICAL_COPY.items()))
 def test_bounded_refusal_copy_is_the_canonical_korean_sentence(code, expected):
-    general = GENERAL_ROUTES.read_text(encoding="utf-8")
+    general = claw_general_sources()
     assert f'"{code}",\n' in general or f'"{code}"' in general, code
     assert expected in general, (
         f"{code} must carry the canonical Korean sentence, not corrupted copy"
@@ -76,7 +77,7 @@ def test_bounded_refusal_copy_is_the_canonical_korean_sentence(code, expected):
 
 def test_the_two_repaired_sentences_are_real_korean():
     """A repaired sentence must actually contain Hangul, not ASCII filler."""
-    general = GENERAL_ROUTES.read_text(encoding="utf-8")
+    general = claw_general_sources()
     for expected in CANONICAL_COPY.values():
         assert expected in general
         assert any("가" <= ch <= "힣" for ch in expected), expected

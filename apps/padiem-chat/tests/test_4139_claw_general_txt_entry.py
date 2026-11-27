@@ -11,6 +11,7 @@ from app import claw_general_routes as general
 from app import connector_txt_read_routes as connector
 from app.history import D1HistoryStore, PRODUCT_SCOPE_CHAT
 from _support.claw_local_task_result import _accounts, _open_database
+from _support.claw_general_modules import patch_bound
 
 
 def run(coro):
@@ -138,9 +139,9 @@ def test_real_claw_general_entry_uses_existing_enqueue_without_model(monkeypatch
     monkeypatch.setattr(route, "_verified_owner_request", auth)
     monkeypatch.setattr(route, "_resolve_memory_workspace", tenant)
     monkeypatch.setattr(claw_memory_routes, "_resolve_memory_workspace", tenant)
-    monkeypatch.setattr(general, "_resolve_intake_session_reference", authorized_session)
-    monkeypatch.setattr(general, "auth_ready", lambda r: True)
-    monkeypatch.setattr(general, "current_user_id", lambda r: "owner1")
+    patch_bound(monkeypatch, "_resolve_intake_session_reference", authorized_session)
+    patch_bound(monkeypatch, "auth_ready", lambda r: True)
+    patch_bound(monkeypatch, "current_user_id", lambda r: "owner1")
     monkeypatch.setattr(route, "current_user_id", lambda r: "owner1")
 
     class Identity:
@@ -250,9 +251,9 @@ def test_claw_txt_entry_runs_mesh_mode_without_any_native_registration(monkeypat
     monkeypatch.setattr(native, "_resolve_memory_workspace", tenant)
     monkeypatch.setattr(native, "current_user_id", lambda r: "owner1")
     monkeypatch.setattr(claw_memory_routes, "_resolve_memory_workspace", tenant)
-    monkeypatch.setattr(general, "_resolve_intake_session_reference", authorized_session)
-    monkeypatch.setattr(general, "auth_ready", lambda r: True)
-    monkeypatch.setattr(general, "current_user_id", lambda r: "owner1")
+    patch_bound(monkeypatch, "_resolve_intake_session_reference", authorized_session)
+    patch_bound(monkeypatch, "auth_ready", lambda r: True)
+    patch_bound(monkeypatch, "current_user_id", lambda r: "owner1")
 
     # This PC has NO native binding: the directory lookup would 404/409.
     class NativeDirectoryTrap:
@@ -352,9 +353,9 @@ def test_mesh_mode_still_refuses_withdrawn_consent_and_foreign_account(monkeypat
         monkeypatch.setattr(module, "_resolve_memory_workspace", tenant)
         monkeypatch.setattr(module, "current_user_id", lambda r: "owner1")
     monkeypatch.setattr(claw_memory_routes, "_resolve_memory_workspace", tenant)
-    monkeypatch.setattr(general, "_resolve_intake_session_reference", authorized_session)
-    monkeypatch.setattr(general, "auth_ready", lambda r: True)
-    monkeypatch.setattr(general, "current_user_id", lambda r: "owner1")
+    patch_bound(monkeypatch, "_resolve_intake_session_reference", authorized_session)
+    patch_bound(monkeypatch, "auth_ready", lambda r: True)
+    patch_bound(monkeypatch, "current_user_id", lambda r: "owner1")
 
     rows = [{"account_ref": "padiem.account", "device_id": "com1.mesh",
              "node_ref": "node.mesh@server", "root_ref": "meshcentral_private_trial",
@@ -433,9 +434,9 @@ def test_an_incomplete_mesh_target_never_strands_the_staged_run_as_pending(monke
         monkeypatch.setattr(module, "_resolve_memory_workspace", tenant)
         monkeypatch.setattr(module, "current_user_id", lambda r: "owner1")
     monkeypatch.setattr(claw_memory_routes, "_resolve_memory_workspace", tenant)
-    monkeypatch.setattr(general, "_resolve_intake_session_reference", authorized_session)
-    monkeypatch.setattr(general, "auth_ready", lambda r: True)
-    monkeypatch.setattr(general, "current_user_id", lambda r: "owner1")
+    patch_bound(monkeypatch, "_resolve_intake_session_reference", authorized_session)
+    patch_bound(monkeypatch, "auth_ready", lambda r: True)
+    patch_bound(monkeypatch, "current_user_id", lambda r: "owner1")
 
     async def incomplete_target(request, *, path_relative, selected_device_id):
         # ``root_ref`` is absent, exactly as a partially resolved Mesh target.

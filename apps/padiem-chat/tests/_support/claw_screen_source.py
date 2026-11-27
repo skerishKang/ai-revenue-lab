@@ -20,7 +20,9 @@ def claw_manager_js() -> str:
 
 
 def claw_routes_py() -> str:
-    return (_APP / "claw_general_routes.py").read_text(encoding="utf-8")
+    from _support.claw_general_modules import sources
+
+    return sources()
 
 
 def app_js() -> str:
