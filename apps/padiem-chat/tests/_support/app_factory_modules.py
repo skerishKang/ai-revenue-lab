@@ -20,7 +20,10 @@ APP_DIR = Path(__file__).resolve().parents[2] / "app"
 ENTRY_MODULE = "app_factory"
 
 # One new owner module at a time. PR0 deliberately registers only the facade.
-FACTORY_MODULES: tuple[str, ...] = (ENTRY_MODULE,)
+FACTORY_MODULES: tuple[str, ...] = (
+    ENTRY_MODULE,
+    "app_factory_health_static",
+)
 
 # A single owner/area per future PR, not a requirement to reach 300 lines.
 # State-wrapper internal slices are separate later phases and require explicit
