@@ -15,14 +15,14 @@
   }
 
   .index-shell{padding:61px 14px 26px!important}
-  .index-folio{font-size:6px!important;letter-spacing:.16em!important}
+  .index-folio{font-size:12px!important;letter-spacing:.05em!important}
   .index-hero{
     gap:12px!important;
     margin-top:8px!important;
     margin-bottom:16px!important;
   }
   .index-hero h1{font-size:46px!important;line-height:.9!important}
-  .index-hero p{max-width:31em!important;font-size:10px!important;line-height:1.58!important}
+  .index-hero p{max-width:31em!important;font-size:13px!important;line-height:1.58!important}
   .resume-card{padding:12px!important}
   .resume-card strong{font-size:15px!important}
   .resume-card button{height:32px!important}
@@ -34,9 +34,9 @@
     padding-top:8px!important;
     padding-bottom:8px!important;
   }
-  .volume{height:102px!important;flex-basis:58px!important}
-  .volume b{font-size:9px!important}
-  .volume small{font-size:6px!important}
+  .volume{height:112px!important;flex-basis:120px!important}
+  .volume b{font-size:13px!important}
+  .volume small{font-size:13px!important}
 
   .volume-focus{
     margin-top:10px!important;
@@ -44,17 +44,17 @@
     padding-bottom:10px!important;
   }
   .volume-focus strong{font-size:22px!important}
-  .volume-focus p{font-size:8.5px!important}
+  .volume-focus p{font-size:13px!important}
 
   .chapter-area{margin-top:14px!important}
   .volume-to-paper-guide,.paper-motion-legend,.chapter-caption{display:none!important}
   .chapter-title{margin-bottom:3px!important}
   .chapter-title h2{font-size:25px!important}
-  .chapter-title small{font-size:6px!important}
+  .chapter-title small{font-size:12px!important}
   .chapter-carousel{height:302px!important}
   .chapter-track{top:47%!important}
   .chapter-nav{bottom:8px!important}
-  .chapter-open{min-width:108px!important;height:38px!important}
+  .chapter-open{min-width:108px!important;height:44px!important}
   .chapter-specimen{right:8px!important;top:12px!important;opacity:.72!important}
   .chapter-dots{max-width:58%!important}
 }
@@ -1772,7 +1772,7 @@ body.global-memory-scope .system-memory{
 }
 .today-recall-preview strong{
   display:block;margin-top:6px;color:#4d453f;
-  font:400 17px/1.1 var(--serif);
+  font:400 17px/1.35 var(--serif);word-break:keep-all;overflow-wrap:normal;
 }
 .today-recall-preview small{
   display:block;margin-top:6px;color:#a09489;font-size:6.5px;

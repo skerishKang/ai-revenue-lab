@@ -207,9 +207,10 @@ function closeGrid(){
   var o=document.getElementById('sm7573ChapterGrid');
   if(o)o.remove();
 }
-function openGrid(){
-  var ctx=currentBibleContext();
-  if(!ctx)return false;
+function openGrid(options){
+  var ctx=options&&options.volume&&options.count?{volume:String(options.volume),chapter:Number(options.chapter),count:Number(options.count)}:currentBibleContext();
+  if(!ctx||!Number.isFinite(ctx.count)||ctx.count<1)return false;
+  var onSelect=options&&typeof options.onSelect==='function'?options.onSelect:null;
   closeGrid();
   var ov=document.createElement('div');
   ov.id='sm7573ChapterGrid';
@@ -240,7 +241,7 @@ function openGrid(){
   x.setAttribute('aria-label','닫기');
   x.textContent='×';
   x.addEventListener('click',closeGrid);
-  head.append(title,count,other,x);
+  head.append(title,count);if(!onSelect)head.append(other);head.append(x);
   var cells=document.createElement('div');
   cells.className='sm7573-grid-cells';
   for(var i=1;i<=ctx.count;i++){
@@ -253,7 +254,8 @@ function openGrid(){
     b.addEventListener('click',function(n){
       return function(){
         closeGrid();
-        openBibleChapter(ctx.volume,n,'first');
+        if(onSelect)onSelect(n);
+        else openBibleChapter(ctx.volume,n,'first');
       };
     }(i));
     cells.append(b);

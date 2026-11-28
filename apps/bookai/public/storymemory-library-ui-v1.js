@@ -332,7 +332,7 @@ function renderChapters(n){
      };
      track.append(st);
    }
-   const showDot=n<=24 || Math.abs(i-selectedChapter)<=5;
+   const showDot=n<=30 && (n<=24 || Math.abs(i-selectedChapter)<=5);
    if(showDot){
      const dot=document.createElement('button');
      dot.className='chapter-dot'+(i===selectedChapter?' on':'');
@@ -341,6 +341,9 @@ function renderChapters(n){
      dots.append(dot);
    }
  }
+ dots.classList.toggle('count-only',n>30);
+ document.getElementById('chapterCarousel').classList.toggle('chapters-many',n>30);
+ if(n>30)dots.textContent=selectedChapter+' / '+n;
  document.getElementById('chapterSpecimenNo').textContent=String(selectedChapter).padStart(2,'0');
  /* #1845 [D] state-aware CTA — authority = trusted StoryMemory resume record only */
  const cta=document.getElementById('openChapter');
