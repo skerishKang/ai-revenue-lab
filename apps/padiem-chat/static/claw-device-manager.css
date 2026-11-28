@@ -60,7 +60,7 @@
   left: 0;
   right: 0;
   margin-top: 0;
-  margin-bottom: 0 !important;
+  margin-bottom: 0;
   z-index: 13;
   padding: 16px;
   /* #5634: the room for the one-line header, the state line and the rows;
@@ -128,7 +128,7 @@
   border-radius: 11px;
   background: var(--pc-device-tint);
 }
-.claw-device-manager-connect[hidden] { display: none !important; }
+.claw-device-manager-connect[hidden] { display: none; }
 .claw-device-manager-connect-title {
   margin: 0;
   font-size: .88rem;
