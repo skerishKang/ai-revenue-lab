@@ -340,3 +340,112 @@ def test_E_missing_metadata_is_not_mislabeled_zero_characters(url):
             assert '0자' not in item.inner_text()
             assert item.get_attribute('title')==files[0]['name']
         finally:ctx.close();browser.close()
+
+
+def test_CTO_8965_pc_format_choices_have_result_action_border_contrast(url):
+    """#8778 #8795 CTO D6: test five styles on the visible PC chooser in 1440."""
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=True)
+        ctx, page = open_case(browser, url, width=1440, pairing=True)
+        try:
+            open_tool(page, 'speech')
+            page.locator('#councilSpeechForm [name=event]').fill('주민 행사')
+            page.locator('#councilSpeechGenerate').click()
+            page.locator('#councilSpeechResult:not([hidden])').wait_for()
+            for style in STYLES:
+                set_style(page, style)
+                page.locator('#councilSpeechPcSave').click()
+                chooser = page.locator('.council-pc-format-choice')
+                chooser.wait_for(state='visible')
+                metrics = chooser.evaluate("""box => {
+                    const paper=box.closest('.council-result');
+                    const body=getComputedStyle(document.body);
+                    return {
+                        paper:getComputedStyle(paper).backgroundColor, body:body.backgroundColor,
+                        resultRadius:getComputedStyle(paper.querySelector('#councilSpeechSave')).borderRadius,
+                        buttons:[...box.querySelectorAll('button')].map(el=>{
+                            const s=getComputedStyle(el),r=el.getBoundingClientRect();
+                            return {label:el.textContent.trim(),width:r.width,height:r.height,
+                                    borderWidth:s.borderTopWidth,border:s.borderTopColor,
+                                    radius:s.borderRadius,background:s.backgroundColor,color:s.color}
+                        })
+                    };
+                }""")
+                assert [x['label'] for x in metrics['buttons']] == ['한글','워드','텍스트','취소']
+                paper = composite(rgba(metrics['paper']),
+                                  composite(rgba(metrics['body']), [1, 1, 1]))
+                for button in metrics['buttons']:
+                    under_border = composite(rgba(button['background']), paper)
+                    painted_border = composite(rgba(button['border']), under_border)
+                    value = ratio(painted_border, paper)
+                    assert button['height'] >= 44, (style, button)
+                    assert button['radius'] == metrics['resultRadius'], (style, button, metrics)
+                    assert float(button['borderWidth'].replace('px','')) >= 1, (style,button)
+                    assert value >= 3.0, (style, button['label'], round(value,3), metrics)
+                chooser.locator('button').first.hover()
+                hovered=chooser.locator('button').first.evaluate("""e=>{
+                    const s=getComputedStyle(e);
+                    return {border:s.borderTopColor,background:s.backgroundColor};
+                }""")
+                hovered_base=composite(rgba(hovered['background']),paper)
+                hovered_border=composite(rgba(hovered['border']),hovered_base)
+                assert ratio(hovered_border,paper)>=3.0,(style,hovered,metrics)
+                chooser.get_by_role('button',name='취소').click()
+                assert chooser.count() == 0
+        finally:
+            ctx.close()
+            browser.close()
+
+
+def test_CTO_8965_activity_book_disabled_is_visibly_different(url):
+    """#8778 #8793 CTO D5: attribute and CSS distinguish inactive from enabled."""
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=True)
+        ctx,page = open_case(browser, url, width=390, files=fake_files('meeting',4))
+        try:
+            open_tool(page,'meeting')
+            generate=page.locator('#councilBookGenerate')
+            assert generate.is_disabled()
+            assert generate.get_attribute('disabled') is not None
+            def style():
+                return generate.evaluate("""e=>{
+                    const s=getComputedStyle(e);
+                    return {background:s.backgroundColor,color:s.color,
+                            cursor:s.cursor,opacity:s.opacity,height:e.getBoundingClientRect().height};
+                }""")
+            off=style()
+            assert off['cursor']=='not-allowed',off
+            page.locator('.council-book-check').first.check()
+            assert generate.is_enabled()
+            on=style()
+            assert off['background']!=on['background'],(off,on)
+            assert off['color']!=on['color'],(off,on)
+            assert on['cursor']!='not-allowed',(off,on)
+            page.locator('.council-book-check').first.uncheck()
+            assert generate.is_disabled()
+            assert style()['background']==off['background']
+        finally:
+            ctx.close()
+            browser.close()
+
+
+def test_CTO_8965_home_2560_quote_and_footer_exact_alignment(url):
+    """#8778 #8780 CTO D1: right quote/card and footer/header match within 2px."""
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=True)
+        ctx,page = open_case(browser,url,width=2560,authenticated=False)
+        try:
+            metric=page.evaluate("""() => {
+                const r=selector=>{const el=document.querySelector(selector);
+                                  const b=el.getBoundingClientRect();
+                                  return {x:b.x,left:b.left,right:b.right,width:b.width,display:getComputedStyle(el).display};};
+                return {quote:r('.council-hero-quote'), cards:r('.council-menu'),
+                        footer:r('#councilPhotoCredit'), header:r('.council-brand'),
+                        eyebrow:r('.council-hero-copy .council-eyebrow')};
+            }""")
+            assert metric['quote']['width']>0 and metric['cards']['width']>0,metric
+            assert abs(metric['quote']['right']-metric['cards']['right'])<=2,metric
+            assert abs(metric['footer']['left']-metric['header']['left'])<=2,metric
+        finally:
+            ctx.close()
+            browser.close()

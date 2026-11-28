@@ -3225,3 +3225,42 @@ html[data-style="minimal"] .council-card:not(.active):hover,
 html[data-style="minimal"] .council-card:not(.active):focus-within {
   box-shadow: 0 0 0 2px var(--accent), 0 12px 28px color-mix(in srgb, var(--text) 12%, transparent);
 }
+
+
+/* #8778 / #8965 CTO D6 — PC format choices use the same visible secondary
+   control treatment as the result actions in every council theme. */
+.council-pc-format-choice .council-pc-format-button {
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 9px 16px;
+  border: 1px solid color-mix(in srgb, var(--text) 75%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 8%, var(--council-surface) 92%);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 650;
+}
+.council-pc-format-choice .council-pc-format-button:hover,
+.council-pc-format-choice .council-pc-format-button:focus-visible {
+  border-color: color-mix(in srgb, var(--text) 75%, transparent);
+  background: color-mix(in srgb, var(--text) 14%, var(--council-surface) 86%);
+}
+
+/* #8778 / #8965 CTO D5 — make 0-source book generation visibly unavailable. */
+#councilBookGenerate:disabled {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 84%, var(--muted) 16%);
+  color: var(--muted);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* #8778 / #8965 CTO D1 — wide-only alignment, no 1440 / 390 movement. */
+@media (min-width: 1600px) {
+  .council-hero-quote {
+    right: max(48px, calc((100vw - var(--pa-shell)) / 2 + 48px));
+  }
+  .council-footer {
+    padding-left: 48px;
+  }
+}
