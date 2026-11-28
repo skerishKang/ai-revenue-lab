@@ -17,15 +17,15 @@
 @media (min-width: 921px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="util"] #utilView.util-view {
     flex: 0 1 auto;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: var(--padiem-six-panel-height) !important;
+    height: auto;
+    min-height: 0;
+    max-height: var(--padiem-six-panel-height);
   }
 }
 
 .util-header[hidden],
 .util-view[data-util-screen="tool"] > .util-header {
-  display: none !important;
+  display: none;
 }
 
 .util-app-root {
