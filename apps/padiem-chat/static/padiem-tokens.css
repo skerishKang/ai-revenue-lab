@@ -914,6 +914,14 @@
   --library-tab-active-edge: rgba(47, 111, 153, 0.24);
   --library-dialog-dim: rgba(15, 19, 25, 0.46);
 
+  /* #7811 C4: confirm dialog fixed palette, invariant across all five themes.
+     Reuse --library-dialog-dim for the same backdrop value. */
+  /* #7811 token-family --confirm sha256=9a249cd9414b9749dfbdcfe9694aecbe3cd2ce0f5d81d981b59519b7aebd6217 */
+  --confirm-dialog-panel-shadow: 0 28px 80px rgba(15, 19, 25, .24);
+  --confirm-dialog-danger-bg: #8e2f2f;
+  --confirm-dialog-danger-hover-bg: #772626;
+  --confirm-dialog-danger-text: #ffffff;
+
   /* #7811 token-family --mcp sha256=714f691043668ee06d2e6ef4878af112be0f7f4b32d1b4ac9b43b0c5e2686f65 */
   /* #7811 C2 mcp-oauth-consent(261125): 동의 화면의 고정 팔레트. 값은 치환 전
      선언마다 박혀 있던 리터럴 그대로이고 :root에만 둔다 — 동의 화면은 테마가
