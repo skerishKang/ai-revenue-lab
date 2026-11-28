@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """#8810 정책자료 디자인 검증: 어둡게 검색, 제8대 펼침, 결과 없음 정렬."""
 import http.server
-import io
+import base64
 import re
 import subprocess
 import sys
@@ -9,8 +9,10 @@ import threading
 from pathlib import Path
 
 import pytest
-from PIL import Image
-from playwright.sync_api import sync_playwright
+try:
+    from playwright.sync_api import sync_playwright
+except ImportError:
+    sync_playwright = None
 
 ROOT = Path(__file__).resolve().parents[1]
 CHROME = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
@@ -34,6 +36,8 @@ def contrast(text, background):
 
 @pytest.fixture(scope="module")
 def site():
+    if sync_playwright is None or not Path(CHROME).is_file():
+        pytest.skip("Playwright/Chrome unavailable")
     subprocess.run([sys.executable,str(ROOT/"scripts"/"build-dist")],check=True)
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self,*args,**kwargs):
@@ -84,11 +88,23 @@ def test_dark_bill_search_uses_activity_input_tokens_and_contrast(site,width):
         assert p["outline"]==a["outline"] and p["outlineWidth"]==a["outlineWidth"],(width,p,a)
         assert contrast(p["fg"],p["bg"])>=4.5,(width,"text",p)
         assert contrast(p["placeholder"],p["bg"])>=4.5,(width,"placeholder",p)
-        # Chromium does not expose native cancel-pseudo colors reliably: measure rendered X pixels.
-        image=Image.open(io.BytesIO(policy.locator("#billSearch").screenshot())).convert("RGB")
-        w,h=image.size
-        cross=image.crop((w-38,h//2-11,w-14,h//2+11))
-        contrasts=[contrast(f"rgb({r}, {g}, {b})",p["bg"]) for r,g,b in cross.get_flattened_data()]
+        # 외부 이미지 패키지 없이 브라우저 캔버스의 실제 × 픽셀을 검사한다.
+        screenshot=base64.b64encode(policy.locator("#billSearch").screenshot()).decode("ascii")
+        pixels=policy.evaluate("""async encoded => {
+            const image=new Image();
+            image.src='data:image/png;base64,'+encoded;
+            await image.decode();
+            const canvas=document.createElement('canvas');
+            canvas.width=image.width;
+            canvas.height=image.height;
+            const ctx=canvas.getContext('2d',{willReadFrequently:true});
+            ctx.drawImage(image,0,0);
+            const data=ctx.getImageData(image.width-38,Math.floor(image.height/2)-11,24,22).data;
+            const colors=[];
+            for(let i=0;i<data.length;i+=4) colors.push([data[i],data[i+1],data[i+2]]);
+            return colors;
+        }""",screenshot)
+        contrasts=[contrast(f"rgb({r}, {g}, {b})",p["bg"]) for r,g,b in pixels]
         assert sum(value>=3 for value in contrasts)>=8,(width,"clear X contrast",sorted(contrasts)[-10:])
         # 스타일을 바꿔도 검색 지우기의 기본 기능을 유지해야 한다.
         field=policy.locator("#billSearch")
