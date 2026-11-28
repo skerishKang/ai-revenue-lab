@@ -916,6 +916,7 @@
 
   /* #7811 C4: confirm dialog fixed palette, invariant across all five themes.
      Reuse --library-dialog-dim for the same backdrop value. */
+  /* #7811 token-family --confirm sha256=9a249cd9414b9749dfbdcfe9694aecbe3cd2ce0f5d81d981b59519b7aebd6217 */
   --confirm-dialog-panel-shadow: 0 28px 80px rgba(15, 19, 25, .24);
   --confirm-dialog-danger-bg: #8e2f2f;
   --confirm-dialog-danger-hover-bg: #772626;
