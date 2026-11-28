@@ -93,6 +93,18 @@ def test_extracted_chat_owner_missing_generate_fails_closed(tmp_path, monkeypatc
     assert contract.findings() == ["PLATFORM_ROUTE_GENERATE_MISSING"]
 
 
+def test_extracted_b66_route_scanner_reads_real_owner(tmp_path, monkeypatch) -> None:
+    owner = contract._read(contract.APP_FACTORY_B66)
+    route = 'Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"])'
+    assert route in owner, "the real B66 owner must hold this route"
+    assert tuple(contract._registered_methods("/api/b66/runtime-config")) == ("GET",)
+    without = owner.replace(route, 'Route("/removed/b66", b66_runtime_config, methods=["GET"])', 1)
+    assert without != owner
+    swap(monkeypatch, "APP_FACTORY_B66", without, tmp_path)
+    assert tuple(contract._registered_methods("/api/b66/runtime-config")) == ()
+    assert contract.findings() == [], "B66 is not on the platform app route allowlist"
+
+
 def test_work_scopes_are_routing_labels_and_an_unknown_one_is_refused(tmp_path, monkeypatch) -> None:
     real = contract._read(contract.REQUEST_CONTRACT)
     assert "grants no identity, tier" in real or "not an authentication input" in real
