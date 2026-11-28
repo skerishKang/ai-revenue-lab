@@ -134,5 +134,7 @@ def test_without_pil_an_oversized_original_sends_text_only(monkeypatch):
     raw = b"\x89PNG\r\n\x1a\n" + b"\x00" * (PC_IMAGE_BYTE_CAP + 50_000)
     note, block = _pc_image_projection(
         PC_IMAGE_ENVELOPE_PREFIX + "image/png:" + base64.b64encode(raw).decode("ascii"))
-    assert block is None
-    assert "이미지 축소를 쓸 수 없어 그림을 보내지 못했습니다" in note
+    assert block is not None and block["type"] == "error"
+    assert block["code"] == "pc_image_size_limit_exceeded"
+    assert block["result_bytes"] > PC_IMAGE_BYTE_CAP
+    assert "보내지 못했습니다" in note

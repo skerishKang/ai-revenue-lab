@@ -690,17 +690,18 @@ def pc_search_content_tool_spec() -> ToolSpec:
 def pc_read_chunk_tool_spec() -> ToolSpec:
     return ToolSpec(id=PC_READ_CHUNK_TOOL_ID,
         title="Read one range of a file on the verified PC",
-        description=("Read one byte range of a UTF-8 text file, or one character range of a "
-                     "document's extracted text, inside the approved scope. Returns the "
-                     "range, its next offset and whether the end was reached; the file is "
-                     "never sent whole"),
+        description=("Read a byte/character range or a UTF-8 text line range "
+                     "(start_line and line_count, max 1000 lines and 256 KiB). "
+                     "The modes are exclusive; the result reports continuation."),
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_READ_CHUNK_SCOPE,),
         input_schema={"type":"object","properties":{
             "path":{"type":"string","minLength":1,"maxLength":2048},
             "offset":{"type":"integer","minimum":0},
-            "length":{"type":"integer","minimum":1}},
-            "required":["path","offset"],"additionalProperties":False},
+            "length":{"type":"integer","minimum":1},
+            "start_line":{"type":"integer","minimum":1},
+            "line_count":{"type":"integer","minimum":1,"maximum":1000}},
+            "required":["path"],"additionalProperties":False},
         output_contract={"type":"object"}, timeout_seconds=None)
 
 

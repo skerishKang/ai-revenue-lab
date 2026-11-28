@@ -116,6 +116,8 @@ async def test_one_range_dispatches_and_projects(monkeypatch):
     assert projection == {
         "ok": True, "unit": "bytes", "size_bytes": 1234, "offset": 0,
         "next_offset": 9, "eof": False, "text": "가나다",
+        "truncated": True, "truncation_reason": "range_limit",
+        "has_more": True, "next_cursor": 9, "source_complete": True,
     }
     assert result["next_offset"] == 9 and result["eof"] is False
     assert result["execution_confirmed"] is True

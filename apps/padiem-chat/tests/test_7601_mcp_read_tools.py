@@ -1,7 +1,8 @@
 """#7601 follow-up: four read-only PC tools for the external AI connector.
 
 pc_search_contents and pc_file_info are new declarations; the range read is
-pc_read carrying two optional arguments instead of a new tool name. Nothing
+pc_read carrying optional byte or line range arguments instead of a new tool name.
+Byte offset/length and start_line/line_count must never be mixed. Nothing
 here writes: no approval id is attached, and the plan each call stages is the
 one-step plan of the Engine tool that actually does the work.
 """
@@ -102,12 +103,19 @@ def test_the_two_new_tools_are_declared_read_only():
     assert MCP_TOOLS["pc_file_info"]["inputSchema"]["required"] == ["path"]
 
 
-def test_the_read_tool_gained_two_optional_range_arguments():
+def test_pc_read_declares_exclusive_optional_byte_or_line_ranges():
+    """The public tool exposes both bounded range pairs; they cannot be mixed."""
     read = MCP_TOOLS["pc_read"]["inputSchema"]["properties"]
-    assert {"path", "offset", "length", "job_id", "device"} == set(read)
+    assert set(read) == {"path", "offset", "length", "start_line", "line_count", "job_id", "device"}
     assert read["length"]["maximum"] == 1_000_000
     assert read["offset"]["minimum"] == 0
-    # 필수 인자는 늘지 않았다: 인자 없이 부르면 예전과 같은 전체 읽기다.
+    assert read["start_line"]["minimum"] == 1
+    assert read["line_count"]["minimum"] == 1
+    assert read["line_count"]["maximum"] == 1_000
+    description = MCP_TOOLS["pc_read"]["description"]
+    assert "줄" in description and "바이트" in description
+    assert "함께 쓸 수 없습니다" in description
+    # Both ranges are optional: ordinary whole-file reads remain supported.
     assert MCP_TOOLS["pc_read"]["inputSchema"]["required"] == []
 
 
@@ -328,3 +336,56 @@ def test_resume_tool_tables_agree_across_the_two_parsers():
     assert engine_resume == core_resume
     assert "claw.pc.search_files" in engine_resume
     assert "claw.pc.search_contents" in engine_resume
+
+
+def test_pc_read_line_range_stages_chunk_and_rejects_mixed_or_incomplete_ranges(monkeypatch):
+    """A valid line pair uses the same read-only Engine tool; all mixed forms fail closed."""
+    request, transport, _, _ = harness(monkeypatch)
+    result = asyncio.run(execution.execute_mcp_pc_tool(
+        request, PRINCIPAL, "pc_read",
+        {"path": "big.log", "start_line": 101, "line_count": 50}))
+    assert result["status"] == "completed"
+    gateway = gateway_of(transport)
+    assert gateway["tool_id"] == "claw.pc.read_file_chunk"
+    assert plan_of(transport) == ["claw.pc.read_file_chunk"]
+    assert gateway["arguments"] == {
+        "path": "big.log", "start_line": 101, "line_count": 50,
+    }
+    for invalid in (
+        {"path": "big.log", "start_line": 1},
+        {"path": "big.log", "line_count": 10},
+        {"path": "big.log", "start_line": 1, "line_count": 10, "offset": 0, "length": 10},
+        {"path": "big.log", "start_line": 0, "line_count": 10},
+        {"path": "big.log", "start_line": 1, "line_count": 1001},
+        {"path": "big.log", "start_line": True, "line_count": 1},
+    ):
+        request, transport, _, _ = harness(monkeypatch)
+        with pytest.raises(ValueError):
+            asyncio.run(execution.execute_mcp_pc_tool(
+                request, PRINCIPAL, "pc_read", invalid))
+        assert transport.calls == []
+
+def test_pc_read_line_range_passes_both_closed_gateway_parsers_only_when_exclusive():
+    """Server-core and Engine-client parser copies agree on bounded line reading."""
+    from padiem_ai_core.pc_gateway import parse_pc_gateway
+    from padiem_ai_engine_client.client import _parse_pc_gateway
+
+    base = {
+        "version": 1, "source": "mcp",
+        "token_id": "mcp_token_fixture", "request_id": "mcp_read_8953_3a",
+        "tool_id": "claw.pc.read_file_chunk",
+        "arguments": {"path": "big.log", "start_line": 101, "line_count": 50},
+    }
+    for parser in (parse_pc_gateway, _parse_pc_gateway):
+        assert parser(base)["arguments"] == base["arguments"]
+        for invalid_args in (
+            {"path": "big.log", "start_line": 101},
+            {"path": "big.log", "line_count": 50},
+            {"path": "big.log", "start_line": 101, "line_count": 50,
+             "offset": 0, "length": 10},
+            {"path": "big.log", "start_line": 0, "line_count": 50},
+            {"path": "big.log", "start_line": 1, "line_count": 1001},
+            {"path": "big.log", "start_line": True, "line_count": 50},
+        ):
+            with pytest.raises(ValueError):
+                parser({**base, "arguments": invalid_args})
