@@ -41,6 +41,9 @@ body.smr-theme-dark{--sm-source-page-ink:#e2d4be}
   font:600 13px/1.45 var(--sm-body-ko,system-ui);white-space:nowrap;
 }
 #reader #readerPageBody > .sm7573-next-chapter{
-  display:block;min-height:44px;font-size:13px;line-height:1.4;
-  word-break:keep-all;
+  display:block;width:min(100%,696px);min-height:44px;font-size:13px;line-height:1.4;
+  margin-left:0;margin-right:auto;word-break:keep-all;
+}
+@media(min-width:1920px){
+  #reader #readerPageBody > .sm7573-next-chapter{width:100%;}
 }

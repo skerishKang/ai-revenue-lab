@@ -60,3 +60,29 @@ body.smr-theme-dark{
     width:100%;margin-left:0;margin-right:0;max-width:100%;box-sizing:border-box;
   }
 }
+
+/* #8982 CTO: on large monitors, keep title, search, text and source in
+   one centered reading column, preserving the 35–45-character line measure. */
+@media(min-width:1920px){
+  #reader .paper-head{
+    width:min(100%,724px);
+    margin-left:auto;
+    margin-right:auto;
+  }
+  #reader #readerPageBody{
+    width:min(100%,724px);
+    margin-left:auto;
+    margin-right:auto;
+  }
+  #reader #readerPageBody .verse:not(.verse-en){
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
+  }
+  #reader #readerPageBody>.sm-verified-source-note{
+    width:100%;
+    max-width:100%;
+    margin-left:0;
+    margin-right:0;
+  }
+}
