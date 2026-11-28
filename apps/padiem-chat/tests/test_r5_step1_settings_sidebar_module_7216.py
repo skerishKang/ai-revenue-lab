@@ -332,7 +332,7 @@ def test_settings_wire_keeps_registration_order_and_dialog_callbacks(observed: d
         "insideOpen": True, "backdropOpen": False, "closeButtonOpen": False,
     }
     for earlier, later in (
-        ("settingsModule().wireTierChange();", 'input.addEventListener("input"'),
+        ("settingsModule().wireTierChange();", 'conversationModule().wireComposerEvents('),
         ("authModule().wireLoginButton();", "settingsModule().wireAdvancedSettings();"),
         ("settingsModule().wireAdvancedSettings();", "settingsModule().wireAdvancedMenuListeners();"),
         ("settingsModule().wireAdvancedMenuListeners();", "authModule().wireLogoutButton();"),

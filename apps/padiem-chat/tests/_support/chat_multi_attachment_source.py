@@ -19,7 +19,7 @@ def frontend_facts() -> dict:
         if attrs.get("id") == "attachmentFileInput"
     ]
     selectors = [selector for rule in rules_for_sheet("attachments.css") for selector in rule.selectors]
-    app = sheet("app.js")
+    app = sheet("app.js") + sheet("chat-conversation-module.js")
     file_input = file_inputs[0] if file_inputs else {}
     return {
         "multiple_file_input": (
