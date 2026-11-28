@@ -26,7 +26,7 @@ def test_new_scroll_rules_load_last_without_modifying_auth_or_handlers():
     assert "row.append(button, manage)" in app
 
 
-def test_desktop_scrollport_and_pinned_account_are_explicit():
+def test_desktop_scrollport_and_nonoverlapping_account_are_explicit():
     facts = css_facts()
     assert MEDIA_DESKTOP in facts["media"]
     # #4905: keep the pinned layout while it fits and let the sidebar scroll
@@ -36,7 +36,8 @@ def test_desktop_scrollport_and_pinned_account_are_explicit():
     assert ("overflow-y", "auto !important") in declarations
     assert _has_selector(facts, "#historySection:not([hidden])")
     assert ("flex", "1 1 auto") in declarations
-    assert ("min-height", "156px") in declarations
+    # The smaller desktop history floor shares height with the help/account stack.
+    assert ("min-height", "120px") in declarations
     assert _has_selector(facts, "#historyList")
     assert ("overflow-y", "auto") in declarations
     assert _has_selector(facts, ".sidebar-bottom")
