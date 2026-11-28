@@ -117,6 +117,18 @@ def test_extracted_claw_route_scanner_reads_real_owner(tmp_path, monkeypatch) ->
     assert contract.findings() == [], "Claw does not widen the app platform route allowlist"
 
 
+def test_extracted_calendar_route_scanner_reads_real_owner(tmp_path, monkeypatch) -> None:
+    owner = contract._read(contract.APP_FACTORY_CALENDAR)
+    route = 'Route("/api/calendar/today", calendar_today, methods=["GET"])'
+    assert route in owner, "the actual Calendar registrar owns this GET"
+    assert tuple(contract._registered_methods("/api/calendar/today")) == ("GET",)
+    without = owner.replace(route, 'Route("/removed/calendar", calendar_today, methods=["GET"])', 1)
+    assert without != owner
+    swap(monkeypatch, "APP_FACTORY_CALENDAR", without, tmp_path)
+    assert tuple(contract._registered_methods("/api/calendar/today")) == ()
+    assert contract.findings() == [], "Calendar does not change the platform allowlist"
+
+
 def test_work_scopes_are_routing_labels_and_an_unknown_one_is_refused(tmp_path, monkeypatch) -> None:
     real = contract._read(contract.REQUEST_CONTRACT)
     assert "grants no identity, tier" in real or "not an authentication input" in real
