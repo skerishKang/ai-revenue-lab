@@ -51,7 +51,8 @@ UI_MIXED_MAX_FILES = 25
 # discovery fails closed to the full Chat suite. Raised 400 -> 450 because the
 # real UI-contract scanner reached 401 valid modules with #7865's new test.
 # Raised 520 -> 640 when main reached the old cap exactly (#8742/#8749).
-UI_CONTRACT_MAX_MODULES = 640
+# Raised 640 -> 800 when main reached 90% (577 modules, 11-28)
+UI_CONTRACT_MAX_MODULES = 800
 _UI_MIXED_STATIC = re.compile(
     r"apps/padiem-chat/static/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.(?:css|html|js)"
 )
