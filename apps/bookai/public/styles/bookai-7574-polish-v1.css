@@ -144,8 +144,8 @@ body.smr-theme-dark #reader .bible-search-more{
 
 @media(max-width:720px){
   /* 휴대폰: 접힌 검색 패널은 종이 머리 오른쪽의 44px 아이콘 하나만 남긴다. */
-  #reader .paper-head{padding-right:56px!important}
-  #reader .paper-head>.bible-search-panel{
+  #reader:not(.flow-mode) .paper-head{padding-right:56px!important}
+  #reader:not(.flow-mode) .paper-head>.bible-search-panel{
     position:absolute!important;
     top:0;
     right:0;
@@ -156,7 +156,7 @@ body.smr-theme-dark #reader .bible-search-more{
     background:transparent!important;
     box-shadow:none!important;
   }
-  #reader .paper-head>.bible-search-panel>summary{
+  #reader:not(.flow-mode) .paper-head>.bible-search-panel>summary{
     width:44px!important;
     height:44px!important;
     min-height:44px!important;
@@ -167,8 +167,8 @@ body.smr-theme-dark #reader .bible-search-more{
     border-radius:10px!important;
     background:#fffdf8!important;
   }
-  #reader .paper-head>.bible-search-panel>summary strong,
-  #reader .paper-head>.bible-search-panel>summary span{
+  #reader:not(.flow-mode) .paper-head>.bible-search-panel>summary strong,
+  #reader:not(.flow-mode) .paper-head>.bible-search-panel>summary span{
     position:absolute!important;
     width:1px!important;
     height:1px!important;
@@ -179,16 +179,16 @@ body.smr-theme-dark #reader .bible-search-more{
     white-space:nowrap!important;
     border:0!important;
   }
-  #reader .paper-head>.bible-search-panel>summary::before{
+  #reader:not(.flow-mode) .paper-head>.bible-search-panel>summary::before{
     font-size:20px!important;
     margin:0!important;
   }
-  #reader .paper-head .bible-search-content{
+  #reader:not(.flow-mode) .paper-head .bible-search-content{
     left:auto!important;
     right:0!important;
     width:min(86vw,340px)!important;
   }
-  body.smr-theme-dark #reader .paper-head>.bible-search-panel>summary{
+  body.smr-theme-dark #reader:not(.flow-mode) .paper-head>.bible-search-panel>summary{
     background:#262019!important;
     border-color:rgba(233,225,210,.25)!important;
   }

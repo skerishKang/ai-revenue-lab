@@ -150,6 +150,10 @@ document.addEventListener('keydown',function(e){
   window.animateReaderPageTurn(step);
 });
 
+/* 페이지 넘김과 흐름에서 같은 다음 장·다음 책 문구를 사용한다. */
+function nextChapterButtonLabel(ctx,next){
+  return (ctx.chapter===ctx.count?'다음 책: ':'다음 장: ')+next.volume+' '+next.chapter+'장 →';
+}
 /* ---- 스크롤 보기 본문 끝의 "다음 장" 링크 ---- */
 function syncFlowLink(body){
   if(!body.querySelector('.reader-flow-section'))return;
@@ -164,7 +168,7 @@ function syncFlowLink(body){
     link.addEventListener('click',function(){neighbourAndTurn(1);});
     body.append(link);
   }
-  var label='다음 장 · '+n.volume+' '+n.chapter+'장 →';
+  var label=nextChapterButtonLabel(ctx,n);
   if(link.textContent!==label)link.textContent=label;
 }
 function enablePageButtons(){
@@ -206,7 +210,7 @@ function syncPageBoundaryActions(body){
     link.type='button';link.className='sm7573-next-chapter';
     link.addEventListener('click',function(){neighbourAndTurn(1);});
   }
-  link.textContent=(ctx.chapter===ctx.count?'다음 책: ':'다음 장: ')+next.volume+' '+next.chapter+'장 →';
+  link.textContent=nextChapterButtonLabel(ctx,next);
   var note=body.querySelector(':scope > .sm-verified-source-note');
   if(note)body.insertBefore(link,note);else body.append(link);
 }
