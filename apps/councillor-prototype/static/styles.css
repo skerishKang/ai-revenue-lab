@@ -919,8 +919,11 @@ body.lightbox-open .mobile-tabbar { visibility: hidden; }
 .combined-policy { margin-top: 24px; }
 .combined-policy-row { background: var(--bg); padding: 4px 16px; min-height: var(--tap); display: flex; align-items: center; }
 .combined-policy-row a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--text); }
+/* News reserves the common eyebrow line without adding any wording. */
+.news-eyebrow-spacer { min-height: 1.2em; }
 /* Public change history uses the existing card palette. */.site-change-list { display: grid; gap: 16px; margin-top: 24px; }
 .site-change h2 { font-size: 20px; margin: 8px 0; }
 .site-change time { color: var(--muted); font-size: var(--fs-body); }
 .site-change ul { padding-inline-start: 24px; line-height: 1.8; }
+.site-change li { max-width: 40em; }
 
