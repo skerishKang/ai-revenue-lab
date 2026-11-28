@@ -40,6 +40,7 @@ CLAW_GENERAL_MODULES: tuple[str, ...] = (
     "claw_general_pc_intent",
     "claw_general_search",
     "claw_general_capabilities",
+    "claw_general_conversation",
 )
 
 # ``claw_general_`` 접두사를 쓰지만 이 나누기와 무관한 app 파일.
@@ -49,6 +50,7 @@ NOT_PART_OF_SPLIT = frozenset({"claw_general_run_history"})
 # 영역을 옮기는 PR 이 그 모듈을 가져오는 파일을 바꾸면 여기도 같이 고친다.
 FIRST_TURN_AUTHORITY_IMPORTERS: tuple[str, ...] = (
     "claw_general_routes.py",
+    "claw_general_conversation.py",
 )
 
 # 다른 파일(운영 코드 3곳·시험)이 claw_general_routes 에서 가져오거나 읽는 이름 44개.
