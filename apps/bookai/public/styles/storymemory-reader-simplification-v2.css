@@ -86,3 +86,30 @@ body.smr-theme-dark{
     margin-right:0;
   }
 }
+
+/* #8789: 흐름에서도 페이지 넘김과 같은 장 머리를 보여준다. */
+body.sm-page-head-hidden #reader.flow-mode .paper-head h1,
+body:not(.source-native-active) #reader.flow-mode:has(#readerUnitNav:not([hidden])) .paper-head h1{
+  display:block;
+}
+#reader.flow-mode #readerPageBody>.sm-verified-source-note{
+  position:static;transform:none;
+  width:100%;max-width:100%;margin-left:0;margin-right:0;
+}
+/* 1024~1919px에서도 페이지 넘김·흐름 본문 열을 종이 가운데에 둔다. */
+@media(min-width:1024px) and (max-width:1919px){
+  #reader .paper-head,
+  #reader #readerPageBody{
+    width:min(100%,696px);
+    margin-left:auto;
+    margin-right:auto;
+  }
+  #reader #readerPageBody .verse:not(.verse-en){
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
+  }
+  #reader #readerPageBody>.sm-verified-source-note{
+    width:100%;max-width:100%;margin-left:0;margin-right:0;
+  }
+}

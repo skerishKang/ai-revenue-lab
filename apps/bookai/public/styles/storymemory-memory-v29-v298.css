@@ -171,10 +171,10 @@
 }
 #reader.flow-mode .reader-flow-section{
   position:relative;
-  min-height:clamp(390px,52vh,500px);
-  padding:18px 0 38px;
-  margin:0 0 22px;
-  border-bottom:1px solid rgba(88,67,49,.09);
+  min-height:0;
+  padding:0;
+  margin:0;
+  border-bottom:0;
 }
 #reader.flow-mode .reader-flow-section:last-child{
   border-bottom:0;
@@ -233,9 +233,11 @@
     display:flex!important;
   }
   #reader.flow-mode .reader-flow-section{
-    min-height:340px;
-    padding-bottom:30px;
+    min-height:0;
+    padding-bottom:0;
   }
+  /* 장 끝에 떠 있는 ⋯ 단추 높이와 12px 이상의 여유를 둔다. */
+  #reader.flow-mode #readerPageBody{padding-bottom:80px;}
   .annotation-memory-entry{
     background:#fffaf3;
   }

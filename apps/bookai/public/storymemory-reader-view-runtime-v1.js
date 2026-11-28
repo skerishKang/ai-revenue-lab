@@ -32,12 +32,22 @@
  document.getElementById('reader').classList.toggle('flow-mode',readerViewMode==='flow');
 },
     flowSectionMarkup: function(html,index){
- return `<section class="reader-flow-section" data-flow-page="${index}"><span class="reader-flow-folio">페이지 ${String(index+1).padStart(2,'0')}</span>${html}</section>`;
+ return `<section class="reader-flow-section" data-flow-page="${index}">${html}</section>`;
 },
     renderFlowReader: function({restoreRatio=null,focusPage=null}={}){
  const body=document.getElementById('readerPageBody');
  const inner=document.querySelector('.paper-inner');
  body.innerHTML=READER_PAGES.map(flowSectionMarkup).join('');
+ /* 흐름에서는 출처 줄을 장 끝에 한 번만 남기고, 읽던 위치 복원용
+    data-flow-page 구간은 그대로 유지한다. */
+ const sourceNotes=[...body.querySelectorAll('.reader-flow-section .sm-verified-source-note')];
+ const source=sourceNotes[sourceNotes.length-1];
+ sourceNotes.forEach(note=>note.remove());
+ if(source){
+   source.classList.add('reader-flow-source');
+   source.querySelector('.sm-reader-source-page-index')?.remove();
+   body.append(source);
+ }
  wireReaderEntityInteractions();
  renderContextualQuestions();
  document.getElementById('readerPageCount').textContent='흐름 · '+(readerPageIndex+1)+' / '+READER_PAGES.length;
@@ -47,7 +57,14 @@
   restoreCurrentAnnotations();
 
   requestAnimationFrame(()=>{
-    if(focusPage!==null){
+    if(focusPage===0){
+      /* 장을 열면 제목·장 칩·검색 상자가 먼저 보이게 한다. */
+      const previous=inner.style.scrollBehavior;
+      inner.style.scrollBehavior='auto';
+      inner.scrollTop=0;
+      void inner.offsetHeight;
+      inner.style.scrollBehavior=previous;
+    }else if(focusPage!==null){
       body.querySelector(`[data-flow-page="${focusPage}"]`)?.scrollIntoView({block:'start'});
     }else if(Number.isFinite(restoreRatio)){
       const max=Math.max(0,inner.scrollHeight-inner.clientHeight);
