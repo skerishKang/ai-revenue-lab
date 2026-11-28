@@ -31,6 +31,7 @@ REQUEST_CONTRACT = CHAT / "app/request_contract.py"
 CHAT_ROUTES = CHAT / "app/chat_routes.py"
 APP_FACTORY = CHAT / "app/app_factory.py"
 APP_FACTORY_AUTH = CHAT / "app/app_factory_routes_auth.py"
+APP_FACTORY_PROJECTS = CHAT / "app/app_factory_routes_projects.py"
 HISTORY = CHAT / "app/history_types.py"
 ORIGIN_GUARD = CHAT / "app/same_origin_guard.py"
 PROJECT_FILE_ROUTES = CHAT / "app/project_file_routes.py"
@@ -109,9 +110,9 @@ def _assigned_int(source: str, name: str) -> int | None:
 
 
 def _registered_methods(path: str) -> Iterable[str]:
-    # The auth registrars moved to their single owner in app_factory PR3.
-    # Scan both real source owners; a deleted/changed route still fails closed.
-    for source in (APP_FACTORY, APP_FACTORY_AUTH):
+    # Route registrars now have auth and projects owners (PR3, PR5).
+    # Scan every real source owner; missing or narrowed routes fail closed.
+    for source in (APP_FACTORY, APP_FACTORY_AUTH, APP_FACTORY_PROJECTS):
         for line in _read(source).splitlines():
             if f'Route("{path}",' in line:
                 return re.findall(r'"([A-Z]+)"', line.split("Route(", 1)[1])

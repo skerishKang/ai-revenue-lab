@@ -168,11 +168,27 @@ def test_a_link_only_product_cannot_be_quietly_promoted(tmp_path, monkeypatch) -
 
 
 def test_a_missing_platform_route_is_reported_by_name(tmp_path, monkeypatch) -> None:
-    factory = contract._read(contract.APP_FACTORY)
-    swap(monkeypatch, "APP_FACTORY",
-         factory.replace('Route("/api/projects/{project_id}/files/{file_id}",', 'Route("/removed",'),
-         tmp_path)
+    owner = contract._read(contract.APP_FACTORY_PROJECTS)
+    needle = 'Route("/api/projects/{project_id}/files/{file_id}",'
+    assert needle in owner, "owner moved without the file-detail guard"
+    swap(monkeypatch, "APP_FACTORY_PROJECTS", owner.replace(needle, 'Route("/removed",'), tmp_path)
     assert contract.findings() == ["PLATFORM_ROUTE_FILE_DETAIL_MISSING"]
+
+
+def test_extracted_project_routes_each_fail_closed_when_removed(tmp_path, monkeypatch) -> None:
+    owner = contract._read(contract.APP_FACTORY_PROJECTS)
+    for label, path in (
+        ("PROJECTS", "/api/projects"),
+        ("FILES", "/api/projects/{project_id}/files"),
+        ("FILE_DETAIL", "/api/projects/{project_id}/files/{file_id}"),
+        ("FILE_ORIGINAL", "/api/projects/{project_id}/files/{file_id}/original"),
+    ):
+        needle = f'Route("{path}",'
+        assert needle in owner, (label, "removed test target")
+        changed = owner.replace(needle, 'Route("/removed/by-contract-test",', 1)
+        assert changed != owner
+        swap(monkeypatch, "APP_FACTORY_PROJECTS", changed, tmp_path)
+        assert contract.findings() == [f"PLATFORM_ROUTE_{label}_MISSING"], label
 
 
 def test_the_cli_reports_exact_then_drift(tmp_path, monkeypatch) -> None:
