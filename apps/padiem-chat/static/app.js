@@ -1123,7 +1123,7 @@
       get noteClawContentEdited() { return clawStatusModule().noteClawContentEdited; },
       get app() { return app; },
     }, app)));
-  clawForm.initializeAction(clawAction?.value || "quote");
+  clawForm.initializeAction("quote");
   let clawLastDispatchKey = "";
   // In-flight elapsed wait state (#2763). Owned by the wait block below.
   let clawWaitStartedAt = 0;

@@ -144,7 +144,7 @@
         });
       }
 
-      return { initializeAction, wireModeChips, wireManualForm, wireExecuteControls };
+      return { initializeAction, get clawLastAction() { return clawLastAction; }, wireModeChips, wireManualForm, wireExecuteControls };
     },
   };
 })();

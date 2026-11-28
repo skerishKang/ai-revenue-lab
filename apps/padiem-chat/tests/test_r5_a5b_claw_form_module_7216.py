@@ -81,7 +81,7 @@ def test_deps_getters_match_the_exact_closure_surface() -> None:
     assert gets <= EXPECTED_GETTERS
     assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
     assert sets == set()
-    assert 'clawForm.initializeAction(clawAction?.value || "quote");' in APP
+    assert 'clawForm.initializeAction("quote");' in APP
     assert "let clawLastAction" not in APP
 
 
@@ -178,12 +178,14 @@ assert.equal(typeof empty.wireManualForm, "function");
 assert.equal(typeof empty.wireExecuteControls, "function");
 
 mod.initializeAction("quote");
+assert.equal(mod.clawLastAction, "quote");
 mod.wireModeChips();
 for (const chip of chips) {
   assert.deepEqual(Object.keys(chip.listeners), ["click"]);
   assert.equal(chip.listeners.click.length, 1);
   chip.fire("click");
   assert.equal(clawAction.value, chip.dataset.clawAction);
+  assert.equal(mod.clawLastAction, chip.dataset.clawAction);
   for (const other of chips) assert.equal(other.attrs["aria-pressed"], other === chip ? "true" : "false");
 }
 assert.equal(input.focused, 4);
