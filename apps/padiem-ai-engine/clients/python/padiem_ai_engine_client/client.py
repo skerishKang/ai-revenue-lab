@@ -638,7 +638,7 @@ _PC_GATEWAY_TOOLS = {
     # search and range read.
     "claw.pc.search_files": {"path"},
     "claw.pc.search_contents": {"path"},
-    "claw.pc.read_file_chunk": {"path", "offset", "length"},
+    "claw.pc.read_file_chunk": {"path", "offset", "length", "start_line", "line_count"},
     "claw.pc.browser_open": {"url"},
     "claw.pc.browser_read": set(),
     "claw.pc.browser_screenshot": set(),
@@ -679,7 +679,7 @@ def _parse_pc_gateway(value):
             or any(not isinstance(item, str)
                    and not (tool == "claw.pc.edit_file" and key == "replace_all"
                             and isinstance(item, bool))
-                   and not (tool == "claw.pc.read_file_chunk" and key in {"offset", "length"}
+                   and not (tool == "claw.pc.read_file_chunk" and key in {"offset", "length", "start_line", "line_count"}
                             and type(item) is int)
                    and not (tool == "claw.pc.list_files" and key in {"depth", "offset"}
                             and type(item) is int)
@@ -717,10 +717,18 @@ def _parse_pc_gateway(value):
                                   or isinstance(args["offset"], bool)
                                   or not 0 <= args["offset"] <= 10_000)):
         raise ValueError("Invalid PC gateway tool arguments")
-    if tool == "claw.pc.read_file_chunk" and any(
-            key in args and (type(args[key]) is not int or args[key] < 0)
-            for key in ("offset", "length")):
-        raise ValueError("Invalid PC gateway tool arguments")
+    if tool == "claw.pc.read_file_chunk":
+        line_mode = "start_line" in args or "line_count" in args
+        if line_mode:
+            if (set(args) != {"path", "start_line", "line_count"}
+                    or type(args["start_line"]) is not int
+                    or not 1 <= args["start_line"] <= (1 << 40)
+                    or type(args["line_count"]) is not int
+                    or not 1 <= args["line_count"] <= 1000):
+                raise ValueError("Invalid PC gateway line range")
+        elif any(key in args and (type(args[key]) is not int or args[key] < 0)
+                 for key in ("offset", "length")):
+            raise ValueError("Invalid PC gateway tool arguments")
     if tool == "claw.pc.write_file" and args.get("mode", "overwrite") not in (
             "overwrite", "append"):
         raise ValueError("Invalid PC gateway write mode")

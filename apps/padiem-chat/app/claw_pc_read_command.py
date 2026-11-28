@@ -26,6 +26,9 @@ from padiem_ai_core.powershell_literal import ps_literal
 #: explicit length from its own setting; this is the transport ceiling.
 PC_READ_CHUNK_MAX_BYTES = 1_000_000
 PC_READ_OFFSET_MAX = 1 << 40
+from .claw_pc_line_read import (
+    PC_READ_LINE_MAX_COUNT, PC_READ_LINE_MAX_BYTES, pc_read_line_lines,
+)
 PC_READ_OFFICE_EXTENSIONS = (".docx", ".xlsx", ".pdf", ".hwpx")
 PC_READ_OFFICE_MEDIA = {
     ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -83,7 +86,9 @@ def _windows_root(value: str) -> str:
 
 
 def pc_read_chunk_command(
-    *, root: str, relative: str, offset: int, length: int,
+    *, root: str, relative: str, offset: int | None = None,
+    length: int | None = None, start_line: int | None = None,
+    line_count: int | None = None,
 ) -> str:
     """Build the one range-read script for ``root/relative``.
 
@@ -100,19 +105,25 @@ def pc_read_chunk_command(
         or any(ord(ch) < 32 for ch in relative)
     ):
         raise ValueError("relative path is not usable")
-    if pc_read_offset(offset) is None:
-        raise ValueError("offset is not usable")
-    if pc_read_length(length) is None:
-        raise ValueError("length is not usable")
+    line_mode = start_line is not None or line_count is not None
+    if line_mode:
+        if (offset is not None or length is not None
+                or type(start_line) is not int or not 1 <= start_line <= PC_READ_OFFSET_MAX
+                or type(line_count) is not int or not 1 <= line_count <= PC_READ_LINE_MAX_COUNT):
+            raise ValueError("start_line and line_count require a bounded pair without bytes")
+    elif pc_read_offset(offset) is None or pc_read_length(length) is None:
+        raise ValueError("offset and length require a bounded pair")
     file_name = relative.replace("\\", "/").rsplit("/", 1)[-1]
     office = is_office_name(file_name)
+    if line_mode and office:
+        raise ValueError("line ranges require UTF-8 text; PDF/XLSX selection belongs to 3b")
     lines = [
         "$ErrorActionPreference='SilentlyContinue'",
         "[Console]::OutputEncoding=New-Object Text.UTF8Encoding $false",
         "$OutputEncoding=New-Object Text.UTF8Encoding $false",
         "$path=" + _ps_literal(root.rstrip("/") + "/" + relative.replace("\\", "/")),
-        "$offset=[int64]" + str(offset),
-        "$length=[int64]" + str(length),
+        ("$startLine=[int64]" + str(start_line) if line_mode else "$offset=[int64]" + str(offset)),
+        ("$lineCount=[int64]" + str(line_count) if line_mode else "$length=[int64]" + str(length)),
         "$items=Get-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue",
         "if($items -eq $null -or $items.PSIsContainer){",
         '  \'{"ok":false,"error":"not_a_file"}\'',
@@ -141,7 +152,9 @@ def pc_read_chunk_command(
         "}",
         "$size=[int64]$items.Length",
     ]
-    if office:
+    if line_mode:
+        lines.extend(pc_read_line_lines())
+    elif office:
         lines.extend(_office_lines(file_name))
     else:
         lines.extend(_text_lines())
@@ -243,6 +256,8 @@ def _office_lines(file_name: str) -> list[str]:
 
 __all__ = [
     "PC_READ_CHUNK_MAX_BYTES",
+    "PC_READ_LINE_MAX_BYTES",
+    "PC_READ_LINE_MAX_COUNT",
     "PC_READ_OFFICE_EXTENSIONS",
     "PC_READ_OFFICE_MEDIA",
     "PC_READ_OFFICE_PREFIX_BYTES",

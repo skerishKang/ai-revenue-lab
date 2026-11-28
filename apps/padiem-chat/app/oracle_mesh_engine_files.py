@@ -437,13 +437,26 @@ async def _engine_pc_files_call_dispatch(
             )
             return _engine_pc_job_response(response, requested_mode), {}
         if op == "read_chunk":
-            offset = pc_read_offset(payload.get("offset"))
-            length = pc_read_length(payload.get("length"))
-            if offset is None or length is None or not relative:
-                return _error(422, "oracle_mesh_file_range_invalid"), {}
-            command = pc_read_chunk_command(
-                root=root, relative=relative, offset=offset, length=length,
-            )
+            line_mode = "start_line" in payload or "line_count" in payload
+            if line_mode:
+                start_line, count = payload.get("start_line"), payload.get("line_count")
+                if (not relative or "offset" in payload or "length" in payload
+                        or type(start_line) is not int or not 1 <= start_line <= (1 << 40)
+                        or type(count) is not int or not 1 <= count <= 1000):
+                    return _error(422, "oracle_mesh_file_range_invalid"), {}
+                try:
+                    command = pc_read_chunk_command(
+                        root=root, relative=relative, start_line=start_line, line_count=count)
+                except ValueError:
+                    return _error(422, "oracle_mesh_file_range_invalid"), {}
+            else:
+                offset = pc_read_offset(payload.get("offset"))
+                length = pc_read_length(payload.get("length"))
+                if offset is None or length is None or not relative:
+                    return _error(422, "oracle_mesh_file_range_invalid"), {}
+                command = pc_read_chunk_command(
+                    root=root, relative=relative, offset=offset, length=length,
+                )
             return await dispatch_oracle_mesh_command_intent(
                 request, command=share_command_prefix([root]) + command,
                 wire={
@@ -561,7 +574,9 @@ async def _engine_pc_files_call_verify(
         # A search names its query and which side of the file it looks at.
         extra_fields = {"write": {"content"}, "move": {"destination"},
                         "search": {"query", "search_mode"},
-                        "read_chunk": {"offset", "length"}}
+                        "read_chunk": ({"start_line", "line_count"} if (
+                            "start_line" in payload or "line_count" in payload
+                        ) else {"offset", "length"})}
         # #7603: a write may name the append spelling. It is its own boolean
         # because `mode` in this body already names the transport leg.
         optional_fields = {"write": {"append"}}

@@ -108,18 +108,21 @@ def test_each_allowed_format_becomes_one_block(mime: str):
     assert "이미지 파일을 읽었습니다" in note
 
 
-def test_without_pil_an_oversized_original_sends_text_only(monkeypatch):
-    # CTO decision 2026-11-13: without Pillow there is no way to meet the
-    # byte cap, so an oversized original ships as bounded text only. This is
-    # the before/after test: before the fix the oversized original travelled
-    # unscaled as an image block.
+def test_without_pil_an_oversized_original_returns_size_limit_error_not_image(monkeypatch):
+    """Fail closed: previously text-only success; now an explicit size error."""
     monkeypatch.setitem(sys.modules, "PIL", None)
     raw = b"\x89PNG\r\n\x1a\n" + b"\x00" * (PC_IMAGE_BYTE_CAP + 50_000)
     note, block = _pc_image_projection(
         PC_IMAGE_ENVELOPE_PREFIX + "image/png:" + base64.b64encode(raw).decode("ascii"))
-    assert block is None
-    assert "이미지 축소를 쓸 수 없어 그림을 보내지 못했습니다" in note
-    assert f"{len(raw):,}바이트" in note
+    assert block is not None
+    assert block["type"] == "error"
+    assert block["code"] == "pc_image_size_limit_exceeded"
+    assert block["resized"] is False
+    assert block["original_bytes"] == len(raw)
+    assert block["result_bytes"] > PC_IMAGE_BYTE_CAP
+    assert "data" not in block  # Oversize bytes never enter an MCP image block.
+    assert "이미지 크기 제한을 초과" in note
+    assert "보내지 못했습니다" in note
 
 
 def test_without_pil_an_original_within_the_cap_still_ships(monkeypatch):
