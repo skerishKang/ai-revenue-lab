@@ -192,3 +192,147 @@ def test_error_icon_stays_in_first_text_row_and_matches_generation_failure(url,k
                 assert values['text'] and values['text']['x']>values['box']['x']+14,(width,kind,values)
             finally:ctx.close()
         browser.close()
+
+
+@pytest.mark.parametrize("tool,kind",(("speech","speech"),("sns","sns")))
+def test_saved_more_button_border_contrast_five_styles(url,tool,kind):
+    """#8976 CTO: the More control has >=3:1 outline against its list surface."""
+    with sync_playwright() as pw:
+        browser=pw.chromium.launch(headless=True)
+        try:
+            for style in STYLES:
+                ctx,page=open_case(browser,url,width=1440,files=fake_files(kind,25))
+                try:
+                    open_tool(page,tool)
+                    set_style(page,style)
+                    container=page.locator(f"#council{tool.capitalize()}Saved")
+                    button=container.get_by_role("button",name="더 보기")
+                    button.wait_for(state="visible")
+                    assert container.locator(".council-saved-item").count()==10
+                    measured=button.evaluate("""b=>{
+                      const c=getComputedStyle(b),p=getComputedStyle(b.closest('.council-saved-list'));
+                      const card=getComputedStyle(b.closest('.council-card'));
+                      return {border:c.borderTopColor,bg:c.backgroundColor,card:card.backgroundColor,
+                        list:p.backgroundColor,width:c.borderTopWidth,height:b.getBoundingClientRect().height};
+                    }""")
+                    paper=composite(rgba(measured['list']),composite(rgba(measured['card']),[1,1,1]))
+                    border=composite(rgba(measured['border']),composite(rgba(measured['bg']),paper))
+                    actual=ratio(border,paper)
+                    assert measured['height']>=44 and float(measured['width'].replace("px",""))>=1,(
+                        tool,style,measured)
+                    assert actual>=3.0,(tool,style,round(actual,3),measured)
+                finally:ctx.close()
+        finally:browser.close()
+
+
+def test_all_nonprimary_outline_buttons_five_styles(url):
+    """#8976 CTO: inspect dark/other themes across home, tools, auth, style,
+    stored history, book and result screens. Exclude only filled primary
+    controls, menu pills and intentionally disabled/iconless controls.
+    Collect all weak outlines before failing to supply one actionable inventory.
+    """
+    cases={
+        # #8976: filled card CTAs are primary controls and deliberately excluded.
+        "home":["#councilAuthAction","#councilThemeTrigger"],
+        "login":["#councilGoogleLogin","#councilAuthClose"],
+        "style":["#councilStyleGroup button:not([aria-checked=true])"],
+        "speech":["#councilSpeechSaved .council-saved-more",
+                  "#councilSpeechSaved .council-speech-use-ref",
+                  "#councilSpeechSaved .council-saved-open",
+                  "#councilSpeechResult .council-result-action:not(.council-primary)"],
+        "sns":[".council-sns-tab:not([aria-pressed=true])",
+               "#councilSnsPhotoAdd"],
+        "book":[".council-book-quick","#councilBookSelectPeriod",
+                ".council-archive-item .council-record-move"],
+    }
+    # At each candidate use the nearest ancestor's visibly painted surface.
+    js="""(selectors)=>{
+      const rgba=c=>{const m=c.match(/rgba?\\(([^)]+)\\)/);return m?m[1].split(/[ ,/]+/).map(Number):[];};
+      function a(c){const n=rgba(c);return n.length>=4?n[3]:n.length>=3?1:0;}
+      function parentBg(el){
+        let p=el.parentElement;
+        while(p){let color=getComputedStyle(p).backgroundColor;
+          if(a(color)>.02)return color;
+          p=p.parentElement;
+        }return 'rgb(255,255,255)';
+      }
+      const result=[];
+      for(const selector of selectors) {
+        for(const el of document.querySelectorAll(selector)){
+          const rect=el.getBoundingClientRect(),s=getComputedStyle(el);
+          if(rect.width<1||rect.height<1||s.visibility==='hidden'||s.display==='none'
+              ||el.disabled||el.closest('[hidden]'))continue;
+          result.push({selector,id:el.id,kind:String(el.className||''),
+            label:(el.innerText||el.textContent||'').trim().replace(/\\s+/g,' ').slice(0,35),
+            border:s.borderTopColor,bg:s.backgroundColor,surface:parentBg(el),
+            stroke:s.borderTopWidth,height:rect.height});
+        }
+      }return result;
+    }"""
+    failed=[]
+    inspected=0
+    unique=set()
+    with sync_playwright() as pw:
+        browser=pw.chromium.launch(headless=True)
+        try:
+            for style in STYLES:
+                # Anonymous home, login dialog and style chooser.
+                ctx,page=open_case(browser,url,width=1440,authenticated=False,
+                                   methods={"password":True,"google":True})
+                try:
+                    set_style(page,style)
+                    groups=[("home",cases["home"])]
+                    groups[0][1] # keep stage keys explicit
+                    for stage,selectors in groups:
+                        records=page.evaluate(js,selectors)
+                        for x in records:
+                            inspected+=1
+                            surface=composite(rgba(x['surface']),[1,1,1])
+                            border=composite(rgba(x['border']),composite(rgba(x['bg']),surface))
+                            value=ratio(border,surface)
+                            unique.add((stage,x['selector']))
+                            if value<3.0 or float(x['stroke'].replace('px',''))<1:
+                                failed.append((style,stage,x['selector'],x['label'],round(value,2)))
+                    page.locator("#councilAuthAction").click()
+                    for x in page.evaluate(js,cases['login']):
+                        inspected+=1;unique.add(("login",x['selector']))
+                        surface=composite(rgba(x['surface']),[1,1,1])
+                        border=composite(rgba(x['border']),composite(rgba(x['bg']),surface))
+                        v=ratio(border,surface)
+                        if v<3 or float(x['stroke'].replace('px',''))<1:failed.append((style,"login",x['selector'],x['label'],round(v,2)))
+                    page.locator("#councilAuthClose").click()
+                    page.locator("#councilThemeTrigger").click()
+                    for x in page.evaluate(js,cases["style"]):
+                        inspected+=1;unique.add(("style",x['selector']))
+                        surface=composite(rgba(x['surface']),[1,1,1])
+                        border=composite(rgba(x['border']),composite(rgba(x['bg']),surface))
+                        v=ratio(border,surface)
+                        if v<3 or float(x['stroke'].replace('px',''))<1:failed.append((style,"style",x['selector'],x['label'],round(v,2)))
+                finally:ctx.close()
+
+                for kind in ("speech","sns","book"):
+                    docs=(fake_files("speech",25) if kind=="speech" else
+                          fake_files("meeting",16) if kind=="book" else [])
+                    ctx,page=open_case(browser,url,width=1440,files=docs,pairing=True)
+                    try:
+                        set_style(page,style)
+                        open_tool(page,"meeting" if kind=="book" else kind)
+                        if kind=="speech":
+                            page.locator('#councilSpeechSaved .council-saved-more').wait_for(state="visible")
+                            page.locator('#councilSpeechResult').evaluate("(e)=>{e.hidden=false}")
+                        if kind=="book":
+                            page.locator('.council-archive-item').first.wait_for(state="visible")
+                        for x in page.evaluate(js,cases[kind]):
+                            inspected+=1;unique.add((kind,x['selector']))
+                            surface=composite(rgba(x['surface']),[1,1,1])
+                            border=composite(rgba(x['border']),composite(rgba(x['bg']),surface))
+                            v=ratio(border,surface)
+                            if v<3 or float(x['stroke'].replace('px',''))<1:
+                                failed.append((style,kind,x['selector'],x['label'],round(v,2)))
+                    finally:ctx.close()
+        finally:browser.close()
+    print("SECONDARY_BUTTON_AUDIT inspected=",inspected,"unique_sectors=",len(unique),
+          "failures=",len(failed))
+    print("SECONDARY_BUTTON_WEAK",sorted(set(failed)))
+    assert inspected>=80,(inspected,unique)
+    assert not failed,sorted(set(failed))
