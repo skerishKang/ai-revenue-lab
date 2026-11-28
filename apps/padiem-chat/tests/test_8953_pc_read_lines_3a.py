@@ -131,3 +131,18 @@ def test_large_100mb_file_only_returns_one_bounded_page(tmp_path):
     assert page["line_count"] == 3 and page["next_cursor"] == 103
     assert len(page["text"].encode()) < 256*1024
     assert page["has_more"] is True
+
+
+@pytest.mark.skipif(not POWERSHELL, reason="Windows PowerShell required")
+def test_utf8_bom_is_removed_from_first_returned_line_only(tmp_path):
+    # Only the signature at file offset zero is stripped. An explicit U+FEFF
+    # in later content is data, and the source file must remain byte-identical.
+    original = b"\xef\xbb\xbf" + "첫째\n\ufeff둘째\n셋째\n".encode("utf-8")
+    first = _page(tmp_path, original, 1, 2)
+    assert first["ok"] is True, first
+    assert first["text"] == "첫째\n\ufeff둘째"
+    assert first["start_line"] == 1 and first["line_count"] == 2
+    assert first["next_cursor"] == 3
+    later = _page(tmp_path, original, 2, 1)
+    assert later["text"] == "\ufeff둘째"
+    assert (tmp_path / "sample.txt").read_bytes() == original

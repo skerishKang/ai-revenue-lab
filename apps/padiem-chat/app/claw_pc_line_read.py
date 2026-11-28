@@ -30,6 +30,10 @@ try {
   }
   while($rows.Count -lt $lineCount -and -not $reader.EndOfStream){
     $line=$reader.ReadLine()
+    # StreamReader with BOM autodetection disabled can expose U+FEFF as text.
+    # Remove only the file-start signature, never an intentional later FEFF.
+    if($startLine -eq 1 -and $rows.Count -eq 0 -and $line.Length -gt 0 -and
+       $line[0] -eq [char]0xFEFF){ $line=$line.Substring(1) }
     if($line.IndexOf([char]0) -ge 0){
       '{"ok":false,"error":"binary_text_rejected"}'
       return
