@@ -1205,16 +1205,13 @@ const sandbox = {document, window: {}};
 vm.createContext(sandbox);
 vm.runInContext(source("chat-app-context.js"), sandbox);
 vm.runInContext(source("chat-conversation-module.js"), sandbox);
-const appSource = source("app.js");
-const getter = appSource.match(/get activeProject\(\) \{ return activeProject; \},/)[0];
-const setter = appSource.match(/set activeProject\(value\) \{ activeProject = value; \},/)[0];
-const execute = vm.runInContext("(async function(){let activeProject = 'before'; let observed; const target = {id: 'after'}; "
-  + "const app = window.PadiemChatAppContext.create({" + getter + setter
+const execute = vm.runInContext("(async function(){let observed; const target = {id: 'after'}; "
+  + "const app = window.PadiemChatAppContext.create({"
   + "uiT: k=>k, conversationState:{setProduct(){},setConversationId(){}}, conversationProduct:'chat',"
-  + "renderProjectState(){ observed=activeProject; }, requestAnswer: async()=>false, selectedAttachments:[]});"
+  + "renderProjectState(){ observed=app.activeProject; }, requestAnswer: async()=>false, selectedAttachments:[]}); app.activeProject='before';"
   + "const api=app.provide('conversation',window.PadiemChatConversationModule.create(Object.setPrototypeOf({},app)));"
   + "const box=api.buildRetryBox('error',{remove(){}},[],'auto',null,{product:'chat',conversationId:'id',project:target});"
-  + "await box.children[2].handlers.click(); return activeProject===target && observed===target;})", sandbox);
+  + "await box.children[2].handlers.click(); return app.activeProject===target && observed===target;})", sandbox);
 execute().then(ok => {assert.equal(ok,true); console.log(JSON.stringify(ok));}).catch(e=>{console.error(e);process.exitCode=1;});
 """
     result = subprocess.run([shutil.which("node"), "-e", script, str(static)],

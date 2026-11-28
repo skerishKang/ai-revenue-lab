@@ -212,6 +212,49 @@ for (const [owner, names] of Object.entries({
   assert.equal(calls, 1);
 }
 checks.deferred_owner_contract = true;
+// 4B: one mutable slot per context, shared by every derived module deps.
+const live = window.PadiemChatAppContext.create({});
+const a = Object.create(live), b = Object.create(live);
+const oldAuth = a.authState;
+assert.equal(oldAuth.authenticated, false);
+assert.equal(a.authViewEpoch, 0);
+assert.equal(a.authDialogView, "login");
+assert.equal(a.passwordResetToken, "");
+assert.equal(a.projectsReady, false);
+assert.equal(a.activeProject, null);
+assert.equal(a.activeProjectFileCount, 0);
+const replacement = {authenticated: true, user: {id: "u1"}};
+a.authState = replacement;
+assert.equal(b.authState, replacement);
+assert.notEqual(oldAuth, b.authState);
+assert.equal(oldAuth.authenticated, false);
+b.authState.user.name = "updated";
+assert.equal(a.authState.user.name, "updated");
+a.authViewEpoch += 1;
+assert.equal(b.authViewEpoch, 1);
+a.authDialogView = "confirm";
+b.passwordResetToken = "fixture";
+a.projectsReady = true;
+const project1 = {id: "p1"}, project2 = {id: "p2"};
+a.activeProject = project1;
+assert.equal(b.activeProject, project1);
+b.activeProject = project2;
+assert.equal(a.activeProject, project2);
+a.activeProjectFileCount = 3;
+assert.equal(b.activeProjectFileCount, 3);
+assert.equal(b.authDialogView, "confirm");
+assert.equal(a.passwordResetToken, "fixture");
+assert.equal(b.projectsReady, true);
+for (const key of ["authState", "authViewEpoch", "authDialogView", "passwordResetToken", "projectsReady", "activeProject", "activeProjectFileCount"]) {
+  assert.equal(Object.hasOwn(a, key), false);
+  assert.equal(Object.hasOwn(b, key), false);
+}
+const another = window.PadiemChatAppContext.create({});
+assert.equal(another.authState.authenticated, false);
+assert.equal(another.activeProject, null);
+assert.throws(() => live.provide("other", {authState: {}}), /context-owned ref/);
+checks.shared_state_contract = true;
+
 console.log("RESULT_JSON " + JSON.stringify({ ok: true, checks }));
 """
 
@@ -230,5 +273,5 @@ def test_context_name_guard_in_node_vm() -> None:
     assert set(payload["checks"]) == {
         "duplicate_module_throws", "duplicate_name_throws",
         "outside_allowlist_throws", "allowlisted_name_shows_module_value",
-        "context_owned_ref_throws", "deferred_owner_contract",
+        "context_owned_ref_throws", "deferred_owner_contract", "shared_state_contract",
     }, payload["checks"]

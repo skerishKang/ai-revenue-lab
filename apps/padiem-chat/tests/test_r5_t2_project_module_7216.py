@@ -178,7 +178,7 @@ def test_project_declarations_functions_and_listeners_live_only_in_module() -> N
     assert len(MODULE.splitlines()) <= 1000
 
 
-def test_shared_state_stays_app_owned_and_deps_surface_is_exact() -> None:
+def test_shared_state_is_context_owned_and_deps_surface_is_exact() -> None:
     block = create_receives_app_context(APP, "window.PadiemChatProjectModule")
     gets = set(re.findall(r"get (\w+)\(\)", block))
     sets = set(re.findall(r"set (\w+)\(\)", block))
@@ -188,9 +188,9 @@ def test_shared_state_stays_app_owned_and_deps_surface_is_exact() -> None:
     assert sets == set()
     names = context_names(APP)
     for name in SHARED_STATE:
-        assert f"let {name} =" in APP
-        assert f"get {name}()" in APP
-        assert f"set {name}(value)" in APP
+        assert f"let {name} =" not in APP
+        assert f"get {name}()" not in APP
+        assert f"set {name}(value)" not in APP
         assert name in names
 
 

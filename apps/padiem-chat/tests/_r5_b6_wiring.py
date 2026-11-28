@@ -32,6 +32,9 @@ def context_names(app: str) -> set[str]:
             match = re.search(r"\b" + owner + r":\s*\[([^]]*)\]", table)
             if match:
                 names.update(re.findall(r'"(\w+)"', match[1]))
+    context = (Path(__file__).resolve().parents[1] / "static/chat-app-context.js").read_text(encoding="utf-8")
+    state = create_block(context, context.index("const state ="))
+    names.update(re.findall(r"^\s*(\w+):", state, re.M))
     return names
 
 

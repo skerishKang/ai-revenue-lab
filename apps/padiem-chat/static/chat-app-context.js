@@ -4,7 +4,7 @@
 // B1 pilot scope: the context owns the two DOM refs shared across the two
 // automation modules (clawAutomation, clawAutomationList) and looks them up at
 // create() time — the same script tick app.js's declaration block used to run.
-// app.js still owns authState/shell/clawWorkspace and the shared functions
+// app.js still owns shell/clawWorkspace and other closure refs
 // (uiT, setNavActive, closeSidebar, clearClawWait, syncClawRunHistoryVisibility)
 // until R5 B6; it mounts them as live accessors, so a value changed before the
 // first read is still observed (same semantics as the old deps getters).
@@ -46,6 +46,26 @@
         }
       }
       const context = Object.create(reserved.size ? deferred : (shared || null));
+      // T2 4B: shared auth/account/project state. Access through inherited deps
+      // must update the single backing slot, never create an own property.
+      // Auth epochs invalidate late responses without storing an account id.
+      const state = {
+        authState: { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false },
+        authViewEpoch: 0,
+        authDialogView: "login",
+        passwordResetToken: "",
+        projectsReady: false,
+        activeProject: null,
+        activeProjectFileCount: 0,
+      };
+      for (const key of Object.keys(state)) {
+        if (shared && Object.prototype.hasOwnProperty.call(shared, key)) continue;
+        Object.defineProperty(context, key, {
+          get() { return state[key]; },
+          set(value) { state[key] = value; },
+          enumerable: true,
+        });
+      }
       context.clawAutomation = document.getElementById("clawAutomation");
       context.clawAutomationList = document.getElementById("clawAutomationList");
       // R5 A2: DOM refs shared between the moved memory/run-history modules and
