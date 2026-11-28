@@ -76,9 +76,9 @@ def _index_meta() -> tuple[set[str], set[str]]:
 
 
 def composer_submit_facts() -> dict:
-    source = app_js()
+    source = sheet("chat-conversation-module.js")
     start = source.index('form.addEventListener("submit"')
-    end = source.index("\n  });", start)
+    end = source.index("\n    });", start)
     handler = source[start:end]
     return {
         "submits_prompt": "submitPrompt(input.value)" in handler,

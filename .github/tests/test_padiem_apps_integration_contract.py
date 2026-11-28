@@ -53,6 +53,23 @@ def test_the_route_set_is_closed_and_methods_are_not_widened() -> None:
         assert beyond not in paths, beyond
 
 
+def test_extracted_auth_owner_missing_route_still_fails_closed(tmp_path, monkeypatch) -> None:
+    original = contract._read(contract.APP_FACTORY_AUTH)
+    auth = 'Route("/api/auth/status", auth_status, methods=["GET"])'
+    login = 'Route("/api/auth/password/login", password_login, methods=["POST"])'
+    assert auth in original and login in original
+
+    without_auth = original.replace(auth, 'Route("/removed/auth", auth_status, methods=["GET"])')
+    assert without_auth != original
+    swap(monkeypatch, "APP_FACTORY_AUTH", without_auth, tmp_path)
+    assert "PLATFORM_ROUTE_AUTH_MISSING" in contract.findings()
+
+    without_login = original.replace(login, 'Route("/removed/login", password_login, methods=["POST"])')
+    assert without_login != original
+    swap(monkeypatch, "APP_FACTORY_AUTH", without_login, tmp_path)
+    assert "PLATFORM_ROUTE_LOGIN_MISSING" in contract.findings()
+
+
 def test_the_ai_lane_is_the_existing_chat_lane_not_a_second_router() -> None:
     generate = next(entry for entry in contract.PLATFORM_ROUTES if entry[0] == "generate")
     assert generate[1:] == (("POST",), "/api/chat")

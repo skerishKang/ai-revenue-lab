@@ -14,6 +14,67 @@
       // Short-lived overlay, not a new composer row.
       const composerInlineHint = document.getElementById("composerInlineHint");
       let composerInlineHintTimer = null;
+  function wireComposerEvents({submitPrompt, cancelActiveStream, documentStarterButton}) {
+    const {input, sendButton, form, cancelStreamButton, attachmentButton, attachmentFileInput} = deps;
+    input.addEventListener("input", (event) => updateComposer(event));
+    // #3084: Korean IME regression protection. While a Hangul/IME composition is
+    // active the browser still reports key === "Enter" for the candidate-confirm
+    // key, so submitting on it would send a half-composed word. The guard below
+    // is the shared pure decision (claw-local-handoff.js) plus an explicit
+    // composition tracker for engines that omit event.isComposing.
+    const localHandoffModule = window.PadiemClawLocalHandoff;
+    // All three products load the canonical keyboard guard. The historic
+    // handoff guard remains for isolated older fixture/browser pages.
+    const composerInputModule = window.PadiemConversationComposer || localHandoffModule;
+    const composerComposition = composerInputModule
+      ? composerInputModule.createCompositionGuard()
+      : null;
+    input.addEventListener("compositionstart", () => composerComposition?.start());
+    input.addEventListener("compositionupdate", () => composerComposition?.update());
+    input.addEventListener("compositionend", () => composerComposition?.end());
+    input.addEventListener("keydown", (event) => {
+      const shouldSubmit = composerInputModule
+        ? composerInputModule.shouldSubmitOnEnter(event, composerComposition)
+        : false; // Never submit Hangul IME text with an unavailable guard.
+      if (!shouldSubmit) return;
+      event.preventDefault();
+      if (!sendButton.disabled) form.requestSubmit();
+    });
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      // #3531: the shared composer always submits to the general Claw
+      // conversation, in every shell state. The quotation/document workflow
+      // runs only via the manual form's own explicit draft submit button;
+      // a generic request must never auto-enter it through the composer.
+      // #4647: the meeting workbench consumes its own explicit meeting-setup
+      // command from its own capture-phase listener on this same form, so this
+      // handler keeps no shell-state fork and every other prompt is unaffected.
+      submitPrompt(input.value);
+    });
+    cancelStreamButton.addEventListener("click", cancelActiveStream);
+    attachmentButton.addEventListener("click", () => { if (!deps.inFlight) attachmentFileInput.click(); });
+    documentStarterButton.addEventListener("click", () => { if (!deps.inFlight) attachmentFileInput.click(); });
+    wireDocumentFormats();
+    attachmentFileInput.addEventListener("change", () => {
+      const files = Array.from(attachmentFileInput.files || []);
+      if (files.length) void addAttachmentFiles(files);
+    });
+    // #261102: drag and drop also attaches several files at once.
+    const composerForm = document.getElementById("composerForm");
+    if (composerForm) {
+      composerForm.addEventListener("dragover", (event) => {
+        if (deps.inFlight) return;
+        event.preventDefault();
+        if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+      });
+      composerForm.addEventListener("drop", (event) => {
+        if (deps.inFlight) return;
+        event.preventDefault();
+        const files = event.dataTransfer ? Array.from(event.dataTransfer.files || []) : [];
+        if (files.length) void addAttachmentFiles(files);
+      });
+    }
+  }
   function wireDocumentFormats() {
     const documentFormatsToggle = document.getElementById("documentFormatsToggle");
     const documentFormatsPanel = document.getElementById("documentFormatsPanel");
@@ -677,6 +738,7 @@
         renderError,
         renderCancelled,
         handleCustomRequestFailure,
+        wireComposerEvents,
         wireDocumentFormats,
         attachmentCopy,
         showComposerInlineHint,
