@@ -37,6 +37,7 @@ CLAW_GENERAL_MODULES: tuple[str, ...] = (
     "claw_general_contract",
     "claw_general_stage",
     "claw_general_response",
+    "claw_general_pc_intent",
 )
 
 # ``claw_general_`` 접두사를 쓰지만 이 나누기와 무관한 app 파일.
