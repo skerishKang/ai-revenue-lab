@@ -379,7 +379,7 @@
       cancel.addEventListener("click", () => finish(null));
       box.append(asNew, overwrite, cancel);
       // A 409 is waiting for the owner, not writing bytes.
-      if (anchor) anchor.textContent = "저장";
+      if (anchor) anchor.textContent = "내 기록에 저장";
       const hostNode = anchor && anchor.parentNode ? anchor.parentNode : anchor;
       if (hostNode && typeof hostNode.appendChild === "function") hostNode.appendChild(box);
       else resolve(null);
@@ -701,7 +701,7 @@
     if (!field || typeof field.style === "undefined") return;
     const grow = () => {
       field.style.height = "auto";
-      field.style.height = Math.max(160, field.scrollHeight || 0) + "px";
+      field.style.height = Math.max(96, field.scrollHeight || 0) + "px";
     };
     field.addEventListener("input", grow);
     field.__growResult = grow;
@@ -729,6 +729,30 @@
     line.hidden = !text;
     if (text && tone) line.dataset.tone = tone;
     else if (line.dataset) delete line.dataset.tone;
+    if (line.classList) {
+      line.classList.remove("council-notice-busy", "council-notice-success",
+                            "council-notice-error", "council-notice-info");
+      if (text && tone && ["busy", "success", "error", "info"].includes(tone)) {
+        line.classList.add("council-notice-" + tone);
+      }
+    }
+  }
+  function beginGeneration(button) {
+    const original = button.textContent;
+    button.textContent = "생성 중…";
+    button.disabled = true;
+    button.setAttribute("aria-busy", "true");
+    button.classList.add("council-generating");
+    const spin = el("span", "council-loading-spinner");
+    spin.setAttribute("aria-hidden", "true");
+    button.appendChild(spin);
+    return original;
+  }
+  function endGeneration(button, original) {
+    button.textContent = original;
+    button.disabled = false;
+    button.setAttribute("aria-busy", "false");
+    button.classList.remove("council-generating");
   }
   // 복사(주 버튼)·저장·다운로드는 모두 결과 본문 바로 아래 한 줄이다.
   function resultPanel(options) {
@@ -739,7 +763,7 @@
     if (heading) result.appendChild(heading);
     const output = document.createElement("textarea");
     output.id = options.outputId;
-    output.rows = options.rows || 12;
+    output.rows = Math.min(options.rows || 3, 3);
     result.appendChild(output);
     autoGrowResult(output);
     // The SNS preview sits between the draft and its action row.
@@ -748,7 +772,7 @@
     const copyBtn = el("button", "council-primary", "복사");
     copyBtn.type = "button";
     copyBtn.id = options.copyId;
-    const saveBtn = el("button", "council-save", options.saveLabel || "저장");
+    const saveBtn = el("button", "council-save", options.saveLabel || "내 기록에 저장");
     saveBtn.type = "button";
     saveBtn.id = options.saveId;
     // [한글(HWPX)] [워드(DOCX)] [텍스트] — 2026-11-01부터 세 가지.
@@ -769,6 +793,7 @@
     pcSaveBtn.type = "button";
     pcSaveBtn.id = options.pcSaveId;
     actions.append(copyBtn, saveBtn, dlHwpxBtn, dlDocxBtn, dlBtn, pcSaveBtn);
+    actions.querySelectorAll("button").forEach((button) => button.classList.add("council-result-action"));
     result.appendChild(actions);
     return { result, output, copyBtn, saveBtn, dlHwpxBtn, dlDocxBtn, dlBtn, pcSaveBtn, actions };
   }
@@ -1140,7 +1165,7 @@
     }
     function showNoPc() {
       pick.hidden = true;
-      note.textContent = PC_REF_COPY.noPc;
+      note.textContent = opts.helpText || "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 예전 글을 가져옵니다.";
       const connect = el("a", "council-pc-ref-connect", PC_REF_COPY.connect);
       connect.href = COMPUTER_CONNECT_HREF;
       note.appendChild(connect);
@@ -1393,7 +1418,7 @@
   // find the form button again (#5895).
   function setNoticeWithRetry(line, text, run) {
     if (!line) return;
-    line.textContent = text;
+    setNotice(line, text, "error");
     const retry = el("button", "council-notice-retry", "다시 시도");
     retry.type = "button";
     retry.addEventListener("click", () => {
@@ -1474,8 +1499,6 @@
       refFieldset.appendChild(el("legend", null, "참고 글"));
       pcSection = createPcReferenceSection();
       refFieldset.appendChild(pcSection.box);
-      refFieldset.appendChild(el("p", "council-pc-ref-help",
-        "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 예전 글을 가져옵니다."));
       form.appendChild(refFieldset);
 
       const primary = el("fieldset", "council-fieldset");
@@ -1589,6 +1612,7 @@
         savedList.appendChild(el("h3", null, "저장된 축사 원고"));
         if (!speechFiles.length) {
           savedList.appendChild(el("p", "council-empty", "저장된 축사가 없습니다."));
+          savedList.appendChild(el("p", "council-empty-hint", "초안을 만든 뒤 저장하면 여기 모입니다."));
           return;
         }
         const ul = document.createElement("ul");
@@ -1637,7 +1661,7 @@
       async function runGeneration() {
         if (busy) return;
         busy = true;
-        submitBtn.disabled = true;
+        const originalSubmitLabel = beginGeneration(submitBtn);
         failed = false;
         refreshSave();
         setNotice(notice, "생성 중…", "busy");
@@ -1659,7 +1683,7 @@
           if (!String(output.value || "").trim()) result.hidden = true;
         } finally {
           busy = false;
-          submitBtn.disabled = false;
+          endGeneration(submitBtn, originalSubmitLabel);
           refreshSave();
         }
       }
@@ -1708,11 +1732,11 @@
         const outcome = await saveCouncilText({
           pid, name: speechFileName(form), text, kind: "speech", anchor: saveBtn,
         });
-        saveBtn.textContent = "저장";
+        saveBtn.textContent = "내 기록에 저장";
         refreshSave();
         if (outcome.file) {
           saveBtn.textContent = "저장됨";
-          setTimeout(() => { saveBtn.textContent = "저장"; }, 1500);
+          setTimeout(() => { saveBtn.textContent = "내 기록에 저장"; }, 1500);
           setNotice(notice, "");
           await refreshSpeechList();
         } else if (outcome.failure) {
@@ -1787,8 +1811,6 @@
       refFieldset.appendChild(el("legend", null, "참고 글"));
       pcSection = createPcReferenceSection();
       refFieldset.appendChild(pcSection.box);
-      refFieldset.appendChild(el("p", "council-pc-ref-help",
-        "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 예전 글을 가져옵니다."));
       form.appendChild(refFieldset);
       const fields = [
         ["event", "행사명", "text", true, "예: 주민 정원 사업 설명회"],
@@ -1888,7 +1910,7 @@
 
       function photoNoteText() {
         if (platform === "blog") return "블로그는 각 사진을 본문 문단 사이에 삽입합니다. 미리보기에서 위치를 확인하세요.";
-        if (platform === "instagram") return "인스타그램은 사진을 별도 미디어로 첨부합니다(이미지 중심 미리보기).";
+        if (platform === "instagram") return "인스타그램은 사진을 글과 따로 올립니다. 미리보기에서 사진 순서를 확인하세요.";
         return "페이스북은 사진을 본문과 구분된 게시물 미디어로 첨부합니다.";
       }
 
@@ -2166,7 +2188,7 @@
       const previewBox = el("div", "council-sns-preview");
       previewBox.id = "councilSnsPreview";
       previewBox.hidden = true;
-      const editBtn = el("button", "council-sns-edit", "고치기");
+      const editBtn = el("button", "council-sns-edit council-result-action", "고치기");
       editBtn.type = "button";
       editBtn.id = "councilSnsEdit";
       const snsView = el("div", "council-sns-view");
@@ -2209,6 +2231,7 @@
         savedList.appendChild(el("h3", null, "저장된 SNS 글"));
         if (!drafts.length) {
           savedList.appendChild(el("p", "council-empty", "저장된 SNS 글이 없습니다."));
+          savedList.appendChild(el("p", "council-empty-hint", "초안을 만든 뒤 저장하면 여기 모입니다."));
           return;
         }
         const ul = document.createElement("ul");
@@ -2317,7 +2340,7 @@
       async function runGeneration() {
         if (busy) return;
         busy = true;
-        submitBtn.disabled = true;
+        const originalSubmitLabel = beginGeneration(submitBtn);
         failed = false;
         refreshSave();
         setNotice(notice, "생성 중…", "busy");
@@ -2344,7 +2367,7 @@
           }
         } finally {
           busy = false;
-          submitBtn.disabled = false;
+          endGeneration(submitBtn, originalSubmitLabel);
           refreshSave();
         }
       }
@@ -2396,11 +2419,11 @@
         const outcome = await saveCouncilText({
           pid, name: snsStoredName() + ".txt", text, kind: "sns", anchor: saveBtn,
         });
-        saveBtn.textContent = "저장";
+        saveBtn.textContent = "내 기록에 저장";
         refreshSave();
         if (outcome.file) {
           saveBtn.textContent = "저장됨";
-          setTimeout(() => { saveBtn.textContent = "저장"; }, 1500);
+          setTimeout(() => { saveBtn.textContent = "내 기록에 저장"; }, 1500);
           setNotice(notice, "");
           // The saved draft rides in the roster so re-entry restores the
           // text and its platform, not only the photos.
@@ -2491,6 +2514,7 @@
         pickLabel: "내 PC에서 회의 원문 가져오기",
         againLabel: "내 PC에서 더 가져오기",
         preview: false,
+        helpText: "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 회의 메모를 가져옵니다.",
         onAdded(entry) {
           const content = form.querySelector("[name=content]");
           if (!content) return;
@@ -2499,8 +2523,6 @@
         },
       });
       refFieldset.appendChild(pcSection.box);
-      refFieldset.appendChild(el("p", "council-pc-ref-help",
-        "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 회의 메모를 가져옵니다."));
       form.appendChild(refFieldset);
       const fields = [
         ["title", "회의명", "text", true, "예: 10월 주민 민원 회의"],
@@ -2557,7 +2579,7 @@
       async function runGeneration() {
         if (busy) return;
         busy = true;
-        submitBtn.disabled = true;
+        const originalSubmitLabel = beginGeneration(submitBtn);
         failed = false;
         refreshSave();
         setNotice(notice, "생성 중…", "busy");
@@ -2576,7 +2598,7 @@
           if (!String(output.value || "").trim()) result.hidden = true;
         } finally {
           busy = false;
-          submitBtn.disabled = false;
+          endGeneration(submitBtn, originalSubmitLabel);
           refreshSave();
         }
       }
@@ -2629,11 +2651,11 @@
         const outcome = await saveCouncilText({
           pid, name: name + ".txt", text: storedText, kind: "meeting", anchor: formSaveB,
         });
-        formSaveB.textContent = "저장";
+        formSaveB.textContent = "내 기록에 저장";
         refreshSave();
         if (outcome.file) {
           formSaveB.textContent = "저장됨";
-          setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
+          setTimeout(() => { formSaveB.textContent = "내 기록에 저장"; }, 1500);
           markSaved();
           setNotice(notice, "");
           await refreshArchive(archive);
@@ -2679,7 +2701,7 @@
         bookResult.appendChild(el("h3", null, "활동집 초안"));
         const bookOutput = document.createElement("textarea");
         bookOutput.id = "councilBookOutput";
-        bookOutput.rows = 16;
+        bookOutput.rows = 3;
         bookResult.appendChild(bookOutput);
         autoGrowResult(bookOutput);
         const bookNotice = noticeLine("councilBookNotice");
@@ -2687,7 +2709,7 @@
         const bookCopy = el("button", "council-primary", "복사");
         bookCopy.type = "button";
         bookCopy.id = "councilBookCopy";
-        const bookSave = el("button", "council-save", "활동집 저장");
+        const bookSave = el("button", "council-save", "내 기록에 저장");
         bookSave.type = "button";
         bookSave.id = "councilBookSave";
         const bookHwpx = el("button", null, "한글(HWPX)");
@@ -2705,6 +2727,7 @@
         bookPcSave.type = "button";
         bookPcSave.id = "councilBookPcSave";
         bookActions.append(bookCopy, bookSave, bookHwpx, bookDocx, bookDl, bookPcSave);
+        bookActions.querySelectorAll("button").forEach((button) => button.classList.add("council-result-action"));
         bookResult.appendChild(bookActions);
 
         const bookBtn = el("button", "council-generate", "선택 기록으로 활동집 초안 생성");
@@ -2712,9 +2735,10 @@
         bookBtn.id = "councilBookGenerate";
 
         arc.replaceChildren();
-        arc.appendChild(el("h3", null, "활동 기록"));
+        arc.appendChild(el("h3", null, "저장된 회의 기록"));
         if (!meetingFiles.length) {
           arc.appendChild(el("p", "council-empty", "저장된 회의 기록이 없습니다."));
+          arc.appendChild(el("p", "council-empty-hint", "초안을 만든 뒤 저장하면 여기 모입니다."));
         } else {
           const range = el("div", "council-book-period");
           const startLabel = el("label", null, "시작일 ");
@@ -2977,7 +3001,7 @@
             pid, name: bookFileName(text), text, kind: "book", anchor: bookSave,
           });
           bookSaving = false;
-          bookSave.textContent = "활동집 저장";
+          bookSave.textContent = "내 기록에 저장";
           refreshBookSave();
           if (!outcome.file) {
             if (outcome.failure) setNotice(bookNotice, saveFailureText(outcome.failure), "error");

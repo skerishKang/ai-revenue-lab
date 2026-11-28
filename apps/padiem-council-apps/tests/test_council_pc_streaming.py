@@ -24,7 +24,8 @@ def test_a_page_without_a_computer_says_so_calmly_and_offers_connect() -> None:
     # way to connect take its place. Nothing is styled as an error.
     assert obs["pickHidden"] is True
     assert obs["noteHidden"] is False
-    assert obs["note"] == "컴퓨터를 연결하면 예전 글을 가져올 수 있습니다."
+    # #8778 I-2: duplicate help texts were consolidated into the approved single sentence.
+    assert obs["note"] == "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 예전 글을 가져옵니다."
     assert obs["linkLabel"] == "컴퓨터 연결하기"
     assert obs["linkHref"] == "/#padiem-connectors"
     # No PC read is attempted just to show the sentence.
@@ -160,3 +161,19 @@ def test_the_pc_bridge_reuses_the_existing_pc_routes_only() -> None:
     assert 'versionedAsset("./static/pc-file-exchange.js")' in source
     # No second pairing screen: the connect link goes to the Chat Connectors page.
     assert 'COMPUTER_CONNECT_HREF = "/#padiem-connectors"' in source
+
+# #8778 A: the Node harness must observe in-flight disabled/aria-busy and restoration.
+def test_shipped_streaming_resets_the_busy_submit_button() -> None:
+    obs = run("streaming")
+    assert obs["during"] == {
+        "text": "생성 중…",
+        "disabled": True,
+        "busy": "true",
+        "spinner": 1,
+    }, obs
+    assert obs["completed"] == {
+        "text": "초안 생성",
+        "disabled": False,
+        "busy": "false",
+        "noticeTone": "success",
+    }, obs

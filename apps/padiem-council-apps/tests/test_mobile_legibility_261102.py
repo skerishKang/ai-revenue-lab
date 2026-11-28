@@ -296,10 +296,10 @@ def test_the_desktop_keeps_its_measured_values(static_url):
             value = page.evaluate(DESKTOP_PROBE)
         finally:
             browser.close()
-    # Measured on main before the phone pass; the phone block must not move
-    # any of these.
-    assert value["eyebrow"] == 11.5
-    assert value["worksEyebrow"] == 11.5
+    # #8778 H: tiny 11.5px eyebrows are intentionally raised to 13px on desktop.
+    # The phone's existing 14px floor remains intact.
+    assert value["eyebrow"] == 13
+    assert value["worksEyebrow"] == 13
     assert value["cardButton"] == 13.5
     assert value["cardTitle"] == 20
     assert value["heroTitle"] == 44

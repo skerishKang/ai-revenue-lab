@@ -117,10 +117,16 @@ def test_10_entry_width_and_result_columns(url):
             page.fill('#councilSpeechForm [name=event]', "넓은 화면 확인")
             page.click("#councilSpeechGenerate")
             page.wait_for_timeout(300)
+            # #8778 B: 2차 확정은 나란히 2단이 아니라 중앙 720px 한 단, 결과는 폼 아래.
             after = page.evaluate("""() => {const f=document.getElementById('councilSpeechForm').getBoundingClientRect();
               const r=document.getElementById('councilSpeechResult').getBoundingClientRect();
-              return {formRight:Math.round(f.right), resultLeft:Math.round(r.left), resultVisible:!document.getElementById('councilSpeechResult').hidden};}""")
-            assert after["resultVisible"] and after["resultLeft"] >= after["formRight"], after
+              return {formLeft:Math.round(f.left), formBottom:Math.round(f.bottom),
+                      resultTop:Math.round(r.top), resultLeft:Math.round(r.left),
+                      resultWidth:Math.round(r.width), resultVisible:!document.getElementById('councilSpeechResult').hidden};}""")
+            assert after["resultVisible"], after
+            assert abs(after["formLeft"] - after["resultLeft"]) <= 2, after
+            assert after["resultTop"] >= after["formBottom"] - 2, after
+            assert 600 <= after["resultWidth"] <= 722, after
         finally:
             page.close()
         browser.close()
@@ -193,12 +199,16 @@ def test_15_styles_are_visibly_distinct(url):
                   return {face:getComputedStyle(h).fontFamily.split(',')[0],
                           panel:getComputedStyle(document.documentElement).getPropertyValue('--panel').trim(),
                           cardBg:getComputedStyle(card).backgroundColor,
+                          cardBorder:getComputedStyle(card).borderTopWidth,
                           cardFilter:getComputedStyle(card).filter,
                           cardFont:getComputedStyle(card.querySelector('h2')).fontFamily.split(',')[0]};}""")
-            assert len({v["cardBg"] for v in seen.values()}) == 3, seen
+            # #8778 G: 미니멀 카드는 모던과 밝은 표면색을 공유하지만 1px 테두리로 구분한다.
+            assert len({v["cardBg"] for v in seen.values()}) >= 2, seen
+            assert float(seen["minimal"]["cardBorder"].replace("px","")) >= 1, seen
             classic = rgb(seen["classic"]["cardBg"])
             assert classic[0] > classic[1] > classic[2], ("paper tone", seen["classic"])
-            assert "grayscale" in seen["minimal"]["cardFilter"], seen["minimal"]
+            # #8778 G: 회색 필터가 버튼을 비활성처럼 보이게 하므로 제거했다.
+            assert seen["minimal"]["cardFilter"] == "none", seen["minimal"]
             assert seen["classic"]["cardFont"] != seen["modern"]["cardFont"], seen
         finally:
             page.close()

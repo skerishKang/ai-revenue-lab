@@ -70,7 +70,9 @@ def test_generation_aborts_after_300_seconds_and_never_prints_raw_json() -> None
 
 def test_the_generation_and_save_buttons_wait_for_the_answer() -> None:
     assert 'setNotice(notice, "생성 중…", "busy")' in JS
-    assert "submitBtn.disabled = true;" in JS
+    # #8778 A: the shared busy helper now owns disabled and aria-busy for every submit.
+    assert "beginGeneration(submitBtn)" in JS and "button.disabled = true;" in JS
+    assert "endGeneration(submitBtn, originalSubmitLabel)" in JS
     assert "saveBtn.disabled = busy || failed || !String(output.value || \"\").trim();" in JS
 
 
@@ -245,7 +247,8 @@ def test_the_screen_strings_are_korean() -> None:
     for english in ("PARLIAMENTARY AI STUDIO", "AI WORK TOOLS",
                     "PEOPLE &middot; DEMOCRACY", "TXT 다운로드"):
         assert english not in HTML + JS, english
-    assert "국회 AI 업무 스튜디오" in HTML and "AI 업무 도구" in HTML
+    # #8778 I-1: approved title intentionally replaces 국회 without changing other copy.
+    assert "의원실 AI 업무 스튜디오" in HTML and "AI 업무 도구" in HTML
     assert "한글(HWPX)" in JS and "워드(DOCX)" in JS and '"텍스트"' in JS
 
 
