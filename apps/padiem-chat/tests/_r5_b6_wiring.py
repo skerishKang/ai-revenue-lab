@@ -19,9 +19,20 @@ def create_block(app: str, start: int) -> str:
 
 def context_names(app: str) -> set[str]:
     import re
+    from pathlib import Path
     start = app.index("window.PadiemChatAppContext.create(")
     block = create_block(app, start)
-    return set(re.findall(r"\b(?:get|set) (\w+)\(", block))
+    names = set(re.findall(r"\b(?:get|set) (\w+)\(", block))
+    tail = app[start + app[start:].index(block) + len(block):]
+    if tail.lstrip().startswith(", {"):
+        owners = create_block(tail, 0)
+        context = (Path(__file__).resolve().parents[1] / "static/chat-app-context.js").read_text(encoding="utf-8")
+        table = create_block(context, context.index("const DEFERRED_API_NAMES"))
+        for owner in re.findall(r"\b(\w+):\s*\(\)\s*=>", owners):
+            match = re.search(r"\b" + owner + r":\s*\[([^]]*)\]", table)
+            if match:
+                names.update(re.findall(r'"(\w+)"', match[1]))
+    return names
 
 
 def create_receives_app_context(app: str, factory: str) -> str:

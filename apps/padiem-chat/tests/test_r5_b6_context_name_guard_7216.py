@@ -166,6 +166,52 @@ try { app5.provide("modE", { provide: () => {} }); } catch (e) { threw = e; }
 assert.ok(threw && /collides with a context-owned ref/.test(String(threw)), String(threw));
 checks.context_owned_ref_throws = true;
 
+// Shipped owner map: no eager evaluation, exact function identity and receiver.
+let creates = 0;
+let core;
+const app6 = window.PadiemChatAppContext.create({}, {core: () => {
+  if (!core) {
+    creates++;
+    core = app6.provide("core", {uiT: key => "translated:" + key});
+  }
+  return core;
+}});
+assert.equal(creates, 0);
+const inherited = Object.create(app6);
+const translate = inherited.uiT;
+assert.equal(creates, 1);
+assert.equal(translate("probe"), "translated:probe");
+assert.equal(inherited.uiT, core.uiT);
+assert.equal(app6.uiT, translate);
+assert.equal(creates, 1);
+const app7 = window.PadiemChatAppContext.create({}, {project: () => {throw Error("too early");}});
+assert.throws(() => app7.provide("wrong", {loadProjects() {}}), /duplicate name/);
+const app8 = window.PadiemChatAppContext.create({}, {project: () => {throw Error("too early");}});
+const project = {loadProjects: () => "loaded", renderProjectState: () => "rendered"};
+app8.provide("project", project);
+assert.equal(app8.loadProjects, project.loadProjects);
+assert.equal(app8.renderProjectState(), "rendered");
+// All three memory/run-history dependency groups must preserve identity.
+for (const [owner, names] of Object.entries({
+  core: ["uiT", "clawT", "mappedUiError"],
+  clawRun: ["downloadClawArtifact", "renderClawApprovalControls"],
+  conversation: ["approvedMemoryErrorMessage", "safeLocalUiMessage", "failureCodeNote"],
+})) {
+  let calls = 0, piece;
+  const expected = Object.fromEntries(names.map(name => [name, () => name]));
+  const context = window.PadiemChatAppContext.create({}, {[owner]: () => {
+    calls++;
+    return piece ||= context.provide(owner, expected);
+  }});
+  assert.equal(calls, 0);
+  const deps = Object.create(context);
+  for (const name of names) {
+    assert.equal(deps[name], expected[name]);
+    assert.equal(deps[name](), name);
+  }
+  assert.equal(calls, 1);
+}
+checks.deferred_owner_contract = true;
 console.log("RESULT_JSON " + JSON.stringify({ ok: true, checks }));
 """
 
@@ -184,5 +230,5 @@ def test_context_name_guard_in_node_vm() -> None:
     assert set(payload["checks"]) == {
         "duplicate_module_throws", "duplicate_name_throws",
         "outside_allowlist_throws", "allowlisted_name_shows_module_value",
-        "context_owned_ref_throws",
+        "context_owned_ref_throws", "deferred_owner_contract",
     }, payload["checks"]

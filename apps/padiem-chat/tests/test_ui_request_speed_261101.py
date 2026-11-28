@@ -279,7 +279,10 @@ def test_entry_restores_all_four_app_closure_states():
     from _r5_b6_wiring import create_block
     from _r5_function_source import app_source
     source = app_source()
-    shared = create_block(source, source.index("window.PadiemChatAppContext.create("))
+    start = source.index("window.PadiemChatAppContext.create(")
+    shared = create_block(source, start)
+    tail = source[start + source[start:].index(shared) + len(shared):]
+    owners = create_block(tail, 0)
     result = run_node(PRELUDE + """
 const window = {};
 const document = {getElementById(){return null}};
@@ -297,7 +300,7 @@ const coreModule=()=>({uiT:x=>x,setNote:x=>{throw Error(x)}});
 const sidebar={closeSidebar(){}};
 const runHistory={syncClawRunHistoryVisibility(){}};
 """ + read(STATIC / "chat-app-context.js") + """
-const app=window.PadiemChatAppContext.create(""" + shared + """);
+const app=window.PadiemChatAppContext.create(""" + shared + ", " + owners + """);
 app.provide('fixture', {ensureProject:projectModule.ensureProject,refreshActiveProjectFileCount:projectModule.refreshActiveProjectFileCount,clearAttachment(){},openClawWorkspace(){},showConversation(){},syncApprovedMemoryVisibility(){},resumeUnfinishedPcRun(){}});
 """ + read(STATIC / "chat-entry-module.js") + """
 const entry=app.provide('entry',window.PadiemChatEntryModule.create(app));
