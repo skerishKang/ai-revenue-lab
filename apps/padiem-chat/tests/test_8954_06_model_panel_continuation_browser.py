@@ -78,7 +78,8 @@ def test_tier_panel_signals_scroll_and_last_action_can_be_reached(browser, url, 
         assert "inset" in state["boxShadow"], (width, theme, state)
         if theme == "padiem-glass":
             assert re.fullmatch(r"rgb\([^)]*\)|rgba\([^)]*, 1\)", state["background"]), state
-            assert state["backgroundImage"] == "none", state
+            # A translucent frosted gradient over an opaque color still fully masks the page.
+            assert "linear-gradient" in state["backgroundImage"], state
         assert state["lastTop"] > state["bottom"], state
         # Reach the bottom action with native scrolling, never dispatch a synthetic click.
         panel.evaluate("el => { el.scrollTop = el.scrollHeight; }")

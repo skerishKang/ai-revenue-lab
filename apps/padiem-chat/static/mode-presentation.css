@@ -229,8 +229,10 @@ html[data-theme="padiem-home"] .mode-option {
  * popover treatment: that produced a nearly black island over the light home. */
 html[data-theme="padiem-glass"] .mode-presentation-panel {
   border-color: rgba(255, 255, 255, .72);
-  /* Existing opaque paper token prevents the home greeting from bleeding through. */
-  background: var(--calendar-paper);
+  /* Keep the existing frosted gradient; opaque paper behind it prevents bleed-through. */
+  background:
+    linear-gradient(155deg, rgba(252, 253, 254, .96), rgba(232, 238, 242, .92)),
+    var(--calendar-paper);
   color: var(--text-panel-ink);
   box-shadow:
     0 24px 70px rgba(24, 33, 42, .22),
