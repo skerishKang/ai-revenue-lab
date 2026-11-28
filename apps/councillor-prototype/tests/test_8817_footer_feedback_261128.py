@@ -16,6 +16,8 @@ CHROME = os.environ.get("B61_CHROME_PATH", r"C:\Program Files\Google\Chrome\Appl
 
 @pytest.fixture(scope="module")
 def site(tmp_path_factory):
+    if not Path(CHROME).is_file():
+        pytest.skip("Chrome unavailable")
     out = tmp_path_factory.mktemp("8817-dist")
     subprocess.run([sys.executable, "scripts/build-dist", "--out", str(out)],
                    cwd=ROOT, check=True)
