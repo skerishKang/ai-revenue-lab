@@ -59,6 +59,26 @@ def test_only_the_windows_install_sentence_is_offered():
         assert other not in source, other
 
 
+def test_the_offline_row_carries_its_own_reconnect_action():
+    # #8898: the reconnect action is its own module — the card stays under its
+    # #7216 size cap and the module only decorates the rows the card drew.
+    source = _read("pc-pairing-reconnect.js")
+    assert 'reconnect: "다시 연결"' in source
+    assert 'reconnect: "Reconnect"' in source
+    assert 'BUTTON_CLASS + " connector-retry"' in source
+    # The action reuses the card's one public connect flow; the module makes
+    # no API call of its own. The tooltip must not promise a remote wake-up.
+    assert "window.padiemPcPairing" in source and ".connect" in source
+    assert "/api/" not in source
+    help_copy = re.search(r'help: "([^"]+)"', source)
+    assert help_copy and "원격" not in help_copy.group(1), help_copy
+    # The card itself draws no reconnect button, and the page loads the module
+    # right after the card so the buttons land on the drawn rows.
+    assert "pc-pairing-reconnect" not in pc_pairing_card_js()
+    html = index_html()
+    assert html.index("./pc-pairing-reconnect.js") > html.index("./pc-pairing-card.js")
+
+
 def test_the_pairing_surface_is_the_only_thing_this_card_calls():
     source = pc_pairing_card_js()
     urls = set(re.findall(r'"(/[a-z0-9/_.-]+)"', source, re.IGNORECASE))
@@ -93,8 +113,10 @@ def test_the_harness_flow_passes_every_check():
     # #6695 PR-4's install controls, which appear only after a download and can
     # cancel the install or prepare a fresh file without ever holding the token,
     # plus the CTO's expired-card shape: no green downloaded line, only 다시 받기
-    # of the install buttons, and both back after a fresh file is downloaded.
-    assert output.count("PC_PAIRING_CARD_CHECK") == 46
+    # of the install buttons, and both back after a fresh file is downloaded —
+    # plus #8898's row-level 다시 연결 on exactly the offline row, reusing the
+    # one connect flow.
+    assert output.count("PC_PAIRING_CARD_CHECK") == 50
     assert "FAIL" not in output
 
 
