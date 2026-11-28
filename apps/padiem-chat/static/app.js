@@ -57,7 +57,7 @@
     set activeRequestCancelReason(value) { activeRequestCancelReason = value; },
     get activeRequestController() { return activeRequestController; },
     set activeRequestController(value) { activeRequestController = value; },
-    get advancedSettingsView() { return advancedSettingsView; },
+    get advancedSettingsView() { return settings.dom.advancedSettingsView; },
     get attachmentCopy() { return conversationModule().attachmentCopy; },
     get authDialog() { return authDialog; },
     get authDialogView() { return authDialogView; },
@@ -140,7 +140,7 @@
     get setClawButtonsBusy() { return clawStatusModule().setClawButtonsBusy; },
     get setClawStatus() { return clawStatusModule().setClawStatus; },
     get setNote() { return coreModule().setNote; },
-    get settingsButton() { return settingsButton; },
+    get settingsButton() { return settings.dom.settingsButton; },
     get syncAuthDialogMethods() { return loginDialogModule().syncAuthDialogMethods; },
     get syncClawRunHistoryVisibility() { return runHistory.syncClawRunHistoryVisibility; },
     get updateComposer() { return conversationModule().updateComposer; },
@@ -173,7 +173,7 @@
   const settings = app.provide("settings",
     window.PadiemChatSettingsModule.create(Object.setPrototypeOf({
 
-      get settingsDialog() { return settingsDialog; },
+      get settingsDialog() { return settings.dom.settingsDialog; },
 
 }, app)));
   function settingsModule() { return settings; }
@@ -366,8 +366,7 @@
   const sendButton = document.getElementById("sendButton");
   const cancelStreamButton = document.getElementById("cancelStreamButton");
   const newChatButton = document.getElementById("newChatButton");
-  const settingsButton = document.getElementById("settingsButton");
-  const settingsDialog = document.getElementById("settingsDialog");
+  settings.captureDialogElements();
   const accountSettingsSection = document.getElementById("accountSettingsSection");
   const settingsAccountEmail = document.getElementById("settingsAccountEmail");
   const advancedAccountSection = document.getElementById("advancedAccountSection");
@@ -932,7 +931,7 @@
 
   // R5 B7: openSettings·closeSettings·openAdvancedSettingsView·
   // closeAdvancedSettingsView are on the registry (provide("settings")).
-  const advancedSettingsView = document.getElementById("advancedSettingsView");
+  settings.captureAdvancedView();
   // The full page opens on top of the screen the user came from (home, chat or
   // claw). Its back entry must return there instead of assuming home.
   // #7812 R5 B5 (rule (b)): settings module registers this at the original spot.
