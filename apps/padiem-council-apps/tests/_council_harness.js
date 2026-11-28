@@ -1752,7 +1752,11 @@ const SCENARIOS = {
     await sleep(60);
     const choice = s.root.querySelectorAll(".council-save-as-new")[0];
     const choiceLabel = choice ? text(choice) : "";
-    const saveChoiceText = s.root.querySelectorAll(".council-save-choice-text").map((n) => text(n));
+    const saveChoiceText = s.root.querySelectorAll(".council-save-choice-text").map((n) => deepText(n));
+    const choiceHasCancel = s.root.querySelectorAll(".council-save-cancel").length > 0;
+    const saveLabelWhileChoice = text(save);
+    const filenameToken = s.root.querySelectorAll(".council-save-file-name")[0];
+    const filenameTitle = filenameToken ? filenameToken.getAttribute("title") : null;
     if (choice) { await choice.dispatch("click"); await sleep(60); }
     const afterNew = storedFiles.map((f) => f.name);
 
@@ -1765,6 +1769,16 @@ const SCENARIOS = {
     if (overwriteAgain) { await overwriteAgain.dispatch("click"); await sleep(60); }
     const afterOverwrite = storedFiles.map((f) => ({ id: f.id, name: f.name, text: f.text }));
 
+    // Cancellation is a real third choice: no new file and no overwrite.
+    const beforeCancel = JSON.stringify(storedFiles);
+    find(s, "councilSpeechOutput").value = "취소 검증 본문";
+    void save.dispatch("click");
+    await sleep(60);
+    const cancelButton = s.root.querySelectorAll(".council-save-cancel")[0];
+    if (cancelButton) { await cancelButton.dispatch("click"); await sleep(60); }
+    const cancelLeavesFilesUnchanged = beforeCancel === JSON.stringify(storedFiles);
+    const cancelRemovesChoice = s.root.querySelectorAll(".council-save-choice").length === 0;
+
     // a save the server refuses says so on the notice line
     find(s, "councilSpeechOutput").value = "저장 실패 문구 검증";
     saveFailureOverride = json({ error: { code: "unavailable", message: "저장소가 잠시 응답하지 않습니다." } }, 503);
@@ -1774,7 +1788,9 @@ const SCENARIOS = {
     const failureTone = find(s, "councilSpeechNotice").dataset.tone || "";
     const failureDisabled = save.disabled;
 
-    return { firstName, choiceLabel, saveChoiceText, afterNew, beforeIds,
+    return { firstName, choiceLabel, saveChoiceText, choiceHasCancel,
+             saveLabelWhileChoice, filenameTitle, cancelLeavesFilesUnchanged,
+             cancelRemovesChoice, afterNew, beforeIds,
              afterOverwrite, failureNotice, failureTone, failureDisabled,
              endpoints: endpointSet(), alerts, pageErrors };
   },
