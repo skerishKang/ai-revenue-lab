@@ -122,7 +122,7 @@ main { flex: 1 0 auto; }
 }
 .top-nav a:hover { opacity: 1; color: var(--accent-2-text); }
 .top-nav a.active { opacity: 1; font-weight: 700; border-bottom-color: var(--accent-text); }
-.top-actions { display: flex; align-items: center; gap: 10px; }
+.top-actions, .top-actions-frame { display: flex; align-items: center; gap: 10px; }
 .ghost {
   display: inline-flex; align-items: center; justify-content: center; min-height: var(--tap);
   background: transparent; border: 1px solid var(--border); color: var(--text);
@@ -142,6 +142,7 @@ html[data-text-size="large"] .text-size-label-large { display: inline; }
 html[data-text-size="large"] .icon-text-large { display: none; }
 @media (max-width: 480px) {
   .topbar { gap: 8px; padding: 0 12px; }
+  .top-cta { display: none; }
   .top-actions { gap: 8px; }
   .topbar .ghost { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; }
   .topbar .header-label { display: none !important; }
@@ -402,15 +403,15 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 }
 .footer-nav a:hover { color: var(--paper); text-decoration: underline; }
 .footer-note { width: 100%; margin: 4px 0 0; font-size: var(--fs-label); color: rgba(245, 241, 232, 0.58); line-height: 1.6; }
-/* ── shared components kept for the inner pages ───────────────────────── */.intro-grid { display: grid; grid-template-columns: 5fr 4fr; gap: 56px; align-items: start; }
-.intro-photo { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); background: var(--bg-soft); }
-.intro-bio p { color: var(--muted); margin: 0 0 16px; font-size: var(--fs-body); }
+/* ── shared components kept for the inner pages ───────────────────────── */.intro-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 48px; align-items: start; }
+.intro-photo { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); background: var(--ivory); }
+.intro-bio p { color: var(--text); margin: 0 0 16px; font-size: calc(var(--fs-body) * 1.0625); line-height: 1.75; max-width: 40em; }
 .profile-list { margin: 0; padding: 0; }
 .profile-list > div { padding: 12px 0; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 130px 1fr; gap: 12px; }
 .profile-list dt { font-size: var(--fs-label); color: var(--accent-2-text); margin: 0; font-weight: 700; letter-spacing: 0.04em; }
 .profile-list dd { margin: 0; font-size: var(--fs-body); }
 .profile-list dd a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2-text); font-weight: 600; }
-.intro-video { margin-top: 32px; }
+.intro-video { margin-top: 32px; max-width: 880px; }
 .intro-video video { width: 100%; aspect-ratio: 16 / 9; display: block; border-radius: var(--radius-sm); background: #000; }
 .intro-video-title { font-family: var(--font-serif); font-size: 18px; margin: 10px 0 0; }
 .activity-toolbar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
@@ -631,7 +632,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 @media (max-width: 900px) {
 .top-nav { display: none; }
 .section-head { grid-template-columns: 1fr; gap: 8px; }
-.intro-grid { grid-template-columns: 1fr; gap: 32px; }
+.intro-grid { grid-template-columns: 280px minmax(0, 1fr); gap: 32px; }
 .media-grid { grid-template-columns: 1fr 1fr; }
 .card-grid, .policy-grid { grid-template-columns: 1fr; }
 .activity-item { grid-template-columns: 1fr; gap: 6px; }
@@ -667,6 +668,10 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 
 
 }
+@media (max-width: 720px) {
+.intro-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+.intro-photo { width: min(100%, 288px); max-height: 360px; justify-self: center; }
+}
 @media (max-width: 760px) {
 :root {
     --gutter: 20px;
@@ -674,7 +679,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
     --hero-image: url("./images/hero-panorama-mobile.webp");
   }
 .brand-tagline { display: none; }
-.top-cta { display: none; }
+/* The shared activity link stays visible until icon-only mode at 480px. */
 /* The stacked hero arrives from the 900px block above; phones only re-size it. */.hero-portrait {
     /* The face must stay whole and large enough to read at 360–430px. Height scales with
        the viewport and the width cap leaves the gutter clear, so the head can never be

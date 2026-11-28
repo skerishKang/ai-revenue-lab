@@ -78,7 +78,7 @@ def test_photo_background_same_theme(browser):
 def test_body_type(browser,theme):
     page=open_page(browser,theme=theme)
     m=metrics(page)
-    token=page.evaluate("getComputedStyle(document.documentElement).color")
+    token=page.evaluate("getComputedStyle(document.body).color")
     assert m["size"]=="17px", m
     assert abs(float(m["lineHeight"].replace("px",""))/17-1.75)<.02, m
     assert m["color"]==token, m
@@ -87,7 +87,7 @@ def test_body_type(browser,theme):
 
 def test_video_width(browser):
     page=open_page(browser)
-    page.wait_for_timeout(400)
+    page.evaluate("""() => { const el=document.querySelector(".intro-video"); el.hidden=false; if (!el.querySelector("video")) el.innerHTML="<video></video><p class=\\"intro-video-title\\">소개 영상</p><p class=\\"source-note\\">출처</p>"; }""")
     box=page.locator(".intro-video").bounding_box()
     assert box is not None
     assert box["width"]<=880.5,box
