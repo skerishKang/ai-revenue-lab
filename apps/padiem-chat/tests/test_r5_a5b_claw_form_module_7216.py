@@ -47,21 +47,21 @@ def test_index_loads_form_module_once_between_run_module_and_app() -> None:
     assert run_at < form_at < app_at
 
 
-def test_app_keeps_only_the_factory_and_two_wire_calls() -> None:
-    assert "function clawFormModule() {" in APP
+def test_app_keeps_only_the_factory_and_three_wire_calls() -> None:
+    assert 'app.provide("clawForm",' in APP
     assert "window.PadiemChatClawFormModule.create(Object.setPrototypeOf({" in APP
-    assert APP.count("clawFormModule().wireModeChips({ set clawLastAction(value) { clawLastAction = value; } });") == 1
-    assert APP.index("navModuleInstance.wireNavEntryListeners();") < APP.index("clawFormModule().wireModeChips(") < APP.index("navModuleInstance.setNavActive();", APP.index("clawFormModule().wireModeChips(")) < APP.index("clawFormModule().wireManualForm();")
-    assert APP.count("clawFormModule().wireManualForm();") == 1
-    assert APP.count("clawFormModule().wireExecuteControls();") == 1
+    assert APP.count("clawForm.wireModeChips();") == 1
+    assert APP.index("navModuleInstance.wireNavEntryListeners();") < APP.index("clawForm.wireModeChips(") < APP.index("navModuleInstance.setNavActive();", APP.index("clawForm.wireModeChips(")) < APP.index("clawForm.wireManualForm();")
+    assert APP.count("clawForm.wireManualForm();") == 1
+    assert APP.count("clawForm.wireExecuteControls();") == 1
     # Wire calls stay at the original registration positions: the form wires
     # before the locale-change listener, the execute controls after the initial
     # area state.
-    assert APP.index("clawFormModule().wireManualForm();") < APP.index(
+    assert APP.index("clawForm.wireManualForm();") < APP.index(
         "// Keep preview/execute hints in sync with locale switches"
     )
     assert APP.index('setClawAreaState("idle");') < APP.index(
-        "clawFormModule().wireExecuteControls();"
+        "clawForm.wireExecuteControls();"
     )
 
 
@@ -81,7 +81,8 @@ def test_deps_getters_match_the_exact_closure_surface() -> None:
     assert gets <= EXPECTED_GETTERS
     assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
     assert sets == set()
-    assert "set clawLastAction(value) { clawLastAction = value; }" in APP
+    assert 'clawForm.initializeAction(clawAction?.value || "quote");' in APP
+    assert "let clawLastAction" not in APP
 
 
 def test_listeners_drive_preview_execute_and_retry_in_node_vm() -> None:
@@ -114,7 +115,6 @@ const el = () => ({
 const clawManualForm = el();
 const chips = ["quote", "order", "reply", "summary"].map(action => Object.assign(el(), {dataset: {clawAction: action}}));
 clawManualForm.querySelectorAll = selector => { assert.equal(selector, ".claw-chip[data-claw-action]"); return chips; };
-let lastAction = "quote";
 const clawResultDocx = el();
 const clawResultCard = el();
 const clawResultEmpty = el();
@@ -177,13 +177,13 @@ const empty = ctx.window.PadiemChatClawFormModule.create(ctx.r5StrictDeps({}, "e
 assert.equal(typeof empty.wireManualForm, "function");
 assert.equal(typeof empty.wireExecuteControls, "function");
 
-mod.wireModeChips({set clawLastAction(value) {lastAction = value;}});
+mod.initializeAction("quote");
+mod.wireModeChips();
 for (const chip of chips) {
   assert.deepEqual(Object.keys(chip.listeners), ["click"]);
   assert.equal(chip.listeners.click.length, 1);
   chip.fire("click");
   assert.equal(clawAction.value, chip.dataset.clawAction);
-  assert.equal(lastAction, chip.dataset.clawAction);
   for (const other of chips) assert.equal(other.attrs["aria-pressed"], other === chip ? "true" : "false");
 }
 assert.equal(input.focused, 4);

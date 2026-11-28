@@ -1114,7 +1114,16 @@
   const clawExecuteHint = document.getElementById("clawExecuteHint");
 
   let clawInFlight = false;
-  let clawLastAction = clawAction?.value || "quote";
+  const clawForm = app.provide("clawForm",
+    window.PadiemChatClawFormModule.create(Object.setPrototypeOf({
+      get clearClawArtifact() { return clawRun.clearClawArtifact; },
+      get renderClawRequestEcho() { return clawRun.renderClawRequestEcho; },
+      get revealClawCard() { return clawRun.revealClawCard; },
+      get runClawExecution() { return clawRun.runClawExecution; },
+      get noteClawContentEdited() { return clawStatusModule().noteClawContentEdited; },
+      get app() { return app; },
+    }, app)));
+  clawForm.initializeAction(clawAction?.value || "quote");
   let clawLastDispatchKey = "";
   // In-flight elapsed wait state (#2763). Owned by the wait block below.
   let clawWaitStartedAt = 0;
@@ -1213,26 +1222,6 @@
   // gone and callers reach the same methods through the registry piece.
   function clawRunModule() { return clawRun; }
 
-  // #7216 R5 A5b (claw-form): the manual form submit/preview handler and the
-  // execute/retry control wiring live in chat-claw-form-module.js. app.js keeps
-  // the declaration block and calls the wire functions at the original
-  // registration positions; deps getters read the closure variables live.
-  let clawFormModuleInstance = null;
-  function clawFormModule() {
-    if (!clawFormModuleInstance) {
-      clawFormModuleInstance = window.PadiemChatClawFormModule.create(Object.setPrototypeOf({
-
-        get clearClawArtifact() { return clawRun.clearClawArtifact; },
-        get renderClawRequestEcho() { return clawRun.renderClawRequestEcho; },
-        get revealClawCard() { return clawRun.revealClawCard; },
-        get runClawExecution() { return clawRun.runClawExecution; },
-        get noteClawContentEdited() { return clawStatusModule().noteClawContentEdited; },
-        get app() { return app; },
-      
-  }, app));
-    }
-    return clawFormModuleInstance;
-  }
 
 
   automationForm.wireEditListeners();
@@ -1317,11 +1306,11 @@
   // entry bar (#3531 keeps the workspace canvas hidden in general/manual
   // views, so the entry lives beside the manual-entry control instead).
   // In-conversation run status/results are unchanged.
-  clawFormModule().wireModeChips({ set clawLastAction(value) { clawLastAction = value; } });
+  clawForm.wireModeChips();
   navModuleInstance.setNavActive();
 
 
-  clawFormModule().wireManualForm();
+  clawForm.wireManualForm();
 
   // Keep preview/execute hints in sync with locale switches (data-locale-key auto-syncs static text,
   // but status and dynamic card chrome need manual refresh when language toggles).
@@ -1385,7 +1374,7 @@
   clawRun.clearClawArtifact();
 
 
-  clawFormModule().wireExecuteControls();
+  clawForm.wireExecuteControls();
 
   // R5 A2: the approved-memory module owns its declarations (rule (a)) and
   // wires its refresh listener here at the original position (rule (b)).

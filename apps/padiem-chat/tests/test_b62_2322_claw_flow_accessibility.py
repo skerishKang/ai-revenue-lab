@@ -129,4 +129,4 @@ def test_action_chip_semantics_unchanged() -> None:
     assert INDEX.count('data-claw-action=') >= 4
     assert 'aria-pressed="false"' in INDEX
     assert 'other.setAttribute("aria-pressed"' in CLAW_FORM
-    assert 'clawFormModule().wireModeChips(' in APP
+    assert 'clawForm.wireModeChips(' in APP
