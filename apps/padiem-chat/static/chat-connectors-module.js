@@ -30,8 +30,7 @@
         "connector:google:calendar@1",
       ]);
       let connectorStatusInFlight = false;
-      // Bound both the status fetch and JSON body read; a hung response must
-      // never leave the Connectors cards in 'checking' indefinitely.
+      // One deadline bounds both the status GET and JSON body read.
       const CONNECTOR_STATUS_TIMEOUT_MS = 10000;
       // Standalone-page mount flag (R5 A9): the let sat with the moved
       // mountConnectorsView body; the module owns it as create-scoped state.
@@ -274,14 +273,10 @@
             return;
           }
           const supportKey = connectorSupportKey(row.read_availability);
-          // #8948: no trusted Telegram/Slack status reader is NOT proof of
-          // never connected. Keep server state "unverified" and let the tile
-          // show the existing "준비 중" copy only for this closed reason.
-          // Other unverified reasons remain check failures in the tile.
+          // #8948: no trusted reader is neutral, never evidence of disconnection.
           const noTrustedProjection =
             (connectorId === "connector:telegram:bot@1" || connectorId === "connector:slack:workspace@1") &&
-            row.workspace_state === "unverified" &&
-            row.workspace_reason === "no_trusted_b62_workspace_state_projection";
+            row.workspace_state === "unverified" && row.workspace_reason === "no_trusted_b62_workspace_state_projection";
           if (noTrustedProjection) card.dataset.connectorDisplay = "unverified";
           else delete card.dataset.connectorDisplay;
           const workspaceKey = connectorWorkspaceKey(row.workspace_state);
