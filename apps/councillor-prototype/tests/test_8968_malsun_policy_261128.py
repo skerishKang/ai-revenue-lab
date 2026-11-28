@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-"""#8968 말순 4회차: 검색 초점·조례안 풀이·원문 이름·새 소식 회귀."""
+"""#8968 말순 4회차: 브라우저 동작과 무자바스크립트 정적 계약."""
 from __future__ import annotations
 
 import http.server
+from html import escape
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -11,10 +13,19 @@ import sys
 import threading
 
 import pytest
-from playwright.sync_api import sync_playwright
+
+try:
+    from playwright.sync_api import sync_playwright
+except ImportError:
+    sync_playwright = None
 
 ROOT = Path(__file__).resolve().parents[1]
-CHROME = Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+CHROME = next((
+    Path(value) for value in (
+        os.environ.get("B61_CHROME_PATH"),
+        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+    ) if value and Path(value).is_file()
+), None)
 TERMS = {
     "대표발의": "의원이 앞장서 낸 조례안",
     "원안가결": "낸 그대로 통과됨",
@@ -24,12 +35,18 @@ NEWS_LINE = "정책자료 조례안 말에 쉬운 풀이를 붙이고, '조례�
 
 
 @pytest.fixture(scope="module")
-def site():
-    assert CHROME.is_file(), "실제 Chrome으로 확인해야 합니다"
+def dist():
     subprocess.run([sys.executable, str(ROOT / "scripts" / "build-dist")], check=True)
+    return ROOT / "dist"
+
+
+@pytest.fixture(scope="module")
+def site(dist):
+    if sync_playwright is None or CHROME is None:
+        pytest.skip("계약 CI는 정적 검증, Chrome이 있는 브라우저 환경에서 동작 검증")
     class QuietHandler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):
-            super().__init__(*args, directory=str(ROOT / "dist"), **kwargs)
+            super().__init__(*args, directory=str(dist), **kwargs)
         def log_message(self, *args):
             pass
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), QuietHandler)
@@ -85,51 +102,58 @@ def test_policy_bill_chip_moves_focus_to_visible_search_field(site):
         page.close()
 
 
-def test_policy_bill_terms_are_exact_and_prerendered(site):
+def test_policy_bill_terms_data_and_static_prerender(dist):
     data = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))
     assert data["policy"]["glossary"]["terms"] == TERMS
+    html = (dist / "policy.html").read_text(encoding="utf-8")
+    assert '<div class="activity-terms" id="policyBillTerms" role="note"' in html
+    assert html.index('id="billSearch"') < html.index('id="policyBillTerms"') < html.index('id="policyBills"')
+    contents = html.split('id="policyBillTerms"', 1)[1].split("</div>", 1)[0]
+    assert contents.count("<p>") == 3
+    positions = [contents.index(f"<p><b>{term}</b> — {meaning}</p>") for term, meaning in TERMS.items()]
+    assert positions == sorted(positions)
+
+
+def test_bill_terms_visible_without_javascript(site):
     page = open_page(site, "policy.html", javascript=False)
     try:
-        glossary = page.locator("#policyBillTerms")
-        assert "activity-terms" in (glossary.get_attribute("class") or "")
-        assert glossary.locator("p").all_text_contents() == [
+        assert page.locator("#policyBillTerms p").all_text_contents() == [
             f"{term} — {meaning}" for term, meaning in TERMS.items()
         ]
-        assert page.evaluate("""() => {
-          const g = document.querySelector('#policyBillTerms');
-          const b = document.querySelector('#policyBills');
-          return !!g && !!b && !!(g.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
-        }""")
     finally:
         page.close()
 
 
-def test_all_visible_source_links_use_council_original_label(site):
+def test_all_built_source_links_use_council_original_label(dist):
     for name in ("index.html", "activity.html", "policy.html", "media.html", "about.html", "news.html", "404.html"):
-        html = (ROOT / "dist" / name).read_text(encoding="utf-8")
+        html = (dist / name).read_text(encoding="utf-8")
         assert not re.search(r">\s*원문 보기(?:\s*↗)?\s*<", html), name
-    policy = open_page(site, "policy.html")
-    media = open_page(site, "media.html", width=390, height=844)
+    assert "의회 원문 보기" in (dist / "policy.html").read_text(encoding="utf-8")
+    for name in ("index.html", "media.html"):
+        assert ">의회 원문 보기 ↗</a>" in (dist / name).read_text(encoding="utf-8")
+    assert "공식 페이지 보기" in (dist / "activity.html").read_text(encoding="utf-8")
+
+
+def test_photo_lightbox_updates_link_and_accessible_name(site):
+    page = open_page(site, "media.html", width=390, height=844)
     try:
-        assert "의회 원문 보기" in policy.locator("#policyForums").inner_text()
-        assert "공식 페이지 보기" in (ROOT / "dist" / "activity.html").read_text(encoding="utf-8")
-        media.locator(".media-tile").nth(1).click()
-        media.locator("#mediaLightbox[open]").wait_for()
-        assert media.locator("#lightboxLink").inner_text() == "의회 원문 보기 ↗"
-        assert media.locator("#lightboxLink").get_attribute("aria-label") == "의회 원문 보기 (새 탭)"
+        page.locator(".media-tile").nth(1).click()
+        page.locator("#mediaLightbox[open]").wait_for()
+        assert page.locator("#lightboxLink").inner_text() == "의회 원문 보기 ↗"
+        assert page.locator("#lightboxLink").get_attribute("aria-label") == "의회 원문 보기 (새 탭)"
     finally:
-        policy.close()
-        media.close()
+        page.close()
 
 
-def test_november_28_news_last_change_is_exact(site):
-    data = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))
+def test_november_28_news_last_change_is_exact_in_data_and_html(dist):
+    source = (ROOT / "static" / "miraen.json").read_bytes()
+    assert b"\r\n" not in source
+    assert bytes.fromhex("EFBFBD") not in source
+    assert not source.startswith(bytes.fromhex("EFBBBF"))
+    data = json.loads(source)
     entry = next(item for item in data["news"] if item["date"] == "2026-11-28")
     assert entry["changes"][-1] == NEWS_LINE
-    page = open_page(site, "news.html", javascript=False)
-    try:
-        article = page.locator("#siteChangeList .site-change").first
-        assert article.locator("time").get_attribute("datetime") == "2026-11-28"
-        assert article.locator("li").last.inner_text() == NEWS_LINE
-    finally:
-        page.close()
+    html = (dist / "news.html").read_text(encoding="utf-8")
+    first = html.split('<article class="info-card site-change">', 1)[1].split("</article>", 1)[0]
+    assert '<time datetime="2026-11-28">' in first
+    assert f"<li>{escape(NEWS_LINE, quote=True)}</li>" in first
