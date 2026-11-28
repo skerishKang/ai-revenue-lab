@@ -43,6 +43,7 @@ from _android_handoff_storage_guard import assert_session_storage_is_handoff_onl
 # 시험은 파싱 값(id·role·로케일 키 집합)과 계산 값(카운트·순서)·부재 금지
 # 경계를 단언한다. 이 모듈은 원문 read를 갖지 않는다.
 from _support import claw_static
+from _support.app_factory_modules import factory_area_source
 from _support.html_tags import tags_for_page
 
 # R5 0단계(R-01): 함수 선언은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
@@ -126,7 +127,7 @@ def test_consumes_the_existing_owner_scoped_route_without_new_authority() -> Non
     assert app.count("/api/claw/manual-intake/artifact/") == 1
     routes = claw_static.server_source("claw_routes")
     assert "async def claw_runs_history(request: Request)" in routes
-    factory = claw_static.server_source("app_factory")
+    factory = factory_area_source()
     # Reuses the existing route registration unchanged: no second run route.
     assert factory.count('/api/claw/runs"') == 1
     assert 'Route("/api/claw/runs", claw_runs_history, methods=["GET"])' in factory

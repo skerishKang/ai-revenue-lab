@@ -27,6 +27,7 @@ from starlette.datastructures import MutableHeaders, State
 from starlette.requests import Request
 
 from app.auth import SESSION_COOKIE, create_session_token
+from _support.app_factory_modules import factory_area_source
 from app.claw_local_office_binary_reader import OFFICE_CHUNK_BYTES, VerifiedOfficeBinary
 from app.claw_office_preview_routes import (
     OFFICE_OUTPUTS_QUERY_PATH, OFFICE_PDF_PREVIEW_PATH, OFFICE_XLSX_DOWNLOAD_PATH,
@@ -306,9 +307,7 @@ def test_the_web_return_added_no_authority_and_enabled_nothing():
 
 
 def test_both_routes_are_registered_and_the_owner_read_surface_stays_bounded():
-    factory = (Path(__file__).resolve().parents[1] / "app" / "app_factory.py").read_text(
-        encoding="utf-8"
-    )
+    factory = factory_area_source()
     for template, handler in (
         ("OFFICE_XLSX_DOWNLOAD_PATH", "claw_office_xlsx_download"),
         ("OFFICE_OUTPUTS_QUERY_PATH", "claw_office_outputs_query"),

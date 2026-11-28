@@ -14,6 +14,7 @@ from starlette.routing import Route
 from starlette.testclient import TestClient
 
 from app.claw_artifact_preview_routes import claw_artifact_inline_preview
+from _support.app_factory_modules import factory_area_source
 from app.workspace_storage import WorkspaceStorageAccessError
 
 ID = "doc_" + "b" * 32
@@ -150,7 +151,7 @@ def test_invalid_artifact_id_fails_before_storage():
 def test_no_new_storage_authority_and_download_route_unchanged():
     root = Path(__file__).resolve().parents[1] / "app"
     preview = (root / "claw_artifact_preview_routes.py").read_text(encoding="utf-8")
-    app = (root / "app_factory.py").read_text(encoding="utf-8")
+    app = factory_area_source()
     assert 'from .claw_routes import _owns_generated_document, _resolve_canonical_owner' in preview
     assert 'tenant_id=tenant, document_id=document_id, user_id=product_user_id' in preview
     assert 'Route("/api/claw/manual-intake/artifact/{document_id}", claw_manual_intake_artifact' in app

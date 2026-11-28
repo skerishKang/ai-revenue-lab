@@ -22,7 +22,8 @@ def claw_general_routes_source() -> str:
 
 
 def app_factory_source() -> str:
-    return _shipped("app/app_factory.py")
+    from _support.app_factory_modules import factory_area_source
+    return factory_area_source()
 
 
 def app_js_source() -> str:

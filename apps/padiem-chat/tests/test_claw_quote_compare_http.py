@@ -20,6 +20,7 @@ from starlette.testclient import TestClient
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.app_factory import create_app
+from _support.app_factory_modules import factory_area_source
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.control_plane_identity import PADIEM_CHAT_PRODUCT_ID
@@ -541,9 +542,7 @@ class TestRouteSourceBoundary:
         )
 
     def test_registered_route_path_is_the_manual_intake_family(self) -> None:
-        factory = (Path(__file__).resolve().parents[1] / "app" / "app_factory.py").read_text(
-            encoding="utf-8"
-        )
+        factory = factory_area_source()
         assert factory.count('"/api/claw/manual-intake/quote-compare"') == 1
         assert "claw_manual_intake_quote_compare" in factory
         assert 'Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"])' in factory

@@ -105,6 +105,18 @@ def test_extracted_b66_route_scanner_reads_real_owner(tmp_path, monkeypatch) -> 
     assert contract.findings() == [], "B66 is not on the platform app route allowlist"
 
 
+def test_extracted_claw_route_scanner_reads_real_owner(tmp_path, monkeypatch) -> None:
+    owner = contract._read(contract.APP_FACTORY_CLAW)
+    route = 'Route("/api/claw/general", claw_general_execute, methods=["POST"])'
+    assert route in owner, "the real Claw route owner must contain this registration"
+    assert tuple(contract._registered_methods("/api/claw/general")) == ("POST",)
+    without = owner.replace(route, 'Route("/removed/claw", claw_general_execute, methods=["POST"])', 1)
+    assert without != owner
+    swap(monkeypatch, "APP_FACTORY_CLAW", without, tmp_path)
+    assert tuple(contract._registered_methods("/api/claw/general")) == ()
+    assert contract.findings() == [], "Claw does not widen the app platform route allowlist"
+
+
 def test_work_scopes_are_routing_labels_and_an_unknown_one_is_refused(tmp_path, monkeypatch) -> None:
     real = contract._read(contract.REQUEST_CONTRACT)
     assert "grants no identity, tier" in real or "not an authentication input" in real
