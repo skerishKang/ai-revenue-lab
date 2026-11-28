@@ -176,3 +176,72 @@ def test_collision_choice_resets_label_has_cancel_and_filename_title():
     assert obs["choiceHasCancel"] is True, obs
     assert obs["filenameTitle"] == obs["firstName"][0], obs
     assert obs["cancelLeavesFilesUnchanged"] and obs["cancelRemovesChoice"], obs
+
+# #8945 CTO follow-up: mobile topbar sits on a solid page background.
+# Read the actual browser-computed colors, including alpha backgrounds.
+import re
+
+
+def _rgba(css_color):
+    css_color = css_color.strip().lower()
+    if css_color == "transparent":
+        return (0.0, 0.0, 0.0, 0.0)
+    nums = [float(n) for n in re.findall(r"[-+]?(?:\d*\.)?\d+", css_color)]
+    if css_color.startswith("color(srgb"):
+        assert len(nums) >= 3, css_color
+        return (*nums[:3], nums[3] if len(nums) > 3 else 1.0)
+    if css_color.startswith(("rgb(", "rgba(")):
+        assert len(nums) >= 3, css_color
+        return (*(x / 255 for x in nums[:3]), nums[3] if len(nums) > 3 else 1.0)
+    raise AssertionError(f"unknown computed browser color: {css_color}")
+
+
+def _onto(foreground, background):
+    alpha = foreground[3]
+    return tuple(alpha * foreground[i] + (1.0 - alpha) * background[i] for i in range(3))
+
+
+def _contrast(text_color, surface_color):
+    def lum(rgb):
+        def c(v):
+            return v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
+        return sum(weight * c(v) for weight, v in zip((0.2126, 0.7152, 0.0722), rgb))
+    a, b = lum(text_color), lum(surface_color)
+    return (max(a, b) + 0.05) / (min(a, b) + 0.05)
+
+
+@pytest.mark.parametrize("signed", (False, True))
+def test_mobile_topbar_ink_contrast_all_five_styles(url, signed):
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=True)
+        ctx, page = open_page(browser, url, signed=signed, width=390)
+        try:
+            for style in ("light", "classic", "modern", "dark", "minimal"):
+                page.locator("#councilThemeTrigger").click()
+                page.locator(f'#councilStyleGroup button[data-style="{style}"]').click()
+                page.locator("#councilThemeTrigger").click()
+                measured = page.evaluate("""() => {
+                  const css = (selector) => {
+                    const el = document.querySelector(selector);
+                    const s = getComputedStyle(el);
+                    return {color:s.color, bg:s.backgroundColor, visible:el.getClientRects().length > 0};
+                  };
+                  return {header:css('.council-topbar'), action:css('#councilAuthAction'),
+                    tier:css('#councilTierWrap'), picker:css('#councilTier'),
+                    status:css('#councilTierStatus'), style:document.documentElement.dataset.style};
+                }""")
+                assert measured["style"] == style, measured
+                assert measured["action"]["visible"], measured
+                header_bg = _onto(_rgba(measured["header"]["bg"]), (1.0, 1.0, 1.0))
+                # The control can have a translucent background; blend it with the solid bar.
+                for part in (("action", "tier", "picker", "status") if signed else ("action",)):
+                    widget = measured[part]
+                    if part == "tier":
+                        assert widget["visible"], (style, measured)
+                    target_bg = _onto(_rgba(widget["bg"]), header_bg)
+                    text_rgb = _onto(_rgba(widget["color"]), target_bg)
+                    ratio = _contrast(text_rgb, target_bg)
+                    assert ratio >= 4.5, (signed, style, part, round(ratio, 2), measured)
+        finally:
+            ctx.close()
+            browser.close()

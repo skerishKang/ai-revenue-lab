@@ -2684,6 +2684,14 @@ html.council-in-workspace .council-card.active { padding: 16px; }
     white-space: nowrap;
     min-width: 44px;
   }
+  .council-badge-action,
+  .council-tier,
+  .council-tier select,
+  .council-tier-status {
+    color: var(--text);
+    border-color: var(--line);
+    background: transparent;
+  }
   .council-theme-panel {
     position: absolute;
     top: calc(100% + 4px);
