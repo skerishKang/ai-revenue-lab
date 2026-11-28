@@ -1,0 +1,19 @@
+{
+  "source_sha256": "41e6e88e6ff4ddf4280433d591aabd3014c1120b5e971be572c8f548147f7ac8",
+  "clean_sha256": "1273678ca35f4a8c5965952c8a63fff0a6ec18853a3d5c73bcb82c718324d440",
+  "image_size": [
+    500,
+    641
+  ],
+  "opaque_person_pixels": 204737,
+  "opaque_person_pixels_changed": 0,
+  "maximum_person_channel_difference": 0,
+  "transparent_and_translucent_background_pixels": 115763,
+  "background_beige_rgba": [
+    245,
+    241,
+    232,
+    255
+  ],
+  "lossless_rgb_composite_mismatch_pixels": 0
+}

@@ -144,7 +144,7 @@ def test_media_lightbox_opens_and_returns_focus(browser, base_url):
             }"""
         )
         assert opened["open"] is True
-        assert opened["src"].endswith("profile-portrait.webp")
+        assert opened["src"].endswith("profile-portrait-beige.webp")
         assert opened["title"]
         assert opened["href"].startswith("https://")
         await_page = page

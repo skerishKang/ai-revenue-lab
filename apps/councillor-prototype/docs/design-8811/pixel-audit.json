@@ -1,0 +1,186 @@
+{
+  "header_unchanged": {
+    "media.html 390 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "media.html 390 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "media.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "media.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    }
+  },
+  "other_pages": {
+    "index.html 390 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "index.html 390 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "index.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "index.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "about.html 390 light": {
+      "equal": false,
+      "bbox": [
+        51,
+        159,
+        339,
+        506
+      ]
+    },
+    "about.html 390 dark": {
+      "equal": false,
+      "bbox": [
+        51,
+        159,
+        339,
+        506
+      ]
+    },
+    "about.html 1440 light": {
+      "equal": false,
+      "bbox": [
+        80,
+        182,
+        440,
+        614
+      ]
+    },
+    "about.html 1440 dark": {
+      "equal": false,
+      "bbox": [
+        80,
+        182,
+        440,
+        614
+      ]
+    },
+    "activity.html 390 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "activity.html 390 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "activity.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "activity.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "media.html 390 light": {
+      "equal": false,
+      "bbox": [
+        33,
+        201,
+        357,
+        799
+      ]
+    },
+    "media.html 390 dark": {
+      "equal": false,
+      "bbox": [
+        33,
+        201,
+        357,
+        799
+      ]
+    },
+    "media.html 1440 light": {
+      "equal": false,
+      "bbox": [
+        99,
+        238,
+        909,
+        718
+      ]
+    },
+    "media.html 1440 dark": {
+      "equal": false,
+      "bbox": [
+        99,
+        238,
+        477,
+        718
+      ]
+    },
+    "news.html 390 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "news.html 390 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "news.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "news.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "404.html 390 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "404.html 390 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "404.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "404.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    }
+  },
+  "media_without_images": {
+    "media.html 390 light": {
+      "equal": false,
+      "bbox": [
+        33,
+        201,
+        349,
+        799
+      ]
+    },
+    "media.html 390 dark": {
+      "equal": false,
+      "bbox": [
+        33,
+        201,
+        349,
+        799
+      ]
+    },
+    "media.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "media.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    }
+  }
+}
