@@ -701,7 +701,8 @@ def test_composition_guard_tracks_the_full_composition_lifecycle() -> None:
 
 
 def test_composer_uses_the_shared_ime_guard() -> None:
-    app = _app_source()
+    from _support.conversation_module_source import _source
+    app = _source("chat-conversation-module.js")
     assert "PadiemClawLocalHandoff" in app
     assert "shouldSubmitOnEnter" in app
     assert "createCompositionGuard" in app

@@ -93,7 +93,9 @@ def test_claw_message_input_primary() -> None:
     # in every shell state. No claw-state branch may divert the composer into
     # the quotation workflow.
     assert "clawManualForm.requestSubmit()" not in APP
-    assert "submitPrompt(input.value)" in APP
+    from _support.claw_general_routing_view import composer_submit_facts
+    assert composer_submit_facts()["submits_prompt"]
+    assert not composer_submit_facts()["forbidden"]
     # Preview and execute read the composer value; the API contract is unchanged.
     assert (APP + CLAW_STATUS).count('const body = (input.value || "").trim();') == 1
     assert CLAW_FORM.count('const body = (deps.input.value || "").trim();') == 1

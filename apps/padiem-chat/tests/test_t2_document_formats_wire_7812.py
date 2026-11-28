@@ -64,7 +64,8 @@ def test_wire_is_relocated_not_duplicated() -> None:
     from _support.conversation_module_source import _source, function_counts
     app = "app.js"
     module = "chat-conversation-module.js"
-    assert _source(app).count("conversationModule().wireDocumentFormats();") == 1
+    assert _source(app).count("conversationModule().wireComposerEvents(") == 1
+    assert _source(module).count("wireDocumentFormats();") == 1
     assert function_counts(module).get("wireDocumentFormats") == 1
     for name in ("documentFormatsToggle", "documentFormatsPanel"):
         lookup = f'document.getElementById("{name}")'
