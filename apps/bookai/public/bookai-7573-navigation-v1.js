@@ -177,6 +177,50 @@ function enablePageButtons(){
   if(prev)prev.disabled=false;
   if(next)next.disabled=false;
 }
+/* #8787: source page number and explicit page-boundary continuation. */
+function syncPageSourceNumber(body){
+  var note=body.querySelector(':scope > .sm-verified-source-note');
+  if(!note)return;
+  var number=note.querySelector('.sm-reader-source-page-index');
+  if(!number){
+    number=document.createElement('span');
+    number.className='sm-reader-source-page-index';
+    number.setAttribute('aria-label','현재 쪽');
+    note.append(number);
+  }
+  number.textContent=String(readerPageIndex+1)+' / '+String(READER_PAGES.length)+'쪽';
+}
+function syncPageBoundaryActions(body){
+  var ctx=currentBibleContext();
+  var prev=document.getElementById('pageTurnPrev');
+  var first=readerPageIndex<=0;
+  var neighbour=ctx&&first?prevChapterBefore(ctx.volume,ctx.chapter):null;
+  var previousLabel=neighbour?'이전 장 마지막 쪽':'이전 페이지';
+  if(prev){prev.setAttribute('aria-label',previousLabel);prev.title=previousLabel;}
+  var next=ctx&&nextChapterAfter(ctx.volume,ctx.chapter);
+  var last=readerPageIndex===Math.max(0,READER_PAGES.length-1);
+  var link=body.querySelector(':scope > .sm7573-next-chapter');
+  if(!last||!next){if(link)link.remove();return;}
+  if(!link){
+    link=document.createElement('button');
+    link.type='button';link.className='sm7573-next-chapter';
+    link.addEventListener('click',function(){neighbourAndTurn(1);});
+  }
+  link.textContent=(ctx.chapter===ctx.count?'다음 책: ':'다음 장: ')+next.volume+' '+next.chapter+'장 →';
+  var note=body.querySelector(':scope > .sm-verified-source-note');
+  if(note)body.insertBefore(link,note);else body.append(link);
+}
+/* Mobile alignment is paint-only: it must not change pagination measurement. */
+function alignPhoneSourceNote(body){
+  var note=body.querySelector(':scope > .sm-verified-source-note');
+  if(!note)return;
+  note.style.transform='';
+  if(!readerScreenActive()||window.innerWidth>768)return;
+  var arrow=document.getElementById('pageTurnPrev');
+  if(!arrow)return;
+  var target=arrow.getBoundingClientRect().top-note.getBoundingClientRect().bottom-30;
+  if(target>0)note.style.transform='translateY('+target.toFixed(1)+'px)';
+}
 function syncAfterRender(){
   var body=document.getElementById('readerPageBody');
   if(!body)return;
@@ -184,9 +228,10 @@ function syncAfterRender(){
     syncFlowLink(body);
     return;
   }
-  var stale=body.querySelector('.sm7573-next-chapter');
-  if(stale)stale.remove();
+  syncPageSourceNumber(body);
+  syncPageBoundaryActions(body);
   enablePageButtons();
+  alignPhoneSourceNote(body);
 }
 var originalApplyView=window.applyReaderViewMode;
 window.applyReaderViewMode=function(mode,options){
