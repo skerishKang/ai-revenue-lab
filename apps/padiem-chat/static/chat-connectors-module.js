@@ -306,32 +306,25 @@
           // #7368: a front-edge loss (502/503/504) or a network error asks one
           // more time after 0.8s. The checking state persists through the retry,
           // and a second failure keeps the same unavailable answer as before.
-          const controller = new AbortController();
-          let timeout;
+          // Browser-owned timeout covers fetch AND body; Promise.race also
+          // settles when a transport mock ignores the aborted signal.
+          const signal = AbortSignal.timeout(CONNECTOR_STATUS_TIMEOUT_MS);
           const deadline = new Promise((_, reject) => {
-            timeout = setTimeout(() => {
-              controller.abort();
-              reject(new Error("connector status timeout"));
-            }, CONNECTOR_STATUS_TIMEOUT_MS);
+            signal.addEventListener("abort", () => reject(new Error("connector status timeout")), { once: true });
           });
-          let data;
-          try {
-            data = await Promise.race([
-              (async () => {
-                const response = await window.PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status", {
-                  headers: { "Accept": "application/json" },
-                  cache: "no-store",
-                  signal: controller.signal,
-                });
-                const document = await response.json().catch(() => null);
-                if (!response.ok) throw new Error("connector status unavailable");
-                return document;
-              })(),
-              deadline,
-            ]);
-          } finally {
-            clearTimeout(timeout);
-          }
+          const data = await Promise.race([
+            (async () => {
+              const response = await window.PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status", {
+                headers: { "Accept": "application/json" },
+                cache: "no-store",
+                signal,
+              });
+              const document = await response.json().catch(() => null);
+              if (!response.ok) throw new Error("connector status unavailable");
+              return document;
+            })(),
+            deadline,
+          ]);
           renderConnectorStatus(data);
           if (deps.googleCalendarReadActivationAfterConnectReturn) {
             deps.googleCalendarReadActivationAfterConnectReturn = false;

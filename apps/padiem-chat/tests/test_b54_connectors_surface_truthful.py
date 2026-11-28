@@ -972,17 +972,19 @@ const card = makeCard("connector:google:drive@1");
 const f = standardFixtures([card]);
 const mod = window.PadiemChatConnectorsModule.create(makeDeps(f));
 let expire = null;
-const realTimeout = global.setTimeout;
-global.setTimeout = (fn, ms, ...args) => {
-  if (ms === 10000) { expire = fn; return 987654; }
-  return realTimeout(fn, ms, ...args);
+const nativeDeadline = global.AbortSignal.timeout;
+global.AbortSignal.timeout = (ms) => {
+  if (ms !== 10000) throw new Error("incorrect status deadline");
+  const controller = new AbortController();
+  expire = () => controller.abort();
+  return controller.signal;
 };
 __queue.push({gate:true}); // The network fetch never settles.
 mod.openConnectorsView();
 await __drain();
 const pending = {state:card.dataset.connectorStatus, loading: !f.loading.hidden};
 if (typeof expire !== "function") throw new Error("no bounded status deadline");
-expire(); // Simulate the exact 10s deadline without sleeping.
+expire(); // Expire the browser-owned 10s AbortSignal without sleeping.
 await __drain();
 const settled = {
   state: card.dataset.connectorStatus,
@@ -991,7 +993,7 @@ const settled = {
   retryVisible: !f.retry.hidden,
   retryEnabled: !f.retry.disabled,
 };
-global.setTimeout = realTimeout;
+global.AbortSignal.timeout = nativeDeadline;
 console.log(JSON.stringify({pending,settled}));
 """
     result = _run_connector_node_script(body)

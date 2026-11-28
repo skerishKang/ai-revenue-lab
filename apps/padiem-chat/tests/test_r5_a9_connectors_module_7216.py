@@ -321,17 +321,14 @@ const ctx = vm.createContext({
     return { ok: true, json: async () => ({ authorization: { connector_id: "google-drive", authorization_url: "https://reviewed.example/auth" } }) };
   },
   JSON, Math, Number, Array, Boolean, Map, Promise, Proxy, Reflect, String, Set,
-  AbortController, // Browser native used by the bounded status GET.
+  AbortController, AbortSignal, // Browser primitives used by the bounded status GET.
   window: {
     location: { assign: (url) => assigned.push(url) },
     PadiemChatTransport: {
       fetchStatusWithRetry: async (url) => { transportCalls.push(url); return transportNext(); },
     },
   },
-  // The 10s status deadline is scheduled, not already expired on this tick.
-  // Existing immediate-turn timers keep their previous deterministic behavior.
-  setTimeout: (fn, delay) => { if (delay === 10000) return 1; fn(); return 1; },
-  clearTimeout: () => {},
+  setTimeout: (fn) => { fn(); return 1; },
 });
 
 function transportNext() {
