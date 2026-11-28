@@ -79,6 +79,20 @@ def test_the_ai_lane_is_the_existing_chat_lane_not_a_second_router() -> None:
     assert "B14_LANE_BINDING_DRIFT" not in contract.findings()
 
 
+def test_extracted_chat_owner_missing_generate_fails_closed(tmp_path, monkeypatch) -> None:
+    original = contract._read(contract.APP_FACTORY_CHAT)
+    route = 'Route("/api/chat", api_chat, methods=["POST"])'
+    assert route in original, "test must modify the real Chat owner"
+    without = original.replace(route, 'Route("/removed/chat", api_chat, methods=["POST"])', 1)
+    assert without != original
+    swap(monkeypatch, "APP_FACTORY_CHAT", without, tmp_path)
+    assert contract.findings() == ["PLATFORM_ROUTE_GENERATE_MISSING"]
+    narrowed = original.replace(route, 'Route("/api/chat", api_chat, methods=["GET"])', 1)
+    assert narrowed != original
+    swap(monkeypatch, "APP_FACTORY_CHAT", narrowed, tmp_path)
+    assert contract.findings() == ["PLATFORM_ROUTE_GENERATE_MISSING"]
+
+
 def test_work_scopes_are_routing_labels_and_an_unknown_one_is_refused(tmp_path, monkeypatch) -> None:
     real = contract._read(contract.REQUEST_CONTRACT)
     assert "grants no identity, tier" in real or "not an authentication input" in real
@@ -194,7 +208,10 @@ def test_extracted_project_routes_each_fail_closed_when_removed(tmp_path, monkey
 def test_the_cli_reports_exact_then_drift(tmp_path, monkeypatch) -> None:
     assert contract.main(["check"]) == 0
     assert contract.main(["describe"]) == 0
-    swap(monkeypatch, "APP_FACTORY", "", tmp_path)
+    # The original facade no longer owns any PLATFORM_ROUTES after PR6.
+    # Mutate the actual Chat owner so this CLI guard still proves refusal.
+    swap(monkeypatch, "APP_FACTORY_CHAT", "", tmp_path)
+    assert contract.findings() == ["PLATFORM_ROUTE_GENERATE_MISSING"]
     assert contract.main(["check"]) == 1
 
 
