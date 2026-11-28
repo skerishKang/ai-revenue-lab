@@ -91,10 +91,12 @@ fonts in this prototype; no derivative or renamed version is distributed.
 
 ## Wiring
 
-Each page links the two stylesheets before `styles.css`:
+Each page loads the two font stylesheets, then base, components and its own page CSS:
 
 ```html
 <link rel="stylesheet" href="./static/fonts/maruburi.css" />
 <link rel="stylesheet" href="./static/fonts/pretendard/pretendard-variable-dynamic-subset.css" />
-<link rel="stylesheet" href="./static/styles.css" />
+<link rel="stylesheet" href="./static/css/base.css" />
+<link rel="stylesheet" href="./static/css/components.css" />
+<link rel="stylesheet" href="./static/css/pages/home.css" />
 ```
