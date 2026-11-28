@@ -1,0 +1,482 @@
+{
+  "photos": {
+    "390-light": {
+      "photo": {
+        "x": 56,
+        "y": 248.5625,
+        "width": 278,
+        "height": 208.5,
+        "right": 334,
+        "bottom": 457.0625,
+        "fontSize": "16px",
+        "display": "block"
+      },
+      "prev": {
+        "x": 8,
+        "y": 330.8125,
+        "width": 44,
+        "height": 44,
+        "right": 52,
+        "bottom": 374.8125,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "next": {
+        "x": 338,
+        "y": 330.8125,
+        "width": 44,
+        "height": 44,
+        "right": 382,
+        "bottom": 374.8125,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "close": {
+        "x": 332,
+        "y": 10,
+        "width": 44,
+        "height": 44,
+        "right": 376,
+        "bottom": 54,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "link": {
+        "x": 140.453125,
+        "y": 740,
+        "width": 109.078125,
+        "height": 44,
+        "right": 249.53125,
+        "bottom": 784,
+        "fontSize": "16px",
+        "display": "inline-flex"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "gap": 286,
+      "src": "http://127.0.0.1:6526/static/images/media-01.jpg",
+      "modalOpen": true,
+      "imageNaturalWidth": 760,
+      "imageNaturalHeight": 570
+    },
+    "390-dark": {
+      "photo": {
+        "x": 56,
+        "y": 248.5625,
+        "width": 278,
+        "height": 208.5,
+        "right": 334,
+        "bottom": 457.0625,
+        "fontSize": "16px",
+        "display": "block"
+      },
+      "prev": {
+        "x": 8,
+        "y": 330.8125,
+        "width": 44,
+        "height": 44,
+        "right": 52,
+        "bottom": 374.8125,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "next": {
+        "x": 338,
+        "y": 330.8125,
+        "width": 44,
+        "height": 44,
+        "right": 382,
+        "bottom": 374.8125,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "close": {
+        "x": 332,
+        "y": 10,
+        "width": 44,
+        "height": 44,
+        "right": 376,
+        "bottom": 54,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "link": {
+        "x": 140.453125,
+        "y": 740,
+        "width": 109.078125,
+        "height": 44,
+        "right": 249.53125,
+        "bottom": 784,
+        "fontSize": "16px",
+        "display": "inline-flex"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "gap": 286,
+      "src": "http://127.0.0.1:6526/static/images/media-01.jpg",
+      "modalOpen": true,
+      "imageNaturalWidth": 760,
+      "imageNaturalHeight": 570
+    },
+    "360-light": {
+      "photo": {
+        "x": 56,
+        "y": 259.8125,
+        "width": 248,
+        "height": 186,
+        "right": 304,
+        "bottom": 445.8125,
+        "fontSize": "16px",
+        "display": "block"
+      },
+      "prev": {
+        "x": 8,
+        "y": 330.8125,
+        "width": 44,
+        "height": 44,
+        "right": 52,
+        "bottom": 374.8125,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "next": {
+        "x": 308,
+        "y": 330.8125,
+        "width": 44,
+        "height": 44,
+        "right": 352,
+        "bottom": 374.8125,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "close": {
+        "x": 302,
+        "y": 10,
+        "width": 44,
+        "height": 44,
+        "right": 346,
+        "bottom": 54,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "link": {
+        "x": 125.453125,
+        "y": 740,
+        "width": 109.078125,
+        "height": 44,
+        "right": 234.53125,
+        "bottom": 784,
+        "fontSize": "16px",
+        "display": "inline-flex"
+      },
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "gap": 256,
+      "src": "http://127.0.0.1:6526/static/images/media-01.jpg",
+      "modalOpen": true,
+      "imageNaturalWidth": 760,
+      "imageNaturalHeight": 570
+    },
+    "820-light": {
+      "photo": {
+        "x": 32.8125,
+        "y": 109.015625,
+        "width": 754.390625,
+        "height": 565.78125,
+        "right": 787.203125,
+        "bottom": 674.796875,
+        "fontSize": "16px",
+        "display": "block"
+      },
+      "prev": {
+        "x": -21.1875,
+        "y": 369.90625,
+        "width": 44,
+        "height": 44,
+        "right": 22.8125,
+        "bottom": 413.90625,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "next": {
+        "x": 797.203125,
+        "y": 369.90625,
+        "width": 44,
+        "height": 44,
+        "right": 841.203125,
+        "bottom": 413.90625,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "close": {
+        "x": 762,
+        "y": 10,
+        "width": 44,
+        "height": 44,
+        "right": 806,
+        "bottom": 54,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "link": {
+        "x": 355.453125,
+        "y": 796,
+        "width": 109.078125,
+        "height": 44,
+        "right": 464.53125,
+        "bottom": 840,
+        "fontSize": "16px",
+        "display": "inline-flex"
+      },
+      "viewport": {
+        "width": 820,
+        "height": 900
+      },
+      "gap": 774.390625,
+      "src": "http://127.0.0.1:6526/static/images/media-01.jpg",
+      "modalOpen": true,
+      "imageNaturalWidth": 760,
+      "imageNaturalHeight": 570
+    },
+    "1440-light": {
+      "photo": {
+        "x": 340,
+        "y": 128.90625,
+        "width": 760,
+        "height": 570,
+        "right": 1100,
+        "bottom": 698.90625,
+        "fontSize": "16px",
+        "display": "block"
+      },
+      "prev": {
+        "x": 286,
+        "y": 391.90625,
+        "width": 44,
+        "height": 44,
+        "right": 330,
+        "bottom": 435.90625,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "next": {
+        "x": 1110,
+        "y": 391.90625,
+        "width": 44,
+        "height": 44,
+        "right": 1154,
+        "bottom": 435.90625,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "close": {
+        "x": 1382,
+        "y": 10,
+        "width": 44,
+        "height": 44,
+        "right": 1426,
+        "bottom": 54,
+        "fontSize": "20px",
+        "display": "block"
+      },
+      "link": {
+        "x": 665.453125,
+        "y": 840,
+        "width": 109.078125,
+        "height": 44,
+        "right": 774.53125,
+        "bottom": 884,
+        "fontSize": "16px",
+        "display": "inline-flex"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "gap": 780,
+      "src": "http://127.0.0.1:6526/static/images/media-01.jpg",
+      "modalOpen": true,
+      "imageNaturalWidth": 760,
+      "imageNaturalHeight": 570
+    }
+  },
+  "policy": {
+    "390": {
+      "viewport": 390,
+      "cardHeight": 389.53125,
+      "cardWidth": 350,
+      "number": {
+        "fontSize": "30px",
+        "lineHeight": "30px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "card": {
+        "fontSize": "16px",
+        "lineHeight": "27.2px",
+        "paddingTop": "26px",
+        "paddingBottom": "26px",
+        "overflow": "visible"
+      },
+      "title": {
+        "fontSize": "18px",
+        "lineHeight": "30.6px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "meta": {
+        "fontSize": "16px",
+        "lineHeight": "26.4px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "paragraph": {
+        "fontSize": "16px",
+        "lineHeight": "26.4px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "cardText": "01\n웰니스정책 토론회 · 성공적인 웰니스 정책, 행정 설계와 제도적 기반이 우선돼야\n\n2026-10-07\n\n전남광주통합특별시의회·광주여자대학교 앵커사업단·광주광역시한의사회가 공동으로 연 토론회입니다. AI 헬스케어 데이터 표준화와 치유관광 자원 연계, 조례 제정과 단계별 계획 수립을 제안했습니다.\n\n의회 원문 보기\n↗",
+      "videoText": "01\n제3회 제1차 정례회 5분자유발언 · 웰니스 관광\n\n2026-09-11 · 전남광주통합특별시의회\n\n지역 웰니스 관광 경쟁력 강화를 위해 전담 컨트롤타워 구축과 체계적인 정책 추진이 필요하다고 강조했습니다.\n\n영상 보기\n↗",
+      "videoNumber": {
+        "fontSize": "30px",
+        "lineHeight": "30px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "videoPadding": {
+        "fontSize": "16px",
+        "lineHeight": "27.2px",
+        "paddingTop": "26px",
+        "paddingBottom": "26px",
+        "overflow": "visible"
+      },
+      "overflowX": 0
+    },
+    "820": {
+      "viewport": 820,
+      "cardHeight": 279.765625,
+      "cardWidth": 764,
+      "number": {
+        "fontSize": "30px",
+        "lineHeight": "30px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "card": {
+        "fontSize": "16px",
+        "lineHeight": "27.2px",
+        "paddingTop": "26px",
+        "paddingBottom": "26px",
+        "overflow": "visible"
+      },
+      "title": {
+        "fontSize": "18px",
+        "lineHeight": "30.6px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "meta": {
+        "fontSize": "16px",
+        "lineHeight": "26.4px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "paragraph": {
+        "fontSize": "16px",
+        "lineHeight": "26.4px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "cardText": "01\n웰니스정책 토론회 · 성공적인 웰니스 정책, 행정 설계와 제도적 기반이 우선돼야\n\n2026-10-07\n\n전남광주통합특별시의회·광주여자대학교 앵커사업단·광주광역시한의사회가 공동으로 연 토론회입니다. AI 헬스케어 데이터 표준화와 치유관광 자원 연계, 조례 제정과 단계별 계획 수립을 제안했습니다.\n\n의회 원문 보기\n↗",
+      "videoText": "01\n제3회 제1차 정례회 5분자유발언 · 웰니스 관광\n\n2026-09-11 · 전남광주통합특별시의회\n\n지역 웰니스 관광 경쟁력 강화를 위해 전담 컨트롤타워 구축과 체계적인 정책 추진이 필요하다고 강조했습니다.\n\n영상 보기\n↗",
+      "videoNumber": {
+        "fontSize": "30px",
+        "lineHeight": "30px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "videoPadding": {
+        "fontSize": "16px",
+        "lineHeight": "27.2px",
+        "paddingTop": "26px",
+        "paddingBottom": "26px",
+        "overflow": "visible"
+      },
+      "overflowX": 0
+    },
+    "1440": {
+      "viewport": 1440,
+      "cardHeight": 363.140625,
+      "cardWidth": 413.328125,
+      "number": {
+        "fontSize": "30px",
+        "lineHeight": "30px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "card": {
+        "fontSize": "16px",
+        "lineHeight": "27.2px",
+        "paddingTop": "26px",
+        "paddingBottom": "26px",
+        "overflow": "visible"
+      },
+      "title": {
+        "fontSize": "18px",
+        "lineHeight": "30.6px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "meta": {
+        "fontSize": "16px",
+        "lineHeight": "26.4px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "paragraph": {
+        "fontSize": "16px",
+        "lineHeight": "26.4px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "cardText": "01\n웰니스정책 토론회 · 성공적인 웰니스 정책, 행정 설계와 제도적 기반이 우선돼야\n\n2026-10-07\n\n전남광주통합특별시의회·광주여자대학교 앵커사업단·광주광역시한의사회가 공동으로 연 토론회입니다. AI 헬스케어 데이터 표준화와 치유관광 자원 연계, 조례 제정과 단계별 계획 수립을 제안했습니다.\n\n의회 원문 보기\n↗",
+      "videoText": "01\n제3회 제1차 정례회 5분자유발언 · 웰니스 관광\n\n2026-09-11 · 전남광주통합특별시의회\n\n지역 웰니스 관광 경쟁력 강화를 위해 전담 컨트롤타워 구축과 체계적인 정책 추진이 필요하다고 강조했습니다.\n\n영상 보기\n↗",
+      "videoNumber": {
+        "fontSize": "30px",
+        "lineHeight": "30px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "overflow": "visible"
+      },
+      "videoPadding": {
+        "fontSize": "16px",
+        "lineHeight": "27.2px",
+        "paddingTop": "26px",
+        "paddingBottom": "26px",
+        "overflow": "visible"
+      },
+      "overflowX": 0
+    }
+  }
+}
