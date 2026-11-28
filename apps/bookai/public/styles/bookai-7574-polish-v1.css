@@ -11,8 +11,21 @@
    11 휴대폰 기억 시트: 위쪽 빈 줄을 없애고 "현재 읽기 / 전체 기억"을 14px 로 키운다. */
 
 /* #8779 D2·D3: 검색 안내는 13px 이상이고 테마별 읽기 대비를 지킨다. */
-:root { --sm-search-hint-ink:#65574b; }
-body.smr-theme-dark { --sm-search-hint-ink:#e2d5c4; }
+:root {
+  --sm-search-hint-ink:#65574b;
+  --sm-search-panel-bg:#fffdf8;
+  --sm-search-panel-ink:#332c25;
+  --sm-search-panel-muted:#62574c;
+}
+body.smr-theme-dark {
+  --sm-search-hint-ink:#e2d5c4;
+  --sm-search-panel-bg:#262019;
+  --sm-search-panel-ink:#e9e1d2;
+  --sm-search-panel-muted:#e0d6ca;
+}
+body.smr-theme-sepia { --sm-search-panel-bg:#f9f0e4; }
+body.smr-theme-glass { --sm-search-panel-bg:#fffdf8; }
+body.smr-theme-light { --sm-search-panel-bg:#fffdf8; }
 #reader .paper-head>.bible-search-panel>summary span,
 #reader .paper-head>.bible-search-panel .bible-search-hint {
   font-size:13px;
@@ -99,20 +112,21 @@ body.smr-theme-dark #reader #readerPageBody .vn{color:var(--sm-vn-ink,#bfb19c)!i
 }
 
 /* ---- 6. 성경 본문 검색 패널 ------------------------------------------------ */
-#reader .paper-head .bible-search-panel{position:relative;z-index:40}
+#reader .paper-head .bible-search-panel{position:relative;z-index:40;background:var(--sm-search-panel-bg)}
 /* 결과는 패널 아래에 겹쳐 띄운다. 펼쳐도 #readerPageBody 의 시작 위치가
    바뀌지 않는다(본문을 밀지 않음). */
 #reader .paper-head .bible-search-content{
   position:absolute!important;
   top:calc(100% + 6px);
   left:0;
-  width:min(100%,460px);
+  width:100%;
+  box-sizing:border-box;
   max-height:min(62vh,420px);
   overflow:auto;
   padding:10px 12px 12px!important;
   border:1px solid rgba(105,82,59,.22);
   border-radius:12px;
-  background:rgba(255,253,248,.99);
+  background:var(--sm-search-panel-bg);
   box-shadow:0 16px 36px rgba(52,39,27,.2);
   z-index:60;
 }
@@ -132,7 +146,7 @@ body.smr-theme-dark #reader #readerPageBody .vn{color:var(--sm-vn-ink,#bfb19c)!i
   cursor:pointer;
 }
 body.smr-theme-dark #reader .bible-search-content{
-  background:#262019;
+  background:var(--sm-search-panel-bg);
   border-color:rgba(233,225,210,.22);
   color:#e9e1d2;
 }
@@ -141,6 +155,49 @@ body.smr-theme-dark #reader .bible-search-more{
   color:#f0e8dd;
   border-color:rgba(233,225,210,.18)!important;
 }
+
+/* #8794: 주제 색을 유지하되 검색 결과는 충분히 불투명하고 읽을 수 있게 한다. */
+#reader .paper-head .bible-search-content form label{
+  font-size:12px;
+  color:var(--sm-search-panel-muted);
+}
+#reader .paper-head .bible-search-content #bibleSearchStatus{
+  font-size:13px;
+  line-height:1.5;
+  color:var(--sm-search-panel-muted);
+}
+#reader .paper-head .bible-search-content .bible-search-result{
+  background:var(--sm-search-panel-bg);
+  color:var(--sm-search-panel-ink);
+}
+#reader .paper-head .bible-search-content .bible-search-result>strong{
+  font-size:13px;
+}
+#reader .paper-head .bible-search-content .bible-search-result span{
+  font-size:13px;
+  color:var(--sm-search-panel-muted);
+}
+#reader .paper-head .bible-search-content .bible-search-result span strong{
+  display:inline;
+  margin:0;
+  font:inherit;
+  font-weight:800;
+  color:var(--sm-search-panel-ink);
+}
+#reader .bible-search-list-wrap{position:relative}
+#reader .bible-search-list-wrap::after{
+  content:'';
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:26px;
+  pointer-events:none;
+  background:linear-gradient(to bottom,transparent,var(--sm-search-panel-bg));
+  opacity:0;
+  transition:opacity .15s;
+}
+#reader .bible-search-list-wrap.has-scroll-more::after{opacity:1}
 
 @media(max-width:720px){
   /* 휴대폰: 접힌 검색 패널은 종이 머리 오른쪽의 44px 아이콘 하나만 남긴다. */

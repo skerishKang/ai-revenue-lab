@@ -207,6 +207,7 @@ function staticKeywordSearch(query, opts){
   var workKey=opts.workKey||null;
   var limit=opts.limit!=null? Number(opts.limit): MAX_RESULTS_DEFAULT;
   limit=Math.max(1, Math.min(64, limit));
+  var offset=Math.max(0,Math.floor(Number(opts.offset)||0));
   var contentRoot=opts.contentRoot||'dist/content';
   var terms=tokenize(query);
   if(!terms.length) return {status:'NO_RESULT', query:query, results:[], truncated:false, total:0};
@@ -279,8 +280,8 @@ function staticKeywordSearch(query, opts){
      order: equal scores must read 창세기→계시록 rather than by locator text. */
   rows.sort(function(a,b){ var d=b.score-a.score; if(d!==0) return d; d=a.block.ordinal-b.block.ordinal; if(d!==0) return d; return String(a.block.canonical_locator).localeCompare(String(b.block.canonical_locator)); });
   var total=rows.length;
-  var truncated=total>limit;
-  var sliced=rows.slice(0,limit);
+  var truncated=total>offset+limit;
+  var sliced=rows.slice(offset,offset+limit);
   var results=sliced.map(function(r){
     var b=r.block;
     var snippet=isLatinQuery?makeSnippet(b.en||b.sourceText||b.text||'', query):makeSnippet(b.text||b.ko||b.en||'', query);
@@ -307,7 +308,7 @@ function staticKeywordSearch(query, opts){
       navigation_target: b.unit_key||b.canonical_locator
     };
   });
-  return {status:'FOUND', query:query, results:results, truncated:truncated, total:total, limit:limit};
+  return {status:'FOUND', query:query, results:results, truncated:truncated, total:total, limit:limit, offset:offset};
 }
 
   if(typeof window!=='undefined'){
