@@ -151,7 +151,8 @@ def definition_count(name: str) -> int:
 
 
 def _factory_source() -> str:
-    return (_APP / "app_factory.py").read_text(encoding="utf-8")
+    from _support.app_factory_modules import factory_area_source
+    return factory_area_source()
 
 
 def claw_routes() -> list[str]:

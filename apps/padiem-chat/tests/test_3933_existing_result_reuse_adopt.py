@@ -21,6 +21,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from _support.app_factory_modules import factory_area_source
 from _support.conversation_artifact_d1 import (  # noqa: E402
     CHAT, FOREIGN_CHAT, OTHER_WORKSPACE, OWNER, RUN, WORKSPACE,
     D1HistoryStore, D1Sqlite, setup_database,
@@ -460,7 +461,7 @@ class AdoptBoundarySourceTests(unittest.TestCase):
         self.assertIn('"p01_approval_started": False', source)
 
     def test_the_route_is_registered_once_as_post_only(self):
-        factory = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
+        factory = factory_area_source()
         self.assertEqual(factory.count("artifact-followup/adopt"), 1)
         line = next(
             item for item in factory.splitlines()
