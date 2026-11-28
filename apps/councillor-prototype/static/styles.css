@@ -439,7 +439,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 }
 .activity-legend {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 6px 16px;
-  margin: 0 0 14px; color: color-mix(in srgb, var(--muted) 80%, var(--text));
+  margin: 24px 0 14px; color: color-mix(in srgb, var(--muted) 80%, var(--text));
   font-size: var(--fs-body); line-height: 1.4;
 }
 .activity-legend b { color: var(--accent-2-text); font-weight: 700; }
@@ -682,6 +682,9 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 @media (max-width: 720px) {
 .intro-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
 .intro-photo { width: min(100%, 288px); max-height: 360px; justify-self: center; }
+/* Read the full activity heading before the 44px detail affordance. */
+.activity-item .item-title { display: block; }
+.activity-item .item-more { display: flex; align-items: center; min-height: var(--tap); justify-content: flex-start; }
 }
 @media (max-width: 760px) {
 :root {
