@@ -118,19 +118,6 @@
   cursor: pointer;
 }
 
-/* #8954-2: these two exit/edit controls need opaque contrast even on glass. */
-html:is([data-theme="light"], [data-theme="padiem-glass"], [data-theme="padiem-home"]) .project-banner-actions button {
-  background: var(--project-solid-bg);
-  border-color: var(--project-strong-text);
-  color: var(--project-strong-text);
-}
-
-html:is([data-theme="dark"], [data-theme="cinematic"]) .project-banner-actions button {
-  background: var(--project-ink);
-  border-color: var(--project-on-ink-text);
-  color: var(--project-on-ink-text);
-}
-
 .project-dialog {
   width: min(520px, calc(100% - 28px));
   border: 0;
