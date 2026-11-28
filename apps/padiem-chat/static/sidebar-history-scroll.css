@@ -1,17 +1,13 @@
 /* Owner UI decision 2026-10-16.
-   Desktop: one scrollport for recent conversations; account/home stay pinned.
+   Desktop: history has its own scrollport; help/account stay unobstructed.
    Mobile: the entire drawer may scroll; conversation list has a nested limit.
    Keep primary and secondary click handlers, permissions, and menu semantics. */
 @media (min-width: 921px) {
   html body .app-shell .sidebar {
-    /* #4905 regression guard. The pinned stacks (brand, Chat/Claw group, the
-       workspace + tools menus, projects) plus the pinned account/home stack can
-       together exceed a short desktop viewport (measured: 1280x800 with the
-       owner-ordered menu). With `overflow-y: hidden` the recent-conversation
-       section collapsed to ~34px and its rows were painted *underneath*
-       .sidebar-bottom, so every row click was intercepted by the account stack.
-       Keep the pinned layout while the content fits, and let the sidebar itself
-       scroll when it cannot, so no row can ever sit under the pinned stack. */
+    /* #4905 regression guard: when menus, projects and history exceed a short
+       desktop viewport, permit the sidebar to scroll instead of letting rows
+       escape and be painted underneath the account stack. #8954-3 also puts
+       help and account in normal flow and budgets height for the two lists. */
     overflow: hidden;
     overflow-y: auto !important;
     display: flex;
@@ -19,26 +15,27 @@
     min-height: 0;
     height: 100dvh;
     box-sizing: border-box;
+    /* Fit the pinned controls above the account stack before lists scroll. */
+    gap: 8px;
+    padding-block: 12px;
   }
   html body .app-shell .sidebar > :not(#historySection) {
     flex-shrink: 0;
   }
   html body .app-shell .sidebar #projectsSection {
-    flex: 0 0 auto;
-    /* Emergency overflow for unusually large project lists: keep account/home reachable. */
+    flex: 0 1 auto;
+    min-height: 90px;
+    /* Long project lists scroll inside the budget shared with history. */
     max-height: min(32dvh, 290px);
     overflow-y: auto;
     overflow-x: hidden;
   }
   html body .app-shell .sidebar #historySection:not([hidden]) {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     display: flex;
     flex-direction: column;
-    min-height: 0;
-    /* #4905: heading row + at least two conversation rows. Without a floor the
-       section is squeezed to a few pixels on a short viewport and its rows are
-       laid out past the section, under the pinned account/home stack. */
-    min-height: 156px;
+    /* The list owns scrolling, the heading remains visible, and pinned tools fit. */
+    min-height: 100px;
     /* Must never be `visible`. Rows that escape this box are painted below
        .sidebar-bottom and then intercept every pointer event aimed at the row.
        #historyList below stays the single scrollport for the conversation list. */
@@ -58,8 +55,11 @@
     overscroll-behavior-y: contain;
     scrollbar-width: thin;
     scrollbar-color: rgba(237,243,248,.35) transparent;
-    scroll-padding-block: 8px 62px;
-    padding-bottom: 56px;
+    scroll-padding-block: 8px 34px;
+    padding-bottom: 28px;
+    /* Fade a partial final row rather than slicing its text at the separator. */
+    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 24px), transparent);
+    mask-image: linear-gradient(to bottom, black calc(100% - 24px), transparent);
   }
   html body .app-shell .sidebar #historySection.is-collapsed #historyList {
     display: none;
@@ -67,6 +67,10 @@
   html body .app-shell .sidebar .sidebar-bottom {
     flex: 0 0 auto;
     margin-top: auto;
+    /* The sticky layer used to cover the help link when content overflowed. */
+    position: static;
+    bottom: auto;
+    z-index: auto;
   }
 }
 
