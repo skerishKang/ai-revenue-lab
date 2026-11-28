@@ -159,7 +159,7 @@
  * the last card row ended under the fixed input. */
 @media (max-width: 620px) {
   .app-shell[data-layout-variant="conversation"] .conversation:has(#emptyState:not([hidden])) {
-    min-height: auto !important;
+    min-height: auto;
     padding-top: 16px;
     /* #5014: the reserved bottom space and the scroll padding stay owned by
      * the shared rule above, so the software keyboard inset is included. */
@@ -190,8 +190,8 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter {
-    min-height: 84px !important;
-    padding: 11px !important;
+    min-height: 84px;
+    padding: 11px;
   }
   /* The landing used to hide every card description on a phone, so a reader
    * could not tell what a card does. It shows as up to two lines (#7827: one
@@ -272,7 +272,7 @@
   }
   .app-shell .main-panel .conversation {
     min-height: 0;
-    overflow-y: auto !important;
+    overflow-y: auto;
     overscroll-behavior-y: contain;
   }
   .app-shell .main-panel > .topbar #mobileMenu {
