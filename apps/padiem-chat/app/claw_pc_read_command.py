@@ -29,6 +29,7 @@ PC_READ_OFFSET_MAX = 1 << 40
 from .claw_pc_line_read import (
     PC_READ_LINE_MAX_COUNT, PC_READ_LINE_MAX_BYTES, pc_read_line_lines,
 )
+from .claw_pc_document_read import pc_document_lines
 PC_READ_OFFICE_EXTENSIONS = (".docx", ".xlsx", ".pdf", ".hwpx")
 PC_READ_OFFICE_MEDIA = {
     ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -88,7 +89,9 @@ def _windows_root(value: str) -> str:
 def pc_read_chunk_command(
     *, root: str, relative: str, offset: int | None = None,
     length: int | None = None, start_line: int | None = None,
-    line_count: int | None = None,
+    line_count: int | None = None, page: int | None = None,
+    page_count: int | None = None, sheet: str | None = None,
+    cell_range: str | None = None,
 ) -> str:
     """Build the one range-read script for ``root/relative``.
 
@@ -106,7 +109,12 @@ def pc_read_chunk_command(
     ):
         raise ValueError("relative path is not usable")
     line_mode = start_line is not None or line_count is not None
-    if line_mode:
+    document_mode = any(value is not None for value in (
+        page, page_count, sheet, cell_range))
+    if document_mode:
+        if line_mode or offset is not None or length is not None:
+            raise ValueError("PDF/XLSX selectors cannot be mixed with other ranges")
+    elif line_mode:
         if (offset is not None or length is not None
                 or type(start_line) is not int or not 1 <= start_line <= PC_READ_OFFSET_MAX
                 or type(line_count) is not int or not 1 <= line_count <= PC_READ_LINE_MAX_COUNT):
@@ -117,13 +125,22 @@ def pc_read_chunk_command(
     office = is_office_name(file_name)
     if line_mode and office:
         raise ValueError("line ranges require UTF-8 text; PDF/XLSX selection belongs to 3b")
+    # Fail before building any PC command when an input selector is malformed.
+    selector_lines = (pc_document_lines(
+        name=file_name, page=page, page_count=page_count,
+        sheet=sheet, cell_range=cell_range,
+    ) if document_mode else None)
     lines = [
         "$ErrorActionPreference='SilentlyContinue'",
         "[Console]::OutputEncoding=New-Object Text.UTF8Encoding $false",
         "$OutputEncoding=New-Object Text.UTF8Encoding $false",
         "$path=" + _ps_literal(root.rstrip("/") + "/" + relative.replace("\\", "/")),
-        ("$startLine=[int64]" + str(start_line) if line_mode else "$offset=[int64]" + str(offset)),
-        ("$lineCount=[int64]" + str(line_count) if line_mode else "$length=[int64]" + str(length)),
+        *([] if document_mode else [
+            ("$startLine=[int64]" + str(start_line) if line_mode
+             else "$offset=[int64]" + str(offset)),
+            ("$lineCount=[int64]" + str(line_count) if line_mode
+             else "$length=[int64]" + str(length)),
+        ]),
         "$items=Get-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue",
         "if($items -eq $null -or $items.PSIsContainer){",
         '  \'{"ok":false,"error":"not_a_file"}\'',
@@ -152,7 +169,9 @@ def pc_read_chunk_command(
         "}",
         "$size=[int64]$items.Length",
     ]
-    if line_mode:
+    if document_mode:
+        lines.extend(selector_lines)
+    elif line_mode:
         lines.extend(pc_read_line_lines())
     elif office:
         lines.extend(_office_lines(file_name))

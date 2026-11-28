@@ -250,7 +250,7 @@ _TOOLS = {
     # tool to the recursive name search; no other tool accepts the key.
     "pc_search": ("files_list", "claw.pc.list_files",
                   {"path", "query", "recursive", "job_id"}),
-    "pc_read": ("files", "claw.pc.read_file", {"path", "job_id", "offset", "length", "start_line", "line_count"}),
+    "pc_read": ("files", "claw.pc.read_file", {"path", "job_id", "offset", "length", "start_line", "line_count", "page", "page_count", "sheet", "range"}),
     # Read-only additions. Each reuses the Engine tool that already does the
     # work; nothing here widens what those tools may touch.
     "pc_search_contents": ("files_list", "claw.pc.search_contents", {"path", "query"}),
@@ -374,6 +374,12 @@ async def _mcp_pc_tool_intake(
             # A continuation names the dispatch that is already running. It
             # stages nothing; ownership is checked against that dispatch below.
             pass
+        elif tool_name == "pc_read" and set(arguments) in (
+                {"path"}, {"path", "offset", "length"},
+                {"path", "start_line", "line_count"},
+                {"path", "page", "page_count"}, {"path", "sheet", "range"}):
+            # Every accepted selector shape has strict types and bounds below.
+            pass
         elif (set(arguments) not in (keys - {"job_id"}, keys - {"replace_all"},
                                      keys - {"job_id", "mode"},
                                      keys - {"offset"}, keys - {"length"},
@@ -436,10 +442,31 @@ async def _mcp_pc_tool_intake(
         raise ValueError("Invalid MCP PC arguments")
     # A range read names both ends or neither: an offset alone would silently
     # become "offset 0", and a length alone has no start to read from.
-    if tool_name == "pc_read" and set(arguments) not in (
-            {"job_id"}, {"path"}, {"path", "offset", "length"},
-            {"path", "start_line", "line_count"}):
-        raise ValueError("Invalid MCP PC arguments")
+    if tool_name == "pc_read":
+        from padiem_ai_core.pc_document_selectors import valid_pdf_selection, valid_xlsx_selection
+        fields = set(arguments)
+        if fields not in ({"job_id"}, {"path"}, {"path", "offset", "length"},
+                          {"path", "start_line", "line_count"},
+                          {"path", "page", "page_count"}, {"path", "sheet", "range"}):
+            raise ValueError("Invalid MCP PC arguments")
+        if (fields == {"path", "offset", "length"}
+                and (type(arguments["offset"]) is not int
+                     or not 0 <= arguments["offset"] <= _PC_READ_OFFSET_MAX
+                     or type(arguments["length"]) is not int
+                     or not 1 <= arguments["length"] <= _PC_READ_CHUNK_MAX_BYTES)):
+            raise ValueError("Invalid MCP PC byte range")
+        if (fields == {"path", "start_line", "line_count"}
+                and (type(arguments["start_line"]) is not int
+                     or not 1 <= arguments["start_line"] <= _PC_READ_OFFSET_MAX
+                     or type(arguments["line_count"]) is not int
+                     or not 1 <= arguments["line_count"] <= 1000)):
+            raise ValueError("Invalid MCP PC line range")
+        if (fields == {"path", "page", "page_count"}
+                and not valid_pdf_selection(arguments["page"], arguments["page_count"])):
+            raise ValueError("Invalid MCP PC PDF range")
+        if (fields == {"path", "sheet", "range"}
+                and not valid_xlsx_selection(arguments["sheet"], arguments["range"])):
+            raise ValueError("Invalid MCP PC XLSX range")
     # A recursive flag is a real boolean and a depth a real in-range integer:
     # the string "true" or "2" is a caller mistake, never a value.
     if tool_name == "pc_search" and "recursive" in arguments and (
@@ -765,7 +792,9 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                 "pc_file_info": "files_info"}.get(tool_name, scope)
     if tool_name == "pc_read" and (
             "offset" in arguments or "length" in arguments
-            or "start_line" in arguments or "line_count" in arguments):
+            or "start_line" in arguments or "line_count" in arguments
+            or "page" in arguments or "page_count" in arguments
+            or "sheet" in arguments or "range" in arguments):
         # A range read is the Engine's own chunk tool. Without the two
         # arguments this stays exactly the whole-file read it always was.
         plan_key, tool_id = "files_chunk", "claw.pc.read_file_chunk"
@@ -786,6 +815,12 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         if "start_line" in arguments:
             wire_arguments = {"path": arguments["path"],
                 "start_line": arguments["start_line"], "line_count": arguments["line_count"]}
+        elif "page" in arguments:
+            wire_arguments = {"path": arguments["path"],
+                "page": arguments["page"], "page_count": arguments["page_count"]}
+        elif "sheet" in arguments:
+            wire_arguments = {"path": arguments["path"],
+                "sheet": arguments["sheet"], "range": arguments["range"]}
         else:
             chunk = {"path": arguments["path"], "offset": arguments.get("offset", 0)}
             if "length" in arguments:

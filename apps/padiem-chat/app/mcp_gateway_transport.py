@@ -162,7 +162,10 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False,
                   "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다. "
                   "offset과 length를 주면 그 파일의 그 바이트 구간만 읽고 전체 크기와 다음 offset을 함께 돌려줍니다"
                   "(한 번에 1,000,000바이트까지). start_line(1부터)과 line_count(최대 1000)로 "
-                  "텍스트 줄도 읽습니다(응답 최대 256KiB). 줄·바이트 범위는 함께 쓸 수 없습니다. "
+                  "텍스트 줄도 읽습니다(응답 최대 256KiB). "
+                  "PDF는 page(1부터)와 page_count(최대 10), XLSX는 sheet와 range(A1:D30, 2,000셀)를 지정해 "
+                  "쪽·셀을 읽습니다(응답 최대 256KiB). 서로 다른 범위는 함께 쓸 수 없습니다. "
+                  "문서 선택은 앞부분 16MiB만 자르지 않고, 전체 확인이 안 되면 제한 초과로 거절합니다. "
                   "범위를 주지 않으면 파일 전체를 읽습니다. "
                   "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
                   {"path": _PATH,
@@ -174,6 +177,14 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False,
                                   "description": "텍스트 읽기 시작 줄(1부터). line_count와 함께 줍니다."},
                    "line_count": {"type": "integer", "minimum": 1, "maximum": 1000,
                                   "description": "읽을 최대 줄 수(1~1000). 바이트 범위와 함께 쓸 수 없습니다."},
+                   "page": {"type": "integer", "minimum": 1,
+                            "description": "PDF 원래 페이지 번호(1부터). page_count와 함께 줍니다."},
+                   "page_count": {"type": "integer", "minimum": 1, "maximum": 10,
+                                  "description": "PDF 최대 10쪽. 바이트·줄 범위와 혼합 불가."},
+                   "sheet": {"type": "string", "minLength": 1, "maxLength": 128,
+                             "description": "XLSX 시트 이름(정확하게 일치)."},
+                   "range": {"type": "string", "minLength": 5, "maxLength": 32,
+                             "description": "XLSX 직사각형 A1:D30, 최대 2,000셀."},
                    "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
         _tool("pc_shell", "PC 명령 실행",
                   "연결 PC에서 명령을 실행합니다. 응답 대기 시간이 끝나도 PC 작업은 계속 실행되며, 돌려준 작업 ID로 상태와 출력을 읽거나 중지할 수 있습니다.",

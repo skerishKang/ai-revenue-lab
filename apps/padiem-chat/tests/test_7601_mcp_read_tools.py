@@ -103,15 +103,20 @@ def test_the_two_new_tools_are_declared_read_only():
     assert MCP_TOOLS["pc_file_info"]["inputSchema"]["required"] == ["path"]
 
 
-def test_pc_read_declares_exclusive_optional_byte_or_line_ranges():
-    """The public tool exposes both bounded range pairs; they cannot be mixed."""
+def test_pc_read_declares_exclusive_byte_line_pdf_or_xlsx_ranges():
+    """The public tool exposes four closed modes: bytes, lines, PDF pages, XLSX cells."""
     read = MCP_TOOLS["pc_read"]["inputSchema"]["properties"]
-    assert set(read) == {"path", "offset", "length", "start_line", "line_count", "job_id", "device"}
+    assert set(read) == {"path", "offset", "length", "start_line", "line_count",
+                         "page", "page_count", "sheet", "range", "job_id", "device"}
     assert read["length"]["maximum"] == 1_000_000
     assert read["offset"]["minimum"] == 0
     assert read["start_line"]["minimum"] == 1
     assert read["line_count"]["minimum"] == 1
     assert read["line_count"]["maximum"] == 1_000
+    assert read["page"]["minimum"] == 1
+    assert read["page_count"]["maximum"] == 10
+    assert read["sheet"]["maxLength"] == 128
+    assert read["range"]["maxLength"] == 32
     description = MCP_TOOLS["pc_read"]["description"]
     assert "줄" in description and "바이트" in description
     assert "함께 쓸 수 없습니다" in description
@@ -389,3 +394,66 @@ def test_pc_read_line_range_passes_both_closed_gateway_parsers_only_when_exclusi
         ):
             with pytest.raises(ValueError):
                 parser({**base, "arguments": invalid_args})
+
+
+# #8953 3b — one exact file selection, no mixed range modes.
+@pytest.mark.parametrize("args",[
+    {"path":"file.pdf","page":2,"page_count":3},
+    {"path":"file.xlsx","sheet":"견적서","range":"A1:D30"},
+])
+def test_pdf_and_xlsx_selectors_use_existing_read_only_chunk_tool(monkeypatch,args):
+    request,transport,_,_=harness(monkeypatch)
+    result=asyncio.run(execution.execute_mcp_pc_tool(request,PRINCIPAL,"pc_read",args))
+    assert result["status"]=="completed"
+    gateway=gateway_of(transport)
+    assert gateway["tool_id"]=="claw.pc.read_file_chunk"
+    assert gateway["arguments"]==args
+    assert plan_of(transport)==["claw.pc.read_file_chunk"]
+    assert "approval_id" not in gateway
+
+
+@pytest.mark.parametrize("args",[
+    {"path":"file.pdf","page":1},
+    {"path":"file.pdf","page_count":1},
+    {"path":"file.pdf","page":0,"page_count":1},
+    {"path":"file.pdf","page":1,"page_count":11},
+    {"path":"file.pdf","page":True,"page_count":1},
+    {"path":"file.pdf","page":1,"page_count":1,"offset":0,"length":20},
+    {"path":"file.xlsx","sheet":"견적서"},
+    {"path":"file.xlsx","range":"A1:D30"},
+    {"path":"file.xlsx","sheet":"견적서","range":"A1:Z100"},
+    {"path":"file.xlsx","sheet":"견적서","range":"C3:A1"},
+    {"path":"file.xlsx","sheet":"견적서","range":"A1:D30","start_line":1,"line_count":2},
+])
+def test_pdf_and_xlsx_invalid_or_mixed_selectors_never_dispatch(monkeypatch,args):
+    request,transport,_,_=harness(monkeypatch)
+    with pytest.raises(ValueError):
+        asyncio.run(execution.execute_mcp_pc_tool(request,PRINCIPAL,"pc_read",args))
+    assert transport.calls==[]
+
+
+@pytest.mark.parametrize("args",[
+    {"path":"sample.pdf","page":1,"page_count":10},
+    {"path":"sample.xlsx","sheet":"견적서","range":"A1:D30"},
+])
+def test_core_and_engine_client_verify_identical_pdf_xlsx_gateway_selectors(args):
+    from padiem_ai_core.pc_gateway import parse_pc_gateway
+    from padiem_ai_engine_client.client import _parse_pc_gateway
+    common={
+        "version":1,"source":"mcp","token_id":"fixture","request_id":"mcp_3b_request",
+        "tool_id":"claw.pc.read_file_chunk","arguments":args,
+    }
+    assert parse_pc_gateway(common)["arguments"]==args
+    assert _parse_pc_gateway(common)["arguments"]==args
+    for bad in (
+        {**args, "offset":0},
+        {**args,"start_line":1},
+        {"path":"sample.pdf","page":0,"page_count":1},
+        {"path":"sample.pdf","page":1,"page_count":11},
+        {"path":"sample.xlsx","sheet":"견적서","range":"A1:Z100"},
+        {"path":"sample.xlsx","sheet":"견적서","range":"A1:ZZZZ30"},
+        {"path":"sample.xlsx","sheet":"견적서","range":"A0:D30"},
+    ):
+        for validator in (parse_pc_gateway,_parse_pc_gateway):
+            with pytest.raises(ValueError):
+                validator({**common,"arguments":bad})

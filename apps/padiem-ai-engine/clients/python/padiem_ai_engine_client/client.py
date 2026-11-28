@@ -623,6 +623,38 @@ def _normalize_gateway_browser_url(value: str) -> str:
     return urlunsplit((parsed.scheme.lower(), netloc, parsed.path or "/", parsed.query, ""))
 
 
+# Mirror padiem_ai_core.pc_document_selectors: this transport client must
+# remain independently importable, with no additional runtime dependencies.
+_PC_PDF_MAX_PAGES = 10
+_PC_XLSX_MAX_CELLS = 2000
+_PC_XLSX_RANGE_RE = re.compile(r"([A-Z]{1,3})([1-9][0-9]{0,6}):([A-Z]{1,3})([1-9][0-9]{0,6})\Z")
+
+
+def _valid_pdf_selection(page, count):
+    return (type(page) is int and type(count) is int
+            and 1 <= page <= (1 << 40) and 1 <= count <= _PC_PDF_MAX_PAGES)
+
+
+def _valid_xlsx_selection(sheet, cell_range):
+    if (not isinstance(sheet, str) or not 0 < len(sheet) <= 128
+            or any(ord(c) < 32 for c in sheet)
+            or not isinstance(cell_range, str) or len(cell_range) > 32):
+        return False
+    match = _PC_XLSX_RANGE_RE.fullmatch(cell_range)
+    if not match:
+        return False
+    a, start, b, end = match.groups()
+    def number(text):
+        value = 0
+        for char in text:
+            value = value * 26 + ord(char) - 64
+        return value
+    x, y = number(a), number(b)
+    row_start, row_end = int(start), int(end)
+    return (1 <= x <= y <= 16384 and 1 <= row_start <= row_end <= 1048576
+            and (y - x + 1) * (row_end - row_start + 1) <= _PC_XLSX_MAX_CELLS)
+
+
 _PC_GATEWAY_TOOLS = {
     # depth (1..3) widens one listing into one bounded deep walk; re-validated
     # at every layer, so only a real integer in range crosses.
@@ -638,7 +670,7 @@ _PC_GATEWAY_TOOLS = {
     # search and range read.
     "claw.pc.search_files": {"path"},
     "claw.pc.search_contents": {"path"},
-    "claw.pc.read_file_chunk": {"path", "offset", "length", "start_line", "line_count"},
+    "claw.pc.read_file_chunk": {"path", "offset", "length", "start_line", "line_count", "page", "page_count", "sheet", "range"},
     "claw.pc.browser_open": {"url"},
     "claw.pc.browser_read": set(),
     "claw.pc.browser_screenshot": set(),
@@ -679,7 +711,7 @@ def _parse_pc_gateway(value):
             or any(not isinstance(item, str)
                    and not (tool == "claw.pc.edit_file" and key == "replace_all"
                             and isinstance(item, bool))
-                   and not (tool == "claw.pc.read_file_chunk" and key in {"offset", "length", "start_line", "line_count"}
+                   and not (tool == "claw.pc.read_file_chunk" and key in {"offset", "length", "start_line", "line_count", "page", "page_count"}
                             and type(item) is int)
                    and not (tool == "claw.pc.list_files" and key in {"depth", "offset"}
                             and type(item) is int)
@@ -719,7 +751,19 @@ def _parse_pc_gateway(value):
         raise ValueError("Invalid PC gateway tool arguments")
     if tool == "claw.pc.read_file_chunk":
         line_mode = "start_line" in args or "line_count" in args
-        if line_mode:
+        pdf_mode = "page" in args or "page_count" in args
+        xlsx_mode = "sheet" in args or "range" in args
+        if sum((line_mode, pdf_mode, xlsx_mode)) > 1:
+            raise ValueError("Mixed PC range arguments")
+        if pdf_mode:
+            if (set(args) != {"path", "page", "page_count"}
+                    or not _valid_pdf_selection(args["page"], args["page_count"])):
+                raise ValueError("Invalid PC gateway PDF range")
+        elif xlsx_mode:
+            if (set(args) != {"path", "sheet", "range"}
+                    or not _valid_xlsx_selection(args["sheet"], args["range"])):
+                raise ValueError("Invalid PC gateway XLSX range")
+        elif line_mode:
             if (set(args) != {"path", "start_line", "line_count"}
                     or type(args["start_line"]) is not int
                     or not 1 <= args["start_line"] <= (1 << 40)

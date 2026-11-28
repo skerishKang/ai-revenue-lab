@@ -1894,6 +1894,8 @@ def _pc_read_marker(output: str) -> str | None:
 def _pc_chunk_projection(
     output: str, *, offset: int | None = None, length: int | None = None,
     start_line: int | None = None, line_count: int | None = None,
+    page: int | None = None, page_count: int | None = None,
+    sheet: str | None = None, cell_range: str | None = None,
 ) -> dict[str, Any]:
     """Bound one range answer to the rows a model may see.
 
@@ -1919,10 +1921,105 @@ def _pc_chunk_projection(
             r"[a-z0-9_]{1,40}", code,
         ) else "read_failed"
         raise ToolHandlerError(
-            "pc_chunk_" + bounded, "PC range read failed",
+            bounded if bounded in {"encrypted", "ocr_required", "source_limit_exceeded"}
+            else "pc_chunk_" + bounded, "PC range read failed",
         )
     unit = parsed.get("unit")
     size = parsed.get("size_bytes")
+    if page is not None or page_count is not None or sheet is not None or cell_range is not None:
+        from padiem_ai_core.pc_document_selectors import valid_pdf_selection, valid_xlsx_selection
+        is_pdf = page is not None or page_count is not None
+        if is_pdf:
+            if not valid_pdf_selection(page, page_count) or unit != "pages":
+                raise ToolHandlerError("pc_chunk_output_invalid", "Wrong PDF selection")
+            entries, total = parsed.get("pages"), parsed.get("total_pages")
+            if (type(total) is not int or total < page or not isinstance(entries, list)
+                    or not 1 <= len(entries) <= page_count
+                    or parsed.get("page") != page or parsed.get("page_count") != len(entries)
+                    or any(not isinstance(row, dict) or set(row) != {"page", "text"}
+                           or type(row["page"]) is not int or row["page"] != page + i
+                           or row["page"] > total or not isinstance(row["text"], str)
+                           or not row["text"].strip()
+                           for i, row in enumerate(entries))):
+                raise ToolHandlerError("pc_chunk_output_invalid", "Untrusted PDF page metadata")
+            last = page + len(entries) - 1
+            has_more = last < total
+            reason = ("response_bytes_limit" if last < min(total, page + page_count - 1)
+                      else "page_count_limit") if has_more else None
+            expected_text = "\n\n".join(
+                "[page %d]\n%s" % (item["page"], item["text"]) for item in entries)
+            expected = {"unit": "pages", "page": page, "page_count": len(entries),
+                        "total_pages": total, "pages": entries}
+        else:
+            if not valid_xlsx_selection(sheet, cell_range) or unit != "cells":
+                raise ToolHandlerError("pc_chunk_output_invalid", "Wrong XLSX selection")
+            entries = parsed.get("cells")
+            if not isinstance(entries, list) or parsed.get("sheet") != sheet or parsed.get("range") != cell_range:
+                raise ToolHandlerError("pc_chunk_output_invalid", "Untrusted XLSX selection metadata")
+            from padiem_ai_core.pc_document_selectors import _RANGE
+            m = _RANGE.fullmatch(cell_range)
+            a, first, b, last_row = m.groups()
+            def col_index(txt):
+                v = 0
+                for char in txt:
+                    v = v * 26 + ord(char) - 64
+                return v
+            width = col_index(b) - col_index(a) + 1
+            total_rows = int(last_row) - int(first) + 1
+            if (len(entries) < width or len(entries) > 2000
+                    or len(entries) % width != 0
+                    or parsed.get("cell_count") != len(entries)):
+                raise ToolHandlerError("pc_chunk_output_invalid", "Invalid XLSX row boundary")
+            def get_column_letter(column: int) -> str:
+                answer = ""
+                while column:
+                    column, digit = divmod(column - 1, 26)
+                    answer = chr(65 + digit) + answer
+                return answer
+            lines = []
+            for i, row in enumerate(entries):
+                name = "%s%d" % (get_column_letter(col_index(a) + i % width),
+                                 int(first) + i // width)
+                if (not isinstance(row, dict)
+                        or set(row) not in ({"cell", "value"}, {"cell", "value", "formula"})
+                        or row.get("cell") != name or not isinstance(row.get("value"), str)
+                        or ("formula" in row and (not isinstance(row["formula"], str)
+                                                  or not row["formula"].startswith("=")))):
+                    raise ToolHandlerError("pc_chunk_output_invalid", "Invalid XLSX cell record")
+                line = "[%s!%s] " % (sheet, name)
+                line += (row["formula"] + " => " + (row["value"] or "(no cached value)")
+                         if "formula" in row else row["value"])
+                lines.append(line)
+            expected_text = "\n".join(lines)
+            consumed = len(entries) // width
+            has_more = consumed < total_rows
+            reason = "response_bytes_limit" if has_more else None
+            next_row = int(first) + consumed
+            expected = {"unit": "cells", "sheet": sheet, "range": cell_range,
+                        "cell_count": len(entries), "cells": entries}
+        text = parsed.get("text")
+        actual_cursor = parsed.get("next_cursor")
+        if is_pdf:
+            expected_cursor = last + 1 if has_more else None
+        else:
+            expected_cursor = ("%s%d:%s%s" % (a, next_row, b, last_row)
+                               if has_more else None)
+        if (type(size) is not int or size < 1
+                or not isinstance(text, str) or text != expected_text
+                or any(ord(ch) < 32 and ch not in "\n\t" for ch in text)
+                or type(parsed.get("has_more")) is not bool or parsed["has_more"] != has_more
+                or type(parsed.get("truncated")) is not bool or parsed["truncated"] != has_more
+                or parsed.get("truncation_reason") != reason
+                or parsed.get("next_cursor") != expected_cursor
+                or parsed.get("eof") is not (not has_more)
+                or parsed.get("partial") is not False
+                or parsed.get("source_complete") is not True
+                or len(output.encode("utf-8")) > 256 * 1024):
+            raise ToolHandlerError("pc_chunk_output_invalid", "Malformed bounded document selection")
+        return {"ok": True, "size_bytes": size, **expected, "text": text,
+                "eof": not has_more, "partial": False, "truncated": has_more,
+                "truncation_reason": reason, "has_more": has_more,
+                "next_cursor": expected_cursor, "source_complete": True}
     if start_line is not None or line_count is not None:
         cursor = parsed.get("next_cursor")
         more = parsed.get("has_more")
@@ -2023,12 +2120,36 @@ def _make_pc_read_chunk_handler(*, service, request_factory, secret):
         if not isinstance(arguments, Mapping):
             raise ToolHandlerError("pc_chunk_arguments_invalid", "Invalid range arguments")
         line_mode = "start_line" in arguments or "line_count" in arguments
+        pdf_mode = "page" in arguments or "page_count" in arguments
+        xlsx_mode = "sheet" in arguments or "range" in arguments
         keys = set(arguments)
+        if sum((line_mode, pdf_mode, xlsx_mode)) > 1:
+            raise ToolHandlerError("pc_chunk_arguments_invalid", "Mixed range selectors")
         if (line_mode and keys != {"path", "start_line", "line_count"}) or (
-                not line_mode and keys not in ({"path", "offset"}, {"path", "offset", "length"})):
+                pdf_mode and keys != {"path", "page", "page_count"}) or (
+                xlsx_mode and keys != {"path", "sheet", "range"}) or (
+                not any((line_mode, pdf_mode, xlsx_mode))
+                and keys not in ({"path", "offset"}, {"path", "offset", "length"})):
             raise ToolHandlerError("pc_chunk_arguments_invalid", "Mixed or incomplete ranges")
         path = _validate_pc_file_arguments({"path": arguments.get("path")})
-        if line_mode:
+        if pdf_mode:
+            from padiem_ai_core.pc_document_selectors import valid_pdf_selection
+            page, page_count = arguments["page"], arguments["page_count"]
+            if not valid_pdf_selection(page, page_count):
+                raise ToolHandlerError("pc_chunk_arguments_invalid", "Invalid PDF page range")
+            offset = length = start_line = line_count = sheet = cell_range = None
+            reference = "%s\npdf\n%d\n%d" % (path, page, page_count)
+            payload_range = {"page": page, "page_count": page_count}
+        elif xlsx_mode:
+            from padiem_ai_core.pc_document_selectors import valid_xlsx_selection
+            sheet, cell_range = arguments["sheet"], arguments["range"]
+            if not valid_xlsx_selection(sheet, cell_range):
+                raise ToolHandlerError("pc_chunk_arguments_invalid", "Invalid XLSX sheet and cell range")
+            offset = length = start_line = line_count = page = page_count = None
+            reference = "%s\nxlsx\n%s\n%s" % (path, sheet, cell_range)
+            payload_range = {"sheet": sheet, "range": cell_range}
+        elif line_mode:
+            page = page_count = sheet = cell_range = None
             start_line, line_count = arguments["start_line"], arguments["line_count"]
             if (type(start_line) is not int or not 1 <= start_line <= (1 << 40)
                     or type(line_count) is not int or not 1 <= line_count <= 1000):
@@ -2039,7 +2160,7 @@ def _make_pc_read_chunk_handler(*, service, request_factory, secret):
         else:
             offset = arguments["offset"]
             length = arguments.get("length", pc_chunk_bytes())
-            start_line = line_count = None
+            start_line = line_count = page = page_count = sheet = cell_range = None
             if (type(offset) is not int or not 0 <= offset <= (1 << 40)
                     or type(length) is not int or not 0 < length <= PC_CHUNK_MAX_BYTES):
                 raise ToolHandlerError("pc_chunk_arguments_invalid", "Invalid byte bounds")
@@ -2140,6 +2261,7 @@ def _make_pc_read_chunk_handler(*, service, request_factory, secret):
                 projection = _pc_chunk_projection(
                     final["output"], offset=offset, length=length,
                     start_line=start_line, line_count=line_count,
+                    page=page, page_count=page_count, sheet=sheet, cell_range=cell_range,
                 )
                 emit_progress("result")
                 return {
@@ -2160,6 +2282,13 @@ def _make_pc_read_chunk_handler(*, service, request_factory, secret):
                         "line_count": projection["line_count"]}
                        if line_mode else {}),
                     **({"partial": projection["partial"]} if "partial" in projection else {}),
+                    # Page/cell records live in bounded output JSON, not a
+                    # second copy in structured fields (which would double
+                    # the 256 KiB document selection response).
+                    **({key: projection[key] for key in (
+                        "page", "page_count", "total_pages", "sheet",
+                        "range", "cell_count") if key in projection}
+                       if pdf_mode or xlsx_mode else {}),
                     "result_sha256": final.get("result_sha256"),
                     "execution_confirmed": True,
                     "termination": termination,
