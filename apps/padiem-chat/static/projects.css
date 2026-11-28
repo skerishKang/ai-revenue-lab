@@ -106,6 +106,10 @@
 .project-banner-actions {
   display: flex;
   gap: 6px;
+  /* Scope opaque ribbon controls without changing the shared veil roles. */
+  --surface-veil-ghost: var(--sidebar-solid);
+  --line-veil-dim: var(--text);
+  --ws-control-muted-text: var(--text);
 }
 
 .project-banner-actions button {

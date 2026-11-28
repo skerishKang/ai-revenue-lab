@@ -70,6 +70,8 @@ html[data-theme="padiem-glass"] .app-shell::before {
 }
 
 html[data-theme="padiem-glass"] .sidebar {
+  /* Masking the glass scrollport changes its backdrop sampling and weakens text contrast. */
+  --sidebar-history-edge-mask: none;
   padding-bottom: 18px;
   background: linear-gradient(180deg, rgba(43, 51, 60, .58), rgba(35, 43, 51, .42));
   color: #f6f8fa;

@@ -134,7 +134,7 @@ html[data-theme="dark"] .sidebar {
   box-shadow: none;
   backdrop-filter: none;
 }
-html[data-theme="dark"] .brand { color: #f4f5f6; }
+html[data-theme="dark"] .brand { color: #f4f5f6; letter-spacing: -.02em; white-space: nowrap; }
 html[data-theme="dark"] .brand-mark,
 html[data-theme="dark"] .assistant-avatar {
   background: var(--utility-surface);
@@ -214,7 +214,7 @@ html[data-theme="cinematic"] .sidebar {
   border-right-color: var(--film-frame-edge);
   box-shadow: 22px 0 70px rgba(0,0,0,.28), inset -1px 0 0 rgba(136,201,255,.14), 10px 0 48px rgba(91,166,230,.08);
 }
-html[data-theme="cinematic"] .brand { color: #fff; }
+html[data-theme="cinematic"] .brand { color: #fff; letter-spacing: -.02em; white-space: nowrap; }
 html[data-theme="cinematic"] .brand-mark,
 html[data-theme="cinematic"] .assistant-avatar {
   background: linear-gradient(145deg, rgba(210,235,255,.14), var(--surface-veil-panel)), rgba(8,12,20,.78);

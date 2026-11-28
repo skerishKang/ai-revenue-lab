@@ -63,7 +63,10 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
   border-radius: 18px;
   background: var(--panel);
   color: var(--text);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, .18);
+  /* #8954-6: a bottom inset shadow signals that more model actions scroll below. */
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, .18),
+    inset 0 -18px 18px -12px color-mix(in srgb, var(--text) 28%, transparent);
   backdrop-filter: blur(20px);
 }
 
@@ -226,12 +229,15 @@ html[data-theme="padiem-home"] .mode-option {
  * popover treatment: that produced a nearly black island over the light home. */
 html[data-theme="padiem-glass"] .mode-presentation-panel {
   border-color: rgba(255, 255, 255, .72);
+  /* Keep the existing frosted gradient; opaque paper behind it prevents bleed-through. */
   background:
-    linear-gradient(155deg, rgba(252, 253, 254, .96), rgba(232, 238, 242, .92));
+    linear-gradient(155deg, rgba(252, 253, 254, .96), rgba(232, 238, 242, .92)),
+    var(--calendar-paper);
   color: var(--text-panel-ink);
   box-shadow:
     0 24px 70px rgba(24, 33, 42, .22),
-    inset 0 1px 0 rgba(255, 255, 255, .90);
+    inset 0 1px 0 rgba(255, 255, 255, .90),
+    inset 0 -18px 18px -12px color-mix(in srgb, currentColor 28%, transparent);
   backdrop-filter: blur(28px) saturate(108%);
   -webkit-backdrop-filter: blur(28px) saturate(108%);
 }
