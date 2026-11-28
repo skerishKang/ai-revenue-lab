@@ -113,3 +113,34 @@ def test_shared_header(browser,width):
 
 def test_no_new_important():
     assert CSS.count("!important")<=5
+
+# CTO follow-up: at most 480px the shared action must disappear, preserving
+# the full councillor name; from 481px it must remain visible on every page.
+@pytest.mark.parametrize("name", PAGES)
+@pytest.mark.parametrize("width,expected_display", [
+    (360, "none"), (390, "none"), (480, "none"),
+    (481, "inline-flex"), (620, "inline-flex"), (820, "inline-flex"),
+])
+def test_header_cta_phone_visibility_and_brand_not_truncated(browser, name, width, expected_display):
+    page = open_page(browser, name, width=width)
+    result = page.evaluate("""() => {
+      const cta = document.querySelector('.topbar .top-cta');
+      const label = document.querySelector('.topbar .brand-name');
+      return {
+        cta_count: document.querySelectorAll('.topbar .top-cta').length,
+        display: getComputedStyle(cta).display,
+        brand_client: label.clientWidth,
+        brand_scroll: label.scrollWidth,
+        document_client: document.documentElement.clientWidth,
+        document_scroll: document.documentElement.scrollWidth,
+      };
+    }""")
+    page.close()
+    assert result["cta_count"] == 1, (name, width, result)
+    if expected_display == "none":
+        assert result["display"] == "none", (name, width, result)
+    else:
+        assert result["display"] != "none", (name, width, result)
+    assert result["brand_client"] > 0, (name, width, result)
+    assert result["brand_scroll"] <= result["brand_client"], (name, width, result)
+    assert result["document_scroll"] <= result["document_client"], (name, width, result)
