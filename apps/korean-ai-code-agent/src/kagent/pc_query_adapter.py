@@ -692,7 +692,9 @@ def pc_read_chunk_tool_spec() -> ToolSpec:
         title="Read one range of a file on the verified PC",
         description=("Read a byte/character range or a UTF-8 text line range "
                      "(start_line and line_count, max 1000 lines and 256 KiB). "
-                     "The modes are exclusive; the result reports continuation."),
+                     "PDF page/page_count (1-based, max 10), or XLSX sheet/range "
+                     "(A1:D30, max 2000 cells). All modes are mutually exclusive; "
+                     "each result is bounded to 256 KiB and reports continuation."),
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_READ_CHUNK_SCOPE,),
         input_schema={"type":"object","properties":{
@@ -700,7 +702,11 @@ def pc_read_chunk_tool_spec() -> ToolSpec:
             "offset":{"type":"integer","minimum":0},
             "length":{"type":"integer","minimum":1},
             "start_line":{"type":"integer","minimum":1},
-            "line_count":{"type":"integer","minimum":1,"maximum":1000}},
+            "line_count":{"type":"integer","minimum":1,"maximum":1000},
+            "page":{"type":"integer","minimum":1},
+            "page_count":{"type":"integer","minimum":1,"maximum":10},
+            "sheet":{"type":"string","minLength":1,"maxLength":128},
+            "range":{"type":"string","minLength":5,"maxLength":32}},
             "required":["path"],"additionalProperties":False},
         output_contract={"type":"object"}, timeout_seconds=None)
 

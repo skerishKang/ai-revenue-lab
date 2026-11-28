@@ -8,6 +8,7 @@ from collections.abc import Mapping
 import re
 
 from .web_runtime import normalize_public_url
+from .pc_document_selectors import valid_pdf_selection, valid_xlsx_selection
 
 
 PC_GATEWAY_TOOLS = {
@@ -30,7 +31,7 @@ PC_GATEWAY_TOOLS = {
     "claw.pc.search_contents": {"path"},
     # The Engine's recursive name search: one folder, the query beside the id.
     "claw.pc.search_files": {"path"},
-    "claw.pc.read_file_chunk": {"path", "offset", "length", "start_line", "line_count"},
+    "claw.pc.read_file_chunk": {"path", "offset", "length", "start_line", "line_count", "page", "page_count", "sheet", "range"},
     "claw.pc.browser_open": {"url"},
     "claw.pc.browser_read": set(),
     "claw.pc.browser_screenshot": set(),
@@ -71,7 +72,7 @@ def parse_pc_gateway(value):
             or any(not isinstance(item, str)
                    and not (tool == "claw.pc.edit_file" and key == "replace_all"
                             and isinstance(item, bool))
-                   and not (tool == "claw.pc.read_file_chunk" and key in {"offset", "length", "start_line", "line_count"}
+                   and not (tool == "claw.pc.read_file_chunk" and key in {"offset", "length", "start_line", "line_count", "page", "page_count"}
                             and type(item) is int)
                    and not (tool == "claw.pc.list_files" and key in {"depth", "offset"}
                             and type(item) is int)
@@ -103,7 +104,19 @@ def parse_pc_gateway(value):
         raise ValueError("Invalid PC gateway tool arguments")
     if tool == "claw.pc.read_file_chunk":
         line_mode = "start_line" in args or "line_count" in args
-        if line_mode:
+        pdf_mode = "page" in args or "page_count" in args
+        xlsx_mode = "sheet" in args or "range" in args
+        if sum((line_mode, pdf_mode, xlsx_mode)) > 1:
+            raise ValueError("Mixed PC range arguments")
+        if pdf_mode:
+            if (set(args) != {"path", "page", "page_count"}
+                    or not valid_pdf_selection(args["page"], args["page_count"])):
+                raise ValueError("Invalid PC gateway PDF range")
+        elif xlsx_mode:
+            if (set(args) != {"path", "sheet", "range"}
+                    or not valid_xlsx_selection(args["sheet"], args["range"])):
+                raise ValueError("Invalid PC gateway XLSX range")
+        elif line_mode:
             if (set(args) != {"path", "start_line", "line_count"}
                     or type(args["start_line"]) is not int
                     or not 1 <= args["start_line"] <= (1 << 40)

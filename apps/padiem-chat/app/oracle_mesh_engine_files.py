@@ -438,7 +438,26 @@ async def _engine_pc_files_call_dispatch(
             return _engine_pc_job_response(response, requested_mode), {}
         if op == "read_chunk":
             line_mode = "start_line" in payload or "line_count" in payload
-            if line_mode:
+            pdf_mode = "page" in payload or "page_count" in payload
+            xlsx_mode = "sheet" in payload or "range" in payload
+            if sum((line_mode, pdf_mode, xlsx_mode)) > 1:
+                return _error(422, "oracle_mesh_file_range_invalid"), {}
+            if pdf_mode or xlsx_mode:
+                from padiem_ai_core.pc_document_selectors import valid_pdf_selection, valid_xlsx_selection
+                if ("offset" in payload or "length" in payload or not relative
+                        or (pdf_mode and not valid_pdf_selection(
+                            payload.get("page"), payload.get("page_count")))
+                        or (xlsx_mode and not valid_xlsx_selection(
+                            payload.get("sheet"), payload.get("range")))):
+                    return _error(422, "oracle_mesh_file_range_invalid"), {}
+                try:
+                    command = pc_read_chunk_command(
+                        root=root, relative=relative,
+                        **({"page": payload["page"], "page_count": payload["page_count"]}
+                           if pdf_mode else {"sheet": payload["sheet"], "cell_range": payload["range"]}))
+                except ValueError:
+                    return _error(422, "oracle_mesh_file_range_invalid"), {}
+            elif line_mode:
                 start_line, count = payload.get("start_line"), payload.get("line_count")
                 if (not relative or "offset" in payload or "length" in payload
                         or type(start_line) is not int or not 1 <= start_line <= (1 << 40)
@@ -574,7 +593,11 @@ async def _engine_pc_files_call_verify(
         # A search names its query and which side of the file it looks at.
         extra_fields = {"write": {"content"}, "move": {"destination"},
                         "search": {"query", "search_mode"},
-                        "read_chunk": ({"start_line", "line_count"} if (
+                        "read_chunk": ({"page", "page_count"} if (
+                            "page" in payload or "page_count" in payload
+                        ) else {"sheet", "range"} if (
+                            "sheet" in payload or "range" in payload
+                        ) else {"start_line", "line_count"} if (
                             "start_line" in payload or "line_count" in payload
                         ) else {"offset", "length"})}
         # #7603: a write may name the append spelling. It is its own boolean
