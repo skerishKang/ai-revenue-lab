@@ -750,7 +750,7 @@
         "kind": "프로필",
         "title": "임미란 의원 공식 프로필 사진",
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=003",
-        "thumb": "./static/images/profile-portrait.webp",
+        "thumb": "./static/images/profile-portrait-beige.webp",
         "notes": [
           "제9대 광주광역시의회 공식 페이지 제공",
           "출처: council.gwangju.go.kr"

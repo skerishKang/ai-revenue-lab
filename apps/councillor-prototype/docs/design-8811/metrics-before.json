@@ -1,0 +1,162 @@
+{
+  "media-default-390-light": {
+    "gridColumns": "169px 169px",
+    "bodyWidth": 350,
+    "firstCard": {
+      "x": 20,
+      "y": 201.25,
+      "width": 169,
+      "height": 719.5625,
+      "right": 189,
+      "bottom": 920.8125
+    },
+    "firstPhoto": {
+      "x": 33,
+      "y": 214.25,
+      "width": 143,
+      "height": 480,
+      "right": 176,
+      "bottom": 694.25
+    },
+    "firstTitle": {
+      "x": 33,
+      "y": 704.25,
+      "width": 143,
+      "height": 54.375,
+      "right": 176,
+      "bottom": 758.625
+    },
+    "profile": {
+      "x": 33,
+      "y": 214.25,
+      "width": 143,
+      "height": 480,
+      "right": 176,
+      "bottom": 694.25
+    },
+    "profileBackground": "rgb(235, 229, 214)",
+    "profileFit": "cover",
+    "profileSrc": "http://127.0.0.1:2113/static/images/thumbs/profile-portrait-320.webp",
+    "pageOverflow": 0
+  },
+  "media-default-820-dark": {
+    "gridColumns": "374px 374px",
+    "bodyWidth": 764,
+    "firstCard": {
+      "x": 28,
+      "y": 207.25,
+      "width": 374,
+      "height": 680.578125,
+      "right": 402,
+      "bottom": 887.828125
+    },
+    "firstPhoto": {
+      "x": 47,
+      "y": 226.25,
+      "width": 336,
+      "height": 480,
+      "right": 383,
+      "bottom": 706.25
+    },
+    "firstTitle": {
+      "x": 47,
+      "y": 746.046875,
+      "width": 336,
+      "height": 27.1875,
+      "right": 383,
+      "bottom": 773.234375
+    },
+    "profile": {
+      "x": 47,
+      "y": 226.25,
+      "width": 336,
+      "height": 480,
+      "right": 383,
+      "bottom": 706.25
+    },
+    "profileBackground": "rgb(19, 35, 58)",
+    "profileFit": "cover",
+    "profileSrc": "http://127.0.0.1:2113/static/images/thumbs/profile-portrait-320.webp",
+    "pageOverflow": 0
+  },
+  "media-profile-1440-light": {
+    "gridColumns": "416px 416px 416px",
+    "bodyWidth": 1280,
+    "firstCard": {
+      "x": 80,
+      "y": 219.453125,
+      "width": 416,
+      "height": 680.578125,
+      "right": 496,
+      "bottom": 900.03125
+    },
+    "firstPhoto": {
+      "x": 99,
+      "y": 238.453125,
+      "width": 378,
+      "height": 480,
+      "right": 477,
+      "bottom": 718.453125
+    },
+    "firstTitle": {
+      "x": 99,
+      "y": 758.25,
+      "width": 378,
+      "height": 27.1875,
+      "right": 477,
+      "bottom": 785.4375
+    },
+    "profile": {
+      "x": 99,
+      "y": 238.453125,
+      "width": 378,
+      "height": 480,
+      "right": 477,
+      "bottom": 718.453125
+    },
+    "profileBackground": "rgb(235, 229, 214)",
+    "profileFit": "cover",
+    "profileSrc": "http://127.0.0.1:2113/static/images/thumbs/profile-portrait-640.webp",
+    "pageOverflow": 0
+  },
+  "media-profile-edge-1440-light": {
+    "gridColumns": "416px 416px 416px",
+    "bodyWidth": 1280,
+    "firstCard": {
+      "x": 80,
+      "y": 219.453125,
+      "width": 416,
+      "height": 680.578125,
+      "right": 496,
+      "bottom": 900.03125
+    },
+    "firstPhoto": {
+      "x": 99,
+      "y": 238.453125,
+      "width": 378,
+      "height": 480,
+      "right": 477,
+      "bottom": 718.453125
+    },
+    "firstTitle": {
+      "x": 99,
+      "y": 758.25,
+      "width": 378,
+      "height": 27.1875,
+      "right": 477,
+      "bottom": 785.4375
+    },
+    "profile": {
+      "x": 99,
+      "y": 238.453125,
+      "width": 378,
+      "height": 480,
+      "right": 477,
+      "bottom": 718.453125
+    },
+    "profileBackground": "rgb(235, 229, 214)",
+    "profileFit": "cover",
+    "profileSrc": "http://127.0.0.1:2113/static/images/thumbs/profile-portrait-640.webp",
+    "pageOverflow": 0
+  }
+}

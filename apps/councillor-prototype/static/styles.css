@@ -605,6 +605,10 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 [data-theme="dark"] .media-tile { background: var(--navy-soft); }
 .media-tile:hover { border-color: var(--accent-2); transform: translateY(-2px); }
 .tile-thumb { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-sm); margin-bottom: 10px; background: var(--ivory-soft); }
+/* 프로필 카드만 의원 소개의 베이지 바탕을 유지하고 사람을 자르지 않는다. */
+#mediaGrid .media-card:has(.tile-thumb[src*="profile-portrait"]) .tile-thumb {
+  background: var(--ivory); object-fit: contain; object-position: center center;
+}
 [data-theme="dark"] .tile-thumb { background: var(--navy-soft); }
 /* Tiles without a picture of their own (video, external link) show the kind instead of
    reusing one poster across every card. */.tile-kind { display: block; font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.06em; color: var(--accent-2-text); }
@@ -662,6 +666,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 .hero-strip-inner .strip-link { grid-column: 1 / -1; justify-self: end; }
 .col-grid { grid-template-columns: 1fr 1fr; }
 .col-grid > :last-child { grid-column: 1 / -1; }
+.media-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 
 }
@@ -761,6 +766,12 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 .profile-list > div { grid-template-columns: 1fr; gap: 2px; }
 
 
+}
+/* 600px 이하의 미디어 사진과 제목은 한 열 전체를 사용한다. */
+@media (max-width: 600px) {
+  .media-grid { grid-template-columns: minmax(0, 1fr); }
+  .media-grid .tile-thumb { aspect-ratio: 4 / 3; }
+  .media-grid .tile-title { display: block; overflow: visible; -webkit-line-clamp: unset; }
 }
 @media (max-width: 420px) {
 .hero-name { font-size: 27px; }
