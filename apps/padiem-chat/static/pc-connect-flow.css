@@ -240,6 +240,13 @@
   display: none;
 }
 
+/* #8954-9: only a verified connected PC makes the home card's status bullet
+   green, matching the composer dot. The status words keep their theme colour. */
+body:has(#composerPcStatus[data-pc-connect="connected"])
+  #pcConnectStarter [data-pc-connect-state]::first-letter {
+  color: var(--success);
+}
+
 @media (max-width: 560px) {
   .pc-connect-modal {
     padding: 16px;
