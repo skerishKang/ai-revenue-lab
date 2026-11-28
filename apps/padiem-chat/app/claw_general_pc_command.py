@@ -13,6 +13,7 @@ from kagent.p01_run_flow import create_claw_run
 from .auth_routes import auth_ready, current_user_id
 from .claw_general_pc_intent import _requested_local_command
 from .claw_general_response import _claw_general_sse
+from .claw_general_conversation import _settle_claw_run_failed
 from .claw_routes import _error, _resolve_intake_session_reference
 from .history import PRODUCT_SCOPE_CHAT
 
@@ -182,5 +183,120 @@ async def _dispatch_user_command_request(
         return dispatched
     return _claw_general_sse(
         "COM1에서 명령을 실행하는 중입니다. 실제 출력은 작업 완료 후 이 대화에 표시됩니다.",
+        conversation_id=cid, pending_run_id=run.run_id,
+    )
+
+
+async def _dispatch_user_txt_request(
+    request: Request, *, user_text: str, path_relative: str,
+    data: dict[str, Any],
+) -> JSONResponse | Response:
+    """Claw's existing composer → existing Broker enqueue, with owned run."""
+    from .claw_memory_routes import _resolve_memory_workspace
+    from .connector_txt_read_routes import (
+        choose_verified_txt_device, dispatch_verified_txt_read,
+    )
+
+    conversation_id, denial = await _resolve_intake_session_reference(request, data)
+    if denial is not None:
+        return denial
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not isinstance(uid, str) or not uid:
+        return _error(401, "canonical_session_required", "로그인이 필요합니다.")
+    selected = data.get("device_id")
+    if selected is not None and (not isinstance(selected, str) or not selected):
+        return _error(422, "txt_read_device_invalid", "선택한 PC를 확인할 수 없습니다.")
+
+    # #4139: an ordinary TXT request may execute on the management host over
+    # the verified Mesh ownership map. That decision is made BEFORE the native
+    # device directory lookup, so a PC without a native binding is not filtered
+    # out first; the native lane below is unchanged for everything else.
+    from .oracle_mesh_read_return_routes import (
+        dispatch_oracle_mesh_read_intent, resolve_oracle_mesh_execution,
+    )
+    mesh_target, mesh_error = await resolve_oracle_mesh_execution(
+        request, path_relative=path_relative, selected_device_id=selected,
+    )
+    if mesh_error is not None:
+        return mesh_error
+    if mesh_target is not None:
+        try:
+            workspace = await _resolve_memory_workspace(request, uid)
+        except Exception:
+            workspace = None
+        if not isinstance(workspace, str) or not workspace:
+            return _error(503, "txt_read_workspace_unavailable", "대화 범위를 확인할 수 없습니다.")
+        history = getattr(request.app.state, "history_store", None)
+        stage = getattr(history, "record_txt_pending_run", None)
+        if not callable(stage):
+            return _error(503, "txt_read_history_unavailable", "대화 저장소를 확인할 수 없습니다.")
+        run = create_claw_run("padiem-chat", user_text, model_only_text=True)
+        try:
+            cid = await stage(
+                user_id=uid, run_id=run.run_id, workspace_id=workspace,
+                user_text=user_text, conversation_id=conversation_id,
+            )
+        except Exception:
+            return _error(503, "txt_read_history_unavailable", "대화 저장에 실패했습니다.")
+        try:
+            staged = await dispatch_oracle_mesh_read_intent(request, {
+                "device_id": mesh_target["device_id"],
+                "run_id": run.run_id,
+                "root_ref": mesh_target["root_ref"],
+                "path_relative": mesh_target["path_relative"],
+                "confirmed": True,  # derived from this authenticated user's READ text
+            })
+        except Exception:
+            await _settle_claw_run_failed(history, uid, run.run_id)
+            return _error(503, "txt_read_dispatch_unavailable",
+                          "PC 작업 요청을 보내지 못했습니다.")
+        if staged.status_code != 200:
+            await _settle_claw_run_failed(history, uid, run.run_id)
+            return staged
+        return _claw_general_sse(
+            "PC의 TXT 파일을 읽는 중입니다. 실제 파일 내용은 작업 완료 후 이 대화에 표시됩니다.",
+            conversation_id=cid, pending_run_id=run.run_id,
+        )
+
+    device_id, error = await choose_verified_txt_device(
+        request, selected_device_id=selected,
+    )
+    if error is not None:
+        return error
+    try:
+        workspace = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace = None
+    if not isinstance(workspace, str) or not workspace:
+        return _error(503, "txt_read_workspace_unavailable", "대화 범위를 확인할 수 없습니다.")
+    history = getattr(request.app.state, "history_store", None)
+    stage = getattr(history, "record_txt_pending_run", None)
+    if not callable(stage):
+        return _error(503, "txt_read_history_unavailable", "대화 저장소를 확인할 수 없습니다.")
+    run = create_claw_run("padiem-chat", user_text, model_only_text=True)
+    try:
+        cid = await stage(
+            user_id=uid, run_id=run.run_id, workspace_id=workspace,
+            user_text=user_text, conversation_id=conversation_id,
+        )
+    except Exception:
+        return _error(503, "txt_read_history_unavailable", "대화 저장에 실패했습니다.")
+    try:
+        dispatched = await dispatch_verified_txt_read(request, {
+            "device_id": device_id, "root_ref": "root.3140",
+            "path_relative": path_relative, "run_id": run.run_id,
+            "confirmed": True,  # derived from this authenticated user's actual READ text
+        })
+    except Exception:
+        await _settle_claw_run_failed(history, uid, run.run_id)
+        return _error(503, "txt_read_dispatch_unavailable",
+                      "PC 작업 요청을 보내지 못했습니다.")
+    if dispatched.status_code != 200:
+        await _settle_claw_run_failed(history, uid, run.run_id)
+        return dispatched
+    # Only a wait response is emitted. The *verified* PC body is appended
+    # asynchronously on existing run-history/local-result reconciliation.
+    return _claw_general_sse(
+        "PC의 TXT 파일을 읽는 중입니다. 실제 파일 내용은 작업 완료 후 이 대화에 표시됩니다.",
         conversation_id=cid, pending_run_id=run.run_id,
     )
