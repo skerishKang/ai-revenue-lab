@@ -143,7 +143,7 @@ window.addEventListener('error', e => {
         language = panel.get_by_role("group", name="영어 함께 보기")
         size = panel.get_by_role("group", name="글자 크기")
         spacing = panel.get_by_role("group", name="줄 간격")
-        theme = panel.get_by_role("group", name="테마 · 배경")
+        theme = panel.get_by_role("group", name="읽기 화면 테마")
         assert font.count() == language.count() == size.count() == spacing.count() == theme.count() == 1
         assert page.evaluate("document.activeElement.classList.contains('srsg-x')")
         page.keyboard.press("Tab")

@@ -1,4 +1,16 @@
 
+:root{
+  --sm-chapter-chip-bg:rgba(255,255,255,.7);
+  --sm-chapter-chip-ink:#4f4944;
+  --sm-chapter-chip-border:rgba(79,73,68,.28);
+  --sm-chapter-chip-hover:#fff;
+}
+body.smr-theme-dark{
+  --sm-chapter-chip-bg:#342c25;
+  --sm-chapter-chip-ink:#f2e8d9;
+  --sm-chapter-chip-border:#756455;
+  --sm-chapter-chip-hover:#45382d;
+}
 .reader-layout{grid-template-columns:minmax(168px,190px) minmax(0,1fr)!important}
 /* B61-1613: AI panel is an overlay sheet gated on body.ai-open (see
    storymemory-b61-1613-reachability-v1.css). Do not force-hide here. */
@@ -12,8 +24,8 @@
 .memory-rail::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
 .memory-focus-empty b{font-size:13px!important;color:#4f4944!important;font-family:var(--font-bible)!important}
 .memory-focus-empty span{font-size:13px!important;line-height:1.68!important;color:#4f4944!important;letter-spacing:-0.01em!important;font-family:var(--font-bible)!important}
-.v2-chapter-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin:0 0 6px 14px;padding:5px 12px;border:1px solid rgba(79,73,68,.28);border-radius:999px;background:rgba(255,255,255,.7);color:#4f4944;font-family:var(--font-ui,inherit);font-size:11.5px;font-weight:600;letter-spacing:.02em;cursor:pointer;box-shadow:0 1px 3px rgba(30,25,20,.08)}
-.v2-chapter-chip:hover{background:#fff;border-color:rgba(79,73,68,.5)}
+.v2-chapter-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin:0 0 6px 14px;padding:5px 12px;border:1px solid var(--sm-chapter-chip-border);border-radius:999px;background:var(--sm-chapter-chip-bg);color:var(--sm-chapter-chip-ink);font-family:var(--font-ui,inherit);font-size:11.5px;font-weight:600;letter-spacing:.02em;cursor:pointer;box-shadow:0 1px 3px rgba(30,25,20,.08)}
+.v2-chapter-chip:hover{background:var(--sm-chapter-chip-hover);border-color:var(--sm-chapter-chip-border)}
 @media (max-width:768px){
 .reader-layout{grid-template-columns:minmax(0,1fr)!important}
 /* B61-1613: rail/panel sheets governed by reachability stylesheet. */
@@ -34,3 +46,9 @@
 #reader .paper-rule-ornament { display:none; }
 #reader .paper-head::after { content:none; }
 #reader .v2-chapter-chip::after { content:none; }
+/* #8779: 출처의 중심을 종이(814px)가 아닌 실제 본문 열(696px)에 맞춘다. */
+@media(min-width:1181px){
+  #reader #readerPageBody>.sm-verified-source-note{
+    width:696px;max-width:100%;margin-left:0;margin-right:auto;box-sizing:border-box;
+  }
+}

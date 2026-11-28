@@ -88,7 +88,7 @@
   }
   function themeRow(){
     var row=document.createElement('div');row.className='srsg-row';
-    var lb=document.createElement('div');lb.className='srsg-label';lb.id='srsg-label-theme';lb.textContent='테마 · 배경';row.appendChild(lb);
+    var lb=document.createElement('div');lb.className='srsg-label';lb.id='srsg-label-theme';lb.textContent='읽기 화면 테마';row.appendChild(lb);
     var seg=document.createElement('div');seg.className='srsg-sw';seg.dataset.field='theme';seg.setAttribute('role','group');seg.setAttribute('aria-labelledby',lb.id);
     [['default','현재(#fffdf8)','#fffdf8'],['light','밝게','#ffffff'],['sepia','세피아','#f2e8d5'],['dark','어둡게','#262019'],['glass','글래스','linear-gradient(135deg,rgba(250,247,242,.92),rgba(250,247,242,.4))']].forEach(function(t){
       var b=document.createElement('button');b.type='button';b.dataset.value=t[0];b.title=t[1];b.setAttribute('aria-label',t[1]);

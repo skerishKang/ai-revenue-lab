@@ -13,7 +13,10 @@ const memoryUi = readFileSync(
   new URL('../public/storymemory-memory-ui-v1.js', import.meta.url), 'utf8');
 
 function labelOf(name) {
-  const match = firstscreen.match(new RegExp(name + "\.textContent='([^']*)'"));
+  // #8781: 네 줄 메뉴 통일 후 실제 단추 라벨을 검사한다.
+  const match=name==='motionLabel'
+    ? firstscreen.match(/motionText\.textContent='([^']+)'/)
+    : html.match(/<span class="sm-menu-label">([^<]+)<\/span>/);
   assert.ok(match, name + ' 라벨을 찾지 못했다');
   return match[1];
 }

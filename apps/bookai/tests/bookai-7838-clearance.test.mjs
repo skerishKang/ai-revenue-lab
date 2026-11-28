@@ -11,15 +11,13 @@ const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const publicRoot = path.join(appRoot, 'public');
 const read = (...parts) => fs.readFileSync(path.join(publicRoot, ...parts), 'utf8');
 
-test('#7838 첫 화면 여백: 떠 있는 단추 영역 예약 변수와 적용 규칙이 있다', () => {
+test('#7838·#8781 첫 화면 여백: 떠 있는 의견 단추 제거 뒤 통계 양옆 16px', () => {
   const css = read('styles', 'bookai-7838-clearance-v1.css');
-  // 여백 변수: 390 첫 화면 오른쪽 아래 엄지 영역(둥근 단추 한 개 폭) 예약
-  assert.match(css, /--sm-corner-fab-zone:\s*72px/, '예약 폭 변수(--sm-corner-fab-zone)가 있어야 한다');
-  // 768 이하에서 요약 줄의 오른쪽 끝이 예약 영역 왼쪽에서 끝난다
+  assert.doesNotMatch(css,/--sm-corner-fab-zone/,'제거된 떠 있는 단추의 예약폭을 남기지 않는다');
   assert.match(
     css,
-    /@media \(max-width:768px\)\s*\{[\s\S]*?#library \.library-order-control\{right:calc\(16px \+ var\(--sm-corner-fab-zone\)\)\}/,
-    '768 이하 요약 줄이 단추 영역만큼 비켜가는 규칙이 있어야 한다',
+    /@media\(max-width:768px\)\s*\{[\s\S]*?#library \.library-order-control\{right:16px\}/,
+    '768 이하 통계 줄은 오른쪽 16px를 지킨다',
   );
   // 이 파일은 기존 규칙을 뒤집지 않는다 — 새 !important 없음
   assert.ok(!css.includes('!important'), '새 파일에 !important를 추가하지 않는다');

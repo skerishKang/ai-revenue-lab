@@ -85,9 +85,9 @@
     white-space:nowrap;
   }
   .hero-title{
-    margin-top:9px!important;
-    font-size:clamp(38px,10.8vw,46px)!important;
-    line-height:.90!important;
+    margin-top:16px!important;
+    font-size:clamp(30px,8.5vw,39px)!important;
+    line-height:1.48!important;
     letter-spacing:-.062em!important;
     max-width:9.4em!important;
   }
