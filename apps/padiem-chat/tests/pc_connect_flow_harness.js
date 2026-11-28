@@ -225,7 +225,7 @@ function makeDom(responses, options = {}) {
   vm.runInContext(dependency, sandbox);
   vm.runInContext(script, sandbox);
   return { body, chip, starter, managerToggle, calls, downloads, store, events, sandbox,
-    window: windowObj, blobs: globalThis.blobs, advance };
+    window: windowObj, blobs: globalThis.blobs, advance, clock };
 }
 
 const LINK = {
@@ -432,6 +432,71 @@ async function main() {
     && waitingExpiredBox.allText().includes("10분 안에 다시 열어")
     && waitingRedownload && waitingRedownload.hidden === false,
     waitingModal.allText());
+
+  // -- #8915: a deadline that is already past on arrival -----------------------
+  /* The download answer itself can carry a stamp that is already history (a
+   * very slow link, a long-open window). rememberInstall's paint routes it to
+   * the expired notice; the wait phase must not paint over it. */
+  const prepaid = makeDom({
+    "GET *": { status: 200, body: { ok: true, links: [], codes: [] } },
+    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
+      headers: { "x-pc-pairing-code-id": "pcpair_prepaid01",
+        "x-pc-pairing-expires-at": new Date(Date.now() - 60 * 1000).toISOString(),
+        "date": new Date(Date.now() - 30 * 1000).toUTCString() } },
+  });
+  await settle();
+  await prepaid.window.PadiemPcConnectFlow.open();
+  const prepaidModal = prepaid.body.querySelectorAll(".pc-connect-backdrop")[0];
+  prepaidModal.querySelector(".pc-connect-install").click();
+  await dwell(80);
+  const prepaidExpired = prepaidModal.querySelector(".pc-connect-expired-copy");
+  const prepaidRedownload = prepaidModal.querySelector(".pc-connect-redownload");
+  const prepaidRun = prepaidModal.querySelector(".pc-connect-run");
+  check("an already-past deadline lands in the expired notice, never stuck on 설치 중",
+    prepaidExpired && prepaidExpired.hidden === false
+    && prepaidExpired.allText().includes("설치 파일 시간이 지났어요")
+    && prepaidRedownload && prepaidRedownload.hidden === false
+    && prepaidRun && prepaidRun.hidden === true,
+    prepaidModal.allText());
+  const prepaidGets = prepaid.calls.filter((call) => call.method === "GET").length;
+  await dwell(60);
+  check("the expired-on-arrival install starts no wait and no poll",
+    prepaid.calls.filter((call) => call.method === "GET").length === prepaidGets
+    && (prepaidModal.querySelector(".pc-connect-wait") || {}).hidden !== false,
+    JSON.stringify(prepaid.calls));
+
+  // -- #8915: a skewed PC clock judges the deadline in server time -------------
+  /* The response's Date header is the server's clock; a PC clock 20 minutes
+   * ahead must not kill a fresh file, and the countdown still completes. */
+  const skewed = makeDom({
+    "GET *": { status: 200, body: { ok: true, links: [], codes: [] } },
+    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
+      headers: { "x-pc-pairing-code-id": "pcpair_skew01",
+        "x-pc-pairing-expires-at": new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+        "date": new Date().toUTCString() } },
+  }, { fakeClock: true, pollMs: 4000 });
+  skewed.clock.now += 20 * 60 * 1000;
+  await settle();
+  await skewed.window.PadiemPcConnectFlow.open();
+  const skewedModal = skewed.body.querySelectorAll(".pc-connect-backdrop")[0];
+  skewedModal.querySelector(".pc-connect-install").click();
+  await settle();
+  const skewedDeadline = skewedModal.querySelector(".pc-connect-deadline");
+  const skewedExpired = skewedModal.querySelector(".pc-connect-expired-copy");
+  const skewedRun = skewedModal.querySelector(".pc-connect-run");
+  check("a PC clock 20 minutes ahead still sees the fresh file's remaining time",
+    skewedRun && skewedRun.hidden === false
+    && skewedDeadline && skewedDeadline.hidden === false
+    && skewedDeadline.allText().includes("남은 시간")
+    && skewedExpired && skewedExpired.hidden === true,
+    skewedModal.allText());
+  await skewed.advance(601000);
+  await settle();
+  const skewedExpiredLater = skewedModal.querySelector(".pc-connect-expired-copy");
+  check("the skewed clock's countdown still completes into the expired notice",
+    skewedExpiredLater && skewedExpiredLater.hidden === false
+    && skewedExpiredLater.allText().includes("설치 파일 시간이 지났어요"),
+    skewedModal.allText());
 
   // -- #8028: a connection stops the flow immediately ------------------------------
   let seen2 = [];

@@ -78,7 +78,9 @@ def test_the_module_takes_the_list_from_the_shared_reader_and_never_reads_at_boo
 
 
 def test_the_card_and_locale_files_stay_where_they_were():
-    assert len(card_js().splitlines()) == 995
+    # #8915: the install deadline is judged in server time (skew capture plus
+    # the no-paint-over guard) — 995 → 999, measured.
+    assert len(card_js().splitlines()) == 999
     assert len(locale_js().splitlines()) <= 1217
     assert len(module_js().splitlines()) < 500
 

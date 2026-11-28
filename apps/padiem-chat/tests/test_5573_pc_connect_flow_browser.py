@@ -61,7 +61,7 @@ def test_the_harness_flow_passes_every_check():
     # refusals, the popover that carries names, states and the one action into
     # the device manager's drive list, and the card and the composer chip that
     # never paint an unread state as "연결 안 됨" or offer "연결하기".
-    assert output.count("PC_CONNECT_FLOW_CHECK") == 41
+    assert output.count("PC_CONNECT_FLOW_CHECK") == 45
     assert "FAIL" not in output
 
 
