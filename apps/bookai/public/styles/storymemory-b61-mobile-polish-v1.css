@@ -90,7 +90,7 @@ body.smr-theme-dark #index .index-shell {
   border-color: rgba(233,225,210,.15) !important;
 }
 body.smr-theme-dark #index .index-top {
-  background: rgba(33, 28, 22, .94) !important;
+  background: var(--sm-index-header-bg) !important;
   border-color: rgba(233,225,210,.14) !important;
   color: #f2eadc !important;
 }

@@ -8,6 +8,8 @@
 .library-reading-summary{font-size:8px;color:rgba(255,255,255,.54);white-space:nowrap}
 .book-rig .book-reading-state{position:absolute;right:-9px;top:-20px;z-index:14;min-width:58px;padding:5px 6px 6px;border-radius:7px;border:1px solid rgba(255,255,255,.14);background:rgba(18,15,12,.78);box-shadow:0 7px 22px rgba(0,0,0,.18);font-family:Arial,sans-serif;pointer-events:none;opacity:.78;transform:translateZ(4px)}
 .book-rig.selected .book-reading-state{opacity:1;right:-14px;top:-23px}
+#library .book-rig[data-motif="bible"] .book-reading-state[data-state="new"] .brs-top{justify-content:center}
+#library .book-rig[data-motif="bible"] .book-reading-state[data-state="new"] .brs-top small:empty{display:none}
 .book-reading-state .brs-top{display:flex;align-items:center;justify-content:space-between;gap:5px}
 .book-reading-state b{font-size:9px;color:#f4e4c6;font-weight:600;letter-spacing:.04em}
 .book-reading-state small{font-size:6px;color:rgba(255,255,255,.5);letter-spacing:.09em}

@@ -207,9 +207,10 @@ function closeGrid(){
   var o=document.getElementById('sm7573ChapterGrid');
   if(o)o.remove();
 }
-function openGrid(){
-  var ctx=currentBibleContext();
-  if(!ctx)return false;
+function openGrid(options){
+  var ctx=options&&options.volume&&options.count?{volume:String(options.volume),chapter:Number(options.chapter),count:Number(options.count)}:currentBibleContext();
+  if(!ctx||!Number.isFinite(ctx.count)||ctx.count<1)return false;
+  var onSelect=options&&typeof options.onSelect==='function'?options.onSelect:null;
   closeGrid();
   var ov=document.createElement('div');
   ov.id='sm7573ChapterGrid';
@@ -240,7 +241,7 @@ function openGrid(){
   x.setAttribute('aria-label','닫기');
   x.textContent='×';
   x.addEventListener('click',closeGrid);
-  head.append(title,count,other,x);
+  head.append(title,count);if(!onSelect)head.append(other);head.append(x);
   var cells=document.createElement('div');
   cells.className='sm7573-grid-cells';
   for(var i=1;i<=ctx.count;i++){
@@ -253,15 +254,31 @@ function openGrid(){
     b.addEventListener('click',function(n){
       return function(){
         closeGrid();
-        openBibleChapter(ctx.volume,n,'first');
+        if(onSelect)onSelect(n);
+        else openBibleChapter(ctx.volume,n,'first');
       };
     }(i));
     cells.append(b);
   }
-  card.append(head,cells);
+  var fade=document.createElement('div');
+  fade.className='sm7573-grid-fade';
+  fade.setAttribute('aria-hidden','true');
+  card.append(head,cells,fade);
   ov.append(card);
   ov.addEventListener('click',function(e){if(e.target===ov)closeGrid();});
   document.body.append(ov);
+  /* The grid alone scrolls. On opening, the selected chapter is already visible. */
+  var active=cells.querySelector('.sm7573-grid-cell.on');
+  if(active){
+    var target=active.getBoundingClientRect(),visible=cells.getBoundingClientRect();
+    cells.scrollTop+=(target.top+target.height/2)-(visible.top+visible.height/2);
+  }
+  function syncFade(){
+    fade.style.opacity=cells.scrollHeight>cells.clientHeight+2&&
+      cells.scrollTop+cells.clientHeight<cells.scrollHeight-2?'1':'0';
+  }
+  cells.addEventListener('scroll',syncFade,{passive:true});
+  syncFade();
   return true;
 }
 document.addEventListener('keydown',function(e){

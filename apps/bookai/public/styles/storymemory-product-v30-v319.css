@@ -306,7 +306,7 @@ body.auth-gate-open .auth-gate-sheet{opacity:1;pointer-events:auto;transform:non
   scroll-snap-align:center;
 }
 .volume-grid::before{
-  content:"SWIPE / WHEEL · 66 BOOKS";
+  content:none;
   position:sticky;
   left:10px;
   align-self:flex-start;

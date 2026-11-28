@@ -236,7 +236,11 @@
     </div>
     <div class="index-body">
       <div class="testament-tabs"><button class="testament-tab on" data-testament="new">신약</button><button class="testament-tab" data-testament="old">구약</button></div>
-      <div class="volume-grid" id="volumes"></div>
+      <div class="sm-volume-rail" aria-label="성경 책장">
+        <button type="button" class="sm-volume-arrow" id="volumePrev" aria-label="이전 책">←</button>
+        <div class="volume-grid" id="volumes"></div>
+        <button type="button" class="sm-volume-arrow" id="volumeNext" aria-label="다음 책">→</button>
+      </div>
       <div class="volume-focus" id="volumeFocus">
         <div class="volume-focus-head">
           <div class="volume-focus-titleblock"><small>선택한 책</small><strong id="volumeFocusTitle">고린도전서</strong></div>
@@ -252,8 +256,8 @@
         <div class="volume-to-paper-guide" aria-hidden="true">
           <span>책</span><i></i><b>→</b><i></i><span>종이</span>
         </div>
-        <div class="chapter-title"><div><small>종이 묶음을 고르세요</small><h2 id="chapterTitle">고린도전서</h2></div><span>장</span></div>
         <div class="chapter-carousel" id="chapterCarousel">
+          <div class="chapter-title"><div><small>종이 묶음을 고르세요</small><h2 id="chapterTitle">고린도전서</h2></div><div class="sm-chapter-title-controls"><button type="button" id="chapterNumberPick">장 번호로 고르기</button><span>장</span></div></div>
           <div class="chapter-ambient-line line-a"></div>
           <div class="chapter-ambient-line line-b"></div>
           <div class="world-key-light world-key-light-chapter" aria-hidden="true"></div><div class="chapter-shadow-bed"></div>
@@ -1109,7 +1113,13 @@ function __smAnchorChapterNavToView(){
  const cRect=carousel.getBoundingClientRect();
  const absTop=cRect.top-idxRect.top+idx.scrollTop;
  const target=Math.max(0,Math.min(absTop-(viewportH-cRect.height)/2,idx.scrollHeight-viewportH));
- idx.scrollTop=target;
+ /* #8785: 큰 화면의 탭과 책장이 머리줄 뒤로 숨지 않게 상한을 둔다. */
+ const tabs=idx.querySelector('.testament-tabs');
+ const header=idx.querySelector('.index-top');
+ if(tabs&&header&&window.innerHeight>=760){
+  const safe=Math.max(0,idx.scrollTop+tabs.getBoundingClientRect().top-header.getBoundingClientRect().bottom-12);
+  idx.scrollTop=Math.min(target,safe);
+ }else idx.scrollTop=target;
 }
 let __smNavAnchorTimer=null;
 window.addEventListener('resize',()=>{clearTimeout(__smNavAnchorTimer);__smNavAnchorTimer=setTimeout(__smAnchorChapterNavToView,160)});
@@ -1358,6 +1368,22 @@ function renderVolumes(testament=activeTestament,{preserve=true}={}){
 document.querySelectorAll('[data-testament]').forEach(btn=>{
  btn.onclick=()=>renderVolumes(btn.dataset.testament,{preserve:true});
 });
+/* #8785: 책장 넘김은 선택과 별개로 수평 스크롤만 이동한다. */
+for(const [id,direction] of [['volumePrev',-1],['volumeNext',1]]){
+ document.getElementById(id)?.addEventListener('click',()=>{
+  const rail=document.getElementById('volumes');
+  const book=rail.querySelector('.volume');
+  const step=(book?.getBoundingClientRect().width||128)+7;
+  rail.scrollBy({left:direction*step*2,behavior:'smooth'});
+ });
+}
+/* 독서 화면 #8638의 장 번호 격자를 책·장 선택에서도 재사용한다. */
+document.getElementById('chapterNumberPick')?.addEventListener('click',()=>{
+ window.BookAI7573NavigationV1?.openGrid({
+  volume:selectedVolume,chapter:selectedChapter,count:chapterCount,
+  onSelect:(n)=>{window.__smRingCancelSnap?.();selectChapter(n);}
+ });
+});
 let chapterCount=16;
 let selectedChapter=3;
 const CHAPTER_PREVIEW=[
@@ -1521,7 +1547,7 @@ document.getElementById('chapterCarousel').addEventListener('wheel',e=>{
    /* CDP/synthetic mouse sequences can deliver pointerup without a matching
       pointermove under our window listeners — refresh from the click itself. */
    if(e.clientX||e.clientY){upX=e.clientX;upY=e.clientY}
-   if(!carousel.contains(e.target)||e.target.closest('.chapter-nav,.chapter-dots'))return;
+   if(!carousel.contains(e.target)||e.target.closest('.chapter-nav,.chapter-dots,.chapter-title'))return;
    if(performance.now()<suppressClickUntil){e.preventDefault();e.stopImmediatePropagation();return}
    const viaStack=e.detail===0?e.target.closest?.('.chapter-stack'):null;
    const i=viaStack?Number(viaStack.dataset.chapter):sheetAtPoint(upX,upY);
@@ -7285,7 +7311,7 @@ function storyMemorySyncLibraryOrderControl(){
   const btn=document.getElementById('libraryOrderToggle');
   if(btn){
     btn.dataset.mode=__smLibraryOrderMode;
-    const sortText=__smLibraryOrderMode==='recent'?'정렬 · <b>최근순</b>':' · <b>기본</b>';
+    const sortText=__smLibraryOrderMode==='recent'?'정렬 · <b>최근순</b>':'<b>기본</b>';
     btn.innerHTML=btn.closest('#libOverflowMenu')
       ?'<span class="sm-menu-label">책장 순서</span><span class="sm-menu-state">'+sortText+'</span>'
       :(__smLibraryOrderMode==='recent'?sortText:'책장 순서 · <b>기본</b>');
@@ -7312,7 +7338,8 @@ function storyMemoryRenderShelfReadingStates(){
     rig.querySelector('.book-reading-state')?.remove();
     const badge=document.createElement('div');badge.className='book-reading-state';badge.dataset.state=s.state;
     badge.title=s.presentation?`${s.presentation.unit} · ${s.presentation.position} · ${s.relative}`:'아직 읽기 시작 전';
-    badge.innerHTML=`<div class="brs-top"><b>${s.state==='new'?'새':Math.round(s.pct)+'%'}</b><small>${s.stateLabel}</small></div><i><em style="width:${s.pct}%"></em></i>`;
+    const bibleNew=book.motif==='bible'&&s.state==='new';
+    badge.innerHTML=`<div class="brs-top"><b>${bibleNew?'새로 시작':s.state==='new'?'새':Math.round(s.pct)+'%'}</b><small>${bibleNew?'':s.stateLabel}</small></div><i><em style="width:${s.pct}%"></em></i>`;
     rig.append(badge);out.push({title:book.title,state:s.state,pct:s.pct,updatedAt:s.updatedAt});
   });
   document.querySelectorAll('#markers .marker').forEach((marker,i)=>{const s=storyMemoryBookReadingState(BOOKS[i]);marker.dataset.readingState=s.state;marker.title=s.presentation?`${BOOKS[i].title} · ${Math.round(s.pct)}% · ${s.relative}`:`${BOOKS[i].title} · 시작 전`;});
@@ -8022,7 +8049,7 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
 #index .volume-focus-facts{display:flex;align-items:flex-end;flex-shrink:0;padding-bottom:2px}
 #index .volume-focus-fact{display:flex;flex-direction:column;align-items:flex-end;gap:3px;padding:0 14px;border-left:1px solid rgba(54,40,27,.10)}
 #index .volume-focus-fact:last-child{padding-right:0}
-#index .volume-focus-fact small{margin:0!important;font-size:9px!important;letter-spacing:.08em;color:#8d857c!important}
+#index .volume-focus-fact small{margin:0!important;font-size:12px!important;letter-spacing:.02em;color:var(--sm-index-meta-ink)!important}
 #index .volume-focus-fact b{font-family:var(--shelf-sans);font-weight:600;font-size:13px;line-height:1;color:#2b2722;white-space:nowrap}
 #index .volume-focus-fact b.fact-muted{color:#a89e91}
 @media(max-width:768px){
