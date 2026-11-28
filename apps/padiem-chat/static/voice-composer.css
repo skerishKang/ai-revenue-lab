@@ -99,7 +99,7 @@
    move when the composer turns from empty to filled. */
 #composerForm .send-button .send-arrow-icon[hidden],
 #composerForm .send-button .send-waveform-icon[hidden] {
-  display: none !important;
+  display: none;
 }
 #composerForm .send-button .send-waveform-icon {
   width: 23px;
@@ -177,7 +177,7 @@
   text-align: right;
   pointer-events: none;
 }
-#composerForm .composer-inline-hint[hidden] { display: none !important; }
+#composerForm .composer-inline-hint[hidden] { display: none; }
 /* Legacy mic status remains in live region, not in the visible flow. */
 #composerForm .voice-status--notice {
   position: absolute;
@@ -263,7 +263,7 @@
   font-size: 12px;
   line-height: 1.5;
 }
-.starter-grid .document-formats-panel[hidden] { display: none !important; }
+.starter-grid .document-formats-panel[hidden] { display: none; }
 .starter-grid .document-formats-panel p { margin: 5px 0 0; }
 @media (max-width: 620px) {
   #composerForm .composer-inline-hint { top: -24px; right: 8px; font-size: 11px; }
