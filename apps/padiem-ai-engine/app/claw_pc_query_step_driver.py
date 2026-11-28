@@ -120,8 +120,8 @@ PC_WRITE_REASONS = frozenset({"backup_failed", "target_exists", "path_invalid", 
                                # was not there, it was there more than once, or the
                                # file is not UTF-8 at all (a cp949/ANSI file would
                                # lose its other Korean letters to the rewrite).
-                               "edit_not_found", "edit_not_unique",
-                               "edit_encoding_unsupported"})
+                               "edit_not_found", "edit_not_unique", "edit_conflict",
+                               "edit_verification_failed", "edit_encoding_unsupported"})
 #: 한 번의 읽기 답이 담는 양(#5882 A). 파일 전체 크기 제한이 아니라 한
 #: 답의 크기다: 이보다 큰 파일은 read_file이 첫 구간 + 전체 크기 +
 #: next_offset을 돌려주고 read_file_chunk로 이어진다. Chat 읽기 레인과
@@ -1114,12 +1114,18 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
         if "content" in extra:
             identity = (identity + "\n" + hashlib.sha256(
                 extra["content"].encode("utf-8")).hexdigest())
+        if op == "edit":
+            # The call receipt is for the exact approved replacement, not just
+            # the path. Distinct edits on one run cannot share an old receipt.
+            edit_fingerprint = "\n".join((extra["old_text"], extra["new_text"],
+                                           str(extra["replace_all"])))
+            identity += "\n" + hashlib.sha256(edit_fingerprint.encode("utf-8")).hexdigest()
         if extra.get("append") is True:
             # An append of the same bytes to the same path is not the call an
             # overwrite of those bytes is; the two must never share a ref.
             identity = identity + "\nappend"
         tool_call_ref = _pc_file_call_ref(owner[1], tool_id, identity)
-        if op in ("write", "move", "delete", "mkdir"):
+        if op in ("write", "edit", "move", "delete", "mkdir"):
             _PC_ACTION_ATTEMPT.set({"operation": op, "path": path,
                                     "destination": extra.get("destination")})
         dispatch_id = resume_dispatch
@@ -1238,7 +1244,7 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 # Owner-approved presentation: received means PC processing
                 # in flight, not independently verified OS process creation.
                 emit_progress("executing")
-            if row.get("state") in ("done", "failed") and op in ("write", "move", "delete", "mkdir"):
+            if row.get("state") in ("done", "failed") and op in ("write", "edit", "move", "delete", "mkdir"):
                 from app.pc_action_verification import mutation_observation, verify_pc_action
 
                 final = await _final_result()

@@ -171,52 +171,10 @@ def _pc_write_operation_body(
             " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
         )
     elif op == "edit":
-        # #7065: find-and-replace inside one existing file. The caller's two
-        # byte sequences are compared as byte sequences; the utf8 branch on
-        # IndexOf/Replace only lets the two sides be compared. Nothing is
-        # written unless the search text occurs exactly once, or once or more
-        # when replace_all was asked for; a miss and an ambiguous match each
-        # refuse with their own reason and change nothing. The original is
-        # backed up first, by the same step every other change uses.
-        #
-        # Round trip guard: the file is edited as UTF-8 and written back as
-        # UTF-8, so a file that is NOT valid UTF-8 (a cp949/ANSI file on a
-        # Korean Windows, where one Hangul letter is two bytes that decode to
-        # garbage) would have every Korean letter outside the edit rewritten
-        # as replacement characters. Before anything is backed up or changed,
-        # the read bytes are decoded and encoded again; if that differs the
-        # step refuses with edit_encoding_unsupported and leaves the file
-        # untouched. A UTF-8 BOM survives because it is part of the decoded
-        # text and is encoded back at the head of the file.
-        body = (
-            "try { $source_to_keep = $target;"
-            + target_missing
-            + "; $before = [IO.File]::ReadAllBytes($target);"
-            " $strict = New-Object Text.UTF8Encoding($false, $true);"
-            " try { $beforeText = $strict.GetString($before) }"
-            " catch { $reason = 'edit_encoding_unsupported'; throw 'padiem edit encoding' };"
-            " if (-not [Linq.Enumerable]::SequenceEqual($strict.GetBytes($beforeText), $before))"
-            " { $reason = 'edit_encoding_unsupported'; throw 'padiem edit encoding' };"
-            " $beforeText = [Text.Encoding]::UTF8.GetString($before);"
-            " $oldPlain = [Text.Encoding]::UTF8.GetString($oldText);"
-            " $newPlain = [Text.Encoding]::UTF8.GetString($newText);"
-            " $hits = 0; $at = $beforeText.IndexOf($oldPlain, 0, [StringComparison]::Ordinal);"
-            " while ($at -ge 0) { $hits += 1; $at = $beforeText.IndexOf($oldPlain, $at + $oldPlain.Length, [StringComparison]::Ordinal) };"
-            " if ($hits -eq 0) { $reason = 'edit_not_found'; throw 'padiem edit miss' };"
-            " if ($hits -gt 1 -and -not "
-            + ("$true" if replace_all else "$false") + ") { $reason = 'edit_not_unique'; throw 'padiem edit ambiguous' };"
-            " " + backup_step +
-            "; $afterText = "
-            + ("$beforeText.Replace($oldPlain, $newPlain)" if replace_all else
-               "$beforeText.Substring(0, $beforeText.IndexOf($oldPlain, 0, [StringComparison]::Ordinal)) + $newPlain + "
-               "$beforeText.Substring($beforeText.IndexOf($oldPlain, 0, [StringComparison]::Ordinal) + $oldPlain.Length)")
-            + "; $payload = [Text.Encoding]::UTF8.GetBytes($afterText);"
-            " $temp = $target + '.padiem-write';"
-            " [IO.File]::WriteAllBytes($temp, $payload);"
-            " Move-Item -LiteralPath $temp -Destination $target -Force;"
-            " $bytes = $payload.Length;"
-            " $ok = $true; $reason = $null }"
-            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
+        from .oracle_mesh_pc_edit import pc_edit_operation_body
+        body = pc_edit_operation_body(
+            backup_step=backup_step, target_missing=target_missing,
+            replace_all=replace_all,
         )
     elif op == "mkdir":
         # #7603: one folder, including missing parents. An existing folder is a
@@ -256,7 +214,7 @@ def _pc_write_operation_body(
 
 
 def _pc_write_record_statements(
-    statements: list[str], *, body: str, link_refusal: str, append: bool,
+    statements: list[str], *, body: str, link_refusal: str, append: bool, edit: bool,
 ) -> None:
     """기록·응답 단계: 거절 문장, 검증, 계정 줄을 같은 순서로 붙인다."""
     # A refused step changes nothing and still answers with one account line:
@@ -299,8 +257,9 @@ def _pc_write_record_statements(
         " if ($targetIsFile) {"
         " $targetItem = Get-Item -LiteralPath $verifyTarget -Force -ErrorAction Stop;"
         " $targetBytes = [int64]$targetItem.Length;"
-        " if ($op -eq 'write') {"
-        " $fileHash = Get-FileHash -LiteralPath $verifyTarget -Algorithm SHA256 -ErrorAction Stop;"
+        + (" if ($op -eq 'write' -or $op -eq 'edit') {" if edit
+           else " if ($op -eq 'write') {")
+        + " $fileHash = Get-FileHash -LiteralPath $verifyTarget -Algorithm SHA256 -ErrorAction Stop;"
         " $targetSha256 = $fileHash.Hash.ToLowerInvariant() } };"
         + append_probe
         + " $backupExists = $null; $backupIsFile = $null;"
@@ -317,9 +276,21 @@ def _pc_write_record_statements(
            " $verification['append_sha256'] = $tailSha256 }")
         + " } catch { $verification = [ordered]@{version=1; status='unavailable'} }",
     ])
-    statements.extend([
+    if edit:
+        statements.append(
+            "if ($op -eq 'edit' -and $verification['status'] -eq 'observed') {"
+            " $verification['edit_verified'] = [bool]$editVerified };"
+        )
+    statements.append(
         "$account = [ordered]@{ok=$ok; op=$op; reason=$reason; target=$target; "
-        "backup=$backup; bytes=$bytes; verification=$verification}",
+        "backup=$backup; bytes=$bytes; verification=$verification}"
+    )
+    if edit:
+        statements.append(
+            "if ($op -eq 'edit' -and $ok -and $editDetails) {"
+            " foreach ($key in $editDetails.Keys) { $account[$key] = $editDetails[$key] } };"
+        )
+    statements.extend([
         "$json = ConvertTo-Json -InputObject $account -Compress",
         "$encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))",
         "Write-Output ('" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded)",
@@ -386,6 +357,6 @@ def _pc_write_command(
         target_missing=target_missing,
     )
     _pc_write_record_statements(
-        statements, body=body, link_refusal=link_refusal, append=append,
+        statements, body=body, link_refusal=link_refusal, append=append, edit=op == "edit",
     )
     return "; ".join(statements)

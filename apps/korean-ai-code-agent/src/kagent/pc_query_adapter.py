@@ -616,9 +616,12 @@ def pc_edit_file_tool_spec() -> ToolSpec:
     # file's own line endings and BOM.
     return _pc_file_tool_spec(tool_id=PC_EDIT_FILE_TOOL_ID,
         title="Change part of a UTF-8 file on the verified PC",
-        description=("Replace one exact piece of text inside an existing file in the "
-                     "approved scope on the verified owner PC, keeping the previous "
-                     "contents in a backup"),
+        description=("Replace one exact unique piece of text (overlapping hits count "
+                     "as ambiguous) in an approved UTF-8 file. replace_all=true changes "
+                     "all non-overlapping occurrences. Preserve existing BOM and file "
+                     "newlines, normalize inserted newlines locally, refuse hash conflicts, "
+                     "and return verified line numbers plus up to 4 KiB of before/after "
+                     "two-line context and the original backup."),
         scope=PC_EDIT_FILE_SCOPE,
         properties={"path": _pc_path_property(),
                     "old_text": {"type": "string", "minLength": 1},

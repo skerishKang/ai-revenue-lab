@@ -401,6 +401,9 @@ _PC_QUERY_PLAN_SHAPES = (
     (("write_file", "claw.pc.write_file"),
      ("move_file", "claw.pc.move_file"),
      ("delete_file", "claw.pc.delete_file")),
+    # #8953: the existing pc_edit tool has its own one-step plan. Keep exact
+    # tool identity and granted files_write scope; never admit extra steps.
+    (("edit_file", "claw.pc.edit_file"),),
     # #7603: creating one folder is the same write lane with one step; it must
     # not be admitted as any of the file-write shapes above or below.
     (("mkdir", "claw.pc.mkdir"),),
