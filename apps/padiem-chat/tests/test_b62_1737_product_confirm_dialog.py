@@ -98,3 +98,42 @@ def test_dialog_is_themed_for_every_product_theme() -> None:
 
     assert "min-height: 44px" in css
     assert "min-height: 48px" in css
+
+
+def test_c4_confirm_dialog_keeps_exact_fixed_palette_as_tokens() -> None:
+    """The five-theme dialog colors remain unchanged when C4 literals are tokenized."""
+    css = read("accessibility-polish.css")
+    tokens = read("padiem-tokens.css")
+
+    expected = {
+        "--library-dialog-dim": "rgba(15, 19, 25, 0.46)",
+        "--confirm-dialog-panel-shadow": "0 28px 80px rgba(15, 19, 25, .24)",
+        "--confirm-dialog-danger-bg": "#8e2f2f",
+        "--confirm-dialog-danger-hover-bg": "#772626",
+        "--confirm-dialog-danger-text": "#ffffff",
+    }
+    for name, value in expected.items():
+        assert f"{name}: {value};" in tokens
+
+    for declaration in (
+        "background: var(--library-dialog-dim);",
+        "box-shadow: var(--confirm-dialog-panel-shadow);",
+        "border: 1px solid var(--confirm-dialog-danger-bg);",
+        "background: var(--confirm-dialog-danger-bg);",
+        "color: var(--confirm-dialog-danger-text);",
+        "background: var(--confirm-dialog-danger-hover-bg);",
+        "border-color: var(--confirm-dialog-danger-hover-bg);",
+    ):
+        assert declaration in css
+
+    # The same dialog paint must not silently revert to component-owned colors.
+    for old in (
+        "background: rgba(15, 19, 25, .46);",
+        "box-shadow: 0 28px 80px rgba(15, 19, 25, .24);",
+        "border: 1px solid #8e2f2f;",
+        "background: #8e2f2f;",
+        "color: #ffffff;",
+        "background: #772626;",
+        "border-color: #772626;",
+    ):
+        assert old not in css
