@@ -11,7 +11,7 @@
 }
 .app-shell:not([data-state="claw"]) .claw-task-hub,
 .app-shell[data-state="claw"] .claw-workspace:not([data-view="general"]) ~ .conversation .claw-task-hub {
-  display: none !important;
+  display: none;
 }
 .claw-task-hub-heading h2 {
   margin: 2px 0 8px;
@@ -118,8 +118,8 @@
     display: flex;
   }
   html body .app-shell[data-state="claw"] .claw-workspace[data-view="manual"] ~ .composer-wrap {
-    max-height: min(72dvh, 560px) !important;
-    overflow-y: auto !important;
+    max-height: min(72dvh, 560px);
+    overflow-y: auto;
     overscroll-behavior-y: contain;
   }
   .app-shell[data-state="claw"] .claw-mobile-composer-toggle {
@@ -143,29 +143,29 @@
    * --padiem-composer-clearance, so the conversation keeps only a small gap
    * of its own and the task hub never ends under the input. */
   html body .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]))) .conversation {
-    padding-bottom: 24px !important;
+    padding-bottom: 24px;
     scroll-padding-bottom: 24px;
   }
   html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]))) .composer-wrap {
-    height: auto !important;
-    min-height: 0 !important;
+    height: auto;
+    min-height: 0;
     max-height: none !important;
-    padding: 6px 12px calc(7px + env(safe-area-inset-bottom)) !important;
+    padding: 6px 12px calc(7px + env(safe-area-inset-bottom));
     /* #4488: match Chat's transparent composer wrap instead of a flat --bg band. */
-    background: transparent !important;
+    background: transparent;
   }
   /* Preserve the shared chat input and manual-entry affordance.
    * Only the optional model/workflow panels collapse. */
   html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] .composer-wrap > :not(#clawMobileComposerToggle):not(#clawManualEntryBar):not(#composerForm) {
-    display: none !important;
+    display: none;
   }
   html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] #composerForm > .claw-model-choice,
   html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] #composerForm > .claw-model-advanced,
   html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] #composerForm > #ownerModelPreviewOpen {
-    display: none !important;
+    display: none;
   }
   html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]))) .conversation {
-    padding-bottom: 24px !important;
+    padding-bottom: 24px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
