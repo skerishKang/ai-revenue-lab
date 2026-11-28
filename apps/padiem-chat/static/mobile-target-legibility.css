@@ -304,11 +304,10 @@
   }
 }
 
-/* Fourth pass: the Claw connector cards shrink their own title with an
-   important rule inside its own media query, so the chain is mirrored. */
+/* Fourth pass: keep the Claw connector card text at the phone floor. */
 @media (max-width: 920px) {
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .starter :is(strong, small) {
-    font-size: 14px !important;
+    font-size: 14px;
   }
 }
 
