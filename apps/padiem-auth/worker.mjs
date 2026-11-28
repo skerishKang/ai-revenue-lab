@@ -660,8 +660,11 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
     const url = new URL(request.url), current = now();
     // #7818: the shared PADIEM account documents. htmlPage on purpose:
     // passwordPage would inject the optional recovery link into the docs.
+    // #8897: ?theme=night|garden forwards into the document shell; unknown
+    // values fall back to the default look inside shared-docs.mjs.
     if (request.method === 'GET' && (url.pathname === '/privacy' || url.pathname === '/terms')) {
-      return htmlPage(200, url.pathname === '/privacy' ? privacyPage() : termsPage());
+      const docTheme = url.searchParams.get('theme');
+      return htmlPage(200, url.pathname === '/privacy' ? privacyPage(docTheme) : termsPage(docTheme));
     }
     if (url.pathname === '/password/recovery' || url.pathname.startsWith('/password/recovery/')) {
       if (!recoveryEnabled) return json(404, { error: 'not_found' });
