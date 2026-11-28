@@ -213,9 +213,12 @@ def _static_tool_definitions(*, shell_user_mode_enabled: bool = False,
         _tool("pc_edit", "파일 일부 바꾸기",
                   "파일 안에서 정확히 같은 글자(old_text)를 찾아 new_text로 바꿉니다. "
                   "old_text가 정확히 한 번 나올 때만 바꾸고, 0번이면 edit_not_found, "
-                  "여러 번인데 replace_all이 없으면 edit_not_unique로 거부합니다. "
+                  "여러 번(겹치는 일치 포함)인데 replace_all이 없으면 edit_not_unique로 거부합니다. "
+                  "replace_all=true는 겹치지 않는 모든 곳을 바꾸고 실제 변경 건수를 돌려줍니다. "
                   "UTF-8이 아닌 파일(예: cp949)은 edit_encoding_unsupported로 거부합니다. "
-                  "줄바꿈(CRLF/LF)과 BOM은 원래 파일 그대로 유지하고, 바꾸기 전에 백업을 남깁니다. "
+                  "기존 CRLF/LF 및 UTF-8 BOM을 유지하고, 새 글의 줄바꿈은 해당 위치의 형식으로 바꿉니다. "
+                  "쓰기 직전 원본이 달라지면 edit_conflict로 거부하며, 저장 후 다시 읽어 검증합니다. "
+                  "성공하면 앞뒤 2줄 미리보기(합계 최대 4KiB)와 줄 번호·백업·잘림 여부를 반환합니다. "
                   "사전 위임 밖이면 PADIEM에서 확인합니다.",
                   {"path": _PATH, "old_text": {"type": "string", "minLength": 1},
                    "new_text": {"type": "string"},

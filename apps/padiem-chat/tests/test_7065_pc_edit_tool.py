@@ -135,16 +135,16 @@ def test_the_command_finds_the_text_exactly_and_refuses_the_other_two_cases():
 def test_replace_all_is_the_only_difference_in_the_command():
     one = _edit_command(old_text="초안", new_text="최종")
     all_at_once = _edit_command(old_text="초안", new_text="최종", replace_all=True)
-    # 갈리는 지점은 딱 두 곳이다: 여러 번일 때 거부하느냐, 그리고 한 번만 바꾸느냐
-    # 전체를 바꾸느냐. 그 밖의 바이트는 완전히 같다.
+    # The exact same non-overlapping builder serves both modes. Only the
+    # explicit multi-match refusal boolean may differ between the commands.
     assert "$hits -gt 1 -and -not $true" in all_at_once
     assert "$hits -gt 1 -and -not $false" in one
-    assert one.count("$false") - all_at_once.count("$false") == 1
-    # 한 번만 바꾸는 쪽은 정확히 한 구간만 이어 붙이고, 전체 치환은 Replace 한 번이다.
-    assert all_at_once.count("$beforeText.Replace($oldPlain, $newPlain)") == 1
-    assert all_at_once.count("$beforeText.Substring(") == 0
-    assert one.count("$beforeText.Substring(") == 2
-    assert one.count("$beforeText.Replace(") == 0
+    assert one.replace("$hits -gt 1 -and -not $false", "$hits -gt 1 -and -not CHOICE") == (
+        all_at_once.replace("$hits -gt 1 -and -not $true", "$hits -gt 1 -and -not CHOICE")
+    )
+    assert "$at + 1, [StringComparison]::Ordinal" in one  # overlapping locations count
+    assert "$positions.Add($at)" in one
+    assert "New-Object System.Text.StringBuilder" in one
 
 
 def test_the_command_backs_up_before_changing_and_never_decodes_the_file():
@@ -317,7 +317,8 @@ def _account(**fields) -> str:
     return "PADIEM_PC_ACCOUNT=" + encoded
 
 
-@pytest.mark.parametrize("reason", ["edit_not_found", "edit_not_unique"])
+@pytest.mark.parametrize("reason", ["edit_not_found", "edit_not_unique",
+                                    "edit_conflict", "edit_verification_failed"])
 def test_a_refused_edit_answers_with_its_own_reason_code(reason):
     ToolHandlerError = _ToolHandlerError
     _pc_write_account = _engine_module()._pc_write_account
@@ -338,7 +339,8 @@ def test_the_account_line_a_successful_edit_prints_is_the_write_account():
 def test_the_reason_namespace_is_closed():
     PC_WRITE_REASONS = _engine_module().PC_WRITE_REASONS
     # 편집의 두 이유만 늘고, 그 밖의 문자열은 여전히 일반 실패로 접힌다.
-    assert {"edit_not_found", "edit_not_unique"} <= PC_WRITE_REASONS
+    assert {"edit_not_found", "edit_not_unique", "edit_conflict",
+            "edit_verification_failed", "edit_encoding_unsupported"} <= PC_WRITE_REASONS
     assert "행운" not in PC_WRITE_REASONS
 
 
@@ -373,7 +375,7 @@ def _run_edit(tmp_path, body: bytes, old_text: str, new_text: str, replace_all=F
     path = tmp_path / "notes.txt"
     path.write_bytes(body)
     backup = tmp_path / ".padiem-backup"
-    backup.mkdir()
+    backup.mkdir(exist_ok=True)
     command = routes._pc_write_command(
         op="edit", root=str(tmp_path), target=str(path), backup_dir=str(backup),
         relative="notes.txt", old_text_b64=base64.b64encode(old_text.encode()).decode(),
@@ -477,3 +479,133 @@ def test_the_encoding_reason_is_in_the_closed_namespace_and_in_the_tool_text():
     edit = next(tool for tool in tools["pc_edit"]["description"].splitlines()
                 if "pc_edit" in tool or True)
     assert "edit_encoding_unsupported" in tools["pc_edit"]["description"]
+
+
+# #8953 2/5: real Windows edit in pytest's dedicated test-only folder.
+@pytest.mark.skipif(os.name != "nt" or not shutil.which("powershell"),
+                    reason="Windows PowerShell is required")
+def test_exact_single_match_returns_two_lines_each_side_and_verified_readback(tmp_path):
+    body = b"first\nsecond\nthird OLD\nfourth\nfifth\nsixth\n"
+    account, path = _run_edit(tmp_path, body, "OLD", "NEW")
+    assert account["ok"] is True, account
+    assert path.read_bytes() == body.replace(b"OLD", b"NEW")
+    assert account["line_start"] == account["line_end"] == 3
+    assert account["before_context"] == "first\nsecond\nthird OLD\nfourth\nfifth"
+    assert account["after_context"] == "first\nsecond\nthird NEW\nfourth\nfifth"
+    assert account["replacement_count"] == 1
+    assert account["truncated"] is False and account["newline_converted"] is False
+    assert account["verification"]["edit_verified"] is True
+    assert account["verification"]["target_sha256"] == account["edit_expected_sha256"]
+    assert account["backup"] and account["verification"]["backup_exists"] is True
+
+
+@pytest.mark.skipif(os.name != "nt" or not shutil.which("powershell"),
+                    reason="Windows PowerShell is required")
+def test_overlapping_locations_are_ambiguous_and_replace_all_counts_nonoverlapping(tmp_path):
+    initial = b"aaa\n"
+    refused, path = _run_edit(tmp_path, initial, "aa", "X")
+    assert refused["ok"] is False and refused["reason"] == "edit_not_unique"
+    assert path.read_bytes() == initial
+    assert not list((tmp_path / ".padiem-backup").glob("*-notes.txt"))
+    accepted, path = _run_edit(tmp_path, initial, "aa", "X", replace_all=True)
+    assert accepted["ok"] is True and path.read_bytes() == b"Xa\n"
+    assert accepted["replacement_count"] == 1  # 2 overlapping starts, 1 actual mutation
+
+
+@pytest.mark.skipif(os.name != "nt" or not shutil.which("powershell"),
+                    reason="Windows PowerShell is required")
+@pytest.mark.parametrize("body,replacement,expected", [
+    (b"top\r\nold\r\nbottom\r\n", "new\nmore", b"top\r\nnew\r\nmore\r\nbottom\r\n"),
+    (b"top\nold\nbottom\n", "new\r\nmore", b"top\nnew\nmore\nbottom\n"),
+    (b"\xef\xbb\xbftop\r\nold\r\nbottom\r\n", "new\nmore",
+     b"\xef\xbb\xbftop\r\nnew\r\nmore\r\nbottom\r\n"),
+])
+def test_mismatched_input_newline_is_converted_to_existing_style(tmp_path, body, replacement, expected):
+    account, path = _run_edit(tmp_path, body, "old", replacement)
+    assert account["ok"] is True, account
+    assert path.read_bytes() == expected
+    assert account["newline_converted"] is True
+    assert account["line_start"] == 2 and account["line_end"] == 3
+
+
+@pytest.mark.skipif(os.name != "nt" or not shutil.which("powershell"),
+                    reason="Windows PowerShell is required")
+@pytest.mark.parametrize("body,replacement,expected", [
+    (b"top\r\nbefore\nold\r\nlast\n", "new\r\nmore", b"top\r\nbefore\nnew\nmore\r\nlast\n"),
+    (b"top\nbefore\r\nold\nlast\r\n", "new\nmore", b"top\nbefore\r\nnew\r\nmore\nlast\r\n"),
+])
+def test_mixed_newline_uses_immediately_preceding_line_style(tmp_path, body, replacement, expected):
+    account, path = _run_edit(tmp_path, body, "old", replacement)
+    assert account["ok"] is True, account
+    assert path.read_bytes() == expected
+    assert account["newline_converted"] is True
+
+
+@pytest.mark.skipif(os.name != "nt" or not shutil.which("powershell"),
+                    reason="Windows PowerShell is required")
+def test_replace_all_reports_real_count_and_preview_is_bounded(tmp_path):
+    account, path = _run_edit(tmp_path, b"A\nOLD\nB\nOLD\nC\nOLD\n", "OLD", "NEW", True)
+    assert account["ok"] is True, account
+    assert account["replacement_count"] == 3
+    assert account["truncated"] is True  # later replacements omitted from one preview
+    assert path.read_bytes() == b"A\nNEW\nB\nNEW\nC\nNEW\n"
+    long_line = b"a" * 11000
+    huge, path = _run_edit(tmp_path, long_line + b"OLD\n", "OLD", "NEW")
+    assert huge["ok"] is True, huge
+    assert huge["truncated"] is True
+    assert len(huge["before_context"].encode()) + len(huge["after_context"].encode()) <= 4096
+    assert path.read_bytes() == long_line + b"NEW\n"
+
+
+@pytest.mark.skipif(os.name != "nt" or not shutil.which("powershell"),
+                    reason="Windows PowerShell is required")
+def test_original_changed_before_replace_refuses_edit_conflict_and_keeps_external_bytes(tmp_path):
+    target = tmp_path / "notes.txt"
+    target.write_bytes(b"old\n")
+    backup_dir = tmp_path / ".padiem-backup"
+    backup_dir.mkdir()
+    command = routes._pc_write_command(
+        op="edit", root=str(tmp_path), target=str(target),
+        backup_dir=str(backup_dir), relative="notes.txt",
+        old_text_b64=base64.b64encode(b"old").decode(),
+        new_text_b64=base64.b64encode(b"NEW").decode(),
+    )
+    marker = "[IO.File]::WriteAllBytes($temp, $payload);"
+    assert command.count(marker) == 1
+    # Simulate a second writer *after* our backup and temporary file, but
+    # before the final original-hash compare. This is an isolated fixture.
+    injected = command.replace(marker, marker +
+        " [IO.File]::WriteAllBytes($target, [Text.Encoding]::UTF8.GetBytes('external'));", 1)
+    completed = subprocess.run(
+        ["powershell", "-NoProfile", "-NonInteractive", "-Command", injected],
+        capture_output=True, timeout=90,
+    )
+    lines = [line for line in completed.stdout.decode("utf-8", "replace").splitlines()
+             if line.startswith("PADIEM_PC_ACCOUNT=")]
+    assert lines, completed.stderr.decode("utf-8", "replace")
+    account = json.loads(base64.b64decode(lines[-1].split("=", 1)[1]).decode())
+    assert account["ok"] is False and account["reason"] == "edit_conflict", account
+    assert target.read_bytes() == b"external"
+    assert not list(tmp_path.glob("*.padiem-write-*"))
+
+
+@pytest.mark.asyncio
+async def test_edit_audit_contains_request_digest_only_not_file_text_or_previews():
+    from app.mcp_gateway_store import mcp_request_digest
+    from _support.mcp_gateway_account import setup, issued
+
+    db, owner, _other, store = setup()
+    token, identity = await issued(store, owner)
+    args = {"path": "fixture/notes.txt", "old_text": "synthetic-old-content-8953",
+            "new_text": "synthetic-new-content-8953", "replace_all": False}
+    await store.audit(identity=identity, tool_name="pc_edit", arguments=args,
+                      status="completed")
+    row = db.conn.execute(
+        "SELECT request_digest FROM padiem_mcp_audit "
+        "WHERE tool_name='pc_edit'").fetchone()
+    assert row[0] == mcp_request_digest("pc_edit", args)
+    assert row[0] != mcp_request_digest("pc_edit", {**args, "new_text": "other"})
+    dump = "\n".join(db.conn.iterdump())
+    for text in (args["old_text"], args["new_text"],
+                 "before_context", "after_context", "synthetic-file-preview-8953"):
+        assert text not in dump

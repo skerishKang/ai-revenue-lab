@@ -47,7 +47,7 @@
   },
   {
     "case": "편집_한_곳",
-    "sha256": "a170eba48a944d1424ff0f8d05f5d75d47ae39570d776eff327824aeb807844b",
+    "sha256": "996b8f7bec621bfe30a33bc8878b7cd632ae895e9fcedfabea5228d831832487",
     "reasons": [
       "failed",
       "이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다.",
@@ -55,8 +55,12 @@
       "edit_encoding_unsupported",
       "edit_encoding_unsupported",
       "edit_not_found",
+      "edit_not_found",
       "edit_not_unique",
+      "edit_conflict",
       "backup_failed",
+      "edit_conflict",
+      "edit_verification_failed",
       "path_invalid"
     ],
     "stages": [
@@ -73,7 +77,7 @@
   },
   {
     "case": "편집_전체",
-    "sha256": "a748f07c4a6458391b7b25aafe0f935b4c892d99a84054b409d03554c4082b57",
+    "sha256": "0ff334a43c2d797b11a1b6c7737eb812f1eaeda2459b2da72dce5ef217b45014",
     "reasons": [
       "failed",
       "이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다.",
@@ -81,8 +85,12 @@
       "edit_encoding_unsupported",
       "edit_encoding_unsupported",
       "edit_not_found",
+      "edit_not_found",
       "edit_not_unique",
+      "edit_conflict",
       "backup_failed",
+      "edit_conflict",
+      "edit_verification_failed",
       "path_invalid"
     ],
     "stages": [

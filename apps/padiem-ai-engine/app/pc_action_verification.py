@@ -37,6 +37,14 @@ def verify_pc_action(*, operation: str, path: str, extra: Mapping[str, str],
         return finish("unavailable", "evidence_missing")
     if account.get("op") != operation or type(account.get("ok")) is not bool:
         return finish("unavailable", "evidence_invalid")
+    # The PC's exact refusal must never be projected as a completed edit.
+    if operation == "edit" and account.get("ok") is False:
+        refused = account.get("reason")
+        return finish("failed", refused if refused in {
+            "edit_not_found", "edit_not_unique", "edit_conflict",
+            "edit_encoding_unsupported", "edit_verification_failed",
+            "backup_failed", "path_invalid",
+        } else "execution_failed")
     evidence = account.get("verification")
     if not isinstance(evidence, Mapping):
         return finish("unavailable", "evidence_missing")
@@ -53,7 +61,7 @@ def verify_pc_action(*, operation: str, path: str, extra: Mapping[str, str],
     # the caller approved, never by a field the PC reported about itself.
     appending = extra.get("append") is True or (
         isinstance(expected_content, Mapping) and expected_content.get("mode") == "append")
-    if operation in {"write", "move"}:
+    if operation in {"write", "edit", "move"}:
         if any(type(evidence.get(key)) is not bool for key in ("target_exists", "target_is_file")):
             return finish("unavailable", "evidence_invalid")
         result.update(source_exists=evidence["source_exists"], target_exists=evidence["target_exists"],
@@ -93,6 +101,35 @@ def verify_pc_action(*, operation: str, path: str, extra: Mapping[str, str],
             return finish("unavailable", "evidence_invalid")
     else:
         return finish("unavailable", "evidence_invalid")
+
+    if operation == "edit":
+        expected_digest = account.get("edit_expected_sha256")
+        actual_digest = evidence.get("target_sha256")
+        count = account.get("replacement_count")
+        before_preview = account.get("before_context")
+        after_preview = account.get("after_context")
+        first_line, last_line = account.get("line_start"), account.get("line_end")
+        if (evidence.get("edit_verified") is not True
+                or type(count) is not int or count < 1
+                or type(first_line) is not int or first_line < 1
+                or type(last_line) is not int or last_line < first_line
+                or type(account.get("newline_converted")) is not bool
+                or type(account.get("truncated")) is not bool
+                or not isinstance(before_preview, str) or not isinstance(after_preview, str)
+                or len(before_preview.encode("utf-8")) + len(after_preview.encode("utf-8")) > 4096
+                or type(evidence.get("target_bytes")) is not int
+                or evidence["target_bytes"] != account.get("bytes")
+                or not isinstance(expected_digest, str)
+                or re.fullmatch("[a-f0-9]{64}", expected_digest) is None
+                or not isinstance(actual_digest, str)
+                or re.fullmatch("[a-fA-F0-9]{64}", actual_digest) is None):
+            return finish("unavailable", "evidence_invalid")
+        if actual_digest.lower() != expected_digest:
+            return finish("failed", "content_mismatch")
+        if not isinstance(account.get("backup"), str) or not account["backup"].strip():
+            return finish("unavailable", "evidence_invalid")
+        if evidence.get("backup_exists") is not True or evidence.get("backup_is_file") is not True:
+            return finish("failed", "backup_missing")
 
     if operation == "write":
         if expected_content is None:
@@ -162,8 +199,16 @@ def mutation_observation(*, verification: Mapping[str, Any], account=None, final
     data = {"ok": verified, "op": verification["operation"], "target": account.get("target"),
             "backup": account.get("backup"), "bytes": account.get("bytes"),
             "action_verification": dict(verification)}
+    # Only a verified edit may expose the bounded, two-sided preview to the
+    # caller. It is tool output, never a new audit argument or trace entry.
+    preview_keys = ("line_start", "line_end", "before_context", "after_context",
+                    "replacement_count", "truncated", "newline_converted", "backup")
+    if verified and verification["operation"] == "edit":
+        data.update({key: account[key] for key in preview_keys if key in account})
     output = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     return {"ok": verified, "dispatch_id": dispatch_id, "output": output, "content": output,
+            **({key: data[key] for key in preview_keys if key in data}
+               if verified and verification["operation"] == "edit" else {}),
             "content_bytes": len(output.encode("utf-8")), "execution_confirmed": verified,
             "action_verification": dict(verification), "termination": final.get("termination"),
             "exit_code": final.get("exit_code"), "result_sha256": final.get("result_sha256"),

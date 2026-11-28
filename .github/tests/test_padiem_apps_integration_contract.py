@@ -129,6 +129,38 @@ def test_extracted_calendar_route_scanner_reads_real_owner(tmp_path, monkeypatch
     assert contract.findings() == [], "Calendar does not change the platform allowlist"
 
 
+def test_extracted_pc_source_owner_is_scanned_without_widening_platform(tmp_path, monkeypatch) -> None:
+    owner = contract._read(contract.APP_FACTORY_PC)
+    assert 'Route(PC_PAIRING_PATH, pc_pairing_issue, methods=["POST"])' in owner
+    assert 'Route(PC_FILE_PATH, pc_file_exchange_file, methods=["GET"])' in owner
+    # PC routes use named path constants. A synthetic literal probes the same
+    # source scanner without changing product routes or broadening allowlists.
+    path = "/__pc_source_owner_probe__"
+    literal = 'Route("/__pc_source_owner_probe__", pc_pairing_issue, methods=["POST"])'
+    assert literal not in owner
+    swap(monkeypatch, "APP_FACTORY_PC", owner + "\n" + literal + "\n", tmp_path)
+    assert tuple(contract._registered_methods(path)) == ("POST",)
+    swap(monkeypatch, "APP_FACTORY_PC", owner, tmp_path)
+    assert tuple(contract._registered_methods(path)) == ()
+    assert contract.findings() == [], "PC routes are not platform-app allowlist entries"
+
+
+def test_extracted_static_owner_is_scanned_without_widening_platform(tmp_path, monkeypatch) -> None:
+    owner = contract._read(contract.APP_FACTORY_STATIC)
+    assert 'Route(COUNCILLOR_REDIRECT_PATH, councillor_redirect, methods=["GET"])' in owner
+    assert 'Mount("/", app=CachedStaticFiles(directory=str(STATIC_DIR), html=True), name="static")' in owner
+    # Static route uses a named constant. A temporary literal verifies the
+    # scanner reads the actual new owner without changing product routing.
+    probe = "/__static_owner_source_probe__"
+    literal = 'Route("/__static_owner_source_probe__", councillor_redirect, methods=["GET"])'
+    assert literal not in owner
+    swap(monkeypatch, "APP_FACTORY_STATIC", owner + "\n" + literal + "\n", tmp_path)
+    assert tuple(contract._registered_methods(probe)) == ("GET",)
+    swap(monkeypatch, "APP_FACTORY_STATIC", owner, tmp_path)
+    assert tuple(contract._registered_methods(probe)) == ()
+    assert contract.findings() == [], "Static route source does not broaden the platform allowlist"
+
+
 def test_work_scopes_are_routing_labels_and_an_unknown_one_is_refused(tmp_path, monkeypatch) -> None:
     real = contract._read(contract.REQUEST_CONTRACT)
     assert "grants no identity, tier" in real or "not an authentication input" in real
