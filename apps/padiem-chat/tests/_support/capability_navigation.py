@@ -13,6 +13,7 @@ import re
 from collections import Counter
 
 from _support.claw_static import server_source, sheet
+from _support.app_factory_modules import FACTORY_MODULES
 from _support.conversation_search_4471 import (
     _balanced_block,
     _executable,
@@ -203,31 +204,32 @@ def search_sources_export() -> dict | None:
 
 
 def app_factory_facts() -> dict:
-    """Route declarations and health capability entries from app_factory.py."""
-    source = server_source("app_factory")
-    tree = ast.parse(source)
+    """Route declarations and health capability entries across all factory owners."""
     routes: list[tuple[str, tuple[str, ...]]] = []
     entries: dict[str, str] = {}
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Call):
-            callee = node.func
-            name = callee.id if isinstance(callee, ast.Name) else getattr(callee, "attr", None)
-            if name == "Route" and node.args and isinstance(node.args[0], ast.Constant):
-                methods: list[str] = []
-                for keyword in node.keywords:
-                    if keyword.arg == "methods" and isinstance(keyword.value, (ast.List, ast.Tuple)):
-                        methods = [
-                            item.value for item in keyword.value.elts
-                            if isinstance(item, ast.Constant) and isinstance(item.value, str)
-                        ]
-                routes.append((node.args[0].value, tuple(methods)))
-        if isinstance(node, ast.Dict):
-            for key, value in zip(node.keys, node.values):
-                if (
-                    isinstance(key, ast.Constant)
-                    and isinstance(key.value, str)
-                    and key.value in _CAP_KEYS
-                ):
-                    segment = ast.get_source_segment(source, value) or ""
-                    entries[key.value] = " ".join(segment.split())
+    for module_name in FACTORY_MODULES:
+        source = server_source(module_name)
+        tree = ast.parse(source)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                callee = node.func
+                name = callee.id if isinstance(callee, ast.Name) else getattr(callee, "attr", None)
+                if name == "Route" and node.args and isinstance(node.args[0], ast.Constant):
+                    methods: list[str] = []
+                    for keyword in node.keywords:
+                        if keyword.arg == "methods" and isinstance(keyword.value, (ast.List, ast.Tuple)):
+                            methods = [
+                                item.value for item in keyword.value.elts
+                                if isinstance(item, ast.Constant) and isinstance(item.value, str)
+                            ]
+                    routes.append((node.args[0].value, tuple(methods)))
+            if isinstance(node, ast.Dict):
+                for key, value in zip(node.keys, node.values):
+                    if (
+                        isinstance(key, ast.Constant)
+                        and isinstance(key.value, str)
+                        and key.value in _CAP_KEYS
+                    ):
+                        segment = ast.get_source_segment(source, value) or ""
+                        entries[key.value] = " ".join(segment.split())
     return {"routes": routes, "capability_entries": entries}
