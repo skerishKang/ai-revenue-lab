@@ -81,7 +81,7 @@ def test_deps_getters_match_the_exact_closure_surface() -> None:
     assert gets <= EXPECTED_GETTERS
     assert gets | (EXPECTED_GETTERS & context_names(APP)) == EXPECTED_GETTERS
     assert sets == set()
-    assert 'clawForm.initializeAction("quote");' in APP
+    assert 'clawForm.initializeAction(clawAction?.value || "quote");' in APP
     assert "let clawLastAction" not in APP
 
 
