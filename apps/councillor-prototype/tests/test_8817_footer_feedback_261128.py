@@ -8,7 +8,12 @@ import threading
 from pathlib import Path
 
 import pytest
-from playwright.sync_api import sync_playwright
+try:
+    from playwright.sync_api import sync_playwright
+except ModuleNotFoundError:
+    sync_playwright = None
+
+pytestmark = pytest.mark.skipif(sync_playwright is None, reason="playwright is not installed")
 
 ROOT = Path(__file__).resolve().parents[1]
 CHROME = os.environ.get("B61_CHROME_PATH", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
