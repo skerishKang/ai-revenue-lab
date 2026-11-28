@@ -92,10 +92,13 @@ def test_unverified_workspace_copy_is_preparing_ko_and_coming_soon_en():
 
 def test_unverified_rows_render_through_the_reviewed_key():
     # #7216 A9: renderConnectorStatus moved into chat-connectors-module.js; it
-    # writes the workspace line from the row state and connectorWorkspaceKey
-    # routes the unverified state to the reviewed key.
+    # writes the workspace line from the reviewed effective state, while only
+    # the explicit never-connected Telegram/Slack reason maps to disconnected.
+    # Other unverified rows still use the reviewed unverified key.
     connectors = read(STATIC / "chat-connectors-module.js")
-    assert 'card.dataset.connectorStatus = String(row.workspace_state || "unverified")' in connectors
+    assert 'card.dataset.connectorStatus = String(workspaceState || "unverified")' in connectors
+    assert 'row.workspace_reason === "no_trusted_b62_workspace_state_projection"' in connectors
+    assert 'const workspaceState = neverConnected ? "not_connected" : row.workspace_state;' in connectors
     assert '"connectors-workspace-unverified"' in connectors
 
 

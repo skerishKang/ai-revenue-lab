@@ -30,6 +30,9 @@
         "connector:google:calendar@1",
       ]);
       let connectorStatusInFlight = false;
+      // Bound both the status fetch and JSON body read; a hung response must
+      // never leave the Connectors cards in 'checking' indefinitely.
+      const CONNECTOR_STATUS_TIMEOUT_MS = 10000;
       // Standalone-page mount flag (R5 A9): the let sat with the moved
       // mountConnectorsView body; the module owns it as create-scoped state.
       let connectorsViewMounted = false;
@@ -268,8 +271,18 @@
             return;
           }
           const supportKey = connectorSupportKey(row.read_availability);
-          const workspaceKey = connectorWorkspaceKey(row.workspace_state);
-          card.dataset.connectorStatus = String(row.workspace_state || "unverified");
+          // Telegram/Slack have no Connectors connect action or trusted
+          // workspace reader today. On the explicit no-trusted-projection
+          // reason they have no connection record in this surface: do not
+          // mistake that normal never-connected state for a failed check.
+          // All other unverified reasons still fail closed.
+          const neverConnected = deps.authState.authenticated &&
+            (connectorId === "connector:telegram:bot@1" || connectorId === "connector:slack:workspace@1") &&
+            row.workspace_state === "unverified" &&
+            row.workspace_reason === "no_trusted_b62_workspace_state_projection";
+          const workspaceState = neverConnected ? "not_connected" : row.workspace_state;
+          const workspaceKey = connectorWorkspaceKey(workspaceState);
+          card.dataset.connectorStatus = String(workspaceState || "unverified");
           setConnectorCopy(card.querySelector("[data-connector-support]"), supportKey);
           setConnectorCopy(card.querySelector("[data-connector-workspace]"), workspaceKey);
         });
@@ -295,12 +308,32 @@
           // #7368: a front-edge loss (502/503/504) or a network error asks one
           // more time after 0.8s. The checking state persists through the retry,
           // and a second failure keeps the same unavailable answer as before.
-          const response = await window.PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status", {
-            headers: { "Accept": "application/json" },
-            cache: "no-store",
+          const controller = new AbortController();
+          let timeout;
+          const deadline = new Promise((_, reject) => {
+            timeout = setTimeout(() => {
+              controller.abort();
+              reject(new Error("connector status timeout"));
+            }, CONNECTOR_STATUS_TIMEOUT_MS);
           });
-          const data = await response.json().catch(() => null);
-          if (!response.ok) throw new Error("connector status unavailable");
+          let data;
+          try {
+            data = await Promise.race([
+              (async () => {
+                const response = await window.PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status", {
+                  headers: { "Accept": "application/json" },
+                  cache: "no-store",
+                  signal: controller.signal,
+                });
+                const document = await response.json().catch(() => null);
+                if (!response.ok) throw new Error("connector status unavailable");
+                return document;
+              })(),
+              deadline,
+            ]);
+          } finally {
+            clearTimeout(timeout);
+          }
           renderConnectorStatus(data);
           if (deps.googleCalendarReadActivationAfterConnectReturn) {
             deps.googleCalendarReadActivationAfterConnectReturn = false;

@@ -395,6 +395,7 @@
   // connection of its own and the two surfaces cannot disagree.
   const COMPUTER_STATE_COPY = {
     connected: ["연결된 PC가 있습니다.", "A PC is connected."],
+    offline: ["PC가 연결되어 있지만 현재 오프라인입니다.", "The paired PC is offline."],
     connecting: ["컴퓨터 연결 상태를 확인하는 중입니다.", "Checking the computer connection status."],
     disconnected: ["연결된 PC가 없습니다.", "No PC is connected."],
     unavailable: ["컴퓨터 연결 상태를 확인하지 못했습니다. 다시 시도해 주세요.", "The computer connection status could not be confirmed. Please retry."],
@@ -404,7 +405,10 @@
   // the Claw tiles and the composer chip say the same line for the same
   // state. The one static line in the card is retired as soon as the live
   // state is written — one card never shows two different truths.
-  const VOCAB_STATE = { connected: "connected", connecting: "checking", disconnected: "disconnected", unavailable: "failed" };
+  const VOCAB_STATE = { connected: "connected", offline: "offline", connecting: "checking", disconnected: "disconnected", unavailable: "failed" };
+  const COMPUTER_STATUS_TIMEOUT_MS = 13000;
+  let pcReadTimer = null;
+  let pcReadExpired = false;
   function renderComputerState(state) {
     if (!statusText || typeof state !== "string") return;
     const copy = COMPUTER_STATE_COPY[state];
@@ -422,6 +426,20 @@
     }
   }
   function refreshComputerConnectionState() {
+    // The first-screen PC chip already reads this owner-scoped pairing list.
+    // Prefer its settled state over a directory read that may be unconfigured
+    // on this host; never invent a second PC connection authority.
+    const flow = window.PadiemPcConnectFlow;
+    const pairing = typeof flow?.current === "function" ? flow.current() : null;
+    if (pairing?.read === "ok" && typeof pairing.state === "string") {
+      renderComputerState(pairing.state);
+      return;
+    }
+    if (pairing?.read === "unavailable" || pairing?.read === "not_ready") {
+      renderComputerState(pairing.read === "not_ready" ? "preparing" : "unavailable");
+      return;
+    }
+    if (pcReadExpired) { renderComputerState("unavailable"); return; }
     const shared = window.PadiemComputerConnectionState;
     if (shared && typeof shared.current === "function") {
       const detail = shared.current();
@@ -430,16 +448,53 @@
     }
     renderComputerState("connecting");
   }
+  function readComputerForCard() {
+    const flow = window.PadiemPcConnectFlow;
+    if (!flow || typeof flow.read !== "function") return;
+    if (pcReadTimer !== null) clearTimeout(pcReadTimer);
+    pcReadExpired = false;
+    // Even an in-flight fetch that ignores AbortSignal cannot keep the card
+    // on checking. A later verified pairing event can still recover it.
+    pcReadTimer = setTimeout(() => {
+      pcReadTimer = null;
+      if (!connectorsSurfaceOpen()) return;
+      const status = typeof flow.current === "function" ? flow.current() : null;
+      if (!status || status.read === "idle") {
+        pcReadExpired = true;
+        refreshComputerConnectionState();
+      }
+    }, COMPUTER_STATUS_TIMEOUT_MS);
+    void Promise.resolve().then(() => flow.read()).then(() => {
+      const status = typeof flow.current === "function" ? flow.current() : null;
+      if (status && status.read !== "idle" && pcReadTimer !== null) {
+        clearTimeout(pcReadTimer);
+        pcReadTimer = null;
+      }
+      refreshComputerConnectionState();
+    }).catch(() => {
+      if (pcReadTimer !== null) clearTimeout(pcReadTimer);
+      pcReadTimer = null;
+      pcReadExpired = true;
+      refreshComputerConnectionState();
+    });
+  }
+  // The Connectors PC status follows the SAME pairings event as the first
+  // screen; a late directory response cannot overwrite a verified pairing.
+  window.addEventListener("padiem:pc-pairing-state", () => {
+    pcReadExpired = false;
+    if (pcReadTimer !== null) { clearTimeout(pcReadTimer); pcReadTimer = null; }
+    refreshComputerConnectionState();
+  });
   // The card follows the shared state, and asking for a re-read only
   // triggers the EXISTING directory control.
-  window.addEventListener("padiem:computer-connection", (event) => {
-    const detail = event && event.detail ? event.detail : null;
-    renderComputerState(detail && typeof detail.state === "string" ? detail.state : "connecting");
+  window.addEventListener("padiem:computer-connection", () => {
+    refreshComputerConnectionState();
   });
   deviceStatus?.addEventListener("click", () => {
     if (!connectorsSurfaceOpen() && !isClawHome()) return;
     const shared = window.PadiemComputerConnectionState;
     if (shared && typeof shared.requestRead === "function") shared.requestRead();
+    readComputerForCard();
     refreshComputerConnectionState();
   });
   // The Connectors screen shows the live state without a click. The re-read is
@@ -452,6 +507,7 @@
       const shared = window.PadiemComputerConnectionState;
       if (shared && typeof shared.requestRead === "function") shared.requestRead();
       refreshComputerConnectionState();
+      readComputerForCard();
     }).observe(connectorsShell, { attributes: true, attributeFilter: ["data-state"] });
   }
   }

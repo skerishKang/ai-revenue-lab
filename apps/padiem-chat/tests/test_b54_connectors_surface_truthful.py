@@ -931,3 +931,74 @@ def _shipped_connector_connector_ids() -> set[str]:
     dialog = _dialog_element()
     ids = set(re.findall(r'data-connector-id="([^"]+)"', dialog))
     return {connector_id for connector_id in ids if connector_id}
+
+# #8948: a normal no-record connector must not become a connection-read failure.
+def test_8948_telegram_slack_without_connection_record_are_disconnected() -> None:
+    body = r"""
+const ids = ["connector:telegram:bot@1", "connector:slack:workspace@1",
+             "connector:google:drive@1"];
+const cards = ids.map(makeCard);
+const f = standardFixtures(cards);
+const mod = window.PadiemChatConnectorsModule.create(makeDeps(f));
+mod.renderConnectorStatus({
+  static_support_vs_workspace_state_separated: true,
+  send_write_authorized: false,
+  connectors: [
+    {connector_id: ids[0], workspace_state:"unverified", read_availability:"complete",
+     workspace_reason:"no_trusted_b62_workspace_state_projection"},
+    {connector_id: ids[1], workspace_state:"unverified", read_availability:"deferred",
+     workspace_reason:"no_trusted_b62_workspace_state_projection"},
+    // A different kind of unverified row is NOT proof of never-connected.
+    {connector_id: ids[2], workspace_state:"unverified", read_availability:"complete",
+     workspace_reason:"canonical_identity_service_unavailable"},
+  ],
+});
+console.log(JSON.stringify(cards.map(c => ({
+  state:c.dataset.connectorStatus, workspace:c.workspaceEl.textContent
+}))));
+"""
+    result = _run_connector_node_script(body)
+    assert result == [
+        {"state": "not_connected", "workspace": "connectors-workspace-not-connected"},
+        {"state": "not_connected", "workspace": "connectors-workspace-not-connected"},
+        {"state": "unverified", "workspace": "connectors-workspace-unverified"},
+    ]
+
+
+def test_8948_hung_connector_check_exits_loading_and_offers_retry() -> None:
+    body = r"""
+const card = makeCard("connector:google:drive@1");
+const f = standardFixtures([card]);
+const mod = window.PadiemChatConnectorsModule.create(makeDeps(f));
+let expire = null;
+const realTimeout = global.setTimeout;
+global.setTimeout = (fn, ms, ...args) => {
+  if (ms === 10000) { expire = fn; return 987654; }
+  return realTimeout(fn, ms, ...args);
+};
+__queue.push({gate:true}); // The network fetch never settles.
+mod.openConnectorsView();
+await __drain();
+const pending = {state:card.dataset.connectorStatus, loading: !f.loading.hidden};
+if (typeof expire !== "function") throw new Error("no bounded status deadline");
+expire(); // Simulate the exact 10s deadline without sleeping.
+await __drain();
+const settled = {
+  state: card.dataset.connectorStatus,
+  loading: !f.loading.hidden,
+  error: !f.error.hidden,
+  retryVisible: !f.retry.hidden,
+  retryEnabled: !f.retry.disabled,
+};
+global.setTimeout = realTimeout;
+console.log(JSON.stringify({pending,settled}));
+"""
+    result = _run_connector_node_script(body)
+    assert result["pending"] == {"state": "loading", "loading": True}
+    assert result["settled"] == {
+        "state": "unavailable",
+        "loading": False,
+        "error": True,
+        "retryVisible": True,
+        "retryEnabled": True,
+    }
