@@ -12,6 +12,7 @@ import ast
 import re
 
 from _support.claw_static import server_source, sheet
+from _support.app_factory_modules import factory_area_source
 
 _IDENT = r"[A-Za-z_$][\w$]*"
 _CHAIN = rf"{_IDENT}(?:\.{_IDENT})*"
@@ -325,7 +326,7 @@ def app_opener_facts() -> dict:
 
 def search_route_facts() -> dict:
     """Route registration and handler guards, parsed with ast (not text)."""
-    factory_tree = ast.parse(server_source("app_factory"))
+    factory_tree = ast.parse(factory_area_source())
     factory_routes: list[tuple[str, str, tuple[str, ...]]] = []
     for node in ast.walk(factory_tree):
         if not isinstance(node, ast.Call):
