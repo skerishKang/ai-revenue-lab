@@ -1,0 +1,250 @@
+{
+  "about-default-1440-light": {
+    "before": {
+      "photo": {
+        "x": 80,
+        "y": 164.265625,
+        "width": 680,
+        "height": 850
+      },
+      "paragraph": {
+        "x": 816,
+        "y": 164.265625,
+        "width": 544,
+        "height": 135.9375
+      },
+      "video": {
+        "x": 80,
+        "y": 1046.265625,
+        "width": 1280,
+        "height": 804.390625
+      },
+      "videoElement": {
+        "x": 80,
+        "y": 1046.265625,
+        "width": 1280,
+        "height": 720
+      },
+      "headerCTA": false,
+      "photoBackground": "rgb(245, 241, 232)",
+      "paragraphColor": "rgb(84, 96, 120)",
+      "paragraphFont": "16px"
+    },
+    "after": {
+      "photo": {
+        "x": 80,
+        "y": 164.265625,
+        "width": 360,
+        "height": 450
+      },
+      "paragraph": {
+        "x": 488,
+        "y": 164.265625,
+        "width": 680,
+        "height": 119
+      },
+      "video": {
+        "x": 80,
+        "y": 646.265625,
+        "width": 880,
+        "height": 579.390625
+      },
+      "videoElement": {
+        "x": 80,
+        "y": 646.265625,
+        "width": 880,
+        "height": 495
+      },
+      "headerCTA": true,
+      "photoBackground": "rgb(245, 241, 232)",
+      "paragraphColor": "rgb(11, 26, 46)",
+      "paragraphFont": "17px"
+    }
+  },
+  "about-default-820-dark": {
+    "before": {
+      "photo": {
+        "x": 28,
+        "y": 152.0625,
+        "width": 764,
+        "height": 955
+      },
+      "paragraph": {
+        "x": 28,
+        "y": 1139.0625,
+        "width": 764,
+        "height": 108.75
+      },
+      "video": {
+        "x": 28,
+        "y": 1366.1875,
+        "width": 764,
+        "height": 514.140625
+      },
+      "videoElement": {
+        "x": 28,
+        "y": 1366.1875,
+        "width": 764,
+        "height": 429.75
+      },
+      "headerCTA": false,
+      "photoBackground": "rgb(19, 35, 58)",
+      "paragraphColor": "rgb(184, 179, 166)",
+      "paragraphFont": "16px"
+    },
+    "after": {
+      "photo": {
+        "x": 28,
+        "y": 152.0625,
+        "width": 280,
+        "height": 350
+      },
+      "paragraph": {
+        "x": 340,
+        "y": 152.0625,
+        "width": 452,
+        "height": 178.5
+      },
+      "video": {
+        "x": 28,
+        "y": 534.0625,
+        "width": 764,
+        "height": 514.140625
+      },
+      "videoElement": {
+        "x": 28,
+        "y": 534.0625,
+        "width": 764,
+        "height": 429.75
+      },
+      "headerCTA": true,
+      "photoBackground": "rgb(245, 241, 232)",
+      "paragraphColor": "rgb(245, 241, 232)",
+      "paragraphFont": "17px"
+    }
+  },
+  "about-default-390-light": {
+    "before": {
+      "photo": {
+        "x": 20,
+        "y": 146.0625,
+        "width": 350,
+        "height": 437.5
+      },
+      "paragraph": {
+        "x": 20,
+        "y": 615.5625,
+        "width": 350,
+        "height": 190.3125
+      },
+      "video": {
+        "x": 0,
+        "y": 951.4375,
+        "width": 390,
+        "height": 303.765625
+      },
+      "videoElement": {
+        "x": 0,
+        "y": 951.4375,
+        "width": 390,
+        "height": 219.375
+      },
+      "headerCTA": false,
+      "photoBackground": "rgb(245, 241, 232)",
+      "paragraphColor": "rgb(84, 96, 120)",
+      "paragraphFont": "16px"
+    },
+    "after": {
+      "photo": {
+        "x": 51,
+        "y": 146.0625,
+        "width": 288,
+        "height": 360
+      },
+      "paragraph": {
+        "x": 20,
+        "y": 526.0625,
+        "width": 350,
+        "height": 238
+      },
+      "video": {
+        "x": 0,
+        "y": 917.3125,
+        "width": 390,
+        "height": 303.765625
+      },
+      "videoElement": {
+        "x": 0,
+        "y": 917.3125,
+        "width": 390,
+        "height": 219.375
+      },
+      "headerCTA": true,
+      "photoBackground": "rgb(245, 241, 232)",
+      "paragraphColor": "rgb(11, 26, 46)",
+      "paragraphFont": "17px"
+    }
+  },
+  "about-video-1440-light": {
+    "before": {
+      "photo": {
+        "x": 80,
+        "y": -861.734375,
+        "width": 680,
+        "height": 850
+      },
+      "paragraph": {
+        "x": 816,
+        "y": -861.734375,
+        "width": 544,
+        "height": 135.9375
+      },
+      "video": {
+        "x": 80,
+        "y": 20.265625,
+        "width": 1280,
+        "height": 804.390625
+      },
+      "videoElement": {
+        "x": 80,
+        "y": 20.265625,
+        "width": 1280,
+        "height": 720
+      },
+      "headerCTA": false,
+      "photoBackground": "rgb(245, 241, 232)",
+      "paragraphColor": "rgb(84, 96, 120)",
+      "paragraphFont": "16px"
+    },
+    "after": {
+      "photo": {
+        "x": 80,
+        "y": -217.734375,
+        "width": 360,
+        "height": 450
+      },
+      "paragraph": {
+        "x": 488,
+        "y": -217.734375,
+        "width": 680,
+        "height": 119
+      },
+      "video": {
+        "x": 80,
+        "y": 264.265625,
+        "width": 880,
+        "height": 579.390625
+      },
+      "videoElement": {
+        "x": 80,
+        "y": 264.265625,
+        "width": 880,
+        "height": 495
+      },
+      "headerCTA": true,
+      "photoBackground": "rgb(245, 241, 232)",
+      "paragraphColor": "rgb(11, 26, 46)",
+      "paragraphFont": "17px"
+    }
+  }
+}
