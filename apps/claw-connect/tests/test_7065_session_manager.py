@@ -66,6 +66,7 @@ CP949 = (
 CONTRACT_HEADER_KEYS = {
     "v", "ok", "code", "op", "session", "alive", "ended", "exit_code", "offset",
     "next_offset", "end_offset", "dropped_bytes", "idle_ms", "ends_with_newline", "backend",
+    "input_state",
 }
 
 
@@ -519,7 +520,8 @@ def test_status_lists_sessions_and_what_this_helper_can_do(fake):
     assert header["limit"] == sessions.MAX_SESSIONS and header["features"] == ["pipe", "secret_mask"]
     row = header["sessions"][0]
     assert set(row) == {"session", "alive", "ended", "exit_code", "backend", "end_offset",
-                        "idle_ms"}
+                        "idle_ms", "input_state"}
+    assert row["input_state"] == "unknown"
     assert row["session"] == sid(1) and row["alive"] is True and row["backend"] == "pipe"
 
 
@@ -763,3 +765,51 @@ def test_bash_without_git_bash_and_an_unknown_shell_are_refused(monkeypatch):
     with pytest.raises(sessions.SessionRefusal) as refused:
         sessions.build_session_argv("fish", "ls", terminal=False)
     assert refused.value.code == "pc_session_bad_request"
+
+
+# #8953: "waiting" is advisory only after known prompt + 300ms of no output.
+@pytest.mark.parametrize("tail, idle_ms, alive, ends_with_newline, expected", [
+    (">>> ", 299, True, False, "unknown"),
+    (">>> ", 300, True, False, "waiting_likely"),
+    ("... ", 400, True, False, "waiting_likely"),
+    ("PS C:\\\\trial> ", 450, True, False, "waiting_likely"),
+    ("Password: ", 350, True, False, "waiting_likely"),
+    ("PIN: ", 350, True, False, "waiting_likely"),
+    ("비밀번호: ", 350, True, False, "waiting_likely"),
+    ("progress 41%", 1000, True, False, "unknown"),
+    (">>> ", 1000, False, False, "unknown"),
+    (">>> ", 1000, True, True, "unknown"),
+    (">>> ", 1000, True, False, "waiting_likely"),
+    ("", 1000, True, False, "unknown"),
+])
+def test_input_state_requires_known_stable_prompt(tail, idle_ms, alive, ends_with_newline, expected):
+    from claw_connect.session_secret_output import input_state_hint
+    assert input_state_hint(tail, alive=alive, ends_with_newline=ends_with_newline,
+                            idle_ms=idle_ms) == expected
+
+
+def test_prompt_state_and_legacy_hint_both_survive_read_and_status(fake):
+    start(fake, wait_ms=0)
+    backend = fake.created[0]
+    backend.on_output(">>> ")
+    early = fake.handle(doc("read", session=sid(1), wait_ms=0), request_id=rid(2))
+    assert early.header["input_state"] == "unknown"
+    assert early.header["waiting_hint"] == "input"  # old contract retained
+    time.sleep(0.35)
+    ready = fake.handle(doc("read", session=sid(1), wait_ms=0), request_id=rid(3))
+    assert ready.header["input_state"] == "waiting_likely"
+    status = fake.handle(doc("status"), request_id=rid(4))
+    assert status.header["sessions"][0]["input_state"] == "waiting_likely"
+    backend.on_output("\n")
+    later = fake.handle(doc("read", session=sid(1), wait_ms=0), request_id=rid(5))
+    assert later.header["input_state"] == "unknown"
+    backend.on_output("Password: ")
+    time.sleep(0.35)
+    secret = fake.handle(doc("read", session=sid(1), wait_ms=0), request_id=rid(6))
+    assert secret.header["input_state"] == "waiting_likely"
+    assert secret.header["prompt_kind"] == "secret"
+    backend.on_exit(0)
+    ended = fake.handle(doc("read", session=sid(1), wait_ms=0), request_id=rid(7))
+    assert ended.header["alive"] is False
+    assert ended.header["ended"] == "exited"
+    assert ended.header["input_state"] == "unknown"

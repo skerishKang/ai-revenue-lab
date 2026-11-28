@@ -406,3 +406,55 @@ def test_session_and_ordinary_commands_select_their_own_envelopes_on_one_pc():
     outcome = executor.execute(ordinary)
     assert outcome.exit_code == 0 and outcome.body == b"ordinary-result"
     assert calls[0] != calls[1]
+
+
+# #8953: the PC agent validates and forwards closed prompt metadata.
+@pytest.mark.parametrize("op", ["read", "input"])
+def test_prompt_wait_state_passes_through_pc_agent_without_raw_prompt(op):
+    from kagent.local_agent_user_helper_outcome import parse_session_helper_outcome
+
+    operation = _material(op, **({"text": "one"} if op == "input" else {}))
+    request_id = "req_" + SESSION
+    header = {
+        "v": 1, "ok": True, "code": None, "op": op, "session": SESSION,
+        "alive": True, "backend": "conpty", "input_state": "waiting_likely",
+        "waiting_hint": "input", "prompt_kind": "secret", "idle_ms": 350,
+        "ends_with_newline": False, "offset": 0, "next_offset": 0, "end_offset": 0,
+    }
+    def frame(body):
+        return json.dumps({"status": "ok", "request_id": request_id, "exit_code": 0,
+            "stdout_b64": base64.b64encode(body).decode(), "stderr_b64": ""}).encode()
+
+    outcome = parse_session_helper_outcome(
+        frame(json.dumps(header).encode() + b"\nPassword: "),
+        operation, None, request_id,
+    )
+    public = _header(outcome)
+    assert public["input_state"] == "waiting_likely"
+    assert public["waiting_hint"] == "input"
+    assert public["prompt_kind"] == "secret"
+    assert "Password:" in outcome.body.decode()
+
+    for bad in ("yes", "certain", "active", False, 1, ""):
+        malformed = frame(json.dumps({**header, "input_state": bad}).encode() + b"\n")
+        rejected = _header(parse_session_helper_outcome(
+            malformed, operation, None, request_id))
+        assert rejected.get("error_code"), rejected
+
+
+def test_scoped_status_keeps_only_owned_prompt_state():
+    from kagent.local_agent_user_helper_outcome import scoped_status_outcome
+    from kagent.local_agent_oracle_mesh_executor import OracleMeshExecutionOutcome
+
+    own = {"session": SESSION, "alive": True, "ended": None, "exit_code": None,
+           "backend": "pipe", "end_offset": 3, "idle_ms": 320,
+           "input_state": "waiting_likely"}
+    other = {**own, "session": "f" * 32, "input_state": "unknown"}
+    header = {"v": 1, "ok": True, "code": None, "op": "status", "limit": 4,
+              "features": ["pipe"], "sessions": [own, other]}
+    outcome = OracleMeshExecutionOutcome(termination="exited", exit_code=0,
+        body=json.dumps(header).encode() + b"\n")
+    scoped = scoped_status_outcome(outcome, SESSION)
+    reply = _header(scoped)
+    assert reply["sessions"] == [own]
+    assert ("f" * 32).encode() not in scoped.body

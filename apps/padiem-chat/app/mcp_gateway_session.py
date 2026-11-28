@@ -200,7 +200,9 @@ def _failure(code, *, status="failed"):
 
 
 def _valid_metadata(row):
-    if row.get("prompt_kind") not in (None, "secret") or row.get("waiting_hint") not in (None, "input"):
+    if (row.get("prompt_kind") not in (None, "secret")
+            or row.get("waiting_hint") not in (None, "input")
+            or row.get("input_state") not in (None, "waiting_likely", "unknown")):
         return False
     if "alive" in row and type(row["alive"]) is not bool:
         return False
@@ -247,18 +249,21 @@ def project_session_reply(body, *, op, session_id):
                 raise ValueError
             features = [f for f in header.get("features", []) if f in ("pipe", "conpty", "secret_mask")]
             return {"status": "completed", "ok": header["ok"], "features": features,
-                    "sessions": [{k: r[k] for k in ("session", "alive", "ended", "exit_code",
-                                "backend", "end_offset", "idle_ms") if k in r} for r in rows]}
+                    "sessions": [{**{k: r[k] for k in ("session", "alive", "ended", "exit_code",
+                                "backend", "end_offset", "idle_ms") if k in r},
+                                  "input_state": r.get("input_state") or "unknown"} for r in rows]}
         if header.get("session") not in (session_id, None):
             raise ValueError
         if header["ok"] and header.get("session") != session_id:
             raise ValueError
         fields = ("ok", "code", "op", "session", "alive", "ended", "exit_code", "offset",
                   "next_offset", "end_offset", "dropped_bytes", "idle_ms", "ends_with_newline", "backend",
-                  "prompt_kind", "waiting_hint")
+                  "prompt_kind", "waiting_hint", "input_state")
         result = {k: header[k] for k in fields if k in header}
         if not _valid_metadata(result):
             raise ValueError
+        # Older helpers do not emit this advisory field; never guess waiting.
+        result["input_state"] = result.get("input_state") or "unknown"
         code = result.get("code")
         if code is not None and (not isinstance(code, str) or not re.fullmatch(r"pc_session_[a-z_]+", code)):
             raise ValueError
@@ -353,6 +358,13 @@ async def execute_session_tool(request, *, tool_name, arguments, identity,
         public = await shell._dispatch_row(request, uid=identity["user_id"], dispatch_id=job_id)
         if not isinstance(public, dict) or public.get("job_operation") != {"op": "session"}:
             return _failure("pc_session_not_found", status="denied") if input_op else None
+        # The MCP gateway resolved an explicitly supplied device into the
+        # request identity. Never silently redirect input to the job owner PC.
+        if (input_op and isinstance(arguments.get("device"), str)
+                and arguments["device"].strip()
+                and identity["device_id"] != private["device_id"]):
+            return {"status": "denied", "code": "pc_session_device_mismatch",
+                    "answer": "지정한 PC가 이 세션을 시작한 PC와 다릅니다."}
         identity = {**identity, "device_id": private["device_id"]}
     return await execute_authorized_session(
         request, tool_name=tool_name, arguments=arguments, identity=identity,

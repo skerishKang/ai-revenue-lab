@@ -52,7 +52,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Mapping, Sequence
 
-from .session_secret_output import SecretOutputFilter, prompt_hints
+from .session_secret_output import SecretOutputFilter, input_state_hint, prompt_hints
 from .user_session_helper import (
     SHELL_BASH,
     SHELL_CMD,
@@ -983,6 +983,7 @@ class SessionManager:
                 "session": s.session_id, "alive": s.alive, "ended": s.ended,
                 "exit_code": s.exit_code, "backend": s.backend_name,
                 "end_offset": s.buffer.end_offset, "idle_ms": self._idle_ms(s),
+                "input_state": self._prompt_state(s),
             } for s in sessions],
         }
         return SessionReply(header=header)
@@ -1102,6 +1103,13 @@ class SessionManager:
         reference = last if last is not None else session.started_real
         return max(0, int((time.monotonic() - reference) * 1000))
 
+    def _prompt_state(self, session: _Session) -> str:
+        end = session.buffer.end_offset
+        tail = session.buffer.read(max(0, end - 1024), 1024).data.decode("utf-8")
+        return input_state_hint(tail, alive=session.alive,
+                                ends_with_newline=session.buffer.ends_with_newline,
+                                idle_ms=self._idle_ms(session))
+
     def _reply(self, session: _Session, op: str, *, offset: int, length: int,
                code: str | None = None, detail: str | None = None) -> SessionReply:
         piece = session.buffer.read(offset, length)
@@ -1126,6 +1134,9 @@ class SessionManager:
         tail = session.buffer.read(max(0, end - 1024), 1024).data.decode("utf-8")
         header.update(prompt_hints(tail, alive=session.alive,
                                    ends_with_newline=session.buffer.ends_with_newline))
+        header["input_state"] = input_state_hint(
+            tail, alive=session.alive, ends_with_newline=session.buffer.ends_with_newline,
+            idle_ms=header["idle_ms"])
         if detail:
             header["detail"] = detail
         return SessionReply(header=header, output=piece.data)
