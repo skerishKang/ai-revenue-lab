@@ -26,8 +26,16 @@
       "type": "secret_text"
     },
     {
+      "name": "PADIEM_AUTH_ADMIN_SECRET",
+      "type": "secret_text"
+    },
+    {
       "name": "PADIEM_AUTH_CLIENTS",
       "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_AUTH_EMAIL_ASSERTION_KEY_LOVETREE",
+      "type": "secret_text"
     },
     {
       "name": "PADIEM_AUTH_ES256_PRIVATE_JWK",
@@ -52,6 +60,10 @@
     {
       "name": "PADIEM_AUTH_SIGNING_KID",
       "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_AUTH_TRUSTED_SOURCE_HASHES",
+      "type": "secret_text"
     },
     {
       "name": "PADIEM_CHAT_PASSWORD_RPC_ORIGIN",
