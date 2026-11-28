@@ -34,7 +34,18 @@ function bookNameForCode(code){
 function isBibleReader(){try{return typeof __smCurrentReaderKind!=='undefined'?__smCurrentReaderKind==='bible':true}catch(_){return true}}
 function syncPanelVisibility(){panel.hidden=!isBibleReader()}
 function setStatus(text){status.textContent=String(text||'')}
-function clearResults(){results.replaceChildren()}
+var resultsWrap=results.parentElement;
+function syncResultFade(){
+  if(!resultsWrap||!resultsWrap.classList)return;
+  var hasMore=results.scrollHeight>results.clientHeight+2&&results.scrollTop+results.clientHeight<results.scrollHeight-2;
+  resultsWrap.classList.toggle('has-scroll-more',hasMore);
+}
+function refreshResultFade(){
+  if(typeof requestAnimationFrame==='function')requestAnimationFrame(syncResultFade);
+  else syncResultFade();
+}
+results.addEventListener('scroll',syncResultFade,{passive:true});
+function clearResults(){results.replaceChildren();syncResultFade()}
   function escapeLabel(code,chapter,verse){return bookNameForCode(code)+' '+chapter+'장'+(verse==null?'':' '+verse+'절')}
   function krvLabelForBlock(row){
     if(!row)return null;
@@ -78,11 +89,29 @@ function referenceError(parsed){
   if(parsed.error==='ambiguous_book')return '책 약어가 여러 책과 겹쳐요. 책 이름을 더 정확히 입력해 주세요.';
   return '구절 형식을 확인해 주세요. 예: 요한복음 3장 16절 또는 요 3:16';
 }
-function appendResult(label,snippet,locator,buttonLabel){
+function appendHighlightedSnippet(element,snippet,query){
+  var value=String(snippet||'본문을 열어 확인합니다.');
+  var terms=[String(query||'').trim()];
+  if(query&&window.__smStaticKeywordSearchV1&&typeof window.__smStaticKeywordSearchV1.tokenize==='function'){
+    terms=terms.concat(window.__smStaticKeywordSearchV1.tokenize(query));
+  }
+  terms=[...new Set(terms.filter(Boolean))].sort(function(a,b){return b.length-a.length;});
+  if(!terms.length){element.textContent=value;return}
+  var regex=new RegExp('('+terms.map(function(term){return term.replace(/[|\\{}()[\]^$+*?.]/g,'\\$&')}).join('|')+')','gi');
+  var start=0,hit;
+  while((hit=regex.exec(value))!==null){
+    if(hit.index>start)element.appendChild(document.createTextNode(value.slice(start,hit.index)));
+    var strong=document.createElement('strong');strong.textContent=hit[0];element.appendChild(strong);
+    start=hit.index+hit[0].length;
+    if(!hit[0].length)regex.lastIndex++;
+  }
+  if(start<value.length)element.appendChild(document.createTextNode(value.slice(start)));
+}
+function appendResult(label,snippet,locator,buttonLabel,query){
   var li=document.createElement('li');
   var button=document.createElement('button');button.type='button';button.className='bible-search-result';
   var title=document.createElement('strong');title.textContent=label;
-  var text=document.createElement('span');text.textContent=snippet||'본문을 열어 확인합니다.';
+  var text=document.createElement('span');appendHighlightedSnippet(text,snippet,query);
   button.append(title,text);
   if(buttonLabel)button.setAttribute('aria-label',buttonLabel+' · '+label);
   button.addEventListener('click',function(){openSearchResult(locator)});
@@ -188,34 +217,38 @@ async function loadBibleBlocks(onProgress,signal,options){
       var blocks=null;
       if(preloadedBlocksPromise){try{blocks=await preloadedBlocksPromise;}catch(_){blocks=null;}}
       if(!blocks||!blocks.length)blocks=await loadBibleBlocks(function(done,total){setStatus('성경 검색 색인을 불러오는 중이에요 ('+done+' / '+total+' 묶음)')},searchController.signal);
+      cancelButton.hidden=true;
       setStatus('성경 본문 '+blocks.length.toLocaleString()+'개 구절에서 검색하고 있어요.');
-      var result=window.__smStaticKeywordSearchV1.staticKeywordSearch(query,{workKey:'bible-web',blocks:blocks,limit:50});
+      var result=window.__smStaticKeywordSearchV1.staticKeywordSearch(query,{workKey:'bible-web',blocks:blocks,limit:20,offset:0});
       clearResults();
       if(!result.results||!result.results.length){setStatus('검색 결과가 없어요. 다른 단어로 다시 찾아보세요.');return}
       shownResultCount=0;
-      result.results.slice(0,20).forEach(function(row){appendResult(resultLabel(row),row.snippet||row.ko||row.en,row.canonical_locator,'본문 결과 열기'); shownResultCount++;});
-      lastTextResult=result;
+      result.results.forEach(function(row){appendResult(resultLabel(row),row.snippet||row.ko||row.en,row.canonical_locator,'본문 결과 열기',query); shownResultCount++;});
+      lastTextResult={query:query,blocks:blocks,total:result.total};
       setStatus(result.total.toLocaleString()+'개 결과 중 '+shownResultCount+'개를 표시합니다. 결과를 누르면 해당 구절로 이동합니다.');
-      if(result.total>20)ensureMoreButton();
+      if(result.total>shownResultCount)ensureMoreButton();
+      refreshResultFade();
     }catch(error){
       if(error&&error.name==='AbortError')setStatus('색인 불러오기를 취소했어요. 다시 검색하면 이어서 불러옵니다.');
       else{setStatus('성경 검색 색인을 불러오지 못했어요. 연결을 확인한 뒤 다시 시도해 주세요.');retryButton.hidden=false}
-    }finally{submit.disabled=false;input.disabled=false}
-    cancelButton.hidden=true;searchController=null;
+    }finally{
+      submit.disabled=false;input.disabled=false;cancelButton.hidden=true;searchController=null;
+    }
   }
   var lastTextResult=null, shownResultCount=0, moreButton=null;
   function ensureMoreButton(){
     if(moreButton&&moreButton.isConnected)return;
-    moreButton=document.createElement('button');moreButton.type='button';moreButton.textContent='더 보기';
+    moreButton=document.createElement('button');moreButton.type='button';moreButton.textContent='결과 더 보기';
     moreButton.className='bible-search-more';
     moreButton.addEventListener('click',function(){
       if(!lastTextResult)return;
-      var slice=lastTextResult.results.slice(shownResultCount,shownResultCount+20);
-      slice.forEach(function(row){appendResult(resultLabel(row),row.snippet||row.ko||row.en,row.canonical_locator,'본문 결과 열기'); shownResultCount++;});
+      var next=window.__smStaticKeywordSearchV1.staticKeywordSearch(lastTextResult.query,{workKey:'bible-web',blocks:lastTextResult.blocks,limit:20,offset:shownResultCount});
+      (next.results||[]).forEach(function(row){appendResult(resultLabel(row),row.snippet||row.ko||row.en,row.canonical_locator,'본문 결과 열기',lastTextResult.query);shownResultCount++;});
       setStatus(lastTextResult.total.toLocaleString()+'개 결과 중 '+shownResultCount+'개를 표시합니다.');
-      if(shownResultCount>=lastTextResult.results.length){moreButton.remove();moreButton=null;}
+      if(shownResultCount>=lastTextResult.total||!next.results||!next.results.length){moreButton.remove();moreButton=null;}
+      refreshResultFade();
     });
-    results.parentElement.insertBefore(moreButton,results.nextSibling);
+    resultsWrap.parentElement.insertBefore(moreButton,resultsWrap.nextSibling);
   }
   var highlightGeneration=0;
   var preloadedBlocksPromise=null;
