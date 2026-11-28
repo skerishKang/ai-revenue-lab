@@ -29,7 +29,7 @@
 | 도구: 웹 검색 | `raw.get("web_search")` (chat_routes.py) |
 | 첨부 | 이미지·문서 허용; 이미지 모델 지원 검증 (`chat_routes.py:1512-1523`) |
 | Custom (내 키) | 허용, 텍스트만 (`chat_routes.py` custom 파싱, `app.js:3638`) |
-| 저장 | `store.append_exchange` → `conversations`, `messages`, scope `PRODUCT_SCOPE_CHAT` (`claw_general_routes.py:468` 공통, `apps/padiem-chat/app/history.py`) |
+| 저장 | `store.append_exchange` → `conversations`, `messages`, scope `PRODUCT_SCOPE_CHAT` (`claw_general_conversation.py:131-138` 공통, `apps/padiem-chat/app/history.py`) |
 | 화면 표시 | 같은 `messages` 행을 브라우저가 렌더 |
 
 ### 1-B. Claw 경로 — `POST /api/claw/general` (협약, B54 → P01 Engine lane)
@@ -38,15 +38,15 @@
 |---|---|
 | 브라우저 입력창·전송 (같은 화면, 같은 sendArea) | `app.js` (`submitPrompt` — `clawGeneralRequest` 사실, `PRODUCT_CLAW="claw"`) |
 | 전송기 | `apps/padiem-chat/static/chat-transport.js` (`requestClawGeneral` 490→503) |
-| HTTP `POST /api/claw/general` | `apps/padiem-chat/app/claw_general_routes.py` (`claw_general_execute` 1663) |
-| 사전 검증 | `parse_claw_turn_attachments_async` (`claw_attachment_context.py`); **이미지는 거부**(422 `claw_image_attachment_unsupported`, `claw_general_routes.py:1730-1734`); 문서만 통함 |
-| Custom 처리 | 있음 — 직접 제공자(`_claw_custom_direct`, `claw_general_routes.py:1755-1787`) — 텍스트만. 단, 라이브 마커·PC 도구 의도와 섞이면 거부 |
+| HTTP `POST /api/claw/general` | `apps/padiem-chat/app/claw_general_routes.py` (`claw_general_execute` 441) |
+| 사전 검증 | `parse_claw_turn_attachments_async` (`claw_attachment_context.py`); **이미지는 거부**(422 `claw_image_attachment_unsupported`, `claw_general_intake.py:187-197`); 문서만 통함 |
+| Custom 처리 | 있음 — 직접 제공자(`_claw_custom_direct`, `claw_general_intake.py:77-136`) — 텍스트만. 단, 라이브 마커·PC 도구 의도와 섞이면 거부 |
 | 등급 결정 | `resolve_claw_execution_grade` (`model_policy`), custom 우선 적용 |
 | P01 Engine 디스패치 | `P01CoreOrchestrationAdapter` → `P01EngineOrchestrationClient` → `P01_ENGINE_SERVICE` (Service Binding) (`claw_general_routes.py:1-22` 모듈 문서) |
 | 도구 실행 | Engine ToolRuntime (PC·파일·앱 조작, desktop op) |
 | B14 호출 | Engine → B14 |
-| 실행 기록 저장 | `_save_claw_exchange` → `append_exchange` (PRODUCT_SCOPE_CHAT, Chat과 같은 `conversations`/`messages`) |
-| 실행 기록/투영 | `project_completed_general_run` → `claw_run_history` (`claw_general_routes.py`) |
+| 실행 기록 저장 | `_save_claw_exchange` (`claw_general_conversation.py:99-145`) → `append_exchange` (PRODUCT_SCOPE_CHAT, Chat과 같은 `conversations`/`messages`) |
+| 실행 기록/투영 | `project_completed_general_run` → `claw_run_history` (`claw_general_conversation.py:262-266`) |
 | 메모리 제안·승인 UI | `/api/claw/memory*` (`app/claw_memory_routes.py`), UI는 claw workspace 전용 |
 | 화면 표시 | 같은 `messages` 행; 캔버스에 추가로 run history·메모리 surface |
 
@@ -73,7 +73,7 @@
 
 ### 2-A. 테이블·필드 차이
 
-- 공용: `conversations` (id, user_id, title, created_at, updated_at), `messages` (id, conversation_id, sequence_number, role, content, created_at) — `apps/padiem-chat/migrations/001_auth_history.sql:17-41`. Chat·Claw가 같은 테이블에 저장된다(`claw_general_routes.py:468` — (`PRODUCT_SCOPE_CHAT`)).
+- 공용: `conversations` (id, user_id, title, created_at, updated_at), `messages` (id, conversation_id, sequence_number, role, content, created_at) — `apps/padiem-chat/migrations/001_auth_history.sql:17-41`. Chat·Claw가 같은 테이블에 저장된다(`claw_general_conversation.py:131-138` — (`PRODUCT_SCOPE_CHAT`)).
 - 스레드 구분은 id prefix(`chat_`, `history.py:569-577`)만 있다. Column product 라벨은 없다.
 - Claw 고유: `claw_run_history`(실행 영수증), `claw_coding_conversation_grant`, automation 관련 행 — 실행 영수증은 엔트리 단위로 기록되며 대화 스레드 본질은 아니다.
 
@@ -120,5 +120,5 @@
 | 툴(웹검색) 커버리지 | 웹 검색이 양 경로에 나란히 있는지는 현재 스튜디오로 더 확인이 필요하다 (Chat 경로의 web_search 필드와 P01 증거 판단을 하나로 맞추는 조건). |
 
 ## 부록. 근거 (파일:줄)
-- 본 문서의 모든 파일:줄은 사용 시점 `main` HEAD 기준으로 적혀 있다. 이후 커밋으로 이동할 수 있다.
-- 서버 구현 위치: `apps/padiem-chat/app/chat_routes.py:1480(api_chat)`, `apps/padiem-chat/app/chat_routes.py:694(api_chat_stream)`, `apps/padiem-chat/app/orchestration_routes.py:1347-1350(api_orchestration)`, `apps/padiem-chat/app/claw_general_routes.py:1663(claw_general_execute)`, `apps/padiem-chat/app/claw_routes.py`(Runner 경로), `apps/padiem-chat/app/claw_memory_routes.py`(기억).
+- 이 문서는 2026-11-09 설계 스냅샷이다. 2026-11-28 #7809에 따라 **Claw 관련 참조**는 분리 후 소유 파일·현재 줄로 교정했다. 다른 제품/화면 번호는 11-09 당시 기록이다.
+- 서버 구현 위치: `apps/padiem-chat/app/chat_routes.py:1480(api_chat)`, `apps/padiem-chat/app/chat_routes.py:694(api_chat_stream)`, `apps/padiem-chat/app/orchestration_routes.py:1347-1350(api_orchestration)`, `apps/padiem-chat/app/claw_general_routes.py:441(claw_general_execute)`, `apps/padiem-chat/app/claw_routes.py`(Runner 경로), `apps/padiem-chat/app/claw_memory_routes.py`(기억).

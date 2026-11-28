@@ -5,6 +5,8 @@
 - 구간 표기: `입력 검증 / 권한·한도 / 분기 / 외부 호출 / 기록 / 응답 조립` 6구간으로 나누어 제안한다. 줄 범위는 함수 시작~끝 중 대략 위치이며, 각 단계 PR에서 확정한다(제목의 "대략" 표기). 구간 사이 변수와 early return 수는 `ast` 실측이다.
 - PC 표시: 오늘 다친 PC 경로 `#7845`(orchestration PC 의도), `#7851`(범위 밖 안내), `#7854`(답변 저장 거절 503 방지), `#7857`(결과 적재 거절 이유 로그)가 걸치는 함수는 ★로 표시한다. `#7851/#7854`는 `chat_pc_drive.py`를 고쳤으므로, 그 함수를 호출하는 큰 함수는 간접 영향으로 ★다.
 
+> **2026-11-28 #7809 현재 코드 위치 (아래 R7-0 과거 측정값은 유지):** `claw_general_execute` = `apps/padiem-chat/app/claw_general_routes.py:441-737` (297줄), `_claw_general_pc_branch` = `claw_general_pc_branch.py:41-232`, `_claw_general_quota_gate` = `claw_general_quota.py:41-181`. 아래 1,053줄·1894-2946줄 및 R7-4~R7-7 구간 번호는 **당시 메인에 대한 이력**이며 새 진입점의 현행 줄 번호로 사용하지 않습니다.
+
 ## 요약
 
 | 줄 | 파일 | 함수 | early return·raise | 글자 검사 파일 수 | 예상 PR | PC |
