@@ -1,0 +1,1269 @@
+{
+  "before": {
+    "viewer-close-focus-1440-dark": {
+      "theme": "dark",
+      "scrollY": 0,
+      "focusId": "lightboxClose",
+      "modal": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 900,
+          "right": 1440,
+          "bottom": 900
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgba(4, 8, 14, 0.96)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalClose": {
+        "rect": {
+          "x": 1382,
+          "y": 10,
+          "width": 44,
+          "height": 44,
+          "right": 1426,
+          "bottom": 54
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(0, 96, 156)",
+        "outlineWidth": "2px",
+        "outlineOffset": "3px",
+        "outlineStyle": "solid"
+      },
+      "modalNext": {
+        "rect": {
+          "x": 968.6875,
+          "y": 407.703125,
+          "width": 44,
+          "height": 44,
+          "right": 1012.6875,
+          "bottom": 451.703125
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalImage": {
+        "rect": {
+          "x": 481.3125,
+          "y": 123.703125,
+          "width": 477.375,
+          "height": 611.984375,
+          "right": 958.6875,
+          "bottom": 735.6875
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgb(10, 16, 24)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "sourceLink": {
+        "rect": {
+          "x": 681.1875,
+          "y": 840,
+          "width": 77.625,
+          "height": 44,
+          "right": 758.8125,
+          "bottom": 884
+        },
+        "border": "rgb(245, 241, 232)",
+        "background": "rgba(0, 0, 0, 0)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "picture": "http://127.0.0.1:2385/static/images/profile-portrait-beige.webp",
+      "controls": [
+        {
+          "rect": {
+            "x": 1080.578125,
+            "y": 7.5,
+            "width": 83.3125,
+            "height": 44,
+            "right": 1163.890625,
+            "bottom": 51.5
+          },
+          "border": "rgba(245, 241, 232, 0.14)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost theme-toggle",
+          "text": "밝게 보기"
+        },
+        {
+          "rect": {
+            "x": 1173.890625,
+            "y": 7.5,
+            "width": 83.3125,
+            "height": 44,
+            "right": 1257.203125,
+            "bottom": 51.5
+          },
+          "border": "rgba(245, 241, 232, 0.14)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost text-size-toggle",
+          "text": "글씨 크게"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": 0
+    },
+    "viewer-close-focus-390-light": {
+      "theme": "light",
+      "scrollY": 2,
+      "focusId": "lightboxClose",
+      "modal": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "right": 390,
+          "bottom": 844
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgba(4, 8, 14, 0.96)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalClose": {
+        "rect": {
+          "x": 332,
+          "y": 10,
+          "width": 44,
+          "height": 44,
+          "right": 376,
+          "bottom": 54
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(0, 96, 156)",
+        "outlineWidth": "2px",
+        "outlineOffset": "3px",
+        "outlineStyle": "solid"
+      },
+      "modalNext": {
+        "rect": {
+          "x": 338,
+          "y": 359.40625,
+          "width": 44,
+          "height": 44,
+          "right": 382,
+          "bottom": 403.40625
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalImage": {
+        "rect": {
+          "x": 56,
+          "y": 203.203125,
+          "width": 278,
+          "height": 356.390625,
+          "right": 334,
+          "bottom": 559.59375
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgb(10, 16, 24)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "sourceLink": {
+        "rect": {
+          "x": 156.1875,
+          "y": 740,
+          "width": 77.625,
+          "height": 44,
+          "right": 233.8125,
+          "bottom": 784
+        },
+        "border": "rgb(245, 241, 232)",
+        "background": "rgba(0, 0, 0, 0)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "picture": "http://127.0.0.1:2385/static/images/profile-portrait-beige.webp",
+      "controls": [
+        {
+          "rect": {
+            "x": 282,
+            "y": 7.5,
+            "width": 44,
+            "height": 44,
+            "right": 326,
+            "bottom": 51.5
+          },
+          "border": "rgba(11, 26, 46, 0.12)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(11, 26, 46)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost theme-toggle",
+          "text": "☾"
+        },
+        {
+          "rect": {
+            "x": 334,
+            "y": 7.5,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 51.5
+          },
+          "border": "rgba(11, 26, 46, 0.12)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(11, 26, 46)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost text-size-toggle",
+          "text": "가+"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "overflow": 0
+    },
+    "dark-outlined-controls-1440": {
+      "theme": "dark",
+      "scrollY": 266,
+      "focusId": "detailTitle",
+      "modal": null,
+      "modalClose": null,
+      "modalNext": null,
+      "modalImage": null,
+      "sourceLink": null,
+      "picture": "",
+      "controls": [
+        {
+          "rect": {
+            "x": 1080.578125,
+            "y": 7.5,
+            "width": 83.3125,
+            "height": 44,
+            "right": 1163.890625,
+            "bottom": 51.5
+          },
+          "border": "rgba(245, 241, 232, 0.14)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost theme-toggle",
+          "text": "밝게 보기"
+        },
+        {
+          "rect": {
+            "x": 1173.890625,
+            "y": 7.5,
+            "width": 83.3125,
+            "height": 44,
+            "right": 1257.203125,
+            "bottom": 51.5
+          },
+          "border": "rgba(245, 241, 232, 0.14)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost text-size-toggle",
+          "text": "글씨 크게"
+        },
+        {
+          "rect": {
+            "x": 109,
+            "y": 513.015625,
+            "width": 157.640625,
+            "height": 45.1875,
+            "right": 266.640625,
+            "bottom": 558.203125
+          },
+          "border": "rgb(0, 72, 132)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(124, 192, 234)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "detail-link",
+          "text": "공식 페이지 보기\n↗"
+        },
+        {
+          "rect": {
+            "x": 278.65625,
+            "y": 513.015625,
+            "width": 93.3125,
+            "height": 45.1875,
+            "right": 371.96875,
+            "bottom": 558.203125
+          },
+          "border": "rgb(0, 72, 132)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(124, 192, 234)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "share-btn",
+          "text": "공유하기"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": 0
+    },
+    "dark-home-chips-390": {
+      "theme": "dark",
+      "scrollY": 0,
+      "focusId": "",
+      "modal": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgba(4, 8, 14, 0.96)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalClose": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalNext": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalImage": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgb(10, 16, 24)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "sourceLink": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "border": "rgb(245, 241, 232)",
+        "background": "rgba(0, 0, 0, 0)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "picture": "",
+      "controls": [
+        {
+          "rect": {
+            "x": 282,
+            "y": 7.5,
+            "width": 44,
+            "height": 44,
+            "right": 326,
+            "bottom": 51.5
+          },
+          "border": "rgba(245, 241, 232, 0.14)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost theme-toggle",
+          "text": "☀"
+        },
+        {
+          "rect": {
+            "x": 334,
+            "y": 7.5,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 51.5
+          },
+          "border": "rgba(245, 241, 232, 0.14)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost text-size-toggle",
+          "text": "가+"
+        },
+        {
+          "rect": {
+            "x": 20,
+            "y": 316.234375,
+            "width": 350,
+            "height": 49.1875,
+            "right": 370,
+            "bottom": 365.421875
+          },
+          "border": "rgba(245, 241, 232, 0.14)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "btn secondary",
+          "text": "의정활동 보기\n→"
+        },
+        {
+          "rect": {
+            "x": 20,
+            "y": 373.421875,
+            "width": 350,
+            "height": 49.1875,
+            "right": 370,
+            "bottom": 422.609375
+          },
+          "border": "rgba(245, 241, 232, 0.14)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "btn secondary",
+          "text": "이메일 보내기\nmiran2640@naver.com"
+        },
+        {
+          "rect": {
+            "x": 20,
+            "y": 430.609375,
+            "width": 350,
+            "height": 49.1875,
+            "right": 370,
+            "bottom": 479.796875
+          },
+          "border": "rgba(245, 241, 232, 0.14)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "btn secondary",
+          "text": "의회 홈페이지에 의견\n↗"
+        },
+        {
+          "rect": {
+            "x": 311.796875,
+            "y": 495.796875,
+            "width": 58.203125,
+            "height": 49.1875,
+            "right": 370,
+            "bottom": 544.984375
+          },
+          "border": "rgba(245, 241, 232, 0.14)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "home-search-go",
+          "text": "검색"
+        },
+        {
+          "rect": {
+            "x": 20,
+            "y": 2570.265625,
+            "width": 176.75,
+            "height": 44,
+            "right": 196.75,
+            "bottom": 2614.265625
+          },
+          "border": "rgba(245, 241, 232, 0.42)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(255, 255, 255)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "site-feedback-open",
+          "text": "이 사이트 오류·불편 알리기"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "overflow": 0
+    }
+  },
+  "after": {
+    "viewer-close-focus-1440-dark": {
+      "theme": "dark",
+      "scrollY": 0,
+      "focusId": "lightboxClose",
+      "modal": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 900,
+          "right": 1440,
+          "bottom": 900
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgba(4, 8, 14, 0.96)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalClose": {
+        "rect": {
+          "x": 1382,
+          "y": 10,
+          "width": 44,
+          "height": 44,
+          "right": 1426,
+          "bottom": 54
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(124, 192, 234)",
+        "outlineWidth": "2px",
+        "outlineOffset": "2px",
+        "outlineStyle": "solid"
+      },
+      "modalNext": {
+        "rect": {
+          "x": 968.6875,
+          "y": 407.703125,
+          "width": 44,
+          "height": 44,
+          "right": 1012.6875,
+          "bottom": 451.703125
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalImage": {
+        "rect": {
+          "x": 481.3125,
+          "y": 123.703125,
+          "width": 477.375,
+          "height": 611.984375,
+          "right": 958.6875,
+          "bottom": 735.6875
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgb(10, 16, 24)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "sourceLink": {
+        "rect": {
+          "x": 681.1875,
+          "y": 840,
+          "width": 77.625,
+          "height": 44,
+          "right": 758.8125,
+          "bottom": 884
+        },
+        "border": "rgb(245, 241, 232)",
+        "background": "rgba(0, 0, 0, 0)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "picture": "http://127.0.0.1:2386/static/images/profile-portrait-beige.webp",
+      "controls": [
+        {
+          "rect": {
+            "x": 1080.578125,
+            "y": 7.5,
+            "width": 83.3125,
+            "height": 44,
+            "right": 1163.890625,
+            "bottom": 51.5
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost theme-toggle",
+          "text": "밝게 보기"
+        },
+        {
+          "rect": {
+            "x": 1173.890625,
+            "y": 7.5,
+            "width": 83.3125,
+            "height": 44,
+            "right": 1257.203125,
+            "bottom": 51.5
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost text-size-toggle",
+          "text": "글씨 크게"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": 0
+    },
+    "viewer-close-focus-390-light": {
+      "theme": "light",
+      "scrollY": 2,
+      "focusId": "lightboxClose",
+      "modal": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "right": 390,
+          "bottom": 844
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgba(4, 8, 14, 0.96)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalClose": {
+        "rect": {
+          "x": 332,
+          "y": 10,
+          "width": 44,
+          "height": 44,
+          "right": 376,
+          "bottom": 54
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(124, 192, 234)",
+        "outlineWidth": "2px",
+        "outlineOffset": "2px",
+        "outlineStyle": "solid"
+      },
+      "modalNext": {
+        "rect": {
+          "x": 338,
+          "y": 359.40625,
+          "width": 44,
+          "height": 44,
+          "right": 382,
+          "bottom": 403.40625
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalImage": {
+        "rect": {
+          "x": 56,
+          "y": 203.203125,
+          "width": 278,
+          "height": 356.390625,
+          "right": 334,
+          "bottom": 559.59375
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgb(10, 16, 24)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "sourceLink": {
+        "rect": {
+          "x": 156.1875,
+          "y": 740,
+          "width": 77.625,
+          "height": 44,
+          "right": 233.8125,
+          "bottom": 784
+        },
+        "border": "rgb(245, 241, 232)",
+        "background": "rgba(0, 0, 0, 0)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "picture": "http://127.0.0.1:2386/static/images/profile-portrait-beige.webp",
+      "controls": [
+        {
+          "rect": {
+            "x": 282,
+            "y": 7.5,
+            "width": 44,
+            "height": 44,
+            "right": 326,
+            "bottom": 51.5
+          },
+          "border": "rgba(11, 26, 46, 0.12)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(11, 26, 46)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost theme-toggle",
+          "text": "☾"
+        },
+        {
+          "rect": {
+            "x": 334,
+            "y": 7.5,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 51.5
+          },
+          "border": "rgba(11, 26, 46, 0.12)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(11, 26, 46)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost text-size-toggle",
+          "text": "가+"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "overflow": 0
+    },
+    "dark-outlined-controls-1440": {
+      "theme": "dark",
+      "scrollY": 266,
+      "focusId": "detailTitle",
+      "modal": null,
+      "modalClose": null,
+      "modalNext": null,
+      "modalImage": null,
+      "sourceLink": null,
+      "picture": "",
+      "controls": [
+        {
+          "rect": {
+            "x": 1080.578125,
+            "y": 7.5,
+            "width": 83.3125,
+            "height": 44,
+            "right": 1163.890625,
+            "bottom": 51.5
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost theme-toggle",
+          "text": "밝게 보기"
+        },
+        {
+          "rect": {
+            "x": 1173.890625,
+            "y": 7.5,
+            "width": 83.3125,
+            "height": 44,
+            "right": 1257.203125,
+            "bottom": 51.5
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost text-size-toggle",
+          "text": "글씨 크게"
+        },
+        {
+          "rect": {
+            "x": 109,
+            "y": 513.015625,
+            "width": 157.640625,
+            "height": 45.1875,
+            "right": 266.640625,
+            "bottom": 558.203125
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(124, 192, 234)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "detail-link",
+          "text": "공식 페이지 보기\n↗"
+        },
+        {
+          "rect": {
+            "x": 278.65625,
+            "y": 513.015625,
+            "width": 93.3125,
+            "height": 45.1875,
+            "right": 371.96875,
+            "bottom": 558.203125
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(124, 192, 234)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "share-btn",
+          "text": "공유하기"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": 0
+    },
+    "dark-home-chips-390": {
+      "theme": "dark",
+      "scrollY": 0,
+      "focusId": "",
+      "modal": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgba(4, 8, 14, 0.96)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalClose": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalNext": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalImage": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgb(10, 16, 24)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "sourceLink": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "border": "rgb(245, 241, 232)",
+        "background": "rgba(0, 0, 0, 0)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "picture": "",
+      "controls": [
+        {
+          "rect": {
+            "x": 282,
+            "y": 7.5,
+            "width": 44,
+            "height": 44,
+            "right": 326,
+            "bottom": 51.5
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost theme-toggle",
+          "text": "☀"
+        },
+        {
+          "rect": {
+            "x": 334,
+            "y": 7.5,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 51.5
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost text-size-toggle",
+          "text": "가+"
+        },
+        {
+          "rect": {
+            "x": 20,
+            "y": 316.234375,
+            "width": 350,
+            "height": 49.1875,
+            "right": 370,
+            "bottom": 365.421875
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "btn secondary",
+          "text": "의정활동 보기\n→"
+        },
+        {
+          "rect": {
+            "x": 20,
+            "y": 373.421875,
+            "width": 350,
+            "height": 49.1875,
+            "right": 370,
+            "bottom": 422.609375
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "btn secondary",
+          "text": "이메일 보내기\nmiran2640@naver.com"
+        },
+        {
+          "rect": {
+            "x": 20,
+            "y": 430.609375,
+            "width": 350,
+            "height": 49.1875,
+            "right": 370,
+            "bottom": 479.796875
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "btn secondary",
+          "text": "의회 홈페이지에 의견\n↗"
+        },
+        {
+          "rect": {
+            "x": 311.796875,
+            "y": 495.796875,
+            "width": 58.203125,
+            "height": 49.1875,
+            "right": 370,
+            "bottom": 544.984375
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(245, 241, 232)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "home-search-go",
+          "text": "검색"
+        },
+        {
+          "rect": {
+            "x": 20,
+            "y": 2570.265625,
+            "width": 176.75,
+            "height": 44,
+            "right": 196.75,
+            "bottom": 2614.265625
+          },
+          "border": "rgb(124, 192, 234)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(255, 255, 255)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "site-feedback-open",
+          "text": "이 사이트 오류·불편 알리기"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "overflow": 0
+    },
+    "viewer-profile-1440-light": {
+      "theme": "light",
+      "scrollY": 0,
+      "focusId": "lightboxClose",
+      "modal": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 900,
+          "right": 1440,
+          "bottom": 900
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgba(4, 8, 14, 0.96)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalClose": {
+        "rect": {
+          "x": 1382,
+          "y": 10,
+          "width": 44,
+          "height": 44,
+          "right": 1426,
+          "bottom": 54
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(124, 192, 234)",
+        "outlineWidth": "2px",
+        "outlineOffset": "2px",
+        "outlineStyle": "solid"
+      },
+      "modalNext": {
+        "rect": {
+          "x": 968.6875,
+          "y": 407.703125,
+          "width": 44,
+          "height": 44,
+          "right": 1012.6875,
+          "bottom": 451.703125
+        },
+        "border": "rgba(245, 241, 232, 0.35)",
+        "background": "rgba(10, 16, 24, 0.55)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "modalImage": {
+        "rect": {
+          "x": 481.3125,
+          "y": 123.703125,
+          "width": 477.375,
+          "height": 611.984375,
+          "right": 958.6875,
+          "bottom": 735.6875
+        },
+        "border": "rgb(0, 0, 0)",
+        "background": "rgb(10, 16, 24)",
+        "outline": "rgb(0, 0, 0)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "sourceLink": {
+        "rect": {
+          "x": 681.1875,
+          "y": 840,
+          "width": 77.625,
+          "height": 44,
+          "right": 758.8125,
+          "bottom": 884
+        },
+        "border": "rgb(245, 241, 232)",
+        "background": "rgba(0, 0, 0, 0)",
+        "outline": "rgb(245, 241, 232)",
+        "outlineWidth": "3px",
+        "outlineOffset": "0px",
+        "outlineStyle": "none"
+      },
+      "picture": "http://127.0.0.1:2386/static/images/profile-portrait-beige.webp",
+      "controls": [
+        {
+          "rect": {
+            "x": 1068.1875,
+            "y": 7.5,
+            "width": 95.703125,
+            "height": 44,
+            "right": 1163.890625,
+            "bottom": 51.5
+          },
+          "border": "rgba(11, 26, 46, 0.12)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(11, 26, 46)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost theme-toggle",
+          "text": "어둡게 보기"
+        },
+        {
+          "rect": {
+            "x": 1173.890625,
+            "y": 7.5,
+            "width": 83.3125,
+            "height": 44,
+            "right": 1257.203125,
+            "bottom": 51.5
+          },
+          "border": "rgba(11, 26, 46, 0.12)",
+          "background": "rgba(0, 0, 0, 0)",
+          "outline": "rgb(11, 26, 46)",
+          "outlineWidth": "3px",
+          "outlineOffset": "0px",
+          "outlineStyle": "none",
+          "name": "ghost text-size-toggle",
+          "text": "글씨 크게"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": 0
+    }
+  }
+}

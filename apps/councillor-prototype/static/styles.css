@@ -30,6 +30,7 @@
   --text: #f5f1e8;
   --muted: #b8b3a6;
   --border: rgba(245, 241, 232, 0.14);
+  --outlined-control-contrast: #7cc0ea;
   --radius: 14px;
   --radius-sm: 8px;
   --maxw: 1280px;
@@ -816,6 +817,10 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 }
 .lightbox-foot h2 { margin: 0 0 4px; font-family: var(--font-serif); font-size: 18px; font-weight: 700; color: var(--ivory); }
 .lightbox-foot a { display: inline-flex; min-height: var(--tap); align-items: center; color: var(--ivory); font-size: var(--fs-body); font-weight: 600; }
+/* 사진 보기 창은 테마와 무관하게 늘 검은 바탕: 키보드 초점만 밝게 고정한다. */
+.lightbox :is(button, a):focus-visible {
+  outline: 2px solid var(--outlined-control-contrast); outline-offset: 2px;
+}
 .lightbox-source { max-width: 720px; margin: 4px auto 6px; color: rgba(245, 241, 232, .86); font-size: var(--fs-body); line-height: 1.6; }
 @media (max-width: 900px) {
 body.lightbox-open .mobile-tabbar { visibility: hidden; }
@@ -962,6 +967,12 @@ body.lightbox-open .mobile-tabbar { visibility: hidden; }
 .media-card .media-source { position: absolute; right: 8px; bottom: 4px; }
 .home-media-card { display: flex; align-items: flex-start; gap: 4px; min-width: 0; }
 .home-media-card .col-item { flex: 1; min-width: 0; }
+/* #8821: 어둡게의 모든 테두리형 단추·칩에 공통 고대비 색 하나만 쓴다. */
+[data-theme="dark"] :is(
+  .topbar .ghost, .detail-link, .share-btn, .btn.secondary,
+  .col-tile, .policy-jump a, .home-search-go, .home-search-alt,
+  .site-feedback-open, .site-feedback-again
+) { border-color: var(--outlined-control-contrast); }
 [data-media-thumb] { cursor: pointer; }
 .activity-terms { margin: 12px 0 0; font-size: var(--fs-body); color: var(--text); max-width: 40em; }
 .activity-terms p { margin: 4px 0; max-width: 40em; }
