@@ -8,6 +8,7 @@ real executor loop rather than a stand-in.
 from __future__ import annotations
 
 from app import oracle_mesh_dispatch as mesh_dispatch
+from app import oracle_mesh_execution as mesh_execution
 
 import asyncio
 import hashlib
@@ -86,7 +87,7 @@ async def _workspace(request, uid):
 def setup_auth(monkeypatch, user: str = OWNER):
     monkeypatch.setattr(routes, "current_user_id", lambda request: user)
     monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: user)
-    monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+    monkeypatch.setattr(mesh_execution, "_verified_owner_request", _verified)
     monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", _verified)
     monkeypatch.setattr(routes, "_resolve_memory_workspace", _workspace)
     monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", _workspace)
@@ -894,7 +895,7 @@ class TestScopeRefusalTelemetry:
 
         emitted: list[dict] = []
         monkeypatch.setattr(
-            routes, "emit_stage_event", lambda **entry: emitted.append(entry)
+            mesh_execution, "emit_stage_event", lambda **entry: emitted.append(entry)
         )
         monkeypatch.setattr(mesh_dispatch, 'emit_stage_event', lambda **entry: emitted.append(entry))
 
@@ -908,7 +909,7 @@ class TestScopeRefusalTelemetry:
 
         monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
         monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
-        monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+        monkeypatch.setattr(mesh_execution, "_verified_owner_request", _verified)
         monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", _verified)
 
         target, denial = asyncio.run(routes.resolve_oracle_mesh_execution(
@@ -929,7 +930,7 @@ class TestScopeRefusalTelemetry:
     def test_owner_scope_refusal_without_a_bounded_code_projects_no_code(self, monkeypatch):
         emitted: list[dict] = []
         monkeypatch.setattr(
-            routes, "emit_stage_event", lambda **entry: emitted.append(entry)
+            mesh_execution, "emit_stage_event", lambda **entry: emitted.append(entry)
         )
         monkeypatch.setattr(mesh_dispatch, 'emit_stage_event', lambda **entry: emitted.append(entry))
 
@@ -940,7 +941,7 @@ class TestScopeRefusalTelemetry:
 
         monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
         monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
-        monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+        monkeypatch.setattr(mesh_execution, "_verified_owner_request", _verified)
         monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", _verified)
 
         target, denial = asyncio.run(routes.resolve_oracle_mesh_execution(
@@ -959,12 +960,12 @@ class TestScopeRefusalTelemetry:
     def test_successful_scope_resolution_emits_nothing(self, monkeypatch):
         emitted: list[dict] = []
         monkeypatch.setattr(
-            routes, "emit_stage_event", lambda **entry: emitted.append(entry)
+            mesh_execution, "emit_stage_event", lambda **entry: emitted.append(entry)
         )
         monkeypatch.setattr(mesh_dispatch, 'emit_stage_event', lambda **entry: emitted.append(entry))
         monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
         monkeypatch.setattr(mesh_dispatch, "current_user_id", lambda request: OWNER)
-        monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+        monkeypatch.setattr(mesh_execution, "_verified_owner_request", _verified)
         monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", _verified)
 
         target, denial = asyncio.run(routes.resolve_oracle_mesh_execution(

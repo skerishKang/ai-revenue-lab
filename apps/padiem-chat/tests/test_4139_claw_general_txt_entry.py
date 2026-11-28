@@ -242,6 +242,8 @@ def test_claw_txt_entry_runs_mesh_mode_without_any_native_registration(monkeypat
         return "conv.txt", None
 
     monkeypatch.setattr(mesh, "_verified_owner_request", auth)
+    from app import oracle_mesh_execution as mesh_execution
+    monkeypatch.setattr(mesh_execution, "_verified_owner_request", auth)
     monkeypatch.setattr(mesh_dispatch, "_verified_owner_request", auth)
     monkeypatch.setattr(mesh, "_resolve_memory_workspace", tenant)
     monkeypatch.setattr(mesh_dispatch, "_resolve_memory_workspace", tenant)
@@ -348,6 +350,8 @@ def test_mesh_mode_still_refuses_withdrawn_consent_and_foreign_account(monkeypat
     async def authorized_session(request, data):
         return "conv.txt", None
 
+    from app import oracle_mesh_execution as mesh_execution
+    monkeypatch.setattr(mesh_execution, "_verified_owner_request", auth)
     for module in (mesh, mesh_dispatch, native):
         monkeypatch.setattr(module, "_verified_owner_request", auth)
         monkeypatch.setattr(module, "_resolve_memory_workspace", tenant)
@@ -429,6 +433,8 @@ def test_an_incomplete_mesh_target_never_strands_the_staged_run_as_pending(monke
     async def authorized_session(request, data):
         return "conv.txt", None
 
+    from app import oracle_mesh_execution as mesh_execution
+    monkeypatch.setattr(mesh_execution, "_verified_owner_request", auth)
     for module in (mesh, mesh_dispatch, native):
         monkeypatch.setattr(module, "_verified_owner_request", auth)
         monkeypatch.setattr(module, "_resolve_memory_workspace", tenant)
