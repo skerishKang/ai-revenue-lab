@@ -131,6 +131,13 @@ def modules(selection: Iterable[ModuleType | str] | None = None) -> tuple[Module
 def short_name(module: ModuleType) -> str:
     return module.__name__.rsplit(".", 1)[-1]
 
+def factory_area_source() -> str:
+    """Read the facade and every registered owner for existing source contracts."""
+    return "\n\n".join(
+        (APP_DIR / f"{name}.py").read_text(encoding="utf-8")
+        for name in FACTORY_MODULES
+    )
+
 def syntax_tree(module: ModuleType) -> ast.Module:
     return ast.parse(Path(module.__file__).read_text(encoding="utf-8"), filename=module.__file__)
 
