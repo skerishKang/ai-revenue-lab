@@ -269,7 +269,7 @@ def test_7574_polish_at_width(browser, base_url, label, width, height):
 
         # ---- 9: 테마별 절 번호 대비 --------------------------------------
         settings = _open_settings(page)
-        theme = settings.get_by_role("group", name="테마 · 배경")
+        theme = settings.get_by_role("group", name="읽기 화면 테마")
         theme.get_by_role("button", name="현재(#fffdf8)").click()
         for theme_name in ("현재(#fffdf8)", "밝게", "세피아", "어둡게"):
             theme.get_by_role("button", name=theme_name).click()

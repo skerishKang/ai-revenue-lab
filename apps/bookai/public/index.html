@@ -7126,6 +7126,14 @@ openStoredMemoryContext=function(context,onReady){
   return __smV327OpenStoredMemoryContext(context,onReady);
 };
 
+/* #8781: 서재의 좁은 진행 정보만 '2/3쪽'으로 표시한다.
+   오늘·읽기·복원 기록의 기존 문구는 바꾸지 않는다. */
+function storyMemoryShelfPositionLabel(p){
+  if(!p?.record||p.record.mode==='flow')return p?.position||'';
+  const page=Math.max(0,Number(p.record.page)||0)+1;
+  const pageCount=Math.max(0,Number(p.record.unitPageCount)||0);
+  return pageCount?`${page}/${pageCount}쪽`:(p.position||'');
+}
 function storyMemorySyncLibraryContinueCard(){
   const book=BOOKS?.[selected];
   const p=storyMemoryResumeForBook(book);
@@ -7139,8 +7147,8 @@ function storyMemorySyncLibraryContinueCard(){
     open.textContent='책 열기';delete open.dataset.resumeReady;
     return {resume:false,book:book.title};
   }
-  note.textContent=`읽던 위치 · ${p.unit} · ${p.position}`;
-  text.textContent=p.record.authoritative?`정확한 위치 저장 · ${storyMemoryResumeLocatorLabel(p.record)}`:`최근 읽음 · ${p.position}`;
+  note.textContent=`읽던 위치 · ${p.unit} · ${storyMemoryShelfPositionLabel(p)}`;
+  text.textContent=p.record.authoritative?`정확한 위치 저장 · ${storyMemoryResumeLocatorLabel(p.record)}`:`최근 읽음 · ${storyMemoryShelfPositionLabel(p)}`;
   bar.style.width=p.pct+'%';
   open.textContent='계속 읽기';open.dataset.resumeReady='true';
   open.title=p.preview;
@@ -7275,7 +7283,14 @@ function storyMemoryApplyLibraryOrder(mode,{persist=true,render=true}={}){
 }
 function storyMemorySyncLibraryOrderControl(){
   const btn=document.getElementById('libraryOrderToggle');
-  if(btn){btn.dataset.mode=__smLibraryOrderMode;btn.innerHTML=__smLibraryOrderMode==='recent'?'정렬 · <b>최근순</b>':'정렬 · <b>서가순</b>';btn.setAttribute('aria-pressed',__smLibraryOrderMode==='recent'?'true':'false');}
+  if(btn){
+    btn.dataset.mode=__smLibraryOrderMode;
+    const sortText=__smLibraryOrderMode==='recent'?'정렬 · <b>최근순</b>':'정렬 · <b>서가순</b>';
+    btn.innerHTML=btn.closest('#libOverflowMenu')
+      ?'<span class="sm-menu-label">책장 순서</span><span class="sm-menu-state">'+sortText+'</span>'
+      :sortText;
+    btn.setAttribute('aria-pressed',__smLibraryOrderMode==='recent'?'true':'false');
+  }
   const sum=storyMemoryLibraryReadingSummary(),label=document.getElementById('libraryReadingSummary');
   if(label)label.textContent=`읽는 중 ${sum.reading} · 완독 ${sum.complete}`;
 }
@@ -7310,7 +7325,14 @@ storyMemorySyncLibraryContinueCard=function(){
   const book=BOOKS?.[selected],state=book?storyMemoryBookReadingState(book):null;
   if(state?.presentation){
     const text=document.getElementById('libProgressText');
-    if(text)text.textContent=`${state.presentation.record.authoritative?'정확한 위치':'최근 읽음'} · ${storyMemoryResumeLocatorLabel(state.presentation.record)} · ${state.relative}`;
+    if(text){
+      const parts=[
+        state.presentation.record.authoritative?'정확한 위치':'최근 읽음',
+        storyMemoryResumeLocatorLabel(state.presentation.record),
+        state.relative
+      ].filter(part=>part && part!=='SEMANTIC POSITION');
+      text.textContent=parts.join(' · ');
+    }
   }
   return result;
 };
