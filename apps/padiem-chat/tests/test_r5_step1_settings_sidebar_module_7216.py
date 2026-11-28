@@ -341,3 +341,65 @@ def test_settings_wire_keeps_registration_order_and_dialog_callbacks(observed: d
     ):
         assert APP.count(earlier) == APP.count(later) == 1
         assert APP.index(earlier) < APP.index(later)
+
+
+def test_settings_dialog_and_advanced_view_dom_capture_preserve_boot_order() -> None:
+    """Settings owns DOM refs, but obtains them at their original app.js positions."""
+    assert APP.index("settings.captureDialogElements();") < APP.index(
+        'document.getElementById("accountSettingsSection")'
+    )
+    assert APP.index("settings.captureAdvancedView();") < APP.index(
+        "settingsModule().wireTierChange();"
+    )
+    assert APP.index("settingsModule().wireTierChange();") < APP.index(
+        "settingsModule().wireAdvancedSettings();"
+    ) < APP.index("settingsModule().wireAdvancedMenuListeners();") < APP.index(
+        "settingsModule().wireSettingsDialog();"
+    )
+    assert 'get settingsButton() { return settings.dom.settingsButton; }' in APP
+    assert 'get settingsDialog() { return settings.dom.settingsDialog; }' in APP
+    assert 'get advancedSettingsView() { return settings.dom.advancedSettingsView; }' in APP
+    assert 'const settingsButton = document.getElementById("settingsButton")' not in APP
+    assert 'const settingsDialog = document.getElementById("settingsDialog")' not in APP
+    assert 'const advancedSettingsView = document.getElementById("advancedSettingsView")' not in APP
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node not installed")
+    script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+const ids = [];
+const nodes = new Map();
+const document = {
+  getElementById(id) {
+    ids.push(id);
+    if (!nodes.has(id)) nodes.set(id, {id, hidden: true});
+    return nodes.get(id);
+  },
+  querySelectorAll() { return []; },
+};
+const context = vm.createContext({window: {}, document, console});
+vm.runInContext(fs.readFileSync(process.argv[1], "utf8"), context);
+const settings = context.window.PadiemChatSettingsModule.create({});
+assert.equal(settings.dom.settingsButton, null);
+assert.equal(settings.dom.settingsDialog, null);
+assert.equal(settings.dom.advancedSettingsView, null);
+assert.deepEqual(ids, ["settingsCloseButton", "settingsAdvancedOpen", "advancedSettingsBack"]);
+settings.captureDialogElements();
+assert.equal(settings.dom.settingsButton, nodes.get("settingsButton"));
+assert.equal(settings.dom.settingsDialog, nodes.get("settingsDialog"));
+assert.equal(settings.dom.advancedSettingsView, null);
+settings.captureAdvancedView();
+assert.equal(settings.dom.advancedSettingsView, nodes.get("advancedSettingsView"));
+assert.deepEqual(ids, [
+  "settingsCloseButton", "settingsAdvancedOpen", "advancedSettingsBack",
+  "settingsButton", "settingsDialog", "advancedSettingsView"
+]);
+"""
+    result = subprocess.run(
+        [node, "-e", script, str(_STATIC_DIR / "chat-settings-module.js")],
+        text=True, capture_output=True, timeout=20,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

@@ -9,6 +9,16 @@
       // The full page opens on top of the screen the user came from (home, chat
       // or claw); its back entry returns there instead of assuming home.
       let advancedSettingsReturnState = null;
+      // Lookups happen at the same app.js boot positions as before extraction.
+      // Expose the shared DOM refs without duplicating the underlying lookup.
+      const dom = { settingsButton: null, settingsDialog: null, advancedSettingsView: null };
+      function captureDialogElements() {
+        dom.settingsButton = document.getElementById("settingsButton");
+        dom.settingsDialog = document.getElementById("settingsDialog");
+      }
+      function captureAdvancedView() {
+        dom.advancedSettingsView = document.getElementById("advancedSettingsView");
+      }
       const settingsCloseButton = document.getElementById("settingsCloseButton");
       const settingsAdvancedOpen = document.getElementById("settingsAdvancedOpen");
       const advancedSettingsBack = document.getElementById("advancedSettingsBack");
@@ -113,7 +123,7 @@
         }
       }
 
-      return { selectedProductTier, openSettings, closeSettings, openAdvancedSettingsView, closeAdvancedSettingsView, selectAdvancedMenu, wireTierChange, wireAdvancedSettings, wireSettingsDialog, wireAdvancedMenuListeners };
+      return { dom, captureDialogElements, captureAdvancedView, selectedProductTier, openSettings, closeSettings, openAdvancedSettingsView, closeAdvancedSettingsView, selectAdvancedMenu, wireTierChange, wireAdvancedSettings, wireSettingsDialog, wireAdvancedMenuListeners };
     },
   };
 })();
