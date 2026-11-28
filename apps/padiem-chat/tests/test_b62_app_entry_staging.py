@@ -26,6 +26,7 @@ from starlette.testclient import TestClient
 
 # #8060: shipped-source reads live in _support; assertions stay here.
 from _support.app_entry_staging_source import app_factory_source, council_index_html, wrangler_toml
+from _support.app_factory_modules import factory_area_source
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parents[1]
@@ -112,9 +113,9 @@ def test_entry_page_root_absolute_chat_references_exist() -> None:
     # The Google entry is the server's own route, not a static asset.
     # The shared sign-up entry (#8766) is registered by the shared login flow,
     # not the factory itself, and that module quotes its route with ' - read
-    # both sources and accept either quote so the check follows the route, not
-    # the quoting style.
-    route_sources = app_factory_source() + (ROOT / "app" / "shared_login_flow.py").read_text(encoding="utf-8")
+    # the registered factory owners and shared-login flow, accepting either
+    # quote style so the check follows the actual route.
+    route_sources = factory_area_source() + (ROOT / "app" / "shared_login_flow.py").read_text(encoding="utf-8")
     for target in re.findall(r'href="(/auth/[^"]+)"', html):
         path = target.split("?")[0]
         assert re.search(r"Route\(\s*['\"]" + re.escape(path) + r"['\"]", route_sources), target
