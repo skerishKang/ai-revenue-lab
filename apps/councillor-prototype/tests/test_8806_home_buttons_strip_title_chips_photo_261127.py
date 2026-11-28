@@ -14,6 +14,7 @@ import subprocess
 import sys
 import threading
 from pathlib import Path
+from css_source import read_site_css
 
 import pytest
 
@@ -25,7 +26,7 @@ except ModuleNotFoundError:  # pragma: no cover
 browser_only = pytest.mark.skipif(sync_playwright is None, reason="playwright is not installed")
 
 ROOT = Path(__file__).resolve().parents[1]
-CSS = (ROOT / "static" / "styles.css").read_text(encoding="utf-8")
+CSS = read_site_css()
 IMAGES = ROOT / "static" / "images"
 CHROME = next(
     (c for c in (os.environ.get("B61_CHROME_PATH"),

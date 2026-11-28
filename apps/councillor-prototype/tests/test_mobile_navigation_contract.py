@@ -23,6 +23,7 @@ import struct
 import subprocess
 import sys
 from pathlib import Path
+from css_source import read_site_css
 
 import pytest
 
@@ -43,7 +44,7 @@ ROOT_ASSETS = ("robots.txt", "sitemap.xml", "favicon.ico", "favicon-32.png", "fa
 TEXT_SUFFIXES = {".html", ".xml", ".txt", ".json", ".js", ".css", ".svg"}
 ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
-STYLES = (APP_ROOT / "static" / "styles.css").read_text(encoding="utf-8")
+STYLES = read_site_css()
 # Selector matching below is textual, so comments would glue onto the next selector.
 CSS_RULES = re.sub(r"/\*.*?\*/", "", STYLES, flags=re.S)
 APP_JS = (APP_ROOT / "static" / "app.js").read_text(encoding="utf-8")
@@ -492,8 +493,8 @@ def test_hero_and_portrait_are_webp_with_a_smaller_phone_copy():
     assert portrait_phone.stat().st_size < portrait.stat().st_size
     assert not (images / "hero-panorama.jpg").exists(), "the JPG panorama was replaced, not kept"
     assert not (images / "profile-portrait.png").exists(), "the PNG portrait was replaced, not kept"
-    assert '--hero-image: url("./images/hero-panorama.webp")' in STYLES
-    assert '--hero-image: url("./images/hero-panorama-mobile.webp")' in block_at("max-width:760px")
+    assert '--hero-image: url("../../images/hero-panorama.webp")' in STYLES
+    assert '--hero-image: url("../../images/hero-panorama-mobile.webp")' in block_at("max-width:760px")
     html = page("index.html")
     assert "profile-portrait.webp" in html and "profile-portrait-390.webp" in html
     assert "srcset=" in html and "sizes=" in html, "the portrait needs responsive sources"

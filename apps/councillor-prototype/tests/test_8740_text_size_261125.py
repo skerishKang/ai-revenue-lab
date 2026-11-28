@@ -9,6 +9,7 @@ import subprocess
 import sys
 import threading
 from pathlib import Path
+from css_source import read_site_css
 
 import pytest
 
@@ -92,7 +93,7 @@ def test_every_page_has_the_text_size_button_and_early_script():
         assert 'aria-pressed="false"' in html, page
         assert "글씨 크게" in html and "글씨 보통" in html, page
         assert 'localStorage.getItem("textSize")' in html, page
-    css = (ROOT / "static" / "styles.css").read_text(encoding="utf-8")
+    css = read_site_css()
     assert 'html[data-text-size="large"]' in css
     assert "--fs-body: 20px" in css and "--fs-label: 17px" in css
     assert ".lightbox-source" in css and "font-size: var(--fs-body)" in css

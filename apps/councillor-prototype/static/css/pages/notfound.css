@@ -1,0 +1,7 @@
+/* ── 404 ─────────────────────────────────────────────────────────────── */.not-found { padding: 72px var(--gutter) 88px; text-align: center; }
+
+.not-found .section-title { margin: 16px 0 10px; }
+
+.not-found .section-lead { margin: 0 auto 28px; max-width: 46ch; }
+
+.not-found-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }

@@ -1,6 +1,7 @@
 """#7690 static contracts: public site feedback is anonymous, bounded, script-off safe."""
 import sys
 from pathlib import Path
+from css_source import read_site_css
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -43,7 +44,7 @@ def test_site_feedback_script_is_anonymous_and_bounded():
 
 
 def test_site_feedback_styles_cover_footer_and_mobile():
-    css = (ROOT / "static" / "styles.css").read_text(encoding="utf-8")
+    css = read_site_css()
     assert '.site-feedback {' in css
     assert '.site-feedback-form {' in css
     assert '.site-feedback-body {' in css

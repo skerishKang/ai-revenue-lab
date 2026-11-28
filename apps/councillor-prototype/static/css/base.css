@@ -1,0 +1,156 @@
+/*
+ * 임미란 의원 홈페이지 (#5972) — layout reproduced from reference_01_cinematic.png.
+ *
+ * Measured on the 1448x1086 mockup, scaled to 1440:
+ *   topbar      52px, light ground, hairline rule
+ *   hero band  363px (25.2vw), photographic panorama
+ *   headline   ~52px serif, 2 lines — line 1 var(--navy-deep), line 2 var(--accent-2)
+ *   body       ~16px #546078
+ *   CTA        navy fill var(--accent) + white/outline, 8px radius
+ *   sections   near-white ground, navy headings, tight heading leading
+ *
+ * Colour note: the mockup's accent is BLUE (var(--accent) / var(--accent-2)), not gold.
+ * The palette below follows the measured mockup.
+ */:root {
+  --navy: #0b1a2e;
+  --navy-deep: #00183c;
+  --navy-soft: #13233a;
+  --accent: #004884;
+  --accent-2: #00609c;
+  --accent-soft: rgba(0, 72, 132, 0.08);
+  /* #8805 D3: 글자·링크·아이콘·선택 표시 전용. 바탕·테두리는 --accent/--accent-2를 그대로 쓴다.
+     :root 기본값이 어둡게라 밝은 파랑, 밝게는 아래에서 수리 전과 같은 값으로 되돌린다. */
+  --accent-text: #7cc0ea;
+  --accent-2-text: #7cc0ea;
+  --ivory: #f5f1e8;
+  --ivory-soft: #ebe5d6;
+  --paper: #ffffff;
+  --bg: #0b1a2e;
+  --bg-soft: #13233a;
+  --text: #f5f1e8;
+  --muted: #b8b3a6;
+  --border: rgba(245, 241, 232, 0.14);
+  --outlined-control-contrast: #7cc0ea;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --maxw: 1280px;
+  --gutter: 40px;
+  /* Accessibility floor: body copy 16px, labels 14px, tap targets 44px. */
+  --fs-body: 16px;
+  --fs-label: 14px;
+  --tap: 44px;
+  /* Both families are self-hosted (static/fonts/). The webfont family is named
+     first so a locally installed copy can never take over the rendering. */
+  --font: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+  --font-serif: "MaruBuri", "Noto Serif KR", "Nanum Myeongjo", serif;
+  /* Hero background layer — 영산강 in Gwangju, 3840x960 (4:1), cropped from a
+     6016x4000 original. Source: Saigen Jiro, Wikimedia Commons, CC0. The
+     gradient underneath still shows through wherever the photo is scrimmed.
+     Phones get a 1280x320 copy (see the 760px query below). */
+  --hero-image: url("../../images/hero-panorama.webp");
+}
+
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-soft: #f5f1e8;
+  --text: #0b1a2e;
+  --muted: #546078;
+  --border: rgba(11, 26, 46, 0.12);
+  --accent-text: #004884;
+  --accent-2-text: #00609c;
+}
+
+/* #8740: one place changes every reading size; the base sizes stay untouched. */
+html[data-text-size="large"] {
+  --fs-body: 20px;
+  --fs-label: 17px;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  /* #8805 D2: 한글은 낱말 단위로 줄을 바꾸고, 칸보다 긴 낱말만 쪼갠다. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  /* The page is a column that always reaches the viewport bottom: on short pages the
+     content area grows so the footer sits at the bottom edge (above the phone tab bar)
+     instead of floating mid-page with an empty band under it; long pages scroll and
+     the footer simply stays last. 100dvh tracks the real phone viewport; 100vh is the
+     fallback for engines without dynamic-viewport units. */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+main { flex: 1 0 auto; }
+
+.skip-link { position: absolute; left: -9999px; top: 0; display: inline-flex; align-items: center; min-height: var(--tap); background: var(--accent); color: var(--paper); padding: 8px 12px; z-index: 100; }
+
+.skip-link:focus { left: 12px; top: 12px; }
+
+/* [hidden] has to win over component display rules, or the activity list/detail
+   toggle shows both panels at once. */[hidden] { display: none !important; }
+
+:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; }
+
+/* ── sections ─────────────────────────────────────────────────────────── */.section { padding: 32px var(--gutter); background: var(--bg); }
+
+.section-inner { max-width: var(--maxw); margin: 0 auto; }
+
+/* One compact row: title left, note and link right (reference spends ~63px here). */.section-head {
+  display: grid; grid-template-columns: auto minmax(0, 46ch) auto;
+  align-items: end; gap: 6px 28px; margin-bottom: 16px;
+}
+
+.section-head-main { display: flex; flex-direction: column; }
+
+.section-head .section-title { margin: 0; }
+
+/* inner pages place .section-lead directly under .section-inner */.section-inner > .section-lead { margin: 0 0 28px; }
+
+.section-eyebrow {
+  margin: 0 0 8px; font-size: var(--fs-label); font-weight: 700; line-height: 1.2;
+  letter-spacing: 0.12em; color: var(--accent-2-text);
+}
+
+/* Headings must not inherit the body's 1.7 leading — the mockup's titles sit in a
+   tight box (its 4-card heading measured 59px tall, ours was 84.5px). */.section-title {
+  margin: 0 0 6px; font-family: var(--font-serif);
+  font-size: clamp(24px, 2.4vw, 34px); font-weight: 700; line-height: 1.22;
+  letter-spacing: -0.01em; color: var(--text);
+}
+
+.section-lead { margin: 0; font-size: var(--fs-body); color: var(--muted); max-width: 62ch; }
+
+@media (max-width: 1100px) {
+:root { --gutter: 28px; }
+}
+
+@media (max-width: 900px) {
+.section-head { grid-template-columns: 1fr; gap: 8px; }
+}
+
+@media (max-width: 760px) {
+:root {
+    --gutter: 20px;
+    /* Phones never need the 3840px panorama — this copy is 1280x320. */
+    --hero-image: url("../../images/hero-panorama-mobile.webp");
+  }
+.section { padding: 26px var(--gutter); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+* { transition: none !important; animation: none !important; }
+
+
+}

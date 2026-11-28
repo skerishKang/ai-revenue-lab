@@ -1,0 +1,112 @@
+.policy-block { margin-top: 34px; }
+
+.policy-block[hidden] { display: none; }
+
+.policy-heading { font-family: var(--font-serif); font-size: clamp(18px, 1.6vw, 22px); margin: 0 0 14px; }
+
+.policy-meta { color: var(--accent-2-text); font-weight: 700; font-size: var(--fs-label); margin: 0 0 6px !important; }
+
+.card-link { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2-text); text-decoration: none; font-weight: 600; font-size: var(--fs-body); }
+
+.card-link:hover { text-decoration: underline; }
+
+.policy-note { color: var(--muted); font-size: var(--fs-label); margin: -6px 0 0; }
+
+.bill-search { margin: 0 0 14px; }
+
+.bill-search input {
+  width: 100%; min-height: 44px; padding: 8px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: var(--paper); color: var(--text); font: inherit; font-size: var(--fs-body);
+}
+
+/* 어둡게 검색칸은 의정활동 검색과 동일한 바탕·글자·테두리 토큰 사용. */
+[data-theme="dark"] .bill-search input { background: var(--bg-soft); }
+
+[data-theme="dark"] .bill-search input::placeholder { color: var(--muted); opacity: 1; }
+
+/* 어둡게에서 검색 지우기(×)도 밝은 잉크로 그려 대비를 확보한다. */
+[data-theme="dark"] .bill-search input::-webkit-search-cancel-button {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; cursor: pointer;
+  background-color: var(--text);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath stroke='black' stroke-width='3' stroke-linecap='round' d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.bill-search-status { min-height: 1.6em; margin: -6px 0 14px; color: var(--muted); font-size: var(--fs-label); line-height: 1.6; }
+
+.bill-group > summary.bill-group-title {
+  cursor: pointer; list-style: none;
+}
+
+.bill-group > summary.bill-group-title::-webkit-details-marker { display: none; }
+
+.bill-group > summary.bill-group-title:hover { background: var(--accent-soft); border-radius: var(--radius-sm); }
+
+.bill-group > summary.bill-group-title:focus-visible {
+  outline: 2px solid var(--accent-2-text); outline-offset: 2px; border-radius: var(--radius-sm);
+}
+
+.bill-groups { margin-top: 6px; }
+
+.bill-group + .bill-group { margin-top: 30px; }
+
+/* 제8·9대 건수를 같은 오른쪽 기준선에 배치하고 제8대 표시 공간을 남긴다. */
+.bill-group-title {
+  display: flex; align-items: center; gap: 8px; min-height: 44px;
+  position: relative; padding: 6px 28px 6px 0;
+  font-family: var(--font-serif); font-size: clamp(18px, 1.6vw, 22px); margin: 0 0 10px;
+}
+
+.bill-count {
+  color: var(--muted); font-family: inherit; font-size: var(--fs-label);
+  font-weight: 600; margin-left: auto; white-space: nowrap; flex-shrink: 0;
+}
+
+.bill-toggle-indicator {
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  color: var(--accent-2-text); font-family: var(--font);
+  font-size: 20px; font-weight: 700; line-height: 1;
+}
+
+.bill-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+
+.bill-group.is-empty .bill-list { display: none; }
+
+.bill-row { border-bottom: 1px solid var(--border); }
+
+.bill-row a {
+  display: grid; grid-template-columns: 76px minmax(0, 1fr) 96px 76px; gap: 14px;
+  align-items: center; min-height: var(--tap); padding: 10px 0;
+  color: var(--text); text-decoration: none; font-size: var(--fs-body);
+}
+
+.bill-row a:hover .bill-title { color: var(--accent-2-text); text-decoration: underline; }
+
+.bill-number { color: var(--accent-2-text); font-weight: 700; font-size: var(--fs-label); white-space: nowrap; }
+
+.bill-title { min-width: 0; }
+
+.bill-date { color: var(--muted); font-size: var(--fs-label); white-space: nowrap; }
+
+.bill-result { color: var(--accent-2-text); font-weight: 700; font-size: var(--fs-label); white-space: nowrap; }
+
+@media (max-width: 760px) {
+.bill-row a {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "num date result" "title title title";
+    gap: 4px 10px; padding: 12px 0;
+  }
+.bill-number { grid-area: num; }
+.bill-date { grid-area: date; }
+.bill-result { grid-area: result; justify-self: end; }
+.bill-title { grid-area: title; font-weight: 600; }
+
+
+}
+
+.combined-policy { margin-top: 24px; }
+
+.combined-policy-row { background: var(--bg); padding: 4px 16px; min-height: var(--tap); display: flex; align-items: center; }
+
+.combined-policy-row a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--text); }

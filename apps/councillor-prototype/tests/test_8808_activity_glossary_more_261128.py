@@ -6,6 +6,7 @@ import functools
 import http.server
 import os
 from pathlib import Path
+from css_source import read_site_css
 import subprocess
 import sys
 import threading
@@ -144,5 +145,5 @@ def test_1440_glossary_four_columns_below_list(site):
     assert value["listBottom"] <= value["legendTop"] <= value["sourceTop"], value
 
 def test_no_new_important():
-    css=(ROOT/"static"/"styles.css").read_text(encoding="utf-8")
+    css=read_site_css()
     assert css.count("!important") <= 5

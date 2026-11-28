@@ -1,0 +1,117 @@
+.activity-toolbar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+
+.activity-toolbar label { font-size: var(--fs-label); align-self: center; color: var(--muted); }
+
+.activity-toolbar input, .activity-toolbar select {
+  min-height: var(--tap); padding: 10px 14px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--bg-soft);
+  color: var(--text); font: inherit; font-size: var(--fs-body);
+}
+
+.activity-toolbar input { flex: 1; min-width: 220px; }
+
+.activity-status {
+  margin: 8px 0 0; color: var(--accent-2-text);
+  font-size: var(--fs-label); font-weight: 600;
+}
+
+.activity-legend {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 6px 16px;
+  margin: 24px 0 14px; color: color-mix(in srgb, var(--muted) 80%, var(--text));
+  font-size: var(--fs-body); line-height: 1.4;
+}
+
+.activity-legend b { color: var(--accent-2-text); font-weight: 700; }
+
+[data-theme="dark"] .activity-legend b { color: var(--text); }
+
+.activity-list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+}
+
+.activity-item {
+  background: var(--bg); padding: 18px 20px; cursor: pointer;
+  display: grid; grid-template-columns: 150px 1fr; gap: 16px; align-items: center;
+  min-height: calc(var(--tap) + 24px);
+  transition: background 0.15s;
+}
+
+.activity-item:hover { background: var(--bg-soft); }
+
+.activity-item > noscript { display: none; }
+
+@media (scripting: none) {
+.activity-item > noscript { display: block; grid-column: 1 / -1; }
+
+
+}
+
+.activity-item .item-date { font-size: var(--fs-label); color: var(--accent-2-text); font-weight: 700; }
+
+.activity-item .item-tag {
+  display: inline-block; margin-left: 8px; padding: 2px 8px;
+  font-size: var(--fs-label); border-radius: 4px;
+  background: var(--accent-soft); color: var(--accent-text);
+}
+
+[data-theme="dark"] .activity-item .item-tag { color: #9fd0ee; background: rgba(0, 96, 156, 0.24); }
+
+.activity-item .item-title {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 8px; flex-wrap: wrap;
+  font-size: var(--fs-body); font-weight: 600;
+}
+
+.activity-item .item-more {
+  color: var(--accent-2-text); font-size: var(--fs-label);
+  font-weight: 700; white-space: nowrap;
+}
+
+.activity-detail {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 28px; margin-top: 24px;
+}
+
+/* 상세 진입 시 제목으로 이동한 초점에는 테두리를 그리지 않는다. */
+.activity-detail #detailTitle:focus { outline: none; }
+
+.back-btn { display: inline-flex; align-items: center; min-height: var(--tap); background: none; border: 0; color: var(--accent-2-text); cursor: pointer; font: inherit; font-size: var(--fs-body); font-weight: 600; padding: 0; margin-bottom: 12px; }
+
+.detail-date { color: var(--muted); font-size: var(--fs-label); margin: 0 0 14px; max-width: 40em; }
+
+.detail-body { color: var(--text); font-size: var(--fs-body); line-height: 1.8; margin: 0; }
+
+.detail-body p { margin: 0 0 16px; max-width: 40em; }
+
+.detail-body p:last-child { margin-bottom: 0; }
+
+.detail-link, .share-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--tap); margin-top: 16px;
+  padding: 8px 18px; border: 1px solid var(--accent); border-radius: 999px;
+  background: transparent; color: var(--accent-2-text); text-decoration: none;
+  font: inherit; font-size: var(--fs-body); font-weight: 600; vertical-align: middle;
+}
+
+/* 두 인라인 요소 사이 원래 HTML 공백을 포함해 화면 간격은 12px. */
+.share-btn { margin-left: 8px; cursor: pointer; }
+
+.detail-link:hover, .share-btn:hover { border-color: var(--accent-2); background: var(--accent-soft); }
+
+.share-status { color: var(--muted); font-size: var(--fs-label); margin: 8px 0 0; }
+
+@media (max-width: 900px) {
+.activity-item { grid-template-columns: 1fr; gap: 6px; }
+}
+
+@media (max-width: 720px) {
+/* 휴대폰에서는 제목 아래 독립 줄에 최소 44px 높이로 자세히를 둔다. */
+.activity-item .item-title { display: block; }
+.activity-item .item-more { display: flex; align-items: center; min-height: var(--tap); justify-content: flex-start; }
+}
+
+.activity-terms { margin: 12px 0 0; font-size: var(--fs-body); color: var(--text); max-width: 40em; }
+
+.activity-terms p { margin: 4px 0; max-width: 40em; }

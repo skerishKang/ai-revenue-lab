@@ -8,6 +8,7 @@ import subprocess
 import sys
 import threading
 from pathlib import Path
+from css_source import read_site_css
 
 import pytest
 
@@ -117,7 +118,7 @@ def test_profile_media_beige_matches_about_background_without_crop(site,width,th
 
 
 def test_no_new_important():
-    css=(ROOT/"static"/"styles.css").read_text(encoding="utf-8")
+    css=read_site_css()
     assert css.count("!important")<=5
 
 

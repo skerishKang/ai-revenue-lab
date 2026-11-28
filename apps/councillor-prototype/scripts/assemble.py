@@ -32,6 +32,8 @@ def render(page: str) -> str:
     """Return the full source HTML for one page, without prerendered records."""
     meta = PAGES[page]
     values = {
+        "PAGE_CSS": ("home" if page == "index.html" else
+                     "notfound" if page == "404.html" else page.removesuffix(".html")),
         "TITLE": meta["title"],
         "DESCRIPTION": meta["description"],
         "CANONICAL": meta["canonical"],

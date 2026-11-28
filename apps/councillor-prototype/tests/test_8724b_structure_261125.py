@@ -13,10 +13,11 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from css_source import read_site_css
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
-STYLES = (ROOT / "static" / "styles.css").read_text(encoding="utf-8")
+STYLES = read_site_css()
 # Runtime-only nodes observed in the four states above; they are not in the HTML.
 RUNTIME_CLASSES = {"combined-policy-row", "ext-mark", "intro-video-title", "is-empty", "lightbox-open"}
 RUNTIME_IDS = {"activityEmpty"}

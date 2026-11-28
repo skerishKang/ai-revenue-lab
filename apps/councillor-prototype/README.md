@@ -17,7 +17,7 @@ python -m http.server 8792 --directory apps/councillor-prototype/dist
 - `partials/` — 공통 head·header·footer·tabbar 조각과 `pages.json`(페이지별 제목·설명·canonical·OG·활성 탭 값). `scripts/assemble.py`가 조립합니다.
 - `index.html` — 홈 본문 (히어로·의정활동 카드·자료 수·소식/미디어/바로가기)
 - `about.html` · `activity.html` · `policy.html` · `media.html` — 내부 페이지 본문 4개 + `404.html`
-- `static/styles.css` — 디자인 토큰 기반 반응형 스타일 (본문 16px · 이름표 14px · 누르는 곳 44px)
+- `static/css/base.css`, `static/css/components.css`, `static/css/pages/<page>.css` — 디자인 토큰 기반 반응형 스타일 (본문 16px · 이름표 14px · 누르는 곳 44px)
 - `static/fonts/` — 자체 호스팅 웹폰트 (제목 마루부리 Bold 부분집합 · 본문 Pretendard), 라이선스 고지 포함
 - `scripts/prerender.py` — 목록·카드·소식·더 보기 목록을 만드는 유일한 곳
 - `static/app.js` — 이미 그려진 DOM에 검색·분류·상세·크게 보기·홈 미디어·테마만 붙입니다 (한 파일)
