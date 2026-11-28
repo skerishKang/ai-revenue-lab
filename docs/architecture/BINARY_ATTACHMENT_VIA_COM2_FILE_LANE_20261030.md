@@ -1,11 +1,11 @@
 # 바이너리 첨부 문서를 컴2 파일 레인에서 파싱 — 2026-10-30
 
-상태: 설계. 기준 main `d1eea300b`. 대표 결정(22:03): Chat에 Cloudflare 파서 Worker를 연결하지 않고 컴2 파일 레인으로 PDF·DOCX·PPTX·XLSX를 보낸다. #2824 / #5881.
+상태: 설계. 기준 main `d1eea300b`. 2026-11-28 #7809 이후 Claw 위치 표기만 갱신(당시 설계 판정은 변경하지 않음). 대표 결정(22:03): Chat에 Cloudflare 파서 Worker를 연결하지 않고 컴2 파일 레인으로 PDF·DOCX·PPTX·XLSX를 보낸다. #2824 / #5881.
 
 ## 현재 경로와 빈 곳
 
 - Chat `app_factory.py:434`의 `binary_document_attachment_ready`는 Core `document_parser_boundary.py:248`을 읽는다. Worker에서 격리 파서가 설치되지 않으면 false다. `static/locale.js:753`이 파일 선택 기능에 전달하며, 인라인 바이너리는 `attachments.py:129,161` → `binary_documents.py:137` → Core 비동기 파서 경계에서 거부된다. 이 health 값은 **Worker 인라인 파서**의 상태이지 컴2 준비 여부가 아니다.
-- `static/file-lane.js:4-10`과 `app/file_lane.py:24,155`은 현재 TXT/MD/CSV/PDF만 공지·전달한다. 파일 레인이 준비되고 인라인 파서가 없을 때 PDF는 작은 파일도 우회한다. DOCX/PPTX/XLSX는 브라우저 및 Chat의 형식 목록에서 빠져 있다. `attachments.py:141`, `chat_routes.py:334,865`, `orchestration_routes.py:180`, `claw_general_routes.py:1339`에는 file_id 해석 경로가 이미 있다.
+- `static/file-lane.js:4-10`과 `app/file_lane.py:24,155`은 현재 TXT/MD/CSV/PDF만 공지·전달한다. 파일 레인이 준비되고 인라인 파서가 없을 때 PDF는 작은 파일도 우회한다. DOCX/PPTX/XLSX는 브라우저 및 Chat의 형식 목록에서 빠져 있다. `attachments.py:141`, `chat_routes.py:334,865`, `orchestration_routes.py:180`, `claw_general_intake.py:187-197`에는 file_id 해석 경로가 이미 있다.
 - 컴2 구현은 `apps/padiem-file-lane/src/padiem_file_lane/{app,storage,tickets,parsing}.py`: 티켓 검증·스트리밍 업로드·사용자별 디렉터리·SHA-256·메타데이터·텍스트 조회가 있고, `/text` 최초 조회에서 동기 파싱 후 디스크 캐시한다. PDF·DOCX·PPTX·XLSX 종류도 구현돼 있다. XLSX의 `/structure`는 별도 양식 구조 API이며 모든 문서의 구조 결과를 반환하는 범용 API는 아니다. 호스트 서비스는 `deploy/host-com2/file-lane/`; 실제 설치·가동 상태와 설치된 코드 버전은 이번에 읽지 않았다.
 - `parsing.py:13`의 OOXML은 Core `document_normalization.extract_binary_document`를, PDF는 Core `pdf_markdown.convert_pdf_to_markdown`을 재사용한다. 파서 Worker의 `worker.py:14` → `isolated_parser_service.py:45`도 같은 Core `extract_binary_document`를 사용한다. 동일 코드 기반을 컴2에서 재사용 가능하다. 단 PDF의 두 호출 경로는 동일 함수가 아니므로 안전 검사를 각각 입증한다.
 - `PADIEM_CHAT_FILE_LANE_ORIGIN` 및 `PADIEM_CHAT_FILE_LANE_TICKET_SECRET` 구성·발급 경로는 이미 있다. Core 안전 보강 #6316은 이 설계 기준에서 미병합이다. 또한 컴2 OOXML 호출은 `ooxml_member_max_bytes=None`이므로 기본 멤버 예산 적용을 가정하지 않는다. #6316이 확정하는 검사와 현행 예외의 적용 범위를 구현 전 대조한다.

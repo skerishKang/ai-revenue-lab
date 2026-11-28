@@ -358,18 +358,28 @@
       const box = el("div", "council-save-choice");
       box.setAttribute("role", "group");
       box.setAttribute("aria-label", "같은 이름의 글이 이미 있습니다");
-      box.appendChild(el("p", "council-save-choice-text", "같은 이름의 글이 이미 있습니다: " + name));
+      const heading = el("p", "council-save-choice-text", "같은 이름의 글이 이미 있습니다: ");
+      const filename = el("span", "council-save-file-name", name);
+      filename.setAttribute("title", name);
+      heading.appendChild(filename);
+      box.appendChild(heading);
       const asNew = el("button", "council-save-as-new", "새 이름으로 저장 (" + suggested + ")");
       asNew.type = "button";
+      asNew.setAttribute("title", suggested);
       const overwrite = el("button", "council-save-overwrite", "덮어쓰기 (이전 내용은 버전으로 남김)");
       overwrite.type = "button";
+      const cancel = el("button", "council-save-cancel", "취소");
+      cancel.type = "button";
       const finish = (choice) => {
         if (box.parentNode) box.parentNode.removeChild(box);
         resolve(choice);
       };
       asNew.addEventListener("click", () => finish("new"));
       overwrite.addEventListener("click", () => finish("overwrite"));
-      box.append(asNew, overwrite);
+      cancel.addEventListener("click", () => finish(null));
+      box.append(asNew, overwrite, cancel);
+      // A 409 is waiting for the owner, not writing bytes.
+      if (anchor) anchor.textContent = "저장";
       const hostNode = anchor && anchor.parentNode ? anchor.parentNode : anchor;
       if (hostNode && typeof hostNode.appendChild === "function") hostNode.appendChild(box);
       else resolve(null);
@@ -3295,20 +3305,36 @@
     node.textContent = text || "";
     node.hidden = !text;
   }
+  function hideAccountMenu() {
+    const menu = host("councilAccountMenu");
+    if (menu) menu.hidden = true;
+  }
+  function syncAuthAction() {
+    const action = host("councilAuthAction");
+    if (!action) return;
+    const menu = host("councilAccountMenu");
+    action.hidden = false;
+    action.setAttribute("aria-controls", "councilAccountMenu");
+    action.textContent = session.signedIn ? "내 계정" : "로그인";
+    action.setAttribute("aria-expanded", menu && !menu.hidden ? "true" : "false");
+  }
   function showAuthPanel(message, badge) {
+    hideAccountMenu();
     const panel = host("councilAuthPanel");
     if (panel) panel.hidden = false;
-    const action = host("councilAuthAction");
-    if (action) { action.hidden = false; action.textContent = "로그인"; }
+    syncAuthAction();
     setBadge(badge || "로그인 필요");
     if (message) setStatus(message);
   }
   function hideAuthPanel() {
     const panel = host("councilAuthPanel");
     if (panel) panel.hidden = true;
-    const action = host("councilAuthAction");
-    if (action) { action.hidden = false; action.textContent = "로그인"; }
+    syncAuthAction();
     setStatus("");
+  }
+  function closeAuthPanel() {
+    session.pending = null;
+    hideAuthPanel();
   }
 
   function store() {
@@ -3434,7 +3460,17 @@
       });
     });
     const action = host("councilAuthAction");
-    if (action) action.addEventListener("click", () => openLoginHere(session.selected));
+    if (action) action.addEventListener("click", () => {
+      if (session.signedIn) {
+        const menu = host("councilAccountMenu");
+        if (menu) menu.hidden = !menu.hidden;
+        syncAuthAction();
+        return;
+      }
+      const panel = host("councilAuthPanel");
+      if (panel && !panel.hidden) closeAuthPanel();
+      else openLoginHere(session.selected);
+    });
   }
 
   function offerGoogle(methods) {
@@ -3522,11 +3558,42 @@
       event.preventDefault();
       await loginWithPassword(form);
     });
+    const close = host("councilAuthClose");
+    if (close) close.addEventListener("click", closeAuthPanel);
+    const logout = host("councilAccountLogout");
+    if (logout) logout.addEventListener("click", async (event) => {
+      if (event && typeof event.preventDefault === "function") event.preventDefault();
+      hideAccountMenu();
+      syncAuthAction();
+      try {
+        const res = await fetch("/api/auth/logout", {
+          method: "POST", credentials: "include", headers: { Accept: "application/json" },
+        });
+        if (res.ok && window.location && typeof window.location.reload === "function") {
+          window.location.reload();
+        }
+      } catch (_) { /* Keep the current session if logout did not succeed. */ }
+    });
+    document.addEventListener("pointerdown", (event) => {
+      const panel = host("councilAuthPanel");
+      if (panel && !panel.hidden && typeof panel.contains === "function"
+          && !panel.contains(event.target) && event.target !== host("councilAuthAction")) {
+        closeAuthPanel();
+      }
+      const menu = host("councilAccountMenu");
+      const action = host("councilAuthAction");
+      if (menu && !menu.hidden && typeof menu.contains === "function"
+          && !menu.contains(event.target) && event.target !== action) {
+        hideAccountMenu();
+        syncAuthAction();
+      }
+    });
   }
 
   function markSessionLost() {
     if (!session.signedIn) return false;
     session.signedIn = false;
+    hideAccountMenu();
     hideTierSelect();
     openLoginHere(session.selected, "세션이 만료되었습니다. 다시 로그인하면 이 화면에서 이어나갑니다.");
     return true;
@@ -3641,6 +3708,10 @@
     document.addEventListener("click", () => { if (theme.open) setThemePanel(false); });
     document.addEventListener("keydown", (event) => {
       if (!event || event.key !== "Escape") return;
+      const authPanel = host("councilAuthPanel");
+      if (authPanel && !authPanel.hidden) { closeAuthPanel(); return; }
+      const accountMenu = host("councilAccountMenu");
+      if (accountMenu && !accountMenu.hidden) { hideAccountMenu(); syncAuthAction(); return; }
       // A shared PC dialog that is open owns Escape: close the dialog, never the
       // editor behind it.
       const exchange = window.PadiemPcFileExchange;

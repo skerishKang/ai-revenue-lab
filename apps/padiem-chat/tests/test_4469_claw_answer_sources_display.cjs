@@ -28,9 +28,20 @@ test("the renderer refuses malformed, non-https and missing provenance", () => {
 });
 
 test("backend still ships sources only as the verified terminal contract", () => {
-  const routes = fs.readFileSync(
-    path.join(__dirname, "..", "app", "claw_general_routes.py"), "utf8"
+  // Resolve the split-owner files from the Python test registry, never from
+  // a hard-coded facade. Backend source contracts survive verbatim moves.
+  const registry = fs.readFileSync(
+    path.join(__dirname, "_support", "claw_general_modules.py"), "utf8"
   );
+  const registered = registry.match(/CLAW_GENERAL_MODULES:\s*tuple\[str,\s*\.\.\.\]\s*=\s*\(([\s\S]*?)^\)/m);
+  assert.ok(registered, "missing split source registry");
+  const owners = [...registered[1].matchAll(/^\s+"(claw_general_[a-z_]+)",?\s*$/gm)]
+    .map((match) => match[1]);
+  assert.ok(owners.length >= 15, "incomplete split module registry");
+  const routes = ["claw_general_routes", ...owners]
+    .map((owner) => fs.readFileSync(
+      path.join(__dirname, "..", "app", owner + ".py"), "utf8"
+    )).join("\n");
   assert.match(routes, /def _project_search_sources/);
   assert.match(routes, /url\.startswith\("https:\/\/"\)/);
   assert.match(routes, /retrieved_at/);
