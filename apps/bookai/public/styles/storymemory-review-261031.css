@@ -54,6 +54,12 @@
   #library .library-shelf-toolbar { top: auto; bottom: 174px; }
 }
 
+/* #8779: 390px 본문 끝 출처 행과 44px 넘김 버튼 사이 보호 영역. */
+@media (max-width:768px) {
+  #reader #readerPageBody { padding-bottom:56px; }
+  #reader .page-turn-btn { bottom:50px; }
+}
+
 /* Reading and source screens: prevent controls from covering their content. */
 :root {
   --review-control-gap: 8px;

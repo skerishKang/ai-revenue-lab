@@ -10,6 +10,18 @@
       글씨(제목·권 정보)를 4.5:1 이상으로 올린다.
    11 휴대폰 기억 시트: 위쪽 빈 줄을 없애고 "현재 읽기 / 전체 기억"을 14px 로 키운다. */
 
+/* #8779 D2·D3: 검색 안내는 13px 이상이고 테마별 읽기 대비를 지킨다. */
+:root { --sm-search-hint-ink:#65574b; }
+body.smr-theme-dark { --sm-search-hint-ink:#e2d5c4; }
+#reader .paper-head>.bible-search-panel>summary span,
+#reader .paper-head>.bible-search-panel .bible-search-hint {
+  font-size:13px;
+  color:var(--sm-search-hint-ink);
+}
+
+/* #8779 D1: 안내 줄 뒤 장식은 선택/진행 상태가 아니므로 없앤다. */
+#reader .paper-head>.bible-search-panel>summary::after { content:none; }
+
 /* ---- 8. 오늘 화면 터치 영역 ------------------------------------------------ */
 #today #todayBack,
 #today #todayOpenGlobal,

@@ -34,9 +34,12 @@ test('#6476 모바일 章 칩은 44px 이상 높이로 제공한다',()=>{
   assert.match(css,/\.v2-chapter-chip\{[^}]*min-height:44px/,'v2ChapterChip must keep a 44px touch target');
 });
 
-test('#6476 모바일 읽기 화면에서 의견 보내기는 AI 하단 탭을 덮지 않는다',()=>{
-  const css=fs.readFileSync(path.join(__dirname,'..','public','styles','bookai-7839-feedback.css'),'utf8').replace(/\s+/g,' ');
-  assert.match(css,/body\.reader-mode \.bookai-feedback-open \{ bottom: 128px; \}/,'feedback button must move above the reader dock');
+test('#6476·#8779 모바일 읽기 의견 보내기는 떠 있지 않고 메뉴 마지막에 있어 탭을 덮지 않는다',()=>{
+  const css=fs.readFileSync(path.join(__dirname,'..','public','styles','bookai-7839-feedback.css'),'utf8');
+  const reader=fs.readFileSync(path.join(__dirname,'..','public','storymemory-reader-settings-v1.js'),'utf8');
+  assert.doesNotMatch(html,/class="bookai-feedback-open"/,'떠 있는 의견 단추를 제거한다');
+  assert.doesNotMatch(css,/\.bookai-feedback-open\s*\{[^}]*position:\s*fixed/,'의견 단추를 고정 배치하지 않는다');
+  assert.match(reader,/ovMenu\.append\(bk,er,un,gear,ai,feedback\)/,'의견 보내기는 읽기 메뉴 마지막 항목이다');
 });
 
 test('#6476 홈 첫 화면 안내문은 떠 있는 TODAY 칩 아래에서 시작한다',()=>{

@@ -27,6 +27,34 @@
     if (body) body.focus();
   };
   openButton.addEventListener("click", showForm);
+
+  // 오늘 화면도 서재·읽기와 같은 ⋯ 메뉴를 사용한다.
+  const todayActions=document.querySelector("#today .today-top-actions");
+  if(todayActions){
+    const wrap=document.createElement("div");
+    wrap.className="bookai-today-overflow";
+    const toggle=document.createElement("button");
+    toggle.type="button";toggle.id="bookaiTodayOverflow";
+    toggle.textContent="⋯";toggle.setAttribute("aria-label","오늘 화면 더보기");
+    toggle.setAttribute("aria-expanded","false");toggle.setAttribute("aria-haspopup","true");
+    const menu=document.createElement("div");
+    menu.id="bookaiTodayOverflowMenu";menu.className="bookai-today-overflow-menu";
+    const item=document.createElement("button");
+    item.type="button";item.textContent="의견 보내기";
+    item.className="bookai-feedback-menu-item";
+    menu.append(item);
+    const close=()=>{wrap.classList.remove("open");toggle.setAttribute("aria-expanded","false");};
+    toggle.addEventListener("click",(event)=>{
+      event.stopPropagation();
+      const isOpen=wrap.classList.toggle("open");
+      toggle.setAttribute("aria-expanded",String(isOpen));
+      if(isOpen)item.focus();
+    });
+    item.addEventListener("click",()=>{close();showForm();});
+    document.addEventListener("click",(event)=>{if(!wrap.contains(event.target))close();});
+    document.addEventListener("keydown",(event)=>{if(event.key==="Escape"&&wrap.classList.contains("open")){close();toggle.focus();}});
+    wrap.append(toggle,menu);todayActions.append(wrap);
+  }
   if (again) again.addEventListener("click", showForm);
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
