@@ -471,26 +471,14 @@ body.reader-mode .skip-reader-link{display:block}
 /* ===== post-v3.1.4 · SM-005 paper stack motion completion ===== */
 #reader.active:not(.paper-enter) .paper-stack{
   transform-style:preserve-3d;
-  animation:smReaderIdleStack 9.2s ease-in-out infinite;
+  animation:none;
 }
 #reader.active:not(.paper-enter) .paper-stack:has(.curl-page.show){animation:none}
-@keyframes smReaderIdleStack{
-  0%,100%{transform:translateY(0) rotateX(.08deg) rotateZ(-.035deg)}
-  50%{transform:translateY(-1.35px) rotateX(-.14deg) rotateZ(.045deg)}
-}
 #reader.active:not(.paper-enter) .under1{
-  animation:smReaderUnderA 10.8s ease-in-out infinite;
+  animation:none;
 }
 #reader.active:not(.paper-enter) .under2{
-  animation:smReaderUnderB 9.7s ease-in-out infinite;
-}
-@keyframes smReaderUnderA{
-  0%,100%{transform:translate(-18px,14px) rotate(-1.9deg)}
-  50%{transform:translate(-19.4px,14.8px) rotate(-2.08deg)}
-}
-@keyframes smReaderUnderB{
-  0%,100%{transform:translate(-9px,7px) rotate(-.9deg)}
-  50%{transform:translate(-10.1px,7.7px) rotate(-1.02deg)}
+  animation:none;
 }
 .paper-stack .under-sheet{
   transition:transform .36s cubic-bezier(.18,.78,.18,1),filter .36s ease,opacity .36s ease;
@@ -520,8 +508,7 @@ body.reader-mode .skip-reader-link{display:block}
 .chapter-carousel.paper-switch .chapter-stack.on .layer-c{animation-delay:70ms!important}
 .chapter-carousel.paper-switch .chapter-stack.on .layer-d{animation-delay:105ms!important}
 @media(max-width:720px){
-  #reader.active:not(.paper-enter) .paper-stack{animation:smReaderIdleStackMobile 10.5s ease-in-out infinite}
-  @keyframes smReaderIdleStackMobile{0%,100%{transform:translateY(0)}50%{transform:translateY(-.7px)}}
+  #reader.active:not(.paper-enter) .paper-stack{animation:none}
 }
 @media(prefers-reduced-motion:reduce){
   #reader.active:not(.paper-enter) .paper-stack,
