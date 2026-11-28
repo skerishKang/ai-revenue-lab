@@ -1,0 +1,71 @@
+{
+  "policy-search-1440-light": {
+    "path": "/policy.html",
+    "scrollY": 1285,
+    "overflow": 0,
+    "search": "조례",
+    "status": "검색 결과 총 61건 / 전체 61건. 제9대 29건 / 전체 29건, 제8대 32건 / 전체 32건",
+    "statusRect": {
+      "x": 80,
+      "y": 239.6875,
+      "width": 1280,
+      "height": 22.390625,
+      "top": 239.6875,
+      "bottom": 262.078125
+    },
+    "groupCounts": [
+      {
+        "assembly": "9",
+        "count": "29건 / 전체 29건"
+      },
+      {
+        "assembly": "8",
+        "count": "32건 / 전체 32건"
+      }
+    ],
+    "eyebrow": "자료",
+    "eyebrowClass": "section-eyebrow",
+    "eyebrowAria": null,
+    "firstNewsDate": "",
+    "firstNewsTitle": "",
+    "firstNewsCard": null,
+    "main": {
+      "x": 0,
+      "y": -1225,
+      "width": 1440,
+      "height": 4681.09375,
+      "top": -1225,
+      "bottom": 3456.09375
+    }
+  },
+  "news-1440-light": {
+    "path": "/news.html",
+    "scrollY": 0,
+    "overflow": 0,
+    "search": "",
+    "status": "",
+    "statusRect": null,
+    "groupCounts": [],
+    "eyebrow": "",
+    "eyebrowClass": "section-eyebrow news-eyebrow-spacer",
+    "eyebrowAria": "true",
+    "firstNewsDate": "2026-11-25",
+    "firstNewsTitle": "자료를 더 빠르게 찾도록",
+    "firstNewsCard": {
+      "x": 80,
+      "y": 219.453125,
+      "width": 1280,
+      "height": 327.96875,
+      "top": 219.453125,
+      "bottom": 547.421875
+    },
+    "main": {
+      "x": 0,
+      "y": 60,
+      "width": 1440,
+      "height": 1978.5,
+      "top": 60,
+      "bottom": 2038.5
+    }
+  }
+}

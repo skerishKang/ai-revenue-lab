@@ -33,3 +33,27 @@ def test_the_change_list_is_not_the_home_news_mount():
     html = assemble.render("news.html")
     assert 'id="newsList"' not in html and 'id="siteChangeList"' in html
     assert "siteChangeList" not in (ROOT / "static/app.js").read_text(encoding="utf8")
+
+
+def test_approved_news_1128_is_first_with_exact_copy():
+    data = json.loads((ROOT / "static/miraen.json").read_text(encoding="utf-8"))
+    item = data["news"][0]
+    assert item == {
+        "date": "2026-11-28",
+        "title": "더 읽기 편하게",
+        "changes": [
+            "어두운 화면에서 파란 글자와 조례안 검색칸 글자가 잘 보이도록 바꿨습니다.",
+            "휴대폰에서 의정활동과 미디어를 한 줄에 하나씩 크게 볼 수 있습니다.",
+            "의원 소개 사진과 소개 글을 나란히 놓아 한눈에 읽을 수 있습니다.",
+            "낱말이 줄 끝에서 끊기지 않고, 오류·불편을 보낼 때 빠뜨린 곳을 바로 알려 드립니다.",
+        ],
+    }
+    rendered = prerender.prerender_news(data)
+    assert rendered.index("2026-11-28") < rendered.index("2026-11-25")
+
+
+def test_news_eyebrow_is_approved_word_without_spacer():
+    html = assemble.render("news.html")
+    assert '<p class="section-eyebrow">알림</p>' in html
+    assert "news-eyebrow-spacer" not in html
+    assert 'aria-hidden="true">알림' not in html
