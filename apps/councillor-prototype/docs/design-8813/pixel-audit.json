@@ -1,0 +1,134 @@
+{
+  "viewer-close-focus-1440-dark": {
+    "state": "viewer-close-focus-1440-dark",
+    "total_changed_pixels": 1162,
+    "outside_allowed_pixels": 0,
+    "allowed_exception": "close focus ring, unchanged image raster, and dark header outlined buttons behind translucent modal",
+    "outside_bbox": null
+  },
+  "viewer-close-focus-390-light": {
+    "state": "viewer-close-focus-390-light",
+    "total_changed_pixels": 613,
+    "outside_allowed_pixels": 0,
+    "allowed_exception": "close focus ring and unchanged profile-photo raster",
+    "outside_bbox": null
+  },
+  "dark-home-chips-390": {
+    "state": "dark-home-chips-390",
+    "total_changed_pixels": 3178,
+    "outside_allowed_pixels": 0,
+    "allowed_exception": "dark header, hero action, and search-button border rectangles",
+    "outside_bbox": null
+  },
+  "dark-outlined-controls-1440": {
+    "state": "dark-outlined-controls-1440",
+    "total_changed_pixels": 1550,
+    "outside_allowed_pixels": 0,
+    "allowed_exception": "outlined header and detailed action rectangles; comparison divider omitted",
+    "outside_bbox": null
+  },
+  "modalFocusContrast": {
+    "beforeColor": "rgb(0, 96, 156)",
+    "afterColor": "rgb(124, 192, 234)",
+    "beforeAgainstBlack": 3.014,
+    "afterAgainstBlack": 10.117,
+    "beforeWidth": "2px",
+    "afterWidth": "2px",
+    "beforeOffset": "3px",
+    "afterOffset": "2px"
+  },
+  "darkBorderContrast": {
+    "dark-outlined-controls-1440": [
+      {
+        "name": "ghost theme-toggle",
+        "background_assumed": "rgb(19,35,58)",
+        "beforeColor": "rgba(245, 241, 232, 0.14)",
+        "afterColor": "rgb(124, 192, 234)",
+        "beforeContrast": 1.498,
+        "afterContrast": 7.963
+      },
+      {
+        "name": "ghost text-size-toggle",
+        "background_assumed": "rgb(19,35,58)",
+        "beforeColor": "rgba(245, 241, 232, 0.14)",
+        "afterColor": "rgb(124, 192, 234)",
+        "beforeContrast": 1.498,
+        "afterContrast": 7.963
+      },
+      {
+        "name": "detail-link",
+        "background_assumed": "rgb(11,26,46)",
+        "beforeColor": "rgb(0, 72, 132)",
+        "afterColor": "rgb(124, 192, 234)",
+        "beforeContrast": 1.881,
+        "afterContrast": 8.81
+      },
+      {
+        "name": "share-btn",
+        "background_assumed": "rgb(11,26,46)",
+        "beforeColor": "rgb(0, 72, 132)",
+        "afterColor": "rgb(124, 192, 234)",
+        "beforeContrast": 1.881,
+        "afterContrast": 8.81
+      }
+    ],
+    "dark-home-chips-390": [
+      {
+        "name": "ghost theme-toggle",
+        "background_assumed": "rgb(19,35,58)",
+        "beforeColor": "rgba(245, 241, 232, 0.14)",
+        "afterColor": "rgb(124, 192, 234)",
+        "beforeContrast": 1.498,
+        "afterContrast": 7.963
+      },
+      {
+        "name": "ghost text-size-toggle",
+        "background_assumed": "rgb(19,35,58)",
+        "beforeColor": "rgba(245, 241, 232, 0.14)",
+        "afterColor": "rgb(124, 192, 234)",
+        "beforeContrast": 1.498,
+        "afterContrast": 7.963
+      },
+      {
+        "name": "btn secondary",
+        "background_assumed": "rgb(11,26,46)",
+        "beforeColor": "rgba(245, 241, 232, 0.14)",
+        "afterColor": "rgb(124, 192, 234)",
+        "beforeContrast": 1.471,
+        "afterContrast": 8.81
+      },
+      {
+        "name": "btn secondary",
+        "background_assumed": "rgb(11,26,46)",
+        "beforeColor": "rgba(245, 241, 232, 0.14)",
+        "afterColor": "rgb(124, 192, 234)",
+        "beforeContrast": 1.471,
+        "afterContrast": 8.81
+      },
+      {
+        "name": "btn secondary",
+        "background_assumed": "rgb(11,26,46)",
+        "beforeColor": "rgba(245, 241, 232, 0.14)",
+        "afterColor": "rgb(124, 192, 234)",
+        "beforeContrast": 1.471,
+        "afterContrast": 8.81
+      },
+      {
+        "name": "home-search-go",
+        "background_assumed": "rgb(11,26,46)",
+        "beforeColor": "rgba(245, 241, 232, 0.14)",
+        "afterColor": "rgb(124, 192, 234)",
+        "beforeContrast": 1.471,
+        "afterContrast": 8.81
+      },
+      {
+        "name": "site-feedback-open",
+        "background_assumed": "rgb(11,26,46)",
+        "beforeColor": "rgba(245, 241, 232, 0.42)",
+        "afterColor": "rgb(124, 192, 234)",
+        "beforeContrast": 3.71,
+        "afterContrast": 8.81
+      }
+    ]
+  }
+}
