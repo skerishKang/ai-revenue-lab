@@ -2,6 +2,7 @@ from _r5_function_source import definition_source
 """Owner-approved Chat/Claw one composer / card frame boundary."""
 # #8060: shipped reads live in _support; the markup and CSS checks stay.
 from _support import claw_chat_first_use_source as sheets
+from _support import theme_sheets
 
 HTML = sheets.sheet("index.html")
 CAP = sheets.sheet("product-capabilities.js")
@@ -34,7 +35,13 @@ def test_claw_dedicated_connectors_keep_real_buttons_inside_chat_card_geometry()
     # The card is a positioning wrapper only: the inner .starter carries the Chat
     # box and paint, so Claw no longer stacks a second card surface on top of it.
     assert '.claw-home-card > .claw-workspace-starter' in FOCUS
-    assert 'background: none !important;' in FOCUS
+    # #8340: the declared value is the contract; the sheet carries no priority flag.
+    wrappers = [
+        theme_sheets.decl_map(rule)
+        for rule in theme_sheets.rules_with_selector("claw-focus-layout.css", ".conversation .claw-home-card")
+        if rule.selector.strip().endswith(".conversation .claw-home-card")
+    ]
+    assert any(decls.get("background") == "none" for decls in wrappers)
     assert '.claw-home-card > .claw-card-status' in FOCUS
     # Truthful connection headline in the top-right of every connector card.
     for status_id in ("clawPcCardStatus", "clawDriveCardStatus", "clawGithubCardStatus"):

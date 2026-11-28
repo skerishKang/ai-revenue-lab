@@ -308,7 +308,6 @@
     background: var(--card-bg, #fff);
     border: 1px solid var(--line);
     border-radius: 12px;
-    overflow: hidden;
   }
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
     order: 1;
@@ -316,7 +315,6 @@
     border: 0;
     box-shadow: none;
     padding: 10px 12px 2px;
-    min-height: 0;
     height: auto !important;
     flex: 0 0 auto !important;
     align-items: flex-start;
