@@ -39,6 +39,21 @@ class El {
     for (const n of nodes) if (n) { n.parent = this; this.children.push(n); }
   }
   replaceChildren(...nodes) { this.children = []; this.text = ""; this.append(...nodes); }
+  // #8898: the reconnect module edits drawn rows with querySelector,
+  // insertBefore and remove, so the stand-in DOM answers like one.
+  querySelector(sel) { return this.querySelectorAll(sel)[0] || null; }
+  insertBefore(node, ref) {
+    if (!ref) { this.append(node); return; }
+    const at = this.children.indexOf(ref);
+    if (at < 0) { this.append(node); return; }
+    this.children.splice(at, 0, node); node.parent = this;
+  }
+  remove() {
+    if (!this.parent) return;
+    const at = this.parent.children.indexOf(this);
+    if (at >= 0) this.parent.children.splice(at, 1);
+    this.parent = null;
+  }
   setAttribute(name, value) { this.attrs[name] = String(value); }
   addEventListener(name, handler) { (this.listeners[name] ||= []).push(handler); }
   focus() {}
@@ -67,6 +82,7 @@ class El {
 }
 
 function makeDom(responses, options = {}) {
+  const observers = [];
   const card = new El("div");
   card.attrs.id = "connectorComputerCard";
   const root = new El("html");
@@ -144,7 +160,9 @@ function makeDom(responses, options = {}) {
       createObjectURL: (blob) => { objectUrls += 1; (globalThis.blobs ||= {})[`blob:${objectUrls}`] = blob; return `blob:${objectUrls}`; },
       revokeObjectURL: () => {},
     }),
-    MutationObserver: class { observe() {} },
+    // #8898: observers are recorded per makeDom and fired by hand, so the
+    // reconnect module's row repaint runs like it does after a real draw.
+    MutationObserver: class { constructor(cb) { observers.push(cb); } observe() {} },
     console, JSON, Object, Array, Promise, String, Number, Math, encodeURIComponent,
   };
   globalThis.downloads = downloads;
@@ -154,7 +172,11 @@ function makeDom(responses, options = {}) {
   vm.runInContext(dependency, sandbox);
   vm.runInContext(shareApproval, sandbox);
   vm.runInContext(script, sandbox);
-  return { card, calls, downloads, blobs: globalThis.blobs, sandbox, document, confirmState };
+  // #8898: the reconnect module loads after the card, like index.html does.
+  const reconnectSource = fs.readFileSync(
+    path.join(__dirname, "..", "static", "pc-pairing-reconnect.js"), "utf8");
+  vm.runInContext(reconnectSource, sandbox);
+  return { card, calls, downloads, blobs: globalThis.blobs, sandbox, document, confirmState, observers };
 }
 
 const NODE_ID = "node/meshdomain/mesh-pc-09";
@@ -219,6 +241,9 @@ const settle = async (rounds = 8) => {
   }
 };
 const dwell = async (ms = 60) => { await new Promise((resolve) => setTimeout(resolve, ms)); };
+const fireObservers = (observers) => {
+  for (const cb of observers || []) cb([], null);
+};
 function check(name, condition, detail) {
   results.push({ name, ok: Boolean(condition), detail: condition ? "" : String(detail ?? "") });
 }
@@ -525,6 +550,38 @@ async function main() {
   check("the paused PC's menu offers 다시 시작 and posts the resume route",
     listed.calls.some((call) => call.method === "POST"
       && call.url === "/api/pc/pairings/" + PAUSED_LINK.link_id + "/resume"),
+    JSON.stringify(listed.calls));
+
+  // #8898: the offline row carries its own 다시 연결 action on the row itself,
+  // not inside the menu; the online and paused rows do not. Clicking it calls
+  // the card's public connect flow (program download), and the server
+  // supersedes the stale row by machine name when the new link lands.
+  fireObservers(listed.observers);
+  const offlineRow = shown.ids().find((n) => (n.className || "") === "pc-pairing-link"
+    && n.allText().includes("사무실 PC"));
+  const reconnectButton = offlineRow.ids().find((n) => n.matchesClass("pc-pairing-reconnect"));
+  check("the offline row shows 다시 연결 on the row itself, outside the menu",
+    reconnectButton && reconnectButton.textContent === "다시 연결"
+    && reconnectButton.hidden !== true
+    && reconnectButton.parent !== offlineRow.ids().find(
+      (n) => (n.className || "") === "pc-pairing-menu-panel"),
+    JSON.stringify(offlineRow.ids().map((n) => n.className)));
+  check("the reconnect button names the PC and explains without promising a remote wake",
+    String(reconnectButton.attrs["aria-label"] || "").includes("사무실 PC")
+    && String(reconnectButton.title || "").includes("그 PC에서")
+    && !String(reconnectButton.title || "").includes("원격"),
+    JSON.stringify({ label: reconnectButton.attrs["aria-label"], title: reconnectButton.title }));
+  check("exactly the offline row carries the reconnect button",
+    shown.ids().filter((n) => n.matchesClass("pc-pairing-reconnect")).length === 1,
+    JSON.stringify(shown.ids().map((n) => n.className)));
+  const downloadsBeforeReconnect = listed.downloads.length;
+  reconnectButton.click();
+  await settle();
+  check("다시 연결 reuses the existing connect flow (program download, no new route)",
+    listed.calls.some((call) => call.method === "POST"
+      && call.url === "/api/pc/pairings/install-exe")
+    && listed.downloads.length > downloadsBeforeReconnect
+    && listed.downloads[listed.downloads.length - 1].name === "padiem-pc-connect.exe",
     JSON.stringify(listed.calls));
 
   listed.confirmState.value = false;
