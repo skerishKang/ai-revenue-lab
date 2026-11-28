@@ -193,28 +193,59 @@ def test_unknown_activity_shows_list_and_message(browser, base_url):
         page.close()
 
 
-def test_theme_button_copy_toggles(browser, base_url):
-    page = browser.new_page(viewport={"width": 390, "height": 844})
+@pytest.mark.parametrize("width,height", [(390, 844), (1440, 900)])
+def test_theme_button_copy_toggles(browser, base_url, width, height):
+    """Compare only visible header labels/icons, not hidden spans in textContent."""
+    page = browser.new_page(viewport={"width": width, "height": height}, color_scheme="light")
     try:
         _open_activity(page, base_url)
-        initial = page.evaluate(
-            """() => ({text: document.getElementById('themeToggle').textContent, aria: document.getElementById('themeToggle').getAttribute('aria-label'), pressed: document.getElementById('themeToggle').getAttribute('aria-pressed')})"""
+        toggle = page.locator("#themeToggle")
+
+        def visible_state():
+            return toggle.evaluate(
+                """button => {
+                  const visibleText = selector => [...button.querySelectorAll(selector)]
+                    .filter(el => getComputedStyle(el).display !== "none" &&
+                      getComputedStyle(el).visibility === "visible" &&
+                      el.getClientRects().length > 0)
+                    .map(el => el.innerText.trim());
+                  return {
+                    theme: document.documentElement.getAttribute("data-theme"),
+                    labels: visibleText(".header-label"),
+                    icons: visibleText(".header-icon"),
+                    aria: button.getAttribute("aria-label"),
+                    pressed: button.getAttribute("aria-pressed"),
+                  };
+                }"""
+            )
+
+        # The existing site uses the short accessible names, not the older
+        # "어두운 화면으로 보기"/"밝은 화면으로 보기" labels.
+        light = visible_state()
+        assert light["theme"] == "light", light
+        assert light["aria"] == "어둡게 보기", light
+        assert light["pressed"] == "false", light
+        if width == 390:
+            assert light["icons"] == ["☾"], light
+            assert light["labels"] == [], light
+        else:
+            assert light["labels"] == ["어둡게 보기"], light
+            assert light["icons"] == [], light
+
+        toggle.click()
+        page.wait_for_function(
+            "() => document.documentElement.getAttribute('data-theme') === 'dark'"
         )
-        assert initial == {
-            "text": "어둡게 보기",
-            "aria": "어두운 화면으로 보기",
-            "pressed": "false",
-        }
-        page.locator("#themeToggle").click()
-        page.wait_for_timeout(250)
-        dark = page.evaluate(
-            """() => ({text: document.getElementById('themeToggle').textContent, aria: document.getElementById('themeToggle').getAttribute('aria-label'), pressed: document.getElementById('themeToggle').getAttribute('aria-pressed')})"""
-        )
-        assert dark == {
-            "text": "밝게 보기",
-            "aria": "밝은 화면으로 보기",
-            "pressed": "true",
-        }
+        dark = visible_state()
+        assert dark["theme"] == "dark", dark
+        assert dark["aria"] == "밝게 보기", dark
+        assert dark["pressed"] == "true", dark
+        if width == 390:
+            assert dark["icons"] == ["☀"], dark
+            assert dark["labels"] == [], dark
+        else:
+            assert dark["labels"] == ["밝게 보기"], dark
+            assert dark["icons"] == [], dark
     finally:
         page.close()
 
