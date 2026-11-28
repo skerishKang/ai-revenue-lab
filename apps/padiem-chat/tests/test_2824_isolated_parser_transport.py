@@ -515,7 +515,7 @@ async def test_health_reports_async_parser_readiness_without_lying() -> None:
 
 
 def test_health_handler_reads_the_async_readiness_signal() -> None:
-    source = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
+    source = (ROOT / "app" / "app_factory_health_static.py").read_text(encoding="utf-8")
     assert '"binary_document_attachment_ready": bool(request.app.state.file_lane_client.ready and BINARY_KINDS <= KINDS.keys())' in source
 
 
