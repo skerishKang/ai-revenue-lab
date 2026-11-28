@@ -145,6 +145,22 @@ def test_extracted_pc_source_owner_is_scanned_without_widening_platform(tmp_path
     assert contract.findings() == [], "PC routes are not platform-app allowlist entries"
 
 
+def test_extracted_static_owner_is_scanned_without_widening_platform(tmp_path, monkeypatch) -> None:
+    owner = contract._read(contract.APP_FACTORY_STATIC)
+    assert 'Route(COUNCILLOR_REDIRECT_PATH, councillor_redirect, methods=["GET"])' in owner
+    assert 'Mount("/", app=CachedStaticFiles(directory=str(STATIC_DIR), html=True), name="static")' in owner
+    # Static route uses a named constant. A temporary literal verifies the
+    # scanner reads the actual new owner without changing product routing.
+    probe = "/__static_owner_source_probe__"
+    literal = 'Route("/__static_owner_source_probe__", councillor_redirect, methods=["GET"])'
+    assert literal not in owner
+    swap(monkeypatch, "APP_FACTORY_STATIC", owner + "\n" + literal + "\n", tmp_path)
+    assert tuple(contract._registered_methods(probe)) == ("GET",)
+    swap(monkeypatch, "APP_FACTORY_STATIC", owner, tmp_path)
+    assert tuple(contract._registered_methods(probe)) == ()
+    assert contract.findings() == [], "Static route source does not broaden the platform allowlist"
+
+
 def test_work_scopes_are_routing_labels_and_an_unknown_one_is_refused(tmp_path, monkeypatch) -> None:
     real = contract._read(contract.REQUEST_CONTRACT)
     assert "grants no identity, tier" in real or "not an authentication input" in real
