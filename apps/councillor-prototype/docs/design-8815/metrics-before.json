@@ -1,0 +1,221 @@
+{
+  "news-1440-light": {
+    "title": {
+      "x": 80,
+      "y": 92,
+      "width": 1280,
+      "height": 41.46875,
+      "bottom": 133.46875
+    },
+    "titleSize": 34,
+    "eyebrow": null,
+    "lead": {
+      "x": 80,
+      "y": 149.46875,
+      "width": 1280,
+      "height": 27.1875,
+      "bottom": 176.65625
+    },
+    "leadClass": "",
+    "leadColor": "rgb(11, 26, 46)",
+    "leadBottomMargin": 16,
+    "list": {
+      "x": 80,
+      "y": 200.65625,
+      "width": 1280,
+      "height": 1729.453125,
+      "bottom": 1930.109375
+    },
+    "card": {
+      "x": 80,
+      "y": 200.65625,
+      "width": 1280,
+      "height": 270.375,
+      "bottom": 471.03125
+    },
+    "date": {
+      "x": 103,
+      "y": 231.65625,
+      "width": 84.421875,
+      "height": 19,
+      "bottom": 250.65625
+    },
+    "dateText": "2026-11-25",
+    "newsTitle": {
+      "x": 103,
+      "y": 262.84375,
+      "width": 1234,
+      "height": 34,
+      "bottom": 296.84375
+    },
+    "newsTitleText": "자료를 더 빠르게 찾도록",
+    "listItem": {
+      "x": 127,
+      "y": 312.84375,
+      "width": 1210,
+      "height": 28.796875,
+      "bottom": 341.640625
+    },
+    "itemSize": 16,
+    "itemMaxWidth": "none",
+    "header": null,
+    "main": {
+      "x": 0,
+      "y": 60,
+      "width": 1440,
+      "height": 1902.109375,
+      "bottom": 1962.109375
+    },
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "theme": "light",
+    "textLarge": "",
+    "kind": "news"
+  },
+  "news-390-dark": {
+    "title": {
+      "x": 20,
+      "y": 86,
+      "width": 350,
+      "height": 29.265625,
+      "bottom": 115.265625
+    },
+    "titleSize": 24,
+    "eyebrow": null,
+    "lead": {
+      "x": 20,
+      "y": 131.265625,
+      "width": 350,
+      "height": 27.1875,
+      "bottom": 158.453125
+    },
+    "leadClass": "",
+    "leadColor": "rgb(245, 241, 232)",
+    "leadBottomMargin": 16,
+    "list": {
+      "x": 20,
+      "y": 182.453125,
+      "width": 350,
+      "height": 2219,
+      "bottom": 2401.453125
+    },
+    "card": {
+      "x": 20,
+      "y": 182.453125,
+      "width": 350,
+      "height": 529.546875,
+      "bottom": 712
+    },
+    "date": {
+      "x": 43,
+      "y": 213.453125,
+      "width": 84.421875,
+      "height": 19,
+      "bottom": 232.453125
+    },
+    "dateText": "2026-11-25",
+    "newsTitle": {
+      "x": 43,
+      "y": 244.640625,
+      "width": 304,
+      "height": 34,
+      "bottom": 278.640625
+    },
+    "newsTitleText": "자료를 더 빠르게 찾도록",
+    "listItem": {
+      "x": 67,
+      "y": 294.640625,
+      "width": 280,
+      "height": 115.1875,
+      "bottom": 409.828125
+    },
+    "itemSize": 16,
+    "itemMaxWidth": "none",
+    "header": null,
+    "main": {
+      "x": 0,
+      "y": 60,
+      "width": 390,
+      "height": 2367.453125,
+      "bottom": 2427.453125
+    },
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "theme": "dark",
+    "textLarge": "",
+    "kind": "news"
+  },
+  "news-1440-large": {
+    "title": {
+      "x": 80,
+      "y": 92,
+      "width": 1280,
+      "height": 41.46875,
+      "bottom": 133.46875
+    },
+    "titleSize": 34,
+    "eyebrow": null,
+    "lead": {
+      "x": 80,
+      "y": 153.46875,
+      "width": 1280,
+      "height": 34,
+      "bottom": 187.46875
+    },
+    "leadClass": "",
+    "leadColor": "rgb(11, 26, 46)",
+    "leadBottomMargin": 20,
+    "list": {
+      "x": 80,
+      "y": 211.46875,
+      "width": 1280,
+      "height": 1970,
+      "bottom": 2181.46875
+    },
+    "card": {
+      "x": 80,
+      "y": 211.46875,
+      "width": 1280,
+      "height": 314,
+      "bottom": 525.46875
+    },
+    "date": {
+      "x": 103,
+      "y": 243.46875,
+      "width": 105.53125,
+      "height": 24,
+      "bottom": 267.46875
+    },
+    "dateText": "2026-11-25",
+    "newsTitle": {
+      "x": 103,
+      "y": 280.46875,
+      "width": 1234,
+      "height": 34,
+      "bottom": 314.46875
+    },
+    "newsTitleText": "자료를 더 빠르게 찾도록",
+    "listItem": {
+      "x": 127,
+      "y": 334.46875,
+      "width": 1210,
+      "height": 36,
+      "bottom": 370.46875
+    },
+    "itemSize": 20,
+    "itemMaxWidth": "none",
+    "header": null,
+    "main": {
+      "x": 0,
+      "y": 60,
+      "width": 1440,
+      "height": 2153.46875,
+      "bottom": 2213.46875
+    },
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "theme": "light",
+    "textLarge": "large",
+    "kind": "news"
+  }
+}

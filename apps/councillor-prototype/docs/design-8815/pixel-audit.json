@@ -1,0 +1,65 @@
+{
+  "news-1440-light": {
+    "outsideNewsTopPixels": 0,
+    "headerDifferenceBounds": null,
+    "checkedTopHeight": 60,
+    "titleYBefore": 92,
+    "titleYAfter": 116.796875,
+    "lineWidthBefore": 1210,
+    "lineWidthAfter": 640,
+    "cardWidthBefore": 1280,
+    "cardWidthAfter": 1280,
+    "dateUnchanged": true,
+    "newsTitleUnchanged": true
+  },
+  "news-390-dark": {
+    "outsideNewsTopPixels": 0,
+    "headerDifferenceBounds": null,
+    "checkedTopHeight": 60,
+    "titleYBefore": 86,
+    "titleYAfter": 110.796875,
+    "lineWidthBefore": 280,
+    "lineWidthAfter": 280,
+    "cardWidthBefore": 350,
+    "cardWidthAfter": 350,
+    "dateUnchanged": true,
+    "newsTitleUnchanged": true
+  },
+  "news-1440-large": {
+    "outsideNewsTopPixels": 0,
+    "headerDifferenceBounds": null,
+    "checkedTopHeight": 60,
+    "titleYBefore": 92,
+    "titleYAfter": 120.390625,
+    "lineWidthBefore": 1210,
+    "lineWidthAfter": 800,
+    "cardWidthBefore": 1280,
+    "cardWidthAfter": 1280,
+    "dateUnchanged": true,
+    "newsTitleUnchanged": true
+  },
+  "_audit-activity-1440-light": {
+    "unchanged": true,
+    "boundingBox": null
+  },
+  "_audit-activity-390-dark": {
+    "unchanged": true,
+    "boundingBox": null
+  },
+  "_audit-about-1440-light": {
+    "unchanged": true,
+    "boundingBox": null
+  },
+  "_audit-policy-1440-light": {
+    "unchanged": true,
+    "boundingBox": null
+  },
+  "_audit-media-390-dark": {
+    "unchanged": true,
+    "boundingBox": null
+  },
+  "_audit-404-390-dark": {
+    "unchanged": true,
+    "boundingBox": null
+  }
+}
