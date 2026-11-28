@@ -274,7 +274,7 @@ console.log(JSON.stringify({deadlineMs:3000,keptPreviousDisplay:true,noAutomatic
 
 
 
-def test_entry_restores_all_four_app_closure_states():
+def test_entry_restores_all_four_shared_states():
     # Execute the shipped accessors and actual registry, not copied setters.
     from _r5_b6_wiring import create_block
     from _r5_function_source import app_source
@@ -286,8 +286,8 @@ def test_entry_restores_all_four_app_closure_states():
     result = run_node(PRELUDE + """
 const window = {};
 const document = {getElementById(){return null}};
-let authState={authenticated:true}, inFlight=false, authViewEpoch=1;
-let conversationProduct='chat', activeProject=null, activeProjectFileCount=17, clawArtifactShownFor='';
+let inFlight=false;
+let conversationProduct='chat', clawArtifactShownFor='';
 const PRODUCT_CLAW='claw', PRODUCT_CHAT='chat', id='saved';
 const clawConversationIds=new Set([id]); let clawConversationLabelsRead=null;
 const project={id:'project'}, calls=[];
@@ -295,20 +295,21 @@ const messageList={replaceChildren(){}}, input={focus(){}};
 const conversationArtifactContext=null;
 const conversationState={resetProduct(){},setProduct(){},setConversationId(){},appendMessage(){}};
 const fetch=async()=>({ok:true,json:async()=>({conversation:{id,project_id:project.id,messages:[]}})});
-const projectModule={renderProjectState(){calls.push([activeProject,activeProjectFileCount])},ensureProject:async()=>project,refreshActiveProjectFileCount(){}};
+const projectModule={renderProjectState(){calls.push([app.activeProject,app.activeProjectFileCount])},ensureProject:async()=>project,refreshActiveProjectFileCount(){}};
 const coreModule=()=>({uiT:x=>x,setNote:x=>{throw Error(x)}});
 const sidebar={closeSidebar(){}};
 const runHistory={syncClawRunHistoryVisibility(){}};
 """ + read(STATIC / "chat-app-context.js") + """
 const app=window.PadiemChatAppContext.create(""" + shared + ", " + owners + """);
+app.authState={authenticated:true}; app.authViewEpoch=1; app.activeProjectFileCount=17;
 app.provide('fixture', {ensureProject:projectModule.ensureProject,refreshActiveProjectFileCount:projectModule.refreshActiveProjectFileCount,clearAttachment(){},openClawWorkspace(){},showConversation(){},syncApprovedMemoryVisibility(){},resumeUnfinishedPcRun(){}});
 """ + read(STATIC / "chat-entry-module.js") + """
 const entry=app.provide('entry',window.PadiemChatEntryModule.create(app));
 (async()=>{
 assert.equal(await entry.openSavedConversation(id),true);
 assert.equal(conversationProduct,'claw');
-assert.equal(activeProject,project);
-assert.equal(activeProjectFileCount,0);
+assert.equal(app.activeProject,project);
+assert.equal(app.activeProjectFileCount,0);
 assert.equal(clawArtifactShownFor,id);
 assert.deepEqual(calls,[[project,0]]);
 assert.equal(app.openSavedConversation,entry.openSavedConversation);

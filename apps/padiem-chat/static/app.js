@@ -1,18 +1,14 @@
 (() => {
   "use strict";
-
   // R5 B1: the shared app context — the module registry (rule (d)) and the
   // namespace the pilot zones read shared state through (rule (c)). app.js
-  // keeps owning authState/shell/clawWorkspace and the shared functions
-  // until R5 B6; they are mounted here as live accessors.
+  // Remaining closure-owned refs are mounted here as live accessors.
   const app = window.PadiemChatAppContext.create({
     get clawConversationIds() { return clawConversationIds; },
     get clawConversationLabelsRead() { return clawConversationLabelsRead; },
     get selectedAttachments() { return selectedAttachments; },
     set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; },
     set selectedAttachments(value) { selectedAttachments = value; },
-    get authState() { return authState; },
-    set authState(value) { authState = value; },
     get shell() { return shell; },
     get clawWorkspace() { return clawWorkspace; },
     get emptyState() { return emptyState; },
@@ -21,8 +17,6 @@
     set clawRunHistoryInFlight(value) { clawRunHistoryInFlight = value; },
     get clawRunHistoryLimit() { return clawRunHistoryLimit; },
     set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; },
-    get authViewEpoch() { return authViewEpoch; },
-    set authViewEpoch(value) { authViewEpoch = value; },
     get pendingClawRunFocusId() { return pendingClawRunFocusId; },
     set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
       get ALLOWED_IMAGE_TYPES() { return ALLOWED_IMAGE_TYPES; },
@@ -34,12 +28,7 @@
     get accountName() { return accountName; },
     get activeClawRunId() { return activeClawRunId; },
     set activeClawRunId(value) { activeClawRunId = value; },
-    get activeProject() { return activeProject; },
-    set activeProject(value) { activeProject = value; },
-    get activeProjectFileCount() { return activeProjectFileCount; },
-    set activeProjectFileCount(value) { activeProjectFileCount = value; },
-    get projectsReady() { return projectsReady; },
-    set projectsReady(value) { projectsReady = value; },
+
     get activeRequestArticle() { return activeRequestArticle; },
     set activeRequestArticle(value) { activeRequestArticle = value; },
     get activeRequestCancelReason() { return activeRequestCancelReason; },
@@ -48,8 +37,6 @@
     set activeRequestController(value) { activeRequestController = value; },
     get advancedSettingsView() { return settings.dom.advancedSettingsView; },
     get authDialog() { return authDialog; },
-    get authDialogView() { return authDialogView; },
-    set authDialogView(value) { authDialogView = value; },
     get chatTransport() { return chatTransport; },
     get clawAction() { return clawAction; },
     get clawApprovalEpoch() { return clawApprovalEpoch; },
@@ -103,8 +90,6 @@
     get passwordResetRequestError() { return passwordResetRequestError; },
     get passwordResetRequestStatus() { return passwordResetRequestStatus; },
     get passwordResetRequestView() { return passwordResetRequestView; },
-    get passwordResetToken() { return passwordResetToken; },
-    set passwordResetToken(value) { passwordResetToken = value; },
     get profileToggle() { return profileToggle; },
     get settingsButton() { return settings.dom.settingsButton; },
 }, {
@@ -408,8 +393,6 @@
   const passwordResetNew = document.getElementById("passwordResetNew");
   const passwordResetConfirmError = document.getElementById("passwordResetConfirmError");
   const passwordResetConfirmStatus = document.getElementById("passwordResetConfirmStatus");
-  let passwordResetToken = "";
-  let authDialogView = "login";
   const accountName = document.getElementById("accountName");
   const accountAvatar = document.getElementById("accountAvatar");
   const accountContainer = document.querySelector(".sidebar-account");
@@ -435,7 +418,7 @@
   const historyActionStatus = document.getElementById("historyActionStatus");
   const historyEmpty = document.getElementById("historyEmpty");
   // #7812 R5 B7: the project list, dialogs and project-file controls are created
-  // here at the original declaration position. Shared selection state stays in app.js.
+  // here at the original declaration position. Shared selection state lives in the Context.
   const projectModule = app.provide("project",
     window.PadiemChatProjectModule.create(Object.setPrototypeOf({
 
@@ -489,16 +472,9 @@
   // Each chip holds its own rejection state; only valid chips reach the
   // send payload.
   let selectedAttachments = [];
-  let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
-  // UI read generations contain no account identifier. Every verified auth
-  // refresh invalidates late sidebar responses from the previous session.
-  let authViewEpoch = 0;
   // Only the owner-scoped Claw run history can identify a Claw thread.
   const clawConversationIds = new Set();
   let clawConversationLabelsRead = null;
-  let projectsReady = false;
-  let activeProject = null;
-  let activeProjectFileCount = 0;
 
   // Android 1.0.0 keeps chat.padiem.net in a WebView and completes Google in a
   // Custom Tab whose cookies never reach the WebView. The WebView therefore
@@ -809,7 +785,7 @@
   // currently displayed chat or fabricates an assistant answer/file READ grant.
   window.addEventListener("padiem:claw-web-work-conversation-open", async (event) => {
     const detail = event?.detail;
-    if (!authState.authenticated || inFlight || !detail
+    if (!app.authState.authenticated || inFlight || !detail
         || typeof detail.conversationId !== "string"
         || !/^chat_[a-f0-9]{32}$/.test(detail.conversationId)) return;
     // Two server-verified handoff shapes exist: an exact owner-indexed
@@ -950,10 +926,10 @@
     if (event.key === "Escape" && shell.classList.contains("sidebar-open")) sidebar.closeSidebar();
   });
   window.addEventListener("padiem:localechange", () => {
-    authModule().applyAuthState(authState);
+    authModule().applyAuthState(app.authState);
     androidHandoffModule().renderAndroidHandoff();
     navModuleInstance.setNavActive();
-    if (projectsReady) projectModule.renderProjects();
+    if (app.projectsReady) projectModule.renderProjects();
     projectModule.renderProjectState();
     if (!selectedAttachments.length) coreModule().setNote(coreModule().idleNote());
     clawStatusModule().syncComposerForClaw(shell.dataset.state === "claw");
