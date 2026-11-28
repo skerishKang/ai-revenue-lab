@@ -1,0 +1,274 @@
+{
+  "policy-search-1440-dark": {
+    "search": {
+      "x": 80,
+      "y": 111.5,
+      "width": 1280,
+      "height": 45.1875,
+      "right": 1360,
+      "bottom": 156.6875
+    },
+    "bg": "rgb(255, 255, 255)",
+    "text": "rgb(245, 241, 232)",
+    "placeholder": "rgb(117, 117, 117)",
+    "border": "rgba(245, 241, 232, 0.14)",
+    "outline": "rgb(0, 96, 156)",
+    "cancelBg": "rgb(255, 255, 255)",
+    "groups": [
+      {
+        "assembly": "9",
+        "tag": "SECTION",
+        "open": false,
+        "heading": {
+          "x": 80,
+          "y": 201.078125,
+          "width": 1280,
+          "height": 37.390625,
+          "right": 1360,
+          "bottom": 238.46875
+        },
+        "count": {
+          "x": 299.578125,
+          "y": 212.078125,
+          "width": 108.109375,
+          "height": 19,
+          "right": 407.6875,
+          "bottom": 231.078125
+        },
+        "countText": "29건 / 전체 29건",
+        "expanded": null,
+        "icon": null
+      },
+      {
+        "assembly": "8",
+        "tag": "DETAILS",
+        "open": true,
+        "heading": {
+          "x": 80,
+          "y": 1676.90625,
+          "width": 1280,
+          "height": 37.390625,
+          "right": 1360,
+          "bottom": 1714.296875
+        },
+        "count": {
+          "x": 1251.890625,
+          "y": 1683.703125,
+          "width": 108.109375,
+          "height": 23.796875,
+          "right": 1360,
+          "bottom": 1707.5
+        },
+        "countText": "32건 / 전체 32건",
+        "expanded": null,
+        "icon": null
+      }
+    ],
+    "overflow": 0,
+    "theme": "dark"
+  },
+  "policy-search-390-dark": {
+    "search": {
+      "x": 20,
+      "y": 111.671875,
+      "width": 350,
+      "height": 45.1875,
+      "right": 370,
+      "bottom": 156.859375
+    },
+    "bg": "rgb(255, 255, 255)",
+    "text": "rgb(245, 241, 232)",
+    "placeholder": "rgb(117, 117, 117)",
+    "border": "rgba(245, 241, 232, 0.14)",
+    "outline": "rgb(0, 96, 156)",
+    "cancelBg": "rgb(255, 255, 255)",
+    "groups": [
+      {
+        "assembly": "9",
+        "tag": "SECTION",
+        "open": false,
+        "heading": {
+          "x": 20,
+          "y": 223.640625,
+          "width": 350,
+          "height": 30.59375,
+          "right": 370,
+          "bottom": 254.234375
+        },
+        "count": {
+          "x": 201.109375,
+          "y": 229.640625,
+          "width": 108.109375,
+          "height": 19,
+          "right": 309.21875,
+          "bottom": 248.640625
+        },
+        "countText": "29건 / 전체 29건",
+        "expanded": null,
+        "icon": null
+      },
+      {
+        "assembly": "8",
+        "tag": "DETAILS",
+        "open": true,
+        "heading": {
+          "x": 20,
+          "y": 2941.03125,
+          "width": 350,
+          "height": 30.59375,
+          "right": 370,
+          "bottom": 2971.625
+        },
+        "count": {
+          "x": 261.890625,
+          "y": 2944.421875,
+          "width": 108.109375,
+          "height": 23.796875,
+          "right": 370,
+          "bottom": 2968.21875
+        },
+        "countText": "32건 / 전체 32건",
+        "expanded": null,
+        "icon": null
+      }
+    ],
+    "overflow": 0,
+    "theme": "dark"
+  },
+  "policy-folded-1440-light": {
+    "search": {
+      "x": 80,
+      "y": -950.5,
+      "width": 1280,
+      "height": 45.1875,
+      "right": 1360,
+      "bottom": -905.3125
+    },
+    "bg": "rgb(255, 255, 255)",
+    "text": "rgb(11, 26, 46)",
+    "placeholder": "rgb(117, 117, 117)",
+    "border": "rgba(11, 26, 46, 0.12)",
+    "outline": "rgb(11, 26, 46)",
+    "cancelBg": "rgb(255, 255, 255)",
+    "groups": [
+      {
+        "assembly": "9",
+        "tag": "SECTION",
+        "open": false,
+        "heading": {
+          "x": 80,
+          "y": -860.921875,
+          "width": 1280,
+          "height": 37.390625,
+          "right": 1360,
+          "bottom": -823.53125
+        },
+        "count": {
+          "x": 299.578125,
+          "y": -849.921875,
+          "width": 29.953125,
+          "height": 19,
+          "right": 329.53125,
+          "bottom": -830.921875
+        },
+        "countText": "29건",
+        "expanded": null,
+        "icon": null
+      },
+      {
+        "assembly": "8",
+        "tag": "DETAILS",
+        "open": false,
+        "heading": {
+          "x": 80,
+          "y": 614.90625,
+          "width": 1280,
+          "height": 37.390625,
+          "right": 1360,
+          "bottom": 652.296875
+        },
+        "count": {
+          "x": 1330.046875,
+          "y": 621.703125,
+          "width": 29.953125,
+          "height": 23.796875,
+          "right": 1360,
+          "bottom": 645.5
+        },
+        "countText": "32건",
+        "expanded": null,
+        "icon": null
+      }
+    ],
+    "overflow": 0,
+    "theme": "light"
+  },
+  "policy-empty-390-dark": {
+    "search": {
+      "x": 20,
+      "y": 231.671875,
+      "width": 350,
+      "height": 45.1875,
+      "right": 370,
+      "bottom": 276.859375
+    },
+    "bg": "rgb(255, 255, 255)",
+    "text": "rgb(245, 241, 232)",
+    "placeholder": "rgb(117, 117, 117)",
+    "border": "rgba(245, 241, 232, 0.14)",
+    "outline": "rgb(0, 96, 156)",
+    "cancelBg": "rgb(255, 255, 255)",
+    "groups": [
+      {
+        "assembly": "9",
+        "tag": "SECTION",
+        "open": false,
+        "heading": {
+          "x": 20,
+          "y": 321.25,
+          "width": 350,
+          "height": 30.59375,
+          "right": 370,
+          "bottom": 351.84375
+        },
+        "count": {
+          "x": 201.109375,
+          "y": 327.25,
+          "width": 90.171875,
+          "height": 19,
+          "right": 291.28125,
+          "bottom": 346.25
+        },
+        "countText": "검색 결과 없음",
+        "expanded": null,
+        "icon": null
+      },
+      {
+        "assembly": "8",
+        "tag": "DETAILS",
+        "open": false,
+        "heading": {
+          "x": 20,
+          "y": 381.84375,
+          "width": 350,
+          "height": 30.59375,
+          "right": 370,
+          "bottom": 412.4375
+        },
+        "count": {
+          "x": 279.828125,
+          "y": 385.234375,
+          "width": 90.171875,
+          "height": 23.796875,
+          "right": 370,
+          "bottom": 409.03125
+        },
+        "countText": "검색 결과 없음",
+        "expanded": null,
+        "icon": null
+      }
+    ],
+    "overflow": 0,
+    "theme": "dark"
+  }
+}

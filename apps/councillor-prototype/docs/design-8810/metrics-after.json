@@ -1,0 +1,298 @@
+{
+  "policy-search-1440-dark": {
+    "search": {
+      "x": 80,
+      "y": 111.5,
+      "width": 1280,
+      "height": 45.1875,
+      "right": 1360,
+      "bottom": 156.6875
+    },
+    "bg": "rgb(19, 35, 58)",
+    "text": "rgb(245, 241, 232)",
+    "placeholder": "rgb(184, 179, 166)",
+    "border": "rgba(245, 241, 232, 0.14)",
+    "outline": "rgb(0, 96, 156)",
+    "cancelBg": "rgb(19, 35, 58)",
+    "groups": [
+      {
+        "assembly": "9",
+        "tag": "SECTION",
+        "open": false,
+        "heading": {
+          "x": 80,
+          "y": 201.078125,
+          "width": 1280,
+          "height": 49.390625,
+          "right": 1360,
+          "bottom": 250.46875
+        },
+        "count": {
+          "x": 1223.890625,
+          "y": 213.875,
+          "width": 108.109375,
+          "height": 23.796875,
+          "right": 1332,
+          "bottom": 237.671875
+        },
+        "countText": "29건 / 전체 29건",
+        "expanded": null,
+        "icon": null
+      },
+      {
+        "assembly": "8",
+        "tag": "DETAILS",
+        "open": true,
+        "heading": {
+          "x": 80,
+          "y": 1688.90625,
+          "width": 1280,
+          "height": 49.390625,
+          "right": 1360,
+          "bottom": 1738.296875
+        },
+        "count": {
+          "x": 1223.890625,
+          "y": 1701.703125,
+          "width": 108.109375,
+          "height": 23.796875,
+          "right": 1332,
+          "bottom": 1725.5
+        },
+        "countText": "32건 / 전체 32건",
+        "expanded": "true",
+        "icon": "▴"
+      }
+    ],
+    "overflow": 0,
+    "theme": "dark"
+  },
+  "policy-search-390-dark": {
+    "search": {
+      "x": 20,
+      "y": 111.671875,
+      "width": 350,
+      "height": 45.1875,
+      "right": 370,
+      "bottom": 156.859375
+    },
+    "bg": "rgb(19, 35, 58)",
+    "text": "rgb(245, 241, 232)",
+    "placeholder": "rgb(184, 179, 166)",
+    "border": "rgba(245, 241, 232, 0.14)",
+    "outline": "rgb(0, 96, 156)",
+    "cancelBg": "rgb(19, 35, 58)",
+    "groups": [
+      {
+        "assembly": "9",
+        "tag": "SECTION",
+        "open": false,
+        "heading": {
+          "x": 20,
+          "y": 223.640625,
+          "width": 350,
+          "height": 44,
+          "right": 370,
+          "bottom": 267.640625
+        },
+        "count": {
+          "x": 233.890625,
+          "y": 233.734375,
+          "width": 108.109375,
+          "height": 23.796875,
+          "right": 342,
+          "bottom": 257.53125
+        },
+        "countText": "29건 / 전체 29건",
+        "expanded": null,
+        "icon": null
+      },
+      {
+        "assembly": "8",
+        "tag": "DETAILS",
+        "open": true,
+        "heading": {
+          "x": 20,
+          "y": 2954.4375,
+          "width": 350,
+          "height": 44,
+          "right": 370,
+          "bottom": 2998.4375
+        },
+        "count": {
+          "x": 233.890625,
+          "y": 2964.53125,
+          "width": 108.109375,
+          "height": 23.796875,
+          "right": 342,
+          "bottom": 2988.328125
+        },
+        "countText": "32건 / 전체 32건",
+        "expanded": "true",
+        "icon": "▴"
+      }
+    ],
+    "overflow": 0,
+    "theme": "dark"
+  },
+  "policy-folded-1440-light": {
+    "search": {
+      "x": 80,
+      "y": -974.5,
+      "width": 1280,
+      "height": 45.1875,
+      "right": 1360,
+      "bottom": -929.3125
+    },
+    "bg": "rgb(255, 255, 255)",
+    "text": "rgb(11, 26, 46)",
+    "placeholder": "rgb(117, 117, 117)",
+    "border": "rgba(11, 26, 46, 0.12)",
+    "outline": "rgb(11, 26, 46)",
+    "cancelBg": "rgb(255, 255, 255)",
+    "groups": [
+      {
+        "assembly": "9",
+        "tag": "SECTION",
+        "open": false,
+        "heading": {
+          "x": 80,
+          "y": -884.921875,
+          "width": 1280,
+          "height": 49.390625,
+          "right": 1360,
+          "bottom": -835.53125
+        },
+        "count": {
+          "x": 1302.046875,
+          "y": -872.125,
+          "width": 29.953125,
+          "height": 23.796875,
+          "right": 1332,
+          "bottom": -848.328125
+        },
+        "countText": "29건",
+        "expanded": null,
+        "icon": null
+      },
+      {
+        "assembly": "8",
+        "tag": "DETAILS",
+        "open": false,
+        "heading": {
+          "x": 80,
+          "y": 602.90625,
+          "width": 1280,
+          "height": 49.390625,
+          "right": 1360,
+          "bottom": 652.296875
+        },
+        "count": {
+          "x": 1302.046875,
+          "y": 615.703125,
+          "width": 29.953125,
+          "height": 23.796875,
+          "right": 1332,
+          "bottom": 639.5
+        },
+        "countText": "32건",
+        "expanded": "false",
+        "icon": "▾"
+      }
+    ],
+    "overflow": 0,
+    "theme": "light",
+    "expandedAfterClick": {
+      "assembly": "8",
+      "tag": "DETAILS",
+      "open": true,
+      "heading": {
+        "x": 80,
+        "y": 602.90625,
+        "width": 1280,
+        "height": 49.390625,
+        "right": 1360,
+        "bottom": 652.296875
+      },
+      "count": {
+        "x": 1302.046875,
+        "y": 615.703125,
+        "width": 29.953125,
+        "height": 23.796875,
+        "right": 1332,
+        "bottom": 639.5
+      },
+      "countText": "32건",
+      "expanded": "true",
+      "icon": "▴"
+    }
+  },
+  "policy-empty-390-dark": {
+    "search": {
+      "x": 20,
+      "y": 204.671875,
+      "width": 350,
+      "height": 45.1875,
+      "right": 370,
+      "bottom": 249.859375
+    },
+    "bg": "rgb(19, 35, 58)",
+    "text": "rgb(245, 241, 232)",
+    "placeholder": "rgb(184, 179, 166)",
+    "border": "rgba(245, 241, 232, 0.14)",
+    "outline": "rgb(0, 96, 156)",
+    "cancelBg": "rgb(19, 35, 58)",
+    "groups": [
+      {
+        "assembly": "9",
+        "tag": "SECTION",
+        "open": false,
+        "heading": {
+          "x": 20,
+          "y": 294.25,
+          "width": 350,
+          "height": 44,
+          "right": 370,
+          "bottom": 338.25
+        },
+        "count": {
+          "x": 251.828125,
+          "y": 304.34375,
+          "width": 90.171875,
+          "height": 23.796875,
+          "right": 342,
+          "bottom": 328.140625
+        },
+        "countText": "검색 결과 없음",
+        "expanded": null,
+        "icon": null
+      },
+      {
+        "assembly": "8",
+        "tag": "DETAILS",
+        "open": false,
+        "heading": {
+          "x": 20,
+          "y": 368.25,
+          "width": 350,
+          "height": 44,
+          "right": 370,
+          "bottom": 412.25
+        },
+        "count": {
+          "x": 251.828125,
+          "y": 378.34375,
+          "width": 90.171875,
+          "height": 23.796875,
+          "right": 342,
+          "bottom": 402.140625
+        },
+        "countText": "검색 결과 없음",
+        "expanded": "false",
+        "icon": "▾"
+      }
+    ],
+    "overflow": 0,
+    "theme": "dark"
+  }
+}

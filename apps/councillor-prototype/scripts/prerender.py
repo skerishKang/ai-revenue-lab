@@ -242,8 +242,8 @@ def prerender_policy(data: dict) -> dict:
         label = f'제{assembly}대 광주광역시의회<span class="bill-count">{len(rows)}건</span>'
         if assembly == 8:
             groups.append(
-                f'<details class="bill-group" data-assembly="{assembly}" data-total="{len(rows)}"><summary class="bill-group-title" id="bills-{assembly}">'
-                f'{label}</summary><ul class="bill-list">{row_html}</ul></details>'
+                f'<details class="bill-group" data-assembly="{assembly}" data-total="{len(rows)}"><summary class="bill-group-title" id="bills-{assembly}" aria-expanded="false">'
+                f'{label}<span class="bill-toggle-indicator" aria-hidden="true">▾</span></summary><ul class="bill-list">{row_html}</ul></details>'
             )
         else:
             groups.append(
