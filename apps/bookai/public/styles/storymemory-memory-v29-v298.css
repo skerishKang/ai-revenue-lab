@@ -1931,3 +1931,58 @@ body.global-memory-scope .system-memory{
 }
 
 
+
+/* #8783 · 오늘 화면 D2/D3 — 같은 화면의 이름표·단추·보조 글자는 모두 읽을 수 있게.
+   밝은 서재/오늘 바탕은 기존대로 유지하며 테마에 따라 변하지 않는다. */
+#today{
+  --today-review-label-ink:#664f3b;
+  --today-review-copy-ink:#62564a;
+  --today-review-dark-ink:#efdfcf;
+  --today-review-title-ink:#ad7657;
+}
+#today .today-kicker,
+#today .today-section-label,
+#today .today-panel-head span,
+#today .today-date-block span,
+#today .today-continue-copy small,
+#today .today-progress span,
+#today .today-recall-preview b,
+#today .today-memory-row small{
+  font-size:12px;line-height:1.4;letter-spacing:.02em;
+  color:var(--today-review-label-ink);
+}
+#today .today-continue-copy small,
+#today .today-progress span{color:var(--today-review-dark-ink)}
+#today .today-intro h1{word-break:keep-all;overflow-wrap:normal;line-height:1.16}
+#today .today-intro h1 em{font-style:normal;color:var(--today-review-title-ink)}
+#today .today-back,
+#today .today-memory-link,
+#today .today-cloud-button,
+#today .today-primary,
+#today .today-secondary{
+  font-size:14px;line-height:1.35;letter-spacing:0;min-height:44px;
+}
+#today .today-back,
+#today .today-memory-link,
+#today .today-cloud-button{color:var(--today-review-copy-ink)}
+#today .today-continue-copy p,
+#today .today-recall-panel>p,
+#today .today-recall-preview small,
+#today .today-empty,
+#today .today-memory-row span,
+#today .today-thread-card span{
+  font-size:13px;line-height:1.5;color:var(--today-review-copy-ink);
+}
+#today .today-continue-copy p{color:var(--today-review-dark-ink)}
+#today .today-memory-row b{font-size:15px;line-height:1.4;color:#40382f}
+#today .today-memory-row small{white-space:nowrap}
+#today .today-recall-preview strong{line-height:1.35}
+#today #todayRecallCopy:empty,
+#today .today-secondary[hidden]{display:none}
+@media(max-width:720px){
+  #today .today-intro h1{
+    font-size:clamp(31px,9vw,37px);line-height:1.16;max-width:100%;
+  }
+  #today .today-top{grid-template-columns:auto auto minmax(0,1fr);gap:8px}
+  #today .today-primary{height:44px}
+}

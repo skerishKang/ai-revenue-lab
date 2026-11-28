@@ -22,7 +22,7 @@ function labelOf(name) {
 }
 
 test('라이브러리 설정 창 라벨은 쉬운 한국어다', () => {
-  assert.equal(labelOf('motionLabel'), '책 넘김 속도');
+  assert.equal(labelOf('motionLabel'), '책장 넘기는 속도');
   assert.equal(labelOf('orderLabel'), '책장 순서');
 });
 
@@ -33,7 +33,7 @@ test('설정 창 라벨에 영어 대문자 낱말이 남지 않는다', () => {
   assert.doesNotMatch(firstscreen, /'BOOK MOTION'|'SHELF ORDER'/);
 });
 
-test('책 넘김 속도 값은 배수가 아니라 쉬운 말로 보인다', () => {
+test('책장 넘기는 속도 값은 배수가 아니라 쉬운 말로 보인다', () => {
   const source = html.match(/function __smMotionWord\(factor\)\{([\s\S]*?)\n\}/);
   assert.ok(source, '__smMotionWord 가 없다');
   const word = new Function('factor', source[1]);
@@ -53,7 +53,7 @@ test('배수와 정렬 키는 그대로다', () => {
   assert.match(html, /function __smMotionDuration\(ms\)\{return Math\.round\(ms\*__smMotionFactor\)\}/);
   assert.match(html, /storymemory\.libraryOrder\.v1/);
   assert.match(html, /정렬 · <b>최근순<\/b>/);
-  assert.match(html, /정렬 · <b>서가순<\/b>/);
+  assert.match(html, /책장 순서 · <b>기본<\/b>/);
 });
 
 test('#6476 사용자에게 보이는 SM·AI 약호는 한국어로 바뀐다', () => {
@@ -66,7 +66,7 @@ test('#6476 사용자에게 보이는 SM·AI 약호는 한국어로 바뀐다', 
   assert.match(html, /<strong class="ai-t-desk">AI 질문<\/strong>/);
   assert.match(html, /<strong class="ai-t-mob">AI 질문<\/strong>/);
   assert.match(html, /<button class="pill" data-memory-filter="ai">AI 질문<\/button>/);
-  assert.match(html, /kind:m\.kind==='ai'\?'AI 질문':'NOTE'/);
+  assert.match(html, /kind:m\.kind==='ai'\?'AI 질문':'메모'/);
   assert.match(memoryUi, /<i title="AI 질문">/);
 });
 

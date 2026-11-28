@@ -37,12 +37,12 @@ test('#8781-2 한글 책 이름과 자료 서재 안내에 낱말 단위 줄바�
  assert.match(source,/\.source-object-copy (?:strong|span)[^}]*word-break:keep-all/);
 });
 
-test('#8781-3 SEMANTIC POSITION은 서재 진행 문구에서 제거, 다른 미확정 문구 보존',()=>{
+test('#8781-3 SEMANTIC POSITION 제거 및 확정된 서재 문구 유지',()=>{
  const html=read('index.html');
  assert.match(html,/\.filter\(part=>part && part!=='SEMANTIC POSITION'\)/);
- assert.match(html,/정렬 · <b>서가순<\/b>/);
+ assert.match(html,/책장 순서 · <b>기본<\/b>/);
  const lib=read('storymemory-b61-library-firstscreen-v1.js');
- assert.match(lib,/책 넘김 속도/);
+ assert.match(lib,/책장 넘기는 속도/);
 });
 
 test('#8781-4 데스크톱의 의미 없는 서재 장식 글자 제거',()=>{

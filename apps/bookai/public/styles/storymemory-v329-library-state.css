@@ -20,3 +20,19 @@
 .marker[data-reading-state="reading"]::after,.marker[data-reading-state="complete"]::after{content:"";position:absolute;width:3px;height:3px;border-radius:50%;background:#d5b774;transform:translate(-1px,-6px)}
 .marker[data-reading-state="complete"]::after{background:#aebd84}
 @media(max-width:760px){.library-order-control{right:12px;top:104px;transform:scale(.9);transform-origin:right top}.library-reading-summary{display:none}.book-rig .book-reading-state{display:none}}
+
+/* #8781 남은 D2/D3: 1440 표지 위 상태표는 성경만 남긴다. */
+@media(min-width:761px){
+  .book-rig:not([data-motif="bible"]) .book-reading-state{display:none}
+  #library .book-rig[data-motif="bible"] .book-reading-state{
+    min-width:104px;right:-9px;top:-30px;padding:8px 10px;
+    background:#29221c;border-color:rgba(245,230,204,.34);
+    opacity:1;transform:translateZ(72px);
+  }
+  #library .book-rig[data-motif="bible"] .book-reading-state b{
+    font-size:12px;line-height:1.35;color:#f4e4c6;
+  }
+  #library .book-rig[data-motif="bible"] .book-reading-state small{
+    font-size:12px;line-height:1.35;letter-spacing:0;color:#e8d7bf;
+  }
+}
