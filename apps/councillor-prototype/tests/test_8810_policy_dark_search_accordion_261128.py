@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """#8810 정책자료 디자인 검증: 어둡게 검색, 제8대 펼침, 결과 없음 정렬."""
 import http.server
+import io
 import re
 import subprocess
 import sys
@@ -8,15 +9,16 @@ import threading
 from pathlib import Path
 
 import pytest
+from PIL import Image
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 CHROME = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 
 def rgb(value):
-    match = re.match(r"rgba?\\(([^)]*)\\)", value)
+    match = re.match(r"rgba?\(([^)]*)\)", value)
     assert match, value
-    nums = [float(x) for x in re.findall(r"\\d+(?:\\.\\d+)?",match.group(1))]
+    nums = [float(x) for x in re.findall(r"\d+(?:\.\d+)?",match.group(1))]
     return nums
 
 def contrast(text, background):
@@ -82,8 +84,17 @@ def test_dark_bill_search_uses_activity_input_tokens_and_contrast(site,width):
         assert p["outline"]==a["outline"] and p["outlineWidth"]==a["outlineWidth"],(width,p,a)
         assert contrast(p["fg"],p["bg"])>=4.5,(width,"text",p)
         assert contrast(p["placeholder"],p["bg"])>=4.5,(width,"placeholder",p)
-        # The clear X is an independently painted icon, not inherited text alone.
-        assert contrast(p["cancelBg"],p["bg"])>=3,(width,"clear X",p)
+        # Chromium does not expose native cancel-pseudo colors reliably: measure rendered X pixels.
+        image=Image.open(io.BytesIO(policy.locator("#billSearch").screenshot())).convert("RGB")
+        w,h=image.size
+        cross=image.crop((w-38,h//2-11,w-14,h//2+11))
+        contrasts=[contrast(f"rgb({r}, {g}, {b})",p["bg"]) for r,g,b in cross.get_flattened_data()]
+        assert sum(value>=3 for value in contrasts)>=8,(width,"clear X contrast",sorted(contrasts)[-10:])
+        # 스타일을 바꿔도 검색 지우기의 기본 기능을 유지해야 한다.
+        field=policy.locator("#billSearch")
+        bounds=field.bounding_box()
+        field.click(position={"x":bounds["width"]-26,"y":bounds["height"]/2})
+        assert field.input_value()=="",("clear X not actionable",width)
     finally:
         policy.close();activity.close()
 
