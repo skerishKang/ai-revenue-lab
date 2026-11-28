@@ -80,7 +80,7 @@
       return;
     }
     var motionText=motionToggle.querySelector('span');
-    if(motionText)motionText.textContent='책 넘김 속도';
+    if(motionText)motionText.textContent='책장 넘기는 속도';
     [account,motionToggle,order,feedback].forEach(function(el){el.classList.add('sm-library-menu-item');});
     menu.append(account,motion,order,feedback);
     if(typeof storyMemorySyncLibraryOrderControl==='function')storyMemorySyncLibraryOrderControl();

@@ -46,6 +46,8 @@
       function openAdvancedSettingsView() {
         if (!deps.advancedSettingsView) { openSettings(); return; }
         closeSettings();
+        // The phone sidebar scrim otherwise stays over the standalone view.
+        if (deps.shell.classList.contains("sidebar-open")) deps.closeSidebar();
         if (deps.shell.dataset.state && deps.shell.dataset.state !== "settings") {
           advancedSettingsReturnState = deps.shell.dataset.state;
         }
@@ -53,6 +55,8 @@
         deps.shell.dataset.state = "settings";
         deps.setNavActive();
         selectAdvancedMenu("pc");
+        // Closing a modal returns focus to its now-hidden trigger; move it into the page.
+        advancedSettingsBack?.focus({ preventScroll: true });
         window.dispatchEvent(new CustomEvent("padiem:advanced-settings-open"));
       }
       function closeAdvancedSettingsView() {

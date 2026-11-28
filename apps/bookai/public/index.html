@@ -1012,7 +1012,7 @@ function todayMemoryItems(){
   const memories=__smUserMemories
     .filter(m=>todayLocalDay(Number(m.createdAt||m.updatedAt||0))===day)
     .map(m=>({
-      kind:m.kind==='ai'?'AI 질문':'NOTE',
+      kind:m.kind==='ai'?'AI 질문':'메모',
       title:m.title||(m.kind==='ai'?'AI 기억':'내 메모'),
       body:m.body,
       context:m.context,
@@ -7285,10 +7285,10 @@ function storyMemorySyncLibraryOrderControl(){
   const btn=document.getElementById('libraryOrderToggle');
   if(btn){
     btn.dataset.mode=__smLibraryOrderMode;
-    const sortText=__smLibraryOrderMode==='recent'?'정렬 · <b>최근순</b>':'정렬 · <b>서가순</b>';
+    const sortText=__smLibraryOrderMode==='recent'?'정렬 · <b>최근순</b>':' · <b>기본</b>';
     btn.innerHTML=btn.closest('#libOverflowMenu')
       ?'<span class="sm-menu-label">책장 순서</span><span class="sm-menu-state">'+sortText+'</span>'
-      :sortText;
+      :(__smLibraryOrderMode==='recent'?sortText:'책장 순서 · <b>기본</b>');
     btn.setAttribute('aria-pressed',__smLibraryOrderMode==='recent'?'true':'false');
   }
   const sum=storyMemoryLibraryReadingSummary(),label=document.getElementById('libraryReadingSummary');
@@ -7690,7 +7690,7 @@ function storyMemoryRenderJournalControls(allEvents){
   ['all','reading','memory','annotation','ai_context'].forEach(kind=>{
     const b=document.createElement('button');b.type='button';b.className='sm-journal-chip'+(!__smJournalState.memoryFocus&&__smJournalState.kind===kind?' is-active':'');b.textContent=storyMemoryJournalKindLabel(kind);b.onclick=()=>storyMemoryJournalSetState({kind,memoryFocus:false});row.append(b);
   });
-  const mem=document.createElement('button');mem.type='button';mem.className='sm-journal-chip sm-memory-focus'+(__smJournalState.memoryFocus?' is-active':'');mem.textContent=`${current} · 기억만`;mem.onclick=()=>storyMemoryJournalSetState(__smJournalState.memoryFocus?{memoryFocus:false,book:'all',kind:'all'}:{memoryFocus:true});row.append(mem);
+  const mem=document.createElement('button');mem.type='button';mem.className='sm-journal-chip sm-memory-focus'+(__smJournalState.memoryFocus?' is-active':'');mem.textContent='이 책 기억만';mem.onclick=()=>storyMemoryJournalSetState(__smJournalState.memoryFocus?{memoryFocus:false,book:'all',kind:'all'}:{memoryFocus:true});row.append(mem);
 
   const summary=document.createElement('div');summary.className='sm-journal-summary';summary.id='smJournalSummary';
   shell.append(tools,row,summary);

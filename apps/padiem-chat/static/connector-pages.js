@@ -38,6 +38,9 @@
     const raw = String(card.dataset.connectorStatus || "").toLowerCase();
     if (raw === "connected") return "connected";
     if (raw === "not_connected" || raw === "disconnected") return "disconnected";
+    // No trusted Telegram/Slack workspace reader is a neutral "준비 중",
+    // not proof of disconnection and not an operational check failure.
+    if (raw === "unverified" && card.dataset.connectorDisplay === "unverified") return "unverified";
     if (raw === "connecting" || raw === "loading" || raw === "preparing" || raw === "") return "checking";
     return "failed";
   }
@@ -45,6 +48,14 @@
   function statusText(card) {
     const state = stateOf(card);
     if (state === "soon") return "곧 지원돼요";
+    if (state === "unverified") {
+      // Reuse the already reviewed localized workspace copy. No new visual
+      // state, colour or server text enters the tile or detail title.
+      const key = "connectors-workspace-unverified";
+      const translated = window.__padiemLocale?.text?.(key);
+      return translated && translated !== key
+        ? translated : (card.querySelector("[data-connector-workspace]")?.textContent || "");
+    }
     const vocab = window.PadiemConnectorVocabulary;
     return vocab ? (vocab.status(state) || "") : "";
   }
@@ -231,7 +242,7 @@
   });
   const start = () => {
     const host = byId(VIEW_ID) || document.body;
-    observer.observe(host, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["hidden", "data-connector-status"] });
+    observer.observe(host, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["hidden", "data-connector-status", "data-connector-display"] });
     makeTiles();
     handleHash();
   };

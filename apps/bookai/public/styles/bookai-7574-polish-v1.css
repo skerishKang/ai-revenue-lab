@@ -25,7 +25,7 @@ body.smr-theme-dark { --sm-search-hint-ink:#e2d5c4; }
 /* ---- 8. 오늘 화면 터치 영역 ------------------------------------------------ */
 #today #todayBack,
 #today #todayOpenGlobal,
-#today #todayAllMemoryBtn,
+#today #todayAllMemoryBtn:not([hidden]),
 #today .sm-journal-chip,
 #today .sm-journal-clear{
   box-sizing:border-box!important;
@@ -39,7 +39,7 @@ body.smr-theme-dark { --sm-search-hint-ink:#e2d5c4; }
 #today #todayOpenGlobal{padding:0 8px!important}
 #today #todayAllMemoryBtn{padding:0 16px!important}
 #today .sm-journal-chip{padding:0 10px!important}
-#today .sm-journal-clear{padding:0 4px!important}
+#today .sm-journal-clear{padding:0 12px!important}
 
 /* ---- 5. 새 기본값 '영어 작게' ------------------------------------------- */
 /* 휴대폰의 `.verse{font-size:16.5px!important}` 가 영어 문단에도 걸려, '영어 작게'를
