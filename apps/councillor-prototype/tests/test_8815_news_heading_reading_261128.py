@@ -84,7 +84,7 @@ def heading(page):
 @pytest.mark.parametrize("width,theme,large", [
     (1440,"light",False), (390,"dark",False), (1440,"light",True),
 ])
-def test_news_header_matches_activity_without_new_eyebrow_text(site,width,theme,large):
+def test_news_header_matches_activity_with_approved_eyebrow_text(site,width,theme,large):
     news=open_page(site,"news",width,theme,large)
     activity=open_page(site,"activity",width,theme,large)
     try:
@@ -92,7 +92,9 @@ def test_news_header_matches_activity_without_new_eyebrow_text(site,width,theme,
         assert abs(n["title"]["y"]-a["title"]["y"])<=1, (width,theme,large,n,a)
         assert abs(n["titlePx"]-a["titlePx"])<=1, (width,theme,large,n,a)
         assert n["eyebrowClass"].split()[0]=="section-eyebrow", n
-        assert n["eyebrowText"]=="",n
+        assert n["eyebrowText"]=="알림",n
+        assert n["eyebrowClass"]=="section-eyebrow",n
+        assert news.locator("main .section-eyebrow").get_attribute("aria-hidden") is None
         assert n["leadClass"]=="section-lead",n
         assert n["leadColor"]==a["leadColor"],(width,theme,large,n,a)
         assert abs(n["leadMargin"]-a["leadMargin"])<=1,(width,theme,large,n,a)

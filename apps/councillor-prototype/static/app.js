@@ -348,7 +348,7 @@ function renderBills(policy) {
   const applyFilter = () => {
     const q = search.value.trim().toLowerCase();
     let totalVisible = 0;
-    const summaries = [];
+    const byAssembly = { 9: 0, 8: 0 };
     grid.querySelectorAll(".bill-group").forEach((group) => {
       const total = Number(group.dataset.total) || 0;
       const assembly = group.dataset.assembly;
@@ -359,6 +359,7 @@ function renderBills(policy) {
         if (match) visible += 1;
       });
       totalVisible += visible;
+      byAssembly[assembly] = visible;
       const count = group.querySelector(".bill-count");
       if (count) {
         count.textContent = !q ? total + "건" : visible > 0
@@ -368,16 +369,12 @@ function renderBills(policy) {
       group.hidden = false;
       group.classList.toggle("is-empty", Boolean(q) && visible === 0);
       if (q && visible > 0 && group.tagName === "DETAILS") group.open = true;
-      summaries.push("제" + assembly + "대 " + (q && visible === 0
-        ? "검색 결과 없음 / 전체 " + total + "건"
-        : visible + "건 / 전체 " + total + "건"));
     });
     if (status) {
-      status.textContent = q
-        ? totalVisible > 0
-          ? "검색 결과 총 " + totalVisible + "건 / 전체 " + items.length + "건. " + summaries.join(", ")
-          : "검색 결과가 없습니다. 전체 " + items.length + "건."
-        : "전체 " + items.length + "건";
+      status.textContent = q && totalVisible === 0
+        ? "검색 결과가 없습니다. 전체 " + items.length + "건."
+        : items.length + "건 중 " + totalVisible + "건 (제9대 " +
+          byAssembly[9] + " · 제8대 " + byAssembly[8] + ")";
     }
   };
   search.oninput = applyFilter;
