@@ -214,7 +214,7 @@ def _pc_write_operation_body(
 
 
 def _pc_write_record_statements(
-    statements: list[str], *, body: str, link_refusal: str, append: bool,
+    statements: list[str], *, body: str, link_refusal: str, append: bool, edit: bool,
 ) -> None:
     """기록·응답 단계: 거절 문장, 검증, 계정 줄을 같은 순서로 붙인다."""
     # A refused step changes nothing and still answers with one account line:
@@ -257,8 +257,9 @@ def _pc_write_record_statements(
         " if ($targetIsFile) {"
         " $targetItem = Get-Item -LiteralPath $verifyTarget -Force -ErrorAction Stop;"
         " $targetBytes = [int64]$targetItem.Length;"
-        " if ($op -eq 'write' -or $op -eq 'edit') {"
-        " $fileHash = Get-FileHash -LiteralPath $verifyTarget -Algorithm SHA256 -ErrorAction Stop;"
+        + (" if ($op -eq 'write' -or $op -eq 'edit') {" if edit
+           else " if ($op -eq 'write') {")
+        + " $fileHash = Get-FileHash -LiteralPath $verifyTarget -Algorithm SHA256 -ErrorAction Stop;"
         " $targetSha256 = $fileHash.Hash.ToLowerInvariant() } };"
         + append_probe
         + " $backupExists = $null; $backupIsFile = $null;"
@@ -275,13 +276,21 @@ def _pc_write_record_statements(
            " $verification['append_sha256'] = $tailSha256 }")
         + " } catch { $verification = [ordered]@{version=1; status='unavailable'} }",
     ])
-    statements.extend([
-        "if ($op -eq 'edit' -and $verification['status'] -eq 'observed') {"
-        " $verification['edit_verified'] = [bool]$editVerified };",
+    if edit:
+        statements.append(
+            "if ($op -eq 'edit' -and $verification['status'] -eq 'observed') {"
+            " $verification['edit_verified'] = [bool]$editVerified };"
+        )
+    statements.append(
         "$account = [ordered]@{ok=$ok; op=$op; reason=$reason; target=$target; "
-        "backup=$backup; bytes=$bytes; verification=$verification}",
-        "if ($op -eq 'edit' -and $ok -and $editDetails) {"
-        " foreach ($key in $editDetails.Keys) { $account[$key] = $editDetails[$key] } };",
+        "backup=$backup; bytes=$bytes; verification=$verification}"
+    )
+    if edit:
+        statements.append(
+            "if ($op -eq 'edit' -and $ok -and $editDetails) {"
+            " foreach ($key in $editDetails.Keys) { $account[$key] = $editDetails[$key] } };"
+        )
+    statements.extend([
         "$json = ConvertTo-Json -InputObject $account -Compress",
         "$encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))",
         "Write-Output ('" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded)",
@@ -348,6 +357,6 @@ def _pc_write_command(
         target_missing=target_missing,
     )
     _pc_write_record_statements(
-        statements, body=body, link_refusal=link_refusal, append=append,
+        statements, body=body, link_refusal=link_refusal, append=append, edit=op == "edit",
     )
     return "; ".join(statements)
