@@ -8,12 +8,7 @@
   const trap = document.getElementById("siteFeedbackTrap");
   const status = document.getElementById("siteFeedbackStatus");
   const count = document.getElementById("siteFeedbackCount");
-  const error = document.createElement("span");
-  error.id = "siteFeedbackError";
-  error.className = "site-feedback-error";
-  error.setAttribute("role", "alert");
-  error.hidden = true;
-  if (count) count.before(error);
+  const error = document.getElementById("siteFeedbackError");
   form.noValidate = true; // Handle empty text inside the form with a visible, linked warning.
   const clearError = () => {
     error.textContent = "";
