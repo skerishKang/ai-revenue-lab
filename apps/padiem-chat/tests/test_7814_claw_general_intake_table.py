@@ -16,6 +16,7 @@ from types import SimpleNamespace
 import pytest
 
 from app import claw_general_routes as routes
+from _support.claw_general_modules import patch_bound
 
 GOLDEN_PATH = (
     Path(__file__).resolve().parent
@@ -136,15 +137,14 @@ def _bundle_table(bundle: dict) -> dict:
 
 def _run_case(name: str, kind: str, body: bytes, content_type: str,
               runtime_mode: str, max_bytes, monkeypatch) -> dict:
-    original_max = routes.MAX_CLAW_GENERAL_BODY_BYTES
-    if max_bytes is not None:
-        routes.MAX_CLAW_GENERAL_BODY_BYTES = max_bytes
-    try:
+    # The moved intake callable reads this constant in its own module.
+    # Patch every actual caller and restore both module bindings per case.
+    with monkeypatch.context() as scoped_patch:
+        if max_bytes is not None:
+            patch_bound(scoped_patch, "MAX_CLAW_GENERAL_BODY_BYTES", max_bytes)
         request = _FakeRequest(
             body=body, content_type=content_type, runtime_mode=runtime_mode)
         error, bundle = asyncio.run(routes._claw_general_intake(request))
-    finally:
-        routes.MAX_CLAW_GENERAL_BODY_BYTES = original_max
     if kind == "error":
         assert error is not None and bundle is None
         return {"case": name, "kind": kind, "response": _response_table(error)}
