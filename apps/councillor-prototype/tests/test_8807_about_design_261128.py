@@ -102,6 +102,9 @@ def test_shared_header(browser,width):
         cta=page.locator(".topbar .top-cta")
         assert cta.count()==1,(name,cta.count())
         assert cta.is_visible(),(name,width)
+        assert cta.bounding_box()["x"]+cta.bounding_box()["width"]<=width+1,(name,width)
+        if width==481:
+            assert page.locator(".brand-name").bounding_box()["width"]>=80,(name,width)
         if page.locator(".top-nav").is_visible():
             starts.append((name,page.locator(".top-nav").bounding_box()["x"]))
         page.close()

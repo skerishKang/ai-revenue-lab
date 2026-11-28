@@ -140,6 +140,17 @@ html[data-text-size="large"] .text-size-label-large { display: inline; }
 [data-theme="dark"] .theme-label-dark { display: inline; }
 [data-theme="dark"] .icon-moon { display: none; }
 html[data-text-size="large"] .icon-text-large { display: none; }
+/* Keep the councillor name readable next to the shared link on narrow tablets. */
+@media (min-width: 481px) and (max-width: 620px) {
+  .topbar .ghost { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; }
+  .topbar .header-label { display: none; }
+  .topbar .header-icon { display: none; align-items: center; justify-content: center; font-size: 18px; line-height: 1; }
+  .topbar .icon-moon, .topbar .icon-text-large { display: inline-flex; }
+  [data-theme="dark"] .topbar .icon-moon { display: none; }
+  [data-theme="dark"] .topbar .icon-sun { display: inline-flex; }
+  html[data-text-size="large"] .topbar .icon-text-large { display: none; }
+  html[data-text-size="large"] .topbar .icon-text-normal { display: inline-flex; }
+}
 @media (max-width: 480px) {
   .topbar { gap: 8px; padding: 0 12px; }
   .top-cta { display: none; }
