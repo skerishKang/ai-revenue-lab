@@ -124,7 +124,8 @@ def js_facts() -> dict:
 
 
 def factory_source() -> str:
-    return (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
+    from _support.app_factory_modules import factory_area_source
+    return factory_area_source()
 
 
 def app_js_source() -> str:
