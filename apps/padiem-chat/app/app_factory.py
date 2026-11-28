@@ -576,9 +576,10 @@ from .app_factory_routes_shared_auth_comparison import (
 )
 
 
-def register_shared_login_routes(routes: list, shared_login_flow) -> None:
-    if shared_login_flow is not None:
-        routes[0:0] = shared_login_flow.login_routes()
+from .app_factory_routes_shared_login import (
+    register_shared_login_routes,
+)
+
 
 # --- 상태·미들웨어 나누기 (R7-1 후속, #7814) ---
 # 순서: create_app 원래 순서를 그대로 따른다. 설정 읽기, 라우트, 미들웨어,
