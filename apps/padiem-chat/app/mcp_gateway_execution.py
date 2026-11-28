@@ -250,7 +250,7 @@ _TOOLS = {
     # tool to the recursive name search; no other tool accepts the key.
     "pc_search": ("files_list", "claw.pc.list_files",
                   {"path", "query", "recursive", "job_id"}),
-    "pc_read": ("files", "claw.pc.read_file", {"path", "job_id", "offset", "length"}),
+    "pc_read": ("files", "claw.pc.read_file", {"path", "job_id", "offset", "length", "start_line", "line_count"}),
     # Read-only additions. Each reuses the Engine tool that already does the
     # work; nothing here widens what those tools may touch.
     "pc_search_contents": ("files_list", "claw.pc.search_contents", {"path", "query"}),
@@ -388,7 +388,10 @@ async def _mcp_pc_tool_intake(
                                       # {"path","offset"} stay legal calls.
                                       keys - {"job_id", "depth", "offset"},
                                       keys - {"depth", "offset"},
-                                      keys - {"job_id", "offset"})
+                                      keys - {"job_id", "offset"},
+                                      keys - {"job_id", "offset", "length"},
+                                      keys - {"job_id", "start_line", "line_count"},
+                                      keys - {"job_id", "offset", "length", "start_line", "line_count"})
                 and not (tool_name == "pc_list" and not arguments)) or any(
                 not ((isinstance(value, str) or (
                         tool_name == "pc_edit" and key == "replace_all"
@@ -399,6 +402,10 @@ async def _mcp_pc_tool_intake(
                      or (tool_name == "pc_read" and key == "length"
                          and type(value) is int and not isinstance(value, bool)
                          and 0 < value <= _PC_READ_CHUNK_MAX_BYTES)
+                     or (tool_name == "pc_read" and key == "start_line"
+                         and type(value) is int and 1 <= value <= _PC_READ_OFFSET_MAX)
+                     or (tool_name == "pc_read" and key == "line_count"
+                         and type(value) is int and 1 <= value <= 1000)
                      or (tool_name == "pc_search" and key == "recursive"
                          and isinstance(value, bool))
                       or (tool_name == "pc_list" and key == "depth"
@@ -429,7 +436,9 @@ async def _mcp_pc_tool_intake(
         raise ValueError("Invalid MCP PC arguments")
     # A range read names both ends or neither: an offset alone would silently
     # become "offset 0", and a length alone has no start to read from.
-    if tool_name == "pc_read" and (("offset" in arguments) != ("length" in arguments)):
+    if tool_name == "pc_read" and set(arguments) not in (
+            {"job_id"}, {"path"}, {"path", "offset", "length"},
+            {"path", "start_line", "line_count"}):
         raise ValueError("Invalid MCP PC arguments")
     # A recursive flag is a real boolean and a depth a real in-range integer:
     # the string "true" or "2" is a caller mistake, never a value.
@@ -754,7 +763,9 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     plan_key = {"pc_edit": "files_edit", "pc_mkdir": "files_mkdir",
                 "pc_search_contents": "files_search_contents",
                 "pc_file_info": "files_info"}.get(tool_name, scope)
-    if tool_name == "pc_read" and ("offset" in arguments or "length" in arguments):
+    if tool_name == "pc_read" and (
+            "offset" in arguments or "length" in arguments
+            or "start_line" in arguments or "line_count" in arguments):
         # A range read is the Engine's own chunk tool. Without the two
         # arguments this stays exactly the whole-file read it always was.
         plan_key, tool_id = "files_chunk", "claw.pc.read_file_chunk"
@@ -772,10 +783,14 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     if tool_name == "pc_list" and "offset" in arguments:
         wire_arguments = {**wire_arguments, "offset": arguments["offset"]}
     if tool_name == "pc_read" and tool_id == "claw.pc.read_file_chunk":
-        chunk = {"path": arguments["path"], "offset": arguments.get("offset", 0)}
-        if "length" in arguments:
-            chunk["length"] = arguments["length"]
-        wire_arguments = chunk
+        if "start_line" in arguments:
+            wire_arguments = {"path": arguments["path"],
+                "start_line": arguments["start_line"], "line_count": arguments["line_count"]}
+        else:
+            chunk = {"path": arguments["path"], "offset": arguments.get("offset", 0)}
+            if "length" in arguments:
+                chunk["length"] = arguments["length"]
+            wire_arguments = chunk
     gateway = {"version": 1, "source": "mcp", "token_id": token_id,
         "request_id": "mcp_" + uuid.uuid4().hex, "tool_id": tool_id, "arguments": wire_arguments}
     if browser_context is not None:

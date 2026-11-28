@@ -155,6 +155,14 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
             note_extra = f" 용량 상한에 맞춰 JPEG({quality})로 재부호화.{note_extra}"
         out_mime = {"PNG": "image/png", "JPEG": "image/jpeg"}[fmt]
         data = buf.getvalue()
+        if len(data) > PC_IMAGE_BYTE_CAP:
+            # Three compression passes are not a proof of a bound. Fail closed.
+            return ("이미지 크기 제한을 초과하여 그림을 보내지 못했습니다.",
+                    {"type": "error", "code": "pc_image_size_limit_exceeded",
+                     "resized": image.size != source_size,
+                     "original_size": list(source_size),
+                     "result_size": list(image.size),
+                     "original_bytes": len(raw), "result_bytes": len(data)})
         note = (
             f"이미지 파일을 읽었습니다: {mime}, "
             f"{source_size[0]}x{source_size[1]} → {image.size[0]}x{image.size[1]}, "
@@ -167,9 +175,16 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
         # Pillow there is no way to meet the cap, so the caller gets the
         # bounded text only (CTO decision 2026-11-13, #7447 follow-up).
         if len(raw) > PC_IMAGE_BYTE_CAP:
-            return (f"이미지 파일을 읽었습니다: {mime}, {len(raw):,}바이트. "
-                    "이미지 축소를 쓸 수 없어 그림을 보내지 못했습니다."), None
+            return ("이미지 크기 제한을 초과하여 그림을 보내지 못했습니다.",
+                    {"type": "error", "code": "pc_image_size_limit_exceeded",
+                     "resized": False, "original_size": None, "result_size": None,
+                     "original_bytes": len(raw), "result_bytes": len(raw)})
         return note, {"type": "image", "mimeType": mime,
-                      "data": base64.b64encode(raw).decode("ascii")}
+                      "data": base64.b64encode(raw).decode("ascii"),
+                      "resized": False, "original_size": None, "result_size": None,
+                      "original_bytes": len(raw), "result_bytes": len(raw)}
     return note, {"type": "image", "mimeType": out_mime,
-                  "data": base64.b64encode(data).decode("ascii")}
+                  "data": base64.b64encode(data).decode("ascii"),
+                  "resized": image.size != source_size,
+                  "original_size": list(source_size), "result_size": list(image.size),
+                  "original_bytes": len(raw), "result_bytes": len(data)}

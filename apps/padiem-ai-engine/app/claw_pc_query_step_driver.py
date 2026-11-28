@@ -197,6 +197,14 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
             note_extra = f" 용량 상한에 맞춰 JPEG({quality})로 재부호화.{note_extra}"
         out_mime = {"PNG": "image/png", "JPEG": "image/jpeg"}[fmt]
         data = buf.getvalue()
+        if len(data) > PC_IMAGE_BYTE_CAP:
+            # Three compression passes are not a proof of a bound. Fail closed.
+            return ("이미지 크기 제한을 초과하여 그림을 보내지 못했습니다.",
+                    {"type": "error", "code": "pc_image_size_limit_exceeded",
+                     "resized": image.size != source_size,
+                     "original_size": list(source_size),
+                     "result_size": list(image.size),
+                     "original_bytes": len(raw), "result_bytes": len(data)})
         note = (
             f"이미지 파일을 읽었습니다: {mime}, "
             f"{source_size[0]}x{source_size[1]} → {image.size[0]}x{image.size[1]}, "
@@ -209,12 +217,19 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
         # is no way to meet the cap, so the caller gets the bounded text only
         # (CTO decision 2026-11-13, #7447 follow-up).
         if len(raw) > PC_IMAGE_BYTE_CAP:
-            return (f"이미지 파일을 읽었습니다: {mime}, {len(raw):,}바이트. "
-                    "이미지 축소를 쓸 수 없어 그림을 보내지 못했습니다."), None
+            return ("이미지 크기 제한을 초과하여 그림을 보내지 못했습니다.",
+                    {"type": "error", "code": "pc_image_size_limit_exceeded",
+                     "resized": False, "original_size": None, "result_size": None,
+                     "original_bytes": len(raw), "result_bytes": len(raw)})
         return note, {"type": "image", "mimeType": mime,
-                      "data": base64.b64encode(raw).decode("ascii")}
+                      "data": base64.b64encode(raw).decode("ascii"),
+                      "resized": False, "original_size": None, "result_size": None,
+                      "original_bytes": len(raw), "result_bytes": len(raw)}
     return note, {"type": "image", "mimeType": out_mime,
-                  "data": base64.b64encode(data).decode("ascii")}
+                  "data": base64.b64encode(data).decode("ascii"),
+                  "resized": image.size != source_size,
+                  "original_size": list(source_size), "result_size": list(image.size),
+                  "original_bytes": len(raw), "result_bytes": len(data)}
 
 #: 2026-11-04: the first answer waits this long for the PC and then hands the
 #: dispatch id back instead of holding one MCP request open. It bounds only the
@@ -1307,10 +1322,14 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                         # `final`; this re-wrap must not drop it (#7447).
                         candidate = final.get("_pc_image")
                         if (isinstance(candidate, dict)
-                                and candidate.get("type") == "image"
-                                and isinstance(candidate.get("mimeType"), str)
-                                and isinstance(candidate.get("data"), str)):
+                                and (candidate.get("type") == "error"
+                                     or (candidate.get("type") == "image"
+                                         and isinstance(candidate.get("mimeType"), str)
+                                         and isinstance(candidate.get("data"), str)))):
                             image_block = candidate
+                    if isinstance(image_block, dict) and image_block.get("type") == "error":
+                        raise ToolHandlerError("pc_image_size_limit_exceeded",
+                                               "Image could not fit the 300 KB delivery limit")
                     emit_progress("result")
                     projected = {"dispatch_id": dispatch_id, "output_ref": output_ref,
                         "output": output, "content_bytes": output_ref["size"],
@@ -1384,10 +1403,14 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                     # be dropped by this re-wrap (#7447).
                     candidate = final.get("_pc_image")
                     if (isinstance(candidate, dict)
-                            and candidate.get("type") == "image"
-                            and isinstance(candidate.get("mimeType"), str)
-                            and isinstance(candidate.get("data"), str)):
+                            and (candidate.get("type") == "error"
+                                 or (candidate.get("type") == "image"
+                                     and isinstance(candidate.get("mimeType"), str)
+                                     and isinstance(candidate.get("data"), str)))):
                         image_block = candidate
+                if isinstance(image_block, dict) and image_block.get("type") == "error":
+                    raise ToolHandlerError("pc_image_size_limit_exceeded",
+                                           "Image could not fit the 300 KB delivery limit")
                 common = {
                     "dispatch_id": dispatch_id,
                     "output": output,
@@ -1869,7 +1892,8 @@ def _pc_read_marker(output: str) -> str | None:
 
 
 def _pc_chunk_projection(
-    output: str, *, offset: int, length: int,
+    output: str, *, offset: int | None = None, length: int | None = None,
+    start_line: int | None = None, line_count: int | None = None,
 ) -> dict[str, Any]:
     """Bound one range answer to the rows a model may see.
 
@@ -1899,6 +1923,39 @@ def _pc_chunk_projection(
         )
     unit = parsed.get("unit")
     size = parsed.get("size_bytes")
+    if start_line is not None or line_count is not None:
+        cursor = parsed.get("next_cursor")
+        more = parsed.get("has_more")
+        truncated = parsed.get("truncated")
+        source_complete = parsed.get("source_complete")
+        reason = parsed.get("truncation_reason")
+        text = parsed.get("text")
+        count = parsed.get("line_count")
+        if (type(start_line) is not int or type(line_count) is not int
+                or not 1 <= start_line <= (1 << 40) or not 1 <= line_count <= 1000
+                or unit != "lines" or type(size) is not int or size < 0
+                or type(parsed.get("start_line")) is not int
+                or parsed["start_line"] != start_line
+                or type(count) is not int or not 0 <= count <= line_count
+                or not isinstance(text, str) or any(ord(c) < 32 and c not in "\n\t" for c in text)
+                or type(more) is not bool or type(truncated) is not bool
+                or type(source_complete) is not bool or source_complete is not True
+                or truncated != more or parsed.get("eof") is not (not more)
+                or parsed.get("partial") is not False
+                or (more and (type(cursor) is not int or cursor != start_line + count
+                              or count == 0))
+                or (not more and cursor is not None)
+                or reason not in (None, "line_count_limit", "response_bytes_limit")
+                or (more and reason is None) or (not more and reason is not None)
+                or (count > 0 and len(text.split("\n")) != count
+                    and not (count == 1 and text == ""))
+                or len(output.encode("utf-8")) > 256 * 1024):
+            raise ToolHandlerError("pc_chunk_output_invalid", "Invalid bounded line page")
+        return {"ok": True, "unit": "lines", "size_bytes": size,
+                "start_line": start_line, "line_count": count, "text": text,
+                "eof": not more, "partial": False,
+                "truncated": truncated, "truncation_reason": reason,
+                "has_more": more, "next_cursor": cursor, "source_complete": True}
     start = parsed.get("offset")
     next_offset = parsed.get("next_offset")
     eof = parsed.get("eof")
@@ -1937,6 +1994,16 @@ def _pc_chunk_projection(
         projection["partial"] = partial
     if text_chars is not None:
         projection["text_chars"] = text_chars
+    # #8953 3a: retain the byte/character legacy cursor, and also expose one
+    # closed, consistent continuation contract across all bounded reads.
+    projection.update({
+        "truncated": not eof,
+        "truncation_reason": ("source_prefix_limit" if partial else "range_limit")
+                             if not eof else None,
+        "has_more": not eof,
+        "next_cursor": next_offset if not eof else None,
+        "source_complete": partial is not True,
+    })
     return projection
 
 
@@ -1953,34 +2020,37 @@ def _make_pc_read_chunk_handler(*, service, request_factory, secret):
             raise ToolHandlerError(
                 "pc_files_admission_required", "Verified owner run is required",
             )
-        if (
-            not isinstance(arguments, Mapping)
-            or set(arguments) - {"path", "offset", "length"}
-            or "path" not in arguments or "offset" not in arguments
-        ):
-            raise ToolHandlerError(
-                "pc_chunk_arguments_invalid", "A path and an offset are required",
-            )
+        if not isinstance(arguments, Mapping):
+            raise ToolHandlerError("pc_chunk_arguments_invalid", "Invalid range arguments")
+        line_mode = "start_line" in arguments or "line_count" in arguments
+        keys = set(arguments)
+        if (line_mode and keys != {"path", "start_line", "line_count"}) or (
+                not line_mode and keys not in ({"path", "offset"}, {"path", "offset", "length"})):
+            raise ToolHandlerError("pc_chunk_arguments_invalid", "Mixed or incomplete ranges")
         path = _validate_pc_file_arguments({"path": arguments.get("path")})
-        offset = arguments.get("offset")
-        length = arguments.get("length", pc_chunk_bytes())
-        if (
-            type(offset) is not int or offset < 0
-            or type(length) is not int or not 0 < length <= PC_CHUNK_MAX_BYTES
-        ):
-            raise ToolHandlerError(
-                "pc_chunk_arguments_invalid", "A path and an offset are required",
-            )
-        tool_call_ref = _pc_file_call_ref(
-            owner[1], PC_READ_CHUNK_TOOL_ID, "%s\n%d\n%d" % (path, offset, length),
-        )
+        if line_mode:
+            start_line, line_count = arguments["start_line"], arguments["line_count"]
+            if (type(start_line) is not int or not 1 <= start_line <= (1 << 40)
+                    or type(line_count) is not int or not 1 <= line_count <= 1000):
+                raise ToolHandlerError("pc_chunk_arguments_invalid", "Invalid line bounds")
+            offset, length = None, None
+            reference = "%s\nlines\n%d\n%d" % (path, start_line, line_count)
+            payload_range = {"start_line": start_line, "line_count": line_count}
+        else:
+            offset = arguments["offset"]
+            length = arguments.get("length", pc_chunk_bytes())
+            start_line = line_count = None
+            if (type(offset) is not int or not 0 <= offset <= (1 << 40)
+                    or type(length) is not int or not 0 < length <= PC_CHUNK_MAX_BYTES):
+                raise ToolHandlerError("pc_chunk_arguments_invalid", "Invalid byte bounds")
+            reference = "%s\n%d\n%d" % (path, offset, length)
+            payload_range = {"offset": offset, "length": length}
+        tool_call_ref = _pc_file_call_ref(owner[1], PC_READ_CHUNK_TOOL_ID, reference)
         dispatched = await _signed_files_call(
             service=service, request_factory=request_factory, secret=secret,
             owner=owner, mode="dispatch",
-            payload={
-                "op": "read_chunk", "path": path, "offset": offset,
-                "length": length, "tool_call_ref": tool_call_ref,
-            },
+            payload={"op": "read_chunk", "path": path,
+                     **payload_range, "tool_call_ref": tool_call_ref},
         )
         dispatch = dispatched.get("dispatch")
         if (
@@ -2069,6 +2139,7 @@ def _make_pc_read_chunk_handler(*, service, request_factory, secret):
                     )
                 projection = _pc_chunk_projection(
                     final["output"], offset=offset, length=length,
+                    start_line=start_line, line_count=line_count,
                 )
                 emit_progress("result")
                 return {
@@ -2078,8 +2149,17 @@ def _make_pc_read_chunk_handler(*, service, request_factory, secret):
                     ),
                     "unit": projection["unit"],
                     "size_bytes": projection["size_bytes"],
-                    "next_offset": projection["next_offset"],
+                    "next_offset": projection.get("next_offset"),
                     "eof": projection["eof"],
+                    "truncated": projection["truncated"],
+                    "truncation_reason": projection["truncation_reason"],
+                    "has_more": projection["has_more"],
+                    "next_cursor": projection["next_cursor"],
+                    "source_complete": projection["source_complete"],
+                    **({"start_line": projection["start_line"],
+                        "line_count": projection["line_count"]}
+                       if line_mode else {}),
+                    **({"partial": projection["partial"]} if "partial" in projection else {}),
                     "result_sha256": final.get("result_sha256"),
                     "execution_confirmed": True,
                     "termination": termination,
