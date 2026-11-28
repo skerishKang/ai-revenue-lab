@@ -1,0 +1,129 @@
+{
+  "header_unchanged": {
+    "policy.html 390 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "policy.html 390 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "policy.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "policy.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    }
+  },
+  "other_pages": {
+    "index.html 390 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "index.html 390 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "index.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "index.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "about.html 390 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "about.html 390 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "about.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "about.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "activity.html 390 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "activity.html 390 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "activity.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "activity.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "media.html 390 light": {
+      "equal": false,
+      "bbox": [
+        214,
+        214,
+        357,
+        694
+      ]
+    },
+    "media.html 390 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "media.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "media.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "news.html 390 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "news.html 390 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "news.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "news.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "404.html 390 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "404.html 390 dark": {
+      "equal": true,
+      "bbox": null
+    },
+    "404.html 1440 light": {
+      "equal": true,
+      "bbox": null
+    },
+    "404.html 1440 dark": {
+      "equal": true,
+      "bbox": null
+    }
+  },
+  "media_without_images": {
+    "media.html 390 light": {
+      "equal": true,
+      "bbox": null
+    }
+  }
+}

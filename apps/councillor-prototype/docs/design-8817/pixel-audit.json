@@ -1,0 +1,32 @@
+{
+  "default-1440-light": {
+    "comparisonHeight": 369,
+    "outsideFooterIdentical": false,
+    "differentBoundingBox": [
+      80,
+      182,
+      140,
+      337
+    ]
+  },
+  "empty-390-light": {
+    "comparisonHeight": 14,
+    "outsideFooterIdentical": true,
+    "differentBoundingBox": null
+  },
+  "empty-1440-dark": {
+    "comparisonHeight": 367,
+    "outsideFooterIdentical": false,
+    "differentBoundingBox": [
+      80,
+      72,
+      1359,
+      337
+    ]
+  },
+  "failed-390-light": {
+    "comparisonHeight": 27,
+    "outsideFooterIdentical": true,
+    "differentBoundingBox": null
+  }
+}

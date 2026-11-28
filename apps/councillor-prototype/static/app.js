@@ -333,6 +333,18 @@ function renderBills(policy) {
   const search = document.getElementById("billSearch");
   if (!search) return;
   const status = document.getElementById("billSearchStatus");
+  // 접힘 상태는 기본 HTML/접근성 이름/눈에 보이는 표시가 함께 움직인다.
+  grid.querySelectorAll("details.bill-group").forEach((group) => {
+    const heading = group.querySelector("summary.bill-group-title");
+    const indicator = group.querySelector(".bill-toggle-indicator");
+    if (!heading || !indicator) return;
+    const syncDisclosure = () => {
+      heading.setAttribute("aria-expanded", String(group.open));
+      indicator.textContent = group.open ? "▴" : "▾";
+    };
+    group.addEventListener("toggle", syncDisclosure);
+    syncDisclosure();
+  });
   const applyFilter = () => {
     const q = search.value.trim().toLowerCase();
     let totalVisible = 0;

@@ -533,16 +533,42 @@ html[data-text-size="large"] .icon-text-large { display: none; }
   border: 1px solid var(--border); border-radius: 8px;
   background: var(--paper); color: var(--text); font: inherit; font-size: var(--fs-body);
 }
+/* 어둡게 검색칸은 의정활동 검색과 동일한 바탕·글자·테두리 토큰 사용. */
+[data-theme="dark"] .bill-search input { background: var(--bg-soft); }
+[data-theme="dark"] .bill-search input::placeholder { color: var(--muted); opacity: 1; }
+/* 어둡게에서 검색 지우기(×)도 밝은 잉크로 그려 대비를 확보한다. */
+[data-theme="dark"] .bill-search input::-webkit-search-cancel-button {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; cursor: pointer;
+  background-color: var(--text);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath stroke='black' stroke-width='3' stroke-linecap='round' d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E") center / contain no-repeat;
+}
 .bill-search-status { min-height: 1.6em; margin: -6px 0 14px; color: var(--muted); font-size: var(--fs-label); line-height: 1.6; }
 .bill-group > summary.bill-group-title {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
   cursor: pointer; list-style: none;
 }
 .bill-group > summary.bill-group-title::-webkit-details-marker { display: none; }
+.bill-group > summary.bill-group-title:hover { background: var(--accent-soft); border-radius: var(--radius-sm); }
+.bill-group > summary.bill-group-title:focus-visible {
+  outline: 2px solid var(--accent-2-text); outline-offset: 2px; border-radius: var(--radius-sm);
+}
 .bill-groups { margin-top: 6px; }
 .bill-group + .bill-group { margin-top: 30px; }
-.bill-group-title { font-family: var(--font-serif); font-size: clamp(18px, 1.6vw, 22px); margin: 0 0 10px; }
-.bill-count { color: var(--muted); font-family: inherit; font-size: var(--fs-label); font-weight: 600; margin-left: 8px; }
+/* 제8·9대 건수를 같은 오른쪽 기준선에 배치하고 제8대 표시 공간을 남긴다. */
+.bill-group-title {
+  display: flex; align-items: center; gap: 8px; min-height: 44px;
+  position: relative; padding: 6px 28px 6px 0;
+  font-family: var(--font-serif); font-size: clamp(18px, 1.6vw, 22px); margin: 0 0 10px;
+}
+.bill-count {
+  color: var(--muted); font-family: inherit; font-size: var(--fs-label);
+  font-weight: 600; margin-left: auto; white-space: nowrap; flex-shrink: 0;
+}
+.bill-toggle-indicator {
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  color: var(--accent-2-text); font-family: var(--font);
+  font-size: 20px; font-weight: 700; line-height: 1;
+}
 .bill-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
 .bill-group.is-empty .bill-list { display: none; }
 .bill-row { border-bottom: 1px solid var(--border); }
@@ -835,6 +861,14 @@ body.lightbox-open .mobile-tabbar { visibility: hidden; }
   font: inherit;
   font-size: var(--fs-body);
 }
+.site-feedback-body[aria-invalid="true"] { border: 2px solid #ffb66b; }
+.site-feedback-error {
+  color: #ffb66b;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  line-height: 1.5;
+}
+.site-feedback-error[hidden] { display: none; }
 .site-feedback-body::placeholder { color: rgba(245, 241, 232, 0.48); }
 .site-feedback-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .site-feedback-actions {
@@ -843,6 +877,7 @@ body.lightbox-open .mobile-tabbar { visibility: hidden; }
   justify-content: space-between;
   gap: 12px;
 }
+.site-feedback-error + .site-feedback-count { margin-left: auto; }
 .site-feedback-count { color: rgba(245, 241, 232, 0.62); font-size: var(--fs-label); }
 .site-feedback-send {
   min-height: var(--tap);
@@ -865,7 +900,10 @@ body.lightbox-open .mobile-tabbar { visibility: hidden; }
   line-height: 1.5;
 }
 @media (max-width: 720px) {
+.site-footer { padding-bottom: calc(var(--tap) + 25px + env(safe-area-inset-bottom, 0px)); }
 .site-feedback-actions { align-items: stretch; flex-direction: column; }
+.site-feedback-error + .site-feedback-count { margin-left: 0; }
+
 .site-feedback-send { width: 100%; }
 
 

@@ -1,0 +1,498 @@
+{
+  "default-1440-light-before": {
+    "arrowCount": 2,
+    "textarea": {
+      "x": 80,
+      "y": 669.984375,
+      "top": 669.984375,
+      "bottom": 800.734375,
+      "width": 720,
+      "height": 130.75
+    },
+    "border": "rgba(245, 241, 232, 0.34)",
+    "footerBackground": "rgb(0, 24, 60)",
+    "error": {
+      "x": 80,
+      "y": 860.734375,
+      "top": 860.734375,
+      "bottom": 880.328125,
+      "width": 720,
+      "height": 19.59375
+    },
+    "errorText": "",
+    "errorColor": "rgba(245, 241, 232, 0.86)",
+    "warningWeight": "400",
+    "invalid": null,
+    "describedby": null,
+    "status": {
+      "x": 80,
+      "y": 860.734375,
+      "top": 860.734375,
+      "bottom": 880.328125,
+      "width": 720,
+      "height": 19.59375
+    },
+    "statusText": "",
+    "send": {
+      "x": 731.6875,
+      "y": 808.734375,
+      "top": 808.734375,
+      "bottom": 852.734375,
+      "width": 68.3125,
+      "height": 44
+    },
+    "tab": {
+      "x": 0,
+      "y": 0,
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0
+    },
+    "foot": {
+      "x": 0,
+      "y": 369.421875,
+      "top": 369.421875,
+      "bottom": 900.328125,
+      "width": 1440,
+      "height": 530.90625
+    },
+    "footPadding": "20px",
+    "bottomScroll": 870,
+    "documentHeight": 1770
+  },
+  "empty-390-light-before": {
+    "arrowCount": 2,
+    "textarea": {
+      "x": 20,
+      "y": 533.65625,
+      "top": 533.65625,
+      "bottom": 664.40625,
+      "width": 350,
+      "height": 130.75
+    },
+    "border": "rgba(245, 241, 232, 0.34)",
+    "footerBackground": "rgb(0, 24, 60)",
+    "error": {
+      "x": 20,
+      "y": 760.203125,
+      "top": 760.203125,
+      "bottom": 779.796875,
+      "width": 350,
+      "height": 19.59375
+    },
+    "errorText": "",
+    "errorColor": "rgba(245, 241, 232, 0.86)",
+    "warningWeight": "400",
+    "invalid": null,
+    "describedby": null,
+    "status": {
+      "x": 20,
+      "y": 760.203125,
+      "top": 760.203125,
+      "bottom": 779.796875,
+      "width": 350,
+      "height": 19.59375
+    },
+    "statusText": "",
+    "send": {
+      "x": 20,
+      "y": 708.203125,
+      "top": 708.203125,
+      "bottom": 752.203125,
+      "width": 350,
+      "height": 44
+    },
+    "tab": {
+      "x": 0,
+      "y": 799,
+      "top": 799,
+      "bottom": 844,
+      "width": 390,
+      "height": 45
+    },
+    "foot": {
+      "x": 0,
+      "y": 98.3125,
+      "top": 98.3125,
+      "bottom": 799.796875,
+      "width": 390,
+      "height": 701.484375
+    },
+    "footPadding": "20px",
+    "bottomScroll": 2142,
+    "documentHeight": 2986
+  },
+  "empty-1440-dark-before": {
+    "arrowCount": 2,
+    "textarea": {
+      "x": 80,
+      "y": 669.984375,
+      "top": 669.984375,
+      "bottom": 800.734375,
+      "width": 720,
+      "height": 130.75
+    },
+    "border": "rgba(245, 241, 232, 0.34)",
+    "footerBackground": "rgb(0, 24, 60)",
+    "error": {
+      "x": 80,
+      "y": 860.734375,
+      "top": 860.734375,
+      "bottom": 880.328125,
+      "width": 720,
+      "height": 19.59375
+    },
+    "errorText": "",
+    "errorColor": "rgba(245, 241, 232, 0.86)",
+    "warningWeight": "400",
+    "invalid": null,
+    "describedby": null,
+    "status": {
+      "x": 80,
+      "y": 860.734375,
+      "top": 860.734375,
+      "bottom": 880.328125,
+      "width": 720,
+      "height": 19.59375
+    },
+    "statusText": "",
+    "send": {
+      "x": 731.6875,
+      "y": 808.734375,
+      "top": 808.734375,
+      "bottom": 852.734375,
+      "width": 68.3125,
+      "height": 44
+    },
+    "tab": {
+      "x": 0,
+      "y": 0,
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0
+    },
+    "foot": {
+      "x": 0,
+      "y": 369.421875,
+      "top": 369.421875,
+      "bottom": 900.328125,
+      "width": 1440,
+      "height": 530.90625
+    },
+    "footPadding": "20px",
+    "bottomScroll": 870,
+    "documentHeight": 1770
+  },
+  "failed-390-light-before": {
+    "arrowCount": 2,
+    "textarea": {
+      "x": 20,
+      "y": 511.65625,
+      "top": 511.65625,
+      "bottom": 642.40625,
+      "width": 350,
+      "height": 130.75
+    },
+    "border": "rgba(245, 241, 232, 0.34)",
+    "footerBackground": "rgb(0, 24, 60)",
+    "error": {
+      "x": 20,
+      "y": 738.203125,
+      "top": 738.203125,
+      "bottom": 780.203125,
+      "width": 350,
+      "height": 42
+    },
+    "errorText": "보내지 못했습니다. 잠시 후 다시 시도해 주세요. 급한 일은 의원실 전화(062-613-5133)·이메일로 연락해 주세요.",
+    "errorColor": "rgba(245, 241, 232, 0.86)",
+    "warningWeight": "400",
+    "invalid": null,
+    "describedby": null,
+    "status": {
+      "x": 20,
+      "y": 738.203125,
+      "top": 738.203125,
+      "bottom": 780.203125,
+      "width": 350,
+      "height": 42
+    },
+    "statusText": "보내지 못했습니다. 잠시 후 다시 시도해 주세요. 급한 일은 의원실 전화(062-613-5133)·이메일로 연락해 주세요.",
+    "send": {
+      "x": 20,
+      "y": 686.203125,
+      "top": 686.203125,
+      "bottom": 730.203125,
+      "width": 350,
+      "height": 44
+    },
+    "tab": {
+      "x": 0,
+      "y": 799,
+      "top": 799,
+      "bottom": 844,
+      "width": 390,
+      "height": 45
+    },
+    "foot": {
+      "x": 0,
+      "y": 76.3125,
+      "top": 76.3125,
+      "bottom": 800.203125,
+      "width": 390,
+      "height": 723.890625
+    },
+    "footPadding": "20px",
+    "bottomScroll": 2164,
+    "documentHeight": 3008
+  },
+  "default-1440-light-after": {
+    "arrowCount": 1,
+    "textarea": {
+      "x": 80,
+      "y": 669.984375,
+      "top": 669.984375,
+      "bottom": 800.734375,
+      "width": 720,
+      "height": 130.75
+    },
+    "border": "rgba(245, 241, 232, 0.34)",
+    "footerBackground": "rgb(0, 24, 60)",
+    "error": {
+      "x": 0,
+      "y": 0,
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0
+    },
+    "errorText": "",
+    "errorColor": "rgb(255, 182, 107)",
+    "warningWeight": "700",
+    "invalid": null,
+    "describedby": null,
+    "status": {
+      "x": 80,
+      "y": 860.734375,
+      "top": 860.734375,
+      "bottom": 880.328125,
+      "width": 720,
+      "height": 19.59375
+    },
+    "statusText": "",
+    "send": {
+      "x": 731.6875,
+      "y": 808.734375,
+      "top": 808.734375,
+      "bottom": 852.734375,
+      "width": 68.3125,
+      "height": 44
+    },
+    "tab": {
+      "x": 0,
+      "y": 0,
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0
+    },
+    "foot": {
+      "x": 0,
+      "y": 369.421875,
+      "top": 369.421875,
+      "bottom": 900.328125,
+      "width": 1440,
+      "height": 530.90625
+    },
+    "footPadding": "20px",
+    "bottomScroll": 870,
+    "documentHeight": 1770
+  },
+  "empty-390-light-after": {
+    "arrowCount": 1,
+    "textarea": {
+      "x": 20,
+      "y": 449.65625,
+      "top": 449.65625,
+      "bottom": 582.40625,
+      "width": 350,
+      "height": 132.75
+    },
+    "border": "rgb(255, 182, 107)",
+    "footerBackground": "rgb(0, 24, 60)",
+    "error": {
+      "x": 20,
+      "y": 590.40625,
+      "top": 590.40625,
+      "bottom": 611.40625,
+      "width": 350,
+      "height": 21
+    },
+    "errorText": "내용을 적어 주세요.",
+    "errorColor": "rgb(255, 182, 107)",
+    "warningWeight": "700",
+    "invalid": "true",
+    "describedby": "siteFeedbackError",
+    "status": {
+      "x": 20,
+      "y": 711.203125,
+      "top": 711.203125,
+      "bottom": 730.796875,
+      "width": 350,
+      "height": 19.59375
+    },
+    "statusText": "",
+    "send": {
+      "x": 20,
+      "y": 659.203125,
+      "top": 659.203125,
+      "bottom": 703.203125,
+      "width": 350,
+      "height": 44
+    },
+    "tab": {
+      "x": 0,
+      "y": 799,
+      "top": 799,
+      "bottom": 844,
+      "width": 390,
+      "height": 45
+    },
+    "foot": {
+      "x": 0,
+      "y": 14.3125,
+      "top": 14.3125,
+      "bottom": 799.796875,
+      "width": 390,
+      "height": 785.484375
+    },
+    "footPadding": "69px",
+    "bottomScroll": 2226,
+    "documentHeight": 3070
+  },
+  "empty-1440-dark-after": {
+    "arrowCount": 1,
+    "textarea": {
+      "x": 80,
+      "y": 667.984375,
+      "top": 667.984375,
+      "bottom": 800.734375,
+      "width": 720,
+      "height": 132.75
+    },
+    "border": "rgb(255, 182, 107)",
+    "footerBackground": "rgb(0, 24, 60)",
+    "error": {
+      "x": 80,
+      "y": 820.234375,
+      "top": 820.234375,
+      "bottom": 841.234375,
+      "width": 107.21875,
+      "height": 21
+    },
+    "errorText": "내용을 적어 주세요.",
+    "errorColor": "rgb(255, 182, 107)",
+    "warningWeight": "700",
+    "invalid": "true",
+    "describedby": "siteFeedbackError",
+    "status": {
+      "x": 80,
+      "y": 860.734375,
+      "top": 860.734375,
+      "bottom": 880.328125,
+      "width": 720,
+      "height": 19.59375
+    },
+    "statusText": "",
+    "send": {
+      "x": 731.6875,
+      "y": 808.734375,
+      "top": 808.734375,
+      "bottom": 852.734375,
+      "width": 68.3125,
+      "height": 44
+    },
+    "tab": {
+      "x": 0,
+      "y": 0,
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0
+    },
+    "foot": {
+      "x": 0,
+      "y": 367.421875,
+      "top": 367.421875,
+      "bottom": 900.328125,
+      "width": 1440,
+      "height": 532.90625
+    },
+    "footPadding": "20px",
+    "bottomScroll": 872,
+    "documentHeight": 1772
+  },
+  "failed-390-light-after": {
+    "arrowCount": 1,
+    "textarea": {
+      "x": 20,
+      "y": 462.65625,
+      "top": 462.65625,
+      "bottom": 593.40625,
+      "width": 350,
+      "height": 130.75
+    },
+    "border": "rgba(245, 241, 232, 0.34)",
+    "footerBackground": "rgb(0, 24, 60)",
+    "error": {
+      "x": 0,
+      "y": 0,
+      "top": 0,
+      "bottom": 0,
+      "width": 0,
+      "height": 0
+    },
+    "errorText": "",
+    "errorColor": "rgb(255, 182, 107)",
+    "warningWeight": "700",
+    "invalid": null,
+    "describedby": null,
+    "status": {
+      "x": 20,
+      "y": 689.203125,
+      "top": 689.203125,
+      "bottom": 731.203125,
+      "width": 350,
+      "height": 42
+    },
+    "statusText": "보내지 못했습니다. 잠시 후 다시 시도해 주세요. 급한 일은 의원실 전화(062-613-5133)·이메일로 연락해 주세요.",
+    "send": {
+      "x": 20,
+      "y": 637.203125,
+      "top": 637.203125,
+      "bottom": 681.203125,
+      "width": 350,
+      "height": 44
+    },
+    "tab": {
+      "x": 0,
+      "y": 799,
+      "top": 799,
+      "bottom": 844,
+      "width": 390,
+      "height": 45
+    },
+    "foot": {
+      "x": 0,
+      "y": 27.3125,
+      "top": 27.3125,
+      "bottom": 800.203125,
+      "width": 390,
+      "height": 772.890625
+    },
+    "footPadding": "69px",
+    "bottomScroll": 2213,
+    "documentHeight": 3057
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "policy-search-1440-dark": {
+    "before": {
+      "background": "rgb(255, 255, 255)",
+      "textContrast": 1.13,
+      "placeholderContrast": 4.61
+    },
+    "after": {
+      "background": "rgb(19, 35, 58)",
+      "textContrast": 14.02,
+      "placeholderContrast": 7.55
+    },
+    "groups": [
+      {
+        "assembly": "9",
+        "beforeCountX": 407.69,
+        "afterCountX": 1332,
+        "beforeHeight": 37.39,
+        "afterHeight": 49.39,
+        "afterAria": null,
+        "afterIcon": null
+      },
+      {
+        "assembly": "8",
+        "beforeCountX": 1360,
+        "afterCountX": 1332,
+        "beforeHeight": 37.39,
+        "afterHeight": 49.39,
+        "afterAria": "true",
+        "afterIcon": "▴"
+      }
+    ],
+    "overflowBefore": 0,
+    "overflowAfter": 0
+  },
+  "policy-search-390-dark": {
+    "before": {
+      "background": "rgb(255, 255, 255)",
+      "textContrast": 1.13,
+      "placeholderContrast": 4.61
+    },
+    "after": {
+      "background": "rgb(19, 35, 58)",
+      "textContrast": 14.02,
+      "placeholderContrast": 7.55
+    },
+    "groups": [
+      {
+        "assembly": "9",
+        "beforeCountX": 309.22,
+        "afterCountX": 342,
+        "beforeHeight": 30.59,
+        "afterHeight": 44,
+        "afterAria": null,
+        "afterIcon": null
+      },
+      {
+        "assembly": "8",
+        "beforeCountX": 370,
+        "afterCountX": 342,
+        "beforeHeight": 30.59,
+        "afterHeight": 44,
+        "afterAria": "true",
+        "afterIcon": "▴"
+      }
+    ],
+    "overflowBefore": 0,
+    "overflowAfter": 0
+  },
+  "policy-folded-1440-light": {
+    "before": {
+      "background": "rgb(255, 255, 255)",
+      "textContrast": 17.48,
+      "placeholderContrast": 4.61
+    },
+    "after": {
+      "background": "rgb(255, 255, 255)",
+      "textContrast": 17.48,
+      "placeholderContrast": 4.61
+    },
+    "groups": [
+      {
+        "assembly": "9",
+        "beforeCountX": 329.53,
+        "afterCountX": 1332,
+        "beforeHeight": 37.39,
+        "afterHeight": 49.39,
+        "afterAria": null,
+        "afterIcon": null
+      },
+      {
+        "assembly": "8",
+        "beforeCountX": 1360,
+        "afterCountX": 1332,
+        "beforeHeight": 37.39,
+        "afterHeight": 49.39,
+        "afterAria": "false",
+        "afterIcon": "▾"
+      }
+    ],
+    "overflowBefore": 0,
+    "overflowAfter": 0,
+    "expandedAfterClick": {
+      "assembly": "8",
+      "tag": "DETAILS",
+      "open": true,
+      "heading": {
+        "x": 80,
+        "y": 602.90625,
+        "width": 1280,
+        "height": 49.390625,
+        "right": 1360,
+        "bottom": 652.296875
+      },
+      "count": {
+        "x": 1302.046875,
+        "y": 615.703125,
+        "width": 29.953125,
+        "height": 23.796875,
+        "right": 1332,
+        "bottom": 639.5
+      },
+      "countText": "32건",
+      "expanded": "true",
+      "icon": "▴"
+    }
+  },
+  "policy-empty-390-dark": {
+    "before": {
+      "background": "rgb(255, 255, 255)",
+      "textContrast": 1.13,
+      "placeholderContrast": 4.61
+    },
+    "after": {
+      "background": "rgb(19, 35, 58)",
+      "textContrast": 14.02,
+      "placeholderContrast": 7.55
+    },
+    "groups": [
+      {
+        "assembly": "9",
+        "beforeCountX": 291.28,
+        "afterCountX": 342,
+        "beforeHeight": 30.59,
+        "afterHeight": 44,
+        "afterAria": null,
+        "afterIcon": null
+      },
+      {
+        "assembly": "8",
+        "beforeCountX": 370,
+        "afterCountX": 342,
+        "beforeHeight": 30.59,
+        "afterHeight": 44,
+        "afterAria": "false",
+        "afterIcon": "▾"
+      }
+    ],
+    "overflowBefore": 0,
+    "overflowAfter": 0
+  }
+}

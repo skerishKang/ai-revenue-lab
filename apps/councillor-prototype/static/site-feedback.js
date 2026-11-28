@@ -8,6 +8,26 @@
   const trap = document.getElementById("siteFeedbackTrap");
   const status = document.getElementById("siteFeedbackStatus");
   const count = document.getElementById("siteFeedbackCount");
+  const error = document.getElementById("siteFeedbackError");
+  form.noValidate = true; // Handle empty text inside the form with a visible, linked warning.
+  const clearError = () => {
+    error.textContent = "";
+    error.hidden = true;
+    if (body) {
+      body.removeAttribute("aria-invalid");
+      body.removeAttribute("aria-describedby");
+    }
+  };
+  const showEmptyError = () => {
+    setStatus("");
+    error.textContent = "내용을 적어 주세요.";
+    error.hidden = false;
+    if (body) {
+      body.setAttribute("aria-invalid", "true");
+      body.setAttribute("aria-describedby", error.id);
+      body.focus();
+    }
+  };
   // #7550 동훈 3회차: a 201 receipt replaces the form with an announced notice
   // (aria-live) and a way back to the form; failures keep the form open.
   const done = document.getElementById("siteFeedbackDone");
@@ -27,10 +47,12 @@
     form.hidden = false;
     renderedAt = Date.now();
     setStatus("");
+    clearError();
     if (body) body.focus();
   };
   const resetForm = () => {
     form.reset();
+    clearError();
     updateCount();
     if (send) send.disabled = false;
     if (body) body.focus();
@@ -38,11 +60,15 @@
 
   open.addEventListener("click", openForm);
   if (again) again.addEventListener("click", openForm);
-  if (body) body.addEventListener("input", updateCount);
+  if (body) body.addEventListener("input", () => {
+    updateCount();
+    if (body.value.trim()) clearError();
+  });
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const text = body ? body.value.trim() : "";
-    if (!text) { setStatus("내용을 적어 주세요."); if (body) body.focus(); return; }
+    if (!text) { showEmptyError(); return; }
+    clearError();
     if (Array.from(text).length > MAX) { setStatus(`${MAX}자까지 적을 수 있습니다.`); return; }
     if (trap && trap.value) { setStatus("보내지 못했습니다. 잠시 후 다시 시도해 주세요."); return; }
     const screen = {
