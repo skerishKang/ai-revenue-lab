@@ -199,16 +199,16 @@ def test_bill_search_updates_group_counts_and_announces_results(browser, base_ur
         assert nine.locator(".bill-count").inner_text() == "3건 / 전체 29건"
         assert eight.locator(".bill-count").inner_text() == "검색 결과 없음"
         assert page.locator("#policyBills .bill-row:visible").count() == 3
-        assert "검색 결과 총 3건 / 전체 61건" in page.locator("#billSearchStatus").inner_text()
+        assert page.locator("#billSearchStatus").inner_text() == "61건 중 3건 (제9대 3 · 제8대 0)"
         page.fill("#billSearch", "no-record-xyz-261125")
         assert nine.locator(".bill-count").inner_text() == "검색 결과 없음"
         assert eight.locator(".bill-count").inner_text() == "검색 결과 없음"
         assert page.locator("#policyBills .bill-row:visible").count() == 0
-        assert "검색 결과가 없습니다" in page.locator("#billSearchStatus").inner_text()
+        assert page.locator("#billSearchStatus").inner_text() == "검색 결과가 없습니다. 전체 61건."
         page.fill("#billSearch", "")
         assert nine.locator(".bill-count").inner_text() == "29건"
         assert eight.locator(".bill-count").inner_text() == "32건"
-        assert page.locator("#billSearchStatus").inner_text() == "전체 61건"
+        assert page.locator("#billSearchStatus").inner_text() == "61건 중 61건 (제9대 29 · 제8대 32)"
     finally:
         page.close()
 
