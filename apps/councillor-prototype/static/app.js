@@ -37,7 +37,7 @@ function mediaSourceLabel(item) {
   const raw = String(item.url || "");
   return item.kind === "포토" && raw.includes("PID=014") && !raw.includes("bbsSn=")
     ? "의회 사진자료실 보기"
-    : "원문 보기";
+    : "의회 원문 보기";
 }
 
 function mediaSourceNotice(item) {
@@ -689,7 +689,13 @@ document.addEventListener("DOMContentLoaded", () => {
     a.addEventListener("click", (e) => {
       const id = a.getAttribute("href").slice(1);
       const target = document.getElementById(id);
-      if (target) { e.preventDefault(); scrollToElement(target); }
+      if (target) {
+        e.preventDefault();
+        scrollToElement(target);
+        if (a.matches('.policy-jump a[href="#billSearch"]')) {
+          target.focus({ preventScroll: true });
+        }
+      }
     });
   });
 

@@ -16,7 +16,9 @@ def test_news_is_static_latest_first(tmp_path):
     news = data["news"]
     assert len(news) >= 5
     assert [n["date"] for n in news] == sorted((n["date"] for n in news), reverse=True)
-    assert all(2 <= len(n["changes"]) <= 4 for n in news)
+    # #8968: 승인된 11-28 소식 한 줄만 늘고, 이전 소식 길이 계약은 유지한다.
+    assert len(news[0]["changes"]) == 5
+    assert all(2 <= len(n["changes"]) <= 4 for n in news[1:])
     path = tmp_path / "news.html"
     path.write_text(assemble.render("news.html"), encoding="utf8")
     prerender.inject(tmp_path, data)
@@ -46,6 +48,7 @@ def test_approved_news_1128_is_first_with_exact_copy():
             "휴대폰에서 의정활동과 미디어를 한 줄에 하나씩 크게 볼 수 있습니다.",
             "의원 소개 사진과 소개 글을 나란히 놓아 한눈에 읽을 수 있습니다.",
             "낱말이 줄 끝에서 끊기지 않고, 오류·불편을 보낼 때 빠뜨린 곳을 바로 알려 드립니다.",
+            "정책자료 조례안 말에 쉬운 풀이를 붙이고, '조례안 찾기'로 바로 검색할 수 있습니다.",
         ],
     }
     rendered = prerender.prerender_news(data)
