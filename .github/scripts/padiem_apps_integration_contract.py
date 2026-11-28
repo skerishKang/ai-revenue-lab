@@ -40,6 +40,7 @@ APP_FACTORY_PC = CHAT / "app/app_factory_routes_pc.py"
 APP_FACTORY_STATIC = CHAT / "app/app_factory_routes_static.py"
 APP_FACTORY_ENROLLMENT = CHAT / "app/app_factory_routes_enrollment.py"
 APP_FACTORY_MESH = CHAT / "app/app_factory_routes_mesh.py"
+APP_FACTORY_SHARED_AUTH_COMPARISON = CHAT / "app/app_factory_routes_shared_auth_comparison.py"
 HISTORY = CHAT / "app/history_types.py"
 ORIGIN_GUARD = CHAT / "app/same_origin_guard.py"
 PROJECT_FILE_ROUTES = CHAT / "app/project_file_routes.py"
@@ -120,7 +121,7 @@ def _assigned_int(source: str, name: str) -> int | None:
 def _registered_methods(path: str) -> Iterable[str]:
     # Route registrars now have auth, projects and chat owners (PR3, PR5, PR6).
     # Scan every real source owner; missing or narrowed routes fail closed.
-    for source in (APP_FACTORY, APP_FACTORY_AUTH, APP_FACTORY_PROJECTS, APP_FACTORY_CHAT, APP_FACTORY_B66, APP_FACTORY_CLAW, APP_FACTORY_CALENDAR, APP_FACTORY_PC, APP_FACTORY_STATIC, APP_FACTORY_ENROLLMENT, APP_FACTORY_MESH):
+    for source in (APP_FACTORY, APP_FACTORY_AUTH, APP_FACTORY_PROJECTS, APP_FACTORY_CHAT, APP_FACTORY_B66, APP_FACTORY_CLAW, APP_FACTORY_CALENDAR, APP_FACTORY_PC, APP_FACTORY_STATIC, APP_FACTORY_ENROLLMENT, APP_FACTORY_MESH, APP_FACTORY_SHARED_AUTH_COMPARISON):
         for line in _read(source).splitlines():
             if f'Route("{path}",' in line:
                 return re.findall(r'"([A-Z]+)"', line.split("Route(", 1)[1])
