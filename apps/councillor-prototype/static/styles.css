@@ -682,7 +682,7 @@ html[data-text-size="large"] .icon-text-large { display: none; }
 @media (max-width: 720px) {
 .intro-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
 .intro-photo { width: min(100%, 288px); max-height: 360px; justify-self: center; }
-/* Read the full activity heading before the 44px detail affordance. */
+/* 휴대폰에서는 제목 아래 독립 줄에 최소 44px 높이로 자세히를 둔다. */
 .activity-item .item-title { display: block; }
 .activity-item .item-more { display: flex; align-items: center; min-height: var(--tap); justify-content: flex-start; }
 }

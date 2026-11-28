@@ -1,0 +1,28 @@
+{
+  "about.html 1440 light": {
+    "static_pixel_equal": true,
+    "bbox": null
+  },
+  "about.html 1440 dark": {
+    "static_pixel_equal": true,
+    "bbox": null
+  },
+  "media.html 390 light": {
+    "static_pixel_equal": false,
+    "bbox": [
+      33,
+      214,
+      357,
+      694
+    ]
+  },
+  "media.html 1440 light": {
+    "static_pixel_equal": false,
+    "bbox": [
+      99,
+      238,
+      1341,
+      718
+    ]
+  }
+}
