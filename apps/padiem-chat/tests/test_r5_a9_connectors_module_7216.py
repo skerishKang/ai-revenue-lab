@@ -321,6 +321,7 @@ const ctx = vm.createContext({
     return { ok: true, json: async () => ({ authorization: { connector_id: "google-drive", authorization_url: "https://reviewed.example/auth" } }) };
   },
   JSON, Math, Number, Array, Boolean, Map, Promise, Proxy, Reflect, String, Set,
+  AbortController, AbortSignal, // Browser primitives used by the bounded status GET.
   window: {
     location: { assign: (url) => assigned.push(url) },
     PadiemChatTransport: {
