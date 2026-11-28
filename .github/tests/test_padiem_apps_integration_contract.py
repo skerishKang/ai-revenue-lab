@@ -161,6 +161,23 @@ def test_extracted_static_owner_is_scanned_without_widening_platform(tmp_path, m
     assert contract.findings() == [], "Static route source does not broaden the platform allowlist"
 
 
+def test_extracted_enrollment_owner_is_scanned_without_widening_platform(tmp_path, monkeypatch) -> None:
+    owner = contract._read(contract.APP_FACTORY_ENROLLMENT)
+    assert "if connector_owner_enrollment is not None:" in owner
+    assert "routes[-1:-1] = list(reviewed_owner_enrollment_routes(connector_owner_enrollment))" in owner
+    assert 'Route(CONNECTOR_TXT_READ_REQUEST_PATH, connector_txt_read_request, methods=["POST"])' in owner
+    assert 'Route(CONNECTOR_ANDROID_FOLDERS_PATH, connector_android_folders, methods=["GET"])' in owner
+    # Product routes use constants, so test the scanner with a synthetic literal.
+    probe = "/__enrollment_source_owner_probe__"
+    literal = 'Route("/__enrollment_source_owner_probe__", connector_txt_read_request, methods=["POST"])'
+    assert literal not in owner
+    swap(monkeypatch, "APP_FACTORY_ENROLLMENT", owner + "\n" + literal + "\n", tmp_path)
+    assert tuple(contract._registered_methods(probe)) == ("POST",)
+    swap(monkeypatch, "APP_FACTORY_ENROLLMENT", owner, tmp_path)
+    assert tuple(contract._registered_methods(probe)) == ()
+    assert contract.findings() == [], "Enrolled owner routes are not platform-app allowlist entries"
+
+
 def test_work_scopes_are_routing_labels_and_an_unknown_one_is_refused(tmp_path, monkeypatch) -> None:
     real = contract._read(contract.REQUEST_CONTRACT)
     assert "grants no identity, tier" in real or "not an authentication input" in real
