@@ -9,6 +9,7 @@
      Noto Serif KR: accent/quote only — never default for body */
   --font-bible:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --reader-paper:#fffdf8; --paper-rule:none;
+  --sm-library-bg:radial-gradient(ellipse at 50% 80%,rgba(105,118,156,.16),transparent 30%),radial-gradient(circle at 82% 18%,rgba(211,165,124,.055),transparent 24%),radial-gradient(circle at 12% 17%,rgba(158,187,220,.04),transparent 22%),linear-gradient(180deg,#181b25 0%,#141720 58%,#10121a 100%);
 }
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night);color:var(--ink)}
@@ -21,12 +22,18 @@ button{cursor:pointer}
 
 /* ========== LIBRARY ========== */
 .library{
-  background:
-    radial-gradient(circle at 50% 80%,rgba(74,85,116,.18),transparent 34%),
-    linear-gradient(180deg,#191c26 0%,#151821 54%,#101219 100%);
+  background:var(--sm-library-bg);
   color:#f7f2ea;
   overflow:hidden;
 }
+/* #8781: 부팅 덮개에도 같은 배경을 쓰고, 문구는 유지한 채 진행 표시만 추가. */
+.bookai-startup-progress{
+  display:block;justify-self:center;width:20px;height:20px;
+  border:2px solid rgba(247,242,234,.24);border-top-color:#f7f2ea;
+  border-radius:50%;animation:bookai-startup-spin .9s linear infinite;
+}
+@keyframes bookai-startup-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.bookai-startup-progress{animation:none}}
 .library::before{
   content:"";position:absolute;inset:0;pointer-events:none;opacity:.11;
   background-image:
@@ -910,14 +917,8 @@ body.focus-reading .focus-toggle{color:#a6613f}
 
 /* ===== v0.9 visual refinement ===== */
 
-/* Library — cinematic but restrained */
-.library{
-  background:
-    radial-gradient(ellipse at 50% 80%,rgba(105,118,156,.16),transparent 30%),
-    radial-gradient(circle at 82% 18%,rgba(211,165,124,.055),transparent 24%),
-    radial-gradient(circle at 12% 17%,rgba(158,187,220,.04),transparent 22%),
-    linear-gradient(180deg,#181b25 0%,#141720 58%,#10121a 100%);
-}
+/* Library — cinematic but restrained. 부팅 덮개와 서재가 동일 토큰을 사용한다. */
+.library{background:var(--sm-library-bg)}
 .library-orbit{
   position:absolute;border:1px solid rgba(245,236,223,.045);border-radius:50%;
   pointer-events:none;z-index:1

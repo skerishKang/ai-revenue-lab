@@ -38,9 +38,8 @@
   btn.textContent='···';
   var menu=document.createElement('div');
   menu.className='lib-overflow-menu';menu.id='libOverflowMenu';
-  var motionLabel=document.createElement('span');
-  motionLabel.className='overflow-label';motionLabel.textContent='책 넘김 속도';
-  menu.append(motionLabel);
+  btn.setAttribute('aria-haspopup','true');
+  btn.setAttribute('aria-controls','libOverflowMenu');
   library.append(btn,menu);
 
   function closeMenu(){
@@ -60,20 +59,6 @@
   });
 
   var motion=document.getElementById('motionControl');
-  if(motion)menu.append(motion);
-  var orderLabel=document.createElement('span');
-  orderLabel.className='overflow-label';orderLabel.textContent='책장 순서';
-  var order=document.getElementById('libraryOrderToggle');
-  if(order){menu.append(orderLabel,order);}
-  else{
-    var retries=0;
-    var waitOrder=setInterval(function(){
-      var el=document.getElementById('libraryOrderToggle');
-      if(el){clearInterval(waitOrder);menu.insertBefore(orderLabel,feedback);menu.insertBefore(el,feedback);}
-      else if(++retries>40)clearInterval(waitOrder);
-    },100);
-  }
-
   var feedback=document.createElement('button');
   feedback.type='button';feedback.className='bookai-feedback-menu-item';
   feedback.textContent='의견 보내기';
@@ -83,6 +68,25 @@
     if(trigger)trigger.click();
   });
   menu.append(feedback);
+
+  /* 기존 계정·속도·순서 단추를 재사용한다. 네 줄 모두 동일한 목록이 된다. */
+  var menuTries=0;
+  function arrangeMenu(){
+    var account=document.getElementById('bookaiAccountMenu');
+    var order=document.getElementById('libraryOrderToggle');
+    var motionToggle=motion&&motion.querySelector('#motionToggle');
+    if(!(account&&motion&&order&&motionToggle)){
+      if(++menuTries<60)setTimeout(arrangeMenu,100);
+      return;
+    }
+    var motionText=motionToggle.querySelector('span');
+    if(motionText)motionText.textContent='책 넘김 속도';
+    [account,motionToggle,order,feedback].forEach(function(el){el.classList.add('sm-library-menu-item');});
+    menu.append(account,motion,order,feedback);
+    if(typeof storyMemorySyncLibraryOrderControl==='function')storyMemorySyncLibraryOrderControl();
+    menu.dataset.ready='1';
+  }
+  arrangeMenu();
 
   /* 2. Selected-book CTA label follows reading state: NEW / READING / FINISHED. */
   function labelCta(){
@@ -106,4 +110,32 @@
     storyMemorySyncLibraryContinueCard=window.storyMemorySyncLibraryContinueCard;
   }
   labelCta();
+
+  /* #8781: 좁은 표지에선 글자 크기를 조정하고, 긴 제목은 단어 사이에서만 줄바꿈. */
+  var shelf=document.getElementById('shelfTrack');
+  function fitCoverTitles(){
+    if(!shelf)return;
+    shelf.querySelectorAll('.book-rig:not(.motion-echo) .cover-copy strong').forEach(function(el){
+      var rig=el.closest('.book-rig');
+      if(!rig)return;
+      var text=(el.textContent||'').replace(/\s+/g,' ').trim();
+      var available=Math.max(52,Math.floor(rig.clientWidth*.78));
+      var units=Array.from(text).reduce(function(sum,ch){
+        return sum+(ch===' '?0.45:/[a-zA-Z0-9]/.test(ch)?0.63:1);
+      },0);
+      var font=Math.min(units<=3?28:22,available/Math.max(1,units));
+      var wrap=font<13;
+      if(wrap){
+        var longest=Math.max(1,...text.split(/\s+/).map(function(word){return Array.from(word).length;}));
+        font=Math.max(13,Math.min(17,available/longest));
+      }
+      el.style.setProperty('--sm-cover-title-size',font.toFixed(1)+'px');
+      el.style.maxWidth=available+'px';
+      el.style.whiteSpace=wrap?'normal':'nowrap';
+    });
+  }
+  if(shelf){
+    new MutationObserver(fitCoverTitles).observe(shelf,{childList:true});
+    fitCoverTitles();
+  }
 })();

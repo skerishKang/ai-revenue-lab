@@ -27,6 +27,7 @@ FACTORY_MODULES: tuple[str, ...] = (
     "app_factory_routes_auth",
     "app_factory_routes_connectors",
     "app_factory_routes_projects",
+    "app_factory_routes_chat",
 )
 
 # A single owner/area per future PR, not a requirement to reach 300 lines.

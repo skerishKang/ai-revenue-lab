@@ -8,8 +8,12 @@
   const gate=document.createElement('div');
   gate.id='bookai-startup';
   gate.setAttribute('role','status');
-  gate.style.cssText='position:fixed;inset:0;z-index:99999;display:grid;place-content:center;background:var(--bg,#faf8f4);color:var(--text,#282622);font:16px system-ui;text-align:center;padding:24px';
+  gate.style.cssText='position:fixed;inset:0;z-index:99999;display:grid;place-content:center;gap:14px;background:var(--sm-library-bg);color:#f7f2ea;font:16px system-ui;text-align:center;padding:24px';
   gate.textContent='책과 기록을 열고 있습니다.';
+  const progress=document.createElement('span');
+  progress.className='bookai-startup-progress';
+  progress.setAttribute('aria-hidden','true');
+  gate.append(progress);
   document.body.append(gate);
   document.body.setAttribute('aria-busy','true');
   let finished=false;

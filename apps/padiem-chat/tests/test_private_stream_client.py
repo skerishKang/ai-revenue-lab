@@ -15,12 +15,12 @@ from app.dispatch_quota import (
     _refund_active_reservation,
 )
 from app.usage_gate import UsageDecision
+from _support.app_factory_modules import factory_area_source
 
 
 MODEL = "openrouter/free"
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 WORKER_PATH = Path(__file__).resolve().parents[1] / "worker.py"
-APP_FACTORY_PATH = Path(__file__).resolve().parents[1] / "app" / "app_factory.py"
 
 
 class ChunkStream(httpx.AsyncByteStream):
@@ -303,7 +303,7 @@ def test_dispatch_aware_stream_clears_refundability_before_transport_attempt():
 
 def test_worker_wires_completed_and_streaming_transports_with_separate_public_stream_route():
     worker = WORKER_PATH.read_text(encoding="utf-8")
-    app_factory = APP_FACTORY_PATH.read_text(encoding="utf-8")
+    app_factory = factory_area_source()
 
     wired = " ".join(worker.split())
     assert (
