@@ -31,6 +31,11 @@
 @media(min-width:901px){
   #library .scene-meta,#library .collection-stamp{display:none}
   #library .lib-head::after{content:none;display:none}
+  /* 서재 상단의 오늘 칩은 항상 ⋯ 왼쪽에 12px 여유를 둔다. */
+  #library #todayEntry{
+    display:flex;visibility:visible;opacity:1;pointer-events:auto;
+    top:28px;left:auto;right:84px;
+  }
 }
 #libOverflow{
   position:absolute;top:28px;right:28px;z-index:96;
@@ -68,13 +73,40 @@
 #libOverflowMenu .sm-library-menu-item.bookai-feedback-menu-item{border:0;padding:9px 10px;font:500 13px/1.4 var(--sans)}
 .lib-overflow-menu .sm-library-menu-item:hover{background:rgba(255,255,255,.09)}
 .lib-overflow-menu .sm-library-menu-item:focus-visible{outline:2px solid #dfc49e;outline-offset:1px}
-.lib-overflow-menu .motion-control{position:relative;z-index:auto;width:100%}
-.lib-overflow-menu .motion-toggle{justify-content:flex-start}
-.lib-overflow-menu .motion-toggle b{margin-left:auto;color:#dfc49e;font-size:12px}
+/* 기존 상단 속도 제어의 top/right 값을 메뉴 안에서 초기화한다. */
+#library #libOverflowMenu .motion-control{
+  position:relative;top:auto;right:auto;bottom:auto;left:auto;
+  transform:none;width:100%;min-height:44px;
+  z-index:auto;opacity:1;pointer-events:auto;
+}
+#library #libOverflowMenu #motionToggle{
+  width:100%;height:44px;min-height:44px;justify-content:flex-start;
+  font:500 13px/1.4 var(--sans);letter-spacing:normal;text-transform:none;
+}
+#library #libOverflowMenu #motionToggle span{
+  display:inline-block;min-width:0;flex:1 1 auto;
+  font:500 13px/1.4 var(--sans);white-space:nowrap;color:#f4ecdf;
+}
+#library #libOverflowMenu #motionToggle b{
+  flex:0 0 auto;margin-left:auto;color:#dfc49e;font-size:12px;
+}
 .lib-overflow-menu .motion-popover{right:auto;left:0;top:calc(100% + 6px)}
 .lib-overflow-menu .library-order-toggle{justify-content:flex-start}
 .lib-overflow-menu .sm-menu-label{flex:1;min-width:0}
-.lib-overflow-menu .sm-menu-state{color:#dfc49e;font-size:11px;white-space:nowrap}
+.lib-overflow-menu .sm-menu-state{
+  flex:0 0 auto;color:#dfc49e;font-size:11px;white-space:nowrap;
+}
+#libOverflowMenu #bookaiAccountMenu{
+  min-height:44px;border:0;border-radius:8px;padding:9px 10px;
+  font:500 13px/1.4 var(--sans);color:#f4ecdf;
+}
+#libOverflowMenu .sm-library-menu-item.bookai-feedback-menu-item,
+#libOverflowMenu .sm-library-menu-item.bookai-feedback-menu-item:hover{
+  color:#f4ecdf;background:transparent;border:0;
+}
+#libOverflowMenu .sm-library-menu-item.bookai-feedback-menu-item:hover{
+  background:rgba(255,255,255,.09);
+}
 
 /* 3. Books / Sources / + become library-local in a dedicated shelf toolbar.
    Keep the toolbar outside .shelf-wrap so it remains available in SOURCES mode,
