@@ -174,7 +174,7 @@ def test_photo_lightbox_links_to_article_and_names_source(browser, base_url):
         photo.click()
         page.wait_for_selector("#mediaLightbox[open]")
         assert "bbsSn=0000119170" in page.locator("#lightboxLink").get_attribute("href")
-        assert page.locator("#lightboxLink").inner_text() == "원문 보기 ↗"
+        assert page.locator("#lightboxLink").inner_text() == "의회 원문 보기 ↗"
         assert page.locator("#lightboxSource").inner_text() == (
             "사진: 광주광역시의회 사진자료실 · 다른 곳에 쓰실 때는 원문 안내를 확인하세요"
         )
@@ -284,7 +284,7 @@ def test_council_photos_link_to_their_articles():
         assert tile["url"] == "https://council.gwangju.go.kr/9imr/index.do?PID=014&bbsSn=" + expected[name]
     generic = {"kind": "포토", "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014"}
     assert prerender._media_source_label(generic) == "의회 사진자료실 보기"
-    assert prerender._media_source_label(photos[0]) == "원문 보기"
+    assert prerender._media_source_label(photos[0]) == "의회 원문 보기"
 
 
 ACTIVITY_ITEMS = json.loads((ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))["activity"]["items"]

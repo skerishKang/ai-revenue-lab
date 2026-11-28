@@ -33,7 +33,7 @@ def _media_source_label(item) -> str:
     url = str(item.get("url") or "")
     if item.get("kind") == "포토" and "PID=014" in url and "bbsSn=" not in url:
         return "의회 사진자료실 보기"
-    return "원문 보기"
+    return "의회 원문 보기"
 
 
 def _link(url, class_name: str, label: str, external: bool = False) -> str:
@@ -252,9 +252,13 @@ def prerender_policy(data: dict) -> dict:
                 f'<ul class="bill-list">{row_html}</ul></section>'
             )
     return {
-        "policyForums": _policy_cards(policy["forums"], "원문 보기"),
+        "policyForums": _policy_cards(policy["forums"], "의회 원문 보기"),
         "policyVideos": _policy_cards(policy["videos"], "영상 보기"),
         "policyBills": "".join(groups),
+        "policyBillTerms": "".join(
+            f'<p><b>{_e(term)}</b> — {_e(meaning)}</p>'
+            for term, meaning in policy.get("glossary", {}).get("terms", {}).items()
+        ),
     }
 
 
@@ -350,6 +354,10 @@ def inject(out_dir: Path, data: dict) -> None:
         html = html.replace(
             '<div class="bill-groups" id="policyBills"></div>',
             f'<div class="bill-groups" id="policyBills">{policy["policyBills"]}</div>',
+        )
+        html = html.replace(
+            '<div class="activity-terms" id="policyBillTerms" role="note" aria-label="조례안 용어 풀이"></div>',
+            f'<div class="activity-terms" id="policyBillTerms" role="note" aria-label="조례안 용어 풀이">{policy["policyBillTerms"]}</div>',
         )
         policy_path.write_text(html, encoding="utf-8")
 

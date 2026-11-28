@@ -70,14 +70,16 @@ def test_policy_bill_chip_moves_focus_to_visible_search_field(site):
         assert jump.get_by_role("link", name="발언 영상").get_attribute("href") == "#policyVideosTitle"
         jump.get_by_role("link", name="조례안 찾기").click()
         assert page.evaluate("document.activeElement === document.getElementById('billSearch')")
-        assert page.evaluate("location.hash") == "#billSearch"
+        assert jump.get_by_role("link", name="조례안 찾기").get_attribute("href") == "#billSearch"
         check = page.locator("#billSearch").evaluate("""input => {
           const box = input.getBoundingClientRect(), css = getComputedStyle(input);
           return {visible: box.top >= 0 && box.bottom <= innerHeight,
             outline: css.outlineStyle, width: parseFloat(css.outlineWidth),
+            unobscured: box.top >= document.querySelector('.topbar').getBoundingClientRect().bottom + 4
+              && document.elementFromPoint(box.left + 20, box.top + box.height / 2) === input,
             focusVisible: input.matches(':focus-visible')};
         }""")
-        assert check["visible"] and check["focusVisible"], check
+        assert check["visible"] and check["unobscured"] and check["focusVisible"], check
         assert check["outline"] != "none" and check["width"] >= 2, check
     finally:
         page.close()

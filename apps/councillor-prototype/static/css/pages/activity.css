@@ -111,7 +111,3 @@
 .activity-item .item-title { display: block; }
 .activity-item .item-more { display: flex; align-items: center; min-height: var(--tap); justify-content: flex-start; }
 }
-
-.activity-terms { margin: 12px 0 0; font-size: var(--fs-body); color: var(--text); max-width: 40em; }
-
-.activity-terms p { margin: 4px 0; max-width: 40em; }

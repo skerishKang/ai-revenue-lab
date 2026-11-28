@@ -214,6 +214,10 @@ html[data-text-size="large"] .icon-text-large { display: none; }
   text-decoration: none; color: var(--text); font-size: var(--fs-label); font-weight: 600;
 }
 
+/* 의정활동 상세와 정책자료 조례안의 공통 용어 풀이. */
+.activity-terms { margin: 12px 0 0; font-size: var(--fs-body); color: var(--text); max-width: 40em; }
+.activity-terms p { margin: 4px 0; max-width: 40em; }
+
 /* A headline is still a tap target when it is the only link in a row. */.col-item-title a, .news-title a { display: inline-flex; align-items: center; min-height: var(--tap); }
 
 .source-note { font-size: var(--fs-label); color: var(--muted); margin-top: 20px; }
