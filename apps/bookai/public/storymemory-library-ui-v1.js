@@ -141,13 +141,27 @@ function renderTodayHome(){
   document.getElementById('todayRecallCount').textContent=String(due.length);
   document.getElementById('todayEntryCount').textContent=String(due.length);
   const recallPreview=document.getElementById('todayRecallPreview');
-  if(due.length){
-    const item=due[0];
-    recallPreview.innerHTML=`<b>다음 기억 · ${escapeHtml(item.title)}</b><strong>${escapeHtml(item.cue||item.prompt)}</strong><small>${escapeHtml(item.context)}</small>`;
-    document.getElementById('todayRecallCopy').textContent=`지금 떠올릴 기억 ${due.length}개가 있습니다. 먼저 기억하고, 그 다음 원문을 확인합니다.`;
+  const memoryTotal=__smUserMemories.length+__smAnnotations.length;
+  const recallBtn=document.getElementById('todayRecallBtn');
+  const allMemoryBtn=document.getElementById('todayAllMemoryBtn');
+  if(memoryTotal===0){
+    recallPreview.innerHTML='<strong>아직 기억이 없습니다. 읽다가 표시하거나 메모를 남기면 여기에 모입니다.</strong>';
+    document.getElementById('todayRecallCopy').textContent='';
+    recallBtn.textContent='본문 읽기';
+    recallBtn.onclick=()=>document.getElementById('todayContinueBtn').click();
+    allMemoryBtn.hidden=true;
   }else{
-    recallPreview.innerHTML='<b>복습 완료</b><strong>오늘의 복습을 마쳤습니다.</strong><small>새 기억이 쌓이면 복습 목록이 다시 만들어집니다.</small>';
-    document.getElementById('todayRecallCopy').textContent='지금 당장 복습할 기억이 없습니다.';
+    recallBtn.textContent='복습 시작';
+    recallBtn.onclick=openTodayRecall;
+    allMemoryBtn.hidden=false;
+    if(due.length){
+      const item=due[0];
+      recallPreview.innerHTML=`<b>다음 기억 · ${escapeHtml(item.title)}</b><strong>${escapeHtml(item.cue||item.prompt)}</strong><small>${escapeHtml(item.context)}</small>`;
+      document.getElementById('todayRecallCopy').textContent=`지금 떠올릴 기억 ${due.length}개가 있습니다. 먼저 기억하고, 그 다음 원문을 확인합니다.`;
+    }else{
+      recallPreview.innerHTML='<b>복습 완료</b><strong>오늘의 복습을 마쳤습니다.</strong><small>새 기억이 쌓이면 복습 목록이 다시 만들어집니다.</small>';
+      document.getElementById('todayRecallCopy').textContent='지금 당장 복습할 기억이 없습니다.';
+    }
   }
 
   const memories=todayMemoryItems();

@@ -25,3 +25,30 @@
  .sm-journal-chip.sm-memory-focus{margin-left:0}
  .sm-journal-summary{align-items:flex-start;flex-direction:column}
 }
+
+/* #8783 · 오늘 화면 기록 필터·활동 목록의 글자 크기와 대비. */
+#today .sm-journal-chip,
+#today .sm-journal-clear{
+  font-size:14px;line-height:1.4;letter-spacing:0;
+}
+#today .sm-journal-chip:not(.is-active){color:var(--today-review-copy-ink,#62564a)}
+#today .sm-journal-chip.sm-memory-focus:not(.is-active){color:var(--today-review-copy-ink,#62564a)}
+#today .sm-journal-clear{
+  border:1px solid rgba(68,53,40,.28);border-radius:9px;
+  background:#fffaf4;color:#594638;min-height:44px;
+}
+#today .sm-journal-search,
+#today .sm-journal-book{font-size:13px;line-height:1.5;color:#554a40}
+#today .sm-journal-summary,
+#today .sm-journal-empty,
+#today .sm-journal-day-head,
+#today .sm-journal-day-head span,
+#today .sm-thread-preview,
+#today .sm-thread-meta,
+#today .sm-activity-preview,
+#today .sm-activity-meta{
+  font-size:13px;line-height:1.5;letter-spacing:0;color:var(--today-review-copy-ink,#62564a);
+}
+#today .sm-thread-kicker,
+#today .sm-activity-kicker{font-size:12px;line-height:1.5;letter-spacing:0;color:var(--today-review-copy-ink,#62564a)}
+#today .sm-activity-icon{font-size:12px;color:#755034}

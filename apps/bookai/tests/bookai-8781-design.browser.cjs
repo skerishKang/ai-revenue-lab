@@ -82,7 +82,7 @@ async function enterReader(page){
     await page.locator('#libOverflow').click();
     const menu=await page.locator('#libOverflowMenu').evaluate(el=>[...el.children].map(x=>({id:x.id,className:x.className,h:x.getBoundingClientRect().height,text:x.textContent.trim()})));
     assert.equal(menu.length,4,'서재 메뉴 항목 4개');
-    assert.ok(menu[0].text.includes('계정')&&menu[1].text.includes('책 넘김 속도')&&menu[2].text.includes('책장 순서')&&menu[3].text.includes('의견 보내기'),'서재 메뉴 항목 순서');
+    assert.ok(menu[0].text.includes('계정')&&menu[1].text.includes('책장 넘기는 속도')&&menu[2].text.includes('책장 순서')&&menu[3].text.includes('의견 보내기'),'서재 메뉴 항목 순서');
     assert.ok(menu.every(x=>x.h>=44),'서재 메뉴 한 줄 44px');
    }
    await page.close();

@@ -88,7 +88,7 @@ test('1. 메뉴 각 줄 이름·값 글자 상자 겹침 0, 높이 44px 이상',
  }
 });
 test('2. 모든 메뉴 줄에서 계정·책 넘김 속도·책장 순서·의견 보내기 이름이 보여야 함',()=>{
- const names=['계정','책 넘김 속도','책장 순서','의견 보내기'];
+ const names=['계정','책장 넘기는 속도','책장 순서','의견 보내기'];
  for(const state of results){
   assert.equal(state.rows.length,4);
   for(const [i,item] of state.rows.entries()){

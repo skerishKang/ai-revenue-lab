@@ -35,6 +35,8 @@
 .today-data-status.error::before{
   background:#a65c50;
 }
+/* #8783: 정상 저장은 기기 저장 칩 하나로, 진행·오류 안내는 보존한다. */
+#today .today-data-status:not(.saving):not(.error){display:none}
 @media(max-width:720px){
   .reader-source-badge{
     font-size:5px;
