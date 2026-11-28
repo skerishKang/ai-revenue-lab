@@ -44,6 +44,7 @@ CLAW_GENERAL_MODULES: tuple[str, ...] = (
     "claw_general_catalog",
     "claw_general_preflight",
     "claw_general_intake",
+    "claw_general_context",
 )
 
 # ``claw_general_`` 접두사를 쓰지만 이 나누기와 무관한 app 파일.
@@ -54,6 +55,7 @@ NOT_PART_OF_SPLIT = frozenset({"claw_general_run_history"})
 FIRST_TURN_AUTHORITY_IMPORTERS: tuple[str, ...] = (
     "claw_general_routes.py",
     "claw_general_conversation.py",
+    "claw_general_context.py",
 )
 
 # 다른 파일(운영 코드 3곳·시험)이 claw_general_routes 에서 가져오거나 읽는 이름 44개.
