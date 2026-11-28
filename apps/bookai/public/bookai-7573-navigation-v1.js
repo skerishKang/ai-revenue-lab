@@ -260,10 +260,25 @@ function openGrid(options){
     }(i));
     cells.append(b);
   }
-  card.append(head,cells);
+  var fade=document.createElement('div');
+  fade.className='sm7573-grid-fade';
+  fade.setAttribute('aria-hidden','true');
+  card.append(head,cells,fade);
   ov.append(card);
   ov.addEventListener('click',function(e){if(e.target===ov)closeGrid();});
   document.body.append(ov);
+  /* The grid alone scrolls. On opening, the selected chapter is already visible. */
+  var active=cells.querySelector('.sm7573-grid-cell.on');
+  if(active){
+    var target=active.getBoundingClientRect(),visible=cells.getBoundingClientRect();
+    cells.scrollTop+=(target.top+target.height/2)-(visible.top+visible.height/2);
+  }
+  function syncFade(){
+    fade.style.opacity=cells.scrollHeight>cells.clientHeight+2&&
+      cells.scrollTop+cells.clientHeight<cells.scrollHeight-2?'1':'0';
+  }
+  cells.addEventListener('scroll',syncFade,{passive:true});
+  syncFade();
   return true;
 }
 document.addEventListener('keydown',function(e){

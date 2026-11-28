@@ -6152,8 +6152,14 @@ body.smr-theme-dark{
 #index .chapter-stack .chapter-small{font-size:12px;color:#625447}
 #index .chapter-stack .chapter-preview{font-size:13px;line-height:1.38;color:#514539}
 #index .chapter-stack:not(.on) .chapter-preview{display:none}
+/* Side cards have no description: keep their number vertically centered. */
+#index .chapter-stack:not(.on) .chapter-no{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  line-height:1;
+}
 #index .chapter-stack.on .chapter-preview{
   transform:translateY(-15px);max-height:37px;overflow:hidden;
+  word-break:keep-all;overflow-wrap:normal;
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
 }
 #index .chapter-stack .chapter-folio{font-size:13px;line-height:1.2;color:#645445;letter-spacing:0}
@@ -6166,12 +6172,13 @@ body.smr-theme-dark{
   #index .chapter-title{align-items:center;gap:8px}
   #index .sm-chapter-title-controls{gap:7px}
   #index #chapterNumberPick{padding:0 9px;font-size:12px}
+  #index .chapter-stack .folio-tab{left:5px;right:auto}
   #index .chapter-carousel .chapter-nav{bottom:3px}
 }
 /* 장 번호 단추는 카드 상단 오른쪽에 두어 책장 선택 영역을 밀지 않는다. */
 #index .chapter-area{position:relative}
 #index .chapter-title{
-  position:absolute;top:0;right:12px;z-index:24;
+  position:absolute;top:12px;right:12px;z-index:24;
   margin:0;min-height:44px;align-items:center;pointer-events:none;
 }
 #index .chapter-title>div:first-child,

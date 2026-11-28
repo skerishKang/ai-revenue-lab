@@ -256,8 +256,8 @@
         <div class="volume-to-paper-guide" aria-hidden="true">
           <span>책</span><i></i><b>→</b><i></i><span>종이</span>
         </div>
-        <div class="chapter-title"><div><small>종이 묶음을 고르세요</small><h2 id="chapterTitle">고린도전서</h2></div><div class="sm-chapter-title-controls"><button type="button" id="chapterNumberPick">장 번호로 고르기</button><span>장</span></div></div>
         <div class="chapter-carousel" id="chapterCarousel">
+          <div class="chapter-title"><div><small>종이 묶음을 고르세요</small><h2 id="chapterTitle">고린도전서</h2></div><div class="sm-chapter-title-controls"><button type="button" id="chapterNumberPick">장 번호로 고르기</button><span>장</span></div></div>
           <div class="chapter-ambient-line line-a"></div>
           <div class="chapter-ambient-line line-b"></div>
           <div class="world-key-light world-key-light-chapter" aria-hidden="true"></div><div class="chapter-shadow-bed"></div>
@@ -1547,7 +1547,7 @@ document.getElementById('chapterCarousel').addEventListener('wheel',e=>{
    /* CDP/synthetic mouse sequences can deliver pointerup without a matching
       pointermove under our window listeners — refresh from the click itself. */
    if(e.clientX||e.clientY){upX=e.clientX;upY=e.clientY}
-   if(!carousel.contains(e.target)||e.target.closest('.chapter-nav,.chapter-dots'))return;
+   if(!carousel.contains(e.target)||e.target.closest('.chapter-nav,.chapter-dots,.chapter-title'))return;
    if(performance.now()<suppressClickUntil){e.preventDefault();e.stopImmediatePropagation();return}
    const viaStack=e.detail===0?e.target.closest?.('.chapter-stack'):null;
    const i=viaStack?Number(viaStack.dataset.chapter):sheetAtPoint(upX,upY);
