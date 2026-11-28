@@ -1991,9 +1991,10 @@ const SCENARIOS = {
     // 2026-11-02: a document save first asks which format to write. The
     // 텍스트 choice keeps the original text flow, so the dated-name contract
     // below is still exercised through the shipped chooser.
-    const saveChooserLine = find(B, "councilSpeechNotice");
+    // #8778 E-3: format picker now lives immediately under the PC-save control.
+    const saveChooserLine = find(B, "councilSpeechResult").querySelector(".council-pc-format-choice");
     const saveChooser = {
-      text: text(saveChooserLine),
+      text: text(saveChooserLine.querySelector(".council-pc-format-title")),
       choices: saveChooserLine.querySelectorAll("button").map((b) => text(b)),
     };
     const textChoice = saveChooserLine.querySelectorAll("button")
@@ -2430,7 +2431,8 @@ const SCENARIOS = {
 
     await find(A, "councilSpeechPcSave").dispatch("click");
     await sleep(20);
-    const chooser = find(A, "councilSpeechNotice");
+    // #8778 E-3: options are anchored to the result actions, not to the status line.
+    const chooser = find(A, "councilSpeechResult").querySelector(".council-pc-format-choice");
     const choices = chooser.querySelectorAll("button").map((b) => text(b));
     await chooser.querySelectorAll("button")[0].dispatch("click");
     await sleep(60);
@@ -2443,20 +2445,21 @@ const SCENARIOS = {
         bytes: Buffer.from(binaryUploads[0].bytes).toString("base64"),
       } : null,
       save: pcSavesPosted[0] || null,
-      notice: text(chooser),
+      notice: text(find(A, "councilSpeechNotice")),
     };
 
     // 업로드 실패 → 한국어 안내 + 다시 시도 버튼.
     binaryUploadFail = true;
     await find(A, "councilSpeechPcSave").dispatch("click");
     await sleep(20);
-    const retryChooser = find(A, "councilSpeechNotice");
+    const retryChooser = find(A, "councilSpeechResult").querySelector(".council-pc-format-choice");
     await retryChooser.querySelectorAll("button")
       .find((b) => text(b) === "한글").dispatch("click");
     await sleep(40);
+    const uploadFailNotice = find(A, "councilSpeechNotice");
     out.uploadFail = {
-      notice: text(retryChooser),
-      hasRetry: retryChooser.querySelectorAll("button").some((b) => text(b) === "다시 시도"),
+      notice: text(uploadFailNotice),
+      hasRetry: uploadFailNotice.querySelectorAll("button").some((b) => text(b) === "다시 시도"),
     };
 
     // pc/save 실패 → 실제 대화상자의 계약(실패 시 onSave 없음)에 따라 성공
@@ -2467,12 +2470,12 @@ const SCENARIOS = {
     pcSaveFails = true;
     await find(A, "councilSpeechPcSave").dispatch("click");
     await sleep(20);
-    const failChooser = find(A, "councilSpeechNotice");
+    const failChooser = find(A, "councilSpeechResult").querySelector(".council-pc-format-choice");
     await failChooser.querySelectorAll("button")
       .find((b) => text(b) === "한글").dispatch("click");
     await sleep(60);
     out.saveFail = {
-      notice: text(failChooser),
+      notice: text(find(A, "councilSpeechNotice")),
       savesAfter: pcSavesPosted.length,
     };
     pcSaveFails = false;
@@ -2501,7 +2504,7 @@ const SCENARIOS = {
     find(A, "councilSnsOutput").value = "오늘 주민 감사의 밤을 함께했습니다.";
     await find(A, "councilSnsPcSave").dispatch("click");
     await sleep(20);
-    const snsChooser = find(A, "councilSnsNotice");
+    const snsChooser = find(A, "councilSnsResult").querySelector(".council-pc-format-choice");
     await snsChooser.querySelectorAll("button")
       .find((b) => text(b) === "워드").dispatch("click");
     await sleep(60);
@@ -2512,7 +2515,7 @@ const SCENARIOS = {
         docKind: binaryUploads[uploadsBeforeDocx].docKind,
       } : null,
       savePosted: pcSavesPosted.length === savesBeforeDocx + 1,
-      notice: text(snsChooser),
+      notice: text(find(A, "councilSnsNotice")),
     };
     return out;
   },

@@ -136,7 +136,8 @@ def test_a_stored_draft_reopens_with_the_naming_note() -> None:
 
 def test_stored_sns_drafts_are_listed_and_reopen() -> None:
     obs = run("parity")
-    assert obs["snsLabels"] and obs["snsLabels"][0].startswith("블로그 게시글.txt")
+    # #8778 A: titles hide the .txt suffix; metadata remains in the same list.
+    assert obs["snsLabels"] and obs["snsLabels"][0].startswith("블로그 게시글")
     assert obs["snsBody"] == "저장된 SNS 초안"
     assert obs["snsNotice"].startswith("블로그 게시글.txt를 열었습니다.")
 
@@ -146,9 +147,10 @@ def test_the_pc_save_document_copies_stay_off_the_lists() -> None:
     # the Chat library can group it. It is not a second manuscript: the lists
     # show the text drafts only, never the .hwpx/.docx beside them.
     obs = run("parity")
-    assert obs["speechLabels"] == ["지난 축사.txt (8자)"], obs["speechLabels"]
-    assert not any(label.endswith(".hwpx (0자)") for label in obs["speechLabels"])
-    assert obs["snsLabels"] == ["블로그 게시글.txt (10자)"], obs["snsLabels"]
+    # #8778 A/E-6: UI shows title · character count; binary PC copies are excluded.
+    assert obs["speechLabels"] == ["지난 축사 · 8자"], obs["speechLabels"]
+    assert not any(".hwpx" in label for label in obs["speechLabels"])
+    assert obs["snsLabels"] == ["블로그 게시글 · 10자"], obs["snsLabels"]
 
 
 def test_the_pc_bridge_reuses_the_existing_pc_routes_only() -> None:
