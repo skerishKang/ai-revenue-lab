@@ -1,0 +1,37 @@
+/* ── shared components kept for the inner pages ───────────────────────── */.intro-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 48px; align-items: start; }
+
+.intro-photo { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); background: var(--ivory); }
+
+.intro-bio p { color: var(--text); margin: 0 0 16px; font-size: calc(var(--fs-body) * 1.0625); line-height: 1.75; max-width: 40em; }
+
+.profile-list { margin: 0; padding: 0; }
+
+.profile-list > div { padding: 12px 0; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 130px 1fr; gap: 12px; }
+
+.profile-list dt { font-size: var(--fs-label); color: var(--accent-2-text); margin: 0; font-weight: 700; letter-spacing: 0.04em; }
+
+.profile-list dd { margin: 0; font-size: var(--fs-body); }
+
+.profile-list dd a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2-text); font-weight: 600; }
+
+.intro-video { margin-top: 32px; max-width: 880px; }
+
+.intro-video video { width: 100%; aspect-ratio: 16 / 9; display: block; border-radius: var(--radius-sm); background: #000; }
+
+.intro-video-title { font-family: var(--font-serif); font-size: 18px; margin: 10px 0 0; }
+
+@media (max-width: 900px) {
+.intro-grid { grid-template-columns: 280px minmax(0, 1fr); gap: 32px; }
+}
+
+@media (max-width: 720px) {
+.intro-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+.intro-photo { width: min(100%, 288px); max-height: 360px; justify-self: center; }
+}
+
+@media (max-width: 760px) {
+/* Phones get the introduction footage edge to edge, like the hero band. */.intro-video { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+.intro-video video { border-radius: 0; }
+.intro-video-title, .intro-video .source-note { padding: 0 var(--gutter); }
+.profile-list > div { grid-template-columns: 1fr; gap: 2px; }
+}

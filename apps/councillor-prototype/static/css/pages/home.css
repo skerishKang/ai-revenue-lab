@@ -1,0 +1,296 @@
+/* ── hero: cinematic band, copy left, portrait right (reference y 53..417) */.hero {
+  position: relative;
+  display: flex; align-items: center;
+  min-height: clamp(300px, 25.1vw, 362px);
+  overflow: hidden;
+  background: var(--navy);
+}
+
+[data-theme="light"] .hero { background: #dfeaf3; }
+
+/* background layer — swap --hero-image only, layout is independent of it */.hero-bg {
+  position: absolute; inset: 0;
+  background-color: #0d1a2b;
+  background-image:
+    var(--hero-image, none),
+    linear-gradient(180deg, #16293f 0%, #1d3b55 48%, #23485f 72%, #12222f 100%);
+  background-size: cover, cover;
+  background-position: center 42%, center;
+  background-repeat: no-repeat;
+}
+
+[data-theme="light"] .hero-bg {
+  background-color: #dfeaf3;
+  background-image:
+    var(--hero-image, none),
+    linear-gradient(180deg, #cfe3f2 0%, #e6f0f7 42%, #e7eeee 68%, #cdd9d6 100%);
+}
+
+/* keeps the copy legible over whatever panorama is dropped in */.hero-bg::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg,
+    rgba(6, 16, 28, 0.88) 0%, rgba(6, 16, 28, 0.66) 42%, rgba(6, 16, 28, 0) 68%);
+}
+
+[data-theme="light"] .hero-bg::after {
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.78) 40%, rgba(255, 255, 255, 0) 64%);
+}
+
+/* portrait layer — official cut-out, natural aspect, bottom-aligned to band */.hero-portrait {
+  position: absolute;
+  right: clamp(20px, 14vw, 200px);
+  bottom: 0;
+  height: 100%;
+  width: auto;
+  max-width: 44%;
+  object-fit: contain;
+  object-position: bottom center;
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 26px rgba(11, 26, 46, 0.18));
+}
+
+[data-theme="dark"] .hero-portrait { filter: drop-shadow(0 10px 26px rgba(0, 0, 0, 0.45)); }
+
+.hero-inner {
+  position: relative; z-index: 2;
+  width: 100%; max-width: var(--maxw); margin: 0 auto;
+  padding: 30px var(--gutter);
+}
+
+.hero-copy { max-width: 620px; }
+
+.hero-eyebrow {
+  margin: 0 0 10px;
+  font-size: var(--fs-label); font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent-2-text);
+}
+
+.hero-name {
+  margin: 0 0 14px;
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 3.6vw, 52px);
+  line-height: 1.16; font-weight: 700; letter-spacing: -0.01em;
+  color: var(--navy-deep);
+}
+
+[data-theme="dark"] .hero-name { color: #f2f6fa; }
+
+.hero-name-line, .hero-name-sub { display: block; }
+
+.hero-name-sub { color: var(--accent-2-text); }
+
+.hero-lead {
+  margin: 0 0 20px; max-width: 44ch;
+  font-size: var(--fs-body); line-height: 1.62;
+  color: var(--navy-soft);
+}
+
+[data-theme="dark"] .hero-lead { color: #c3ccd8; }
+
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Button labels wrap at word boundaries only (keep-all) and a sub value drops
+   to its own line, so a narrow column can never stack one character per line. */.hero-actions .btn { flex-wrap: wrap; word-break: keep-all; }
+
+
+/* #8806 D1: 721px 이상은 단추 4개를 같은 폭 2열로 묶고, 묶음 폭은 아래 검색 줄(560px)과 맞춘다.
+   칸이 좁아 번호·주소가 있는 단추는 이름 아래 둘째 줄로 내려가므로 줄 간격을 좁힌다. */
+@media (min-width: 721px) {
+.hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 560px; }
+.hero-actions .btn { row-gap: 0; line-height: 1.35; }
+
+
+}
+
+@media (max-width: 720px) {
+.hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.hero-actions .btn.primary { grid-column: 1 / -1; }
+
+
+}
+
+/* Under 480px a half-width column is narrower than the office email value;
+   stack the actions full width so every label fits one line or wraps at words. */@media (max-width: 480px) {
+.hero-actions { grid-template-columns: 1fr; }
+
+
+}
+
+/* ── 3-item guide strip under the hero (reference y 417..500) ──────────── */.hero-strip { background: var(--paper); border-bottom: 1px solid rgba(11, 26, 46, 0.08); }
+
+[data-theme="dark"] .hero-strip { background: var(--navy-soft); border-bottom-color: var(--border); }
+
+.hero-strip-inner {
+  max-width: var(--maxw); margin: 0 auto;
+  padding: 13px var(--gutter);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: 24px; align-items: center;
+}
+
+.strip-item { display: flex; align-items: flex-start; gap: 12px; }
+
+.strip-icon {
+  flex: none; width: 34px; height: 34px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--accent-soft); color: var(--accent-text);
+  font-size: 16px; font-weight: 700;
+}
+
+/* The reference marks each strip item with its own icon, not an ordinal number. */.strip-icon svg { width: 18px; height: 18px; display: block; }
+
+.strip-title { margin: 0; font-size: var(--fs-body); font-weight: 700; color: var(--text); line-height: 1.35; }
+
+.strip-desc { margin: 2px 0 0; font-size: var(--fs-label); color: var(--muted); line-height: 1.45; }
+
+.strip-link { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2-text); text-decoration: none; font-size: var(--fs-body); font-weight: 600; white-space: nowrap; }
+
+.strip-link:hover { color: var(--accent-text); text-decoration: underline; }
+
+/* ── 4-card content grid (reference: 4 photo cards with icon badge) ────── */.key-activity-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+
+.key-activity-card {
+  display: flex; flex-direction: column;
+  text-decoration: none; color: var(--text);
+  background: var(--paper); border: 1px solid rgba(11, 26, 46, 0.10);
+  border-radius: var(--radius); overflow: hidden;
+  transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+}
+
+[data-theme="dark"] .key-activity-card { background: var(--navy-soft); border-color: var(--border); }
+
+.key-activity-card:hover { border-color: var(--accent-2); transform: translateY(-3px); box-shadow: 0 12px 28px rgba(11, 26, 46, 0.08); }
+
+/* A record the council did not photograph renders without a media block at all —
+   the same shape as the summary card — rather than borrowing another meeting's photo. *//* Tighter than the first pass: the reference card is 183px tall and its text block sits
+   close to the photo. Every verified field (date, title, note, source link) is kept. */.ka-body { padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+
+.ka-date { font-size: var(--fs-label); color: var(--accent-2-text); font-weight: 700; letter-spacing: 0.04em; line-height: 1.35; }
+
+.ka-title {
+  margin: 0; font-size: var(--fs-body); font-weight: 700; line-height: 1.45;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.ka-desc {
+  margin: 0; font-size: var(--fs-label); color: var(--muted); line-height: 1.45;
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.ka-foot { margin-top: auto; padding-top: 8px; color: var(--accent-2-text); font-size: var(--fs-label); font-weight: 600; line-height: 1.35; }
+
+.key-activity-card.is-summary { justify-content: center; }
+
+.key-activity-card.is-summary .ka-body { padding: 22px 18px; }
+
+/* ── navy info band (reference y 736..860) ────────────────────────────── *//* ── 2-column media / links (reference y 860..1035) ──────────────────── */.col-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+
+.col-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+
+.col-title { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.35; color: var(--text); font-family: var(--font-serif); }
+
+.col-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+
+.col-item { display: flex; gap: 12px; align-items: flex-start; min-height: var(--tap); text-decoration: none; color: var(--text); }
+
+.col-item:hover .col-item-title { color: var(--accent-2-text); }
+
+.col-thumb { flex: none; width: 60px; height: 45px; border-radius: var(--radius-sm); object-fit: cover; background: var(--bg-soft); }
+
+[data-theme="light"] .col-thumb { background: var(--ivory-soft); }
+
+.col-item-title {
+  margin: 0; font-size: var(--fs-body); font-weight: 600; line-height: 1.4;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.col-item-meta {
+  margin: 2px 0 0; font-size: var(--fs-label); color: var(--muted); line-height: 1.45;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+@media (max-width: 720px) {
+.col-grid > div:last-child { display: none; }
+}
+
+@media (max-width: 1100px) {
+.key-activity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.hero-strip-inner { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 4px; }
+.hero-strip-inner .strip-link { grid-column: 1 / -1; justify-self: end; }
+.col-grid { grid-template-columns: 1fr 1fr; }
+.col-grid > :last-child { grid-column: 1 / -1; }
+}
+
+@media (max-width: 900px) {
+/* Tablet band (≤900px, the same breakpoint that hides the header nav): the desktop
+   two-column hero cannot fit here — the copy column and the absolutely positioned
+   portrait meet mid-band (measured 3,740px² of paragraph/photo box overlap at 820px
+   with the portrait box pushing left as the band grows). Collapse to the stacked
+   hero instead: copy first, then the portrait standing on the band's bottom edge. */
+.hero { display: flex; flex-direction: column; min-height: 0; padding: 18px 0 0; }
+.hero-inner { order: 1; padding: 0 var(--gutter); }
+.hero-portrait {
+    order: 2;
+    position: static;
+    display: block;
+    /* Tablet sizing: the same flat chest cut lands on the band edge; a taller cap
+       than the phone's keeps the face readable on an 820px screen. */
+    height: clamp(240px, 34vw, 300px);
+    width: auto;
+    max-width: min(70%, 320px);
+    margin: 8px var(--gutter) 0 auto;
+    object-fit: contain;
+    object-position: bottom center;
+    filter: drop-shadow(0 6px 16px rgba(11, 26, 46, 0.16));
+  }
+.hero-copy { max-width: none; }
+.hero-bg::after { background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.82) 55%, rgba(255, 255, 255, 0.55) 100%); }
+[data-theme="dark"] .hero-bg::after { background: linear-gradient(180deg, rgba(6, 16, 28, 0.85) 0%, rgba(6, 16, 28, 0.72) 100%); }
+/* The home media column thumbnails must stay recognizable where fingers tap them:
+     120×90 (the same 4:3 as the source photos) instead of the desktop 60×45 list.
+     The row is the tap target and is already taller than the 44px minimum. */.col-thumb { width: 120px; height: 90px; }
+}
+
+@media (max-width: 760px) {
+/* The shared activity link stays visible until icon-only mode at 480px. */
+/* The stacked hero arrives from the 900px block above; phones only re-size it. */.hero-portrait {
+    /* The face must stay whole and large enough to read at 360–430px. Height scales with
+       the viewport and the width cap leaves the gutter clear, so the head can never be
+       pushed past the edge; object-fit keeps the cut-out's own proportion instead of
+       cropping it. The flat chest cut still lands on the band's bottom edge. */
+    height: clamp(212px, 58vw, 252px);
+    width: auto;
+    max-width: min(70%, 260px);
+    margin: 8px var(--gutter) 0 auto;
+    object-fit: contain;
+    object-position: bottom center;
+    filter: drop-shadow(0 6px 16px rgba(11, 26, 46, 0.16));
+  }
+.hero-name { font-size: 30px; margin-bottom: 10px; }
+.hero-lead { margin-bottom: 16px; max-width: none; }
+/* The base veil fades out to the right and is fully transparent past 64% of the width,
+     so a full-width phone paragraph loses its backing over the right third (measured 3.97:1
+     worst-case against 9px-wide photo pockets at 390px). The 900px block's vertical veil
+     never reached light theme because the base [data-theme="light"] veil outranks it, so
+     phones restate it here with the same attribute selector: strong where the copy sits,
+     lighter toward the portrait. */[data-theme="light"] .hero-bg::after {
+    background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.82) 55%, rgba(255, 255, 255, 0.55) 100%);
+  }
+.hero-strip-inner { grid-template-columns: 1fr; gap: 14px; padding: 16px var(--gutter); }
+.hero-strip-inner .strip-link { grid-column: auto; justify-self: auto; }
+.key-activity-grid { grid-template-columns: 1fr; }
+.col-grid { grid-template-columns: 1fr; gap: 24px; }
+.col-grid > :last-child { grid-column: auto; }
+}
+
+@media (max-width: 420px) {
+.hero-name { font-size: 27px; }
+}
+
+.home-media-card { display: flex; align-items: flex-start; gap: 4px; min-width: 0; }
+
+.home-media-card .col-item { flex: 1; min-width: 0; }

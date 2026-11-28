@@ -23,6 +23,7 @@ import sys
 import threading
 import zlib
 from pathlib import Path
+from css_source import read_site_css
 
 import pytest
 
@@ -318,7 +319,7 @@ def _media_blocks(css: str) -> list[tuple[str, str]]:
 
 def test_the_stacked_hero_starts_at_the_nav_breakpoint():
     """The tablet band must not render the desktop arrangement any more."""
-    styles = (ROOT / "static" / "styles.css").read_text(encoding="utf-8")
+    styles = read_site_css()
     joined = chr(10).join(
         body for cond, body in _media_blocks(styles) if cond.replace(" ", "") == "max-width:900px"
     )

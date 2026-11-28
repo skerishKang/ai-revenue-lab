@@ -9,6 +9,7 @@ import subprocess
 import sys
 import threading
 from pathlib import Path
+from css_source import read_site_css
 
 import pytest
 
@@ -198,5 +199,5 @@ def test_light_theme_outline_border_remains_original(site,filename):
 
 
 def test_no_added_important_or_new_stylesheets():
-    css=(ROOT/"static"/"styles.css").read_text(encoding="utf-8")
+    css=read_site_css()
     assert css.count("!important")<=5

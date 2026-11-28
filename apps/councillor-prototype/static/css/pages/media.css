@@ -1,0 +1,78 @@
+.media-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+
+.media-tile {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px; display: block;
+  text-decoration: none; color: var(--text);
+  transition: border-color 0.18s, transform 0.18s;
+}
+
+[data-theme="dark"] .media-tile { background: var(--navy-soft); }
+
+.media-tile:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+
+.tile-thumb { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-sm); margin-bottom: 10px; background: var(--ivory-soft); }
+
+/* 프로필 카드만 의원 소개의 베이지 바탕을 유지하고 사람을 자르지 않는다. */
+#mediaGrid .media-card:has(.tile-thumb[src*="profile-portrait"]) .tile-thumb {
+  background: var(--ivory); object-fit: contain; object-position: center center;
+}
+
+[data-theme="dark"] .tile-thumb { background: var(--navy-soft); }
+
+/* Tiles without a picture of their own (video, external link) show the kind instead of
+   reusing one poster across every card. */.tile-kind { display: block; font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.06em; color: var(--accent-2-text); }
+
+.tile-title { display: block; font-size: var(--fs-body); font-weight: 600; margin: 6px 0 8px; }
+
+.tile-notes { list-style: none; margin: 0; padding: 0; font-size: var(--fs-label); color: var(--muted); }
+
+.tile-notes li { padding: 1px 0; }
+
+.media-more { margin-top: 30px; }
+
+.media-more-title { font-family: var(--font-serif); font-size: 20px; margin: 0 0 10px; }
+
+.link-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+
+.link-list li { border-bottom: 1px solid var(--border); }
+
+.link-list a {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: var(--tap); padding: 10px 0; color: var(--text);
+  text-decoration: none; font-size: var(--fs-body);
+}
+
+.link-list a:hover { color: var(--accent-2-text); text-decoration: underline; }
+
+.link-kind { color: var(--muted); font-size: var(--fs-label); font-weight: 700; white-space: nowrap; }
+
+.media-video { margin-top: 28px; }
+
+.media-video video { width: 100%; aspect-ratio: 16 / 9; display: block; border-radius: var(--radius-sm); background: #000; }
+
+@media (max-width: 1100px) {
+.media-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+.media-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 760px) {
+/* Two columns, not one: the gallery is a contact sheet, and a single column of
+     8 full-width tiles pushed the page to ~9 screens on a phone. */.media-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+.media-tile { padding: 12px; }
+.tile-title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tile-kind { display: none; }
+}
+
+@media (max-width: 600px) {
+.media-grid { grid-template-columns: minmax(0, 1fr); }
+.media-grid .tile-thumb { aspect-ratio: 4 / 3; }
+.media-grid .tile-title { display: block; overflow: visible; -webkit-line-clamp: unset; }
+}
+
+/* A photo trigger and its source link are independent targets. */.media-card { position: relative; display: flex; flex-direction: column; min-width: 0; }
+
+.media-card .media-tile { flex: 1; padding-bottom: 54px; min-width: 0; }

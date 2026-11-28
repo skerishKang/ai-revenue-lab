@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """#8807 의원 소개 디자인 실측 회귀 — CTO 고칠 것 1~5."""
 from pathlib import Path
+from css_source import read_site_css
 import re
 import subprocess
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-CSS = (ROOT / "static/styles.css").read_text(encoding="utf-8")
+CSS = read_site_css()
 PAGES = ["index.html", "about.html", "activity.html", "policy.html",
          "media.html", "news.html", "404.html"]
 

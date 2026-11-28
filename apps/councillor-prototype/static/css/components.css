@@ -1,0 +1,500 @@
+/* ── top bar: 52px light bar with hairline (reference y 0..52) ─────────── */.topbar {
+  position: sticky; top: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px;
+  height: 60px; padding: 0 var(--gutter);
+  background: var(--paper);
+  border-bottom: 1px solid rgba(11, 26, 46, 0.10);
+}
+
+[data-theme="dark"] .topbar { background: var(--navy-soft); border-bottom-color: var(--border); }
+
+.brand { display: flex; align-items: center; gap: 10px; min-height: var(--tap); min-width: 0; color: inherit; text-decoration: none; border-radius: var(--radius-sm); }
+
+.brand:hover .brand-name { color: var(--accent-2-text); }
+
+.brand-mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--accent); color: var(--paper);
+  font-weight: 700; font-family: var(--font-serif); font-size: 14px;
+  flex: none;
+}
+
+.brand-text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+
+.brand-name { font-weight: 700; font-size: 18px; letter-spacing: 0.01em; color: var(--text); }
+
+.brand-tagline { font-size: var(--fs-label); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.top-nav { display: flex; gap: 22px; }
+
+.top-nav a {
+  display: inline-flex; align-items: center; min-height: var(--tap);
+  color: var(--text); text-decoration: none; font-size: var(--fs-body);
+  opacity: 0.72; padding: 0 2px;
+  border-bottom: 2px solid transparent;
+  transition: opacity 0.18s, border-color 0.18s, color 0.18s;
+}
+
+.top-nav a:hover { opacity: 1; color: var(--accent-2-text); }
+
+.top-nav a.active { opacity: 1; font-weight: 700; border-bottom-color: var(--accent-text); }
+
+.top-actions, .top-actions-frame { display: flex; align-items: center; gap: 10px; }
+
+.ghost {
+  display: inline-flex; align-items: center; justify-content: center; min-height: var(--tap);
+  background: transparent; border: 1px solid var(--border); color: var(--text);
+  padding: 8px 14px; border-radius: 999px; cursor: pointer;
+  font: inherit; font-size: var(--fs-label); letter-spacing: 0.02em;
+}
+
+.ghost:hover { border-color: var(--accent-2); color: var(--accent-2-text); }
+
+/* #8740b: header controls keep their own type scale so large text cannot grow
+   the bar, and narrow screens swap the words for 44px icon buttons. */
+.topbar .ghost { font-size: 14px; white-space: nowrap; word-break: keep-all; }
+
+.theme-label-dark, .text-size-label-large, .header-icon { display: none; }
+
+html[data-text-size="large"] .text-size-label-normal { display: none; }
+
+html[data-text-size="large"] .text-size-label-large { display: inline; }
+
+[data-theme="dark"] .theme-label-normal { display: none; }
+
+[data-theme="dark"] .theme-label-dark { display: inline; }
+
+[data-theme="dark"] .icon-moon { display: none; }
+
+html[data-text-size="large"] .icon-text-large { display: none; }
+
+/* Keep the councillor name readable next to the shared link on narrow tablets. */
+@media (min-width: 481px) and (max-width: 620px) {
+  .topbar .ghost { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; }
+  .topbar .header-label { display: none; }
+  .topbar .header-icon { display: none; align-items: center; justify-content: center; font-size: 18px; line-height: 1; }
+  .topbar .icon-moon, .topbar .icon-text-large { display: inline-flex; }
+  [data-theme="dark"] .topbar .icon-moon { display: none; }
+  [data-theme="dark"] .topbar .icon-sun { display: inline-flex; }
+  html[data-text-size="large"] .topbar .icon-text-large { display: none; }
+  html[data-text-size="large"] .topbar .icon-text-normal { display: inline-flex; }
+}
+
+@media (max-width: 480px) {
+  .topbar { gap: 8px; padding: 0 12px; }
+  .topbar .top-cta { display: none; }
+  .top-actions { gap: 8px; }
+  .topbar .ghost { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; }
+  .topbar .header-label { display: none !important; }
+  .topbar .header-icon { display: none; align-items: center; justify-content: center; font-size: 18px; line-height: 1; }
+  .topbar .icon-moon, .topbar .icon-text-large { display: inline-flex; }
+  [data-theme="dark"] .topbar .icon-moon { display: none; }
+  [data-theme="dark"] .topbar .icon-sun { display: inline-flex; }
+  html[data-text-size="large"] .topbar .icon-text-large { display: none; }
+  html[data-text-size="large"] .topbar .icon-text-normal { display: inline-flex; }
+  .brand-tagline { display: none; }
+}
+
+.brand-name { white-space: nowrap; word-break: keep-all; overflow: hidden; text-overflow: ellipsis; }
+
+.top-cta {
+  display: inline-flex; align-items: center; gap: 8px; min-height: var(--tap);
+  background: var(--accent); color: var(--paper); text-decoration: none;
+  padding: 8px 18px; border-radius: 999px;
+  font-size: var(--fs-label); font-weight: 600; white-space: nowrap;
+}
+
+.top-cta:hover { background: var(--accent-2); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: var(--tap);
+  padding: 10px 20px; border-radius: var(--radius-sm);
+  text-decoration: none; font-weight: 600; font-size: var(--fs-body);
+  border: 1px solid transparent; cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+
+.btn-sub { font-size: var(--fs-label); font-weight: 600; opacity: 0.9; }
+
+.btn.primary { background: var(--accent); color: var(--paper); }
+
+.btn.primary:hover { background: var(--accent-2); }
+
+.btn.secondary { background: var(--paper); border-color: rgba(11, 26, 46, 0.22); color: var(--navy-deep); }
+
+.btn.secondary:hover { border-color: var(--accent); color: var(--accent-text); }
+
+[data-theme="dark"] .btn.secondary { background: transparent; border-color: var(--border); color: var(--text); }
+
+.section-more { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2-text); text-decoration: none; font-size: var(--fs-body); font-weight: 600; white-space: nowrap; }
+
+.section-more:hover { color: var(--accent-text); text-decoration: underline; }
+
+.col-tile-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+
+.col-tile {
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-start;
+  justify-content: center; min-height: var(--tap);
+  padding: 12px 10px; border-radius: var(--radius-sm);
+  background: var(--bg-soft); text-decoration: none; color: var(--text);
+  border: 1px solid transparent;
+}
+
+[data-theme="dark"] .col-tile { background: var(--navy-soft); border-color: var(--border); }
+
+.col-tile:hover { border-color: var(--accent-2); }
+
+.col-tile-label { font-size: var(--fs-label); font-weight: 700; line-height: 1.35; }
+
+@media (min-width: 721px) {
+/* #8806 D9: 정책자료 쪽 바로가기 칩(.policy-jump a)과 같은 모양. */
+.col-tile-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.col-tile { flex-direction: row; align-items: center; min-height: var(--tap); padding: 0 12px; border-color: var(--border); border-radius: 999px; background: transparent; }
+.col-tile-label { font-weight: 600; }
+[data-theme="dark"] .col-tile { background: transparent; border-color: var(--border); }
+}
+
+/* ── footer (reference navy bar) ──────────────────────────────────────── */.site-footer {
+  background: var(--navy-deep); color: rgba(245, 241, 232, 0.8);
+  padding: 20px var(--gutter);
+  border-top: 1px solid rgba(245, 241, 232, 0.12);
+}
+
+.footer-inner {
+  max-width: var(--maxw); margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+}
+
+.footer-brand { display: flex; flex-direction: column; gap: 2px; }
+
+.footer-brand strong { color: var(--paper); font-size: 18px; }
+
+.footer-brand span { font-size: var(--fs-label); color: rgba(245, 241, 232, 0.62); }
+
+.footer-nav { display: flex; gap: 8px 20px; flex-wrap: wrap; }
+
+.footer-nav a {
+  display: inline-flex; align-items: center; min-height: var(--tap);
+  color: rgba(245, 241, 232, 0.8); text-decoration: none; font-size: var(--fs-body);
+}
+
+.footer-nav a:hover { color: var(--paper); text-decoration: underline; }
+
+.footer-note { width: 100%; margin: 4px 0 0; font-size: var(--fs-label); color: rgba(245, 241, 232, 0.58); line-height: 1.6; }
+
+/* policy.html uses .card-grid/.info-card; .policy-* kept as aliases */.card-grid, .policy-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+
+.info-card, .policy-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 26px 22px;
+  transition: border-color 0.18s, transform 0.18s;
+}
+
+[data-theme="dark"] .info-card, [data-theme="dark"] .policy-card { background: var(--navy-soft); }
+
+.info-card:hover, .policy-card:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+
+.info-card .card-num, .policy-card .card-num {
+  font-family: var(--font-serif); font-size: 30px; font-weight: 700;
+  color: var(--accent-2-text); line-height: 1; margin-bottom: 12px;
+}
+
+.info-card h3, .policy-card h3 { margin: 0 0 8px; font-size: 18px; }
+
+.info-card p, .policy-card p { color: var(--muted); font-size: var(--fs-body); margin: 0 0 16px; line-height: 1.65; }
+
+.policy-jump { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+
+.policy-jump a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px;
+  border: 1px solid var(--border); border-radius: 999px;
+  text-decoration: none; color: var(--text); font-size: var(--fs-label); font-weight: 600;
+}
+
+/* A headline is still a tap target when it is the only link in a row. */.col-item-title a, .news-title a { display: inline-flex; align-items: center; min-height: var(--tap); }
+
+.source-note { font-size: var(--fs-label); color: var(--muted); margin-top: 20px; }
+
+/* ── mobile tab bar (shown where the header nav is hidden, 900px down) ──── */.mobile-tabbar { display: none; }
+
+@media (max-width: 900px) {
+.mobile-tabbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+    background: var(--paper);
+    border-top: 1px solid rgba(11, 26, 46, 0.12);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+[data-theme="dark"] .mobile-tabbar { background: var(--navy-soft); border-top-color: var(--border); }
+.mobile-tabbar a {
+    display: flex; align-items: center; justify-content: center;
+    min-height: var(--tap); padding: 8px 2px;
+    font-size: var(--fs-label); font-weight: 600; line-height: 1.2;
+    text-align: center; text-decoration: none; color: var(--muted);
+    border-top: 2px solid transparent;
+  }
+.mobile-tabbar a.active { color: var(--accent-2-text); border-top-color: var(--accent-text); font-weight: 700; }
+/* The fixed bar must not cover the footer's last line. The band below the footer
+     reserves one tab stop; the bar's own hairline top border can still overlap the
+     footer's bottom padding edge by 1px, which leaves the note text ~19px clear. */body { padding-bottom: calc(var(--tap) + env(safe-area-inset-bottom, 0px)); }
+
+
+}
+
+@media (max-width: 1100px) {
+.top-nav { gap: 18px; }
+}
+
+@media (max-width: 900px) {
+.top-nav { display: none; }
+.card-grid, .policy-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+.brand-tagline { display: none; }
+.footer-inner { flex-direction: column; align-items: flex-start; gap: 14px; }
+}
+
+@media (max-width: 420px) {
+.col-tile-grid { grid-template-columns: 1fr; }
+}
+
+.ext-mark { margin-left: 2px; font-size: .9em; }
+
+/* Media lightbox: the photo enlarges above the fixed tab bar. #8723 — the
+   dialog owns the top layer and the tab bar stops painting while it is open;
+   the foot reserves one tab stop so the source line never sits under it. */.lightbox {
+  position: fixed; inset: 0; z-index: 200;
+  width: 100vw; height: 100vh; max-width: none; max-height: none;
+  margin: 0; padding: 0; border: 0; background: rgba(4, 8, 14, .96);
+}
+
+.lightbox[open] { display: flex; flex-direction: column; }
+
+.lightbox::backdrop { background: rgba(4, 8, 14, .96); }
+
+.lightbox-head {
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+  padding: 10px 14px; color: var(--ivory);
+}
+
+.lightbox-close, .lightbox-nav {
+  min-width: 44px; min-height: 44px; border: 1px solid rgba(245, 241, 232, .35);
+  border-radius: 8px; background: rgba(10, 16, 24, .55); color: var(--ivory);
+  font: inherit; font-size: 20px; cursor: pointer;
+}
+
+.lightbox-body {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 0; padding: 0 10px;
+}
+
+.lightbox-body img {
+  max-width: min(92vw, 1100px); max-height: 68vh; object-fit: contain;
+  border-radius: 8px; background: #0a1018;
+}
+
+.lightbox-foot {
+  padding: 10px 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center;
+}
+
+.lightbox-foot h2 { margin: 0 0 4px; font-family: var(--font-serif); font-size: 18px; font-weight: 700; color: var(--ivory); }
+
+.lightbox-foot a { display: inline-flex; min-height: var(--tap); align-items: center; color: var(--ivory); font-size: var(--fs-body); font-weight: 600; }
+
+/* 사진 보기 창은 테마와 무관하게 늘 검은 바탕: 키보드 초점만 밝게 고정한다. */
+.lightbox :is(button, a):focus-visible {
+  outline: 2px solid var(--outlined-control-contrast); outline-offset: 2px;
+}
+
+.lightbox-source { max-width: 720px; margin: 4px auto 6px; color: rgba(245, 241, 232, .86); font-size: var(--fs-body); line-height: 1.6; }
+
+@media (max-width: 900px) {
+body.lightbox-open .mobile-tabbar { visibility: hidden; }
+.lightbox-foot { padding-bottom: calc(var(--tap) + 16px + env(safe-area-inset-bottom, 0px)); }
+
+
+}
+
+@media (max-width: 720px) {
+.lightbox-body { gap: 4px; padding: 0 4px; }
+.lightbox-body img { max-width: calc(100vw - 112px); max-height: 60vh; }
+.lightbox-foot h2 { font-size: 16px; }
+
+
+}
+
+/* Public site feedback (#7690): footer-local, anonymous, no account fields. */.site-feedback {
+  width: 100%;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(245, 241, 232, 0.18);
+}
+
+.site-feedback-open {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 14px;
+  border: 1px solid rgba(245, 241, 232, 0.42);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--paper);
+  font: inherit;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.site-feedback-open:hover { border-color: var(--paper); background: rgba(255, 255, 255, 0.08); }
+
+.site-feedback-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  max-width: 720px;
+}
+
+.site-feedback-office { margin: 0; color: rgba(245, 241, 232, 0.72); font-size: var(--fs-label); }
+
+.site-feedback-office a { color: var(--paper); text-underline-offset: 2px; }
+
+.site-feedback-label { color: rgba(245, 241, 232, 0.86); font-size: var(--fs-label); font-weight: 700; }
+
+.site-feedback-body {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  padding: 10px 12px;
+  border: 1px solid rgba(245, 241, 232, 0.34);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--paper);
+  font: inherit;
+  font-size: var(--fs-body);
+}
+
+.site-feedback-body[aria-invalid="true"] { border: 2px solid #ffb66b; }
+
+.site-feedback-error {
+  color: #ffb66b;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.site-feedback-error[hidden] { display: none; }
+
+.site-feedback-body::placeholder { color: rgba(245, 241, 232, 0.48); }
+
+.site-feedback-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+.site-feedback-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.site-feedback-error + .site-feedback-count { margin-left: auto; }
+
+.site-feedback-count { color: rgba(245, 241, 232, 0.62); font-size: var(--fs-label); }
+
+.site-feedback-send {
+  min-height: var(--tap);
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--navy-deep);
+  font: inherit;
+  font-size: var(--fs-label);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.site-feedback-send:disabled { opacity: 0.55; cursor: default; }
+
+.site-feedback-status {
+  margin: 0;
+  min-height: 1.4em;
+  color: rgba(245, 241, 232, 0.86);
+  font-size: var(--fs-label);
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+.site-footer { padding-bottom: calc(var(--tap) + 25px + env(safe-area-inset-bottom, 0px)); }
+.site-feedback-actions { align-items: stretch; flex-direction: column; }
+.site-feedback-error + .site-feedback-count { margin-left: 0; }
+
+.site-feedback-send { width: 100%; }
+
+
+}
+
+/* #7550 동훈 3회차: a 201 receipt replaces the form with an announced notice;
+   the form comes back through its own button. Failures keep the form open. */.site-feedback-done {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+
+.site-feedback-done-text {
+  margin: 0;
+  color: rgba(245, 241, 232, 0.9);
+  font-size: var(--fs-body);
+}
+
+.site-feedback-again {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--tap); padding: 0 16px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.35); background: transparent;
+  color: var(--paper); font: inherit; font-size: var(--fs-label); font-weight: 700; cursor: pointer;
+}
+
+.site-feedback-again:hover { border-color: var(--paper); background: rgba(255, 255, 255, 0.08); }
+
+/* #7550 동훈 3회차: one search box on the first screen. A plain GET form reaches
+   the existing activity/policy search screens without scripts (formaction only
+   swaps the destination). Kept short so the mobile hero does not grow tall. */.home-search { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; max-width: 560px; }
+
+.home-search-input {
+  /* #8805 D1: 기본 최소 폭(글자 20자)이 글씨 크게에서 단추를 아랫줄로 밀었다. 0이면 단추 옆에 남는다. */
+  flex: 1 1 200px; min-width: 0; min-height: var(--tap); padding: 10px 14px;
+  border-radius: var(--radius-sm); border: 1px solid rgba(11, 26, 46, 0.22);
+  background: var(--paper); color: var(--navy-deep); font: inherit; font-size: var(--fs-body);
+}
+
+[data-theme="dark"] .home-search-input { background: transparent; border-color: var(--border); color: var(--text); }
+
+.home-search-go, .home-search-alt {
+  min-height: var(--tap); padding: 10px 16px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(11, 26, 46, 0.22); background: var(--paper);
+  color: var(--navy-deep); font: inherit; font-size: var(--fs-label); font-weight: 700; cursor: pointer;
+}
+
+[data-theme="dark"] .home-search-go, [data-theme="dark"] .home-search-alt {
+  background: transparent; border-color: var(--border); color: var(--text);
+}
+
+.home-search-go:hover { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+
+/* #8821: 어둡게의 모든 테두리형 단추·칩에 공통 고대비 색 하나만 쓴다. */
+[data-theme="dark"] :is(
+  .topbar .ghost, .detail-link, .share-btn, .btn.secondary,
+  .col-tile, .policy-jump a, .home-search-go, .home-search-alt,
+  .site-feedback-open, .site-feedback-again
+) { border-color: var(--outlined-control-contrast); }
+
+[data-media-thumb] { cursor: pointer; }
+
+
+.hero-actions .office-number, .profile-list dd a[href^="tel:"] { font-size: 20px; font-weight: 700; opacity: 1; white-space: nowrap; }
+
+.media-source { display: inline-flex; align-items: center; justify-content: center; min-width: var(--tap); min-height: var(--tap); color: var(--accent-2-text); text-decoration: none; font-weight: 700; }
+
+.media-card .media-source { position: absolute; right: 8px; bottom: 4px; }

@@ -8,6 +8,7 @@ import subprocess
 import sys
 import threading
 from pathlib import Path
+from css_source import read_site_css
 
 import pytest
 
@@ -155,7 +156,7 @@ def test_detail_actions_same_border_rounding_weight_height_and_spacing(site,them
 
 
 def test_no_new_important_and_unchanged_header_list():
-    css=(ROOT/"static"/"styles.css").read_text(encoding="utf-8")
+    css=read_site_css()
     assert css.count("!important")<=5
     source=(ROOT/"activity.html").read_text(encoding="utf-8")
     assert 'id="detailTitle" tabindex="-1"' in source
