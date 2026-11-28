@@ -178,6 +178,19 @@ def test_extracted_enrollment_owner_is_scanned_without_widening_platform(tmp_pat
     assert contract.findings() == [], "Enrolled owner routes are not platform-app allowlist entries"
 
 
+def test_extracted_oracle_mesh_owner_is_scanned_without_broadening_platform(tmp_path, monkeypatch) -> None:
+    owner = contract._read(contract.APP_FACTORY_MESH)
+    route = 'Route("/internal/claw/engine-desktop", oracle_mesh_engine_desktop_call, methods=["POST"])'
+    assert route in owner, "the real conditional Mesh registrar owns this route"
+    assert "if oracle_mesh_return_source is not None:" in owner
+    assert tuple(contract._registered_methods("/internal/claw/engine-desktop")) == ("POST",)
+    without = owner.replace(route, 'Route("/removed/mesh", oracle_mesh_engine_desktop_call, methods=["POST"])', 1)
+    assert without != owner
+    swap(monkeypatch, "APP_FACTORY_MESH", without, tmp_path)
+    assert tuple(contract._registered_methods("/internal/claw/engine-desktop")) == ()
+    assert contract.findings() == [], "Mesh is not part of the platform app route allowlist"
+
+
 def test_work_scopes_are_routing_labels_and_an_unknown_one_is_refused(tmp_path, monkeypatch) -> None:
     real = contract._read(contract.REQUEST_CONTRACT)
     assert "grants no identity, tier" in real or "not an authentication input" in real
