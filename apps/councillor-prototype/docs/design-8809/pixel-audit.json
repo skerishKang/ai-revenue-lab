@@ -1,0 +1,129 @@
+{
+  "unchanged_detail_regions": {
+    "detail-open-1440-light": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "detail-open-390-light": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "detail-link-focus-1440-light": {
+      "equal": true,
+      "difference_bounds": null
+    }
+  },
+  "other_pages": {
+    "index.html 390 light": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "index.html 390 dark": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "index.html 1440 light": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "index.html 1440 dark": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "about.html 390 light": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "about.html 390 dark": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "about.html 1440 light": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "about.html 1440 dark": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "policy.html 390 light": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "policy.html 390 dark": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "policy.html 1440 light": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "policy.html 1440 dark": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "media.html 390 light": {
+      "equal": false,
+      "difference_bounds": [
+        33,
+        214,
+        176,
+        694
+      ]
+    },
+    "media.html 390 dark": {
+      "equal": false,
+      "difference_bounds": [
+        214,
+        214,
+        357,
+        694
+      ]
+    },
+    "media.html 1440 light": {
+      "equal": false,
+      "difference_bounds": [
+        99,
+        238,
+        909,
+        718
+      ]
+    },
+    "media.html 1440 dark": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "news.html 390 light": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "news.html 390 dark": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "news.html 1440 light": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "news.html 1440 dark": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "404.html 390 light": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "404.html 390 dark": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "404.html 1440 light": {
+      "equal": true,
+      "difference_bounds": null
+    },
+    "404.html 1440 dark": {
+      "equal": true,
+      "difference_bounds": null
+    }
+  }
+}

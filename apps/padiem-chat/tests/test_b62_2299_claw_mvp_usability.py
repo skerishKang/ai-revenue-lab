@@ -282,7 +282,10 @@ def test_chat_settings_nav_not_regressed() -> None:
     assert 'id="settingsDialog"' in INDEX
     assert 'id="messageInput"' in INDEX
     assert 'id="composerForm"' in INDEX
-    assert "settingsButton.addEventListener" in APP or 'getElementById("settingsButton")' in APP
+    # Settings now owns its DOM lookup; verify the actual button listener via
+    # the existing Node behavior harness instead of requiring its source in app.js.
+    from _r5_settings_sidebar_module_harness import observations
+    assert observations()["wiredDialog"]["order"][0] == "settingsButton:click"
     assert INDEX.count("<h1") == 1
     assert 'class="claw-workspace-title" id="clawWorkspaceTitle"' in INDEX
 
