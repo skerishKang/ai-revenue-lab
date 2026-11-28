@@ -147,3 +147,79 @@ def test_response_size_is_bounded_at_engine_boundary():
         next_cursor=3,truncation_reason="response_bytes_limit")
     with pytest.raises(ToolHandlerError):
         _pc_chunk_projection(oversize,page=2,page_count=2)
+
+
+def pdf_with_blank_middle(**overrides):
+    pages = [
+        {"page": 1, "text": "FRONT"},
+        {"page": 2, "text": "", "text_missing": True},
+        {"page": 3, "text": "BACK"},
+    ]
+    result = {
+        "ok": True, "unit": "pages", "size_bytes": 1800,
+        "total_pages": 3, "page": 1, "page_count": 3,
+        "pages": pages,
+        "text": "\n\n".join(f"[page {row['page']}]\n{row['text']}" for row in pages),
+        "eof": True, "partial": False, "truncated": False,
+        "truncation_reason": None, "has_more": False,
+        "next_cursor": None, "source_complete": True,
+    }
+    result.update(overrides)
+    return json.dumps(result, ensure_ascii=False)
+
+
+def test_engine_accepts_pdf_blank_separator_with_explicit_missing_metadata():
+    result = _pc_chunk_projection(pdf_with_blank_middle(), page=1, page_count=3)
+    assert result["ok"] is True
+    assert result["pages"] == [
+        {"page": 1, "text": "FRONT"},
+        {"page": 2, "text": "", "text_missing": True},
+        {"page": 3, "text": "BACK"},
+    ]
+    assert result["has_more"] is False and result["source_complete"] is True
+
+
+@pytest.mark.parametrize("bad_middle", [
+    {"page": 2, "text": ""},
+    {"page": 2, "text": "", "text_missing": False},
+    {"page": 2, "text": "", "text_missing": 1},
+    {"page": 2, "text": " ", "text_missing": True},
+    {"page": 2, "text": "VISIBLE", "text_missing": True},
+    {"page": 2, "text": " "},
+])
+def test_engine_rejects_missing_or_untruthful_pdf_blank_metadata(bad_middle):
+    rows = [
+        {"page": 1, "text": "FRONT"},
+        bad_middle,
+        {"page": 3, "text": "BACK"},
+    ]
+    output = "\n\n".join(f"[page {row['page']}]\n{row['text']}" for row in rows)
+    with pytest.raises(ToolHandlerError):
+        _pc_chunk_projection(pdf_with_blank_middle(pages=rows, text=output),
+                             page=1, page_count=3)
+
+
+def test_engine_rejects_false_success_for_pdf_all_blank_selection():
+    rows = [
+        {"page": 1, "text": "", "text_missing": True},
+        {"page": 2, "text": "", "text_missing": True},
+        {"page": 3, "text": "", "text_missing": True},
+    ]
+    output = "\n\n".join(f"[page {row['page']}]\n" for row in rows)
+    with pytest.raises(ToolHandlerError):
+        _pc_chunk_projection(pdf_with_blank_middle(pages=rows, text=output),
+                             page=1, page_count=3)
+
+
+@pytest.mark.asyncio
+async def test_signed_chunk_preserves_empty_page_metadata_in_bounded_output(monkeypatch):
+    staged = []
+    _install_wire(monkeypatch, [pdf_with_blank_middle()], captured=staged)
+    result = await _chunk_handler()({"path": "trial.pdf", "page": 1, "page_count": 3})
+    assert result["execution_confirmed"] is True
+    assert result["page"] == 1 and result["page_count"] == 3
+    assert "pages" not in result  # Page records travel once, inside bounded output.
+    pages = json.loads(result["output"])["pages"]
+    assert pages[1] == {"page": 2, "text": "", "text_missing": True}
+    assert pages[0]["text"] == "FRONT" and pages[2]["text"] == "BACK"
+    assert staged[0]["page"] == 1 and staged[0]["page_count"] == 3

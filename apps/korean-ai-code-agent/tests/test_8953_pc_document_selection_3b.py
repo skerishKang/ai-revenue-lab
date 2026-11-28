@@ -20,6 +20,8 @@ def pdf_bytes(*labels: str, encrypt: bool = False) -> bytes:
     writer = PdfWriter()
     for label in labels:
         page = writer.add_blank_page(width=612, height=792)
+        if not label:
+            continue  # A real blank separator/back page has no content stream.
         resources = DictionaryObject()
         font = DictionaryObject()
         font[NameObject("/Type")] = NameObject("/Font")
@@ -216,3 +218,32 @@ def test_no_host_path_or_network_authority_source_contract():
     assert "import socket" not in source
     assert "os.system" not in source
     assert "MAX_SELECTION_SOURCE_BYTES = 64 * 1024 * 1024" in source
+
+
+def test_pdf_middle_blank_page_is_marked_without_losing_readable_neighbors():
+    data = pdf_bytes("FRONT_TEXT", "", "BACK_TEXT")
+    result = select_document(pdf_request(data, page=1, page_count=3))
+    assert result["ok"] is True, result
+    assert result["pages"] == [
+        {"page": 1, "text": "FRONT_TEXT"},
+        {"page": 2, "text": "", "text_missing": True},
+        {"page": 3, "text": "BACK_TEXT"},
+    ]
+    assert result["text"] == (
+        "[page 1]\nFRONT_TEXT\n\n[page 2]\n\n\n[page 3]\nBACK_TEXT"
+    )
+    assert result["page_count"] == 3 and result["total_pages"] == 3
+    assert result["eof"] is True and result["has_more"] is False
+    assert result["truncated"] is False and result["source_complete"] is True
+    assert len(json.dumps(result, ensure_ascii=False).encode()) <= MAX_SELECTION_REPORT_BYTES
+    # Selecting only the blank page has no extractable text in its selection.
+    assert select_document(pdf_request(data, page=2, page_count=1)) == {
+        "ok": False, "error": "ocr_required"
+    }
+
+
+def test_pdf_all_three_selected_pages_blank_is_ocr_required():
+    data = pdf_bytes("", "", "")
+    assert select_document(pdf_request(data, page=1, page_count=3)) == {
+        "ok": False, "error": "ocr_required"
+    }

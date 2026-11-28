@@ -32,6 +32,8 @@ def pdf_bytes(*texts: str, encrypt=False):
     writer=PdfWriter()
     for text in texts:
         page=writer.add_blank_page(width=612,height=792)
+        if not text:
+            continue  # Real blank page: no PDF content stream.
         font=DictionaryObject({NameObject("/Type"):NameObject("/Font"),
               NameObject("/Subtype"):NameObject("/Type1"),
               NameObject("/BaseFont"):NameObject("/Helvetica")})
@@ -187,3 +189,26 @@ def test_reject_unbounded_or_mixed_selectors_before_any_pc_script():
         with pytest.raises(ValueError):
             pc_read_chunk_command(root="C:/trial",relative="trial.pdf" if "page" in selector
                                   else "trial.xlsx",**selector)
+
+
+@pytest.mark.skipif(not POWERSHELL, reason="Windows PowerShell required")
+def test_pdf_middle_blank_page_survives_real_pc_child_roundtrip(tmp_path):
+    content = pdf_bytes("PAGE_ONE", "", "PAGE_THREE")
+    result = run_pc(tmp_path, "trial.pdf", content, {"page": 1, "page_count": 3})
+    assert result["ok"] is True, result
+    assert result["pages"] == [
+        {"page": 1, "text": "PAGE_ONE"},
+        {"page": 2, "text": "", "text_missing": True},
+        {"page": 3, "text": "PAGE_THREE"},
+    ]
+    assert result["next_cursor"] is None and result["eof"] is True
+    assert result["source_complete"] is True
+    assert (tmp_path / "trial.pdf").read_bytes() == content
+
+
+@pytest.mark.skipif(not POWERSHELL, reason="Windows PowerShell required")
+def test_pdf_all_blank_pages_real_pc_child_refuses_ocr_required(tmp_path):
+    content = pdf_bytes("", "", "")
+    result = run_pc(tmp_path, "trial.pdf", content, {"page": 1, "page_count": 3})
+    assert result == {"ok": False, "error": "ocr_required"}
+    assert (tmp_path / "trial.pdf").read_bytes() == content

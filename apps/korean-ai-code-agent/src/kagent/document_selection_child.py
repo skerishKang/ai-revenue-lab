@@ -71,15 +71,24 @@ def _pdf_selection(payload: bytes, *, start: int, count: int) -> dict:
         if start > total:
             raise SelectionRefusal("page_out_of_range")
         end = min(total, start + count - 1)
-        entries: list[dict] = []
+        selected: list[dict] = []
         for page_no in range(start, end + 1):
             try:
                 body = (reader.pages[page_no - 1].extract_text() or "").strip()
             except Exception:
                 raise SelectionRefusal("invalid_document") from None
-            if not body:
-                raise SelectionRefusal("ocr_required")
-            candidate = entries + [{"page": page_no, "text": body}]
+            # A blank separator/back page is valid in a document that has
+            # readable pages. Do not lose the original page position.
+            selected.append(
+                {"page": page_no, "text": body} if body else
+                {"page": page_no, "text": "", "text_missing": True}
+            )
+        if not any(row["text"] for row in selected):
+            raise SelectionRefusal("ocr_required")
+        entries: list[dict] = []
+        for row in selected:
+            page_no = row["page"]
+            candidate = entries + [row]
             more = page_no < total
             text = "\n\n".join(f"[page {p['page']}]\n{p['text']}" for p in candidate)
             item = {

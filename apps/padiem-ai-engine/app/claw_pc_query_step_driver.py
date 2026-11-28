@@ -1936,11 +1936,17 @@ def _pc_chunk_projection(
             if (type(total) is not int or total < page or not isinstance(entries, list)
                     or not 1 <= len(entries) <= page_count
                     or parsed.get("page") != page or parsed.get("page_count") != len(entries)
-                    or any(not isinstance(row, dict) or set(row) != {"page", "text"}
-                           or type(row["page"]) is not int or row["page"] != page + i
-                           or row["page"] > total or not isinstance(row["text"], str)
-                           or not row["text"].strip()
-                           for i, row in enumerate(entries))):
+                    or any(not isinstance(row, dict)
+                           or set(row) not in ({"page", "text"},
+                                               {"page", "text", "text_missing"})
+                           or type(row.get("page")) is not int or row["page"] != page + i
+                           or row["page"] > total or not isinstance(row.get("text"), str)
+                           or (set(row) == {"page", "text"} and not row["text"].strip())
+                           or (set(row) == {"page", "text", "text_missing"}
+                               and (row["text"] != "" or row["text_missing"] is not True))
+                           for i, row in enumerate(entries))
+                    or (len(entries) == min(total - page + 1, page_count)
+                        and not any(row["text"].strip() for row in entries))):
                 raise ToolHandlerError("pc_chunk_output_invalid", "Untrusted PDF page metadata")
             last = page + len(entries) - 1
             has_more = last < total
