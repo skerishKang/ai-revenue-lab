@@ -82,7 +82,10 @@ async def test_quota_contextvar_survives_gate_and_caller_await_in_same_task(
     _clear_reservation()
     try:
         response, bundle = await claw_general_routes._claw_general_quota_gate(
-            SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace())),
+            SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+                settings=SimpleNamespace(auth_mode="off"),
+                history_store=None,
+            ))),
             {}, "ordinary fixture text",
             conversation_id="fixture-conversation" if existing_conversation else None,
             subject_id="fixture-subject",
