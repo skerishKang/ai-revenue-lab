@@ -1,18 +1,4 @@
 /* #7839 — 북AI 사이트 의견 창구. 색 리터럴·중요도 추가 없음. */
-.bookai-feedback-open {
-  position: fixed;
-  right: 12px;
-  bottom: 12px;
-  z-index: 60;
-  min-height: 44px;
-  padding: 0 12px;
-  border: 1px solid currentColor;
-  border-radius: 10px;
-  background: Canvas;
-  color: CanvasText;
-  font: 600 12px/1.4 var(--sans, Arial, sans-serif);
-  cursor: pointer;
-}
 .bookai-feedback-dialog {
   width: min(100% - 24px, 420px);
   max-height: min(80vh, 600px);
@@ -52,10 +38,23 @@
 .bookai-feedback-status { min-height: 1.5em; margin: 0; }
 .bookai-feedback-dialog label { display: block; }
 .bookai-feedback-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-body.ai-open .bookai-feedback-open,
-body.memory-open .bookai-feedback-open { display: none; }
-@media (max-width: 768px) {
-  .bookai-feedback-open { right: 8px; bottom: 8px; max-width: calc(100% - 16px); }
-  body.reader-mode .bookai-feedback-open { bottom: 128px; }
-  .bookai-feedback-dialog { width: calc(100% - 16px); padding: 10px; }
+#bookaiFeedbackOpen[hidden] { display: none; }
+#libOverflowMenu .bookai-feedback-menu-item {
+  width:100%;min-height:44px;text-align:left;padding:10px 12px;
+  border:0;border-top:1px solid var(--line);background:transparent;
+  color:var(--ink);font:600 13px/1.4 var(--sm-body-ko);
+}
+#libOverflowMenu .bookai-feedback-menu-item:hover { background:var(--sm-rail-bg,#f7f3ec); }
+.bookai-today-overflow { position:relative;display:inline-flex;z-index:62; }
+#bookaiTodayOverflow { min-width:44px;min-height:44px;background:transparent;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-size:24px;cursor:pointer; }
+.bookai-today-overflow-menu {
+  position:absolute;top:calc(100% + 6px);right:0;min-width:164px;
+  display:none;padding:5px;border-radius:10px;border:1px solid var(--line);
+  background:var(--sm-rail-bg,#f7f3ec);box-shadow:0 9px 25px rgba(0,0,0,.18);
+}
+.bookai-today-overflow.open .bookai-today-overflow-menu { display:block; }
+.bookai-today-overflow-menu .bookai-feedback-menu-item { width:100%;min-height:44px;border:0;background:transparent;color:var(--sm-rail-ink,#36302b);text-align:left;padding:9px 12px;font:600 13px/1.4 var(--sm-body-ko);cursor:pointer; }
+.bookai-feedback-menu-item:focus-visible,#bookaiTodayOverflow:focus-visible { outline:2px solid var(--accent);outline-offset:2px; }
+@media (max-width:768px) {
+  .bookai-feedback-dialog { width:calc(100% - 16px);padding:10px; }
 }

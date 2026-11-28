@@ -21,3 +21,16 @@
 .paper-stack{width:100%!important;height:100%!important}
 .v2-chapter-chip{margin-left:10px}
 }
+
+/* #8779: 큰 화면에서도 390과 같은 절 번호 흐름을 유지한다. */
+@media(min-width:769px){
+  #reader #readerPageBody .vn { margin-left:0; padding-right:7px; text-align:left; }
+}
+/* #8779: 제목/검색 줄 끝과 본문 열 끝을 맞춘다(36.2em×18px). */
+@media(min-width:1181px){
+  #reader .paper-head { width:696px; max-width:100%; margin-left:0; margin-right:auto; }
+}
+/* 상태를 뜻하지 않는 짧은 주황 장식선을 읽기 화면에서 제거한다. */
+#reader .paper-rule-ornament { display:none; }
+#reader .paper-head::after { content:none; }
+#reader .v2-chapter-chip::after { content:none; }

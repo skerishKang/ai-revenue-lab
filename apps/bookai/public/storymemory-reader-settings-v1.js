@@ -275,9 +275,18 @@
       if(!(bk&&er&&un&&ai)){if(++smOvTries<20)setTimeout(smOvAdopt,50);return;}
       smOvRow(bk,'🔖','책갈피');smOvRow(er,'🧽','지우개 모드');
       smOvRow(un,'↶','실행 취소');smOvRow(ai,'✦','AI 도우미');
-      ovMenu.append(bk,er,un,gear,ai);
+      ovMenu.append(bk,er,un,gear,ai,feedback);
       ovMenu.dataset.done='1';
     }
+    var feedback=document.createElement('button');
+    feedback.type='button';feedback.className='bookai-feedback-menu-item';
+    smOvRow(feedback,'✉','의견 보내기');
+    feedback.addEventListener('click',function(){
+      smOvClose(false);
+      var trigger=document.getElementById('bookaiFeedbackOpen');
+      if(trigger)trigger.click();
+    });
+    ovMenu.append(feedback);
     setTimeout(smOvAdopt,0);
     stage.appendChild(ovBtn);stage.appendChild(ovMenu);stage.appendChild(panel);
     syncPanel();

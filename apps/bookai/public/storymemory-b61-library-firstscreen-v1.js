@@ -69,10 +69,20 @@
     var retries=0;
     var waitOrder=setInterval(function(){
       var el=document.getElementById('libraryOrderToggle');
-      if(el){clearInterval(waitOrder);menu.append(orderLabel,el);}
+      if(el){clearInterval(waitOrder);menu.insertBefore(orderLabel,feedback);menu.insertBefore(el,feedback);}
       else if(++retries>40)clearInterval(waitOrder);
     },100);
   }
+
+  var feedback=document.createElement('button');
+  feedback.type='button';feedback.className='bookai-feedback-menu-item';
+  feedback.textContent='의견 보내기';
+  feedback.addEventListener('click',function(){
+    closeMenu();
+    var trigger=document.getElementById('bookaiFeedbackOpen');
+    if(trigger)trigger.click();
+  });
+  menu.append(feedback);
 
   /* 2. Selected-book CTA label follows reading state: NEW / READING / FINISHED. */
   function labelCta(){
