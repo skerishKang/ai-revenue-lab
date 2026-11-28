@@ -487,8 +487,21 @@
   });
   // The card follows the shared state, and asking for a re-read only
   // triggers the EXISTING directory control.
-  window.addEventListener("padiem:computer-connection", () => {
-    refreshComputerConnectionState();
+  window.addEventListener("padiem:computer-connection", (event) => {
+    // PadiemComputerConnectionState.current() publishes this very event.
+    // Never call it from its own listener: use the received detail and the
+    // already-read pairing snapshot instead, without another publish cycle.
+    const pairing = window.PadiemPcConnectFlow?.current?.();
+    if (pairing?.read === "ok" && typeof pairing.state === "string") {
+      renderComputerState(pairing.state);
+    } else if (pairing?.read === "unavailable" || pairing?.read === "not_ready") {
+      renderComputerState(pairing.read === "not_ready" ? "preparing" : "unavailable");
+    } else if (pcReadExpired) {
+      renderComputerState("unavailable");
+    } else {
+      const detail = event?.detail;
+      renderComputerState(detail && typeof detail.state === "string" ? detail.state : "connecting");
+    }
   });
   deviceStatus?.addEventListener("click", () => {
     if (!connectorsSurfaceOpen() && !isClawHome()) return;

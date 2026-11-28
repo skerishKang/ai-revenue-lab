@@ -21,9 +21,16 @@ def _run(mode: str) -> dict:
 const fs = require("fs");
 const vm = require("vm");
 const handlers = {};
+let connectionEventCount = 0;
+let currentReadCount = 0;
+let paintCount = 0;
 global.window = globalThis;
 window.addEventListener = (name, callback) => (handlers[name] ??= []).push(callback);
-window.dispatchEvent = (event) => { for(const listener of handlers[event.type] || []) listener(event); };
+window.dispatchEvent = (event) => {
+ if (event.type === "padiem:computer-connection" && ++connectionEventCount > 3)
+   throw new Error("recursive computer-connection event dispatch");
+ for(const listener of handlers[event.type] || []) listener(event);
+};
 const element = (props = {}) => ({
   dataset:{}, hidden:false, textContent:"", listeners:{}, ...props,
   addEventListener(event, fn) { (this.listeners[event] ??= []).push(fn); },
@@ -38,6 +45,11 @@ const staticLine = element({hidden:false});
 const card = element({dataset:{connectorStatus:"preparing"}});
 card.querySelector = name => name === ".capability-read" ? staticLine : null;
 const cardText = element({textContent:"확인 중…",hidden:true});
+let textValue = cardText.textContent;
+Object.defineProperty(cardText, "textContent", {
+ get: () => textValue,
+ set: value => { textValue = value; paintCount += 1; },
+});
 const nodes = {
  connectorsNavButton:opener, connectorsDialog:dialog,
  connectorsView:view, connectorComputerCard:card,
@@ -70,6 +82,16 @@ vm.runInThisContext(fs.readFileSync(HOME, "utf8"),{filename:"claw-home-choices.j
 if (MODE === "connected") {
  window.dispatchEvent({type:"padiem:pc-pairing-state",detail:{read:"ok",state:"connected"}});
  window.dispatchEvent({type:"padiem:computer-connection",detail:{state:"connecting"}});
+} else if (MODE === "one-event") {
+ // The original bug was a publish-on-read API called INSIDE its own event
+ // listener. A single injected event must never read that republishing API.
+ pair.read="idle";pair.state="connecting";
+ window.PadiemComputerConnectionState.current = () => {
+   currentReadCount += 1;
+   window.dispatchEvent({type:"padiem:computer-connection",detail:{state:"connected"}});
+   return {state:"connected"};
+ };
+ window.dispatchEvent({type:"padiem:computer-connection",detail:{state:"connected"}});
 } else {
  pair.read="idle";pair.state="connecting";
  observe(); // The Connectors view opened.
@@ -79,7 +101,8 @@ if (MODE === "connected") {
 }
 console.log(JSON.stringify({
  state:card.dataset.connectorStatus,text:cardText.textContent,
- hidden:cardText.hidden,staticHidden:staticLine.hidden
+ hidden:cardText.hidden,staticHidden:staticLine.hidden,
+ connectionEventCount,currentReadCount,paintCount
 }));
 """
     script = "const HOME=" + json.dumps(str(HOME)) + ";const MODE=" + json.dumps(mode) + ";\n" + script
@@ -92,7 +115,7 @@ console.log(JSON.stringify({
 
 def test_connected_pairing_stays_connected_when_directory_is_still_checking() -> None:
     result = _run("connected")
-    assert result == {
+    assert {key: result[key] for key in ("state", "text", "hidden", "staticHidden")} == {
         "state": "connected", "text": "● 연결됨",
         "hidden": False, "staticHidden": True,
     }
@@ -100,7 +123,16 @@ def test_connected_pairing_stays_connected_when_directory_is_still_checking() ->
 
 def test_pc_status_timeout_never_stays_at_checking() -> None:
     result = _run("timeout")
-    assert result == {
+    assert {key: result[key] for key in ("state", "text", "hidden", "staticHidden")} == {
         "state": "unavailable", "text": "확인 실패 · 다시 시도",
         "hidden": False, "staticHidden": True,
     }
+
+
+def test_computer_connection_event_is_handled_once_without_republish() -> None:
+    result = _run("one-event")
+    assert result["state"] == "connected"
+    assert result["text"] == "● 연결됨"
+    assert result["connectionEventCount"] == 1
+    assert result["currentReadCount"] == 0
+    assert result["paintCount"] == 1

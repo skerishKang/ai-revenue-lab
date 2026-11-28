@@ -932,8 +932,8 @@ def _shipped_connector_connector_ids() -> set[str]:
     ids = set(re.findall(r'data-connector-id="([^"]+)"', dialog))
     return {connector_id for connector_id in ids if connector_id}
 
-# #8948: a normal no-record connector must not become a connection-read failure.
-def test_8948_telegram_slack_without_connection_record_are_disconnected() -> None:
+# #8950 CTO: no-trusted-projection is NOT evidence of no connection.
+def test_8948_telegram_slack_unknown_truth_is_preparing_not_disconnected() -> None:
     body = r"""
 const ids = ["connector:telegram:bot@1", "connector:slack:workspace@1",
              "connector:google:drive@1"];
@@ -948,20 +948,21 @@ mod.renderConnectorStatus({
      workspace_reason:"no_trusted_b62_workspace_state_projection"},
     {connector_id: ids[1], workspace_state:"unverified", read_availability:"deferred",
      workspace_reason:"no_trusted_b62_workspace_state_projection"},
-    // A different kind of unverified row is NOT proof of never-connected.
+    // A different unverified reason remains a check failure in the tile.
     {connector_id: ids[2], workspace_state:"unverified", read_availability:"complete",
      workspace_reason:"canonical_identity_service_unavailable"},
   ],
 });
 console.log(JSON.stringify(cards.map(c => ({
-  state:c.dataset.connectorStatus, workspace:c.workspaceEl.textContent
+  state:c.dataset.connectorStatus, workspace:c.workspaceEl.textContent,
+  display:c.dataset.connectorDisplay || null
 }))));
 """
     result = _run_connector_node_script(body)
     assert result == [
-        {"state": "not_connected", "workspace": "connectors-workspace-not-connected"},
-        {"state": "not_connected", "workspace": "connectors-workspace-not-connected"},
-        {"state": "unverified", "workspace": "connectors-workspace-unverified"},
+        {"state": "unverified", "workspace": "connectors-workspace-unverified", "display": "unverified"},
+        {"state": "unverified", "workspace": "connectors-workspace-unverified", "display": "unverified"},
+        {"state": "unverified", "workspace": "connectors-workspace-unverified", "display": None},
     ]
 
 

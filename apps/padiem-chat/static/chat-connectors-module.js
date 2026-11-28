@@ -230,6 +230,7 @@
 
       function setConnectorCardsLoading() {
         liveConnectorCards().forEach((card) => {
+          delete card.dataset.connectorDisplay;
           card.dataset.connectorStatus = "loading";
           setConnectorCopy(card.querySelector("[data-connector-support]"), "connectors-status-loading");
           setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-loading");
@@ -241,6 +242,7 @@
 
       function setConnectorCardsUnavailable() {
         liveConnectorCards().forEach((card) => {
+          delete card.dataset.connectorDisplay;
           card.dataset.connectorStatus = "unavailable";
           const keys = connectorUnavailableCopyKeys(card.dataset.connectorId);
           setConnectorCopy(card.querySelector("[data-connector-support]"), keys.support);
@@ -265,24 +267,25 @@
           const connectorId = card.dataset.connectorId;
           const row = rows.get(connectorId);
           if (!row) {
+            delete card.dataset.connectorDisplay;
             card.dataset.connectorStatus = "unavailable";
             setConnectorCopy(card.querySelector("[data-connector-support]"), "connectors-status-unavailable");
             setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-unavailable");
             return;
           }
           const supportKey = connectorSupportKey(row.read_availability);
-          // Telegram/Slack have no Connectors connect action or trusted
-          // workspace reader today. On the explicit no-trusted-projection
-          // reason they have no connection record in this surface: do not
-          // mistake that normal never-connected state for a failed check.
-          // All other unverified reasons still fail closed.
-          const neverConnected = deps.authState.authenticated &&
+          // #8948: no trusted Telegram/Slack status reader is NOT proof of
+          // never connected. Keep server state "unverified" and let the tile
+          // show the existing "준비 중" copy only for this closed reason.
+          // Other unverified reasons remain check failures in the tile.
+          const noTrustedProjection =
             (connectorId === "connector:telegram:bot@1" || connectorId === "connector:slack:workspace@1") &&
             row.workspace_state === "unverified" &&
             row.workspace_reason === "no_trusted_b62_workspace_state_projection";
-          const workspaceState = neverConnected ? "not_connected" : row.workspace_state;
-          const workspaceKey = connectorWorkspaceKey(workspaceState);
-          card.dataset.connectorStatus = String(workspaceState || "unverified");
+          if (noTrustedProjection) card.dataset.connectorDisplay = "unverified";
+          else delete card.dataset.connectorDisplay;
+          const workspaceKey = connectorWorkspaceKey(row.workspace_state);
+          card.dataset.connectorStatus = String(row.workspace_state || "unverified");
           setConnectorCopy(card.querySelector("[data-connector-support]"), supportKey);
           setConnectorCopy(card.querySelector("[data-connector-workspace]"), workspaceKey);
         });
