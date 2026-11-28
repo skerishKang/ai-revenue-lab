@@ -516,38 +516,10 @@ from .app_factory_routes_auth import (
 )
 
 
-def register_connector_routes(routes: list) -> None:
-    routes.extend([
-        Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
-        Route(MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session, methods=["POST"]),
-        Route(MEETINGS_PATH, claw_meetings, methods=["GET", "POST"]),
-        Route(MEETING_PATH, claw_meeting_detail, methods=["GET", "PATCH", "DELETE"]),
-        Route(MEETING_END_PATH, claw_meeting_end, methods=["POST"]),
-        Route(MEETING_ARTIFACT_PATH, claw_meeting_artifact, methods=["POST"]),
-        Route(MEETING_ACTIONS_PATH, claw_meeting_action_create, methods=["POST"]),
-        Route(MEETING_ACTION_PATH, claw_meeting_action, methods=["PATCH", "DELETE"]),
-        Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
-        Route("/api/connectors/status", connectors_status, methods=["GET"]),
-        Route("/api/connectors/google/drive/disconnect", disconnect_google_drive, methods=["POST"]),
-        Route("/api/connectors/google/gmail/disconnect", disconnect_gmail, methods=["POST"]),
-        Route(
-            "/api/connectors/google/calendar/disconnect",
-            disconnect_google_calendar,
-            methods=["POST"],
-        ),
-        Route("/api/b66/drive/status", b66_drive_status, methods=["GET"]),
-        Route("/api/b66/drive/connect", b66_drive_connect, methods=["POST"]),
-        Route("/api/b66/drive/connect/callback", b66_drive_connect_callback_return, methods=["GET"]),
-        Route("/api/b66/drive/disconnect", b66_drive_disconnect, methods=["POST"]),
-        Route("/api/connectors/github/start", github_start, methods=["GET"]),
-        Route("/api/connectors/github/callback", github_callback, methods=["GET"]),
-        Route("/api/connectors/github/status", github_status, methods=["GET"]),
-        Route("/api/connectors/github/installations", github_installation_settings, methods=["GET"]),
-        Route("/api/connectors/github/repositories", github_repositories, methods=["GET"]),
-        Route("/api/connectors/github/disconnect", github_disconnect, methods=["POST"]),
-        Route("/api/connectors/github/pause", github_pause, methods=["POST"]),
-        Route("/api/connectors/github/resume", github_resume, methods=["POST"]),
-    ])
+from .app_factory_routes_connectors import (
+    register_connector_routes,
+)
+
 
 def register_project_document_routes(routes: list) -> None:
     routes.extend([
