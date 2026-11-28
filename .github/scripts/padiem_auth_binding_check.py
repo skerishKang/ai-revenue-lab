@@ -63,6 +63,14 @@ def verify(settings, baseline):
             raise ValueError('duplicate binding name')
         return sorted(pairs)
     if metadata(settings['result'].get('bindings')) != metadata(baseline.get('bindings'), True):
+        # #8906: 이름·종류 차이만 출력한다. 값·목적지·비밀값은 이 함수가
+        # 애초에 읽지 않으므로 출력될 수 없다. 판정 자체는 그대로 실패다.
+        live_pairs = set(metadata(settings['result'].get('bindings')))
+        baseline_pairs = set(metadata(baseline.get('bindings'), True))
+        for name, kind in sorted(live_pairs - baseline_pairs):
+            print(f'binding only in live: {name} ({kind})', file=sys.stderr)
+        for name, kind in sorted(baseline_pairs - live_pairs):
+            print(f'binding only in baseline: {name} ({kind})', file=sys.stderr)
         raise ValueError('binding metadata mismatch')
     return True
 
