@@ -36,6 +36,7 @@ FACTORY_MODULES: tuple[str, ...] = (
     "app_factory_routes_static",
     "app_factory_routes_enrollment",
     "app_factory_routes_mesh",
+    "app_factory_routes_shared_auth_comparison",
 )
 
 # A single owner/area per future PR, not a requirement to reach 300 lines.
@@ -56,6 +57,7 @@ SPLIT_PLAN: tuple[str, ...] = (
     "app_factory_routes_static",
     "app_factory_routes_enrollment",
     "app_factory_routes_mesh",
+    "app_factory_routes_shared_auth_comparison",
     "app_factory_routes_shared",
     "app_factory_route_catalog",
     "app_factory_middleware",
