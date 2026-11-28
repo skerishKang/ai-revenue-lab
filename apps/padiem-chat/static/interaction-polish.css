@@ -112,6 +112,8 @@
  * owns the hard 180px ceiling. */
 .composer textarea {
   overflow-y: hidden;
+  /* #8954-5: Ctrl+Home must not scroll past the first line's existing top padding. */
+  scroll-padding-top: 14px;
 }
 
 @media (max-width: 920px) {
