@@ -435,7 +435,19 @@
           checking: t.starterChecking,
           failed: t.starterFailed,
         }[shown];
-        line.textContent = vocabStatus(shown, fallback);
+        const statusText = vocabStatus(shown, fallback);
+        if (shown === "connected" && statusText.startsWith("●")) {
+          // #8954-9: the dot alone shares the composer's existing success role.
+          const mark = element("span", "", statusText.slice(0, 1));
+          mark.dataset.connectedDot = "true";
+          mark.style.color = "var(--success)";
+          mark.style.display = "inline";
+          const copy = element("span", "", statusText.slice(1));
+          copy.style.display = "inline";
+          line.replaceChildren(mark, copy);
+        } else {
+          line.textContent = statusText;
+        }
       }
     }
   }
