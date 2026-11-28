@@ -24,6 +24,10 @@ from collections.abc import Mapping
 from typing import Any
 
 from .pc_dispatch_ttl import chat_pc_dispatch_ttl
+from .claw_general_pc_intent import (
+    _requested_local_command,
+    _requested_natural_pc_query,
+)
 
 PENDING_ANSWER = (
     "연결된 PC에서 명령을 실행하는 중입니다. 실제 출력은 작업이 끝난 뒤 이 대화에 "
@@ -43,17 +47,12 @@ def chat_pc_command_for_turn(user_text: Any) -> str | None:
     """The one command this turn's own words authorize, or None.
 
     Both rules are Claw's own (#4139): the explicit backtick command and the
-    bounded natural PC-state query. Imported lazily so importing this module
-    never pulls the Claw route surface into a narrower caller.
+    bounded natural PC-state query. Import their narrow owner module directly
+    without importing the full Claw route facade.
     """
 
     if not isinstance(user_text, str) or not user_text.strip():
         return None
-    from .claw_general_routes import (
-        _requested_local_command,
-        _requested_natural_pc_query,
-    )
-
     explicit, command = _requested_local_command(user_text)
     if explicit and isinstance(command, str) and command:
         return command
@@ -160,8 +159,7 @@ async def resolve_confirmed_pc_command(
 
 
 def _match_command(user_text: str) -> tuple[bool, str | None]:
-    """The lane matcher, resolved lazily to avoid an import cycle."""
-    from .claw_general_routes import _requested_local_command
+    """The lane matcher, using the shared Claw PC intent owner."""
 
     return _requested_local_command(user_text)
 

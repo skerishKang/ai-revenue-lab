@@ -11,10 +11,12 @@ Preserve real authorization, Free/Plus/Pro/Max eligibility, admin model authoriz
 
 ## Confirmed historical limits — inspect active callers and latest main
 
+2026-11-28 #7809 파일 분리 후 Claw 선언의 **현재 소유 파일·줄 번호**만 아래 표에 반영했다. `claw_general_routes.py:441-737`는 `claw_general_execute` 진입점이며 한도 선언은 재내보낸다. 한도 제거 여부의 과거 근거·정책은 변경하지 않았다.
+
 | Layer | Source / example | Historical bound |
 | --- | --- | --- |
-| Claw HTTP | `apps/padiem-chat/app/claw_general_routes.py` | `MAX_CLAW_GENERAL_BODY_BYTES=6_000_000` — **already removed on main** (now `int | None = None`) |
-| Claw → Engine context | same file | `P01_ENGINE_REQUEST_ENVELOPE_BYTES=5_500_000` — **already removed on main** (now `int | None = None`) |
+| Claw HTTP | `apps/padiem-chat/app/claw_general_contract.py:13` | `MAX_CLAW_GENERAL_BODY_BYTES=6_000_000` — **already removed on main** (now `int | None = None`) |
+| Claw → Engine context | `apps/padiem-chat/app/claw_general_contract.py:19` | `P01_ENGINE_REQUEST_ENVELOPE_BYTES=5_500_000` — **already removed on main** (now `int | None = None`) |
 | B14 completed response | `packages/padiem-ai-core/padiem_ai_core/b14_execution.py` (also imported by `apps/padiem-ai-engine/app/cloudflare_transport.py`) | `MAX_B14_RESPONSE_BYTES=1_048_576` (runtime hard safety ceiling) |
 | B14 configured completed maximum | same file | `MAX_CONFIGURED_B14_RESPONSE_BYTES=8_388_608` (configured cap) |
 | Core tool request | `packages/padiem-ai-core/padiem_ai_core/tool_runtime.py` | `MAX_TOOL_ARGUMENT_BYTES=65_536` |

@@ -3,6 +3,7 @@
 > 범위: `skerishKang/ai-revenue-lab`의 B14, B62 파디엠 챗, B66 견적, Claw/P01, B54 파디엠 엔진, shared Core.
 > **판정:** 완료된 B62/B66 소스 수정은 이미 운영 반영. **엔진은 기존 정상 버전으로 복구돼 있으나 새 Core 릴리스 미반영**. 전체 제한 정비 **진행 중**, 통합 이슈 [#4379](https://github.com/skerishKang/ai-revenue-lab/issues/4379) **OPEN**.
 > 이 문서는 시점 증적(스냅샷)이다. 이후 배포/PR이 일어나면 실제 served version을 다시 읽어 확인한다. 어떤 비밀값도 포함하지 않는다.
+> **2026-11-28 소스 위치만 후속 갱신(#7809):** 아래 과거 `claw_general_routes.py` 경로의 Claw 한도 선언은 현재 `apps/padiem-chat/app/claw_general_contract.py:13`(`MAX_CLAW_GENERAL_BODY_BYTES`) 및 `:19`(`P01_ENGINE_REQUEST_ENVELOPE_BYTES`)에 있고 진입점에서 재내보냅니다. 2026-10-12 운영 판정·용량 정책은 이 주석으로 갱신하지 않습니다.
 
 ## 최신 운영 갱신 — 2026-10-12 KST (이전 스냅샷의 P0/P1 상태를 대체)
 
