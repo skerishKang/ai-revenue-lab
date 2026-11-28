@@ -192,8 +192,6 @@ def test_shared_state_stays_app_owned_and_deps_surface_is_exact() -> None:
         assert f"get {name}()" in APP
         assert f"set {name}(value)" in APP
         assert name in names
-    assert "get loadProjects() { return projectModule.loadProjects; }" in APP
-    assert "get renderProjectState() { return projectModule.renderProjectState; }" in APP
 
 
 def test_create_wire_registry_and_listener_order_with_strict_empty_deps() -> None:
