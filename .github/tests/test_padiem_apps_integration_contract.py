@@ -129,6 +129,22 @@ def test_extracted_calendar_route_scanner_reads_real_owner(tmp_path, monkeypatch
     assert contract.findings() == [], "Calendar does not change the platform allowlist"
 
 
+def test_extracted_pc_source_owner_is_scanned_without_widening_platform(tmp_path, monkeypatch) -> None:
+    owner = contract._read(contract.APP_FACTORY_PC)
+    assert 'Route(PC_PAIRING_PATH, pc_pairing_issue, methods=["POST"])' in owner
+    assert 'Route(PC_FILE_PATH, pc_file_exchange_file, methods=["GET"])' in owner
+    # PC routes use named path constants. A synthetic literal probes the same
+    # source scanner without changing product routes or broadening allowlists.
+    path = "/__pc_source_owner_probe__"
+    literal = 'Route("/__pc_source_owner_probe__", pc_pairing_issue, methods=["POST"])'
+    assert literal not in owner
+    swap(monkeypatch, "APP_FACTORY_PC", owner + "\n" + literal + "\n", tmp_path)
+    assert tuple(contract._registered_methods(path)) == ("POST",)
+    swap(monkeypatch, "APP_FACTORY_PC", owner, tmp_path)
+    assert tuple(contract._registered_methods(path)) == ()
+    assert contract.findings() == [], "PC routes are not platform-app allowlist entries"
+
+
 def test_work_scopes_are_routing_labels_and_an_unknown_one_is_refused(tmp_path, monkeypatch) -> None:
     real = contract._read(contract.REQUEST_CONTRACT)
     assert "grants no identity, tier" in real or "not an authentication input" in real
