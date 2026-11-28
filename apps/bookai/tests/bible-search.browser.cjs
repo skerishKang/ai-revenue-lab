@@ -53,7 +53,7 @@ fs.mkdirSync(path.dirname(screenshotPath),{recursive:true});
       progress:Object.fromEntries(Array.from({length:BookAIStorage.length},(_,i)=>BookAIStorage.key(i)).filter(k=>k&&k.startsWith('storymemory.readerProgress.')).map(k=>[k,BookAIStorage.getItem(k)])),
       reading:BookAIStorage.getItem('storymemory.readingProgress.v1')
     }));
-    assert.equal(await page.locator('#memorySearchInput').getAttribute('aria-label'),'Memory 검색');
+    assert.equal(await page.locator('#memorySearchInput').getAttribute('aria-label'),'기억 검색');
     async function openSearchPanel(){if(!(await panel.evaluate(el=>el.open)))await panel.locator('summary').click()}
 
     async function runRef(query,locator){
@@ -146,7 +146,7 @@ fs.mkdirSync(path.dirname(screenshotPath),{recursive:true});
     await page.unroute(indexPattern,failOnce);
     await page.locator('#bibleSearchRetry').click();
     await page.waitForFunction(()=>/개 결과 중/.test(document.querySelector('#bibleSearchStatus')?.textContent||''),null,{timeout:180000});
-    assert.match(await page.locator('#bibleSearchResults .bible-search-result').first().locator('strong').innerText(),/창세기 1장 1절/);
+    assert.match(await page.locator('#bibleSearchResults .bible-search-result').first().locator(':scope > strong').innerText(),/창세기 1장 1절/);
     const uniqueShards=new Set(indexRequests.filter(url=>/\/shard-\d+\.json$/.test(url)).map(url=>url.match(/shard-\d+\.json$/)[0]));
     assert.equal(uniqueShards.size,12,'a complete text search must load the 12 generated index shards');
     assert.ok(indexRequests.length<20,'search must fetch index shards, not the 1,189 chapter files');
@@ -181,7 +181,7 @@ fs.mkdirSync(path.dirname(screenshotPath),{recursive:true});
     await page.locator('#bibleSearchInput').fill('고린도후서 13장 13절');
     await page.locator('#bibleSearchForm').press('Enter');
     await page.waitForFunction(()=>document.querySelectorAll('#bibleSearchResults .bible-search-result').length>0);
-    assert.match(await page.locator('#bibleSearchResults .bible-search-result').first().locator('strong').innerText(),/고린도후서 13장 13절/);
+    assert.match(await page.locator('#bibleSearchResults .bible-search-result').first().locator(':scope > strong').innerText(),/고린도후서 13장 13절/);
     assert.match(await page.locator('#bibleSearchResults .bible-search-result').first().locator('span').innerText(),/은혜와/);
     // Four WEB-orphan verses get an explicit guide instead of a silent failure.
     await openSearchPanel();

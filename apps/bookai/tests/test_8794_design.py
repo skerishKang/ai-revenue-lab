@@ -4,7 +4,7 @@ import unittest
 from playwright.sync_api import sync_playwright
 
 BASE = os.environ.get("BOOKAI_BASE_URL", "http://127.0.0.1:9527/")
-CHROME = os.environ.get("BOOKAI_CHROME_PATH", "C:/Program Files/Google/Chrome/Application/chrome.exe")
+CHROME = os.environ.get("BOOKAI_CHROME_PATH")
 HINT = "성경 전체에서 찾습니다. 결과를 눌러도 읽던 곳은 그대로입니다."
 
 def luminance(rgb):
@@ -20,7 +20,7 @@ class BibleSearchDesign(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.runner = sync_playwright().start()
-        cls.browser = cls.runner.chromium.launch(headless=True, executable_path=CHROME)
+        cls.browser = cls.runner.chromium.launch(headless=True, **({"executable_path": CHROME} if CHROME else {}))
 
     @classmethod
     def tearDownClass(cls):
