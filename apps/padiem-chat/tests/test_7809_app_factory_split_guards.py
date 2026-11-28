@@ -163,8 +163,8 @@ def test_patch_guard_never_confuses_attribute_access_with_global_read():
 
 
 def test_function_transfer_helper_provides_exact_block_and_parseable_ast():
-    factory = fm.modules()[0]
-    text, original = fm.function_block(factory, "councillor_redirect")
+    owner = fm.definition_owner("councillor_redirect")
+    text, original = fm.function_block(owner, "councillor_redirect")
     parsed = ast.parse(text)
     assert len(parsed.body) == 1
     assert ast.dump(parsed.body[0], include_attributes=False) == ast.dump(
