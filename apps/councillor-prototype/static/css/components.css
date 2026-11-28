@@ -331,6 +331,34 @@ body.lightbox-open .mobile-tabbar { visibility: hidden; }
 
 }
 
+/* #8974: small screens show the full-width photo above centered navigation.
+   DOM order stays close → previous → next → council original link. */
+@media (max-width: 600px) {
+.lightbox-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px 24px 44px minmax(0, 1fr);
+  grid-template-rows: auto 44px;
+  column-gap: 0;
+  row-gap: 12px;
+  align-content: center;
+  justify-items: center;
+  padding: 0 16px;
+}
+.lightbox-body img {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: calc(100vw - 32px);
+  max-height: 62vh;
+  object-fit: contain;
+}
+.lightbox-body .lightbox-nav { width: 44px; height: 44px; }
+.lightbox-body .lightbox-prev { grid-column: 2; grid-row: 2; }
+.lightbox-body .lightbox-next { grid-column: 4; grid-row: 2; }
+}
+
 /* Public site feedback (#7690): footer-local, anonymous, no account fields. */.site-feedback {
   width: 100%;
   margin-top: 6px;

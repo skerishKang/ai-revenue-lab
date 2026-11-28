@@ -107,6 +107,17 @@
 
 }
 
+/* #8974: forum/video cards only; keep all text and other widths unchanged. */
+@media (max-width: 600px) {
+#policyForums .info-card, #policyVideos .info-card {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+#policyForums .info-card .card-num, #policyVideos .info-card .card-num {
+  font-size: 18px;
+}
+}
+
 .combined-policy { margin-top: 24px; }
 
 .combined-policy-row { background: var(--bg); padding: 4px 16px; min-height: var(--tap); display: flex; align-items: center; }
