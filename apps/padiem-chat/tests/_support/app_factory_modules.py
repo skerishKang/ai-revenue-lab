@@ -23,6 +23,7 @@ ENTRY_MODULE = "app_factory"
 FACTORY_MODULES: tuple[str, ...] = (
     ENTRY_MODULE,
     "app_factory_health_static",
+    "app_factory_routes_ops_admin",
 )
 
 # A single owner/area per future PR, not a requirement to reach 300 lines.
