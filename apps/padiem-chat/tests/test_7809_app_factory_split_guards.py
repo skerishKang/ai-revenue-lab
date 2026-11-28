@@ -94,7 +94,7 @@ def test_route_registrars_are_invoked_in_exact_baseline_order(monkeypatch):
     for name in fm.REGISTRATION_ORDER:
         def record(*_args, _name=name, **_kwargs):
             seen.append(_name)
-        monkeypatch.setattr(factory, name, record)
+        fm.patch_bound(monkeypatch, name, record)
     factory.build_routes(None, None, None, None)
     assert seen == list(fm.REGISTRATION_ORDER)
 

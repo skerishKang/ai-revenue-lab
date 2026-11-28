@@ -191,6 +191,22 @@ def test_extracted_oracle_mesh_owner_is_scanned_without_broadening_platform(tmp_
     assert contract.findings() == [], "Mesh is not part of the platform app route allowlist"
 
 
+def test_extracted_shared_auth_comparison_owner_is_scanned_without_broadening_platform(tmp_path, monkeypatch) -> None:
+    owner = contract._read(contract.APP_FACTORY_SHARED_AUTH_COMPARISON)
+    assert "def register_shared_auth_comparison_routes(" in owner
+    assert "if shared_auth_comparison_flow is not None:" in owner
+    assert "routes[0:0] = shared_auth_comparison_flow.routes(enabled=True)" in owner
+    # The injected flow owns its Route objects; probe this source-owner scanner with a synthetic literal.
+    probe = "/__shared_auth_comparison_owner_probe__"
+    literal = 'Route("/__shared_auth_comparison_owner_probe__", test_handler, methods=["GET"])'
+    assert literal not in owner
+    swap(monkeypatch, "APP_FACTORY_SHARED_AUTH_COMPARISON", owner + "\n" + literal + "\n", tmp_path)
+    assert tuple(contract._registered_methods(probe)) == ("GET",)
+    swap(monkeypatch, "APP_FACTORY_SHARED_AUTH_COMPARISON", owner, tmp_path)
+    assert tuple(contract._registered_methods(probe)) == ()
+    assert contract.findings() == [], "Injected comparison routes are not platform-app routes"
+
+
 def test_work_scopes_are_routing_labels_and_an_unknown_one_is_refused(tmp_path, monkeypatch) -> None:
     real = contract._read(contract.REQUEST_CONTRACT)
     assert "grants no identity, tier" in real or "not an authentication input" in real
