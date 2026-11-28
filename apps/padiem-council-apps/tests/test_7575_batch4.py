@@ -27,6 +27,7 @@ def test_failed_fact_check_keeps_the_first_draft_and_warns():
 
 
 def test_pc_import_help_lines_are_on_the_right_screens():
+    # #8778 I-2: checks the new single in-tool PC help line after entering each tool.
     seen = run("meeting_pc_help")
     assert seen["meetingHasMeetingLine"] is True, seen
     assert seen["snsHasMeetingLine"] is False, seen

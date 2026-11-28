@@ -172,7 +172,8 @@ def test_long_archive_name_two_lines_and_vertical_arrows(url):
 
 def test_collision_choice_resets_label_has_cancel_and_filename_title():
     obs=run("conflict")
-    assert obs["saveLabelWhileChoice"] == "저장", obs
+    # #8778 I-3: representative-approved result action name; PC save label is separate.
+    assert obs["saveLabelWhileChoice"] == "내 기록에 저장", obs
     assert obs["choiceHasCancel"] is True, obs
     assert obs["filenameTitle"] == obs["firstName"][0], obs
     assert obs["cancelLeavesFilesUnchanged"] and obs["cancelRemovesChoice"], obs

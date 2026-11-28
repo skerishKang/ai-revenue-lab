@@ -2757,3 +2757,250 @@ html.council-in-workspace .council-card.active { padding: 16px; }
     align-self: center;
   }
 }
+
+
+/* #8778 2차 — A/D: 공통 진행·완료·오류 안내. 내용이 없으면 칸도 그리지 않는다. */
+.council-tool-notice {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 9px 2px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.council-tool-notice:empty:not([hidden]) { display: none; }
+.council-tool-notice.council-notice-busy::before {
+  content: "◌";
+  display: inline-block;
+  font-weight: 800;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+.council-tool-notice.council-notice-success {
+  color: var(--success);
+  font-weight: 700;
+}
+.council-tool-notice.council-notice-success::before {
+  content: "✓";
+  display: inline-block;
+  flex: 0 0 auto;
+  font-weight: 800;
+}
+.council-tool-notice.council-notice-error {
+  display: flex;
+  flex-wrap: wrap;
+  background: var(--council-accent-soft);
+  border: 1px solid var(--council-danger);
+  border-radius: 14px;
+  padding: 10px 14px;
+  color: var(--text);
+}
+.council-tool-notice.council-notice-error::before {
+  content: "!";
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+.council-generate.council-generating {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  cursor: progress;
+}
+.council-loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: council-wait-turn .8s linear infinite;
+}
+@keyframes council-wait-turn {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .council-loading-spinner { animation: none; }
+}
+
+/* #8778 B: tool, status, paper and archive use the same centered 720px column. */
+html.council-in-workspace .council-card-body > .council-form,
+html.council-in-workspace .council-card-body > .council-tool-notice,
+html.council-in-workspace .council-card-body > .council-result,
+html.council-in-workspace .council-card-body > .council-saved-list,
+html.council-in-workspace .council-card-body > .council-archive {
+  box-sizing: border-box;
+  width: min(100%, 720px);
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  min-width: 0;
+}
+@media (min-width: 901px) {
+  html.council-in-workspace .council-card-body:has(.council-saved-list),
+  html.council-in-workspace .council-card-body:has(.council-archive),
+  html.council-in-workspace .council-card-body:has(.council-result:not([hidden])) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    grid-template-columns: none;
+  }
+  html.council-in-workspace .council-card-body:has(.council-result:not([hidden])) > .council-form,
+  html.council-in-workspace .council-card-body:has(.council-result:not([hidden])) > .council-result,
+  html.council-in-workspace .council-card-body:has(.council-result:not([hidden])) > .council-tool-notice,
+  html.council-in-workspace .council-card-body:has(.council-result:not([hidden])) > .council-saved-list,
+  html.council-in-workspace .council-card-body:has(.council-result:not([hidden])) > .council-archive {
+    grid-column: auto;
+    grid-row: auto;
+    width: min(100%, 720px);
+    max-width: 720px;
+    margin-inline: auto;
+  }
+}
+/* #8778 C: one touch target shape for copy, own-record save, exports and SNS edit. */
+.council-actions .council-result-action,
+.council-sns-edit.council-result-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 9px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 650;
+  cursor: pointer;
+  text-decoration: none;
+}
+.council-actions .council-result-action:hover,
+.council-sns-edit.council-result-action:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--text);
+}
+.council-actions .council-primary.council-result-action {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+.council-actions .council-result-action:disabled {
+  opacity: .62;
+  cursor: not-allowed;
+}
+
+/* #8778 E: a short result starts at approximately three lines; long text grows. */
+.council-result textarea {
+  min-height: 96px;
+  height: auto;
+  overflow: hidden;
+}
+
+/* #8778 F: the current tool is an unmistakable filled tab, not a faded tint. */
+html.council-in-workspace .council-nav {
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+html.council-in-workspace .council-nav .council-nav-item {
+  color: var(--text);
+  text-shadow: none;
+  padding-inline: 10px;
+  border-radius: 999px;
+}
+html.council-in-workspace .council-nav .council-nav-item[aria-current="page"],
+.council-tool-nav button[aria-current="page"] {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+  font-weight: 800;
+  text-shadow: none;
+}
+.council-tool-nav button {
+  color: var(--text);
+  border-color: var(--line);
+  background: var(--panel);
+}
+
+/* #8778 G: no disabled-looking gray on the minimal home card or main action. */
+html[data-style="minimal"] .council-card { filter: none; }
+html[data-style="minimal"] .council-card:not(.active) {
+  --work-face: var(--tone-8);
+  --work-ink: var(--tone-1);
+  --work-scrim: none;
+  --card-photo-op: 0;
+  background: var(--tone-8);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+html[data-style="minimal"] .council-card:not(.active) .council-card-select::after {
+  width: 44px;
+  height: 44px;
+  background: var(--tone-1);
+  border-color: var(--tone-1);
+  color: var(--tone-8);
+}
+html[data-style="minimal"] .council-generate,
+html[data-style="minimal"] .council-cta {
+  background: var(--tone-1);
+  border: 1px solid var(--tone-1);
+  color: var(--tone-8);
+}
+html[data-style="minimal"] .council-workspace-bar {
+  --band-face: var(--tone-8);
+  --band-ink: var(--tone-1);
+  border: 1px solid var(--line);
+}
+
+/* #8778 H: legible labels and reliable, unmistakable style selection. */
+.council-eyebrow {
+  font-size: 13px;
+  letter-spacing: .12em;
+}
+.council-hero-quote small {
+  font-size: 13px;
+  letter-spacing: .10em;
+  opacity: 1;
+}
+.council-tier,
+.council-tier-status { font-size: 14px; }
+.council-theme-legend { font-size: 13px; letter-spacing: .1em; }
+.council-photo-note { font-size: 13px; line-height: 1.5; }
+.council-photo-add {
+  color: var(--text);
+  background: var(--panel);
+  border-color: var(--line);
+  min-height: 44px;
+}
+.council-theme-group button[aria-checked="true"] {
+  border-width: 2px;
+  border-color: var(--accent);
+}
+.council-theme-group button[aria-checked="true"]::after {
+  content: " ✓";
+  font-weight: 800;
+  color: var(--text);
+}
+.council-empty-hint {
+  color: var(--council-muted);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 4px 0 0;
+}
+
+/* #8778 H: preserve the older 14px phone-wide reading floor while increasing desktop labels to 13px. */
+@media (max-width: 620px) {
+  .council-eyebrow,
+  .council-theme-legend,
+  .council-photo-note,
+  .council-hero-quote small,
+  .council-tier,
+  .council-tier-status {
+    font-size: 14px;
+  }
+}

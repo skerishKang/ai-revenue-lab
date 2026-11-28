@@ -2047,6 +2047,14 @@ const SCENARIOS = {
     const form = find(s, "councilSpeechForm");
     form.querySelector("[name=event]").value = "스트리밍 검증";
     await form.dispatch("submit");
+    // #8778 A: capture true in-flight UI from the shipped module, before the first SSE delta.
+    const submit = find(s, "councilSpeechGenerate");
+    const during = {
+      text: text(submit),
+      disabled: submit.disabled,
+      busy: submit.getAttribute("aria-busy"),
+      spinner: submit.querySelectorAll(".council-loading-spinner").length,
+    };
     const lengths = [];
     for (let i = 0; i < 40; i += 1) {
       await sleep(5);
@@ -2063,6 +2071,13 @@ const SCENARIOS = {
       endpoint: request ? request.url : "",
       accept: request ? request.headers.Accept : "",
       notice: text(find(s, "councilSpeechNotice")),
+      during,
+      completed: {
+        text: text(submit),
+        disabled: submit.disabled,
+        busy: submit.getAttribute("aria-busy"),
+        noticeTone: find(s, "councilSpeechNotice").dataset.tone,
+      },
       pageErrors,
     };
   },
@@ -2612,12 +2627,19 @@ const SCENARIOS = {
   },
   async meeting_pc_help() {
     const session = spawnSession();
-    await session.ctx.window.PadiemCouncilApps.init();
+    const api = session.ctx.window.PadiemCouncilApps;
+    await api.init();
     await sleep(20);
+    // #8778 I-2: disconnected help is now one shared notice plus connect link;
+    // check() paints it only after the tool is entered, not on startup.
+    await api.select("meeting", false);
+    await api.select("sns", false);
+    await api.select("speech", false);
+    await sleep(40);
     const has = (formId, sentence) => {
       const form = session.ctx.document.getElementById(formId);
       if (!form) return false;
-      return Array.from(form.querySelectorAll(".council-pc-ref-help"))
+      return Array.from(form.querySelectorAll(".council-pc-ref-note"))
         .some((n) => n.textContent.trim() === sentence);
     };
     const meetingLine = "PADIEM PC 연결 프로그램으로 이 컴퓨터에 있는 회의 메모를 가져옵니다.";
