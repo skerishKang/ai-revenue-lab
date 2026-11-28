@@ -22,7 +22,8 @@ def test_the_pc_save_button_first_asks_which_format_to_write() -> None:
     chooser = run("pc")["saveChooser"]
     assert chooser["text"] == "어떤 형식으로 저장할까요?"
     # 기본(첫 버튼)은 한글이고, #5895의 텍스트 저장은 세 번째 선택으로 남는다.
-    assert chooser["choices"] == ["한글", "워드", "텍스트"]
+    # #8778 E-3: PC format choice now includes explicit cancellation.
+    assert chooser["choices"] == ["한글", "워드", "텍스트", "취소"]
 
 
 def test_saving_a_speech_document_uploads_hwpx_bytes_then_hands_them_to_the_pc() -> None:

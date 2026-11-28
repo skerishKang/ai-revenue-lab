@@ -156,7 +156,8 @@ def test_the_saved_speech_list_offers_itself_as_the_style_reference() -> None:
     observed = run("generate")
     labels = observed["speech"]["savedListLabels"]
     assert len(labels) == 1
-    assert labels[0].startswith("축사_제78주년 광복절 기념식_2026-08-15.txt (")
+    # #8778 A: display uses title · date · count; original .txt stays in title attr.
+    assert labels[0].startswith("축사_제78주년 광복절 기념식_2026-08-15 · ")
     assert observed["speech"]["refSelectedMatchesSaved"] is True
     # The picked manuscript IS the stored draft body, not a summary of it.
     assert observed["speech"]["refSelected"] == observed["speech"]["output"]

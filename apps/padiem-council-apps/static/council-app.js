@@ -386,6 +386,33 @@
     });
   }
 
+  function clearSaveFailure(actions) {
+    const hostNode = actions && actions.parentNode;
+    const old = hostNode && hostNode.querySelector(".council-save-failure");
+    if (old) old.remove();
+  }
+  function showSaveFailure(notice, actions, failure, retry) {
+    const message = saveFailureText(failure);
+    // The old notice still carries the contract for module clients, but it is
+    // hidden while the visible error belongs directly below the Save action.
+    setNotice(notice, message, "error");
+    notice.hidden = true;
+    clearSaveFailure(actions);
+    const box = el("div", "council-tool-notice council-notice-error council-save-failure", message);
+    box.dataset.tone = "error";
+    box.setAttribute("role", "status");
+    const button = el("button", "council-notice-retry", "다시 시도");
+    button.type = "button";
+    button.addEventListener("click", () => {
+      clearSaveFailure(actions);
+      retry();
+    });
+    box.appendChild(button);
+    if (actions && actions.parentNode) {
+      actions.parentNode.insertBefore(box, actions.nextSibling);
+    }
+  }
+
   function saveFailureText(failure) {
     if (!failure) return "저장하지 못했습니다. 잠시 후 다시 시도해 주세요.";
     // #5783: a server sentence about why nothing was stored is shown as-is
@@ -428,6 +455,66 @@
     if (!res.ok) return [];
     const data = await res.json();
     return (data && data.files) ? data.files : [];
+  }
+
+  // #8778 A / E: keep the original filename in title/identity while showing
+  // a readable manuscript name, update date, and only a genuinely known count.
+  function savedFileCaption(file) {
+    const name = storedName(file);
+    const title = name.replace(/\.txt$/i, "");
+    const stamp = String(file.updated_at || file.created_at || "").slice(0, 10)
+      || ((name.match(/\d{4}-\d{2}-\d{2}/) || [])[0]);
+    const count = Number(file.content_chars);
+    const chars = Number.isFinite(count) && count > 0 ? count + "자" : "";
+    return [title, stamp, chars].filter(Boolean).join(" · ");
+  }
+
+  function addPagedSavedRows(container, list, files, render) {
+    let count = 0;
+    let more = null;
+    const grow = () => {
+      const next = files.slice(count, count + 10);
+      next.forEach((file) => list.appendChild(render(file)));
+      count += next.length;
+      if (more && more.parentNode) more.parentNode.removeChild(more);
+      if (count < files.length) {
+        more = el("button", "council-saved-more", "더 보기");
+        more.type = "button";
+        more.addEventListener("click", grow);
+        container.appendChild(more);
+      }
+    };
+    grow();
+  }
+
+  // #8778 A / E: keep the original filename in title/identity while showing
+  // a readable manuscript name, update date, and only a genuinely known count.
+  function savedFileCaption(file) {
+    const name = storedName(file);
+    const title = name.replace(/\.txt$/i, "");
+    const stamp = String(file.updated_at || file.created_at || "").slice(0, 10)
+      || ((name.match(/\d{4}-\d{2}-\d{2}/) || [])[0]);
+    const count = Number(file.content_chars);
+    const chars = Number.isFinite(count) && count > 0 ? count + "자" : "";
+    return [title, stamp, chars].filter(Boolean).join(" · ");
+  }
+
+  function addPagedSavedRows(container, list, files, render) {
+    let count = 0;
+    let more = null;
+    const grow = () => {
+      const next = files.slice(count, count + 10);
+      next.forEach((file) => list.appendChild(render(file)));
+      count += next.length;
+      if (more && more.parentNode) more.parentNode.removeChild(more);
+      if (count < files.length) {
+        more = el("button", "council-saved-more", "더 보기");
+        more.type = "button";
+        more.addEventListener("click", grow);
+        container.appendChild(more);
+      }
+    };
+    grow();
   }
 
   async function fetchProjectFile(pid, fileId) {
@@ -1304,7 +1391,7 @@
         noPc();
         return;
       }
-      pcSaveChooser(notice, {
+      pcSaveChooser(button, {
         hwpx: () => void saveDocumentToPc(notice, document, "hwpx", output),
         docx: () => void saveDocumentToPc(notice, document, "docx", output),
         text: async () => {
@@ -1319,23 +1406,29 @@
     });
   }
 
-  function pcSaveChooser(line, options) {
-    if (!line) return;
-    line.textContent = PC_REF_COPY.chooseFormat;
+  function pcSaveChooser(anchor, options) {
+    if (!anchor || !anchor.parentNode) return;
+    const parent = anchor.parentNode;
+    const old = parent.querySelector(".council-pc-format-choice");
+    if (old) old.remove();
+    const box = el("div", "council-pc-format-choice");
+    box.setAttribute("role", "group");
+    box.setAttribute("aria-label", PC_REF_COPY.chooseFormat);
+    box.appendChild(el("span", "council-pc-format-title", PC_REF_COPY.chooseFormat));
     const choose = (label, run) => {
-      const button = el("button", "council-notice-retry", label);
+      const button = el("button", "council-pc-format-button", label);
       button.type = "button";
       button.addEventListener("click", () => {
-        setNotice(line, "");
+        if (box.parentNode) box.parentNode.removeChild(box);
         run();
       });
-      line.appendChild(button);
+      box.appendChild(button);
     };
     choose("한글", options.hwpx);
     choose("워드", options.docx);
     choose("텍스트", options.text);
-    line.hidden = false;
-    line.dataset.tone = "info";
+    choose("취소", () => {});
+    parent.insertBefore(box, anchor.nextSibling);
   }
 
   async function saveDocumentToPc(notice, document, format, output) {
@@ -1616,13 +1709,15 @@
           return;
         }
         const ul = document.createElement("ul");
-        speechFiles.forEach((f) => {
+        savedList.appendChild(ul);
+        addPagedSavedRows(savedList, ul, speechFiles, (f) => {
           const li = document.createElement("li");
           li.className = "council-saved-item";
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "council-saved-open";
-          btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
+          btn.textContent = savedFileCaption(f);
+          btn.title = f.name;
           btn.addEventListener("click", async () => {
             const content = await fetchProjectFile(pid, f.id);
             if (typeof content === "string") {
@@ -1650,12 +1745,20 @@
             const content = data && data.file && (data.file.content || data.file.text);
             if (typeof content !== "string" || !content.trim()) { setNotice(notice, "참고 원고의 본문을 읽을 수 없습니다.", "error"); return; }
             styleField.value = content;
+            savedList.querySelectorAll(".council-saved-item").forEach((row) => {
+              row.classList.remove("council-saved-selected");
+              const mark = row.querySelector(".council-saved-mark");
+              if (mark) mark.remove();
+            });
+            li.classList.add("council-saved-selected");
+            const mark = el("span", "council-saved-mark", "✓");
+            mark.setAttribute("aria-hidden", "true");
+            li.appendChild(mark);
             setNotice(notice, "참고 원고를 말투 샘플에 넣었습니다.", "info");
           });
           li.appendChild(useAsRef);
-          ul.appendChild(li);
+          return li;
         });
-        savedList.appendChild(ul);
       }
 
       async function runGeneration() {
@@ -1727,6 +1830,7 @@
           setNotice(notice, "저장할 프로젝트를 찾지 못했습니다. 잠시 후 다시 시도해 주세요.", "error");
           return;
         }
+        clearSaveFailure(panel.actions);
         saveBtn.disabled = true;
         saveBtn.textContent = "저장 중…";
         const outcome = await saveCouncilText({
@@ -1740,7 +1844,7 @@
           setNotice(notice, "");
           await refreshSpeechList();
         } else if (outcome.failure) {
-          setNotice(notice, saveFailureText(outcome.failure), "error");
+          showSaveFailure(notice, panel.actions, outcome.failure, () => saveBtn.click());
         }
       });
       refreshSave();
@@ -1859,10 +1963,15 @@
         const b = el("button", "council-sns-tab" + (key === "blog" ? " active" : ""), tabNames[key]);
         b.type = "button";
         b.dataset.platform = key;
+        b.setAttribute("aria-pressed", key === "blog" ? "true" : "false");
         b.addEventListener("click", () => {
           // 문체는 탭마다 두지 않는다. 폼은 그대로이므로 선택값은 자연스럽게 유지된다.
-          tabDiv.querySelectorAll(".council-sns-tab").forEach((x) => x.classList.remove("active"));
+          tabDiv.querySelectorAll(".council-sns-tab").forEach((x) => {
+            x.classList.remove("active");
+            x.setAttribute("aria-pressed", "false");
+          });
           b.classList.add("active");
+          b.setAttribute("aria-pressed", "true");
           platform = key;
           title.textContent = tabNames[key] + " 게시글";
           renderPhotoList();
@@ -1990,7 +2099,7 @@
         photoCount.textContent = photos.length + "장";
         photoNote.textContent = photoNoteText();
         photoList.replaceChildren();
-        photos.forEach((item) => {
+        photos.forEach((item, index) => {
           const li = el("li", "council-photo-item");
           const img = document.createElement("img");
           img.className = "council-photo-thumb";
@@ -1999,8 +2108,9 @@
           const nameSpan = el("span", "council-photo-name", item.name);
           const controls = el("div", "council-photo-controls");
           if (platform === "blog") {
-            const posLabel = el("label", "council-photo-pos", "삽입 위치 ");
+            const posLabel = el("label", "council-photo-pos");
             const sel = document.createElement("select");
+            sel.setAttribute("aria-label", "삽입 위치");
             sel.className = "council-photo-pos-select";
             sel.dataset.photoId = String(item.id);
             const opts = [["auto", "자동"], ["0", "맨 앞"], ["end", "문단 끝"]];
@@ -2012,6 +2122,8 @@
           }
           const up = el("button", "council-photo-move", "↑"); up.type = "button"; up.dataset.move = "-1"; up.dataset.photoId = String(item.id);
           const down = el("button", "council-photo-move", "↓"); down.type = "button"; down.dataset.move = "1"; down.dataset.photoId = String(item.id);
+          up.disabled = index === 0;
+          down.disabled = index === photos.length - 1;
           const del = el("button", "council-photo-remove", "삭제"); del.type = "button"; del.dataset.photoId = String(item.id); del.dataset.action = "remove";
           controls.append(up, down, del);
           li.append(img, nameSpan, controls);
@@ -2235,9 +2347,11 @@
           return;
         }
         const ul = document.createElement("ul");
-        drafts.forEach((f) => {
+        savedList.appendChild(ul);
+        addPagedSavedRows(savedList, ul, drafts, (f) => {
           const li = el("li", "council-saved-item");
-          const btn = el("button", "council-saved-open", f.name + " (" + (f.content_chars || 0) + "자)");
+          const btn = el("button", "council-saved-open", savedFileCaption(f));
+          btn.title = f.name;
           btn.type = "button";
           btn.addEventListener("click", async () => {
             const content = await fetchProjectFile(pid, f.id);
@@ -2252,9 +2366,8 @@
             setNotice(notice, f.name + "를 열었습니다. 같은 이름으로 저장하면 새 이름/덮어쓰기를 묻습니다.", "info");
           });
           li.appendChild(btn);
-          ul.appendChild(li);
+          return li;
         });
-        savedList.appendChild(ul);
       }
 
       // #5728: re-entry restores the persisted composition ONCE, at build
@@ -2410,6 +2523,7 @@
           setNotice(notice, "저장할 프로젝트를 찾지 못했습니다. 잠시 후 다시 시도해 주세요.", "error");
           return;
         }
+        clearSaveFailure(panel.actions);
         saveBtn.disabled = true;
         saveBtn.textContent = "저장 중…";
         // 2026-11-05: the stored name follows the speech rule — SNS_행사명_날짜 —
@@ -2431,7 +2545,7 @@
           await writePhotoRoster(pid, lastSavedDraft);
           await refreshSnsList();
         } else if (outcome.failure) {
-          setNotice(notice, saveFailureText(outcome.failure), "error");
+          showSaveFailure(notice, panel.actions, outcome.failure, () => saveBtn.click());
         }
       });
       refreshSave();
@@ -2524,6 +2638,8 @@
       });
       refFieldset.appendChild(pcSection.box);
       form.appendChild(refFieldset);
+      const meetingInfo = el("fieldset", "council-fieldset");
+      meetingInfo.appendChild(el("legend", null, "회의 정보"));
       const fields = [
         ["title", "회의명", "text", true, "예: 10월 주민 민원 회의"],
         ["when", "회의 일시", "datetime-local", false, ""],
@@ -2545,8 +2661,9 @@
         if (req) field.required = true;
         if (placeholder) field.placeholder = placeholder;
         l.appendChild(field);
-        form.appendChild(l);
+        meetingInfo.appendChild(l);
       });
+      form.appendChild(meetingInfo);
 
       const formActions = el("div", "council-form-actions");
       const submitBtn = el("button", "council-generate", "요약 생성");
@@ -2646,6 +2763,7 @@
         const name = fileNamePart(form.querySelector("[name=title]")?.value) || "회의";
         const when = (form.querySelector("[name=when]")?.value || "").trim();
         const storedText = when ? "회의 일시: " + when + "\n\n" + text : text;
+        clearSaveFailure(panel.actions);
         formSaveB.disabled = true;
         formSaveB.textContent = "저장 중…";
         const outcome = await saveCouncilText({
@@ -2660,7 +2778,7 @@
           setNotice(notice, "");
           await refreshArchive(archive);
         } else if (outcome.failure) {
-          setNotice(notice, saveFailureText(outcome.failure), "error");
+          showSaveFailure(notice, panel.actions, outcome.failure, () => formSaveB.click());
         }
       });
       refreshSave();
@@ -2734,6 +2852,8 @@
         bookBtn.type = "button";
         bookBtn.id = "councilBookGenerate";
 
+        let bookBusy = false;
+        let bookFailed = false;
         arc.replaceChildren();
         arc.appendChild(el("h3", null, "저장된 회의 기록"));
         if (!meetingFiles.length) {
@@ -2778,6 +2898,7 @@
                 if (date >= start.value && date <= end.value) selected.push(file.id);
               }
               ul.querySelectorAll(".council-book-check").forEach((cb) => { cb.checked = selected.includes(cb.value); });
+              countSelected();
               periodStatus.textContent = selected.length + "건을 선택했습니다. 날짜를 확인할 수 없는 " + undated + "건은 직접 확인해 선택해 주세요.";
             } catch (_) {
               periodStatus.textContent = "회의 기록을 읽지 못해 기간을 적용하지 못했습니다. 다시 시도해 주세요.";
@@ -2807,8 +2928,31 @@
           });
           range.appendChild(periodStatus);
           arc.appendChild(range);
-          arc.appendChild(bookBtn);
+          const actionRow = el("div", "council-book-generate-row");
+          const selectedCount = el("span", "council-book-selected-count", "0개 선택됨");
+          selectedCount.id = "councilBookSelectedCount";
+          selectedCount.setAttribute("role", "status");
+          const selectHint = el("p", "council-book-select-hint", "기록을 1개 이상 골라 주세요.");
+          actionRow.append(bookBtn, selectedCount, selectHint);
+          arc.appendChild(actionRow);
           const ul = document.createElement("ul");
+          const countSelected = () => {
+            const count = ul.querySelectorAll(".council-book-check:checked").length;
+            selectedCount.textContent = count + "개 선택됨";
+            bookBtn.disabled = bookBusy || count === 0;
+            selectHint.hidden = count > 0;
+          };
+          const moveStatus = el("p", "council-visually-hidden");
+          moveStatus.id = "councilBookMoveStatus";
+          moveStatus.setAttribute("aria-live", "polite");
+          moveStatus.setAttribute("role", "status");
+          const announceMove = (li) => {
+            li.classList.remove("council-record-just-moved");
+            li.classList.add("council-record-just-moved");
+            const pos = Array.from(ul.children).indexOf(li) + 1;
+            moveStatus.textContent = pos + "번째로 옮겼습니다";
+            setTimeout(() => { if (li.classList) li.classList.remove("council-record-just-moved"); }, 1000);
+          };
           meetingFiles.forEach((f) => {
             const li = document.createElement("li");
             li.className = "council-archive-item";
@@ -2868,11 +3012,11 @@
             moveDown.setAttribute("aria-label", f.name + " 아래로");
             moveUp.addEventListener("click", () => {
               const previous = li.previousElementSibling;
-              if (previous) ul.insertBefore(li, previous);
+              if (previous) { ul.insertBefore(li, previous); announceMove(li); }
             });
             moveDown.addEventListener("click", () => {
               const next = li.nextElementSibling;
-              if (next) ul.insertBefore(next, li);
+              if (next) { ul.insertBefore(next, li); announceMove(li); }
             });
             const moves = el("span", "council-record-moves");
             moves.append(moveUp, moveDown);
@@ -2880,13 +3024,16 @@
             ul.appendChild(li);
           });
           arc.appendChild(ul);
+          ul.addEventListener("change", (event) => {
+            if (event.target && event.target.classList.contains("council-book-check")) countSelected();
+          });
+          arc.appendChild(moveStatus);
+          countSelected();
           selectPeriod.addEventListener("click", () => { void runPeriod(); });
         }
         arc.appendChild(bookNotice);
         arc.appendChild(bookResult);
 
-        let bookBusy = false;
-        let bookFailed = false;
         function refreshBookSave() {
           bookSave.disabled = bookBusy || bookFailed || !String(bookOutput.value || "").trim();
         }
@@ -2959,7 +3106,7 @@
             if (!String(bookOutput.value || "").trim()) bookResult.hidden = true;
           } finally {
             bookBusy = false;
-            bookBtn.disabled = false;
+            bookBtn.disabled = document.querySelectorAll(".council-book-check:checked").length === 0;
             refreshBookSave();
           }
         });
@@ -2994,6 +3141,7 @@
         bookSave.addEventListener("click", async () => {
           const text = bookOutput.value;
           if (!text.trim() || bookSaving || bookSave.disabled) return;
+          clearSaveFailure(bookActions);
           bookSaving = true;
           bookSave.disabled = true;
           bookSave.textContent = "저장 중…";
@@ -3004,7 +3152,7 @@
           bookSave.textContent = "내 기록에 저장";
           refreshBookSave();
           if (!outcome.file) {
-            if (outcome.failure) setNotice(bookNotice, saveFailureText(outcome.failure), "error");
+            if (outcome.failure) showSaveFailure(bookNotice, bookActions, outcome.failure, () => bookSave.click());
             return;
           }
           const saved = outcome.file;
@@ -3156,8 +3304,15 @@
       select.appendChild(option);
     });
     select.value = tierState.current;
-    // One choice is not a choice: a Free-only account sees the tier as a label.
-    select.disabled = choices.length <= 1;
+    // #8778 G: a single available tier is a static badge, not a disabled select.
+    const single = choices.length <= 1;
+    const badge = host("councilTierBadge");
+    select.disabled = single;
+    select.hidden = single;
+    if (badge) {
+      badge.hidden = !single;
+      badge.textContent = single ? (TIER_LABELS[choices[0]] || choices[0] || "") : "";
+    }
     wrap.hidden = !session.signedIn;
   }
 

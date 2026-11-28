@@ -3013,3 +3013,254 @@ html[data-style="minimal"] .council-workspace-bar {
     font-size: 14px;
   }
 }
+
+
+/* #8778 3차 A: saved documents are readable title · date · character count rows. */
+.council-saved-list .council-saved-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 112px;
+  min-height: 44px;
+  margin-top: 10px;
+  padding: 8px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.council-saved-item .council-speech-use-ref {
+  min-height: 44px;
+  border: 1px solid color-mix(in srgb, var(--text) 55%, transparent);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  flex: 0 0 auto;
+}
+.council-saved-item.council-saved-selected {
+  background: var(--accent-soft);
+  border-radius: 10px;
+  padding-inline: 8px;
+}
+.council-saved-mark {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--text);
+  flex: 0 0 auto;
+}
+
+/* #8778 3차 B: selected social platform is an actual pressed, readable tab. */
+.council-sns-tabs .council-sns-tab[aria-pressed="true"] {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 800;
+}
+.council-photo-controls .council-photo-move:disabled {
+  opacity: .38;
+  cursor: not-allowed;
+  border-color: var(--line);
+  background: var(--panel);
+  color: var(--muted);
+}
+.council-photo-pos { gap: 0; }
+
+/* #8778 3차 C: period actions, selection count, and reorder acknowledgement. */
+.council-book-period .council-book-quick,
+.council-book-period #councilBookSelectPeriod {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border: 1px solid color-mix(in srgb, var(--text) 45%, transparent);
+  background: var(--panel);
+  color: var(--text);
+}
+.council-book-generate-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-block: 8px 10px;
+}
+.council-book-selected-count {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 700;
+}
+.council-book-select-hint {
+  flex: 1 0 100%;
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+.council-book-check { accent-color: var(--accent); }
+.council-archive-item.council-record-just-moved {
+  background: var(--accent-soft);
+  border-radius: 10px;
+  transition: background-color 1s ease;
+}
+.council-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (max-width: 620px) {
+  .council-book-period {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .council-book-period > label,
+  .council-book-period > #councilBookSelectPeriod,
+  .council-book-period > #councilBookPeriodStatus {
+    grid-column: 1 / -1;
+  }
+  .council-book-period .council-book-quick {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* #8778 3차 E: the PC format chooser lives below its own save control. */
+.council-pc-format-choice {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  flex: 1 0 100%;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--council-surface);
+  color: var(--text);
+}
+.council-pc-format-title {
+  flex: 1 0 100%;
+  font-size: 14px;
+  color: var(--text);
+}
+.council-pc-format-choice .council-pc-format-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+  color: var(--text);
+  background: var(--panel);
+  cursor: pointer;
+}
+.council-result .council-save-failure {
+  margin: 10px 0 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* #8778 3차 F: generous card text insets and a real whole-card hover signal. */
+.council-card:not(.active) {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.council-card:not(.active):hover,
+.council-card:not(.active):focus-within {
+  box-shadow: 0 0 0 2px var(--accent), 0 12px 28px color-mix(in srgb, var(--text) 12%, transparent);
+}
+@media (min-width: 1600px) {
+  .council-topbar {
+    padding-inline: max(48px, calc((100vw - var(--pa-shell)) / 2 + 48px));
+  }
+  .council-hero-copy {
+    box-sizing: border-box;
+    width: min(100%, calc((100vw + var(--pa-shell)) / 2));
+    padding-left: max(48px, calc((100vw - var(--pa-shell)) / 2 + 48px));
+  }
+  .council-strip ul {
+    width: min(100%, calc(var(--pa-shell) - 96px));
+  }
+}
+
+/* #8778 3차 G: a sole grade/country is a label, never a disabled dropdown. */
+.council-tier select[hidden],
+.council-theme-group button[hidden],
+.council-tier-badge[hidden] { display: none; }
+.council-tier-badge,
+.council-country-badge {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+}
+.council-country-badge { min-height: 44px; justify-content: center; }
+
+/* #8778 3차 H: account signup link needs readable text on all theme papers. */
+.council-auth-signup a {
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* #8778 F: minimal's explicit box-shadow:none must not mute the hover cue. */
+html[data-style="minimal"] .council-card:not(.active):hover,
+html[data-style="minimal"] .council-card:not(.active):focus-within {
+  box-shadow: 0 0 0 2px var(--accent), 0 12px 28px color-mix(in srgb, var(--text) 12%, transparent);
+}
+
+
+/* #8778 / #8965 CTO D6 — PC format choices use the same visible secondary
+   control treatment as the result actions in every council theme. */
+.council-pc-format-choice .council-pc-format-button {
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 9px 16px;
+  border: 1px solid color-mix(in srgb, var(--text) 75%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 8%, var(--council-surface) 92%);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 650;
+}
+.council-pc-format-choice .council-pc-format-button:hover,
+.council-pc-format-choice .council-pc-format-button:focus-visible {
+  border-color: color-mix(in srgb, var(--text) 75%, transparent);
+  background: color-mix(in srgb, var(--text) 14%, var(--council-surface) 86%);
+}
+
+/* #8778 / #8965 CTO D5 — make 0-source book generation visibly unavailable. */
+#councilBookGenerate:disabled {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 84%, var(--muted) 16%);
+  color: var(--muted);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* #8778 / #8965 CTO D1 — wide-only alignment, no 1440 / 390 movement. */
+@media (min-width: 1600px) {
+  .council-hero-quote {
+    right: max(48px, calc((100vw - var(--pa-shell)) / 2 + 48px));
+  }
+  .council-footer {
+    padding-left: 48px;
+  }
+}

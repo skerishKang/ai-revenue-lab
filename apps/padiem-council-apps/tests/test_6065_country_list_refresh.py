@@ -27,7 +27,12 @@ KR_MEETING = "주민 안전 회의.txt"
 
 
 def only(pattern, rows):
-    assert len(rows) == 1 and pattern.match(rows[0]), rows
+    # #8778 A: the visible row omits .txt and adds date·character count;
+    # stored filenames remain unchanged, and country filtering still applies.
+    assert len(rows) == 1, rows
+    display = rows[0]
+    candidate = display.split(" · ", 1)[0] + ".txt" if " · " in display else display
+    assert pattern.match(candidate), rows
     return rows[0]
 
 

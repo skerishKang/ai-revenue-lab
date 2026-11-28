@@ -209,7 +209,8 @@ def test_saved_list_count_matches_the_visible_draft(url):
             page.evaluate("(v)=>{const t=document.getElementById('councilSpeechOutput');t.value=v;t.dispatchEvent(new Event('input',{bubbles:true}));}", padded)
             page.click("#councilSpeechSave"); page.wait_for_timeout(700)
             label = page.locator(".council-saved-open").first.inner_text()
-            assert "(%d자)" % len(padded) in label, (label, len(padded))
+            # #8778 A: title · date · character count, without .txt or parentheses.
+            assert "%d자" % len(padded) in label and ".txt" not in label, (label, len(padded))
         finally:
             page.close()
         browser.close()
