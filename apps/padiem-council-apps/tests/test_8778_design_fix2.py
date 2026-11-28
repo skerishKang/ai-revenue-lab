@@ -421,3 +421,83 @@ def test_C_speech_meeting_and_activity_book_actions_share_result_controls(local_
             finally:
                 ctx.close()
         browser.close()
+
+
+def test_C_result_action_border_contrast_across_five_styles_and_modes(local_url):
+    """#8952 CTO: each secondary result control has 3:1 border against the card.
+
+    All five styles are measured in a real browser at mobile and desktop sizes.
+    SNS checks both the preview's 고치기 and the editor's 미리보기로 control;
+    the main 복사 action is deliberately excluded from the new border rule.
+    """
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=True)
+        for width in (390, 1440):
+            for mode in ("speech", "sns", "book"):
+                ctx, page = open_case(browser, local_url, width=width, many=(mode == "book"))
+                try:
+                    open_tool(page, "meeting" if mode == "book" else mode)
+                    panel = {
+                        "speech": "#councilSpeechResult",
+                        "sns": "#councilSnsResult",
+                        "book": "#councilBookResult",
+                    }[mode]
+                    page.locator(panel).wait_for(state="attached")
+                    page.locator(panel).evaluate("(e) => { e.hidden = false; }")
+                    # The result action row is only visible after generation; simulate
+                    # a completed local draft without changing any saved/remote data.
+                    page.locator(panel + " .council-save").evaluate("(e) => { e.disabled = false; }")
+                    for style in STYLES:
+                        set_style(page, style)
+                        states = ("preview", "edit") if mode == "sns" else ("result",)
+                        for state in states:
+                            if mode == "sns":
+                                edit = page.locator("#councilSnsEdit")
+                                if state == "edit" and edit.inner_text() == "고치기":
+                                    edit.click()
+                                if state == "preview" and edit.inner_text() != "고치기":
+                                    edit.click()
+                                expected = "미리보기로" if state == "edit" else "고치기"
+                                assert edit.inner_text() == expected, (width, style, state)
+                            metrics = page.evaluate("""(panel) => {
+                              const card=document.querySelector(panel);
+                              const root=getComputedStyle(document.body);
+                              const c=getComputedStyle(card);
+                              const candidates=[...card.querySelectorAll('.council-result-action:not(.council-primary)')];
+                              return {card:c.backgroundColor,body:root.backgroundColor,
+                                controls:candidates.map(e=>{
+                                  const s=getComputedStyle(e),r=e.getBoundingClientRect();
+                                  return {id:e.id,label:e.textContent.trim(),height:r.height,
+                                    borderWidth:s.borderTopWidth,border:s.borderTopColor,
+                                    bg:s.backgroundColor,opacity:s.opacity,
+                                    visible:r.width>0&&r.height>0};
+                                }),
+                                copy:(()=>{const e=card.querySelector('.council-primary');
+                                  const s=getComputedStyle(e);
+                                  return {bg:s.backgroundColor,border:s.borderTopColor};})()};
+                            }""", panel)
+                            assert len(metrics["controls"]) == (6 if mode == "sns" else 5), (
+                                width, mode, style, state, metrics
+                            )
+                            base = composite(rgba(metrics["card"]), composite(rgba(metrics["body"]), [1, 1, 1]))
+                            for btn in metrics["controls"]:
+                                button_base = composite(rgba(btn["bg"]), base)
+                                # Border is painted over its own button background; compare
+                                # the resulting 1px border pixel against the adjacent card.
+                                painted_border = composite(rgba(btn["border"]), button_base)
+                                measured_ratio = ratio(painted_border, base)
+                                assert btn["visible"] and float(btn["borderWidth"].replace("px", "")) >= 1, (
+                                    width, mode, style, state, btn
+                                )
+                                assert btn["height"] >= 44, (width, mode, style, state, btn)
+                                assert measured_ratio >= 3.0, (
+                                    width, mode, style, state, btn["id"],
+                                    round(measured_ratio, 3), metrics
+                                )
+                            # 복사 stays the existing primary treatment, not a secondary button.
+                            assert metrics["copy"]["bg"] != metrics["controls"][0]["bg"], (
+                                width, mode, style, metrics
+                            )
+                finally:
+                    ctx.close()
+        browser.close()

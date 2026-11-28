@@ -2860,7 +2860,9 @@ html.council-in-workspace .council-card-body > .council-archive {
     margin-inline: auto;
   }
 }
-/* #8778 C: one touch target shape for copy, own-record save, exports and SNS edit. */
+/* #8778 C / #8952 CTO: preserve a measurable 3:1 outline against the result paper.
+   A 35% translucent border was too faint on the light/dark paper; 75% meets
+   the non-text contrast threshold while the separate primary copy rule stays intact. */
 .council-actions .council-result-action,
 .council-sns-edit.council-result-action {
   display: inline-flex;
@@ -2869,9 +2871,9 @@ html.council-in-workspace .council-card-body > .council-archive {
   box-sizing: border-box;
   min-height: 44px;
   padding: 9px 16px;
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--text) 75%, transparent);
   border-radius: 999px;
-  background: var(--panel);
+  background: color-mix(in srgb, var(--text) 8%, var(--council-surface) 92%);
   color: var(--text);
   font: inherit;
   font-size: 15px;
@@ -2879,10 +2881,17 @@ html.council-in-workspace .council-card-body > .council-archive {
   cursor: pointer;
   text-decoration: none;
 }
-.council-actions .council-result-action:hover,
-.council-sns-edit.council-result-action:hover {
+.council-actions .council-result-action:hover {
   border-color: var(--accent);
   background: var(--accent-soft);
+  color: var(--text);
+}
+/* Secondary controls retain their outline even while hovered or pressed;
+   otherwise the low-contrast accent undoes the dark-mode repair. */
+.council-actions .council-result-action:not(.council-primary):hover,
+.council-sns-edit.council-result-action:hover {
+  border-color: color-mix(in srgb, var(--text) 75%, transparent);
+  background: color-mix(in srgb, var(--text) 14%, var(--council-surface) 86%);
   color: var(--text);
 }
 .council-actions .council-primary.council-result-action {
