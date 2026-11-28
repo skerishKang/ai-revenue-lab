@@ -2,9 +2,12 @@
 from __future__ import annotations
 import http.server,io,math,os,re,threading
 from pathlib import Path
-from PIL import Image
 import pytest
-from playwright.sync_api import sync_playwright
+
+try:
+    from playwright.sync_api import sync_playwright
+except ImportError:  # minimal static-only CI workers do not install Chromium
+    sync_playwright = None
 STATIC=Path(__file__).resolve().parents[1]/"static"
 THEMES=("light","dark","cinematic","padiem-glass","padiem-home")
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -18,6 +21,8 @@ def url():
   finally:web.shutdown();worker.join(timeout=5)
 @pytest.fixture(scope="module")
 def browser():
+ if sync_playwright is None:
+  pytest.skip("Playwright is required for real browser contrast verification")
  with sync_playwright() as p:
   b=p.chromium.launch(headless=True)
   try:yield b
@@ -30,6 +35,7 @@ def contrast(a,b):
  return (high+.05)/(low+.05)
 @pytest.mark.parametrize("width,theme",[(w,t) for w in (390,1440) for t in THEMES]+[(2560,"padiem-home")])
 def test_empty_project_contrast_on_actual_sidebar(browser,url,width,theme):
+ from PIL import Image
  page=browser.new_page(viewport={"width":width,"height":844},reduced_motion="reduce")
  try:
   page.goto(f"{url}?theme={theme}",wait_until="domcontentloaded")
