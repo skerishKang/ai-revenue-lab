@@ -118,24 +118,6 @@
   cursor: pointer;
 }
 
-/* #8954-2: the later shared veil leaves the ribbon actions with white text
-   and almost invisible edges on bright themes. These existing project tokens
-   keep both text and button borders at 4.5:1 or better on their own surface. */
-html[data-theme="light"] .project-banner .project-banner-actions button,
-html[data-theme="padiem-glass"] .project-banner .project-banner-actions button,
-html[data-theme="padiem-home"] .project-banner .project-banner-actions button {
-  color: var(--project-strong-text);
-  border-color: var(--project-strong-text);
-  background: var(--project-solid-bg);
-}
-
-html[data-theme="dark"] .project-banner .project-banner-actions button,
-html[data-theme="cinematic"] .project-banner .project-banner-actions button {
-  color: var(--project-on-ink-text);
-  border-color: var(--project-on-ink-text);
-  background: var(--project-ink);
-}
-
 .project-dialog {
   width: min(520px, calc(100% - 28px));
   border: 0;

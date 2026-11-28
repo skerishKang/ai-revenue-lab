@@ -93,10 +93,12 @@
 
 .project-banner-actions button {
   min-height: 30px;
-  border-color: var(--line-veil-dim);
+  /* #8954-2: opaque project tokens keep labels and edges legible on all themes.
+     Edit the winning rule in place; no extra theme selector is needed. */
+  border-color: var(--text);
   border-radius: 6px;
-  background: var(--surface-veil-ghost);
-  color: var(--ws-control-muted-text);
+  background: var(--sidebar-solid);
+  color: var(--text);
   font-family: var(--font-label);
   font-size: 9px;
   letter-spacing: .035em;

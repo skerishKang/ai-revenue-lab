@@ -7,7 +7,7 @@ import threading
 from pathlib import Path
 
 import pytest
-from playwright.sync_api import sync_playwright
+sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
