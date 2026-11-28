@@ -8,6 +8,8 @@ from __future__ import annotations
 import locale_bundle
 from pathlib import Path
 
+from _support.app_factory_modules import factory_area_source
+
 _ROOT = Path(__file__).resolve().parents[2]
 _STATIC = _ROOT / "static"
 _APP = _ROOT / "app"
@@ -46,7 +48,9 @@ def sheet_has(name: str, needle: str) -> bool:
 
 
 def app_has(name: str, needle: str) -> bool:
-    return needle in app_text(name)
+    # app_factory facade and its registered owners form one source area.
+    # Preserve the existing token assertion as functions move across files.
+    return needle in (factory_area_source() if name == "app_factory.py" else app_text(name))
 
 
 def root_has(name: str, needle: str) -> bool:

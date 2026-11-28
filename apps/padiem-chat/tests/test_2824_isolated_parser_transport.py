@@ -59,6 +59,8 @@ from padiem_ai_core.isolated_parser_composition import (
 from padiem_ai_core.isolated_parser_contract import ISOLATED_PARSER_RESPONSE_UNBOUNDED
 from padiem_ai_core.isolated_parser_service import handle_isolated_parser_request
 
+from _support.app_factory_modules import factory_area_source
+
 PDF_MIME = "application/pdf"
 DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 PPTX_MIME = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
@@ -515,7 +517,7 @@ async def test_health_reports_async_parser_readiness_without_lying() -> None:
 
 
 def test_health_handler_reads_the_async_readiness_signal() -> None:
-    source = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
+    source = factory_area_source()
     assert '"binary_document_attachment_ready": bool(request.app.state.file_lane_client.ready and BINARY_KINDS <= KINDS.keys())' in source
 
 

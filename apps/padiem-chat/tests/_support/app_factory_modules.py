@@ -20,7 +20,10 @@ APP_DIR = Path(__file__).resolve().parents[2] / "app"
 ENTRY_MODULE = "app_factory"
 
 # One new owner module at a time. PR0 deliberately registers only the facade.
-FACTORY_MODULES: tuple[str, ...] = (ENTRY_MODULE,)
+FACTORY_MODULES: tuple[str, ...] = (
+    ENTRY_MODULE,
+    "app_factory_health_static",
+)
 
 # A single owner/area per future PR, not a requirement to reach 300 lines.
 # State-wrapper internal slices are separate later phases and require explicit
@@ -127,6 +130,13 @@ def modules(selection: Iterable[ModuleType | str] | None = None) -> tuple[Module
 
 def short_name(module: ModuleType) -> str:
     return module.__name__.rsplit(".", 1)[-1]
+
+def factory_area_source() -> str:
+    """Read the facade and every registered owner for existing source contracts."""
+    return "\n\n".join(
+        (APP_DIR / f"{name}.py").read_text(encoding="utf-8")
+        for name in FACTORY_MODULES
+    )
 
 def syntax_tree(module: ModuleType) -> ast.Module:
     return ast.parse(Path(module.__file__).read_text(encoding="utf-8"), filename=module.__file__)

@@ -6,6 +6,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from _support.app_factory_modules import APP_DIR, FACTORY_MODULES
+
 _TESTS = Path(__file__).resolve().parents[1]
 _CHAT = _TESTS.parent
 _STATIC = _CHAT / "static"
@@ -36,7 +38,12 @@ def util_app_js() -> str:
 
 
 def app_factory_source() -> str:
-    return (_CHAT / "app" / "app_factory.py").read_text(encoding="utf-8")
+    # The original assertions cover both the facade's routes and the migrated
+    # owner definitions. Registry-based reads keep those assertions non-vacuous.
+    return "\n\n".join(
+        (APP_DIR / f"{name}.py").read_text(encoding="utf-8")
+        for name in FACTORY_MODULES
+    )
 
 
 def app_js() -> str:
