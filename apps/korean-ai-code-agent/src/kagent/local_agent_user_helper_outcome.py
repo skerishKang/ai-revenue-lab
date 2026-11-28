@@ -104,7 +104,8 @@ def parse_session_helper_outcome(raw: bytes, material: dict, scope: str | None, 
                  "pc_session_limit", "pc_session_start_failed", "pc_session_bad_request",
                  "pc_session_input_timeout", "pc_session_key_unsupported"}
         if (header.get("code") not in codes or header.get("prompt_kind") not in (None, "secret")
-                or header.get("waiting_hint") not in (None, "input")):
+                or header.get("waiting_hint") not in (None, "input")
+                or header.get("input_state") not in (None, "unknown", "waiting_likely")):
             return refused
         if (any(key in header and type(header[key]) is not bool for key in ("alive", "ends_with_newline"))
                 or header.get("ended") not in (None, "exited", "stopped", "expired")
@@ -116,7 +117,7 @@ def parse_session_helper_outcome(raw: bytes, material: dict, scope: str | None, 
         projected = {key: header[key] for key in (
             "v", "ok", "code", "op", "session", "alive", "ended", "exit_code", "offset",
             "next_offset", "end_offset", "dropped_bytes", "idle_ms", "ends_with_newline", "backend",
-            "prompt_kind", "waiting_hint") if key in header}
+            "prompt_kind", "waiting_hint", "input_state") if key in header}
         return replace(outcome, body=json.dumps(projected, separators=(",", ":")).encode()
                        + b"\n" + output)
     except (ValueError, TypeError, KeyError, AttributeError):
@@ -156,10 +157,12 @@ def scoped_status_outcome(outcome, scope: str | None):
         if (type(row.get("alive")) is not bool or row.get("ended") not in (None, "exited", "stopped", "expired")
                 or (row.get("exit_code") is not None and type(row["exit_code"]) is not int)
                 or row.get("backend") not in ("pipe", "conpty")
+                or row.get("input_state") not in (None, "unknown", "waiting_likely")
                 or any(type(row.get(key)) is not int or row[key] < 0 for key in ("end_offset", "idle_ms"))):
             return session_refused("pc_session_bad_request")
         rows.append({key: row.get(key) for key in
-                     ("session", "alive", "ended", "exit_code", "backend", "end_offset", "idle_ms")})
+                     ("session", "alive", "ended", "exit_code", "backend", "end_offset", "idle_ms", "input_state")
+                     if key in row})
     projected = {"v": 1, "ok": True, "code": None, "op": "status", "limit": 4,
                  "features": [value for value in header["features"]
                               if isinstance(value, str) and value in {"pipe", "conpty", "secret_mask"}],

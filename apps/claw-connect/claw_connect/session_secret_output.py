@@ -176,6 +176,29 @@ class SecretOutputFilter:
         return position, False, len(pattern)
 
 
+_PYTHON_REPL_PROMPT = re.compile(r"(?:>>>|\.\.\.)[ \t]*\Z")
+_POWERSHELL_PROMPT = re.compile(r"PS[ \t]+[^>\r\n]{1,256}>[ \t]*\Z", re.IGNORECASE)
+
+
+def input_state_hint(tail: str, *, alive: bool, ends_with_newline: bool,
+                     idle_ms: int) -> str:
+    """Only recognize a prompt after at least 300ms of quiet output.
+
+    This is advisory. Process liveness and exit remain separate facts.
+    An ambiguous progress line never gives permission to type automatically.
+    """
+    if (not alive or ends_with_newline or not isinstance(tail, str) or not tail
+            or type(idle_ms) is not int or idle_ms < 300):
+        return "unknown"
+    last_line = tail.rsplit("\n", 1)[-1].rstrip("\r")
+    if (len(last_line) <= 512 and (
+            _PYTHON_REPL_PROMPT.fullmatch(last_line)
+            or _POWERSHELL_PROMPT.fullmatch(last_line)
+            or _SECRET_PROMPT.search(last_line))):
+        return "waiting_likely"
+    return "unknown"
+
+
 def prompt_hints(tail: str, *, alive: bool, ends_with_newline: bool) -> dict[str, str]:
     """Advisory hints from the current final line, never permission to input."""
     if not alive or not tail or ends_with_newline:
@@ -186,4 +209,4 @@ def prompt_hints(tail: str, *, alive: bool, ends_with_newline: bool) -> dict[str
     return hints
 
 
-__all__ = ["MASK", "SecretOutputFilter", "prompt_hints"]
+__all__ = ["MASK", "SecretOutputFilter", "prompt_hints", "input_state_hint"]

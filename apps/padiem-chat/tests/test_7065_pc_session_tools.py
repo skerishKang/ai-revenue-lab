@@ -196,3 +196,71 @@ def test_unicode_start_uses_utf8_inside_the_ascii_base64_frame():
     frame = json.loads(sessions.build_session_material(sessions._start_operation(args)))
     assert len(frame["command"]) <= sessions.MAX_OPERATION_CHARS
     assert json.loads(base64.b64decode(frame["command"]))["command"] == args["command"]
+
+
+# #8953 1/5: explicit device must match the verified session owner PC.
+def test_input_rejects_explicit_other_pc_before_any_input_is_staged(rig):
+    job = start(rig)["job_id"]
+    previous = len(rig[1].staged)
+    other = {**IDENTITY, "device_id": "dev_" + "d" * 32}
+    rejected = call(rig, "pc_shell_input",
+                    {"job_id": job, "device": "other-device", "text": "do-not-send"},
+                    identity=other)
+    assert rejected["status"] == "denied"
+    assert rejected["code"] == "pc_session_device_mismatch"
+    assert "PC" in rejected["answer"]
+    assert len(rig[1].staged) == previous
+    assert not rig[3].values and not rig[3].takes
+    # A correctly selected PC keeps the existing one-shot input semantics.
+    accepted = call(rig, "pc_shell_input",
+                    {"job_id": job, "device": "owner-device", "text": "ok"},
+                    identity=IDENTITY)
+    assert accepted["output"] == "ok\n"
+
+
+def test_multiline_input_up_to_4000_chars_is_one_dispatch(rig):
+    job = start(rig)["job_id"]
+    script = "a" * 1999 + "\n" + "b" * 2000
+    assert len(script) == 4000
+    before = len(rig[1].staged)
+    sent = call(rig, "pc_shell_input", {"job_id": job, "text": script})
+    assert sent["status"] == "completed"
+    assert sent["output"] == script + "\n"
+    assert len(rig[1].staged) == before + 1
+    assert script not in json.dumps(rig[1].staged, default=vars)
+    assert not sessions.validate_pc_session_input_arguments(
+        {"job_id": job, "text": script + "x"})
+
+
+def test_prompt_state_projection_is_closed_and_keeps_existing_hint():
+    sid = "a" * 32
+    base = {"v": 1, "ok": True, "op": "read", "session": sid,
+            "alive": True, "input_state": "waiting_likely",
+            "waiting_hint": "input", "prompt_kind": "secret",
+            "idle_ms": 410, "ends_with_newline": False}
+    result = sessions.project_session_reply(json.dumps(base) + "\nPassword: ",
+                                            op="read", session_id=sid)
+    assert result["input_state"] == "waiting_likely"
+    assert result["waiting_hint"] == "input"
+    assert result["prompt_kind"] == "secret"
+    for invalid in ("waiting", "confirmed", "connected", "", 1, True):
+        bad = {**base, "input_state": invalid}
+        assert sessions.project_session_reply(json.dumps(bad),
+            op="read", session_id=sid)["code"] == "pc_session_bad_reply"
+
+
+def test_older_helper_without_prompt_state_fails_closed_to_unknown():
+    sid = "a" * 32
+    legacy = {"v": 1, "ok": True, "op": "read", "session": sid,
+              "alive": True, "waiting_hint": "input", "ends_with_newline": False}
+    reply = sessions.project_session_reply(
+        json.dumps(legacy) + "\n>>> ", op="read", session_id=sid)
+    assert reply["input_state"] == "unknown"
+    assert reply["waiting_hint"] == "input"
+    status = {"v": 1, "ok": True, "op": "status", "features": ["pipe"],
+              "sessions": [{"session": sid, "alive": True, "backend": "pipe",
+                            "end_offset": 4, "idle_ms": 800}]}
+    state = sessions.project_session_reply(json.dumps(status), op="status", session_id=sid)
+    assert state["sessions"] == [{"session": sid, "alive": True, "backend": "pipe",
+                                  "end_offset": 4, "idle_ms": 800,
+                                  "input_state": "unknown"}]
