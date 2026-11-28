@@ -8,6 +8,8 @@ model call or Production action happens here: the B14 client is a stub.
 from __future__ import annotations
 
 import asyncio
+import json
+import os
 import sqlite3
 from pathlib import Path
 from types import SimpleNamespace
@@ -15,8 +17,10 @@ from types import SimpleNamespace
 import pytest
 from starlette.testclient import TestClient
 
+from app import history_store_conversations
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
+from app.b66_ai_chat_routes import reset_dialogue_idempotency
 from app.b66_registered_model_boundary import B14AuthorizedModelRoute
 from app.history import (
     D1HistoryStore,
@@ -603,3 +607,119 @@ def test_concurrent_same_conversation_slow_model_is_refused_without_redispatch(e
     assert timeout_result.json()["error"]["code"] == "dialogue_turn_in_progress"
     assert len(env.model.calls) == before + 1
     assert len(env.client.get(f"/api/b66/ai/dialogues/{cid}").json()["conversation"]["messages"]) == 4
+
+
+CHAT_GOLDEN_PATH = (
+    Path(__file__).resolve().parent / "test_7814_b66_ai_chat_table_golden.json"
+)
+
+
+def _chat_golden_guest(c):
+    return c.client.post(
+        "/api/b66/ai/chat",
+        json={"model_id": MODEL, "messages": [{"role": "user", "content": "안녕"}]},
+    )
+
+
+def _chat_golden_unsupported_field(c):
+    _sign_in(c.settings, c.client, USER_A)
+    return c.client.post(
+        "/api/b66/ai/chat",
+        json={
+            "model_id": MODEL,
+            "messages": [{"role": "user", "content": "안녕"}],
+            "owner": USER_A,
+        },
+    )
+
+
+def _chat_golden_success(c):
+    _sign_in(c.settings, c.client, USER_A)
+    return _chat(c.client, messages=[{"role": "user", "content": "철근 견적 알려줘"}])
+
+
+def _chat_golden_model_failure(c):
+    _sign_in(c.settings, c.client, USER_A)
+    c.model.fail = True
+    return _chat(c.client, messages=[{"role": "user", "content": "실패할 질문"}])
+
+
+def _chat_golden_replay(c):
+    _sign_in(c.settings, c.client, USER_A)
+    request = [{"role": "user", "content": "철근 견적 알려줘"}]
+    first = _chat(c.client, messages=request, turn_token="f" * 32)
+    assert first.status_code == 200, first.text
+    return _chat(c.client, messages=request, turn_token="f" * 32)
+
+
+CHAT_GOLDEN_CASES = [
+    ("비로그인", "error", _chat_golden_guest),
+    ("미지원_필드", "error", _chat_golden_unsupported_field),
+    ("정상_저장", "success", _chat_golden_success),
+    ("모델_실패", "error", _chat_golden_model_failure),
+    ("첫턴_재전송", "success", _chat_golden_replay),
+]
+
+
+def _chat_golden_rows(c):
+    conversations = c.db.execute(
+        "SELECT id,user_id,title,created_at,updated_at,product_scope "
+        "FROM conversations ORDER BY id"
+    ).fetchall()
+    messages = c.db.execute(
+        "SELECT id,conversation_id,sequence_number,role,content,created_at "
+        "FROM messages ORDER BY conversation_id,sequence_number"
+    ).fetchall()
+    return {
+        "conversations": [dict(row) for row in conversations],
+        "messages": [dict(row) for row in messages],
+    }
+
+
+def _run_chat_golden_case(name, kind, runner, c):
+    response = runner(c)
+    return {
+        "case": name,
+        "kind": kind,
+        "response": {
+            "status": response.status_code,
+            "body": response.json(),
+            "content_type": response.headers.get("content-type"),
+        },
+        "resolver_calls": [
+            {
+                "selected_model_id": req.selected_model_id,
+                "task_id": req.task_id,
+                "output_contract": req.output_contract,
+            }
+            for req in c.resolver.calls
+        ],
+        "model_calls": c.model.calls,
+        "stored": _chat_golden_rows(c),
+    }
+
+
+@pytest.mark.parametrize(
+    "name,kind,runner", CHAT_GOLDEN_CASES, ids=[case[0] for case in CHAT_GOLDEN_CASES]
+)
+def test_b66_ai_chat_table_is_identical_to_golden(name, kind, runner, env, monkeypatch):
+    message_ids = iter(["msg_" + "a" * 32, "msg_" + "b" * 32])
+    monkeypatch.setattr(history_store_conversations, "_chat_id", lambda: "chat_" + "d" * 32)
+    monkeypatch.setattr(history_store_conversations, "_message_id", lambda: next(message_ids))
+    monkeypatch.setattr(history_store_conversations, "_now_iso", lambda: "2026-11-26T00:00:00Z")
+    reset_dialogue_idempotency()
+    row = json.loads(json.dumps(_run_chat_golden_case(name, kind, runner, env), ensure_ascii=False))
+    data = json.loads(CHAT_GOLDEN_PATH.read_text(encoding="utf-8"))
+    if os.environ.get("PADIEM_REGEN_7814_AI_CHAT") == "1":
+        found = False
+        for index, item in enumerate(data):
+            if item["case"] == name:
+                data[index] = row
+                found = True
+        if not found:
+            data.append(row)
+        CHAT_GOLDEN_PATH.write_text(
+            json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+    expected = next(item for item in data if item["case"] == name)
+    assert row == expected

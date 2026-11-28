@@ -1,0 +1,211 @@
+[
+  {
+    "case": "비로그인",
+    "kind": "error",
+    "response": {
+      "status": 401,
+      "body": {
+        "ok": false,
+        "error": {
+          "code": "unauthorized",
+          "message": "로그인이 필요합니다."
+        }
+      },
+      "content_type": "application/json"
+    },
+    "resolver_calls": [],
+    "model_calls": [],
+    "stored": {
+      "conversations": [],
+      "messages": []
+    }
+  },
+  {
+    "case": "미지원_필드",
+    "kind": "error",
+    "response": {
+      "status": 400,
+      "body": {
+        "ok": false,
+        "error": {
+          "code": "forbidden_owner_field",
+          "message": "계정 범위는 서버가 결정합니다."
+        }
+      },
+      "content_type": "application/json"
+    },
+    "resolver_calls": [],
+    "model_calls": [],
+    "stored": {
+      "conversations": [],
+      "messages": []
+    }
+  },
+  {
+    "case": "정상_저장",
+    "kind": "success",
+    "response": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "answer": "AI 견적 답변",
+        "saved_quote": false,
+        "model_origin": "registered_model_completion",
+        "search": {
+          "status": "not_needed",
+          "reason": "no_external_evidence_trigger",
+          "sources": []
+        },
+        "conversation_id": "chat_dddddddddddddddddddddddddddddddd",
+        "dialogue_saved": true
+      },
+      "content_type": "application/json"
+    },
+    "resolver_calls": [
+      {
+        "selected_model_id": "google/gemini-3.5-flash-lite",
+        "task_id": "b66.quote.variable_extraction.v1",
+        "output_contract": "quote.variable-extraction.v1"
+      }
+    ],
+    "model_calls": [
+      [
+        {
+          "role": "user",
+          "content": "철근 견적 알려줘"
+        }
+      ]
+    ],
+    "stored": {
+      "conversations": [
+        {
+          "id": "chat_dddddddddddddddddddddddddddddddd",
+          "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "title": "철근 견적 알려줘",
+          "created_at": "2026-11-26T00:00:00Z",
+          "updated_at": "2026-11-26T00:00:00Z",
+          "product_scope": "b66-quote"
+        }
+      ],
+      "messages": [
+        {
+          "id": "msg_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "conversation_id": "chat_dddddddddddddddddddddddddddddddd",
+          "sequence_number": 0,
+          "role": "user",
+          "content": "철근 견적 알려줘",
+          "created_at": "2026-11-26T00:00:00Z"
+        },
+        {
+          "id": "msg_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "conversation_id": "chat_dddddddddddddddddddddddddddddddd",
+          "sequence_number": 1,
+          "role": "assistant",
+          "content": "AI 견적 답변",
+          "created_at": "2026-11-26T00:00:00Z"
+        }
+      ]
+    }
+  },
+  {
+    "case": "모델_실패",
+    "kind": "error",
+    "response": {
+      "status": 502,
+      "body": {
+        "ok": false,
+        "error": {
+          "code": "ai_chat_execution_failed",
+          "message": "AI 응답을 생성하지 못했습니다."
+        }
+      },
+      "content_type": "application/json"
+    },
+    "resolver_calls": [
+      {
+        "selected_model_id": "google/gemini-3.5-flash-lite",
+        "task_id": "b66.quote.variable_extraction.v1",
+        "output_contract": "quote.variable-extraction.v1"
+      }
+    ],
+    "model_calls": [
+      [
+        {
+          "role": "user",
+          "content": "실패할 질문"
+        }
+      ]
+    ],
+    "stored": {
+      "conversations": [],
+      "messages": []
+    }
+  },
+  {
+    "case": "첫턴_재전송",
+    "kind": "success",
+    "response": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "answer": "AI 견적 답변",
+        "saved_quote": false,
+        "model_origin": "registered_model_completion",
+        "search": {
+          "status": "replay",
+          "reason": "idempotent_replay",
+          "sources": []
+        },
+        "conversation_id": "chat_dddddddddddddddddddddddddddddddd",
+        "dialogue_saved": true,
+        "dialogue_replay": true
+      },
+      "content_type": "application/json"
+    },
+    "resolver_calls": [
+      {
+        "selected_model_id": "google/gemini-3.5-flash-lite",
+        "task_id": "b66.quote.variable_extraction.v1",
+        "output_contract": "quote.variable-extraction.v1"
+      }
+    ],
+    "model_calls": [
+      [
+        {
+          "role": "user",
+          "content": "철근 견적 알려줘"
+        }
+      ]
+    ],
+    "stored": {
+      "conversations": [
+        {
+          "id": "chat_dddddddddddddddddddddddddddddddd",
+          "user_id": "usr_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "title": "철근 견적 알려줘",
+          "created_at": "2026-11-26T00:00:00Z",
+          "updated_at": "2026-11-26T00:00:00Z",
+          "product_scope": "b66-quote"
+        }
+      ],
+      "messages": [
+        {
+          "id": "msg_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "conversation_id": "chat_dddddddddddddddddddddddddddddddd",
+          "sequence_number": 0,
+          "role": "user",
+          "content": "철근 견적 알려줘",
+          "created_at": "2026-11-26T00:00:00Z"
+        },
+        {
+          "id": "msg_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "conversation_id": "chat_dddddddddddddddddddddddddddddddd",
+          "sequence_number": 1,
+          "role": "assistant",
+          "content": "AI 견적 답변",
+          "created_at": "2026-11-26T00:00:00Z"
+        }
+      ]
+    }
+  }
+]
