@@ -288,6 +288,8 @@ html[data-theme="padiem-home"] .sidebar {
   box-shadow: 14px 0 44px rgba(26,34,48,.08), inset 0 1px 0 rgba(255,255,255,.7);
   backdrop-filter: blur(20px) saturate(110%);
 }
+/* #8954-8: keep the existing important text-role rule, but make this bright sidebar label readable. */
+html[data-theme="padiem-home"] .sidebar #projectsEmpty { --ws-control-muted-text: var(--text); }
 html[data-theme="padiem-home"] .brand { color: var(--text-deep-ink); letter-spacing: .02em; font-weight: 600; }
 html[data-theme="padiem-home"] .brand-mark,
 html[data-theme="padiem-home"] .assistant-avatar {
