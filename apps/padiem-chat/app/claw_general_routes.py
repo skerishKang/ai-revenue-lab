@@ -172,6 +172,23 @@ from .claw_general_pc_intent import (
     _requested_local_desktop,
 )
 
+from .claw_general_search import (
+    CLAW_PUBLIC_SEARCH_STATE_FLAG,
+    MAX_CLAW_SEARCH_SOURCES,
+    MAX_CLAW_SEARCH_SOURCE_TITLE_CHARS,
+    CLAW_GROUNDING_PREAMBLE_MARKER,
+    CLAW_WEB_SEARCH_EVENT,
+    _SAFE_ERROR_NAME,
+    _elapsed_ms,
+    _emit_claw_web_search,
+    _project_search_sources,
+    _claw_public_search_grounding,
+)
+
+from .claw_general_capabilities import (
+    claw_general_capabilities,
+)
+
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
 # Same canonical device identity grammar the Broker device directory and the
 # saved PC preference expose, including the composed Mesh node identity.
@@ -513,231 +530,6 @@ async def _record_completed_claw_result(
     return saved_conversation_id
 
 
-async def claw_general_capabilities(request: Request) -> JSONResponse:
-    """Read-only session-specific SSE capability and opt-in pre-dispatch diagnostic.
-
-    The normal browser GET keeps its existing one-field response and does not
-    trigger an extra Control Plane lookup when live SSE is disabled. Diagnostic
-    mode checks ONLY signed auth, P01 adapter presence, and current canonical
-    B54 session: never quota, entitlement, Engine, B14 or Provider.
-    """
-    from .auth_routes import auth_ready, current_user_id
-
-    adapter = getattr(request.app.state, "claw_p01_adapter", None)
-    runner = getattr(adapter, "_runner", None)
-    signed_in = bool(auth_ready(request) and current_user_id(request) is not None)
-    subject_lane = (
-        adapter is not None
-        and getattr(adapter, "subject_identity_lane", False) is True
-    )
-    diagnostic = request.query_params.get("diagnostic") == "pre_dispatch_v1"
-    live_candidate = bool(
-        signed_in
-        and getattr(request.app.state, "claw_live_sse_enabled", False) is True
-        and callable(getattr(runner, "run_stream", None))
-        and subject_lane
-    )
-
-    # One read-only CP session lookup maximum per GET. Normal callers with
-    # live SSE disabled do not incur an additional identity roundtrip.
-    session = None
-    if signed_in and subject_lane and (live_candidate or diagnostic):
-        from .b54_canonical_session import resolve_current_b54_canonical_session
-
-        try:
-            session = await resolve_current_b54_canonical_session(request)
-        except Exception:
-            # Read-only diagnostics never disclose Control Plane failures.
-            session = None
-
-    enabled = bool(
-        live_candidate
-        and session is not None
-        and live_stream_allowed(
-            request.app.state, session.auth_session.subject.subject_id
-        )
-    )
-    result: dict[str, object] = {"live_events_available": enabled}
-    if diagnostic:
-        # Fixed codes only. No owner, tenant, subject, session, quota, model,
-        # credential, request body or raw Control Plane exception is returned.
-        if not signed_in:
-            state = "authentication_required"
-        elif adapter is None:
-            state = "p01_adapter_unavailable"
-        elif not subject_lane:
-            state = "canonical_subject_lane_unverified"
-        elif session is None:
-            state = "canonical_b54_session_unavailable"
-        else:
-            state = "pre_quota_ready"
-        result["pre_dispatch_status"] = state
-        result["pre_dispatch_scope"] = "auth_adapter_session_only"
-    return JSONResponse(result, headers=_NO_STORE_HEADERS)
-
-
-CLAW_PUBLIC_SEARCH_STATE_FLAG = "claw_web_search_enabled"
-MAX_CLAW_SEARCH_SOURCES = 5
-MAX_CLAW_SEARCH_SOURCE_TITLE_CHARS = 200
-CLAW_GROUNDING_PREAMBLE_MARKER = "웹 근거 사용 규칙"
-
-# #4469: the search lane had no per-turn evidence in the journal. One bounded
-# line per completed stage replaces guesswork: fixed stage/outcome codes, a
-# source count and a duration. The query, conversation digest, evidence text
-# and every URL stay out of it, and telemetry never fails the turn.
-CLAW_WEB_SEARCH_EVENT = "claw_web_search"
-_SAFE_ERROR_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,63}$")
-
-
-def _elapsed_ms(started: float) -> float:
-    return (time.perf_counter() - started) * 1000.0
-
-
-def _emit_claw_web_search(
-    stage: str,
-    outcome: str,
-    *,
-    duration_ms: float,
-    sources: int = 0,
-    error: str | None = None,
-) -> None:
-    """Emit one bounded journal line for a public web search stage."""
-
-    if stage not in ("decide", "ground") or outcome not in ("ok", "skipped", "error"):
-        return
-    try:
-        event: dict[str, object] = {
-            "event": CLAW_WEB_SEARCH_EVENT,
-            "stage": stage,
-            "outcome": outcome,
-            "sources": max(0, int(sources)),
-            "duration_ms": max(0.0, round(float(duration_ms), 1)),
-        }
-        # Only an exception class name, never its message or any request text.
-        if error is not None and _SAFE_ERROR_NAME.fullmatch(error):
-            event["error"] = error
-        default_emitter(event)
-    except Exception:
-        pass
-
-
-
-def _project_search_sources(raw: Any) -> tuple[dict[str, str], ...] | None:
-    """Verified provenance only: https URL, title and retrieval timestamp."""
-
-    if not isinstance(raw, (list, tuple)) or not raw:
-        return None
-    projected: list[dict[str, str]] = []
-    for item in raw[:MAX_CLAW_SEARCH_SOURCES]:
-        if not isinstance(item, dict):
-            return None
-        url = item.get("url")
-        title = item.get("title")
-        retrieved_at = item.get("retrieved_at")
-        if not isinstance(url, str) or not url.startswith("https://"):
-            return None
-        if not isinstance(title, str) or not isinstance(retrieved_at, str):
-            return None
-        projected.append({
-            "url": url[:2048],
-            "title": title[:MAX_CLAW_SEARCH_SOURCE_TITLE_CHARS],
-            "retrieved_at": retrieved_at[:64],
-        })
-    return tuple(projected)
-
-
-async def _claw_public_search_grounding(
-    request: Request, adapter: Any, messages: Any, *, model_id: str | None = None
-) -> tuple[str | None, tuple[dict[str, str], ...]]:
-    """Let the model decide, then reuse the existing Engine evidence operation once.
-
-    The conversation digest stays inside Padiem. Only a query that survives this lane's
-    own privacy and length checks may reach a provider, and grounding plus provenance
-    stand or fall together. Any refusal degrades to the pre-search answer surface.
-    """
-
-    denied = (None, ())
-    if getattr(request.app.state, CLAW_PUBLIC_SEARCH_STATE_FLAG, False) is not True:
-        # The lane is off: today's quiet turn stays quiet, with no new log line.
-        return denied
-    decide_started = time.perf_counter()
-    client = getattr(getattr(adapter, "_runner", None), "_client", None)
-    judge = getattr(client, "search_judgement", None)
-    search_evidence = getattr(client, "search_evidence", None)
-    if not callable(judge) or not callable(search_evidence):
-        _emit_claw_web_search(
-            "decide", "skipped", duration_ms=_elapsed_ms(decide_started),
-        )
-        return denied
-    digest = build_judgement_digest(messages)
-    if digest is None:
-        _emit_claw_web_search(
-            "decide", "skipped", duration_ms=_elapsed_ms(decide_started),
-        )
-        return denied
-    if not isinstance(model_id, str) or not model_id.strip():
-        _emit_claw_web_search(
-            "decide", "skipped", duration_ms=_elapsed_ms(decide_started),
-        )
-        return denied
-    agent = evidence_agent(model_id)
-    try:
-        verdict = verdict_from_model(await judge(conversation=digest, agent=agent))
-    except Exception as exc:
-        _emit_claw_web_search(
-            "decide", "error", duration_ms=_elapsed_ms(decide_started),
-            error=type(exc).__name__,
-        )
-        return denied
-    _emit_claw_web_search("decide", "ok", duration_ms=_elapsed_ms(decide_started))
-    if not verdict.should_search:
-        _emit_claw_web_search("ground", "skipped", duration_ms=0.0)
-        return denied
-    ground_started = time.perf_counter()
-    try:
-        evidence = await search_evidence(query=verdict.query, agent=agent)
-    except Exception as exc:
-        _emit_claw_web_search(
-            "ground", "error", duration_ms=_elapsed_ms(ground_started),
-            error=type(exc).__name__,
-        )
-        return denied
-    if not isinstance(evidence, dict):
-        _emit_claw_web_search(
-            "ground", "error", duration_ms=_elapsed_ms(ground_started),
-            error="invalid_evidence",
-        )
-        return denied
-    sources = _project_search_sources(evidence.get("sources"))
-    context = evidence.get("grounding_context")
-    if sources is None:
-        # Provenance that cannot be shown means the claim cannot be made either.
-        _emit_claw_web_search(
-            "ground", "error", duration_ms=_elapsed_ms(ground_started),
-            error="invalid_evidence",
-        )
-        return denied
-    # #4379/#6848: no PADIEM total on the evidence text. The model's own
-    # registered window, applied where the registry is read, is the bound; this
-    # lane still requires the shape and Core's untrusted-data preamble.
-    if not isinstance(context, str) or not context.strip():
-        _emit_claw_web_search(
-            "ground", "error", duration_ms=_elapsed_ms(ground_started),
-            error="invalid_evidence",
-        )
-        return denied
-    if CLAW_GROUNDING_PREAMBLE_MARKER not in context:
-        # Without Core's untrusted-data preamble the text would enter the prompt as
-        # ordinary context, which is exactly the promotion this route forbids.
-        _emit_claw_web_search(
-            "ground", "error", duration_ms=_elapsed_ms(ground_started),
-            error="invalid_evidence",
-        )
-        return denied
-    _emit_claw_web_search(
-        "ground", "ok", sources=len(sources), duration_ms=_elapsed_ms(ground_started),
-    )
-    return context, sources
 
 
 
