@@ -36,6 +36,16 @@
     return secondsLeft(expiresAt) !== null;
   }
 
+  // #8915: the browser clock and the server's can disagree, and a clock that
+  // runs ahead makes every fresh file look already expired. The download
+  // response carries the server's own Date header, so the offset between the
+  // two clocks turns the deadline judgment into server time. A response
+  // without the header keeps the browser clock (null).
+  function skew(dateHeader) {
+    const stamp = Date.parse(dateHeader || "");
+    return Number.isFinite(stamp) ? stamp - Date.now() : null;
+  }
+
   function formatRemaining(totalSeconds) {
     const minutes = Math.floor(totalSeconds / 60);
     const clock = String(totalSeconds % 60).padStart(2, "0");
@@ -49,6 +59,7 @@
     findCode,
     secondsLeft,
     isStamped,
+    skew,
     formatRemaining,
   };
 })();

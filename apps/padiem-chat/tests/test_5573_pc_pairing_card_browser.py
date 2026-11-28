@@ -116,7 +116,7 @@ def test_the_harness_flow_passes_every_check():
     # of the install buttons, and both back after a fresh file is downloaded —
     # plus #8898's row-level 다시 연결 on exactly the offline row, reusing the
     # one connect flow.
-    assert output.count("PC_PAIRING_CARD_CHECK") == 50
+    assert output.count("PC_PAIRING_CARD_CHECK") == 51
     assert "FAIL" not in output
 
 

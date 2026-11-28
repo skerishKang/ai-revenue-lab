@@ -258,6 +258,7 @@
         codeId: response.headers.get(CODE_ID_HEADER),
         // The server's own deadline, so the countdown is not a browser guess.
         expiresAt: response.headers.get(EXPIRY_HEADER),
+        serverSkew: deadlineApi()?.skew(response.headers.get("date")) ?? null,
       };
     } catch (networkError) {
       return { ok: false, code: null, status: 0, body: null, text: "", codeId: null };
@@ -331,6 +332,7 @@
         codeId: response.headers.get(CODE_ID_HEADER),
         // The server's own deadline, so the countdown is not a browser guess.
         expiresAt: response.headers.get(EXPIRY_HEADER),
+        serverSkew: deadlineApi()?.skew(response.headers.get("date")) ?? null,
       };
     } catch (networkError) {
       return { ok: false, status: 0, code: null, codeId: null };
@@ -544,7 +546,9 @@
     function paintDeadline() {
       if (!activeInstall) return;
       const api = deadlineApi();
-      const left = api ? api.secondsLeft(activeInstall.expiresAt) : null;
+      const skew = activeInstall.serverSkew; // #8915: judge in server time.
+      const now = skew == null ? undefined : Date.now() + skew;
+      const left = api ? api.secondsLeft(activeInstall.expiresAt, now) : null;
       if (left === null) {
         view.deadline.textContent = t.deadline; view.deadline.hidden = false; return;
       }
@@ -570,12 +574,13 @@
       view.redownload.disabled = false;
     }
 
-    function rememberInstall(codeId, lane, expiresAt) {
+    function rememberInstall(codeId, lane, expiresAt, serverSkew) {
       if (typeof codeId !== "string" || !codeId) return;
       activeInstall = {
         codeId,
         lane,
         expiresAt: typeof expiresAt === "string" && expiresAt ? expiresAt : null,
+        serverSkew: typeof serverSkew === "number" ? serverSkew : null,
       };
       view.installTools.hidden = false;
       view.status.hidden = false;
@@ -711,11 +716,11 @@
         say(true, t.connecting);
         const program = await downloadProgram(INSTALL_EXE, INSTALL_EXE_FILENAME, {});
         if (program.ok) {
-          rememberInstall(program.codeId, "exe", program.expiresAt);
+          rememberInstall(program.codeId, "exe", program.expiresAt, program.serverSkew);
           view.steps.hidden = false;
           await load(true);
-          say(true, t.connected);
-          startPoll();
+          // #8915: an already-past deadline is already on the expired notice.
+          if (view.expiredText.hidden) { say(true, t.connected); startPoll(); }
           return true;
         }
         // Only one refusal is worth falling back on: this build has no reviewed
@@ -742,11 +747,10 @@
           return false;
         }
         saveFile(INSTALL_FILENAME, result.text);
-        rememberInstall(result.codeId, "script", result.expiresAt);
+        rememberInstall(result.codeId, "script", result.expiresAt, result.serverSkew);
         view.steps.hidden = false;
         await load(true);
-        say(true, t.connected);
-        startPoll();
+        if (view.expiredText.hidden) { say(true, t.connected); startPoll(); }
         return true;
       },
       // Cancel one install this account handed out: the token is stamped and
@@ -811,19 +815,19 @@
             return;
           }
           saveFile(INSTALL_FILENAME, file.text);
-          rememberInstall(file.codeId, "script", file.expiresAt || pairing.expires_at);
+          rememberInstall(file.codeId, "script", file.expiresAt || pairing.expires_at, file.serverSkew);
         } else {
           const program = await downloadProgram(INSTALL_EXE, INSTALL_EXE_FILENAME, payload);
           if (!program.ok) {
             say(false, messageFor(program, t), program.code || undefined);
             return;
           }
-          rememberInstall(program.codeId, "exe", program.expiresAt || pairing.expires_at);
+          rememberInstall(program.codeId, "exe", program.expiresAt || pairing.expires_at, program.serverSkew);
         }
         view.steps.hidden = false;
         await load(true);
-        say(true, t.installReprepared);
-        startPoll();
+        // #8915: an already-past deadline is already on the expired notice.
+        if (view.expiredText.hidden) { say(true, t.installReprepared); startPoll(); }
       },
       async issue() {
         say(true, t.issuing);

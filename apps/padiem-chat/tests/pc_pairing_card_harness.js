@@ -429,7 +429,9 @@ async function main() {
         install_tag: "pd-1234abcd",
         install_url: "https://mesh.example.net/meshagents?id=101"
           + "&padiem_install_token=" + TOKEN,
-        expires_at: "2026-11-03T01:10:00Z" } } },
+        // #8915: a live stamp — the old frozen 2026-11-03 date is already past
+        // and the corrected flow rightly refuses to paint over it.
+        expires_at: installExpiry } } },
   });
   await settle();
   const managedSection = managed.card.ids().find((n) => n.attrs.id === "pcPairingSection");
@@ -468,6 +470,31 @@ async function main() {
     && managedSection.ids().find((n) => (n.className || "") === "pc-pairing-status")
       .allText().includes("새 설치 파일을 준비했습니다"),
     JSON.stringify(managed.calls));
+
+  // -- #8915: a deadline already past on arrival goes to the expired notice ---
+  /* The download answer itself can carry an already-past stamp (slow link,
+   * long-open window). rememberInstall's paint routes it to the expired
+   * notice; the downloaded line and the wait must not paint over it. */
+  const prepaid = makeDom({
+    "GET *": { status: 200, body: { ok: true, links: [], codes: [] } },
+    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
+      headers: { "x-pc-pairing-code-id": "pcpair_prepaid01",
+        "x-pc-pairing-expires-at": new Date(Date.now() - 60 * 1000).toISOString(),
+        "date": new Date(Date.now() - 30 * 1000).toUTCString() } },
+  });
+  await settle();
+  await prepaid.sandbox.window.padiemPcPairing.connect();
+  await dwell(80);
+  const prepaidSection = prepaid.card.ids().find((n) => n.attrs.id === "pcPairingSection");
+  const prepaidExpired = prepaidSection.ids().find((n) => n.matchesClass("pc-pairing-expired-copy"));
+  const prepaidRedownload = prepaidSection.ids().find((n) => n.matchesClass("pc-pairing-redownload"));
+  const prepaidStatus = prepaidSection.ids().find((n) => (n.className || "") === "pc-pairing-status");
+  check("an already-past deadline shows the expired notice and 다시 받기, not the downloaded line",
+    prepaidExpired && prepaidExpired.hidden === false
+    && prepaidExpired.allText().includes("설치 파일 시간이 지났어요")
+    && prepaidRedownload && prepaidRedownload.hidden === false
+    && prepaidStatus && prepaidStatus.hidden === true,
+    prepaidSection.allText());
 
   // -- the list: two PCs, one row menu each, and what stays off the screen ---
   const listed = makeDom({

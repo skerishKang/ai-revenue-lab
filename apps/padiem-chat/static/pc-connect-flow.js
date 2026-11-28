@@ -192,6 +192,9 @@
         // download response, so the countdown is not a browser guess.
         codeId: response.headers?.get?.(CODE_ID_HEADER) || null,
         expiresAt: response.headers?.get?.(EXPIRY_HEADER) || null,
+        // #8915: the server's own clock, so an already-past deadline is
+        // judged in server time, not by a skewed PC clock.
+        serverSkew: deadlineApi()?.skew(response.headers?.get?.("date")) ?? null,
       };
     } catch (networkError) {
       return { ok: false, code: null, status: 0, body: null, text: "" };
@@ -253,6 +256,7 @@
         // beside the bytes it belongs to. Neither value is a possession proof.
         codeId: response.headers?.get?.(CODE_ID_HEADER) || null,
         expiresAt: response.headers?.get?.(EXPIRY_HEADER) || null,
+        serverSkew: deadlineApi()?.skew(response.headers?.get?.("date")) ?? null,
       };
     } catch (networkError) {
       return { ok: false, status: 0, code: null };
@@ -473,7 +477,10 @@
     if (!view.parts || !activeInstall) return;
     const t = locale();
     const api = deadlineApi();
-    const left = api ? api.secondsLeft(activeInstall.expiresAt) : null;
+    // #8915: judge the deadline in server time when the response carried its
+    // clock, so a skewed PC clock neither kills a fresh file nor revives a dead one.
+    const skew = activeInstall.serverSkew;
+    const left = api ? api.secondsLeft(activeInstall.expiresAt, skew == null ? undefined : Date.now() + skew) : null;
     if (left === null) {
       view.parts.deadline.textContent = t.deadline; view.parts.deadline.hidden = false; return;
     }
@@ -488,6 +495,7 @@
       codeId: typeof result.codeId === "string" && result.codeId ? result.codeId : null,
       expiresAt: typeof result.expiresAt === "string" && result.expiresAt
         ? result.expiresAt : null,
+      serverSkew: typeof result.serverSkew === "number" ? result.serverSkew : null,
     };
     clearDeadline();
     paintDeadline();
@@ -670,8 +678,9 @@
     if (program.ok) {
       p.refusal.textContent = "";
       rememberInstall(program);
-      showPhase("running");
-      startPoll(baseline);
+      // #8915: rememberInstall's own paint already routes an already-past
+      // deadline to the expired notice; the wait phase must not paint over it.
+      if (view.parts.expiredText.hidden) { showPhase("running"); startPoll(baseline); }
       return true;
     }
     // Only one refusal is worth falling back on: this build carries no reviewed
@@ -686,8 +695,7 @@
       if (script.ok && script.text) {
         saveFile(INSTALL_FILENAME, script.text);
         rememberInstall(script);
-        showPhase("running");
-        startPoll(baseline);
+        if (view.parts.expiredText.hidden) { showPhase("running"); startPoll(baseline); }
         return true;
       }
       p.refusal.textContent = refusalMessage(script, t);
