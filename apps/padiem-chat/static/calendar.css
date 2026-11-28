@@ -40,7 +40,7 @@
 
 .app-shell[data-state="calendar"] .conversation,
 .app-shell[data-state="calendar"] .composer-wrap {
-  display: none !important;
+  display: none;
 }
 
 /* ── Sidebar space budget ───────────────────────────────────────────────
@@ -681,7 +681,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   border-radius: 15px;
   background: var(--calendar-visual-bg);
 }
-.calendar-visual[hidden] { display: none !important; }
+.calendar-visual[hidden] { display: none; }
 .calendar-visual-weekdays,
 .calendar-month-grid,
 .calendar-week-grid {
@@ -805,10 +805,10 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
 
 
 /* Calendar B62 usability: shared Chat eyebrow, stable viewport, date-triggered editor. */
-.app-shell[data-state="calendar"] .calendar-view-help { display: none !important; }
+.app-shell[data-state="calendar"] .calendar-view-help { display: none; }
 /* Forms are launched by date/time or native event rather than top-of-page accordions. */
 .app-shell[data-state="calendar"] .calendar-record {
-  display: none !important;
+  display: none;
 }
 .app-shell[data-state="calendar"] .calendar-record.calendar-record--overlay {
   display: block !important;
@@ -893,7 +893,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   background: var(--calendar-error-compact-bg);
   border-color: var(--calendar-error-compact-border);
 }
-.app-shell[data-state="calendar"] .calendar-error[hidden] { display: none !important; }
+.app-shell[data-state="calendar"] .calendar-error[hidden] { display: none; }
 .app-shell[data-state="calendar"] .calendar-error-copy {
   min-width: 0;
   overflow: hidden;
