@@ -3264,3 +3264,87 @@ html[data-style="minimal"] .council-card:not(.active):focus-within {
     padding-left: 48px;
   }
 }
+
+/* #8778 4차 / #8784: login secondary controls need visible 3:1 outlines. */
+.council-auth .council-google,
+.council-auth .council-auth-close {
+  min-height: 44px;
+  border-color: color-mix(in srgb, var(--text) 75%, transparent);
+  background: color-mix(in srgb, var(--text) 8%, var(--council-surface) 92%);
+  color: var(--text);
+}
+.council-auth .council-google:hover,
+.council-auth .council-google:focus-visible,
+.council-auth .council-auth-close:hover,
+.council-auth .council-auth-close:focus-visible {
+  border-color: color-mix(in srgb, var(--text) 75%, transparent);
+  background: color-mix(in srgb, var(--text) 14%, var(--council-surface) 86%);
+}
+
+/* #8778 4차 / #8795: keep the "!" marker alongside the first line of the
+   message; the retry control stays in the next row. Generation and save
+   failures share this status layout without changing their copy. */
+.council-tool-notice.council-notice-error {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 8px;
+}
+.council-tool-notice.council-notice-error::before {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: center;
+  align-self: center;
+}
+.council-tool-notice.council-notice-error > .council-notice-retry {
+  grid-column: 2;
+  justify-self: start;
+}
+
+
+/* #8976 CTO — the same measurable secondary-control outline used by result
+   actions. Keep filled primary actions and navigation pills unchanged. */
+.council-saved-list .council-saved-more,
+.council-saved-item .council-saved-open,
+.council-saved-item .council-speech-use-ref,
+.council-sns-tabs .council-sns-tab:not([aria-pressed="true"]),
+#councilSnsPhotoAdd,
+.council-book-period .council-book-quick,
+.council-book-period #councilBookSelectPeriod,
+.council-archive-item .council-record-move,
+.council-theme-group button:not([aria-checked="true"]),
+#councilThemeTrigger,
+#councilAuthAction {
+  box-sizing: border-box;
+  border: 1px solid color-mix(in srgb, var(--text) 75%, transparent);
+  background: color-mix(in srgb, var(--text) 8%, var(--council-surface) 92%);
+  color: var(--text);
+}
+.council-saved-item .council-saved-open {
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  text-align: left;
+}
+.council-archive-item .council-record-move {
+  border-radius: 10px;
+}
+.council-saved-list .council-saved-more:hover,
+.council-saved-list .council-saved-more:focus-visible,
+.council-saved-item .council-saved-open:hover,
+.council-saved-item .council-saved-open:focus-visible,
+.council-sns-tabs .council-sns-tab:not([aria-pressed="true"]):hover,
+.council-sns-tabs .council-sns-tab:not([aria-pressed="true"]):focus-visible,
+#councilSnsPhotoAdd:hover,
+#councilSnsPhotoAdd:focus-visible,
+.council-book-period .council-book-quick:hover,
+.council-book-period #councilBookSelectPeriod:hover,
+.council-archive-item .council-record-move:hover,
+.council-theme-group button:not([aria-checked="true"]):hover,
+#councilThemeTrigger:hover,
+#councilAuthAction:hover {
+  border-color: color-mix(in srgb, var(--text) 75%, transparent);
+  background: color-mix(in srgb, var(--text) 14%, var(--council-surface) 86%);
+  color: var(--text);
+}

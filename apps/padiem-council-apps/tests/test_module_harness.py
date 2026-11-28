@@ -156,8 +156,9 @@ def test_the_saved_speech_list_offers_itself_as_the_style_reference() -> None:
     observed = run("generate")
     labels = observed["speech"]["savedListLabels"]
     assert len(labels) == 1
-    # #8778 A: display uses title · date · count; original .txt stays in title attr.
-    assert labels[0].startswith("축사_제78주년 광복절 기념식_2026-08-15 · ")
+    # #8778 #8788 4차: matching suffix date is shown once in the date column;
+    # original .txt and suffix remain intact in storage and the title attribute.
+    assert labels[0].startswith("축사_제78주년 광복절 기념식 · 2026-08-15 · ")
     assert observed["speech"]["refSelectedMatchesSaved"] is True
     # The picked manuscript IS the stored draft body, not a summary of it.
     assert observed["speech"]["refSelected"] == observed["speech"]["output"]
@@ -211,7 +212,8 @@ def test_reentry_restores_the_composition_and_delete_stays_in_sync() -> None:
     restored = observed["restored"]
     # the saved speech is offered again on re-entry, with its 참고로 선택 action
     assert len(restored["speechLabelsB"]) == 1
-    assert restored["speechLabelsB"][0].startswith("축사_재진입 복원 검증 행사_")
+    # #8778 #8788 4차: visible date suffix is removed from the title only.
+    assert restored["speechLabelsB"][0].startswith("축사_재진입 복원 검증 행사 · ")
     assert restored["speechRefCountB"] == 1
     # photos come back in the roster order with the blog insertion positions
     assert restored["photoCountB"] == "3장"
