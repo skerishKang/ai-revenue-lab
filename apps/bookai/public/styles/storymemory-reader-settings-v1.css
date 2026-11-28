@@ -148,3 +148,13 @@ body.smr-open #reader.active .reader-stage{z-index:100!important}
   #reader.active .smal-overflow-menu .srsg-btn{min-height:44px;font-size:14px;padding:11px 10px}
   #reader.active .smal-overflow-menu .smal-ov-ic{font-size:16px}
 }
+
+/* #8787: English-together readability, themed through tokens only. */
+:root{--sm-reader-en-ink:#51473d}
+body.smr-theme-light{--sm-reader-en-ink:#53483c}
+body.smr-theme-sepia{--sm-reader-en-ink:#4b3e30}
+body.smr-theme-dark{--sm-reader-en-ink:#ddd0bd}
+body.smr-theme-glass{--sm-reader-en-ink:#51473d}
+body.smr-en-together #reader #readerPageBody .verse-en{
+  color:var(--sm-reader-en-ink);opacity:1;
+}

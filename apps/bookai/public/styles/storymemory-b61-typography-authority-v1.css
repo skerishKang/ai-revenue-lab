@@ -353,3 +353,6 @@ body.smr-theme-dark {
   .companion-empty-state .quick button{font-size:10px!important;white-space:normal!important;min-height:32px!important}
   .companion-empty-state .voice-status{font-size:9px!important;margin:0!important}
 }
+
+/* #8787: on large monitors, rail names must remain legible. */
+@media(min-width:1920px){.panel-rail-tab{font-size:13px}}

@@ -28,3 +28,19 @@ body.smr-theme-dark .sm7573-grid-x{background:#2e261d;color:#e9e1d2;border-color
  opacity:0;transition:opacity .16s ease;
 }
 body.smr-theme-dark .sm7573-grid-fade{background:linear-gradient(transparent,#262019)}
+
+/* #8787: page-mode provenance and page count share one readable row. */
+#reader #readerPageBody > .sm-verified-source-note{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+#reader #readerPageBody > .sm-verified-source-note .sm-source-detail{flex:1;min-width:0}
+:root{--sm-source-page-ink:#514638}
+body.smr-theme-dark{--sm-source-page-ink:#e2d4be}
+.sm-reader-source-page-index{
+  flex:0 0 auto;color:var(--sm-source-page-ink);
+  font:600 13px/1.45 var(--sm-body-ko,system-ui);white-space:nowrap;
+}
+#reader #readerPageBody > .sm7573-next-chapter{
+  display:block;min-height:44px;font-size:13px;line-height:1.4;
+  word-break:keep-all;
+}
