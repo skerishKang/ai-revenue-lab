@@ -97,3 +97,7 @@ UI는 실제 JavaScript DOM harness로 저장·목록·끄기·로그인 전환�
 - `packages/padiem-ai-core/padiem_ai_core/orchestration.py`
 - `packages/padiem-ai-core/padiem_ai_core/pc_delegation.py`
 - `docs/operations/PC_DELEGATION_20261101.md` (이 보고서)
+
+## 후속 코드 위치 안내 (#7809, 2026-11-28)
+
+위 변경 파일 표는 2026-11-01 당시 변경 목록이라 그대로 둔다. 현재 `claw_general_routes.py:441-737`는 `claw_general_execute` 진입점이고, PC 의도·분기 정의는 `claw_general_pc_intent.py:58-83`(`_requested_local_command`)와 `claw_general_pc_branch.py:41-232`(`_claw_general_pc_branch`)에 있다. 이 절은 파일 위치·줄 번호 안내일 뿐 위임 권한·행동 계약을 변경하지 않는다.

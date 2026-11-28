@@ -136,7 +136,7 @@ import와 클래스 머리뿐이다. 새 파일은 `history.py`를 모듈 수준
 
 | 호출 경로 | 호출처 파일·함수 | 부르는 O 메서드 |
 |---|---|---|
-| `claw_general_execute` | `claw_general_routes.py::claw_general_execute` → `_confirmed_staged_pc_command`(1442줄), `_confirmed_staged_desktop_type`(1602줄) | `list_recent_claw_runs` |
+| `claw_general_execute` | `claw_general_routes.py:441-737::claw_general_execute` → `claw_general_pc_command.py:21-87::_confirmed_staged_pc_command`, `claw_general_pc_desktop.py:229-300::_confirmed_staged_desktop_type` | `list_recent_claw_runs` |
 | PC 디스패치 | `chat_pc_drive.py::_append_lane_answer`(1643줄), `_append_lane_notice`(1687줄) | `get_claw_run` |
 | PC 디스패치 | `chat_pc_session.py`(309–332줄) | `begin_chat_stream_turn`, `record_claw_run`, `list_recent_claw_runs`, `get_claw_run` |
 | `oracle_mesh_read_result` | `oracle_mesh_read_return_routes.py::oracle_mesh_read_result`(3325줄) | `get_claw_run` |
@@ -262,3 +262,5 @@ H7-2 후 `history.py`는 237줄(진입점·재수출 135줄 + L 잔여 6개 메�
 메시 디스패치 읽기 보조로 `__all__` 재수출경로까지 이미 고정되어 있어, 옮기면
 시험·호출경로만 흔들리고 줄 수 목표에는 변화가 없다. 최종 가드
 (`history_py_lines` 237, 상한 337)와 `PUBLIC_NAMES`가 함께 유지된다.
+
+> 2026-11-28 #7809: §8의 Claw 호출처 파일·줄만 현행 위치로 갱신했습니다. H6/H7 내역·기준 커밋은 당시 기록입니다.
