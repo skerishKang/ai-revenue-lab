@@ -6,8 +6,8 @@
   html body .app-shell .sidebar {
     /* #4905 regression guard: when menus, projects and history exceed a short
        desktop viewport, permit the sidebar to scroll instead of letting rows
-       escape and be painted underneath the account stack. #8954-3 also puts
-       help and account in normal flow and budgets height for the two lists. */
+       escape and be painted underneath the account stack. #8954-3 budgets
+       height for the two lists while preserving the pinned account. */
     overflow: hidden;
     overflow-y: auto !important;
     display: flex;
@@ -16,8 +16,8 @@
     height: 100dvh;
     box-sizing: border-box;
     /* Fit the pinned controls above the account stack before lists scroll. */
-    gap: 8px;
-    padding-block: 12px;
+    gap: 0;
+    padding-block: 4px;
   }
   html body .app-shell .sidebar > :not(#historySection) {
     flex-shrink: 0;
@@ -35,7 +35,7 @@
     display: flex;
     flex-direction: column;
     /* The list owns scrolling, the heading remains visible, and pinned tools fit. */
-    min-height: 100px;
+    min-height: 120px;
     /* Must never be `visible`. Rows that escape this box are painted below
        .sidebar-bottom and then intercept every pointer event aimed at the row.
        #historyList below stays the single scrollport for the conversation list. */
@@ -57,9 +57,9 @@
     scrollbar-color: rgba(237,243,248,.35) transparent;
     scroll-padding-block: 8px 34px;
     padding-bottom: 28px;
-    /* Fade a partial final row rather than slicing its text at the separator. */
-    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 24px), transparent);
-    mask-image: linear-gradient(to bottom, black calc(100% - 24px), transparent);
+    /* Fade only the last few pixels; glass disables this mask to preserve backdrop contrast. */
+    -webkit-mask-image: var(--sidebar-history-edge-mask, linear-gradient(to bottom, black calc(100% - 8px), transparent));
+    mask-image: var(--sidebar-history-edge-mask, linear-gradient(to bottom, black calc(100% - 8px), transparent));
   }
   html body .app-shell .sidebar #historySection.is-collapsed #historyList {
     display: none;
@@ -67,10 +67,7 @@
   html body .app-shell .sidebar .sidebar-bottom {
     flex: 0 0 auto;
     margin-top: auto;
-    /* The sticky layer used to cover the help link when content overflowed. */
-    position: static;
-    bottom: auto;
-    z-index: auto;
+    /* Keep the account pinned; let the two lists yield height first. */
   }
 }
 

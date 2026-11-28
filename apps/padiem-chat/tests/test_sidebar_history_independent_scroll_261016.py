@@ -37,12 +37,11 @@ def test_desktop_scrollport_and_nonoverlapping_account_are_explicit():
     assert _has_selector(facts, "#historySection:not([hidden])")
     assert ("flex", "1 1 auto") in declarations
     # The smaller desktop history floor shares height with the help/account stack.
-    assert ("min-height", "100px") in declarations
+    assert ("min-height", "120px") in declarations
     assert _has_selector(facts, "#historyList")
     assert ("overflow-y", "auto") in declarations
     assert _has_selector(facts, ".sidebar-bottom")
     assert ("margin-top", "auto") in declarations
-    assert ("position", "static") in declarations  # no sticky overlay on help
     assert ("max-height", "min(32dvh, 290px)") in declarations
 
 

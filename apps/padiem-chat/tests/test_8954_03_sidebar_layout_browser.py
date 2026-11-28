@@ -84,10 +84,14 @@ def test_desktop_sidebar_history_and_help_do_not_overlap(browser, local_url, the
             accountPosition:getComputedStyle(account).position};
         }""")
         assert result["historyScroll"], result
-        assert result["accountPosition"] != "sticky", result
         assert result["helpBottom"] <= result["accountTop"], result
-        assert result["mask"] != "none", result
+        if theme == "padiem-glass":
+            assert result["mask"] == "none", result
+        else:
+            assert result["mask"] != "none", result
         page.locator("#helpNavLink").scroll_into_view_if_needed(timeout=3000)
         assert page.locator("#helpNavLink").is_visible()
+        # Pointer hit-testing must succeed; an overlay may obscure a visible link.
+        page.locator("#helpNavLink").click(trial=True, timeout=3000)
     finally:
         page.close()
