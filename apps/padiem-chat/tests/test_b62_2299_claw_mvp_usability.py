@@ -120,7 +120,7 @@ def test_preview_execute_distinction_without_technical_jargon() -> None:
 def test_duplicate_submit_guard_and_bounded_states() -> None:
     # Single in-flight flag gates both actions
     assert "clawInFlight" in APP
-    assert "setClawButtonsBusy" in APP
+    assert "setClawButtonsBusy" in CLAW_STATUS and "deps.setClawButtonsBusy(true)" in CLAW_RUN + CLAW_FORM
     assert "aria-busy" in CLAW_STATUS
     assert 'data-claw-state' in INDEX or 'clawStatus' in INDEX or 'claw-status' in WORKSPACE_CSS.lower()
     # Buttons disabled via JS when busy
@@ -131,7 +131,7 @@ def test_duplicate_submit_guard_and_bounded_states() -> None:
     # CSS treats disabled/blocked state as not-allowed
     assert "cursor: not-allowed" in WORKSPACE_CSS
     # States: idle/submitting/success/failure must exist as data attributes/classes
-    assert "setClawAreaState" in APP
+    assert "setClawAreaState" in CLAW_STATUS and "deps.setClawAreaState" in CLAW_RUN + CLAW_FORM
     assert '"idle"' in APP or "'idle'" in APP
     assert '"submitting"' in APP + CLAW_FORM or "'submitting'" in APP + CLAW_FORM
     assert '"success"' in APP + CLAW_FORM or "'success'" in APP + CLAW_FORM
@@ -148,7 +148,7 @@ def test_idle_submitting_success_failure_states_bounded() -> None:
     assert 'aria-live="polite"' in INDEX
     # Status region exists and is used for all transitions
     assert 'id="clawStatus"' in INDEX
-    assert "setClawStatus" in APP
+    assert "setClawStatus" in CLAW_STATUS and "deps.setClawStatus" in CLAW_RUN + CLAW_FORM
     assert "claw-status-preview-running" in LOCALE
     assert "claw-status-execute-running" in LOCALE
     assert "claw-status-error" in LOCALE

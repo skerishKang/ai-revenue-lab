@@ -122,7 +122,7 @@ def test_execute_and_artifact_flow_contract_unchanged() -> None:
     # 등록부(app.provide("clawRun")) 경유로 연결된다(이중 소유 금지).
     assert "renderClawArtifactMeta" in CLAW_RUN
     assert 'app.provide("clawRun",' in APP
-    assert "downloadClawArtifact" in APP
+    assert "downloadClawArtifact" in CLAW_RUN and "deps.downloadClawArtifact" in CLAW_FORM
 
 
 def test_action_chip_semantics_unchanged() -> None:
