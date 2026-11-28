@@ -141,7 +141,8 @@
 .pc-connect-note {
   position: fixed;
   left: 50%;
-  bottom: 24px;
+  /* Keep the connection notice above the measured composer and its microphone. */
+  bottom: calc(var(--padiem-composer-clearance, 230px) + 16px);
   z-index: 230;
   transform: translateX(-50%);
   max-width: calc(100vw - 32px);
