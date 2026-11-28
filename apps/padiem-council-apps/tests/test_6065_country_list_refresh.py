@@ -31,7 +31,17 @@ def only(pattern, rows):
     # stored filenames remain unchanged, and country filtering still applies.
     assert len(rows) == 1, rows
     display = rows[0]
-    candidate = display.split(" · ", 1)[0] + ".txt" if " · " in display else display
+    # #8778 #8788 4차: when the title suffix matches the metadata date, the
+    # visible name omits it. Reconstruct it only to test the old filename
+    # family / country contract; never change the real stored filename.
+    parts = display.split(" · ")
+    if len(parts) == 1:
+        # Raw storedCountries names still carry the original .txt and date.
+        candidate = display
+    else:
+        visible_title, date = parts[:2]
+        suffix = "_" + date if re.fullmatch(r"\d{4}-\d{2}-\d{2}", date) and not visible_title.endswith("_" + date) else ""
+        candidate = visible_title + suffix + ".txt"
     assert pattern.match(candidate), rows
     return rows[0]
 

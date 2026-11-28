@@ -461,39 +461,15 @@
   // a readable manuscript name, update date, and only a genuinely known count.
   function savedFileCaption(file) {
     const name = storedName(file);
-    const title = name.replace(/\.txt$/i, "");
+    let title = name.replace(/\.txt$/i, "");
     const stamp = String(file.updated_at || file.created_at || "").slice(0, 10)
       || ((name.match(/\d{4}-\d{2}-\d{2}/) || [])[0]);
-    const count = Number(file.content_chars);
-    const chars = Number.isFinite(count) && count > 0 ? count + "자" : "";
-    return [title, stamp, chars].filter(Boolean).join(" · ");
-  }
-
-  function addPagedSavedRows(container, list, files, render) {
-    let count = 0;
-    let more = null;
-    const grow = () => {
-      const next = files.slice(count, count + 10);
-      next.forEach((file) => list.appendChild(render(file)));
-      count += next.length;
-      if (more && more.parentNode) more.parentNode.removeChild(more);
-      if (count < files.length) {
-        more = el("button", "council-saved-more", "더 보기");
-        more.type = "button";
-        more.addEventListener("click", grow);
-        container.appendChild(more);
-      }
-    };
-    grow();
-  }
-
-  // #8778 A / E: keep the original filename in title/identity while showing
-  // a readable manuscript name, update date, and only a genuinely known count.
-  function savedFileCaption(file) {
-    const name = storedName(file);
-    const title = name.replace(/\.txt$/i, "");
-    const stamp = String(file.updated_at || file.created_at || "").slice(0, 10)
-      || ((name.match(/\d{4}-\d{2}-\d{2}/) || [])[0]);
+    // #8778 #8788: the date is already displayed separately; do not repeat
+    // a matching _YYYY-MM-DD suffix in the visible title. The file name used
+    // for reading and saved on the button title attribute stays unchanged.
+    if (stamp && /^\d{4}-\d{2}-\d{2}$/.test(stamp) && title.endsWith("_" + stamp)) {
+      title = title.slice(0, -stamp.length - 1);
+    }
     const count = Number(file.content_chars);
     const chars = Number.isFinite(count) && count > 0 ? count + "자" : "";
     return [title, stamp, chars].filter(Boolean).join(" · ");

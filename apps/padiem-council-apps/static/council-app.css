@@ -3264,3 +3264,40 @@ html[data-style="minimal"] .council-card:not(.active):focus-within {
     padding-left: 48px;
   }
 }
+
+/* #8778 4차 / #8784: login secondary controls need visible 3:1 outlines. */
+.council-auth .council-google,
+.council-auth .council-auth-close {
+  min-height: 44px;
+  border-color: color-mix(in srgb, var(--text) 75%, transparent);
+  background: color-mix(in srgb, var(--text) 8%, var(--council-surface) 92%);
+  color: var(--text);
+}
+.council-auth .council-google:hover,
+.council-auth .council-google:focus-visible,
+.council-auth .council-auth-close:hover,
+.council-auth .council-auth-close:focus-visible {
+  border-color: color-mix(in srgb, var(--text) 75%, transparent);
+  background: color-mix(in srgb, var(--text) 14%, var(--council-surface) 86%);
+}
+
+/* #8778 4차 / #8795: keep the "!" marker alongside the first line of the
+   message; the retry control stays in the next row. Generation and save
+   failures share this status layout without changing their copy. */
+.council-tool-notice.council-notice-error {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 8px;
+}
+.council-tool-notice.council-notice-error::before {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: center;
+  align-self: center;
+}
+.council-tool-notice.council-notice-error > .council-notice-retry {
+  grid-column: 2;
+  justify-self: start;
+}
