@@ -1,0 +1,14 @@
+{
+  "media.html 390 light": {
+    "unaffected_static_pixels_equal": true,
+    "difference_bounds": null
+  },
+  "media.html 390 dark": {
+    "unaffected_static_pixels_equal": true,
+    "difference_bounds": null
+  },
+  "media.html 1440 light": {
+    "unaffected_static_pixels_equal": true,
+    "difference_bounds": null
+  }
+}
