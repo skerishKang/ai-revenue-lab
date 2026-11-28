@@ -1,5 +1,5 @@
 // #7216 R5 A5b — Claw manual form submit/preview and the execute/retry control
-// wiring. Moved verbatim from app.js; app.js keeps the declaration block and
+// wiring. Shared DOM references remain in app.js; the module owns private action state and
 // calls wireManualForm()/wireExecuteControls() at the original positions.
 (() => {
   "use strict";
@@ -8,7 +8,9 @@
     create(deps) {
       // Manual submit is the only path that posts the preview request; the
       // execute and retry buttons share the single run entry point.
-      function wireModeChips(state) {
+      let clawLastAction;
+      function initializeAction(value) { clawLastAction = value; }
+      function wireModeChips() {
         if (deps.clawManualForm) {
           const modeChips = deps.clawManualForm.querySelectorAll(".claw-chip[data-claw-action]");
           modeChips.forEach((chip) => {
@@ -18,7 +20,7 @@
               modeChips.forEach((other) => {
                 other.setAttribute("aria-pressed", other === chip ? "true" : "false");
               });
-              state.clawLastAction = action || null;
+              clawLastAction = action || null;
               deps.input.focus();
             });
           });
@@ -142,7 +144,7 @@
         });
       }
 
-      return { wireModeChips, wireManualForm, wireExecuteControls };
+      return { initializeAction, get clawLastAction() { return clawLastAction; }, wireModeChips, wireManualForm, wireExecuteControls };
     },
   };
 })();
