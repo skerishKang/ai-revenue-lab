@@ -20,7 +20,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from app import app_factory
+from _support.app_factory_modules import factory_area_source
 from app import oracle_mesh_read_return_routes as routes
 from app.history import HistoryError, HistoryForbidden
 from app.claw_local_task_result_projection import result_message_id
@@ -1371,7 +1371,7 @@ def test_the_busy_route_is_mounted_on_the_same_channel_proof_as_poll():
     source = inspect.getsource(routes.oracle_mesh_read_busy_check)
     assert "_channel_proof(request, mesh_source)" in source, "the same secret gate"
     assert routes.ORACLE_MESH_READ_BUSY_PATH == "/api/claw/connector/mesh-reads/busy"
-    app_source = inspect.getsource(app_factory)
+    app_source = factory_area_source()
     assert ('Route(ORACLE_MESH_READ_BUSY_PATH, oracle_mesh_read_busy_check,'
             ' methods=["POST"])') in app_source
 
@@ -1478,7 +1478,7 @@ def test_the_lane_status_reports_the_executor_beat_only_for_devices_it_is_asked_
 
 
 def test_the_lane_status_route_is_mounted_where_the_other_executor_legs_are():
-    source = inspect.getsource(app_factory)
+    source = factory_area_source()
     assert ("Route(ORACLE_MESH_READ_LANE_STATUS_PATH, oracle_mesh_read_lane_status,"
             ' methods=["POST"])') in source
     handler = inspect.getsource(routes.oracle_mesh_read_lane_status)

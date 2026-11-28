@@ -35,6 +35,7 @@ FACTORY_MODULES: tuple[str, ...] = (
     "app_factory_routes_pc",
     "app_factory_routes_static",
     "app_factory_routes_enrollment",
+    "app_factory_routes_mesh",
 )
 
 # A single owner/area per future PR, not a requirement to reach 300 lines.
