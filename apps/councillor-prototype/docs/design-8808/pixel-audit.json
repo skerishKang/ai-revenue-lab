@@ -1,0 +1,166 @@
+{
+  "unchanged_activity_regions": {
+    "activity-default-390-light": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "activity-large_text-390-light": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "activity-filter-390-dark": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "activity-bottom-1440-light": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    }
+  },
+  "other_pages": {
+    "index.html 390 light": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "index.html 390 dark": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "index.html 1440 light": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "index.html 1440 dark": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "about.html 390 light": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "about.html 390 dark": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "about.html 1440 light": {
+      "equal": false,
+      "bbox": [
+        80,
+        646,
+        960,
+        900
+      ],
+      "changed_pixels": 63946
+    },
+    "about.html 1440 dark": {
+      "equal": false,
+      "bbox": [
+        80,
+        646,
+        960,
+        900
+      ],
+      "changed_pixels": 63988
+    },
+    "policy.html 390 light": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "policy.html 390 dark": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "policy.html 1440 light": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "policy.html 1440 dark": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "media.html 390 light": {
+      "equal": false,
+      "bbox": [
+        33,
+        229,
+        176,
+        694
+      ],
+      "changed_pixels": 38176
+    },
+    "media.html 390 dark": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "media.html 1440 light": {
+      "equal": false,
+      "bbox": [
+        531,
+        238,
+        909,
+        718
+      ],
+      "changed_pixels": 64498
+    },
+    "media.html 1440 dark": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "news.html 390 light": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "news.html 390 dark": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "news.html 1440 light": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "news.html 1440 dark": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "404.html 390 light": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "404.html 390 dark": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "404.html 1440 light": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    },
+    "404.html 1440 dark": {
+      "equal": true,
+      "bbox": null,
+      "changed_pixels": 0
+    }
+  }
+}

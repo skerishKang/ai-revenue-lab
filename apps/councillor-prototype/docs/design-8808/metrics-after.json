@@ -1,0 +1,186 @@
+{
+  "activity-default-390-light": {
+    "firstTitle": {
+      "x": 41,
+      "y": 346.234375,
+      "width": 308,
+      "height": 98.375,
+      "bottom": 444.609375
+    },
+    "list": {
+      "x": 20,
+      "y": 293.4375,
+      "width": 350,
+      "height": 1583.96875,
+      "bottom": 1877.40625
+    },
+    "glossary": {
+      "x": 20,
+      "y": 1901.40625,
+      "width": 350,
+      "height": 192.734375,
+      "bottom": 2094.140625
+    },
+    "source": {
+      "x": 20,
+      "y": 2114.140625,
+      "width": 350,
+      "height": 47.59375,
+      "bottom": 2161.734375
+    },
+    "glossaryColumns": "350px",
+    "glossaryItems": 7,
+    "cardCount": 10,
+    "more": {
+      "x": 41,
+      "y": 400.609375,
+      "width": 308,
+      "height": 44,
+      "bottom": 444.609375
+    },
+    "firstTitleTextBottom": 396.421875,
+    "firstTitleTextLeft": 41,
+    "theme": "light",
+    "size": "normal",
+    "scrollY": 0,
+    "horizontalOverflow": 0
+  },
+  "activity-large_text-390-light": {
+    "firstTitle": {
+      "x": 41,
+      "y": 368.546875,
+      "width": 308,
+      "height": 112,
+      "bottom": 480.546875
+    },
+    "list": {
+      "x": 20,
+      "y": 310.65625,
+      "width": 350,
+      "height": 1913.90625,
+      "bottom": 2224.5625
+    },
+    "glossary": {
+      "x": 20,
+      "y": 2248.5625,
+      "width": 350,
+      "height": 260,
+      "bottom": 2508.5625
+    },
+    "source": {
+      "x": 20,
+      "y": 2528.5625,
+      "width": 350,
+      "height": 57.78125,
+      "bottom": 2586.34375
+    },
+    "glossaryColumns": "350px",
+    "glossaryItems": 7,
+    "cardCount": 10,
+    "more": {
+      "x": 41,
+      "y": 436.546875,
+      "width": 308,
+      "height": 44,
+      "bottom": 480.546875
+    },
+    "firstTitleTextBottom": 431.546875,
+    "firstTitleTextLeft": 41,
+    "theme": "light",
+    "size": "large",
+    "scrollY": 0,
+    "horizontalOverflow": 0
+  },
+  "activity-filter-390-dark": {
+    "firstTitle": {
+      "x": 41,
+      "y": 346.234375,
+      "width": 308,
+      "height": 98.375,
+      "bottom": 444.609375
+    },
+    "list": {
+      "x": 20,
+      "y": 293.4375,
+      "width": 350,
+      "height": 312.15625,
+      "bottom": 605.59375
+    },
+    "glossary": {
+      "x": 20,
+      "y": 629.59375,
+      "width": 350,
+      "height": 192.734375,
+      "bottom": 822.328125
+    },
+    "source": {
+      "x": 20,
+      "y": 842.328125,
+      "width": 350,
+      "height": 47.59375,
+      "bottom": 889.921875
+    },
+    "glossaryColumns": "350px",
+    "glossaryItems": 7,
+    "cardCount": 2,
+    "more": {
+      "x": 41,
+      "y": 400.609375,
+      "width": 308,
+      "height": 44,
+      "bottom": 444.609375
+    },
+    "firstTitleTextBottom": 396.421875,
+    "firstTitleTextLeft": 41,
+    "theme": "dark",
+    "size": "normal",
+    "scrollY": 0,
+    "horizontalOverflow": 0
+  },
+  "activity-bottom-1440-light": {
+    "firstTitle": {
+      "x": 267,
+      "y": -81.953125,
+      "width": 1072,
+      "height": 27.1875,
+      "bottom": -54.765625
+    },
+    "list": {
+      "x": 80,
+      "y": -103.359375,
+      "width": 1280,
+      "height": 691,
+      "bottom": 587.640625
+    },
+    "glossary": {
+      "x": 80,
+      "y": 611.640625,
+      "width": 1280,
+      "height": 50.78125,
+      "bottom": 662.421875
+    },
+    "source": {
+      "x": 80,
+      "y": 682.421875,
+      "width": 1280,
+      "height": 23.796875,
+      "bottom": 706.21875
+    },
+    "glossaryColumns": "308px 308px 308px 308px",
+    "glossaryItems": 7,
+    "cardCount": 10,
+    "more": {
+      "x": 1294.21875,
+      "y": -78.953125,
+      "width": 44.78125,
+      "height": 23.796875,
+      "bottom": -55.15625
+    },
+    "firstTitleTextBottom": -58.953125,
+    "firstTitleTextLeft": 267,
+    "theme": "light",
+    "size": "normal",
+    "scrollY": 415,
+    "horizontalOverflow": 0
+  }
+}
