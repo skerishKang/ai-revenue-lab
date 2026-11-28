@@ -3,7 +3,7 @@
 }
 
 .model-pill[data-mode-control="true"] {
-  display: inline-flex !important;
+  display: inline-flex;
   min-height: 40px;
   align-items: center;
   gap: 7px;
@@ -71,7 +71,7 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
 }
 
 .mode-presentation-panel[hidden] {
-  display: none !important;
+  display: none;
 }
 
 .mode-presentation-header {
@@ -312,7 +312,7 @@ html[data-theme="padiem-glass"] .mode-option-state {
 }
 
 .mode-custom-credential[hidden] {
-  display: none !important;
+  display: none;
 }
 
 .mode-custom-key-label {
