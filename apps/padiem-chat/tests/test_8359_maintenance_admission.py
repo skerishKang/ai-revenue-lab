@@ -121,25 +121,15 @@ def test_missing_install_evidence_never_opens_unknown_probe_refresh(change):
 
 
 @pytest.mark.parametrize("watcher", [None, False, True])
-def test_current_updater_with_unobserved_watcher_selects_only_fixed_refresh(watcher):
+def test_current_updater_ignores_legacy_watcher_field(watcher):
     state = {**OBS["state"], "helper_version": MANIFEST["version"],
              "updater_source_sha256": SOURCE_SHA256}
     if watcher is None:
-        state.pop("self_heal_task_present")
+        state.pop("self_heal_task_present", None)
     else:
         state["self_heal_task_present"] = watcher
     observation = {**OBS, "state": state}
-    intent, reason = admit(observation=observation)
-    if watcher is True:
-        assert intent is None and reason == "already_current"
-    elif watcher is None:
-        assert intent is None and reason == "probe_needed"
-    else:
-        assert reason is None and intent.action == "refresh"
-        assert intent.command == registration_command()
-        assert admit(observation=observation, owner_session=False) == (None, "owner_unresolved")
-        assert admit(observation=observation, managed_links=[]) == (None, "not_managed")
-        assert admit(observation=observation, rollout={**ROLLOUT, "stage": "paused"}) == (None, "stage_closed")
+    assert admit(observation=observation) == (None, "already_current")
 
 
 def test_confirmed_drift_refreshes_even_when_watcher_unobserved():

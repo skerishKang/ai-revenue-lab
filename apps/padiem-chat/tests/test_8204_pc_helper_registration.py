@@ -25,7 +25,7 @@ DEVICES = ["node//current", "node//old", "node//missing", "node//denied", "node/
 @pytest.mark.parametrize("change,allowed,elapsed,expected", [
     ({"updater_source_sha256": SOURCE_SHA256}, True, 0, ("skipped", "already_current")),
     ({"updater_source_sha256": SOURCE_SHA256, "self_heal_task_present": True}, True, 0, ("skipped", "already_current")),
-    ({"updater_source_sha256": SOURCE_SHA256, "self_heal_task_present": False}, True, 0, ("refresh", "watcher_missing")),
+    ({"updater_source_sha256": SOURCE_SHA256, "self_heal_task_present": False}, True, 0, ("skipped", "already_current")),
     ({"self_heal_task_present": False}, True, 0, ("refresh", "source_changed")),
     ({}, True, 0, ("refresh", "source_changed")),
     ({"helper_status_present": False}, True, 0, ("install", "status_missing")),
@@ -145,34 +145,28 @@ def test_stale_window_outlasts_the_helper_status_round():
     assert MAX_AGE.total_seconds() > DRIVE_REFRESH_SECONDS * 2
 
 
-def test_refresh_command_registers_the_fixed_watcher_after_the_updater():
-    """#8359 F7: the one refresh command also keeps the SYSTEM self-heal task.
-
-    Both payloads are the repository's own fixed bytes. The watcher is
-    registered only when the PC has an interpreter (read the installer's way)
-    and is not registered yet; a current updater with a present watcher is
-    skipped; no interpreter leaves the updater refreshed and says so.
-    """
-    from kagent.pc_self_heal_task import TASK_NAME, render_watcher_command
+def test_refresh_command_registers_updater_only_no_watcher():
+    """#8895: a helper refresh never registers or checks a watcher task."""
     from app.pc_helper_update import render_helper_updater_command
 
     command = registration_command()
-    updater, watcher = render_helper_updater_command(), render_watcher_command()
-    assert command.count(updater) == 1 and command.count(watcher) == 1
-    assert command.index(updater) < command.index(watcher)
-    assert "-TaskName " + TASK_NAME + " -ErrorAction SilentlyContinue" in command
-    assert "$py=$env:PADIEM_PYTHON" in command and "Get-Command python.exe" in command
-    assert "if($same -and $task -and ($watcher -or -not $py))" in command
+    updater = render_helper_updater_command()
+    assert command.count(updater) == 1
+    assert "if($same -and $task){" in command
     assert "if(-not($same -and $task)){" + updater in command
-    assert "if($py -and -not $watcher){$PythonExecutable=$py;" + watcher in command
-    for marker in ("skipped:already_current", "failed:updater_running", "failed:digest_unverified",
-                   "failed:watcher_unregistered", "updated:registered", "updated:watcher_python_missing",
+    assert "PadiemPcSelfHeal" not in command
+    assert "self_heal" not in command
+    assert "$watcher" not in command and "$py=" not in command
+    for marker in ("skipped:already_current", "failed:updater_running",
+                   "failed:digest_unverified", "updated:registered",
                    "failed:registration_failed"):
         assert command.count("PADIEM_HELPER_REFRESH:" + marker) == 1
-    # The marker vocabulary and the receipt parser agree.
-    for text in ("updated:registered", "updated:watcher_python_missing", "failed:watcher_unregistered"):
-        assert parse_receipt("PADIEM_HELPER_REFRESH:" + text)["reason"] == text.split(":")[1]
+    assert "PADIEM_HELPER_REFRESH:failed:watcher_unregistered" not in command
+    assert "PADIEM_HELPER_REFRESH:updated:watcher_python_missing" not in command
     assert "http" not in command.replace("FromBase64String", "")
+    # Retain parser support for receipts already dispatched before #8895.
+    for old in ("updated:watcher_python_missing", "failed:watcher_unregistered"):
+        assert parse_receipt("PADIEM_HELPER_REFRESH:" + old)["reason"] == old.split(":")[1]
 
 
 def test_dispatched_terminal_attempt_records_reason_and_then_takes_over():

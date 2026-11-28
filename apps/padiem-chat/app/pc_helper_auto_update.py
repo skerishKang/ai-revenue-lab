@@ -67,10 +67,6 @@ def needs_update(observation: Any, *, source_sha256: str, min_version: str) -> b
         return True
     if not state.get("updater_task_present"):
         return True
-    # #8359 F7: an observed absence of the self-heal watcher is maintenance
-    # work; an executor that does not report the key yet is not.
-    if state.get("self_heal_task_present") is False:
-        return True
     version = observation.get("helper_version") or state.get("helper_version")
     current, minimum = version_parts(version), version_parts(min_version)
     if current is None:

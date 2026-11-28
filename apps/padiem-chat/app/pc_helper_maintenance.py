@@ -134,9 +134,7 @@ def maintenance_candidate(*, env, device_id, observation, manifest, rollout, now
     # Only the authenticated explicit missing status permits fresh install.
     if plan["action"] == "install" and state.get("helper_status_present") is not False:
         return None, "digest_unverified"
-    # A readable helper status file proves the helper is installed, but a
-    # refused Mesh task-file download does NOT prove the updater or watcher
-    # is absent. Never turn transport uncertainty into a SYSTEM refresh.
+    # Missing updater evidence alone is not proof of a missing task (#8895).
     installed = (state.get("helper_status_present") is True
             and isinstance(state.get("helper_sha256"), str)
             and _DIGEST.fullmatch(state["helper_sha256"]) is not None
@@ -158,11 +156,6 @@ def maintenance_candidate(*, env, device_id, observation, manifest, rollout, now
         minimum = version_parts(manifest.get("min_supported_version"))
         if current is not None and minimum is not None and current < minimum:
             plan = {"action": "refresh", "reason": "outdated_release"}
-        elif installed and state.get("self_heal_task_present") is None:
-            # Source/task match and installed release is current, but watcher
-            # observation is missing: wait for an independently observed
-            # true/false, without consuming a PC attempt or owner session.
-            return None, "probe_needed"
     fixed = command_for_plan(plan, manifest=manifest, env=env)
     if fixed is None:
         return None, "install_switch_off" if plan["action"] == "install" else plan["reason"]

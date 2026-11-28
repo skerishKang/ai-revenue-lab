@@ -149,10 +149,6 @@ out.updater_source_present=exists(up);
 if(out.updater_source_present&&fs.statSync(up).size<=131072)
 out.updater_source_sha256=sha256(fs.readFileSync(up));
 }catch(e){}
-try{
-var st='\\Tasks\\Padiem\\PadiemPcSelfHeal';
-out.self_heal_task_present=exists(windows+'\\System32'+st)||exists(windows+'\\Sysnative'+st);
-}catch(e){}
 out.ok=true;
 return out;
 })(__PADIEM_REQUEST_ID__)
@@ -249,7 +245,6 @@ class MeshHelperReadyReporter:
 HELPER_STATUS_READ_PATH = "C:\\ProgramData\\Padiem\\helper-status.json"
 _UPDATER_SOURCE_READ_PATH = r"C:\ProgramData\PadiemHelperUpdater\update.ps1"
 _UPDATER_TASK_READ_PATH = r"C:\Windows\System32\Tasks\Padiem\PadiemUserHelperUpdater"
-_WATCHER_TASK_READ_PATH = r"C:\Windows\System32\Tasks\Padiem\PadiemPcSelfHeal"
 # #8204: the Mesh Agent's own executable carries its build date in the Windows
 # version resource. The private read port already fetches fixed files from the
 # same PC; this adds no command and no write. The installed agent's durable
@@ -544,8 +539,6 @@ class HelperStatusReadFallback:
             probes.append(("updater_source", _UPDATER_SOURCE_READ_PATH, 131072))
         if state.get("updater_task_present") is None:
             probes.append(("updater_task", _UPDATER_TASK_READ_PATH, 32768))
-        if state.get("self_heal_task_present") is None:
-            probes.append(("self_heal_task", _WATCHER_TASK_READ_PATH, 32768))
         if not probes:
             return
         ref = node.rsplit("/", 1)[-1] if node.startswith("node/") else node
@@ -604,6 +597,10 @@ class HelperStatusReadFallback:
         states = _console_states(rows, nodes)
         for node in nodes:
             state = states.get(node)
+            if state is not None:
+                # A legacy console reply must not reintroduce retired
+                # watcher evidence into new reports (#8895).
+                state.pop("self_heal_task_present", None)
             if state is not None and (state.get("helper_status_present") is False
                                       or state.get("helper_sha256")):
                 console_ok += 1
@@ -647,7 +644,7 @@ class HelperStatusReadFallback:
                     for key in ("task_present", "pipe_open", "interactive_session",
                                 "mesh_agent_version", "updater_task_present",
                                 "updater_source_present", "updater_source_sha256",
-                                "self_heal_task_present"):
+                                ):
                         if key in state:
                             file_state[key] = state[key]
                 self._complete_updater_evidence(node, file_state)
@@ -688,8 +685,11 @@ def attach_helper_ready(source: Any, env: Any, *, post: Any,
         observer = fallback.observe
     else:
         observer = reporter.observe
+    # Historical senders are accepted, but new requests exclude watcher data.
     observe(observer, source=AGENT_HELPER_READY_JS,
-            protocol=HELPER_READY_PROTOCOL, keys=sorted(HELPER_READY_KEYS | HELPER_READY_OPTIONAL_KEYS))
+            protocol=HELPER_READY_PROTOCOL,
+            keys=sorted((HELPER_READY_KEYS | HELPER_READY_OPTIONAL_KEYS)
+                        - {"self_heal_task_present"}))
     return reporter
 
 
