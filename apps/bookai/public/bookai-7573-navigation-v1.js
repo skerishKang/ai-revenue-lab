@@ -309,13 +309,18 @@ function openGrid(options){
     }(i));
     cells.append(b);
   }
+  var fadeTop=document.createElement('div');
+  fadeTop.className='sm7573-grid-fade-top';
+  fadeTop.setAttribute('aria-hidden','true');
   var fade=document.createElement('div');
   fade.className='sm7573-grid-fade';
   fade.setAttribute('aria-hidden','true');
-  card.append(head,cells,fade);
+  card.append(head,cells,fadeTop,fade);
   ov.append(card);
   ov.addEventListener('click',function(e){if(e.target===ov)closeGrid();});
   document.body.append(ov);
+  /* 화면 폭에 따라 머리줄 높이가 달라져도 격자 위쪽부터 흐림을 표시한다. */
+  fadeTop.style.top=cells.offsetTop+'px';
   /* The grid alone scrolls. On opening, the selected chapter is already visible. */
   var active=cells.querySelector('.sm7573-grid-cell.on');
   if(active){
@@ -323,8 +328,9 @@ function openGrid(options){
     cells.scrollTop+=(target.top+target.height/2)-(visible.top+visible.height/2);
   }
   function syncFade(){
-    fade.style.opacity=cells.scrollHeight>cells.clientHeight+2&&
-      cells.scrollTop+cells.clientHeight<cells.scrollHeight-2?'1':'0';
+    var overflow=cells.scrollHeight>cells.clientHeight+2;
+    fadeTop.style.opacity=overflow&&cells.scrollTop>2?'1':'0';
+    fade.style.opacity=overflow&&cells.scrollTop+cells.clientHeight<cells.scrollHeight-2?'1':'0';
   }
   cells.addEventListener('scroll',syncFade,{passive:true});
   syncFade();
