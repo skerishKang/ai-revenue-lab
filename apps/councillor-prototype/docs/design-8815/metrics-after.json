@@ -1,0 +1,251 @@
+{
+  "news-1440-light": {
+    "title": {
+      "x": 80,
+      "y": 116.796875,
+      "width": 1280,
+      "height": 41.46875,
+      "bottom": 158.265625
+    },
+    "titleSize": 34,
+    "eyebrow": {
+      "class": "section-eyebrow news-eyebrow-spacer",
+      "text": "",
+      "box": {
+        "x": 80,
+        "y": 92,
+        "width": 1280,
+        "height": 16.796875,
+        "bottom": 108.796875
+      }
+    },
+    "lead": {
+      "x": 80,
+      "y": 164.265625,
+      "width": 590.9375,
+      "height": 27.1875,
+      "bottom": 191.453125
+    },
+    "leadClass": "section-lead",
+    "leadColor": "rgb(84, 96, 120)",
+    "leadBottomMargin": 28,
+    "list": {
+      "x": 80,
+      "y": 219.453125,
+      "width": 1280,
+      "height": 1787.046875,
+      "bottom": 2006.5
+    },
+    "card": {
+      "x": 80,
+      "y": 219.453125,
+      "width": 1280,
+      "height": 327.96875,
+      "bottom": 547.421875
+    },
+    "date": {
+      "x": 103,
+      "y": 250.453125,
+      "width": 84.421875,
+      "height": 19,
+      "bottom": 269.453125
+    },
+    "dateText": "2026-11-25",
+    "newsTitle": {
+      "x": 103,
+      "y": 281.640625,
+      "width": 1234,
+      "height": 34,
+      "bottom": 315.640625
+    },
+    "newsTitleText": "자료를 더 빠르게 찾도록",
+    "listItem": {
+      "x": 127,
+      "y": 331.640625,
+      "width": 640,
+      "height": 57.59375,
+      "bottom": 389.234375
+    },
+    "itemSize": 16,
+    "itemMaxWidth": "640px",
+    "header": null,
+    "main": {
+      "x": 0,
+      "y": 60,
+      "width": 1440,
+      "height": 1978.5,
+      "bottom": 2038.5
+    },
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "theme": "light",
+    "textLarge": "",
+    "kind": "news"
+  },
+  "news-390-dark": {
+    "title": {
+      "x": 20,
+      "y": 110.796875,
+      "width": 350,
+      "height": 29.265625,
+      "bottom": 140.0625
+    },
+    "titleSize": 24,
+    "eyebrow": {
+      "class": "section-eyebrow news-eyebrow-spacer",
+      "text": "",
+      "box": {
+        "x": 20,
+        "y": 86,
+        "width": 350,
+        "height": 16.796875,
+        "bottom": 102.796875
+      }
+    },
+    "lead": {
+      "x": 20,
+      "y": 146.0625,
+      "width": 350,
+      "height": 27.1875,
+      "bottom": 173.25
+    },
+    "leadClass": "section-lead",
+    "leadColor": "rgb(184, 179, 166)",
+    "leadBottomMargin": 28,
+    "list": {
+      "x": 20,
+      "y": 201.25,
+      "width": 350,
+      "height": 2219,
+      "bottom": 2420.25
+    },
+    "card": {
+      "x": 20,
+      "y": 201.25,
+      "width": 350,
+      "height": 529.546875,
+      "bottom": 730.796875
+    },
+    "date": {
+      "x": 43,
+      "y": 232.25,
+      "width": 84.421875,
+      "height": 19,
+      "bottom": 251.25
+    },
+    "dateText": "2026-11-25",
+    "newsTitle": {
+      "x": 43,
+      "y": 263.4375,
+      "width": 304,
+      "height": 34,
+      "bottom": 297.4375
+    },
+    "newsTitleText": "자료를 더 빠르게 찾도록",
+    "listItem": {
+      "x": 67,
+      "y": 313.4375,
+      "width": 280,
+      "height": 115.1875,
+      "bottom": 428.625
+    },
+    "itemSize": 16,
+    "itemMaxWidth": "640px",
+    "header": null,
+    "main": {
+      "x": 0,
+      "y": 60,
+      "width": 390,
+      "height": 2386.25,
+      "bottom": 2446.25
+    },
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "theme": "dark",
+    "textLarge": "",
+    "kind": "news"
+  },
+  "news-1440-large": {
+    "title": {
+      "x": 80,
+      "y": 120.390625,
+      "width": 1280,
+      "height": 41.46875,
+      "bottom": 161.859375
+    },
+    "titleSize": 34,
+    "eyebrow": {
+      "class": "section-eyebrow news-eyebrow-spacer",
+      "text": "",
+      "box": {
+        "x": 80,
+        "y": 92,
+        "width": 1280,
+        "height": 20.390625,
+        "bottom": 112.390625
+      }
+    },
+    "lead": {
+      "x": 80,
+      "y": 167.859375,
+      "width": 738.671875,
+      "height": 34,
+      "bottom": 201.859375
+    },
+    "leadClass": "section-lead",
+    "leadColor": "rgb(84, 96, 120)",
+    "leadBottomMargin": 28,
+    "list": {
+      "x": 80,
+      "y": 229.859375,
+      "width": 1280,
+      "height": 2042,
+      "bottom": 2271.859375
+    },
+    "card": {
+      "x": 80,
+      "y": 229.859375,
+      "width": 1280,
+      "height": 386,
+      "bottom": 615.859375
+    },
+    "date": {
+      "x": 103,
+      "y": 261.859375,
+      "width": 105.53125,
+      "height": 24,
+      "bottom": 285.859375
+    },
+    "dateText": "2026-11-25",
+    "newsTitle": {
+      "x": 103,
+      "y": 298.859375,
+      "width": 1234,
+      "height": 34,
+      "bottom": 332.859375
+    },
+    "newsTitleText": "자료를 더 빠르게 찾도록",
+    "listItem": {
+      "x": 127,
+      "y": 352.859375,
+      "width": 800,
+      "height": 72,
+      "bottom": 424.859375
+    },
+    "itemSize": 20,
+    "itemMaxWidth": "800px",
+    "header": null,
+    "main": {
+      "x": 0,
+      "y": 60,
+      "width": 1440,
+      "height": 2243.859375,
+      "bottom": 2303.859375
+    },
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "theme": "light",
+    "textLarge": "large",
+    "kind": "news"
+  }
+}
