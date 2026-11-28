@@ -146,6 +146,11 @@ ARCHIVE_ROW = """() => {
       whiteSpace: getComputedStyle(name).whiteSpace,
       nameH: round(nameBox.height),
       lineH: round(parseFloat(getComputedStyle(name).lineHeight)),
+      lineClamp: getComputedStyle(name).webkitLineClamp,
+      dateTop: round(countBox.top),
+      nameBottom: round(nameBox.bottom),
+      movesVertical: moves.length === 2
+        && moves[1].getBoundingClientRect().top >= moves[0].getBoundingClientRect().bottom - 1,
       clipped: name.scrollWidth > name.clientWidth + 1,
       countAfterName: countBox.left >= nameBox.right - 1,
       countBeforeMoves: !moves.length || countBox.right <= moves[0].getBoundingClientRect().left + 1,
@@ -322,7 +327,8 @@ def _archive_rows(url, width, height):
 
 
 @pytest.mark.parametrize("width,height", PHONE_WIDTHS)
-def test_the_archive_row_keeps_its_name_on_one_line(static_url, width, height):
+def test_the_archive_row_shows_two_line_name_above_date_and_vertical_moves(static_url, width, height):
+    # #8793-1 supersedes the 2026-11-02 one-line/ellipsis mobile rule.
     previous = StaticHandler.authenticated
     StaticHandler.authenticated = True
     try:
@@ -331,11 +337,11 @@ def test_the_archive_row_keeps_its_name_on_one_line(static_url, width, height):
         StaticHandler.authenticated = previous
     assert len(rows) == 3, rows
     for row in rows:
-        assert row["whiteSpace"] == "nowrap", row
-        assert row["nameH"] <= row["lineH"] + 1, "the name wrapped to a second line: %s" % row
-        assert row["buttonH"] == 44, "the row is not one 44px line: %s" % row
-        assert row["countAfterName"], "the count overlaps the name: %s" % row
-        assert row["countBeforeMoves"], "the count overlaps the move buttons: %s" % row
-        assert row["rowRight"] <= row["limit"] + 1, "the row spills past the archive: %s" % row
-    clipped = [row["clipped"] for row in rows]
-    assert clipped == [True, False, True], "long names clip, the short one does not: %s" % rows
+        assert row["whiteSpace"] == "normal", row
+        assert row["lineClamp"] == "2", row
+        assert row["nameH"] <= row["lineH"] * 2 + 2, row
+        assert row["buttonH"] >= 44, row
+        assert row["dateTop"] >= row["nameBottom"] - 2, row
+        assert row["movesVertical"], row
+        assert row["countBeforeMoves"], row
+        assert row["rowRight"] <= row["limit"] + 1, row

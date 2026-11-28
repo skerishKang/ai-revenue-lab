@@ -2,6 +2,8 @@
 """#8824 — stricter fact-check instructions and clean book download names."""
 from __future__ import annotations
 
+from datetime import datetime
+
 from _council_module import run
 
 
@@ -24,10 +26,10 @@ def test_book_download_names_strip_markdown_and_heading_words():
         assert "#" not in name, name
         assert "제목 후보" not in name, name
         assert not name.startswith("활동집 - 1."), name
-        assert name.startswith("활동집_2026-11-01~2026-11-30_2026-11-26."), name
+        assert name.startswith(f"활동집_2026-11-01~2026-11-30_{datetime.now().strftime('%Y-%m-%d')}."), name
     # an empty title falls back to the same dated name
     for name in seen["empty"]:
-        assert name.startswith("활동집_2026-11-01~2026-11-30_2026-11-26."), name
+        assert name.startswith(f"활동집_2026-11-01~2026-11-30_{datetime.now().strftime('%Y-%m-%d')}."), name
     # a real title is still kept as the file name
     for name in seen["real"]:
         assert name.startswith("활동집 - 함께 만드는 가온동 안전망."), name
