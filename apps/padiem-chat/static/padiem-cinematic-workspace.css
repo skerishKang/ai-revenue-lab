@@ -93,11 +93,10 @@
 
 .project-banner-actions button {
   min-height: 30px;
-  /* Use the opaque theme surface and its contrasting ink on this ribbon only. */
-  border-color: var(--text);
+  border-color: var(--line-veil-dim);
   border-radius: 6px;
-  background: var(--sidebar-solid);
-  color: var(--text);
+  background: var(--surface-veil-ghost);
+  color: var(--ws-control-muted-text);
   font-family: var(--font-label);
   font-size: 9px;
   letter-spacing: .035em;
