@@ -13,7 +13,7 @@
   const progress=document.createElement('span');
   progress.className='bookai-startup-progress';
   progress.setAttribute('aria-hidden','true');
-  gate.prepend(progress);
+  gate.append(progress);
   document.body.append(gate);
   document.body.setAttribute('aria-busy','true');
   let finished=false;
